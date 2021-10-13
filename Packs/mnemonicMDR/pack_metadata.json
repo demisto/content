@@ -1,9 +1,9 @@
 {
     "name": "mnemonic MDR",
-    "description": "Rapidly detect, analyse and respond to security threats with mnemonic’s leading Managed Detection and Response (MDR) service.",
+    "description": "Rapidly detect, analyse and respond to security threats with mnemonic's leading Managed Detection and Response (MDR) service.",
     "support": "partner",
     "certification": "certified",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.1.1",
     "author": "mnemonic",
     "url": "https://mnemonic.no",
     "email": "contact@mnemonic.no",
@@ -35,5 +35,7 @@
         "Argus",
         "MDR"
     ],
-    "githubUser": []
+    "githubUser": [
+        "konraduh"
+    ]
 }

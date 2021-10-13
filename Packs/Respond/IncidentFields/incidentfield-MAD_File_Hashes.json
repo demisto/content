@@ -1,0 +1,48 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Mandiant Automated Defense Incident"
+    ],
+    "caseInsensitive": true,
+    "cliName": "madfilehashes",
+    "closeForm": false,
+    "columns": [
+        {
+            "displayName": "Hash",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "hash",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        }
+    ],
+    "content": true,
+    "defaultRows": [
+        {},
+        {},
+        {}
+    ],
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_madfilehashes",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "MAD File Hashes",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "5.0.0"
+}

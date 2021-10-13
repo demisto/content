@@ -8,7 +8,7 @@ from requests.exceptions import MissingSchema, InvalidSchema, ConnectionError
 import demistomock as demisto
 from CommonServerPython import DemistoException
 
-MOCK_URL = 'http://123-fake-api.com'
+MOCK_URL = 'http://123-fake-api.com'    # NOSONAR
 
 SSL_ARGS = {
     'field': 'serialNumber',
@@ -43,6 +43,14 @@ HOST_ATTRIBUTE_ARGS = {
         'direction': 'parents',
         'start': '2020-05-25 00:05:25'
     }
+}
+
+COOKIE_ARGS = {
+    "query": "dummy.domain",
+    "search_by": "get addresses by cookie domain",
+    "order": "desc",
+    "sort": "last seen",
+    "page": '0'
 }
 
 
@@ -641,7 +649,7 @@ def test_pt_whois_search_command_success(request_mocker, mock_cr, client):
     # assert overall command output
     mock_cr.assert_called_with(
         outputs_prefix='PassiveTotal.WHOIS',
-        outputs_key_field='domain',
+        outputs_key_field=['domain', 'lastLoadedAt'],
         outputs=dummy_custom_context,
         readable_output=dummy_readable_output,
         raw_response=dummy_response
@@ -989,3 +997,284 @@ def test_domain_reputatin_command_empty_response(request_mocker, mock_cr, client
         outputs=[],
         readable_output='### Domain(s)\n**No entries.**\n'
     )
+
+
+@patch('PassiveTotal_v2.Client.http_request')
+def test_get_services_command_empty_response(request_mocker, client):
+    """
+        Empty response body should not throw any error if API returns.
+    """
+    from PassiveTotal_v2 import get_services_command
+
+    # Configure
+    args = {
+        'ip': '127.0.0.1'
+    }
+    request_mocker.return_value = {}
+
+    # Execute
+    command_response = get_services_command(client, args)
+
+    # Assert
+    assert command_response.readable_output == "No services were found for the given argument(s)."
+
+
+@patch('PassiveTotal_v2.Client.http_request')
+def test_get_services_command_success(request_mocker, client):
+    """
+        Positive case (HR and contextData) should be validated.
+    """
+    from PassiveTotal_v2 import get_services_command
+
+    # Configure
+    args = {
+        'ip': '127.0.0.1'
+    }
+
+    with open('test_data/services_command/services_command_response.json', 'rb') as f:
+        dummy_response = json.load(f)
+
+    with open('test_data/services_command/services_command_context.json', 'rb') as f:
+        context_output = json.load(f)
+
+    with open('test_data/services_command/services_command_readable_output.md', 'r') as f:
+        readable_output = f.read()
+
+    request_mocker.return_value = dummy_response
+
+    # Execute
+    command_response = get_services_command(client, args)
+
+    # Assert
+    assert command_response.outputs_prefix == 'PassiveTotal.Service'
+    assert command_response.outputs_key_field == ['ip', 'portNumber']
+    assert command_response.outputs == context_output
+    assert command_response.readable_output == readable_output
+
+
+@pytest.mark.parametrize("args", [
+    {"ip": "1234"},
+    {"ip": "1.1.1"},
+    {"ip": "124.2222.2.2"},
+    {"ip": "abc"}
+])
+def test_get_services_command_failure(args, client):
+    """
+        Validation error should be validated if business logic/method is throwing any error.
+    """
+    from PassiveTotal_v2 import get_services_command
+
+    with pytest.raises(ValueError):
+        get_services_command(client, args)
+
+
+@patch('PassiveTotal_v2.CommandResults')
+@patch('PassiveTotal_v2.Client.http_request')
+def test_pt_get_whois_command_success(request_mocker, mock_cr, client):
+    """
+        Proper Readable output and context should be set via CommonResults in case of proper response from get-whois
+    API endpoint
+    """
+    from PassiveTotal_v2 import pt_get_whois_command
+    from PassiveTotal_v2 import get_human_readable_for_whois_commands
+    from PassiveTotal_v2 import get_context_for_get_whois_commands
+
+    # Configure
+    args = {
+        'query': 'test-query@test.com',
+        'history': 'true'
+    }
+    with open('test_data/whois_command/whois_command_response.json', 'rb') as f:
+        dummy_response = json.load(f)
+    with open('test_data/whois_command/whois_custom_context.json', 'rb') as f:
+        dummy_custom_context = json.load(f)
+    with open('test_data/whois_command/whois_command_readable_output.md', 'r') as f:
+        dummy_readable_output = f.read()
+    request_mocker.return_value = dummy_response
+
+    # Execute
+    domains = dummy_response.get('results')
+    # get human readable via dummy response
+    readable_output = get_human_readable_for_whois_commands(domains)
+    # get custom context via dummy response
+    custom_context = get_context_for_get_whois_commands(domains)
+    pt_get_whois_command(client, args)
+
+    # Assert
+    # asserts the readable output
+    assert readable_output == dummy_readable_output
+    # asserts the custom context
+    assert custom_context == dummy_custom_context
+    # assert overall command output
+    mock_cr.assert_called_with(
+        outputs_prefix='PassiveTotal.WHOIS',
+        outputs_key_field=['domain', 'lastLoadedAt'],
+        outputs=dummy_custom_context,
+        readable_output=dummy_readable_output,
+        raw_response=dummy_response
+    )
+
+
+@patch('PassiveTotal_v2.Client.http_request')
+def test_pt_get_whois_empty_response(request_mocker, client):
+    """
+        Proper message should be display in case of empty response from get-whois API endpoint
+    """
+    from PassiveTotal_v2 import pt_get_whois_command
+
+    # Configure
+    args = {
+        'query': 'test-query@test.com',
+        'history': 'true'
+    }
+    empty_response = '{"results": []}'
+    dummy_response = json.loads(empty_response)
+
+    request_mocker.return_value = dummy_response
+
+    # Execute
+    response = pt_get_whois_command(client, args)
+
+    # Assert
+    assert response.readable_output == 'No domain information were found for the given argument(s).'
+
+
+@patch("PassiveTotal_v2.Client.http_request")
+def test_get_cookies_no_record_found(mocker_http_request, client):
+    """
+        When no record found from Cookies response then result string should match.
+    """
+    from PassiveTotal_v2 import get_cookies_command
+
+    # Fetching expected raw response from file
+    with open("test_data/Cookie/cookie_resp.json", encoding='utf-8') as f:
+        json_file = json.load(f)
+    expected_res = json_file.get('zeroRecords')
+    mocker_http_request.return_value = expected_res
+
+    result = get_cookies_command(client, COOKIE_ARGS)
+    assert result == 'Total Record(s): 0\nNo cookies were found for the given argument(s).'
+
+
+@patch("PassiveTotal_v2.Client.http_request")
+def test_get_cookies_command_success(mocker_http_request, client):
+    """
+        When get cookies command executes successfully then context output and response should match.
+    """
+    from PassiveTotal_v2 import get_cookies_command
+
+    # Fetching expected raw response from file
+    with open('test_data/Cookie/cookie_resp.json', encoding='utf-8') as f:
+        json_file = json.load(f)
+    expected_res = json_file.get('success')
+    mocker_http_request.return_value = expected_res
+
+    # Fetching expected entry context details from file
+    with open("test_data/Cookie/cookie_ec.json", encoding='utf-8') as f:
+        expected_ec = json.load(f)
+
+    # Fetching expected entry context details from file
+    with open("test_data/Cookie/cookie_hr.md") as f:
+        expected_hr = f.read()
+
+    result = get_cookies_command(client, COOKIE_ARGS)
+
+    assert result.raw_response == expected_res
+    assert result.outputs == expected_ec
+    assert result.readable_output == expected_hr
+    assert result.outputs_key_field == ['hostname', 'cookieName', 'cookieDomain']
+    assert result.outputs_prefix == 'PassiveTotal.Cookie'
+
+
+@pytest.mark.parametrize("query,search_by,sort,order,page", [
+    ("abc", "get addresses by cookie name", "last seen", "desc", "-2"),
+    ("abc", "get addresses by cookie name", "last seen", "desc", "13t"),
+    ("abc", "cookie domain", "last seen", "desc", "0"),
+    ("abc", "Get Addresses By Cookie", "last seen", "desc", "0"),
+    ("abc", "get addresses by cookie name", "seen", "desc", "0"),
+    ("abc", "get addresses by cookie name", "lastseen", "desc", "0"),
+    ("abc", "get addresses by cookie name", "FirstSeen", "desc", "0"),
+    ("abc", "get addresses by cookie name", "last seen", "des", "0"),
+    ("abc", "get addresses by cookie name", "last seen", "ascending", "0"),
+    ("abc", "get addresses by cookie name", "last seen", "desc", "0"),
+    ("abc?", "get addresses by cookie name", "last seen", "desc", "0"),
+    ("abc:", "get addresses by cookie name", "last seen", "desc", "0"),
+    ("a bc", "get addresses by cookie name", "last seen", "desc", "0"),
+    ("abc.?org", "get addresses by cookie domain", "last seen", "desc", "0"),
+    ("abc\\.com", "get addresses by cookie domain", "last seen", "desc", "0"),
+    ("a.b.c", "get addresses by cookie domain", "last seen", "desc", "0"),
+    ("-abc.eu.org", "get addresses by cookie domain", "last seen", "desc", "0"),
+    ("abc.eu.org-", "get addresses by cookie domain", "last seen", "desc", "0"),
+])
+def test_get_cookies_failures(client, query, search_by, sort, order, page):
+    """
+        When erroneous arguments are provided to get cookies command, it throws ValueError.
+    """
+    from PassiveTotal_v2 import get_cookies_command
+
+    args = {
+        "query": query,
+        "search_by": search_by,
+        "sort": sort,
+        "order": order,
+        "page": page
+    }
+
+    with pytest.raises(ValueError):
+        get_cookies_command(client, args)
+
+
+@patch('PassiveTotal_v2.Client.http_request')
+def test_pt_get_articles_command_success(request_mocker, client):
+    """
+        Proper Readable output and context should be set via CommonResults in case of proper response from get-articles
+    API endpoint
+    """
+    from PassiveTotal_v2 import pt_get_articles_command
+
+    # Configure
+    args = {
+        'query': 'dummy.com',
+    }
+    with open('test_data/Articles/articles_command_response.json', 'r') as f:
+        dummy_response = json.load(f)
+    with open('test_data/Articles/articles_custom_context.json', 'r') as f:
+        dummy_custom_context = json.load(f)
+    with open('test_data/Articles/articles_command_readable_output.md', 'r') as f:
+        dummy_readable_output = f.read()
+    request_mocker.return_value = dummy_response
+
+    # Execute
+    response = pt_get_articles_command(client, args)
+
+    # Assert
+    # asserts the readable output
+    assert response.readable_output == dummy_readable_output
+    # asserts the custom context
+    assert response.outputs == dummy_custom_context
+    # asserts raw response
+    assert response.raw_response == dummy_response
+
+
+@patch('PassiveTotal_v2.Client.http_request')
+def test_pt_get_articles_empty_response(request_mocker, client):
+    """
+        Proper message should be display in case of empty response from get-articles API endpoint
+    """
+    from PassiveTotal_v2 import pt_get_articles_command
+
+    # Configure
+    args = {
+        'query': 'dummy.com',
+    }
+    empty_response = '{"success": false,"articles": null,"totalRecords": 0}'
+
+    dummy_response = json.loads(empty_response)
+
+    request_mocker.return_value = dummy_response
+
+    # Execute
+    response = pt_get_articles_command(client, args)
+
+    # Assert
+    assert response.readable_output == 'No articles were found for the given argument(s).'

@@ -1,15 +1,16 @@
 IBM X-Force Exchange lets you receive threat intelligence about applications, IP addresses, URls and hashes
 
-## Configure XFE_v2 on Demisto
+## Configure XFE v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for XFE_v2.
+2. Search for XFE v2.
 3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | url | Server URL (e.g. https://api.xforce.ibmcloud.com) | True |
 | credentials | API Key | True |
+| Source Reliability | Reliability of the source providing the intelligence data. The default value is C - Fairly reliable. | True |
 | insecure | Trust any certificate (not secure) | False |
 | proxy | Use system proxy settings | False |
 | ip_threshold | IP Threshold. Minimum risk score for the IP to be consodered malicious (ranges from 1 to 10). | False |
@@ -18,7 +19,7 @@ IBM X-Force Exchange lets you receive threat intelligence about applications, IP
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### ip
 ***
@@ -33,24 +34,24 @@ IP to check
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ip | IP to check | Required | 
-| threshold | score treshold  | Optional | 
+| threshold | score threshold  | Optional | 
 
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IP.Address | Unknown | The IP address | 
-| IP.Malicious.Vendor | Unknown | For malicious IPs, the vendor that made the decision | 
-| IP.Malicious.Description | Unknown | For malicious IPs, the reason for the vendor to make the decision | 
-| IP.Malicious.Score | Unknown | For malicious IPs, the score from the vendor | 
+| IP.Address | Unknown | The IP address. | 
+| IP.Malicious.Vendor | Unknown | For malicious IPs, the vendor that made the decision. | 
+| IP.Malicious.Description | Unknown | For malicious IPs, the reason for the vendor to make the decision. | 
+| IP.Malicious.Score | Unknown | For malicious IPs, the score from the vendor. | 
 | DBotScore.Indicator | string | The indicator that was tested. | 
 | DBotScore.Type | string | The indicator type. | 
 | DBotScore.Vendor | string | The vendor used to calculate the score. | 
 | DBotScore.Score | number | The actual score. | 
-| XFE.IP.Reason | String | The reason for the given score from X-Force Exchange | 
-| XFE.IP.Reasondescription | String | Additional details of the score's reason | 
-| XFE.IP.Subnets | Unknown | The subnets of the IP | 
+| XFE.IP.Reason | String | The reason for the given score from X-Force Exchange. | 
+| XFE.IP.Reasondescription | String | Additional details of the score's reason. | 
+| XFE.IP.Subnets | Unknown | The subnets of the IP. | 
 
 
 ##### Command Example
@@ -166,8 +167,8 @@ Check the given URL reputation
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| URL.Data | String | The given URL from the user | 
-| URL.Malicious.Vendor | String | For malicious URLs, the vendor that made the decision | 
+| URL.Data | String | The given URL from the user. | 
+| URL.Malicious.Vendor | String | For malicious URLs, the vendor that made the decision. | 
 | DBotScore.Indicator | string | The indicator that was tested. | 
 | DBotScore.Type | string | The indicator type. | 
 | DBotScore.Vendor | string | The vendor used to calculate the score. | 
@@ -219,20 +220,25 @@ Check file reputation
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| File.MD5 | String | The file's MD5 | 
-| File.SHA1 | String | The file's SHA1 | 
-| File.SHA256 | String | The file's SHA256 | 
-| File.Malicious.Vendor | String | For malicious files, the vendor that made the decision | 
-| File.Malicious.Description | String | For malicious files, the reason for the vendor to make the decision | 
+| File.MD5 | String | The file's MD5. | 
+| File.SHA1 | String | The file's SHA1. | 
+| File.SHA256 | String | The file's SHA256. | 
+| File.Malicious.Vendor | String | For malicious files, the vendor that made the decision. | 
+| File.Malicious.Description | String | For malicious files, the reason for the vendor to make the decision. |
+| File.Relationships.EntityA | String | The source of the relationship. |
+| File.Relationships.EntityB | String | The destination of the relationship. |
+| File.Relationships.Relationship | String | The name of the relationship. |
+| File.Relationships.EntityAType | String | The type of the source of the relationship. |
+| File.Relationships.EntityBType | String | The type of the destination of the relationship. |
 | DBotScore.Indicator | string | The indicator that was tested. | 
 | DBotScore.Type | string | The indicator type. | 
 | DBotScore.Vendor | string | The vendor used to calculate the score. | 
 | DBotScore.Score | number | The actual score. | 
-| XFE.File.CnCServers | Unknown | C&C servers related to the given file | 
-| XFE.File.emails | Unknown | Emails related to the given file | 
-| XFE.File.downloadServers | Unknown | Download servers related to the given file | 
-| XFE.File.subjects | Unknown | Subjects related to the given file | 
-| XFE.File.external | Unknown | Additional information about the given file | 
+| XFE.File.CnCServers | Unknown | C&C servers related to the given file. | 
+| XFE.File.emails | Unknown | Emails related to the given file. | 
+| XFE.File.downloadServers | Unknown | Download servers related to the given file. | 
+| XFE.File.subjects | Unknown | Subjects related to the given file. | 
+| XFE.File.external | Unknown | Additional information about the given file. | 
 
 
 ##### Command Example
@@ -339,8 +345,8 @@ Check domain reputation
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Domain.Name | String | Domain | 
-| Domain.Malicious.Vendor | String | For malicious URLs, the vendor that made the decision | 
+| Domain.Name | String | Domain. | 
+| Domain.Malicious.Vendor | String | For malicious URLs, the vendor that made the decision. | 
 | DBotScore.Indicator | string | The indicator that was tested. | 
 | DBotScore.Type | string | The indicator type. | 
 | DBotScore.Vendor | string | The vendor used to calculate the score. | 
@@ -392,18 +398,18 @@ Search for details about the given CVE
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CVE.ID | String | The ID of the CVE | 
-| CVE.CVSS | String | The CVSS of the CVE | 
-| CVE.Published | Date | The date this was published | 
-| CVE.Description | Unknown | The CVE description | 
-| XFE.CVE.Xfdbid | String | The XFBID of the CVE | 
-| XFE.CVE.RiskLevel | Number | The risk level of the CVE | 
-| XFE.CVE.Reported | Date | The reported date of the CVE | 
-| XFE.CVE.Cvss | Unknown | The CVSS information of the CVE | 
-| XFE.CVE.Stdcode | Unknown | The CVE stdcodes | 
-| XFE.CVE.Title | String | the title of the CVE | 
-| XFE.CVE.Description | String | The description of the CVE | 
-| XFE.CVE.PlatformsAffected | Unknown | The affetcted platforms due to the CVE | 
+| CVE.ID | String | The ID of the CVE. | 
+| CVE.CVSS | String | The CVSS of the CVE. | 
+| CVE.Published | Date | The date this was published. | 
+| CVE.Description | Unknown | The CVE description. | 
+| XFE.CVE.Xfdbid | String | The XFBID of the CVE. | 
+| XFE.CVE.RiskLevel | Number | The risk level of the CVE. | 
+| XFE.CVE.Reported | Date | The reported date of the CVE. | 
+| XFE.CVE.Cvss | Unknown | The CVSS information of the CVE. | 
+| XFE.CVE.Stdcode | Unknown | The CVE stdcodes. | 
+| XFE.CVE.Title | String | The title of the CVE. | 
+| XFE.CVE.Description | String | The description of the CVE. | 
+| XFE.CVE.PlatformsAffected | Unknown | The affetcted platforms due to the CVE. | 
 | XFE.CVE.Exploitability | String | The exploitability of the CVE. | 
 
 
@@ -493,18 +499,18 @@ Return the latest vulnerabilities found
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CVE.ID | String | The ID of the CVE | 
-| CVE.CVSS | String | The CVSS of the CVE | 
-| CVE.Published | Date | The date this was published | 
-| CVE.Description | Unknown | The CVE description | 
-| XFE.CVE.Xfdbid | String | The XFBID of the CVE | 
-| XFE.CVE.RiskLevel | Number | The risk level of the CVE | 
-| XFE.CVE.Reported | Date | The reported date of the CVE | 
-| XFE.CVE.Cvss | Unknown | The CVSS information of the CVE | 
-| XFE.CVE.Stdcode | Unknown | The CVE stdcodes | 
-| XFE.CVE.Title | String | the title of the CVE | 
-| XFE.CVE.Description | String | The description of the CVE | 
-| XFE.CVE.PlatformsAffected | Unknown | The affetcted platforms due to the CVE | 
+| CVE.ID | String | The ID of the CVE. | 
+| CVE.CVSS | String | The CVSS of the CVE. | 
+| CVE.Published | Date | The date this was published. | 
+| CVE.Description | Unknown | The CVE description. | 
+| XFE.CVE.Xfdbid | String | The XFBID of the CVE. | 
+| XFE.CVE.RiskLevel | Number | The risk level of the CVE. | 
+| XFE.CVE.Reported | Date | The reported date of the CVE. | 
+| XFE.CVE.Cvss | Unknown | The CVSS information of the CVE. | 
+| XFE.CVE.Stdcode | Unknown | The CVE stdcodes. | 
+| XFE.CVE.Title | String | The title of the CVE. | 
+| XFE.CVE.Description | String | The description of the CVE. | 
+| XFE.CVE.PlatformsAffected | Unknown | The affetcted platforms due to the CVE. | 
 | XFE.CVE.Exploitability | String | The exploitability of the CVE. | 
 
 
@@ -645,9 +651,9 @@ Gets information about the given host address
 | XFE.Whois.RegistrarName | String | The domain name registrar of the host. | 
 | XFE.Whois.Created | Date | The date the host was created. | 
 | XFE.Whois.Updated | Date | The date the host's information has been updated. | 
-| XFE.Whois.Expires | Date | The date the host will be expired | 
+| XFE.Whois.Expires | Date | The date the host will be expired. | 
 | XFE.Whois.Email | String | The contact email of the host owners. | 
-| XFE.Whois.Contact | Unknown | Contact information of the host's organization | 
+| XFE.Whois.Contact | Unknown | Contact information of the host's organization. | 
 | Domain.Name | String | The name of the domain. | 
 | Domain.CreationDate | Date | The creation date of the domain. | 
 | Domain.ExpirationDate | Date | The expiration date of the domain. | 
@@ -743,20 +749,20 @@ Gets list of all vulnerabilities associated with the search term.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CVE.ID | String | The ID of the CVE | 
-| CVE.CVSS | String | The CVSS of the CVE | 
-| CVE.Published | Date | The date this was published | 
-| CVE.Description | Unknown | The CVE description | 
-| XFE.CVE.Xfdbid | String | The XFBID of the CVE | 
-| XFE.CVE.RiskLevel | Number | The risk level of the CVE | 
-| XFE.CVE.Reported | Date | The reported date of the CVE | 
-| XFE.CVE.Cvss | Unknown | The CVSS information of the CVE | 
-| XFE.CVE.Stdcode | Unknown | The CVE stdcodes | 
-| XFE.CVE.Title | String | the title of the CVE | 
-| XFE.CVE.Description | String | The description of the CVE | 
-| XFE.CVE.PlatformsAffected | Unknown | The affetcted platforms due to the CVE | 
+| CVE.ID | String | The ID of the CVE. | 
+| CVE.CVSS | String | The CVSS of the CVE. | 
+| CVE.Published | Date | The date this was published. | 
+| CVE.Description | Unknown | The CVE description. | 
+| XFE.CVE.Xfdbid | String | The XFBID of the CVE. | 
+| XFE.CVE.RiskLevel | Number | The risk level of the CVE. | 
+| XFE.CVE.Reported | Date | The reported date of the CVE. | 
+| XFE.CVE.Cvss | Unknown | The CVSS information of the CVE. | 
+| XFE.CVE.Stdcode | Unknown | The CVE stdcodes. | 
+| XFE.CVE.Title | String | The title of the CVE. | 
+| XFE.CVE.Description | String | The description of the CVE. | 
+| XFE.CVE.PlatformsAffected | Unknown | The affetcted platforms due to the CVE. | 
 | XFE.CVE.Exploitability | String | The exploitability of the CVE. | 
-| XFE.CVESearch.TotalRows | String | The total rows received after search | 
+| XFE.CVESearch.TotalRows | String | The total rows received after search. | 
 | XFE.CVESearch.Bookmark | String | Bookmark used to page through results. | 
 
 

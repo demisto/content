@@ -3,17 +3,22 @@ commonfields:
   id: Crowdstrike Falcon Intel Feed
   version: -1
 configuration:
+- defaultvalue: https://api.crowdstrike.com/
+  display: Cloud Base URL (e.g., https://api.crowdstrike.com)
+  name: server_url
+  required: false
+  type: 0
 - defaultvalue: 'true'
   display: Fetch indicators
   name: feed
   required: false
   type: 8
-- display: Crowdstrike API client ID
+- display: CrowdStrike API client ID
   name: client_id
   required: true
   type: 4
 - additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+    reputation.
   display: Indicator Reputation
   name: feedReputation
   options:
@@ -24,7 +29,7 @@ configuration:
   required: false
   type: 18
   defaultvalue: Bad
-- additionalinfo: Reliability of the source providing the intelligence data
+- additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: A - Completely reliable
   display: Source Reliability
   name: feedReliability
@@ -38,7 +43,7 @@ configuration:
   required: true
   type: 15
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
-    fetched from the feed
+    fetched from the feed.
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -99,27 +104,27 @@ configuration:
   name: feedTags
   required: false
   type: 0
-- display: Crowdstrike API client secret
+- display: CrowdStrike API client secret
   hidden: false
   name: client_secret
   required: true
   type: 4
-- additionalinfo: 'A comma-separated list of the threat actor''s target industries.
-    For example: Aerospace,Academic'
+- additionalinfo: "A comma-separated list of the threat actor's target industries.
+    For example: Aerospace,Academic."
   display: Filter by the threat actor's target industries.
   hidden: false
   name: target_industries
   required: false
   type: 0
-- additionalinfo: 'A comma-separated list of the threat actor''s target countries.
-    For example: united states,canada'
+- additionalinfo: "A comma-separated list of the threat actor's target countries.
+    For example: united states,canada."
   display: Filter by threat actor's target countries.
   hidden: false
   name: target_countries
   required: false
   type: 0
 - additionalinfo: 'For more information about custom filters and their structure,
-    see the (Crowdstrike Falcon documentation)[https://falcon.crowdstrike.com/login/?next=%2Fsupport%2Fdocumentation%2F45%2Ffalcon-query-language-fql%3F].'
+    see the CrowdStrike Falcon documentation at https://falcon.crowdstrike.com/login/?next=%2Fsupport%2Fdocumentation%2F45%2Ffalcon-query-language-fql%3F.'
   display: 'A custom filter by which to filter the indicators. If you pass the custom_filter
     argument it will override the custom_filter parameter from the integration instance
     configuration.'
@@ -130,8 +135,8 @@ configuration:
 description: The CrowdStrike intelligence team tracks the activities of threat actor
   groups and advanced persistent threats (APTs) to understand as much as possible
   about their known aliases, targets, methods, and more. This integration retrieves
-  indicators from the Crowdstrike Falcon Intel Feed
-display: Crowdstrike Falcon Intel Feed
+  indicators from the CrowdStrike Falcon Intel Feed.
+display: CrowdStrike Falcon Intel Feed Actors
 name: Crowdstrike Falcon Intel Feed
 script:
   commands:
@@ -166,16 +171,16 @@ script:
       description: 'A custom filter by which to filter the indicators. If you pass
         the custom_filter argument it will override the custom_filter parameter from
         the integration instance configuration. For more information about custom
-        filters and their structure, see the (Crowdstrike Falcon documentation)[https://falcon.crowdstrike.com/login/?next=%2Fsupport%2Fdocumentation%2F45%2Ffalcon-query-language-fql%3F].'
+        filters and their structure, see the CrowdStrike Falcon documentation at https://falcon.crowdstrike.com/login/?next=%2Fsupport%2Fdocumentation%2F45%2Ffalcon-query-language-fql%3F.'
       isArray: false
       name: custom_filter
       required: false
       secret: false
     deprecated: false
-    description: Gets indicators from Crowdstrike Falcon Intel Feed.
+    description: Gets indicators from CrowdStrike Falcon Intel Feed.
     execution: false
     name: crowdstrike-falcon-intel-get-indicators
-  dockerimage: demisto/python3:3.8.6.12176
+  dockerimage: demisto/python3:3.9.7.24076
   feed: true
   isfetch: false
   longRunning: false

@@ -54,6 +54,7 @@ configuration:
   required: true
   type: 15
 - defaultvalue: indicatorType
+  display: ''
   name: feedExpirationPolicy
   options:
   - never
@@ -63,6 +64,7 @@ configuration:
   required: false
   type: 17
 - defaultvalue: '20160'
+  display: ''
   name: feedExpirationInterval
   required: false
   type: 1
@@ -90,10 +92,7 @@ script:
       isArray: true
       name: ip
       required: true
-      secret: false
-    deprecated: false
     description: Return IP information and reputation
-    execution: false
     name: ip
     outputs:
     - contextPath: DBotScore.Indicator
@@ -217,10 +216,7 @@ script:
       isArray: true
       name: domain
       required: true
-      secret: false
-    deprecated: false
     description: Returns Domain information and reputation.
-    execution: false
     name: domain
     outputs:
     - contextPath: DBotScore.Indicator
@@ -352,10 +348,7 @@ script:
       isArray: true
       name: url
       required: true
-      secret: false
-    deprecated: false
     description: Returns URL information and reputation.
-    execution: false
     name: url
     outputs:
     - contextPath: URL.Data
@@ -386,15 +379,11 @@ script:
       description: The number of engines that positively detected the indicator as
         malicious.
       type: string
-  dockerimage: demisto/python3:3.8.6.13358
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/python3:3.9.7.24076
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
+fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
-fromversion: 6.0.0

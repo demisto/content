@@ -491,3 +491,103 @@ def test_module(mocker):
     mocker.patch.object(client, 'validate_api_key')
     result = test_module_command(client)
     assert result == 'ok'
+
+
+def test_gra_case_action(requests_mock):
+    """Unit test
+        Given
+        - gra case action
+        - command args page, max
+        - command raw response
+        When
+        - mock the Client's send_request.
+        Then
+        - run the gra case action command using the Client
+        Validate the output with mock response
+        Validate the output prefix
+        Validate key field
+    """
+    from GuruculGRA import Client, fetch_record_command
+    mock_response = util_load_json('test_data/gra-case-action.json')
+    requests_mock.get('https://test.com/api/cases/closeCase',
+                      json=mock_response)
+    cases_url = '/cases/closeCase'
+    params = {'page': 1, 'max': 10}
+    client = Client(
+        base_url='https://test.com/api',
+        verify=False,
+        headers={
+            'Authentication': 'Bearer some_api_key'
+        }
+    )
+    response = fetch_record_command(client, cases_url, 'Gra.Case.Action', 'caseId', params)
+    assert response.outputs == mock_response
+    assert response.outputs_prefix == 'Gra.Case.Action'
+    assert response.outputs_key_field == 'caseId'
+
+
+def test_gra_case_action_anomaly(requests_mock):
+    """Unit test
+        Given
+        - gra case action
+        - command args page, max
+        - command raw response
+        When
+        - mock the Client's send_request.
+        Then
+        - run the gra case action anomaly command using the Client
+        Validate the output with mock response
+        Validate the output prefix
+        Validate key field
+    """
+    from GuruculGRA import Client, fetch_record_command
+    mock_response = util_load_json('test_data/gra-case-action-anomaly.json')
+    requests_mock.get('https://test.com/api/cases/closeCaseAnomaly',
+                      json=mock_response)
+    cases_url = '/cases/closeCaseAnomaly'
+    params = {'page': 1, 'max': 10}
+    client = Client(
+        base_url='https://test.com/api',
+        verify=False,
+        headers={
+            'Authentication': 'Bearer some_api_key'
+        }
+    )
+    response = fetch_record_command(client, cases_url, 'Gra.Cases.Action.Anomaly', 'caseId', params)
+    assert response.outputs == mock_response
+    assert response.outputs_prefix == 'Gra.Cases.Action.Anomaly'
+    assert response.outputs_key_field == 'caseId'
+
+
+def test_gra_investigate_anomaly_summary(requests_mock):
+    """Unit test
+        Given
+        - gra investigate anomaly summary
+        - command args page, max
+        - command raw response
+        When
+        - mock the Client's send_request.
+        Then
+        - run the gra investigate anomaly summary command using the Client
+        Validate the output with mock response
+        Validate the output prefix
+        Validate key field
+    """
+    from GuruculGRA import Client, fetch_record_command
+    mock_response = util_load_json('test_data/gra-investigate-anomaly-summary.json')
+    requests_mock.get('https://test.com/api/investigateAnomaly/anomalySummary/ModelName',
+                      json=mock_response)
+    investigateAnomaly_url = '/investigateAnomaly/anomalySummary/ModelName'
+    client = Client(
+        base_url='https://test.com/api',
+        verify=False,
+        headers={
+            'Authentication': 'Bearer some_api_key'
+        }
+    )
+    response = fetch_record_command(client, investigateAnomaly_url, 'Gra.Investigate.Anomaly.Summary', 'modelId', None)
+    mock_response_array = []
+    mock_response_array.append(mock_response)
+    assert response.outputs == mock_response_array
+    assert response.outputs_prefix == 'Gra.Investigate.Anomaly.Summary'
+    assert response.outputs_key_field == 'modelId'

@@ -48,3 +48,28 @@ def test_parse_outputs():
     from MicrosoftGraphUser import parse_outputs
     _, parsed_outputs = parse_outputs(users_list_mock)
     assert parsed_outputs == expected_outputs
+
+
+def test_get_user_command_404_response(mocker):
+    """
+    Given:
+        - The get_user_command
+    When:
+        - The returned response is a 404 - not found error.
+    Then:
+        - Validate that the error is handled and that the human readable indicates an error.
+    """
+    from MicrosoftGraphUser import MsGraphClient, get_user_command
+    from MicrosoftApiModule import MicrosoftClient, BaseClient
+    from requests.models import Response
+
+    client = MsGraphClient('tenant_id', 'auth_id', 'enc_key', 'app_name', 'base_url', 'verify', 'proxy',
+                           'self_deployed', 'redirect_uri', 'auth_code')
+    error_404 = Response()
+    error_404._content = b'{"error": {"code": "Request_ResourceNotFound", "message": "Resource ' \
+                         b'"NotExistingUser does not exist."}}'
+    error_404.status_code = 404
+    mocker.patch.object(BaseClient, '_http_request', return_value=error_404)
+    mocker.patch.object(MicrosoftClient, 'get_access_token')
+    hr, _, _ = get_user_command(client, {'user': 'NotExistingUser'})  # client.get_user('user', 'properties')
+    assert 'User NotExistingUser was not found' in hr

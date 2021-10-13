@@ -1,0 +1,30 @@
+args:
+- auto: PREDEFINED
+  defaultValue: "True"
+  description: is it widget or playbook task
+  name: isWidget
+  predefined:
+  - "True"
+  - "False"
+comment: Present or analyze workers usage
+commonfields:
+  id: HealthCheckWorkers
+  version: -1
+dockerimage: demisto/python3:3.9.7.24076
+enabled: true
+name: HealthCheckWorkers
+outputs:
+- contextPath: workers
+  description: Workers status table
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- dynamic-section
+- widget
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

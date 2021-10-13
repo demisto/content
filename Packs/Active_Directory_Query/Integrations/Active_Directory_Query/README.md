@@ -38,7 +38,7 @@ Use Cases
 * Create or modify Active Directory users.
 * Manage user accounts and their status
 
-Configure Active Directory Query v2 on Demisto
+Configure Active Directory Query v2 on Cortex XSOAR
 ----------------------------------------------
 
 2. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -63,6 +63,8 @@ The premium ILM content pack introduces new functionality that uses both an inco
 
 1. Configure the "Incoming Mapper" with the name of the incoming mapper that you're using. ILM's default mapper is "User Profile - Active Directory (Incoming)".
 2. Configure the "Outgoing Mapper" with the name of the outgoing mapper that you're using. ILM's default mapper is "User Profile - Active Directory (Outgoing)".
+
+> <i>Note:</i> As part of the configuration of the mapper, you must map a value to the OU (organizational unit) required field. To do this, create a transformer that maps a user attribute of your choice to an OU value.
 
 To allow the integration to access the mapper from within the code, as required by the ILM pack, both mappers have to be configured in their proper respective fields and *not* in the "Mapper (outgoing)" dropdown list selector.
 
@@ -379,6 +381,9 @@ Disables an Active Directory user account.
 
 `ad-disable-account`
 
+##### Required Permissions
+Requires `Read userAccountControl` and `write userAccountControl` permissions.
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -407,6 +412,9 @@ Enables a previously disabled Active Directory account.
 ##### Base Command
 
 `ad-enable-account`
+
+##### Required Permissions
+Requires `Read userAccountControl` and `write userAccountControl` permissions.
 
 ##### Input
 
@@ -542,6 +550,7 @@ Retrieves detailed information about a user account. The user can be specified b
 | custom-field-type | Query users by this custom field type. | Optional |
 | custom-field-data | Query users by this custom field data (relevant only if the custom-field-type argument is provided). | Optional |
 | username | Query users by the samAccountName attribute | Optional |
+| samAccountName | Query users by the samAccountName attribute | Optional |
 | limit | Maximum number of objects to return (default is 20). | Optional |
 | email | Query by the user’s email address. | Optional |
 | user-account-control-out | Include verbose translation for UserAccountControl flags. | Optional |
@@ -654,6 +663,7 @@ Retrieves the list of users or computers that are members of the specified group
 | attributes | A CSV list of attributes to include in the results (in addition to the default attributes). | Optional |
 | time\_limit | Time limit (in seconds) for the search to run. | Optional |
 | disable-nested-search | Disable recursive retrieval of a user's group memberships. | Optional |
+| sAMAccountName | Queries results by the samAccountName attribute. | Optional |
 
 
 ##### Context Output

@@ -6,9 +6,35 @@
         "ipRep": {
             "dontMapEventToLabels": true,
             "internalMapping": {
+                "Cyren City Name": {
+                    "complex": {
+                        "accessor": "geo_city",
+                        "filters": [
+
+                        ],
+                        "root": "payload.meta",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
                 "Cyren Country Code": {
                     "complex": {
                         "accessor": "country_code",
+                        "filters": [
+
+                        ],
+                        "root": "payload.meta",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren Country Name": {
+                    "complex": {
+                        "accessor": "geo_country",
                         "filters": [
 
                         ],
@@ -98,6 +124,19 @@
                                 },
                                 "operator": "MapValuesTransformer"
                             }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren Geo Location": {
+                    "complex": {
+                        "accessor": "geo_location",
+                        "filters": [
+
+                        ],
+                        "root": "payload.meta",
+                        "transformers": [
+
                         ]
                     },
                     "simple": ""
@@ -393,6 +432,19 @@
                 "Cyren IP Risk": {
                     "complex": {
                         "accessor": "risk",
+                        "filters": [
+
+                        ],
+                        "root": "payload.detection",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren Malware Family": {
+                    "complex": {
+                        "accessor": "family_name",
                         "filters": [
 
                         ],

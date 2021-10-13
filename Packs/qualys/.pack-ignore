@@ -1,2 +1,5 @@
 [file:playbook-Vulnerability_Management__-_Qualys_(Job).yml]
 ignore=BA101
+
+[file:README.md]
+ignore=RM104

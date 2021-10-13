@@ -1,2 +1,11 @@
 [file:OnboardingIntegration.yml]
-ignore=IN126
+ignore=IN126,BA110
+
+[file:pack_metadata.json]
+ignore=PA125
+
+[file:README.md]
+ignore=RM104
+
+[file:classifier-mapper-incoming-OnboardingIntegration.json]
+ignore=BA101

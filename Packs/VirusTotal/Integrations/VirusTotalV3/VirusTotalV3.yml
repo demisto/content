@@ -1,0 +1,1376 @@
+commonfields:
+  id: VirusTotal (API v3)
+  version: -1
+name: VirusTotal (API v3)
+display: VirusTotal (API v3)
+fromversion: 5.5.0
+category: Data Enrichment & Threat Intelligence
+description: Analyzes suspicious hashes, URLs, domains, and IP addresses.
+configuration:
+- display: API Key (leave empty. Fill in the API key in the password field.)
+  displaypassword: API Key
+  name: credentials
+  type: 9
+  required: true
+  hiddenusername: true
+- additionalinfo: Reliability of the source providing the intelligence data
+  defaultvalue: C - Fairly reliable
+  display: Source Reliability
+  name: feedReliability
+  type: 15
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+- display: Premium Subscription
+  name: is_premium_api
+  defaultvalue: 'false'
+  type: 8
+  required: false
+- display: File Threshold. Minimum number of positive results from VT scanners to
+    consider the file malicious.
+  name: fileThreshold
+  defaultvalue: "10"
+  type: 0
+  required: false
+- display: IP Threshold. Minimum number of positive results from VT scanners to consider
+    the IP malicious.
+  name: ipThreshold
+  defaultvalue: "10"
+  type: 0
+  required: false
+- display: URL Threshold. Minimum number of positive results from VT scanners to consider
+    the URL malicious.
+  name: urlThreshold
+  defaultvalue: "10"
+  type: 0
+  required: false
+- display: Domain Threshold. Minimum number of positive results from VT scanners to
+    consider the domain malicious.
+  name: domainThreshold
+  defaultvalue: "10"
+  type: 0
+  required: false
+- display: Preferred Vendors List. CSV list of vendors who are considered more trustworthy.
+  name: preferredVendors
+  defaultvalue: ""
+  type: 12
+  required: false
+- display: 'Preferred Vendor Threshold. The minimum number of highly trusted vendors
+    required to consider a domain, IP address, URL, or file as malicious. '
+  name: preferredVendorsThreshold
+  defaultvalue: "5"
+  type: 0
+  required: false
+- display: Enable score analyzing by Crowdsourced Yara Rules, Sigma, and IDS
+  name: crowdsourced_yara_rules_enabled
+  defaultvalue: 'true'
+  type: 8
+  required: false
+- display: Crowdsourced Yara Rules Threshold
+  name: yaraRulesThreshold
+  defaultvalue: '1'
+  type: 0
+  required: false
+- display: Sigma and Intrusion Detection Rules Threshold
+  name: SigmaIDSThreshold
+  defaultvalue: '5'
+  type: 0
+  required: false
+- display: Domain Popularity Ranking Threshold
+  name: domain_popularity_ranking
+  defaultvalue: '10000'
+  type: 0
+  required: false
+- display: 'Premium Subscription Only: Relationship Files Threshold'
+  name: relationship_threshold
+  defaultvalue: '3'
+  type: 0
+  required: false
+- additionalinfo: 'Select the list of relationships to retrieve from the API. Note that relationships that are signed with * key are
+                    available only for the VirusTotal premium API key.'
+  display: IP Relationships
+  name: ip_relationships
+  options:
+  - communicating files
+  - '* downloaded files'
+  - referrer files
+  - '* urls'
+  required: false
+  type: 16
+  defaultvalue: 'communicating files,* downloaded files,referrer files,* urls'
+- additionalinfo: 'Select the list of relationships to retrieve from the API. Note that relationships that are signed with * key are
+                    available only for the VirusTotal premium API key.'
+  display: Domain Relationships
+  name: domain_relationships
+  options:
+  - '* cname records'
+  - '* caa records'
+  - communicating files
+  - '* downloaded files'
+  - immediate parent
+  - '* mx records'
+  - '* ns records'
+  - parent
+  - referrer files
+  - siblings
+  - '* soa records'
+  - subdomains
+  - '* urls'
+  required: false
+  type: 16
+  defaultvalue: '* cname records,* caa records,communicating files,* downloaded files,immediate parent,* mx records,* ns records,parent,referrer files,siblings,* soa records,subdomains,* urls'
+- additionalinfo: 'Select the list of relationships to retrieve from the API. Note that relationships that are signed with * key are
+                    available only for the VirusTotal premium API key.'
+  display: URL Relationships
+  name: url_relationships
+  options:
+  - communicating files
+  - '* contacted domains'
+  - '* contacted ips'
+  - '* downloaded files'
+  - last serving ip address
+  - network location
+  - '* redirecting urls'
+  - '* redirects to'
+  - '* referrer files'
+  - '* referrer urls'
+  required: false
+  type: 16
+  defaultvalue: 'communicating files,* contacted domains,* contacted ips,* downloaded files,last serving ip address,network location,* redirecting urls,* redirects to,* referrer files,* referrer urls'
+- additionalinfo: 'Select the list of relationships to retrieve from the API. Note that relationships that are signed with * key are
+                    available only for the VirusTotal premium API key.'
+  display: File Relationships
+  name: file_relationships
+  options:
+  - '* carbonblack children'
+  - '* carbonblack parents'
+  - '* compressed parents'
+  - 'contacted domains'
+  - 'contacted ips'
+  - 'contacted urls'
+  - 'dropped files'
+  - '* email attachments'
+  - '* email parents'
+  - '* embedded domains'
+  - '* embedded ips'
+  - '* embedded urls'
+  - 'execution parents'
+  - '* itw domains'
+  - '* itw ips'
+  - '* overlay children'
+  - '* overlay parents'
+  - '* pcap children'
+  - '* pcap parents'
+  - 'pe resource children'
+  - 'pe resource parents'
+  - '* similar files'
+  required: false
+  type: 16
+  defaultvalue: "* carbonblack children,* carbonblack parents,* compressed parents,contacted domains,contacted ips,contacted urls,dropped files,* email attachments,* email parents,* embedded domains,* embedded ips,* embedded urls,execution parents,* itw domains,* itw ips,* overlay children,* overlay parents,* pcap children,* pcap parents,pe resource children,pe resource parents,* similar files"
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ''
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ''
+  type: 8
+  required: false
+script:
+  script: ''
+  type: python
+  subtype: python3
+  commands:
+  - name: file
+    arguments:
+    - name: file
+      required: true
+      default: true
+      description: Hash of the file to query. Supports MD5, SHA1, and SHA256.
+      isArray: true
+    - name: extended_data
+      required: false
+      description: 'Whether to return extended data (last_analysis_results).'
+      defaultValue: false
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: File.MD5
+      description: Bad MD5 hash.
+    - contextPath: File.SHA1
+      description: Bad SHA1 hash.
+    - contextPath: File.SHA256
+      description: Bad SHA256 hash.
+    - contextPath: File.Relationships.EntityA
+      description: The source of the relationship.
+      type: string
+    - contextPath: File.Relationships.EntityB
+      description: The destination of the relationship.
+      type: string
+    - contextPath: File.Relationships.Relationship
+      description: The name of the relationship.
+      type: string
+    - contextPath: File.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: string
+    - contextPath: File.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision.
+    - contextPath: File.Malicious.Detections
+      description: For malicious files, the total number of detections.
+    - contextPath: File.Malicious.TotalEngines
+      description: For malicious files, the total number of engines that checked the
+        file hash.
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the DBot score.
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: VirusTotal.File.attributes.type_description
+      description: Description of the type of the file.
+      type: String
+    - contextPath: VirusTotal.File.attributes.tlsh
+      description: The locality-sensitive hashing.
+      type: String
+    - contextPath: VirusTotal.File.attributes.exiftool.MIMEType
+      description: MIME type of the file.
+      type: String
+    - contextPath: VirusTotal.File.attributes.names
+      description: Names of the file.
+      type: String
+    - contextPath: VirusTotal.File.attributes.javascript_info.tags
+      description: Tags of the JavaScript.
+      type: String
+    - contextPath: VirusTotal.File.attributes.exiftool.FileType
+      description: The file type.
+      type: String
+    - contextPath: VirusTotal.File.attributes.exiftool.WordCount
+      description: Total number of words in the file.
+      type: String
+    - contextPath: VirusTotal.File.attributes.exiftool.LineCount
+      description: Total number of lines in file.
+      type: String
+    - contextPath: VirusTotal.File.attributes.crowdsourced_ids_stats.info
+      description: Number of IDS that marked the file as "info".
+      type: Number
+    - contextPath: VirusTotal.File.attributes.crowdsourced_ids_stats.high
+      description: Number of IDS that marked the file as "high".
+      type: Number
+    - contextPath: VirusTotal.File.attributes.crowdsourced_ids_stats.medium
+      description: Number of IDS that marked the file as "medium".
+      type: Number
+    - contextPath: VirusTotal.File.attributes.crowdsourced_ids_stats.low
+      description: Number of IDS that marked the file as "low".
+      type: Number
+    - contextPath: VirusTotal.File.attributes.sigma_analysis_stats.critical
+      description: Number of Sigma analysis that marked the file as "critical".
+      type: Number
+    - contextPath: VirusTotal.File.attributes.sigma_analysis_stats.high
+      description: Number of Sigma analysis that marked the file as "high".
+      type: Number
+    - contextPath: VirusTotal.File.attributes.sigma_analysis_stats.medium
+      description: Number of Sigma analysis that marked the file as "medium".
+      type: Number
+    - contextPath: VirusTotal.File.attributes.sigma_analysis_stats.low
+      description: Number of Sigma analysis that marked the file as "low".
+      type: Number
+    - contextPath: VirusTotal.File.attributes.exiftool.MIMEEncoding
+      description: The MIME encoding.
+      type: String
+    - contextPath: VirusTotal.File.attributes.exiftool.FileTypeExtension
+      description: The file type extension.
+      type: String
+    - contextPath: VirusTotal.File.attributes.exiftool.Newlines
+      description: Number of newlines signs.
+      type: String
+    - contextPath: VirusTotal.File.attributes.trid.file_type
+      description: The TrID file type.
+      type: String
+    - contextPath: VirusTotal.File.attributes.trid.probability
+      description: The TrID probability.
+      type: Number
+    - contextPath: VirusTotal.File.attributes.crowdsourced_yara_results.description
+      description: Description of the YARA rule.
+      type: String
+    - contextPath: VirusTotal.File.attributes.crowdsourced_yara_results.source
+      description: Source of the YARA rule.
+      type: String
+    - contextPath: VirusTotal.File.attributes.crowdsourced_yara_results.author
+      description: Author of the YARA rule.
+      type: String
+    - contextPath: VirusTotal.File.attributes.crowdsourced_yara_results.ruleset_name
+      description: Rule set name of the YARA rule.
+      type: String
+    - contextPath: VirusTotal.File.attributes.crowdsourced_yara_results.rule_name
+      description: Name of the YARA rule.
+      type: String
+    - contextPath: VirusTotal.File.attributes.crowdsourced_yara_results.ruleset_id
+      description: ID of the YARA rule.
+      type: String
+    - contextPath: VirusTotal.File.attributes.names
+      description: Name of the file.
+      type: String
+    - contextPath: VirusTotal.File.attributes.last_modification_date
+      description: The last modification date in epoch format.
+      type: Number
+    - contextPath: VirusTotal.File.attributes.type_tag
+      description: Tag of the type.
+      type: String
+    - contextPath: VirusTotal.File.attributes.total_votes.harmless
+      description: Total number of harmless votes.
+      type: Number
+    - contextPath: VirusTotal.File.attributes.total_votes.malicious
+      description: Total number of malicious votes.
+      type: Number
+    - contextPath: VirusTotal.File.attributes.size
+      description: Size of the file.
+      type: Number
+    - contextPath: VirusTotal.File.attributes.popular_threat_classification.suggested_threat_label
+      description: Suggested thread label.
+      type: String
+    - contextPath: VirusTotal.File.attributes.popular_threat_classification.popular_threat_name
+      description: The popular thread name.
+      type: Number
+    - contextPath: VirusTotal.File.attributes.times_submitted
+      description: Number of times the file was submitted.
+      type: Number
+    - contextPath: VirusTotal.File.attributes.last_submission_date
+      description: Last submission date in epoch format.
+      type: Number
+    - contextPath: VirusTotal.File.attributes.downloadable
+      description: Whether the file is downloadable.
+      type: Boolean
+    - contextPath: VirusTotal.File.attributes.sha256
+      description: SHA-256 hash of the file.
+      type: String
+    - contextPath: VirusTotal.File.attributes.type_extension
+      description: Extension of the type.
+      type: String
+    - contextPath: VirusTotal.File.attributes.tags
+      description: File tags.
+      type: String
+    - contextPath: VirusTotal.File.attributes.last_analysis_date
+      description: Last analysis date in epoch format.
+      type: Number
+    - contextPath: VirusTotal.File.attributes.unique_sources
+      description: Unique sources.
+      type: Number
+    - contextPath: VirusTotal.File.attributes.first_submission_date
+      description: First submission date in epoch format.
+      type: Number
+    - contextPath: VirusTotal.File.attributes.ssdeep
+      description: SSDeep hash of the file.
+      type: String
+    - contextPath: VirusTotal.File.attributes.md5
+      description: MD5 hash of the file.
+      type: String
+    - contextPath: VirusTotal.File.attributes.sha1
+      description: SHA-1 hash of the file.
+      type: String
+    - contextPath: VirusTotal.File.attributes.magic
+      description: Identification of file by the magic number.
+      type: String
+    - contextPath: VirusTotal.File.attributes.last_analysis_stats.harmless
+      description: The number of engines that found the indicator to be harmless.
+      type: Number
+    - contextPath: VirusTotal.File.attributes.last_analysis_stats.type-unsupported
+      description: The number of engines that found the indicator to be of type unsupported.
+      type: Number
+    - contextPath: VirusTotal.File.attributes.last_analysis_stats.suspicious
+      description: The number of engines that found the indicator to be suspicious.
+      type: Number
+    - contextPath: VirusTotal.File.attributes.last_analysis_stats.confirmed-timeout
+      description: The number of engines that confirmed the timeout of the indicator.
+      type: Number
+    - contextPath: VirusTotal.File.attributes.last_analysis_stats.timeout
+      description: The number of engines that timed out for the indicator.
+      type: Number
+    - contextPath: VirusTotal.File.attributes.last_analysis_stats.failure
+      description: The number of failed analysis engines.
+      type: Number
+    - contextPath: VirusTotal.File.attributes.last_analysis_stats.malicious
+      description: The number of engines that found the indicator to be malicious.
+      type: Number
+    - contextPath: VirusTotal.File.attributes.last_analysis_stats.undetected
+      description: The number of engines that could not detect the indicator.
+      type: Number
+    - contextPath: VirusTotal.File.attributes.meaningful_name
+      description: Meaningful name of the file.
+      type: String
+    - contextPath: VirusTotal.File.attributes.reputation
+      description: The reputation of the file.
+      type: Number
+    - contextPath: VirusTotal.File.type
+      description: Type of the indicator (file).
+      type: String
+    - contextPath: VirusTotal.File.id
+      description: Type ID of the indicator.
+      type: String
+    - contextPath: VirusTotal.File.links.self
+      description: Link to the response.
+      type: String
+    description: Checks the file reputation of the specified hash.
+  - name: ip
+    arguments:
+    - name: ip
+      required: true
+      default: true
+      description: IP address to check.
+      isArray: true
+    - name: extended_data
+      required: false
+      description: 'Whether to return extended data (last_analysis_results).'
+      defaultValue: false
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: IP.Address
+      description: Bad IP address.
+    - contextPath: IP.ASN
+      description: Bad IP ASN.
+    - contextPath: IP.Geo.Country
+      description: Bad IP country.
+    - contextPath: IP.Relationships.EntityA
+      description: The source of the relationship.
+      type: string
+    - contextPath: IP.Relationships.EntityB
+      description: The destination of the relationship.
+      type: string
+    - contextPath: IP.Relationships.Relationship
+      description: The name of the relationship.
+      type: string
+    - contextPath: IP.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: string
+    - contextPath: IP.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: string
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision.
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the reason that the vendor made the decision.
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the DBot score.
+    - contextPath: DBotScore.Score
+      description: The actual score.
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: VirusTotal.IP.attributes.regional_internet_registry
+      description: Regional internet registry (RIR).
+      type: String
+    - contextPath: VirusTotal.IP.attributes.jarm
+      description: JARM data.
+      type: String
+    - contextPath: VirusTotal.IP.attributes.network
+      description: Network data.
+      type: String
+    - contextPath: VirusTotal.IP.attributes.country
+      description: The country where the IP is located.
+      type: String
+    - contextPath: VirusTotal.IP.attributes.as_owner
+      description: IP owner.
+      type: String
+    - contextPath: VirusTotal.IP.attributes.last_analysis_stats.harmless
+      description: The number of engines that found the domain to be harmless.
+      type: Number
+    - contextPath: VirusTotal.IP.attributes.last_analysis_stats.malicious
+      description: The number of engines that found the indicator to be malicious.
+      type: Number
+    - contextPath: VirusTotal.IP.attributes.last_analysis_stats.suspicious
+      description: The number of engines that found the indicator to be suspicious.
+      type: Number
+    - contextPath: VirusTotal.IP.attributes.last_analysis_stats.undetected
+      description: The number of engines that could not detect the indicator.
+      type: Number
+    - contextPath: VirusTotal.IP.attributes.last_analysis_stats.timeout
+      description: The number of engines that timed out for the indicator.
+      type: Number
+    - contextPath: VirusTotal.IP.attributes.asn
+      description: ASN data.
+      type: Number
+    - contextPath: VirusTotal.IP.attributes.whois_date
+      description: Date of the last update of the whois record.
+      type: Number
+    - contextPath: VirusTotal.IP.attributes.reputation
+      description: IP reputation.
+      type: Number
+    - contextPath: VirusTotal.IP.attributes.last_modification_date
+      description: Last modification date in epoch format.
+      type: Number
+    - contextPath: VirusTotal.IP.attributes.total_votes.harmless
+      description: Total number of harmless votes.
+      type: Number
+    - contextPath: VirusTotal.IP.attributes.total_votes.malicious
+      description: Total number of malicious votes.
+      type: Number
+    - contextPath: VirusTotal.IP.attributes.continent
+      description: The continent where the IP is located.
+      type: String
+    - contextPath: VirusTotal.IP.attributes.whois
+      description: whois data.
+      type: String
+    - contextPath: VirusTotal.IP.type
+      description: Indicator IP type.
+      type: String
+    - contextPath: VirusTotal.IP.id
+      description: ID of the IP.
+      type: String
+    description: Checks the reputation of an IP address.
+  - name: url
+    arguments:
+    - name: url
+      required: true
+      default: true
+      description: URL to check.
+      isArray: true
+    - name: extended_data
+      required: false
+      description: 'Whether to return extended data (last_analysis_results).'
+      defaultValue: false
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: URL.Data
+      description: Bad URLs found.
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision.
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason that the vendor made the decision.
+    - contextPath: URL.Relationships.EntityA
+      description: The source of the relationship.
+      type: string
+    - contextPath: URL.Relationships.EntityB
+      description: The destination of the relationship.
+      type: string
+    - contextPath: URL.Relationships.Relationship
+      description: The name of the relationship.
+      type: string
+    - contextPath: URL.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: string
+    - contextPath: URL.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the DBot score.
+    - contextPath: DBotScore.Score
+      description: The actual score.
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: VirusTotal.URL.attributes.favicon.raw_md5
+      description: The MD5 hash of the URL.
+      type: String
+    - contextPath: VirusTotal.URL.attributes.favicon.dhash
+      description: Difference hash.
+      type: String
+    - contextPath: VirusTotal.URL.attributes.last_modification_date
+      description: Last modification date in epoch format.
+      type: Number
+    - contextPath: VirusTotal.URL.attributes.times_submitted
+      description: The number of times the url has been submitted.
+      type: Number
+    - contextPath: VirusTotal.URL.attributes.total_votes.harmless
+      description: Total number of harmless votes.
+      type: Number
+    - contextPath: VirusTotal.URL.attributes.total_votes.malicious
+      description: Total number of malicious votes.
+      type: Number
+    - contextPath: VirusTotal.URL.attributes.threat_names
+      description: Name of the threats found.
+      type: String
+    - contextPath: VirusTotal.URL.attributes.last_submission_date
+      description: The last submission date in epoch format.
+      type: Number
+    - contextPath: VirusTotal.URL.attributes.last_http_response_content_length
+      description: The last HTTPS response length.
+      type: Number
+    - contextPath: VirusTotal.URL.attributes.last_http_response_headers.date
+      description: The last response header date.
+      type: Date
+    - contextPath: VirusTotal.URL.attributes.last_http_response_headers.x-sinkhole
+      description: DNS sinkhole from last response.
+      type: String
+    - contextPath: VirusTotal.URL.attributes.last_http_response_headers.content-length
+      description: The content length of the last response.
+      type: String
+    - contextPath: VirusTotal.URL.attributes.last_http_response_headers.content-type
+      description: The content type of the last response.
+      type: String
+    - contextPath: VirusTotal.URL.attributes.reputation
+      description: Reputation of the indicator.
+      type: Number
+    - contextPath: VirusTotal.URL.attributes.last_analysis_date
+      description: The date of the last analysis in epoch format.
+      type: Number
+    - contextPath: VirusTotal.URL.attributes.has_content
+      description: Whether the url has content in it.
+      type: Boolean
+    - contextPath: VirusTotal.URL.attributes.first_submission_date
+      description: The first submission date in epoch format.
+      type: Number
+    - contextPath: VirusTotal.URL.attributes.last_http_response_content_sha256
+      description: The SHA-256 hash of the content of the last response.
+      type: String
+    - contextPath: VirusTotal.URL.attributes.last_http_response_code
+      description: Last response status code.
+      type: Number
+    - contextPath: VirusTotal.URL.attributes.last_final_url
+      description: Last final URL.
+      type: String
+    - contextPath: VirusTotal.URL.attributes.url
+      description: The URL itself.
+      type: String
+    - contextPath: VirusTotal.URL.attributes.title
+      description: Title of the page.
+      type: String
+    - contextPath: VirusTotal.URL.attributes.last_analysis_stats.harmless
+      description: The number of engines that found the domain to be harmless.
+      type: Number
+    - contextPath: VirusTotal.URL.attributes.last_analysis_stats.malicious
+      description: The number of engines that found the indicator to be malicious.
+      type: Number
+    - contextPath: VirusTotal.URL.attributes.last_analysis_stats.suspicious
+      description: The number of engines that found the indicator to be suspicious.
+      type: Number
+    - contextPath: VirusTotal.URL.attributes.last_analysis_stats.undetected
+      description: The number of engines that could not detect the indicator.
+      type: Number
+    - contextPath: VirusTotal.URL.attributes.last_analysis_stats.timeout
+      description: The number of engines that timed out for the indicator.
+      type: Number
+    - contextPath: VirusTotal.URL.attributes.outgoing_links
+      description: Outgoing links of the URL page.
+      type: String
+    - contextPath: VirusTotal.URL.type
+      description: Type of the indicator (url).
+      type: String
+    - contextPath: VirusTotal.URL.id
+      description: ID of the indicator.
+      type: String
+    - contextPath: VirusTotal.URL.links.self
+      description: Link to the response.
+      type: String
+    description: Checks the reputation of a URL.
+  - name: domain
+    arguments:
+    - name: domain
+      required: true
+      default: true
+      description: Domain name to check.
+      isArray: true
+    - name: extended_data
+      required: false
+      description: 'Whether to return extended data (last_analysis_results).'
+      defaultValue: false
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: Domain.Name
+      description: Bad domain found.
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision.
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason that the vendor made the decision.
+    - contextPath: Domain.Relationships.EntityA
+      description: The source of the relationship.
+      type: string
+    - contextPath: Domain.Relationships.EntityB
+      description: The destination of the relationship.
+      type: string
+    - contextPath: Domain.Relationships.Relationship
+      description: The name of the relationship.
+      type: string
+    - contextPath: Domain.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: string
+    - contextPath: Domain.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+    - contextPath: DBotScore.Score
+      description: The actual DBot score.
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: VirusTotal.Domain.attributes.last_dns_records.type
+      description: The type of the last DNS records.
+      type: String
+    - contextPath: VirusTotal.Domain.attributes.last_dns_records.value
+      description: The value of the last DNS records.
+      type: String
+    - contextPath: VirusTotal.Domain.attributes.last_dns_records.ttl
+      description: The time To live (ttl) of the last DNS records.
+      type: Number
+    - contextPath: VirusTotal.Domain.attributes.jarm
+      description: JARM data.
+      type: String
+    - contextPath: VirusTotal.Domain.attributes.whois
+      description: whois data.
+      type: String
+    - contextPath: VirusTotal.Domain.attributes.last_dns_records_date
+      description: The last DNS records date in epoch format.
+      type: Number
+    - contextPath: VirusTotal.Domain.attributes.last_analysis_stats.harmless
+      description: The number of engines that found the domain to be harmless.
+      type: Number
+    - contextPath: VirusTotal.Domain.attributes.last_analysis_stats.malicious
+      description: The number of engines that found the indicator to be malicious.
+      type: Number
+    - contextPath: VirusTotal.Domain.attributes.last_analysis_stats.suspicious
+      description: The number of engines that found the indicator to be suspicious.
+      type: Number
+    - contextPath: VirusTotal.Domain.attributes.last_analysis_stats.undetected
+      description: The number of engines that could not detect the indicator.
+      type: Number
+    - contextPath: VirusTotal.Domain.attributes.last_analysis_stats.timeout
+      description: The number of engines that timed out for the indicator.
+      type: Number
+    - contextPath: VirusTotal.Domain.attributes.favicon.raw_md5
+      description: MD5 hash of the domain.
+      type: String
+    - contextPath: VirusTotal.Domain.attributes.favicon.dhash
+      description: Difference hash.
+      type: String
+    - contextPath: VirusTotal.Domain.attributes.reputation
+      description: Reputation of the indicator.
+      type: Number
+    - contextPath: VirusTotal.Domain.attributes.registrar
+      description: Registrar information.
+      type: String
+    - contextPath: VirusTotal.Domain.attributes.last_update_date
+      description: Last updated date in epoch format.
+      type: Number
+    - contextPath: VirusTotal.Domain.attributes.last_modification_date
+      description: Last modification date in epoch format.
+      type: Number
+    - contextPath: VirusTotal.Domain.attributes.creation_date
+      description: Creation date in epoch format.
+      type: Number
+    - contextPath: VirusTotal.Domain.attributes.total_votes.harmless
+      description: Total number of harmless votes.
+      type: Number
+    - contextPath: VirusTotal.Domain.attributes.total_votes.malicious
+      description: Total number of malicious votes.
+      type: Number
+    - contextPath: VirusTotal.Domain.type
+      description: Type of indicator (domain).
+      type: String
+    - contextPath: VirusTotal.Domain.id
+      description: ID of the domain.
+      type: String
+    - contextPath: VirusTotal.Domain.links.self
+      description: Link to the domain investigation.
+      type: String
+    description: Checks the reputation of a domain.
+  - name: file-scan
+    arguments:
+    - name: entryID
+      required: true
+      default: true
+      description: The file entry ID to submit.
+      isArray: true
+    - name: uploadURL
+      description: Premium API extension. Special upload URL for files larger than
+        32 MB. Can be acquired from the vt-file-scan-upload-url command.
+    outputs:
+      - contextPath: VirusTotal.Submission.type
+        description: The submission type.
+        type: String
+      - contextPath: VirusTotal.Submission.id
+        description: The ID of the submission.
+        type: String
+      - contextPath: VirusTotal.Submission.EntryID
+        description: The entry ID of the file detonated.
+        type: String
+      - contextPath: VirusTotal.Submission.Extension
+        description: File extension.
+        type: String
+      - contextPath: VirusTotal.Submission.Info
+        description: File info.
+        type: String
+      - contextPath: VirusTotal.Submission.MD5
+        description: MD5 hash of the file.
+        type: String
+      - contextPath: VirusTotal.Submission.Name
+        description: Name of the file.
+        type: String
+      - contextPath: VirusTotal.Submission.SHA1
+        description: SHA-1 hash of the file
+        type: String
+      - contextPath: VirusTotal.Submission.SHA256
+        description: SHA-256 of the file.
+        type: String
+      - contextPath: VirusTotal.Submission.SHA512
+        description: SHA-512 of the file.
+        type: String
+      - contextPath: VirusTotal.Submission.SSDeep
+        description: SSDeep of the file.
+        type: String
+      - contextPath: VirusTotal.Submission.Size
+        description: Size of the file.
+        type: Number
+      - contextPath: VirusTotal.Submission.Type
+        description: The type of the submission (analysis).
+        type: String
+    description: Submits a file for scanning. Use the vt-analysis-get command to get the scan results.
+  - name: file-rescan
+    arguments:
+    - name: file
+      required: true
+      default: true
+      description: Hash of the file to rescan. Supports MD5, SHA1, and SHA256.
+    outputs:
+      - contextPath: VirusTotal.Submission.Type
+        description: The type of the submission (analysis).
+        type: String
+      - contextPath: VirusTotal.Submission.id
+        description: The ID of the submission
+        type: String
+      - contextPath: VirusTotal.Submission.hash
+        description: The indicator sent to rescan.
+        type: String
+    description: Rescans an already submitted file. This avoids having to upload
+      the file again. Use the vt-analysis-get command to get the scan results.
+  - name: url-scan
+    arguments:
+    - name: url
+      required: true
+      default: true
+      description: The URL to scan.
+    outputs:
+      - contextPath: VirusTotal.Submission.Type
+        description: The type of the submission (analysis).
+        type: String
+      - contextPath: VirusTotal.Submission.id
+        description: The ID of the submission.
+        type: String
+      - contextPath: VirusTotal.Submission.hash
+        description: The indicator sent to rescan.
+        type: String
+    description: Scans a specified URL. Use the vt-analysis-get command to get the scan results.
+  - name: vt-comments-add
+    arguments:
+    - name: resource
+      required: true
+      default: false
+      description: The file hash (MD5, SHA1, orSHA256), Domain, URL or IP on which you're commenting
+        on. If not supplied, will try to determine if it's a hash or a url.
+    - name: resource_type
+      required: false
+      default: false
+      description: 'The type of the resource on which you''re commenting.'
+      auto: PREDEFINED
+      predefined:
+      - ip
+      - url
+      - domain
+      - hash
+    - name: comment
+      required: true
+      description: 'The actual review that you can tag by using the "#" twitter-like
+        syntax, for example, #disinfection #zbot, and reference users using the "@"
+        syntax, for example, @VirusTotalTeam.'
+    outputs:
+      - contextPath: VirusTotal.Comments.comments.attributes.date
+        description: The date of the comment in epoch format.
+        type: Number
+      - contextPath: VirusTotal.Comments.comments.attributes.text
+        description: The text of the comment.
+        type: String
+      - contextPath: VirusTotal.Comments.comments.attributes.votes.positive
+        description: Number of positive votes.
+        type: Number
+      - contextPath: VirusTotal.Comments.comments.attributes.votes.abuse
+        description: Number of abuse votes.
+        type: Number
+      - contextPath: VirusTotal.Comments.comments.attributes.votes.negative
+        description: Number of negative votes.
+        type: Number
+      - contextPath: VirusTotal.Comments.comments.attributes.html
+        description: The HTML content.
+        type: String
+      - contextPath: VirusTotal.Comments.comments.type
+        description: The type of the comment.
+        type: String
+      - contextPath: VirusTotal.Comments.comments.id
+        description: ID of the comment.
+        type: String
+      - contextPath: VirusTotal.Comments.comments.links.self
+        description: Link to the request.
+        type: String
+    description: Adds comments to files and URLs.
+  - name: vt-file-scan-upload-url
+    outputs:
+    - contextPath: VirusTotal.FileUploadURL
+      description: The special upload URL for large files.
+    description: Premium API. Get a special URL for files larger than 32 MB.
+  - name: vt-comments-delete
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: Comment ID
+    description: Delete a comment.
+  - name: vt-comments-get
+    arguments:
+    - name: resource
+      required: true
+      default: false
+      description: The file hash (MD5, SHA1, orSHA256), Domain, URL or IP on which you're commenting
+        on. If not supplied, will try to determine if it's a hash or a url.
+    - name: resource_type
+      required: false
+      default: false
+      description: 'The type of the resource on which you''re commenting. If not supplied,
+        will determine if it''s a url or a file.'
+      auto: PREDEFINED
+      predefined:
+      - ip
+      - url
+      - domain
+      - file
+    - name: limit
+      description: Maximum comments to fetch.
+      defaultValue: 10
+    - name: before
+      description: Fetch only comments before the given time.
+    outputs:
+    - contextPath: VirusTotal.Comments.id
+      description: ID that contains the comment (the given hash, domain, url, or ip).
+      type: String
+    - contextPath: VirusTotal.Comments.comments.attributes.date
+      description: The date of the comment in epoch format.
+      type: Number
+    - contextPath: VirusTotal.Comments.comments.attributes.text
+      description: The text of the comment.
+      type: String
+    - contextPath: VirusTotal.Comments.comments.attributes.votes.positive
+      description: Number of positive votes.
+      type: Number
+    - contextPath: VirusTotal.Comments.comments.attributes.votes.abuse
+      description: Number of abuse votes.
+      type: Number
+    - contextPath: VirusTotal.Comments.comments.attributes.votes.negative
+      description: Number of negative votes.
+      type: Number
+    - contextPath: VirusTotal.Comments.comments.attributes.html
+      description: The HTML content.
+      type: String
+    - contextPath: VirusTotal.Comments.comments.type
+      description: The type of the comment.
+      type: String
+    - contextPath: VirusTotal.Comments.comments.id
+      description: ID of the commented.
+      type: String
+    - contextPath: VirusTotal.Comments.comments.links.self
+      description: Link to the request
+      type: String
+    description: Retrieves comments for a given resource.
+  - name: vt-comments-get-by-id
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: The comment's ID. Can be retrieved using the vt-comments-get command.
+    outputs:
+      - contextPath: VirusTotal.Comments.comments.id
+        description: ID of the comment.
+        type: String
+      - contextPath: VirusTotal.Comments.comments.attributes.date
+        description: The date of the comment in epoch format.
+        type: Number
+      - contextPath: VirusTotal.Comments.comments.attributes.text
+        description: The text of the comment.
+        type: String
+      - contextPath: VirusTotal.Comments.comments.attributes.votes.positive
+        description: Number of positive votes.
+        type: Number
+      - contextPath: VirusTotal.Comments.comments.attributes.votes.abuse
+        description: Number of abuse votes.
+        type: Number
+      - contextPath: VirusTotal.Comments.comments.attributes.votes.negative
+        description: Number of negative votes.
+        type: Number
+      - contextPath: VirusTotal.Comments.comments.attributes.html
+        description: The HTML content.
+        type: String
+      - contextPath: VirusTotal.Comments.comments.type
+        description: The type of the comment.
+        type: String
+      - contextPath: VirusTotal.Comments.comments.links.self
+        description: Link to the request.
+        type: String
+    description: Retrieves a comment by comment ID.
+  - name: vt-search
+    description: Search for an indicator in Virus Total.
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: 'This endpoint searches any of the following: A file hash, URL,
+        domain, IP address, tag comments.'
+    - name: extended_data
+      required: false
+      description: 'Whether to return extended data (last_analysis_results).'
+      defaultValue: false
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+        - 'true'
+        - 'false'
+    - name: limit
+      description: Maximum number of results to fetch.
+      defaultValue: 10
+    outputs:
+      - contextPath: VirusTotal.SearchResults.attributes.last_analysis_stats.harmless
+        description: Number of engines that found the indicator to be harmless.
+        type: Number
+      - contextPath: VirusTotal.SearchResults.attributes.last_analysis_stats.malicious
+        description: Number of engines that found the indicator to be malicious.
+        type: Number
+      - contextPath: VirusTotal.SearchResults.attributes.last_analysis_stats.suspicious
+        description: Number of engines that found the indicator to be suspicious.
+        type: Number
+      - contextPath: VirusTotal.SearchResults.attributes.last_analysis_stats.undetected
+        description: Number of engines that could not detect the indicator.
+        type: Number
+      - contextPath: VirusTotal.SearchResults.attributes.last_analysis_stats.timeout
+        description: Number of engines that timed out.
+        type: Number
+      - contextPath: VirusTotal.SearchResults.attributes.reputation
+        description: The indicator's reputation
+        type: Number
+      - contextPath: VirusTotal.SearchResults.attributes.last_modification_date
+        description: The last modification date in epoch format.
+        type: Number
+      - contextPath: VirusTotal.SearchResults.attributes.total_votes.harmless
+        description: Total number of harmless votes.
+        type: Number
+      - contextPath: VirusTotal.SearchResults.attributes.total_votes.malicious
+        description: Total number of malicious votes.
+        type: Number
+      - contextPath: VirusTotal.SearchResults.type
+        description: The type of the indicator (ip, domain, url, file).
+        type: String
+      - contextPath: VirusTotal.SearchResults.id
+        description: ID of the indicator.
+        type: String
+      - contextPath: VirusTotal.SearchResults.links.self
+        description: Link to the response.
+        type: String
+  - name: vt-file-sandbox-report
+    arguments:
+    - name: file
+      required: true
+      default: true
+      description: Hash of the file to query. Supports MD5, SHA1, and SHA256.
+    - name: limit
+      description: Maximum number of results to fetch.
+      defaultValue: 10
+    outputs:
+      - contextPath: SandboxReport.attributes.analysis_date
+        description: The date of the analysis in epoch format.
+        type: Number
+      - contextPath: SandboxReport.attributes.behash
+        description: Behash of the attribute.
+        type: String
+      - contextPath: SandboxReport.attributes.command_executions
+        description: Which command were executed.
+        type: String
+      - contextPath: SandboxReport.attributes.dns_lookups.hostname
+        description: Host names found in the lookup.
+        type: String
+      - contextPath: SandboxReport.attributes.dns_lookups.resolved_ips
+        description: The IPs that were resolved.
+        type: String
+      - contextPath: SandboxReport.attributes.files_attribute_changed
+        description: The file attributes that were changed.
+        type: String
+      - contextPath: SandboxReport.attributes.has_html_report
+        description: Whether there is an HTML report.
+        type: Boolean
+      - contextPath: SandboxReport.attributes.has_pcap
+        description: Whether the IP has a PCAP file.
+        type: Boolean
+      - contextPath: SandboxReport.attributes.http_conversations.request_method
+        description: The request method of the HTTP conversation.
+        type: String
+      - contextPath: SandboxReport.attributes.http_conversations.response_headers.Cache-Control
+        description: The cache-control method of the response header.
+        type: String
+      - contextPath: SandboxReport.attributes.http_conversations.response_headers.Connection
+        description: The connection of the response header.
+        type: String
+      - contextPath: SandboxReport.attributes.http_conversations.response_headers.Content-Length
+        description: THe Content-Length of the response header.
+        type: String
+      - contextPath: SandboxReport.attributes.http_conversations.response_headers.Content-Type
+        description: The Content-Type of the response header.
+        type: String
+      - contextPath: SandboxReport.attributes.http_conversations.response_headers.Pragma
+        description: The pragma of the  response header.
+        type: String
+      - contextPath: SandboxReport.attributes.http_conversations.response_headers.Server
+        description: The server of the response header.
+        type: String
+      - contextPath: SandboxReport.attributes.http_conversations.response_headers.Status-Line
+        description: The Status-Line of the response header.
+        type: String
+      - contextPath: SandboxReport.attributes.http_conversations.response_status_code
+        description: The response status code.
+        type: Number
+      - contextPath: SandboxReport.attributes.http_conversations.url
+        description: The conversation URL.
+        type: String
+      - contextPath: SandboxReport.attributes.last_modification_date
+        description: Last modified data in epoch format.
+        type: Number
+      - contextPath: SandboxReport.attributes.modules_loaded
+        description: Loaded modules.
+        type: String
+      - contextPath: SandboxReport.attributes.mutexes_created
+        description: The mutexes that were created.
+        type: String
+      - contextPath: SandboxReport.attributes.mutexes_opened
+        description: The mutexes that were opened.
+        type: String
+      - contextPath: SandboxReport.attributes.processes_created
+        description: The processes that were created.
+        type: String
+      - contextPath: SandboxReport.attributes.processes_tree.name
+        description: The name of the process tree.
+        type: String
+      - contextPath: SandboxReport.attributes.processes_tree.process_id
+        description: The ID of the process.
+        type: String
+      - contextPath: SandboxReport.attributes.registry_keys_deleted
+        description: Deleted registry keys.
+        type: String
+      - contextPath: SandboxReport.attributes.registry_keys_set.key
+        description: Key of the registry key.
+        type: String
+      - contextPath: SandboxReport.attributes.registry_keys_set.value
+        description: Value of the registry key.
+        type: String
+      - contextPath: SandboxReport.attributes.sandbox_name
+        description: The name of the sandbox.
+        type: String
+      - contextPath: SandboxReport.attributes.services_started
+        description: The services that were started.
+        type: String
+      - contextPath: SandboxReport.attributes.verdicts
+        description: The verdicts.
+        type: String
+      - contextPath: SandboxReport.id
+        description: The IP analyzed.
+        type: String
+      - contextPath: SandboxReport.links.self
+        description: Link to the response.
+        type: String
+      - contextPath: SandboxReport.attributes.files_dropped.path
+        description: Path of the file dropped.
+        type: String
+      - contextPath: SandboxReport.attributes.files_dropped.sha256
+        description: SHA-256 hash of the dropped files.
+        type: String
+      - contextPath: SandboxReport.attributes.files_opened
+        description: The files that were opened.
+        type: String
+      - contextPath: SandboxReport.attributes.files_written
+        description: The files that were written.
+        type: String
+      - contextPath: SandboxReport.attributes.ip_traffic.destination_ip
+        description: Destination IP in the traffic.
+        type: String
+      - contextPath: SandboxReport.attributes.ip_traffic.destination_port
+        description: Destination port in the traffic.
+        type: Number
+      - contextPath: SandboxReport.attributes.ip_traffic.transport_layer_protocol
+        description: Transport layer protocol in the traffic.
+        type: String
+      - contextPath: SandboxReport.attributes.registry_keys_opened
+        description: The registry keys that were opened.
+        type: String
+      - contextPath: SandboxReport.attributes.tags
+        description: The tags of the DNS data.
+        type: String
+      - contextPath: SandboxReport.attributes.files_copied.destination
+        description: Destination of the files copied.
+        type: String
+      - contextPath: SandboxReport.attributes.files_copied.source
+        description: Source of the files copied.
+        type: String
+      - contextPath: SandboxReport.attributes.permissions_requested
+        description: The permissions that where requested.
+        type: String
+      - contextPath: SandboxReport.attributes.processes_injected
+        description: The processes that were injected.
+        type: String
+      - contextPath: SandboxReport.attributes.processes_terminated
+        description: The processes that were terminated.
+        type: String
+      - contextPath: SandboxReport.attributes.processes_tree.children.name
+        description: The name of the children of the process.
+        type: String
+      - contextPath: SandboxReport.attributes.processes_tree.children.process_id
+        description: The ID of the children of the process.
+        type: String
+      - contextPath: SandboxReport.attributes.services_opened
+        description: The services that were opened.
+        type: String
+      - contextPath: SandboxReport.attributes.text_highlighted
+        description: The text that was highlighted.
+        type: String
+      - contextPath: SandboxReport.attributes.calls_highlighted
+        description: The calls that were highlighted.
+        type: String
+      - contextPath: SandboxReport.attributes.processes_tree.children.time_offset
+        description: The time offset of the children in the process.
+        type: Number
+      - contextPath: SandboxReport.links.self
+        description: The link to the response.
+        type: String
+      - contextPath: SandboxReport.meta.count
+        description: The number of objects that were found in the attributes.
+        type: Number
+    description: Retrieves a behavioral relationship of the given file hash.
+  - name: vt-passive-dns-data
+    description: Returns passive DNS records by indicator.
+    arguments:
+    - name: ip
+      required: true
+      default: true
+      description: IP for which to get its DNS data.
+    - name: limit
+      description: Maximum number of results to fetch.
+      defaultValue: 10
+    outputs:
+      - contextPath: VirusTotal.PassiveDNS.attributes.date
+        description: Date of the DNS analysis in epoch format.
+        type: Number
+      - contextPath: VirusTotal.PassiveDNS.attributes.host_name
+        description: The DNS host name.
+        type: String
+      - contextPath: VirusTotal.PassiveDNS.attributes.ip_address
+        description: The DNS IP address.
+        type: String
+      - contextPath: VirusTotal.PassiveDNS.attributes.resolver
+        description: The name of the resolver.
+        type: String
+      - contextPath: VirusTotal.PassiveDNS.id
+        description: The ID of the resolution.
+        type: String
+      - contextPath: VirusTotal.PassiveDNS.links.self
+        description: The link to the resolution.
+        type: String
+      - contextPath: VirusTotal.PassiveDNS.type
+        description: The type of the resolution.
+        type: String
+  - name: vt-analysis-get
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: ID of the analysis (from file-scan, file-rescan, or url-scan)
+    - name: extended_data
+      required: false
+      description: 'Whether to return extended data (last_analysis_results).'
+      defaultValue: false
+    outputs:
+      - contextPath: VirusTotal.Analysis.data.attributes.date
+        description: Date of the analysis in epoch format.
+        type: Number
+      - contextPath: VirusTotal.Analysis.data.attributes.stats.harmless
+        description: Number of engines that found the indicator to be harmless.
+        type: Number
+      - contextPath: VirusTotal.Analysis.data.attributes.stats.malicious
+        description: Number of engines that found the indicator to be malicious.
+        type: Number
+      - contextPath: VirusTotal.Analysis.data.attributes.stats.suspicious
+        description: Number of engines that found the indicator to be suspicious.
+        type: Number
+      - contextPath: VirusTotal.Analysis.data.attributes.stats.timeout
+        description: he number of engines that timed out for the indicator.
+        type: Number
+      - contextPath: VirusTotal.Analysis.data.attributes.stats.undetected
+        description: Number of engines the found the indicator to be undetected.
+        type: Number
+      - contextPath: VirusTotal.Analysis.data.attributes.status
+        description: Status of the analysis.
+        type: String
+      - contextPath: VirusTotal.Analysis.data.id
+        description: ID of the analysis.
+        type: String
+      - contextPath: VirusTotal.Analysis.data.type
+        description: Type of object (analysis).
+        type: String
+      - contextPath: VirusTotal.Analysis.meta.file_info.sha256
+        description: SHA-256 hash of the file (if it is a file).
+        type: String
+      - contextPath: VirusTotal.Analysis.meta.file_info.sha1
+        description: SHA-1 hash of the file (if it is a file).
+        type: String
+      - contextPath: VirusTotal.Analysis.meta.file_info.md5
+        description: MD5 hash of the file (if it is a file).
+        type: String
+      - contextPath: VirusTotal.Analysis.meta.file_info.name
+        description: Name of the file (if it is a file).
+      - contextPath: VirusTotal.Analysis.meta.file_info.size
+        description: Size of the file (if it is a file).
+        type: String
+      - contextPath: VirusTotal.Analysis.meta.url_info.id
+        description: ID of the url (if it is a URL).
+        type: String
+      - contextPath: VirusTotal.Analysis.meta.url_info.url
+        description: The URL (if it is a URL).
+        type: String
+      - contextPath: VirusTotal.Analysis.id
+        description: The analysis ID.
+        type: String
+    description: Retrieves resolutions of the given IP.
+  runonce: false
+  dockerimage: demisto/python3:3.9.7.24076
+tests:
+- VirusTotalV3-test
+- VirusTotal (API v3) Detonate Test

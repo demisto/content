@@ -1,0 +1,424 @@
+description: Monitor the progress of a Rubrik Radar anamoly event and use Rubrik Sonar
+  to check for data classification hits.
+id: Rubrik Polaris - Anomaly Analysis
+inputs: []
+name: Rubrik Polaris - Anomaly Analysis
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "11"
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: ""
+      id: fae6d763-0cba-4538-896c-862699022d87
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: fae6d763-0cba-4538-896c-862699022d87
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": -80
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      activitySeriesId: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: RubrikPolaris
+      description: Gather the final Rubrik Radar analysis results and update the incident
+        context.
+      id: e8f11a75-49bd-4022-8dcc-96b5a2a9308f
+      iscommand: true
+      name: Gather the final Radar Analysis results
+      script: RubrikPolaris|||rubrik-radar-analysis-status
+      type: regular
+      version: -1
+    taskid: e8f11a75-49bd-4022-8dcc-96b5a2a9308f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 80,
+          "y": 835
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        simple: ${incident.rubrikpolarisactivityseriesid}
+      Interval:
+        simple: "5"
+      PollingCommandArgName:
+        simple: activitySeriesId
+      PollingCommandName:
+        simple: rubrik-radar-analysis-status
+      Timeout:
+        simple: "1440"
+      dt:
+        simple: Rubrik.Radar(val.EventComplete ==  'False').ActivitySeriesId
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      id: ea7ef57a-a4ac-4cbe-80f6-81edabaad2b7
+      iscommand: false
+      name: GenericPolling
+      playbookId: GenericPolling
+      type: playbook
+      version: -1
+    taskid: ea7ef57a-a4ac-4cbe-80f6-81edabaad2b7
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 80,
+          "y": 470
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: ""
+      id: 02559b35-31f4-42fa-8379-5deb11c47a65
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 02559b35-31f4-42fa-8379-5deb11c47a65
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 1230
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: subplaybook-4
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Remove the context created by the "Wait for the Radar Analysis
+        process to complete" step. This information is duplicate information and is
+        not needed.
+      id: cf2de3ef-dae1-4dbd-8867-d02b4f189b09
+      iscommand: false
+      name: Clean up the incident context
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: cf2de3ef-dae1-4dbd-8867-d02b4f189b09
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 80,
+          "y": 650
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      activitySeriesId: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: RubrikPolaris
+      description: Complete an initial query of the Rubrik Radar analysis process
+        and save the results to the incident context.
+      id: 584e9a97-3c5f-450e-8efd-faab62f3ef91
+      iscommand: true
+      name: Determine the status of the Rubrik Radar analysis process
+      script: RubrikPolaris|||rubrik-radar-analysis-status
+      type: regular
+      version: -1
+    taskid: 584e9a97-3c5f-450e-8efd-faab62f3ef91
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 80,
+          "y": 280
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: ""
+      id: 4dab685b-3e8a-4fcf-857a-7d6cc4a0e9e7
+      iscommand: false
+      name: Radar Ransomware Status
+      type: title
+      version: -1
+    taskid: 4dab685b-3e8a-4fcf-857a-7d6cc4a0e9e7
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 80,
+          "y": 140
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: ""
+      id: 8990b8c2-2a13-4ca4-8756-0e1a80596490
+      iscommand: false
+      name: Sonar Data Classification
+      type: title
+      version: -1
+    taskid: 8990b8c2-2a13-4ca4-8756-0e1a80596490
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 140
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      objectName: {}
+      searchTimePeriod: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: RubrikPolaris
+      description: Find data classification hits on an object.
+      id: f0ab66b0-7fcf-4fe6-8d51-faa9a14322f4
+      iscommand: true
+      name: rubrik-sonar-sensitive-hits
+      script: RubrikPolaris|||rubrik-sonar-sensitive-hits
+      type: regular
+      version: -1
+    taskid: f0ab66b0-7fcf-4fe6-8d51-faa9a14322f4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 280
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      message:
+        simple: ${Rubrik.Radar.Message}
+      rubrikpolarismessage:
+        simple: ${Rubrik.Radar.Message}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Change the properties of an incident
+      id: d4591c14-cd6f-48d8-8158-cc8ab1657acb
+      iscommand: true
+      name: Update the Incident Dashboard
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: d4591c14-cd6f-48d8-8158-cc8ab1657acb
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 80,
+          "y": 1020
+        }
+      }
+  "15":
+    fieldMapping:
+    - incidentfield: Rubrik CDM Cluster Location
+      output:
+        simple: ${Rubrik.CDM.Cluster.location}
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      clusterId:
+        simple: ${incident.rubrikcdmclusterid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: RubrikPolaris
+      description: Find the CDM GeoLocation of a CDM Cluster.
+      id: 1217a533-3ba5-4a66-8013-74e26158978a
+      iscommand: true
+      name: rubrik-cdm-cluster-location
+      script: RubrikPolaris|||rubrik-cdm-cluster-location
+      type: regular
+      version: -1
+    taskid: 1217a533-3ba5-4a66-8013-74e26158978a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 470
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      clusterId:
+        simple: ${incident.rubrikcdmclusterid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: RubrikPolaris
+      description: Find the CDM Connection State of a CDM Cluster.
+      id: e444a2d7-29f4-4455-8935-fbd3ba68b2c3
+      iscommand: true
+      name: rubrik-cdm-cluster-connection-state
+      script: RubrikPolaris|||rubrik-cdm-cluster-connection-state
+      type: regular
+      version: -1
+    taskid: e444a2d7-29f4-4455-8935-fbd3ba68b2c3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 660
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1375,
+        "width": 950,
+        "x": 80,
+        "y": -80
+      }
+    }
+  }
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

@@ -52,8 +52,7 @@ args:
   name: disableHeaders
   required: false
   secret: false
-comment: Deprecated. Parse Sane-json-reports and export them as pdf files (used internally, thus
-  deprecated).
+comment: Parse Sane-json-reports and export them as pdf files (used internally).
 commonfields:
   id: SanePdfReports
   version: -1
@@ -68,7 +67,7 @@ tags:
 - pdf
 timeout: '0'
 type: python
-dockerimage: demisto/sane-pdf-reports:1.0.0.15795
+dockerimage: demisto/sane-pdf-reports:1.0.0.24026
 runas: DBotWeakRole
 runonce: false
 tests:

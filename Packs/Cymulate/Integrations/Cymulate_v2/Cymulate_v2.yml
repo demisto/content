@@ -1,0 +1,845 @@
+category: Forensics & Malware Analysis
+commonfields:
+  id: cymulate_v2
+  version: -1
+configuration:
+- display: API token
+  name: api_key
+  required: true
+  type: 4
+- defaultvalue: https://api.app.cymulate.com/v1/
+  display: Base URL
+  name: base_url
+  required: false
+  type: 0
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- additionalinfo: Choose one or more categories to fetch.
+  display: Fetch category
+  name: fetchCategory
+  options:
+  - web-gateway
+  - exfiltration
+  - email-gateway
+  - endpoint-security
+  - waf
+  - kill-chain
+  - immediate-threats
+  - phishing-awareness
+  - lateral-movement
+  required: false
+  type: 16
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: 7 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
+  required: false
+  type: 0
+- additionalinfo: Maximal number of incidents to fetch. Max value can be no grater
+    than 35.
+  defaultvalue: '35'
+  display: Max Fetch
+  name: max_fetch
+  required: false
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Multi-Vector Cyber Attack, Breach and Attack Simulation.
+display: Cymulate v2
+name: cymulate_v2
+script:
+  commands:
+  - deprecated: false
+    description: Retrieve the exfiltration template list.
+    execution: false
+    name: cymulate-exfiltration-template-list
+    outputs:
+    - contextPath: Cymulate.Exfiltration.Template.id
+      description: Template ID.
+      type: String
+    - contextPath: Cymulate.Exfiltration.Template.name
+      description: Template name.
+      type: String
+  - arguments:
+    - default: false
+      description: The ID of the template to run the exfiltration Assessment with.
+        Can be retrieved using Cymulate's UI, or using cymulate-exfiltration-template-list
+        command.
+      isArray: false
+      name: template_id
+      required: true
+      secret: false
+    - default: false
+      description: agent name to run simulation attacks.
+      isArray: false
+      name: agent_name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: whether to schedule the automated assessment periodically.
+      isArray: false
+      name: schedule
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Loop size of the scheduled agent. For example: to run the agent
+        only once, use the value ''one-time''.'
+      isArray: false
+      name: schedule_loop
+      predefined:
+      - one-time
+      - daily
+      - weekly
+      - monthly
+      required: true
+      secret: false
+    deprecated: false
+    description: Create a new exfiltration assessment.
+    execution: false
+    name: cymulate-exfiltration-start
+    outputs:
+    - contextPath: Cymulate.Exfiltration.id
+      description: New exfiltration assessment creation ID.
+      type: String
+    - contextPath: Cymulate.Exfiltration.success
+      description: New exfiltration assessment creation success status.
+      type: Boolean
+  - deprecated: false
+    description: Stop a running exfiltration assessment.
+    execution: false
+    name: cymulate-exfiltration-stop
+    outputs:
+    - contextPath: Cymulate.Exfiltration.data
+      description: New exfiltration assessment stopping data.
+      type: String
+    - contextPath: Cymulate.Exfiltration.success
+      description: New exfiltration assessment stopping success status.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: Assessment ID.
+      isArray: true
+      name: assessment_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get exfiltration assessment status.
+    execution: false
+    name: cymulate-exfiltration-status
+    outputs:
+    - contextPath: Cymulate.Exfiltration.id
+      description: New exfiltration assessment stop ID.
+      type: String
+    - contextPath: Cymulate.Exfiltration.inProgress
+      description: Whether the assessment is in progress.
+      type: Boolean
+    - contextPath: Cymulate.Exfiltration.progress
+      description: Percentage of the progress of the assessment.
+      type: Number
+    - contextPath: Cymulate.Exfiltration.categories
+      description: Categories.
+      type: String
+  - deprecated: false
+    description: Retrieve the email gateway template list.
+    execution: false
+    name: cymulate-email-gateway-template-list
+    outputs:
+    - contextPath: Cymulate.EmailGateway.Template.id
+      description: Template ID.
+      type: String
+    - contextPath: Cymulate.EmailGateway.Template.name
+      description: Template name.
+      type: String
+  - arguments:
+    - default: false
+      description: The ID of the template to run the email gateway assessment with.
+        Can be retrieved using Cymulate's UI, or using cymulate-email-gateway-template-list
+        command.
+      isArray: false
+      name: template_id
+      required: true
+      secret: false
+    - default: false
+      description: agent email.
+      isArray: false
+      name: agent_email
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: whether to schedule the automated assessment periodically.
+      isArray: false
+      name: schedule
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Loop size of the scheduled agent. For example: to run the agent
+        only once, use the value ''one-time''.'
+      isArray: false
+      name: schedule_loop
+      predefined:
+      - one-time
+      - daily
+      - weekly
+      - monthly
+      required: true
+      secret: false
+    deprecated: false
+    description: Create a new email gateway assessment.
+    execution: false
+    name: cymulate-email-gateway-start
+    outputs:
+    - contextPath: Cymulate.EmailGateway.id
+      description: New email gateway assessment creation ID.
+      type: String
+    - contextPath: Cymulate.EmailGateway.success
+      description: New email gateway assessment creation success status.
+      type: Boolean
+  - deprecated: false
+    description: Stop a running exfiltration assessment.
+    execution: false
+    name: cymulate-email-gateway-stop
+    outputs:
+    - contextPath: Cymulate.EmailGateway.data
+      description: Email gateway assessment stopping data.
+      type: String
+    - contextPath: Cymulate.EmailGateway.success
+      description: Email gateway assessment stopping success status.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: Assessment ID.
+      isArray: true
+      name: assessment_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get the email gateway assessment status.
+    execution: false
+    name: cymulate-email-gateway-status
+    outputs:
+    - contextPath: Cymulate.EmailGateway.id
+      description: Email gateway assessment ID.
+      type: String
+    - contextPath: Cymulate.EmailGateway.success
+      description: Whether the assessment was successful.
+      type: Boolean
+    - contextPath: Cymulate.EmailGateway.inProgress
+      description: Whether the assessment is in progress.
+      type: Boolean
+    - contextPath: Cymulate.EmailGateway.progress
+      description: Percentage of the progress of the assessment.
+      type: Number
+    - contextPath: Cymulate.EmailGateway.addresses
+      description: Addresses connected to the assessment.
+      type: String
+  - deprecated: false
+    description: Retrieve the endpoint security template list.
+    execution: false
+    name: cymulate-endpoint-security-template-list
+    outputs:
+    - contextPath: Cymulate.EndpointSecurity.Template.id
+      description: Template ID.
+      type: String
+    - contextPath: Cymulate.EndpointSecurity.Template.name
+      description: Template name.
+      type: String
+  - arguments:
+    - default: false
+      description: The ID of the template to run the endpoint security assessment
+        with. Can be retrieved using Cymulate's UI, or using cymulate-endpoint-security-template-list
+        command.
+      isArray: false
+      name: template_id
+      required: true
+      secret: false
+    - default: false
+      description: agent name.
+      isArray: false
+      name: agent_name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: whether to schedule the automated assessment periodically.
+      isArray: false
+      name: schedule
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Loop size of the scheduled agent. For example: to run the agent
+        only once, use the value ''one-time''.'
+      isArray: false
+      name: schedule_loop
+      predefined:
+      - one-time
+      - daily
+      - weekly
+      - monthly
+      required: true
+      secret: false
+    deprecated: false
+    description: Create a new endpoint security assessment.
+    execution: false
+    name: cymulate-endpoint-security-start
+    outputs:
+    - contextPath: Cymulate.EndpointSecurity.id
+      description: New endpoint security assessment creation ID.
+      type: String
+    - contextPath: Cymulate.EndpointSecurity.success
+      description: New endpoint security assessment creation success status.
+      type: Boolean
+  - deprecated: false
+    description: Stop a running endpoint security assessment.
+    execution: false
+    name: cymulate-endpoint-security-stop
+    outputs:
+    - contextPath: Cymulate.EndpointSecurity.data
+      description: Endpoint security assessment stopping data.
+      type: String
+    - contextPath: Cymulate.EndpointSecurity.success
+      description: Endpoint Security assessment stopping success status.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: Assessment ID.
+      isArray: true
+      name: assessment_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get the endpoint security assessment status.
+    execution: false
+    name: cymulate-endpoint-security-status
+    outputs:
+    - contextPath: Cymulate.EndpointSecurity.id
+      description: Endpoint security assessment ID.
+      type: String
+    - contextPath: Cymulate.EndpointSecurity.inProgress
+      description: Whether the assessment is in progress.
+      type: Boolean
+    - contextPath: Cymulate.EndpointSecurity.progress
+      description: Percentage of the progress of the assessment.
+      type: Number
+    - contextPath: Cymulate.EndpointSecurity.categories
+      description: Assessment categories.
+      type: String
+  - deprecated: false
+    description: Retrieve the WAF template list.
+    execution: false
+    name: cymulate-waf-template-list
+    outputs:
+    - contextPath: Cymulate.WAF.Template.id
+      description: Template ID.
+      type: String
+    - contextPath: Cymulate.WAF.Template.name
+      description: Template name.
+      type: String
+  - arguments:
+    - default: false
+      description: The ID of the template to run the WAF assessment with. Can be retrieved
+        using Cymulate's UI, or using cymulate-waf-template-list command.
+      isArray: false
+      name: template_id
+      required: true
+      secret: false
+    - default: false
+      description: Websites to run the assessment on. Can be a single website URL
+        or a list of URLs.
+      isArray: true
+      name: sites
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: whether to schedule the automated assessment periodically.
+      isArray: false
+      name: schedule
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Loop size of the scheduled agent. For example: to run the agent
+        only once, use the value ''one-time''.'
+      isArray: false
+      name: schedule_loop
+      predefined:
+      - one-time
+      - daily
+      - weekly
+      - monthly
+      required: true
+      secret: false
+    deprecated: false
+    description: Create a new web application firewall assessment.
+    execution: false
+    name: cymulate-waf-start
+    outputs:
+    - contextPath: Cymulate.WAF.id
+      description: Web application firewall assessment creation ID.
+      type: String
+    - contextPath: Cymulate.WAF.success
+      description: Web application firewall assessment creation success status.
+      type: Boolean
+  - deprecated: false
+    description: Stop a running web application firewall assessment.
+    execution: false
+    name: cymulate-waf-stop
+    outputs:
+    - contextPath: Cymulate.WAF.data
+      description: Web application firewall assessment stopping data.
+      type: String
+    - contextPath: Cymulate.WAF.success
+      description: Web application firewall assessment stopping success status.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: Assessment ID.
+      isArray: true
+      name: assessment_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get the web application firewall assessment status.
+    execution: false
+    name: cymulate-waf-status
+    outputs:
+    - contextPath: Cymulate.WAF.id
+      description: Web application firewall assessment ID.
+      type: String
+    - contextPath: Cymulate.WAF.inProgress
+      description: Whether the assessment is in progress.
+      type: Boolean
+    - contextPath: Cymulate.WAF.progress
+      description: Percentage of the progress of the assessment.
+      type: Number
+    - contextPath: Cymulate.WAF.categories
+      description: Assessment categories.
+      type: String
+  - arguments:
+    - default: false
+      description: Browsing address
+      isArray: false
+      name: browsing_address
+      required: false
+      secret: false
+    - default: false
+      description: Agent email address.
+      isArray: false
+      name: mail_address
+      required: false
+      secret: false
+    - default: false
+      description: EDR address
+      isArray: false
+      name: edr_address
+      required: false
+      secret: false
+    - default: false
+      description: The ID of the template to run the immediate threat assessment with.
+        Can be retrieved using Cymulate's UI.
+      isArray: false
+      name: template_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Create a new immediate threats assessment.
+    execution: false
+    name: cymulate-immediate-threat-start
+    outputs:
+    - contextPath: Cymulate.ImmediateThreats.id
+      description: Immediate threats assessment creation ID.
+      type: String
+    - contextPath: Cymulate.ImmediateThreats.success
+      description: New exfiltration assessment creation success status.
+      type: String
+  - deprecated: false
+    description: Stop a running immediate threats assessment.
+    execution: false
+    name: cymulate-immediate-threat-stop
+    outputs:
+    - contextPath: Cymulate.ImmediateThreats.data
+      description: Immediate threats assessment stopping data.
+      type: String
+    - contextPath: Cymulate.ImmediateThreats.success
+      description: Immediate threats assessment stopping success status.
+      type: String
+  - arguments:
+    - default: false
+      description: Assessment ID.
+      isArray: true
+      name: assessment_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get immediate threats assessment status.
+    execution: false
+    name: cymulate-immediate-threat-status
+    outputs:
+    - contextPath: Cymulate.ImmediateThreats.id
+      description: Web application firewall assessment ID.
+      type: String
+    - contextPath: Cymulate.ImmediateThreats.categories
+      description: Assessment categories.
+      type: String
+    - contextPath: Cymulate.ImmediateThreats.inProgress
+      description: Whether the assessment is in progress.
+      type: Boolean
+    - contextPath: Cymulate.ImmediateThreats.progress
+      description: Percentage of the progress of the assessment.
+      type: Number
+  - deprecated: false
+    description: Get a list of contact groups.
+    execution: false
+    name: cymulate-phishing-awareness-contacts-group-list
+    outputs:
+    - contextPath: Cymulate.Phishing.Groups.id
+      description: The ID of the phishing content group.
+      type: String
+    - contextPath: Cymulate.Phishing.Groups.name
+      description: Name of the phishing content group.
+      type: String
+    - contextPath: Cymulate.Phishing.Groups.client
+      description: The client of the phishing content group.
+      type: String
+    - contextPath: Cymulate.Phishing.Groups.canDelete
+      description: Whether this group can be deleted.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: The name of the new group to create.
+      isArray: true
+      name: group_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Create new contacts group.
+    execution: false
+    name: cymulate-phishing-awareness-contacts-group-create
+    outputs:
+    - contextPath: Cymulate.Phishing.Groups.success
+      description: Whether the creation of the new group was successful.
+      type: Boolean
+    - contextPath: Cymulate.Phishing.Groups.id
+      description: The ID of the new phishing content group.
+      type: String
+  - arguments:
+    - default: false
+      description: Group ID.
+      isArray: true
+      name: group_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get contacts group using a group ID.
+    execution: false
+    name: cymulate-phishing-awareness-contacts-get
+    outputs:
+    - contextPath: Cymulate.Phishing.Groups.id
+      description: The ID of the phishing content group.
+      type: String
+    - contextPath: Cymulate.Phishing.Groups.name
+      description: Name of the phishing content group.
+      type: String
+    - contextPath: Cymulate.Phishing.Groups.client
+      description: The client of the phishing content group.
+      type: String
+    - contextPath: Cymulate.Phishing.Groups.canDelete
+      description: Whether this group can be deleted.
+      type: Boolean
+  - deprecated: false
+    description: Retrieve lateral movement template list.
+    execution: false
+    name: cymulate-lateral-movement-template-list
+    outputs:
+    - contextPath: Cymulate.LateralMovement.Template.id
+      description: Template ID.
+      type: String
+    - contextPath: Cymulate.LateralMovement.Template.name
+      description: Template name.
+      type: String
+  - arguments:
+    - default: false
+      description: Agent name to run the assessment with.
+      isArray: false
+      name: agent_name
+      required: true
+      secret: false
+    - default: false
+      description: The ID of the template to run the lateral movement with. Can be
+        retrieved using Cymulate's UI, or using cymulate-lateral-movement-template-list
+        command.
+      isArray: false
+      name: template_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether to upload the result to Cymulate.
+      isArray: false
+      name: upload_to_cymulate
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to schedule the automated assessment periodically.
+      isArray: false
+      name: schedule
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Loop size of the scheduled agent. For example: to run the agent
+        only once, use the value ''one-time''.'
+      isArray: false
+      name: schedule_loop
+      predefined:
+      - one-time
+      - daily
+      - weekly
+      - monthly
+      required: true
+      secret: false
+    deprecated: false
+    description: Create a new lateral movement assessment.
+    execution: false
+    name: cymulate-lateral-movement-start
+    outputs:
+    - contextPath: Cymulate.LateralMovement.id
+      description: Lateral movement assessment creation ID.
+      type: String
+    - contextPath: Cymulate.LateralMovement.success
+      description: Lateral Movement assessment creation success status.
+      type: Boolean
+  - deprecated: false
+    description: Stop a running lateral movement assessment.
+    execution: false
+    name: cymulate-lateral-movement-stop
+    outputs:
+    - contextPath: Cymulate.LateralMovement.data
+      description: Lateral movement assessment stopping data.
+      type: String
+    - contextPath: Cymulate.LateralMovement.success
+      description: New Lateral movement assessment creation success status.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: Assessment ID.
+      isArray: false
+      name: assessment_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get lateral movement assessment status.
+    execution: false
+    name: cymulate-lateral-movement-status
+    outputs:
+    - contextPath: Cymulate.LateralMovement.id
+      description: Lateral movement assessment ID.
+      type: String
+    - contextPath: Cymulate.LateralMovement.inProgress
+      description: Indicates whether the assessment is in progress.
+      type: Boolean
+  - deprecated: false
+    description: Retrieve all agents.
+    execution: false
+    name: cymulate-agent-list
+    outputs:
+    - contextPath: Cymulate.Agent.agentAddress
+      description: The agent's address.
+      type: String
+    - contextPath: Cymulate.Agent.agentMethod
+      description: The agent's methods.
+      type: String
+    - contextPath: Cymulate.Agent.agentName
+      description: Agent name.
+      type: String
+    - contextPath: Cymulate.Agent.comment
+      description: Comments.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Module to retrieve events to.
+      isArray: false
+      name: module
+      predefined:
+      - web-gateway
+      - exfiltration
+      - email-gateway
+      - endpoint-security
+      - waf
+      - kill-chain
+      - immediate-threats
+      - phishing-awareness
+      - lateral-movement
+      required: true
+      secret: false
+    - default: false
+      description: Attack ID. Can be retrieved using cymulate-simulations-id-list
+        command.
+      isArray: false
+      name: attack_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve a list of all simulations by ID.
+    execution: false
+    name: cymulate-simulations-list
+    outputs:
+    - contextPath: Cymulate.Simulations.Attack_Type
+      description: Attack payload
+      type: String
+    - contextPath: Cymulate.Simulations.Classification
+      description: Attack classification.
+      type: String
+    - contextPath: Cymulate.Simulations.Content_Type
+      description: Content type.
+      type: String
+    - contextPath: Cymulate.Simulations.Module
+      description: Event's module.
+      type: String
+    - contextPath: Cymulate.Simulations.Phrase
+      description: Attack description.
+      type: String
+    - contextPath: Cymulate.Simulations.Phrase_Title
+      description: Attack name.
+      type: String
+    - contextPath: Cymulate.Simulations.Status
+      description: Attack status
+      type: String
+    - contextPath: Cymulate.Simulations.PrevStatus
+      description: Attack Previous status
+      type: String
+    - contextPath: Cymulate.Simulations.Risk
+      description: Attack risk level.
+      type: String
+    - contextPath: Cymulate.Simulations.Source
+      description: Attack Source
+      type: String
+    - contextPath: Cymulate.Simulations.User
+      description: User committed the attack ot was attacked.
+      type: String
+    - contextPath: Cymulate.Simulations.Attack_Vector
+      description: Attack vector
+      type: String
+    - contextPath: Cymulate.Simulations.Source_Email_Address
+      description: Source email address.
+      type: String
+    - contextPath: Cymulate.Simulations.Md5
+      description: MD5 attached to the attack.
+      type: String
+    - contextPath: Cymulate.Simulations.Sha256
+      description: Sha256 attached to the attack.
+      type: String
+    - contextPath: Cymulate.Simulations.Sha1
+      description: Sha1 attached to the attack.
+      type: String
+    - contextPath: Cymulate.Simulations.Mitigation
+      description: Mitigation details.
+      type: String
+    - contextPath: Cymulate.Simulations.Mitigation_Details
+      description: Mitigation details.
+      type: String
+    - contextPath: Cymulate.Simulations.Description
+      description: Attack description
+      type: String
+    - contextPath: Cymulate.Simulations.Id
+      description: Attack ID.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Module to retrieve simulations IDs to.
+      isArray: false
+      name: module
+      predefined:
+      - web-gateway
+      - exfiltration
+      - email-gateway
+      - endpoint-security
+      - waf
+      - kill-chain
+      - immediate-threats
+      - phishing-awareness
+      - lateral-movement
+      required: true
+      secret: false
+    - default: false
+      description: 'From which date to fetch data. Format: YYYY-MM-DD, for example:
+        March 1st 2021 should be written: 2021-03-01.'
+      isArray: false
+      name: from_date
+      required: true
+      secret: false
+    - default: false
+      description: 'End date to fetch data. Format: YYYY-MM-DD, for example: March
+        1st 2021 should be written: 2021-03-01. If no argument is given, default is
+        now.'
+      isArray: false
+      name: to_date
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieve a list of all simulations IDs.
+    execution: false
+    name: cymulate-simulations-id-list
+    outputs:
+    - contextPath: Cymulate.Simulations.ID
+      description: Attack ID.
+      type: String
+    - contextPath: Cymulate.Simulations.Timestamp
+      description: Attack timestamp
+      type: String
+    - contextPath: Cymulate.Simulations.Agent
+      description: Agent connected to the attack.
+      type: String
+    - contextPath: Cymulate.Simulations.Template
+      description: Attack template.
+      type: String
+  dockerimage: demisto/python3:3.9.7.24076
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

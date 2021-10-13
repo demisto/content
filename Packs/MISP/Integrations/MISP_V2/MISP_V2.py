@@ -8,6 +8,7 @@ from urllib.parse import urlparse
 import requests
 from pymisp import ExpandedPyMISP, PyMISPError, MISPObject
 from pymisp.tools import EMailObject, GenericObjectGenerator
+import copy
 
 from CommonServerPython import *
 
@@ -28,13 +29,22 @@ requests.packages.urllib3.disable_warnings()
 warnings.warn = warn
 
 ''' GLOBALS/PARAMS '''
-MISP_KEY = demisto.params().get('api_key')
-MISP_URL = demisto.params().get('url')
-USE_SSL = not demisto.params().get('insecure')
+PARAMS = demisto.params()
+MISP_KEY = PARAMS.get('api_key')
+MISP_URL = PARAMS.get('url')
+USE_SSL = not PARAMS.get('insecure')
 proxies = handle_proxy()  # type: ignore
 MISP_PATH = 'MISP.Event(obj.ID === val.ID)'
+MISP_ATTRIBUTE_PATH = 'MISP.Attribute(obj.ID === val.ID)'
 MISP = ExpandedPyMISP(url=MISP_URL, key=MISP_KEY, ssl=USE_SSL, proxies=proxies)  # type: ExpandedPyMISP
-DATA_KEYS_TO_SAVE = demisto.params().get('context_select', [])
+DATA_KEYS_TO_SAVE = PARAMS.get('context_select', [])
+try:
+    MAX_ATTRIBUTES = int(PARAMS.get('attributes_limit') or 1000)
+except ValueError:
+    return_error("Maximum attributes in event must be a positive number")
+else:
+    if MAX_ATTRIBUTES < 1:
+        return_error("Maximum attributes in event must be a positive number")
 
 """
 dict format :
@@ -92,7 +102,8 @@ ENTITIESDICT = {
     'object_relation': 'ObjectRelation',
     'template_version': 'TemplateVersion',
     'template_uuid': 'TemplateUUID',
-    'meta-category': 'MetaCategory'
+    'meta-category': 'MetaCategory',
+    'decay_score': 'DecayScore'
 }
 
 THREAT_LEVELS_WORDS = {
@@ -241,15 +252,40 @@ def remove_unselected_context_keys(context_data):
                 del attribute[key]
 
 
+def limit_attributes_count(event: dict) -> dict:
+    """
+    Gets a MISP's event and limiting the amount of attributes to MAX_ATTRIBUTES
+
+    Args:
+       event (dict): MISP's event
+    Returns:
+        dict: context output
+    """
+
+    if event and 'Attribute' in event and len(event['Attribute']) > MAX_ATTRIBUTES:
+        attributes = event['Attribute']
+        attributes_num = len(attributes)
+        event_id = event.get('id', '')
+        event_uuid = event.get('uuid')
+        demisto.info(f'Limiting amount of attributes in event to {MAX_ATTRIBUTES} '
+                     f'to keep context from being overwhelmed. '
+                     f'This limit can be changed in the integration configuration. '
+                     f'Event ID: {event_id}, Event UUID: {event_uuid}, Attributes in event: {attributes_num}')
+        sorted_attributes = sorted(attributes, key=lambda at: int(at.get('timestamp', 0)))
+        event['Attribute'] = sorted_attributes[attributes_num - MAX_ATTRIBUTES:]
+        return event
+    return event
+
+
 def arrange_context_according_to_user_selection(context_data):
     if not DATA_KEYS_TO_SAVE:
         return
 
     # each related event has it's own attributes
     for event in context_data:
-        # Remove attributes om event
+        # Remove filtered fields in event
         remove_unselected_context_keys(event)
-        # Remove attributes in Objects
+        # Remove filtered fields in object
         for obj in event['Object']:
             remove_unselected_context_keys(obj)
 
@@ -294,6 +330,8 @@ def build_context(response: Union[dict, requests.Response]) -> dict:  # type: ig
     # Remove 'Event' keyword
     events = [event.get('Event') for event in response]  # type: ignore
     for i in range(0, len(events)):
+        events[i] = limit_attributes_count(events[i])
+
         # Filter object from keys in event_args
         events[i] = {
             key: events[i].get(key)
@@ -331,6 +369,58 @@ def build_context(response: Union[dict, requests.Response]) -> dict:  # type: ig
     events = replace_keys(events)  # type: ignore
     arrange_context_according_to_user_selection(events)  # type: ignore
     return events  # type: ignore
+
+
+def build_attribute_context(response: Union[dict, requests.Response]) -> dict:
+    """
+    Convert the response of attribute search returned from MIPS to the context output format.
+    """
+    attribute_fields = [
+        'id',
+        'event_id',
+        'object_id',
+        'object_relation',
+        'category',
+        'type',
+        'to_ids',
+        'uuid',
+        'timestamp',
+        'distribution',
+        'sharing_group_id',
+        'comment',
+        'deleted',
+        'disable_correlation',
+        'value',
+        'Event',
+        'Object',
+        'Galaxy',  # field wasn't tested as we don't see it in our responses. Was added by customer's request.
+        'Tag',
+        'decay_score'
+    ]
+    if isinstance(response, str):
+        response = json.loads(json.dumps(response))
+    attributes = response.get('Attribute')
+    for i in range(len(attributes)):
+        attributes[i] = {key: attributes[i].get(key) for key in attribute_fields if key in attributes[i]}
+
+        # Build Galaxy
+        if attributes[i].get('Galaxy'):
+            attributes[i]['Galaxy'] = [
+                {
+                    'name': star.get('name'),
+                    'type': star.get('type'),
+                    'description': star.get('description')
+                } for star in attributes[i]['Galaxy']
+            ]
+
+        # Build Tag
+        if attributes[i].get('Tag'):
+            attributes[i]['Tag'] = [
+                {'Name': tag.get('name')} for tag in attributes[i].get('Tag')
+            ]
+
+    attributes = replace_keys(attributes)
+    return attributes
 
 
 def get_misp_threat_level(threat_level_id: str) -> str:  # type: ignore
@@ -412,7 +502,7 @@ def check_file(file_hash):
             dbot_obj = {
                 'Indicator': file_hash,
                 'Type': 'hash',
-                'Vendor': misp_organisation,
+                'Vendor': 'MISP V2',
                 'Score': dbot_score
             }
 
@@ -422,7 +512,7 @@ def check_file(file_hash):
             # if malicious, find file with given hash
             if dbot_score == 3:
                 file_obj['Malicious'] = {
-                    'Vendor': misp_organisation,
+                    'Vendor': 'MISP V2',
                     'Description': f'file hash found in MISP event with ID: {event.get("id")}'
                 }
 
@@ -437,23 +527,28 @@ def check_file(file_hash):
             md_list.append(md_obj)
 
         # Building entry
-        ec = {
+        outputs = {
             outputPaths.get('file'): file_list,
             outputPaths.get('dbotscore'): dbot_list
         }
-
         md = tableToMarkdown(f'Results found in MISP for hash: {file_hash}', md_list)
 
-        demisto.results({
-            'Type': entryTypes['note'],
-            'Contents': misp_response,
-            'ContentsFormat': formats['json'],
-            'HumanReadable': md,
-            'ReadableContentsFormat': formats['markdown'],
-            'EntryContext': ec
-        })
     else:
-        demisto.results(f"No events found in MISP for hash {file_hash}")
+        md = f"No events found in MISP for hash {file_hash}"
+        outputs = {
+            outputPaths.get('dbotscore'): {
+                'Indicator': file_hash,
+                'Type': 'hash',
+                'Vendor': 'MISP V2',
+                'Score': Common.DBotScore.NONE,
+            },
+        }
+
+    return_results(CommandResults(
+        readable_output=md,
+        outputs=outputs,
+        raw_response=misp_response,
+    ))
 
 
 def get_ips_events():
@@ -485,14 +580,14 @@ def check_ip(ip):
             dbot_obj = {
                 'Indicator': ip,
                 'Type': 'ip',
-                'Vendor': misp_organisation,
+                'Vendor': 'MISP V2',
                 'Score': dbot_score
             }
             ip_obj = {'Address': ip}
             # if malicious
             if dbot_score == 3:
                 ip_obj['Malicious'] = {
-                    'Vendor': misp_organisation,
+                    'Vendor': 'MISP V2',
                     'Description': f'IP Found in MISP event: {event.get("id")}'
                 }
             md_obj = {
@@ -505,23 +600,29 @@ def check_ip(ip):
             dbot_list.append(dbot_obj)
             md_list.append(md_obj)
 
-        ec = {
+        outputs = {
             outputPaths.get('ip'): ip_list,
             outputPaths.get('dbotscore'): dbot_list,
             MISP_PATH: build_context(misp_response)
         }
-
         md = tableToMarkdown(f'Results found in MISP for IP: {ip}', md_list)
-        demisto.results({
-            'Type': entryTypes['note'],
-            'Contents': misp_response,
-            'ContentsFormat': formats['json'],
-            'HumanReadable': md,
-            'ReadableContentsFormat': formats['markdown'],
-            'EntryContext': ec
-        })
+
     else:
-        demisto.results(f'No events found in MISP for IP: {ip}')
+        md = f'No events found in MISP for IP: {ip}'
+        outputs = {
+            outputPaths.get('dbotscore'): {
+                'Indicator': ip,
+                'Type': DBotScoreType.IP,
+                'Vendor': 'MISP V2',
+                'Score': Common.DBotScore.NONE,
+            },
+        }
+
+    return_results(CommandResults(
+        readable_output=md,
+        outputs=outputs,
+        raw_response=misp_response,
+    ))
 
 
 def upload_sample():
@@ -720,7 +821,7 @@ def download_file():
         else:
             file_buffer = response[1][0][2].getbuffer()
             filename = response[1][0][1]
-        demisto.results(fileResult(filename, file_buffer))  # type: ignore
+            demisto.results(fileResult(filename, file_buffer))  # type: ignore
 
 
 def get_urls_events():
@@ -746,7 +847,7 @@ def check_url(url):
             dbot_obj = {
                 'Indicator': url,
                 'Type': 'url',
-                'Vendor': misp_organisation,
+                'Vendor': 'MISP V2',
                 'Score': dbot_score
             }
 
@@ -755,7 +856,7 @@ def check_url(url):
             }
             if dbot_score == 3:
                 url_obj['Malicious'] = {
-                    'Vendor': misp_organisation,
+                    'Vendor': 'MISP V2',
                     'Description': f'IP Found in MISP event: {event.get("id")}'
                 }
             md_obj = {
@@ -766,22 +867,29 @@ def check_url(url):
             dbot_list.append(dbot_obj)
             md_list.append(md_obj)
             url_list.append(url_obj)
-        ec = {
+        outputs = {
             outputPaths.get('url'): url_list,
             outputPaths.get('dbotscore'): dbot_list,
             MISP_PATH: build_context(response)
         }
         md = tableToMarkdown(f'MISP Reputation for URL: {url}', md_list)
-        demisto.results({
-            'Type': entryTypes['note'],
-            'Contents': response,
-            'ContentsFormat': formats['json'],
-            'HumanReadable': md,
-            'ReadableContentsFormat': formats['markdown'],
-            'EntryContext': ec
-        })
+
     else:
-        demisto.results(f'No events found in MISP for URL: {url}')
+        md = f'No events found in MISP for URL: {url}'
+        outputs = {
+            outputPaths.get('dbotscore'): {
+                'Indicator': url,
+                'Type': DBotScoreType.URL,
+                'Vendor': 'MISP V2',
+                'Score': Common.DBotScore.NONE,
+            },
+        }
+
+    return_results(CommandResults(
+        readable_output=md,
+        outputs=outputs,
+        raw_response=response,
+    ))
 
 
 def build_misp_complex_filter(demisto_query: str) -> str:
@@ -852,7 +960,8 @@ def search(post_to_warroom: bool = True) -> Tuple[dict, Any]:
         'last',
         'eventid',
         'uuid',
-        'to_ids'
+        'to_ids',
+        'enforceWarninglist',
     ]
 
     args = dict()
@@ -866,6 +975,9 @@ def search(post_to_warroom: bool = True) -> Tuple[dict, Any]:
     # search function 'to_ids' parameter gets 0 or 1 instead of bool.
     if 'to_ids' in args:
         args['to_ids'] = 1 if d_args.get('to_ids') in ('true', '1', 1) else 0
+    # search function 'enforceWarninglist' parameter gets 0 or 1 instead of bool.
+    if 'enforceWarninglist' in args:
+        args['enforceWarninglist'] = 1 if d_args.get('enforceWarninglist') in ('true', '1', 1) else 0
     # build MISP complex filter
     if 'tags' in args:
         args['tags'] = build_misp_complex_filter(args['tags'])
@@ -906,6 +1018,69 @@ def search(post_to_warroom: bool = True) -> Tuple[dict, Any]:
         return response_for_context, response
     else:
         demisto.results(f"No events found in MISP for {args}")
+        return {}, {}
+
+
+def search_attributes() -> Tuple[dict, Any]:
+    """
+    Execute a MIPS search using the 'attributes' controller.
+    """
+    d_args = demisto.args()
+    # List of all applicable search arguments
+    search_args = [
+        'value',
+        'type',
+        'category',
+        'uuid',
+        'to_ids',
+        'last',
+        'include_decay_score',
+        'enforceWarninglist',
+    ]
+    args = dict()
+    # Create dict to pass into the search
+    for arg in search_args:
+        if arg in d_args:
+            args[arg] = d_args[arg]
+    # Replacing keys and values from Demisto to Misp's keys
+    if 'type' in args:
+        args['type_attribute'] = d_args.pop('type')
+    # search function 'to_ids' parameter gets 0 or 1 instead of bool.
+    if 'to_ids' in args:
+        args['to_ids'] = 1 if d_args.get('to_ids') in ('true', '1', 1) else 0
+    # search function 'enforceWarninglist' parameter gets 0 or 1 instead of bool.
+    if 'enforceWarninglist' in args:
+        args['enforceWarninglist'] = 1 if d_args.get('enforceWarninglist') in ('true', '1', 1) else 0
+    if 'include_decay_score' in args:
+        args['includeDecayScore'] = 1 if d_args.get('include_decay_score') in ('true', '1', 1) else 0
+
+    # Set the controller to attributes to search for attributes and not events
+    args['controller'] = 'attributes'
+
+    response = MISP.search(**args)
+
+    if response:
+        response_for_context = build_attribute_context(copy.deepcopy(response))
+
+        md = f'## MISP attributes-search returned {len(response_for_context)} attributes.\n'
+
+        # if attributes were returned, display one to the warroom to visualize the result:
+        if len(response_for_context) > 0:
+            md += tableToMarkdown(f'Attribute ID: {response_for_context[0].get("ID")}', response_for_context[0])
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'HumanReadable': md,
+            'ReadableContentsFormat': formats['markdown'],
+            'EntryContext': {
+                MISP_ATTRIBUTE_PATH: response_for_context
+            }
+        })
+        return response_for_context, response
+    else:
+        demisto.results(f"No attributes found in MISP for {args}")
         return {}, {}
 
 
@@ -1201,6 +1376,8 @@ def main():
             add_attribute()
         elif command == 'misp-search':
             search()
+        elif command == 'misp-search-attributes':
+            search_attributes()
         elif command == 'misp-delete-event':
             delete_event()
         elif command == 'misp-add-sighting':

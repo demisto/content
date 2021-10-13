@@ -7,10 +7,32 @@ configuration:
   name: with_error
   required: false
   type: 8
-- display: Proxy URL. Supports socks4/socks5/http connect proxies (e.g. socks5h://host:1080)
+- display: Proxy URL
+  additionalinfo: "Supports socks4/socks5/http connect proxies (e.g. socks5h://host:1080).
+  Will effect all commands except for the `ip` command."
   name: proxy_url
   required: false
   type: 0
+- display: Use system proxy settings
+  additionalinfo: "Effect the `ip` command and the other commands only if the Proxy URL is not set."
+  hidden: false
+  name: proxy
+  required: false
+  type: 8
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: B - Usually reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
 description: Provides data enrichment for domains.
 display: Whois
 name: Whois
@@ -319,12 +341,212 @@ script:
     - contextPath: Domain.Whois.QueryResult
       description: Whether the query found a matching result.
       type: Boolean
-  dockerimage: demisto/ippysocks:1.0.0.13524
+    - contextPath: Domain.Admin.Country
+      description: The country of the domain administrator.
+      type: String
+    - contextPath: Domain.Admin.Name
+      description: The name of domain administrator.
+      type: String
+    - contextPath: Domain.Admin.State
+      description: The state of domain administrator.
+      type: String
+    - contextPath: Domain.Admin.country
+      description: The country of the domain administrator.
+      type: String
+    - contextPath: Domain.Admin.name
+      description: The name of domain administrator.
+      type: String
+    - contextPath: Domain.Admin.state
+      description: The state of domain administrator.
+      type: String
+    - contextPath: Domain.CreationDate
+      description: The date that the domain was created.
+      type: Date
+    - contextPath: Domain.DomainStatus
+      description: The domain status.
+      type: String
+    - contextPath: Domain.ExpirationDate
+      description: The date that the domain expires.
+      type: Date
+    - contextPath: Domain.FeedRelatedIndicators.type
+      description: Indicators that are associated with the Domain.
+      type: String
+    - contextPath: Domain.FeedRelatedIndicators.value
+      description: The type of the indicators that are associated with the Domain.
+      type: String
+    - contextPath: Domain.Name
+      description: The domain name.
+      type: String
+    - contextPath: Domain.NameServers
+      description: The name servers.
+      type: String
+    - contextPath: Domain.Organization
+      description: The organization name.
+      type: String
+    - contextPath: Domain.Registrant.Country
+      description: The country of the registrant.
+      type: String
+    - contextPath: Domain.Registrant.Organization
+      description: The organization of the registrant.
+      type: String
+    - contextPath: Domain.Registrant.State
+      description: The state of the registrant.
+      type: String
+    - contextPath: Domain.Registrant.country
+      description: The country of the registrant.
+      type: String
+    - contextPath: Domain.Registrant.organization
+      description: The organization of the registrant.
+      type: String
+    - contextPath: Domain.Registrant.state
+      description: The state of the registrant.
+      type: String
+    - contextPath: Domain.Registrar.Name
+      description: The name of the registrar.
+      type: String
+    - contextPath: Domain.Tech.Country
+      description: The country of tech administrator.
+      type: String
+    - contextPath: Domain.Tech.Organization
+      description: The organization of the tech administrator.
+      type: String
+    - contextPath: Domain.UpdatedDate
+      description: The date that the domain was last updated.
+      type: Date
+  - arguments:
+    - default: true
+      description: The IP to enrich.
+      isArray: true
+      name: ip
+      required: true
+      secret: false
+    deprecated: false
+    description: Provides data enrichment for ips.
+    execution: false
+    name: ip
+    outputs:
+    - contextPath: Whois.IP.asn
+      description: Globally unique identifier used for routing information exchange
+        with Autonomous Systems.
+      type: string
+    - contextPath: Whois.IP.asn_cidr
+      description: Network routing block assigned to an ASN.
+      type: string
+    - contextPath: Whois.IP.asn_country_code
+      description: ASN assigned country code in ISO 3166-1 format.
+      type: string
+    - contextPath: Whois.IP.asn_date
+      description: ASN allocation date in ISO 8601 format.
+      type: Date
+    - contextPath: Whois.IP.asn_description
+      description: The ASN description
+      type: string
+    - contextPath: Whois.IP.asn_registry
+      description: ASN assigned regional internet registry.
+      type: string
+    - contextPath: Whois.IP.entities
+      description: list of object names referenced by an RIR network. Map these to
+        the objects dictionary keys.
+      type: string
+    - contextPath: Whois.IP.network.cidr
+      description: Network routing block an IP address belongs to.
+      type: string
+    - contextPath: Whois.IP.network.country
+      description: Country code registered with the RIR in ISO 3166-1 format.
+      type: string
+    - contextPath: Whois.IP.network.end_address
+      description: The last IP address in a network block.
+      type: string
+    - contextPath: Whois.IP.network.events.action
+      description: The reason for an event.
+      type: string
+    - contextPath: Whois.IP.network.events.actor
+      description: The identifier for an event initiator (if any).
+      type: string
+    - contextPath: Whois.IP.network.events.timestamp
+      description: The date an event occurred in ISO 8601 format.
+      type: Date
+    - contextPath: Whois.IP.network.handle
+      description: Unique identifier for a registered object.
+      type: string
+    - contextPath: Whois.IP.network.ip_version
+      description: IP protocol version (v4 or v6) of an IP address.
+      type: string
+    - contextPath: Whois.IP.network.links
+      description: HTTP/HTTPS links provided for an RIR object.
+      type: string
+    - contextPath: Whois.IP.network.name
+      description: The identifier assigned to the network registration for an IP address.
+      type: string
+    - contextPath: Whois.IP.network.notices.description
+      description: The description/body of a notice.
+      type: string
+    - contextPath: Whois.IP.network.notices.links
+      description: list of HTTP/HTTPS links provided for a notice.
+      type: string
+    - contextPath: Whois.IP.network.notices.title
+      description: The title/header for a notice.
+      type: string
+    - contextPath: Whois.IP.network.parent_handle
+      description: Unique identifier for the parent network of a registered network.
+      type: string
+    - contextPath: Whois.IP.network.remarks
+      description: List of remark (notice) dictionaries.
+      type: string
+    - contextPath: Whois.IP.network.start_address
+      description: The first IP address in a network block.
+      type: string
+    - contextPath: Whois.IP.network.status
+      description: List indicating the state of a registered object.
+      type: string
+    - contextPath: Whois.IP.network.type
+      description: The RIR classification of a registered network.
+      type: string
+    - contextPath: Whois.IP.query
+      description: The IP address
+      type: string
+    - contextPath: IP.Address
+      description: IP address
+      type: string
+    - contextPath: IP.ASN
+      description: 'The autonomous system name for the IP address, for example: "AS8948".'
+      type: string
+    - contextPath: IP.Geo.Country
+      description: The country in which the IP address is located.
+      type: string
+    - contextPath: IP.Organization.Name
+      description: The organization name.
+      type: string
+    - contextPath: IP.feed_related_indicators.value
+      description: Indicators that are associated with the IP.
+      type: string
+    - contextPath: IP.feed_related_indicators.type
+      description: The type of the indicators that are associated with the IP
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+  dockerimage: demisto/ippysocks:1.0.0.24033
+  feed: false
   isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
-  script: ''
-  type: python
+  script: '-'
   subtype: python2
+  type: python
 defaultEnabled: false
 tests:
 - whois_test

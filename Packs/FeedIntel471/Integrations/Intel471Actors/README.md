@@ -18,7 +18,7 @@ This feed allows getting data out of closed sources (typically referred to as th
     | feedExpirationInterval |  | False |
     | feedFetchInterval | Feed Fetch Interval | False |
     | actor | Free text actor search \(all fields included\) | False |
-    | fetch_time | First fetch timestamp \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., 12 hours, 7 days\) | False |
+    | fetch_time | First fetch timestamp \(`<number>` `<time unit>`, e.g., 12 hours, 7 days\) | False |
     | feedTags | Tags |  |
     | feedBypassExclusionList | Bypass exclusion list | False |
     | proxy | Use system proxy settings | False |

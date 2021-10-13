@@ -1,6 +1,6 @@
-IT service management. Demisto interfaces with ServiceNow to help streamline security-related service management and IT operations. For example, you can use the ‘ServiceNow’ integration in order to:
+IT service management. Cortex XSOAR interfaces with ServiceNow to help streamline security-related service management and IT operations. For example, you can use the ‘ServiceNow’ integration in order to:
 
-- View, create, update or delete a ServiceNow ticket directly from the Demisto CLI and enrich it with Demisto data.
+- View, create, update or delete a ServiceNow ticket directly from the Cortex XSOAR CLI and enrich it with Cortex XSOAR data.
 - View, create, update and delete records from any ServiceNow table.
 - Query ServiceNow data with the ServiceNow query syntax.
 
@@ -12,6 +12,13 @@ This integration was integrated and tested with the Orlando version of ServiceNo
 1. Get, update, create, and delete ServiceNow tickets, as well as add links and comments, or upload files to the tickets.
 2. Fetch newly created incidents.
 3. Get, update, create, delete records from any ServiceNow table.
+
+## Required Permissions
+To use ServiceNow on Cortex XSOAR, ensure your user account has the *rest_api_explorer* and *web_service_admin* roles.
+ These roles are required to make API calls.
+ Also add to your user account the specific tables that you want to have access to.
+ However, these permissions may not suffice for managing records in some tables. Make sure you have the correct role so you have permissions to work with the relevant table.
+ 
 ## Wrapper Scripts
 There are 3 scripts that serve as examples for wrapping the following generic commands:
 servicenow-query-table - ServiceNowQueryIncident
@@ -75,14 +82,16 @@ If MFA is enabled for your user, follow the next steps:
 | isFetch | Fetch incidents | False |
 | sysparm_query | The query to use when fetching incidents | False |
 | fetch_limit | How many incidents to fetch each time | False |
-| fetch_time | First fetch timestamp \(&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year\) | False |
+| fetch_time | First fetch timestamp \(`<number>` `<time unit>`, e.g., 12 hours, 7 days, 3 months, 1 year\) | False |
 | timestamp_field | Timestamp field to filter by \(e.g., \`opened\_at\`\) This is how the filter is applied to the query: "ORDERBYopened\_at^opened\_at&gt;\[Last Run\]". To prevent duplicate incidents, this field is mandatory for fetching incidents. | False |
 | incidentType | Incident type | False |
 | get_attachments | Get incident attachments | False |
-| mirror_direction | Chose whenever to mirror the incident. You can mirror only In (from ServiceNow to XSOAR), only out(from XSOAR to ServiceNow) or both direction. | None |
-| comment_tag | Choose the tag to add to an entry to mirror it as a comment in ServiceNow. | comments |
-| work_notes_tag | Choose the tag to add to an entry to mirror it as a work note in ServiceNow. | work_notes |
-| file_tag | Choose the tag to add to an entry to mirror it as a file in ServiceNow. | ForServiceNow |
+| mirror_direction | Choose whenever to mirror the incident. You can mirror only In (from ServiceNow to XSOAR), only out (from XSOAR to ServiceNow), or both directions. | False |
+| comment_tag | Choose the tag to add to an entry to mirror it as a comment in ServiceNow. | False |
+| work_notes_tag | Choose the tag to add to an entry to mirror it as a work note in ServiceNow. | False |
+| file_tag | Choose the tag to add to an entry to mirror it as a file in ServiceNow. | False |
+| update_timestamp_field | Timestamp field to query for updates as part of the mirroring flow. | False |
+| mirror_limit | The maximum number of incidents to mirror incoming each time | False |
 | close_incident | Close XSOAR Incident. When selected, closing the ServiceNow ticket is mirrored in Cortex XSOAR. | False |
 | close_ticket | Close ServiceNow Ticket. When selected, closing the XSOAR incident is mirrored in ServiceNow. | False |
 | proxy | Use system proxy settings | False |
@@ -90,6 +99,8 @@ If MFA is enabled for your user, follow the next steps:
 
 5. Click **Test** to validate the URLs, token, and connection.
 6. Click **Done.**
+
+Note: Fetch incidents and mirroring is not currently supported for the ServiceNow Security Incident Response (SIR) module.
 
 ## Fetch Incidents
 The integration fetches newly created tickets according to the following parameters,
@@ -162,11 +173,15 @@ match.
 ![image](https://raw.githubusercontent.com/demisto/content/d9bd0725e4bce1d68b949e66dcdd8f42931b1a88/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/ticket-example.png)
 
 
-* The final **source of truth** for the incident for Cortex XSOAR are the **values in Cortex XSOAR**. 
-Meaning, if you change the severity in Cortex XSOAR and then change it back in ServiceNow, the final value that will be presented is the one in Cortex XSOAR.
+**Notes**
+- The final 'source of truth' for the incident for Cortex XSOAR are the values in Cortex XSOAR. 
+  Meaning, if you change the severity in Cortex XSOAR and then change it back in ServiceNow, the final value that will be presented is the one in Cortex XSOAR.
+- The integration queries ServiceNow for modified records based on the timestamp field set in the *update_timestamp_field* integration parameter and the limit set in the *mirror_limit* integration parameter.
+      If more records are modified in the timeframe when they are queried than are configured in the *limit* parameter, the extra records won't be mirrored in and the incidents in Cortex XSOAR will not be updated.  
+
 
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### servicenow-login
 ***
@@ -642,8 +657,8 @@ Retrieves ticket information according to the supplied query.
 | ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident". | Optional | 
 | query | The query to run. To learn about querying in ServiceNow, see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html | Optional | 
 | offset | Starting record index to begin retrieving records from. | Optional | 
-| additional_fields | Additional fields to present in the War Room entry and incident context. | Optional | 
-| system_params | System parameters in the format: fieldname1=value;fieldname2=value. For example: "sysparm_display_value=al;&amp;sysparm_exclude_reference_link=True" | Optional | 
+| additional_fields | Additional fields to present in the War Room entry and incident context. | Optional || system_params | System parameters in the format: fieldname1=value;fieldname2=value. For example: "sysparm_display_value=al;&sysparm_exclude_reference_link=True" | Optional | 
+| system_params | System parameters in the format: fieldname1=value;fieldname2=value. For example: "sysparm_display_value=true;sysparm_exclude_reference_link=True" | Optional | 
 
 
 #### Context Output
@@ -952,7 +967,7 @@ Queries the specified table in ServiceNow.
 | query | The query to run. For more information about querying in ServiceNow, see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html | Optional | 
 | fields | Comma-separated list of table fields to display and output to the context, for example: name,tag,company. ID field is added by default. | Optional | 
 | offset | Starting record index to begin retrieving records from. | Optional | 
-| system_params | System parameters in the format: fieldname1=value;fieldname2=value. For example: "sysparm_display_value=al;&amp;sysparm_exclude_reference_link=True" | Optional | 
+| system_params | System parameters in the format: fieldname1=value;fieldname2=value. For example: "sysparm_display_value=true;sysparm_exclude_reference_link=True" | Optional | 
 
 
 #### Context Output
@@ -2038,4 +2053,9 @@ Get remote data from a remote incident. This method does not update the current 
 There is no context output for this command.
 
 
+### Troubleshooting
 
+* Ensure that the date and time in SNOW are the same as the date and time in XSOAR to prevent mirroring issues.
+* If the date displayed in the layout is incorrect, please follow these steps to resolve the issue:
+1. Navigate to the `incoming-mapper` which you are using.
+2. In every field which uses the ``DateStringToISOFormat`` script, change the argument ``dayfirst`` to be ``true``.

@@ -16,6 +16,18 @@ configuration:
   name: tenant_id
   required: false
   type: 0
+- defaultvalue: https://login.microsoftonline.com
+  display: Azure AD endpoint
+  hidden: false
+  name: azure_ad_endpoint
+  options:
+  - https://login.microsoftonline.com
+  - https://login.microsoftonline.us
+  - https://login.microsoftonline.de
+  - https://login.chinacloudapi.cn
+  required: false
+  type: 15
+  additionalinfo: Azure AD endpoint associated with a national cloud.
 - additionalinfo: A space-separated list of scopes that you want to consent to.
   defaultvalue: User.Read
   display: Scope (Required for using Cortex XSOAR Azure app)
@@ -114,7 +126,7 @@ script:
     description: Tests connectivity to Microsoft when using Cortex XSOAR Azure app.
     execution: false
     name: msgraph-api-test
-  dockerimage: demisto/crypto:1.0.0.12979
+  dockerimage: demisto/crypto:1.0.0.24037
   feed: false
   isfetch: false
   longRunning: false
@@ -124,3 +136,5 @@ script:
   subtype: python3
   type: python
 fromversion: 5.0.0
+tests:
+- Microsoft Graph API - Test

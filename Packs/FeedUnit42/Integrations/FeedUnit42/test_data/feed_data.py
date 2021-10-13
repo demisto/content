@@ -131,6 +131,10 @@ RELATIONSHIP_DATA = [
     {"created": "2019-10-11T18:43:46.039Z", "id": "relationship--001323c2-fc4f-4d4a-914c-2d556fc585a7",
      "modified": "2020-05-12T13:02:30.000000Z", "relationship_type": "indicates",
      "source_ref": "malware--f351db0d-0667-4ca0-aed8-205bcef1d9a9",
+     "target_ref": "attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055", "type": "relationship"},
+    {"created": "2019-10-11T18:43:46.039Z", "id": "relationship--001323c2-fc4f-4d4a-914c-2d556fc585a7",
+     "modified": "2020-05-12T13:02:30.000000Z", "relationship_type": "indicates",
+     "source_ref": "course-of-action--fd0da09e-a0b2-4018-9476-1a7edd809b59",
      "target_ref": "attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055", "type": "relationship"}
 ]
 
@@ -192,7 +196,8 @@ REPORTS_INDICATORS = [
 MATCHED_RELATIONSHIPS = {
     'attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055': {
         'indicator--010bb9ad-5686-485d-97e5-93c2187e56ce',
-        'malware--f351db0d-0667-4ca0-aed8-205bcef1d9a9'},
+        'malware--f351db0d-0667-4ca0-aed8-205bcef1d9a9',
+        'course-of-action--fd0da09e-a0b2-4018-9476-1a7edd809b59'},
     'indicator--0025039e-f0b5-4ad2-aaab-5374fe3734be': {
         'malware--00811855-d9b9-420d-9bd6-8fd63fbd335a',
         'malware--00811855-d9b9-420d-9bd6-8fd63fbd335b',
@@ -205,5 +210,14 @@ MATCHED_RELATIONSHIPS = {
         'indicator--0025039e-f0b5-4ad2-aaab-5374fe3734be'},
     'malware--f351db0d-0667-4ca0-aed8-205bcef1d9a9': {
         'attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055',
-        'indicator--0025039e-f0b5-4ad2-aaab-5374fe3734be'}
+        'indicator--0025039e-f0b5-4ad2-aaab-5374fe3734be'},
+    'course-of-action--fd0da09e-a0b2-4018-9476-1a7edd809b59': {
+        'attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055'}
 }
+
+ID_TO_OBJECT = {'attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055': {'external_references': '8.8.8.8',
+                                                                         'description': 'description',
+                                                                         'name': 'T111: Software Discovery'},
+                'course-of-action--fd0da09e-a0b2-4018-9476-1a7edd809b59': {'name': 'Deploy XSOAR Playbook',
+                                                                           'x_panw_coa_bp_description': 'Deploy XSOAR Playbook - Phishing Investigation - Generic V2',
+                                                                           'x_panw_coa_bp_title': 'Deploy XSOAR Playbook'}}

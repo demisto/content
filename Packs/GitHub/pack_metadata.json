@@ -1,8 +1,8 @@
 {
     "name": "GitHub",
-    "description": "Integration to GitHub API",
+    "description": "Manage GitHub issues and pull requests directly from Cortex XSOAR",
     "support": "xsoar",
-    "currentVersion": "1.1.7",
+    "currentVersion": "1.3.8",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

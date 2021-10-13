@@ -20,7 +20,7 @@ configuration:
   required: false
   type: 8
 - defaultvalue: '2000'
-  display: request timeout
+  display: Request Timeout
   hidden: false
   name: timeout
   required: false
@@ -1238,7 +1238,7 @@ script:
     description: Deletes a list entry.
     execution: false
     name: cisco-email-security-list-entry-delete
-  dockerimage: demisto/python3:3.8.5.11789
+  dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: false
   longRunning: false

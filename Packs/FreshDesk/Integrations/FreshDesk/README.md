@@ -1,19 +1,19 @@
 <!-- HTML_DOC -->
 <div class="cl-preview-section">
-<p>Use the Freshdesk integration to manage and create Freshdesk tickets from Demisto.</p>
+<p>Use the Freshdesk integration to manage and create Freshdesk tickets from Cortex XSOAR.</p>
 </div>
 <div class="cl-preview-section">
 <h2 id="use-cases">Use Cases</h2>
 </div>
 <div class="cl-preview-section">
 <ol>
-<li>Create a Freshdesk ticket from Demisto</li>
-<li>Update a Freshdesk ticket from Demisto</li>
+<li>Create a Freshdesk ticket from Cortex XSOAR</li>
+<li>Update a Freshdesk ticket from Cortex XSOAR</li>
 <li>Get information from a Freshdesk ticket</li>
 </ol>
 </div>
 <div class="cl-preview-section">
-<h2 id="configure-freshdesk-on-demisto">Configure Freshdesk on Demisto</h2>
+<h2 id="configure-freshdesk-on-demisto">Configure Freshdesk on Cortex XSOAR</h2>
 </div>
 <div class="cl-preview-section">
 <ol>
@@ -38,7 +38,7 @@
 <h2 id="commands">Commands</h2>
 </div>
 <div class="cl-preview-section">
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.<br> After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.<br> After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 </div>
 <div class="cl-preview-section">
 <ol>

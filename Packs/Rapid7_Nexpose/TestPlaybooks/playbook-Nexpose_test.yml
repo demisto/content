@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: a4e7d052-b186-493b-89a0-b28f8a40597d
+    taskid: 26e76521-05e0-491b-88b6-33765e150f6d
     type: start
     task:
-      id: a4e7d052-b186-493b-89a0-b28f8a40597d
+      id: 26e76521-05e0-491b-88b6-33765e150f6d
       version: -1
       name: ""
       iscommand: false
@@ -21,7 +21,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 50
         }
       }
@@ -32,10 +32,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 370ccd5b-14b6-4a0f-80d7-90eda29c5386
+    taskid: 4454bba2-c48a-40d9-82aa-abb1fad9b493
     type: regular
     task:
-      id: 370ccd5b-14b6-4a0f-80d7-90eda29c5386
+      id: 4454bba2-c48a-40d9-82aa-abb1fad9b493
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -54,7 +54,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 195
         }
       }
@@ -65,17 +65,17 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 442f48a4-64e2-4afc-818e-b5f17c26cfc1
+    taskid: 80bd195a-b506-4a66-8a8a-5b802ae41e0b
     type: regular
     task:
-      id: 442f48a4-64e2-4afc-818e-b5f17c26cfc1
+      id: 80bd195a-b506-4a66-8a8a-5b802ae41e0b
       version: -1
       name: nexpose-get-assets
       description: Returns all assets for which you have access.
-      script: Rapid7 Nexpose|||nexpose-get-assets
+      script: '|||nexpose-get-assets'
       type: regular
       iscommand: true
-      brand: Rapid7 Nexpose
+      brand: ""
     nexttasks:
       '#none#':
       - "3"
@@ -87,7 +87,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 370
         }
       }
@@ -98,13 +98,14 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: d71096c8-435a-45f7-8a93-4aa403b806e9
+    taskid: b59ec3ce-c354-4444-81d3-79ba4e785da8
     type: regular
     task:
-      id: d71096c8-435a-45f7-8a93-4aa403b806e9
+      id: b59ec3ce-c354-4444-81d3-79ba4e785da8
       version: -1
       name: nexpose-search-assets
-      description: Returns all assets for which you have access that match the given search criteria.
+      description: Returns all assets for which you have access that match the given
+        search criteria.
       script: Rapid7 Nexpose|||nexpose-search-assets
       type: regular
       iscommand: true
@@ -129,7 +130,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 545
         }
       }
@@ -140,10 +141,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 75ffbcc2-22aa-411f-8bc0-8e013a210c96
+    taskid: b7f80676-c035-46c9-82ba-5d40160a3cd3
     type: regular
     task:
-      id: 75ffbcc2-22aa-411f-8bc0-8e013a210c96
+      id: b7f80676-c035-46c9-82ba-5d40160a3cd3
       version: -1
       name: nexpose-get-asset
       description: Returns the specified asset.
@@ -161,7 +162,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 720
         }
       }
@@ -172,36 +173,36 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: daa223de-4758-4cb5-87c4-0d04617c2925
-    type: regular
+    taskid: ada33757-b696-417c-8ed3-d1dc782e66a8
+    type: condition
     task:
-      id: daa223de-4758-4cb5-87c4-0d04617c2925
+      id: ada33757-b696-417c-8ed3-d1dc782e66a8
       version: -1
-      name: VerifyContext
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
+      name: Verify Context
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
-      - "16"
-    scriptarguments:
-      expectedValue: {}
-      fields:
-        simple: IP, OS
-      path:
-        simple: Endpoint
+      "yes":
+      - "28"
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Nexpose.Asset.AssetId
+            iscontext: true
+          right:
+            value:
+              simple: "2"
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 895
         }
       }
@@ -212,13 +213,14 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: d2a06eee-9c71-49cd-8b05-9086b86304e7
+    taskid: adb7b591-3b3e-491e-88da-c11abe0fbd25
     type: regular
     task:
-      id: d2a06eee-9c71-49cd-8b05-9086b86304e7
+      id: adb7b591-3b3e-491e-88da-c11abe0fbd25
       version: -1
       name: nexpose-create-assets-report
-      description: Generates a new report on given assets according to a template and arguments.
+      description: Generates a new report on given assets according to a template
+        and arguments.
       script: Rapid7 Nexpose|||nexpose-create-assets-report
       type: regular
       iscommand: true
@@ -236,8 +238,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 2295
+          "x": 50,
+          "y": 1245
         }
       }
     note: false
@@ -247,13 +249,14 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 7e3979ea-3c52-458b-86bf-e16da6696594
+    taskid: 47cfb9c2-b628-4f62-84cc-fcd49faef2e3
     type: regular
     task:
-      id: 7e3979ea-3c52-458b-86bf-e16da6696594
+      id: 47cfb9c2-b628-4f62-84cc-fcd49faef2e3
       version: -1
       name: nexpose-create-assets-report-xml
-      description: Generates a new report on given assets according to a template and arguments.
+      description: Generates a new report on given assets according to a template
+        and arguments.
       script: Rapid7 Nexpose|||nexpose-create-assets-report
       type: regular
       iscommand: true
@@ -272,8 +275,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 2470
+          "x": 50,
+          "y": 1420
         }
       }
     note: false
@@ -283,37 +286,49 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 63bc30cb-d217-4b3b-8b2e-50cb2ea52e88
-    type: regular
+    taskid: ea2b81f2-8b48-4c7c-8c6b-ba809f9cccce
+    type: condition
     task:
-      id: 63bc30cb-d217-4b3b-8b2e-50cb2ea52e88
+      id: ea2b81f2-8b48-4c7c-8c6b-ba809f9cccce
       version: -1
-      name: VerifyContext
+      name: ' Verify Context'
       description: |-
         Verifies path in context:
         - Verifies path existence
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      "yes":
       - "27"
-    scriptarguments:
-      expectedValue:
-        simple: '["pdf","xml"]'
-      fields: {}
-      path:
-        simple: InfoFile.Extension
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: InfoFile.Extension
+            iscontext: true
+          right:
+            value:
+              simple: xml
+      - - operator: isEqualString
+          left:
+            value:
+              simple: InfoFile.Extension
+            iscontext: true
+          right:
+            value:
+              simple: pdf
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 2645
+          "x": 50,
+          "y": 1595
         }
       }
     note: false
@@ -321,44 +336,32 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "14":
-    id: "14"
-    taskid: 40215e42-756e-478d-8bf0-39891eff759f
+  "27":
+    id: "27"
+    taskid: 6dc64006-d2e2-41c9-8dbc-12b4b4a86bec
     type: regular
     task:
-      id: 40215e42-756e-478d-8bf0-39891eff759f
+      id: 6dc64006-d2e2-41c9-8dbc-12b4b4a86bec
       version: -1
-      name: nexpose-create-site
-      description: Creates a new site with the specified configuration.
-      script: Rapid7 Nexpose|||nexpose-create-site
+      name: nexpose-get-scans
+      description: Returns a list of scans.
+      script: Rapid7 Nexpose|||nexpose-get-scans
       type: regular
       iscommand: true
       brand: Rapid7 Nexpose
     nexttasks:
       '#none#':
-      - "15"
+      - "33"
     scriptarguments:
-      assets:
-        simple: ${Endpoint.IP}
-      description: {}
-      importance: {}
-      name:
-        complex:
-          root: GeneratedUUID
-          transformers:
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: test_playbook_site
-              suffix: {}
-      scanTemplateId: {}
+      active: {}
+      limit: {}
+      sort: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1245
+          "x": 50,
+          "y": 1770
         }
       }
     note: false
@@ -366,59 +369,32 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "15":
-    id: "15"
-    taskid: 48fb51eb-15ba-499f-8abf-e731e1c0e158
+  "28":
+    id: "28"
+    taskid: 9b30a7e2-0a18-469c-8e11-f5936b616b4e
     type: regular
     task:
-      id: 48fb51eb-15ba-499f-8abf-e731e1c0e158
+      id: 9b30a7e2-0a18-469c-8e11-f5936b616b4e
       version: -1
-      name: nexpose-delete-site
-      description: Delete a site
-      script: Rapid7 Nexpose|||nexpose-delete-site
+      name: Get Scans (inactive)
+      description: Returns a list of scans.
+      script: Rapid7 Nexpose|||nexpose-get-scans
       type: regular
       iscommand: true
       brand: Rapid7 Nexpose
     nexttasks:
       '#none#':
-      - "28"
+      - "6"
     scriptarguments:
-      id:
-        simple: ${Nexpose.Site.Id}
+      active:
+        simple: "false"
+      limit: {}
+      sort: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "16":
-    id: "16"
-    taskid: f6c19b68-41d6-49bb-8dc3-616d98dfe748
-    type: regular
-    task:
-      id: f6c19b68-41d6-49bb-8dc3-616d98dfe748
-      version: -1
-      name: GenerateUUID
-      description: Generates random UUID
-      scriptName: GenerateUUID
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "14"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 1070
         }
       }
@@ -427,31 +403,23 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "20":
-    id: "20"
-    taskid: d6c2d6ec-45f2-4b6c-8af0-1c82c1c3fb2e
-    type: regular
+  "31":
+    id: "31"
+    taskid: e4de8187-7427-401d-876d-6ab66aec4b26
+    type: title
     task:
-      id: d6c2d6ec-45f2-4b6c-8af0-1c82c1c3fb2e
+      id: e4de8187-7427-401d-876d-6ab66aec4b26
       version: -1
-      name: nexpose-pause-scan
-      description: Pause the specified scan
-      script: Rapid7 Nexpose|||nexpose-pause-scan
-      type: regular
-      iscommand: true
-      brand: Rapid7 Nexpose
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      id:
-        simple: ${Nexpose.Scan.Id}
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 2880
         }
       }
     note: false
@@ -459,31 +427,39 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "21":
-    id: "21"
-    taskid: a0d0108a-6967-4cae-8f4b-6023359bdfd9
+  "32":
+    id: "32"
+    taskid: c75397f1-85b0-4126-8c47-05a36976139e
     type: regular
     task:
-      id: a0d0108a-6967-4cae-8f4b-6023359bdfd9
+      id: c75397f1-85b0-4126-8c47-05a36976139e
       version: -1
-      name: nexpose-resume-scan
-      description: Resume the specified scan
-      script: Rapid7 Nexpose|||nexpose-resume-scan
+      name: Generate Report Name
+      description: Generates random string
+      scriptName: GenerateRandomString
       type: regular
-      iscommand: true
-      brand: Rapid7 Nexpose
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
-      - "22"
+      - "36"
     scriptarguments:
-      id:
-        simple: ${Nexpose.Scan.Id}
+      Digits:
+        simple: "True"
+      Length:
+        simple: "6"
+      Lowercase:
+        simple: "True"
+      Punctuation:
+        simple: "False"
+      Uppercase:
+        simple: "True"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 3170
+          "y": 2470
         }
       }
     note: false
@@ -491,57 +467,25 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "22":
-    id: "22"
-    taskid: 751fd8cb-62f7-459f-803e-208abc9569b1
+  "33":
+    id: "33"
+    taskid: 8fb5cf60-e1c3-4cef-8b1d-1183726128c1
     type: regular
     task:
-      id: 751fd8cb-62f7-459f-803e-208abc9569b1
+      id: 8fb5cf60-e1c3-4cef-8b1d-1183726128c1
       version: -1
-      name: nexpose-stop-scan
-      description: Stop the specified scan
-      script: Rapid7 Nexpose|||nexpose-stop-scan
+      name: Get sites
+      description: Retrieves accessible sites.
+      script: '|||nexpose-get-sites'
       type: regular
       iscommand: true
-      brand: Rapid7 Nexpose
-    scriptarguments:
-      id:
-        simple: ${Nexpose.Scan.Id}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 3345
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "23":
-    id: "23"
-    taskid: 54643013-e868-4d89-8d6c-ac151ea88dd7
-    type: regular
-    task:
-      id: 54643013-e868-4d89-8d6c-ac151ea88dd7
-      version: -1
-      name: nexpose-start-site-scan
-      description: Starts a scan for the specified site.
-      script: Rapid7 Nexpose|||nexpose-start-site-scan
-      type: regular
-      iscommand: true
-      brand: Rapid7 Nexpose
+      brand: ""
     nexttasks:
       '#none#':
-      - "20"
+      - "34"
     scriptarguments:
-      hosts:
-        simple: 192.168.1.144
-      name: {}
-      site:
-        simple: "1"
+      limit: {}
+      sort: {}
     separatecontext: false
     view: |-
       {
@@ -555,39 +499,37 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "26":
-    id: "26"
-    taskid: c40cde1e-481d-4a35-8279-4750388bdc59
+  "34":
+    id: "34"
+    taskid: 5226a6f3-c153-4d76-8b75-12cae337083a
     type: condition
     task:
-      id: c40cde1e-481d-4a35-8279-4750388bdc59
+      id: 5226a6f3-c153-4d76-8b75-12cae337083a
       version: -1
-      name: is-paused
+      name: Verify Results
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
-      - "22"
       "yes":
-      - "21"
+      - "35"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: containsGeneral
           left:
             value:
-              simple: Nexpose.Scan.Status
+              simple: Nexpose.Site.Name
             iscontext: true
           right:
             value:
-              simple: paused
+              simple: Test
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 2995
+          "x": 50,
+          "y": 2120
         }
       }
     note: false
@@ -595,32 +537,28 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "27":
-    id: "27"
-    taskid: 29847922-a3cd-459c-8f00-8228495039e9
+  "35":
+    id: "35"
+    taskid: 17cb8451-69b0-49fc-842a-cccecfc0b693
     type: regular
     task:
-      id: 29847922-a3cd-459c-8f00-8228495039e9
+      id: 17cb8451-69b0-49fc-842a-cccecfc0b693
       version: -1
-      name: nexpose-get-scans
-      description: Returns a list of scans.
-      script: Rapid7 Nexpose|||nexpose-get-scans
+      name: Get Report Templates
+      description: Returns all available report templates.
+      script: '|||nexpose-get-report-templates'
       type: regular
       iscommand: true
-      brand: Rapid7 Nexpose
+      brand: ""
     nexttasks:
       '#none#':
-      - "26"
-    scriptarguments:
-      active: {}
-      limit: {}
-      sort: {}
+      - "32"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 2820
+          "x": 50,
+          "y": 2295
         }
       }
     note: false
@@ -628,69 +566,43 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "28":
-    id: "28"
-    taskid: c897e1f2-5249-4345-8639-f7369c1aab40
-    type: regular
+  "36":
+    id: "36"
+    taskid: 2d7caabc-988f-4ff8-8767-e854323fba54
+    type: playbook
     task:
-      id: c897e1f2-5249-4345-8639-f7369c1aab40
+      id: 2d7caabc-988f-4ff8-8767-e854323fba54
       version: -1
-      name: check for active scans
-      description: Returns a list of scans.
-      script: Rapid7 Nexpose|||nexpose-get-scans
-      type: regular
-      iscommand: true
-      brand: Rapid7 Nexpose
-    nexttasks:
-      '#none#':
-      - "29"
-    scriptarguments:
-      active: {}
-      limit: {}
-      sort: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 1595
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "29":
-    id: "29"
-    taskid: 012008d6-cf6d-4e1a-8e06-e98215555ae0
-    type: condition
-    task:
-      id: 012008d6-cf6d-4e1a-8e06-e98215555ae0
-      version: -1
-      name: scan-running
-      type: condition
+      name: Nexpose - Create and Download Report
+      playbookName: Nexpose - Create and Download Report
+      type: playbook
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
-      - "23"
-      "yes":
-      - "6"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: Nexpose.Scan
-            iscontext: true
+      '#none#':
+      - "31"
+    scriptarguments:
+      assets: {}
+      format: {}
+      name:
+        simple: ${RandomString}
+      report_type:
+        simple: sites
+      scan: {}
+      sites:
+        simple: "1"
+      template: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1770
+          "x": 50,
+          "y": 2635
         }
       }
     note: false
@@ -703,8 +615,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3390,
-        "width": 492.5,
+        "height": 2895,
+        "width": 380,
         "x": 50,
         "y": 50
       }

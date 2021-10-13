@@ -1,0 +1,1555 @@
+{
+    "incidents": {
+        "data": [
+            {
+                "attributes": {
+                    "alert_class": "data",
+                    "alert_type": "flow_down",
+                    "importance": 1,
+                    "ongoing": true,
+                    "start_time": "2021-03-30T10:07:16+00:00",
+                    "subobject": {}
+                },
+                "id": "2429",
+                "links": {
+                    "self": "https://content.demisto.works:57585/api/sp/v7/alerts/2429?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00"
+                },
+                "relationships": {
+                    "device": {
+                        "data": {
+                            "id": "115",
+                            "type": "device"
+                        },
+                        "links": {
+                            "related": "https://content.demisto.works:57585/api/sp/v7/devices/115"
+                        }
+                    },
+                    "router": {
+                        "data": {
+                            "id": "121",
+                            "type": "router"
+                        },
+                        "links": {
+                            "related": "https://content.demisto.works:57585/api/sp/v7/routers/121"
+                        }
+                    }
+                },
+                "type": "alert"
+            },
+            {
+                "attributes": {
+                    "alert_class": "dos",
+                    "alert_type": "dos_host_detection",
+                    "classification": "Possible Attack",
+                    "importance": 2,
+                    "ongoing": false,
+                    "start_time": "2021-03-30T10:00:02+00:00",
+                    "stop_time": "2021-03-30T10:10:29+00:00",
+                    "subobject": {
+                        "direction": "Incoming",
+                        "fast_detected": true,
+                        "host_address": "1.2.3.4",
+                        "impact_boundary": "managed object",
+                        "impact_bps": 1072,
+                        "impact_pps": 3,
+                        "ip_version": 4,
+                        "misuse_types": [
+                            "Total Traffic"
+                        ],
+                        "severity_percent": 10720.0,
+                        "severity_threshold": 10,
+                        "severity_unit": "bps",
+                        "summary_url": "/page?id=customer_summary&gid=122"
+                    }
+                },
+                "id": "2428",
+                "links": {
+                    "self": "https://content.demisto.works:57585/api/sp/v7/alerts/2428?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00"
+                },
+                "relationships": {
+                    "annotations": {
+                        "data": [
+                            {
+                                "id": "889",
+                                "type": "alert_annotation"
+                            }
+                        ],
+                        "links": {
+                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2428/annotations/"
+                        }
+                    },
+                    "device": {
+                        "data": {
+                            "id": "115",
+                            "type": "device"
+                        },
+                        "links": {
+                            "related": "https://content.demisto.works:57585/api/sp/v7/devices/115"
+                        }
+                    },
+                    "managed_object": {
+                        "data": {
+                            "id": "122",
+                            "type": "managed_object"
+                        },
+                        "links": {
+                            "related": "https://content.demisto.works:57585/api/sp/v7/managed_objects/122"
+                        }
+                    },
+                    "packet_size_distribution": {
+                        "data": {
+                            "id": "packet-size-distribution-2428",
+                            "type": "alert_packet_size_distribution"
+                        },
+                        "links": {
+                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2428/packet_size_distribution"
+                        }
+                    },
+                    "patterns": {
+                        "links": {
+                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2428/patterns/"
+                        }
+                    },
+                    "router_traffic": {
+                        "links": {
+                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2428/router_traffic/"
+                        }
+                    },
+                    "source_ip_addresses": {
+                        "data": {
+                            "id": "source-ip-addresses-2428",
+                            "type": "alert_source_ip_addresses"
+                        },
+                        "links": {
+                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2428/source_ip_addresses"
+                        }
+                    },
+                    "thresholds": {
+                        "links": {
+                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2428/misuse_types_thresholds/"
+                        }
+                    },
+                    "traffic": {
+                        "data": {
+                            "id": "alert-traffic-2428",
+                            "type": "alert_traffic"
+                        },
+                        "links": {
+                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2428/traffic"
+                        }
+                    }
+                },
+                "type": "alert"
+            },
+            {
+                "attributes": {
+                    "alert_class": "data",
+                    "alert_type": "flow_down",
+                    "importance": 1,
+                    "ongoing": false,
+                    "start_time": "2021-03-30T04:07:34+00:00",
+                    "stop_time": "2021-03-30T10:00:16+00:00",
+                    "subobject": {}
+                },
+                "id": "2427",
+                "links": {
+                    "self": "https://content.demisto.works:57585/api/sp/v7/alerts/2427?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00"
+                },
+                "relationships": {
+                    "device": {
+                        "data": {
+                            "id": "115",
+                            "type": "device"
+                        },
+                        "links": {
+                            "related": "https://content.demisto.works:57585/api/sp/v7/devices/115"
+                        }
+                    },
+                    "router": {
+                        "data": {
+                            "id": "121",
+                            "type": "router"
+                        },
+                        "links": {
+                            "related": "https://content.demisto.works:57585/api/sp/v7/routers/121"
+                        }
+                    }
+                },
+                "type": "alert"
+            }
+        ],
+        "links": {
+            "first": "https://content.demisto.works:57585/api/sp/v7/alerts/?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00&perPage=40&page=1",
+            "last": "https://content.demisto.works:57585/api/sp/v7/alerts/?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00&perPage=40&page=25",
+            "next": "https://content.demisto.works:57585/api/sp/v7/alerts/?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00&perPage=40&page=2",
+            "self": "https://content.demisto.works:57585/api/sp/v7/alerts/?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00&perPage=40&page=1"
+        },
+        "meta": {
+            "api": "SP",
+            "api_version": "7",
+            "sp_build_id": "KG4K",
+            "sp_version": "9.3"
+        }
+    },
+    "incident": {
+        "data": {
+            "attributes": {
+                "alert_class": "dos",
+                "alert_type": "dos_host_detection",
+                "classification": "Possible Attack",
+                "importance": 2,
+                "ongoing": false,
+                "start_time": "2021-03-07T11:00:02+00:00",
+                "stop_time": "2021-03-07T11:10:30+00:00",
+                "subobject": {
+                    "direction": "Incoming",
+                    "fast_detected": true,
+                    "host_address": "1.2.3.4",
+                    "impact_boundary": "managed object",
+                    "impact_bps": 1077,
+                    "impact_pps": 3,
+                    "ip_version": 4,
+                    "misuse_types": [
+                        "Total Traffic"
+                    ],
+                    "severity_percent": 10774.0,
+                    "severity_threshold": 10,
+                    "severity_unit": "bps",
+                    "summary_url": "/page?id=customer_summary&gid=122"
+                }
+            },
+            "id": "2009",
+            "links": {
+                "self": "https://content.demisto.works:57585/api/sp/v7/alerts/2009"
+            },
+            "relationships": {
+                "annotations": {
+                    "data": [
+                        {
+                            "id": "886",
+                            "type": "alert_annotation"
+                        },
+                        {
+                            "id": "797",
+                            "type": "alert_annotation"
+                        },
+                        {
+                            "id": "795",
+                            "type": "alert_annotation"
+                        }
+                    ],
+                    "links": {
+                        "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2009/annotations/"
+                    }
+                },
+                "device": {
+                    "data": {
+                        "id": "115",
+                        "type": "device"
+                    },
+                    "links": {
+                        "related": "https://content.demisto.works:57585/api/sp/v7/devices/115"
+                    }
+                },
+                "managed_object": {
+                    "data": {
+                        "id": "122",
+                        "type": "managed_object"
+                    },
+                    "links": {
+                        "related": "https://content.demisto.works:57585/api/sp/v7/managed_objects/122"
+                    }
+                },
+                "mitigation": {
+                    "data": [
+                        {
+                            "id": "flowspec-5",
+                            "type": "mitigation"
+                        },
+                        {
+                            "id": "flowspec-6",
+                            "type": "mitigation"
+                        }
+                    ],
+                    "links": {
+                        "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2009/mitigations/"
+                    }
+                },
+                "packet_size_distribution": {
+                    "data": {
+                        "id": "packet-size-distribution-2009",
+                        "type": "alert_packet_size_distribution"
+                    },
+                    "links": {
+                        "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2009/packet_size_distribution"
+                    }
+                },
+                "patterns": {
+                    "links": {
+                        "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2009/patterns/"
+                    }
+                },
+                "router_traffic": {
+                    "links": {
+                        "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2009/router_traffic/"
+                    }
+                },
+                "source_ip_addresses": {
+                    "data": {
+                        "id": "source-ip-addresses-2009",
+                        "type": "alert_source_ip_addresses"
+                    },
+                    "links": {
+                        "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2009/source_ip_addresses"
+                    }
+                },
+                "thresholds": {
+                    "links": {
+                        "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2009/misuse_types_thresholds/"
+                    }
+                },
+                "traffic": {
+                    "data": {
+                        "id": "alert-traffic-2009",
+                        "type": "alert_traffic"
+                    },
+                    "links": {
+                        "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2009/traffic"
+                    }
+                }
+            },
+            "type": "alert"
+        },
+        "links": {
+            "self": "https://content.demisto.works:57585/api/sp/v7/alerts/2009"
+        },
+        "meta": {
+            "api": "SP",
+            "api_version": "7",
+            "sp_build_id": "KG4K",
+            "sp_version": "9.3"
+        }
+    },
+    "annotations": {
+        "data": [
+            {
+                "attributes": {
+                    "added": "2021-03-29T18:18:13+00:00",
+                    "author": "auto-annotation",
+                    "text": "Flowspec mitigation 'testMit2' started"
+                },
+                "id": "886",
+                "relationships": {
+                    "parent": {
+                        "data": {
+                            "id": "2009",
+                            "type": "alert"
+                        },
+                        "links": {
+                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2009"
+                        }
+                    }
+                },
+                "type": "alert_annotation"
+            },
+            {
+                "attributes": {
+                    "added": "2021-03-07T19:09:05+00:00",
+                    "author": "auto-annotation",
+                    "text": "Flowspec mitigation 'testMit' started"
+                },
+                "id": "797",
+                "relationships": {
+                    "parent": {
+                        "data": {
+                            "id": "2009",
+                            "type": "alert"
+                        },
+                        "links": {
+                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2009"
+                        }
+                    }
+                },
+                "type": "alert_annotation"
+            },
+            {
+                "attributes": {
+                    "added": "2021-03-07T11:00:02+00:00",
+                    "author": "auto-annotation",
+                    "text": "This alert was generated due to fast flood detection. The 'Total Traffic' host alert signature has been triggered at router 'Traffic-PCAP-CentOS'. (expected rate: 5 bps/50.00 Kpps, observed rate: 11 bps/0 pps)"
+                },
+                "id": "795",
+                "relationships": {
+                    "parent": {
+                        "data": {
+                            "id": "2009",
+                            "type": "alert"
+                        },
+                        "links": {
+                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2009"
+                        }
+                    }
+                },
+                "type": "alert_annotation"
+            }
+        ],
+        "links": {
+            "self": "https://content.demisto.works:57585/api/sp/v7/alerts/2009/annotations/"
+        },
+        "meta": {
+            "api": "SP",
+            "api_version": "7",
+            "sp_build_id": "KG4K",
+            "sp_version": "9.3"
+        }
+    },
+    "mitigations": {
+        "data": [
+            {
+                "attributes": {
+                    "description": "just desc",
+                    "ip_version": 6,
+                    "is_automitigation": false,
+                    "name": "testMit2",
+                    "ongoing": true,
+                    "start": "2021-03-29T18:18:08.699990+00:00",
+                    "subobject": {
+                        "action": {
+                            "type": "accept"
+                        },
+                        "bgp_communities": [],
+                        "l3vpn_route_distinguisher": "",
+                        "l3vpn_route_targets": []
+                    },
+                    "subtype": "flowspec",
+                    "user": "demisto"
+                },
+                "id": "flowspec-6",
+                "links": {
+                    "self": "https://content.demisto.works:57585/api/sp/v7/mitigations/flowspec-6"
+                },
+                "relationships": {
+                    "alert": {
+                        "data": {
+                            "id": "2009",
+                            "type": "alert"
+                        },
+                        "links": {
+                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2009"
+                        }
+                    },
+                    "managed_object": {
+                        "data": {
+                            "id": "122",
+                            "type": "managed_object"
+                        },
+                        "links": {
+                            "related": "https://content.demisto.works:57585/api/sp/v7/managed_objects/122"
+                        }
+                    },
+                    "routers": {
+                        "data": [],
+                        "links": {
+                            "related": "https://content.demisto.works:57585/api/sp/v7/routers/"
+                        }
+                    }
+                },
+                "type": "mitigation"
+            },
+            {
+                "attributes": {
+                    "description": "just desc",
+                    "ip_version": 6,
+                    "is_automitigation": false,
+                    "name": "testMit",
+                    "ongoing": true,
+                    "start": "2021-03-07T19:09:03.895220+00:00",
+                    "subobject": {
+                        "action": {
+                            "type": "accept"
+                        },
+                        "bgp_communities": [],
+                        "l3vpn_route_distinguisher": "",
+                        "l3vpn_route_targets": []
+                    },
+                    "subtype": "flowspec",
+                    "user": "demisto"
+                },
+                "id": "flowspec-5",
+                "links": {
+                    "self": "https://content.demisto.works:57585/api/sp/v7/mitigations/flowspec-5"
+                },
+                "relationships": {
+                    "alert": {
+                        "data": {
+                            "id": "2009",
+                            "type": "alert"
+                        },
+                        "links": {
+                            "related": "https://content.demisto.works:57585/api/sp/v7/alerts/2009"
+                        }
+                    },
+                    "managed_object": {
+                        "data": {
+                            "id": "122",
+                            "type": "managed_object"
+                        },
+                        "links": {
+                            "related": "https://content.demisto.works:57585/api/sp/v7/managed_objects/122"
+                        }
+                    },
+                    "routers": {
+                        "data": [],
+                        "links": {
+                            "related": "https://content.demisto.works:57585/api/sp/v7/routers/"
+                        }
+                    }
+                },
+                "type": "mitigation"
+            }
+        ],
+        "links": {
+            "first": "https://content.demisto.works:57585/api/sp/v7/mitigations/?perPage=50&page=1",
+            "last": "https://content.demisto.works:57585/api/sp/v7/mitigations/?perPage=50&page=1",
+            "self": "https://content.demisto.works:57585/api/sp/v7/mitigations/?perPage=50&page=1"
+        },
+        "meta": {
+            "api": "SP",
+            "api_version": "7",
+            "sp_build_id": "KG4K",
+            "sp_version": "9.3"
+        }
+    },
+    "mitigation": {
+        "meta": {
+            "sp_version": "9.3",
+            "api": "SP",
+            "api_version": "7",
+            "sp_build_id": "KG4K"
+        },
+        "data": {
+            "relationships": {
+                "routers": {
+                    "data": [],
+                    "links": {
+                        "related": "https://content.demisto.works:57585/api/sp/v7/routers/"
+                    }
+                }
+            },
+            "attributes": {
+                "description": "just desc",
+                "subtype": "flowspec",
+                "start": "2021-04-03T16:16:11.397680+00:00",
+                "ongoing": true,
+                "user": "demisto",
+                "ip_version": 4,
+                "subobject": {
+                    "action": {
+                        "type": "accept"
+                    },
+                    "l3vpn_route_distinguisher": "",
+                    "bgp_communities": [],
+                    "l3vpn_route_targets": []
+                },
+                "is_automitigation": false,
+                "name": "test_mit"
+            },
+            "type": "mitigation",
+            "id": "flowspec-8",
+            "links": {
+                "self": "https://content.demisto.works:57585/api/sp/v7/mitigations/flowspec-8"
+            }
+        },
+        "links": {
+            "self": "https://content.demisto.works:57585/api/sp/v7/mitigations/flowspec-8"
+        }
+    },
+    "mitigation_templates": {
+        "data": [
+            {
+                "attributes": {
+                    "description": "Default mitigation values inherited by all new IPv4 mitigations (unless otherwise scoped)",
+                    "ip_version": 4,
+                    "name": "Default IPv4",
+                    "subobject": {
+                        "aif_http_url_regexp": {
+                            "aif_http_level": "low",
+                            "blacklist_on_blocked": true
+                        },
+                        "bgp_announce": true,
+                        "black_white_lists": {
+                            "blacklist_sources": false,
+                            "blacklist_sources_locked": true
+                        },
+                        "diversion_prefix_locked": true,
+                        "diversion_prefix_mode": "disabled",
+                        "diversion_prefixes": [
+                            ""
+                        ],
+                        "dns_auth": {
+                            "enabled": true,
+                            "locked": true,
+                            "timeout": 60
+                        },
+                        "dns_malformed": {
+                            "enabled": true,
+                            "locked": true
+                        },
+                        "dns_object_ratelimiting": {
+                            "blacklist_enabled": false,
+                            "enabled": false,
+                            "limit": 100,
+                            "locked": true
+                        },
+                        "dns_regex": {
+                            "match_direction": "query",
+                            "match_direction_locked": true
+                        },
+                        "dns_scoping": {
+                            "apply_on_match": true,
+                            "enabled": false
+                        },
+                        "http_malformed": {
+                            "enabled": true,
+                            "level": "low",
+                            "locked": true
+                        },
+                        "http_object": {
+                            "enabled": true,
+                            "limit": 10,
+                            "locked": true
+                        },
+                        "http_request": {
+                            "enabled": true,
+                            "limit": 100,
+                            "locked": true
+                        },
+                        "http_scoping": {
+                            "apply_on_match": true,
+                            "enabled": false
+                        },
+                        "ip_address_filterlist": {
+                            "blacklist_sources": true,
+                            "blacklist_sources_locked": true
+                        },
+                        "ip_location_filterlist": {
+                            "drop_matched_or_unmatched": "matched"
+                        },
+                        "packet_header_filtering": {
+                            "locked": true
+                        },
+                        "payload": {
+                            "blacklist_hosts": false,
+                            "match_src_port": false,
+                            "match_src_port_locked": false
+                        },
+                        "per_connection_flood_protection": {
+                            "enabled": false,
+                            "enforcement": "block",
+                            "locked": true,
+                            "maximum_bps": 0,
+                            "maximum_pps": 0
+                        },
+                        "protection_prefixes": [
+                            ""
+                        ],
+                        "protocol_baselines": {
+                            "locked": true
+                        },
+                        "sip_malformed": {
+                            "enabled": true,
+                            "locked": true
+                        },
+                        "sip_request_limiting": {
+                            "enabled": true,
+                            "limit": 100,
+                            "locked": true
+                        },
+                        "tcp_connection_limiting": {
+                            "blacklist": true,
+                            "enabled": false,
+                            "ignore_idle": true,
+                            "locked": true
+                        },
+                        "tcp_connection_reset": {
+                            "enabled": true,
+                            "locked": true,
+                            "slow_application_bitrate_interval": 60,
+                            "slow_application_header_time": 60,
+                            "slow_application_request_bitrate": 200,
+                            "timeout": 90,
+                            "track_long_lived": true
+                        },
+                        "tcp_syn_auth": {
+                            "enabled": true,
+                            "idle_timeout": 60,
+                            "locked": true
+                        },
+                        "tls_negotiation": {
+                            "clients_can_alert": true,
+                            "max_cipher_suites": 100,
+                            "max_early_close": 25,
+                            "max_extensions": 25,
+                            "max_pend_secs": 30,
+                            "min_pend_secs": 15
+                        },
+                        "udp_reflection_amp": {
+                            "auto_transfer_misuse": false,
+                            "auto_transfer_misuse_dns": false,
+                            "blacklist_enabled": true,
+                            "dns": {
+                                "match_fcap": "bytes 2049..65535"
+                            },
+                            "enabled": false,
+                            "locked": true
+                        },
+                        "udp_session_auth": {
+                            "enabled": false,
+                            "idle_session_timer": 60,
+                            "in_progress_period": 60,
+                            "locked": false,
+                            "retransmission_timer": 5
+                        },
+                        "zombie_detection": {
+                            "all_hosts": {
+                                "thresholds": {
+                                    "bps": 2000000,
+                                    "pps": 500
+                                }
+                            },
+                            "enabled": true,
+                            "locked": true
+                        }
+                    },
+                    "subtype": "tms",
+                    "system": true
+                },
+                "id": "1",
+                "links": {
+                    "self": "https://content.demisto.works:57585/api/sp/v7/mitigation_templates/1"
+                },
+                "relationships": {
+                    "tms_group": {
+                        "data": {
+                            "id": "3",
+                            "type": "tms_group"
+                        },
+                        "links": {
+                            "related": "https://content.demisto.works:57585/api/sp/v7/tms_groups/3"
+                        }
+                    }
+                },
+                "type": "mitigation_template"
+            },
+            {
+                "attributes": {
+                    "description": "Auto-Mitigation template use by default for all IPv4 auto-mitigations. Auto-mitigation must be enabled for the managed object.",
+                    "ip_version": 4,
+                    "name": "Auto-Mitigation IPv4",
+                    "subobject": {
+                        "aif_http_url_regexp": {
+                            "aif_http_level": "low"
+                        },
+                        "bgp_announce": true,
+                        "black_white_lists": {
+                            "blacklist_sources": false,
+                            "blacklist_sources_locked": true
+                        },
+                        "diversion_prefix_locked": true,
+                        "diversion_prefix_mode": "disabled",
+                        "diversion_prefixes": [
+                            ""
+                        ],
+                        "dns_auth": {
+                            "enabled": true,
+                            "locked": true,
+                            "timeout": 60
+                        },
+                        "dns_malformed": {
+                            "enabled": true,
+                            "locked": true
+                        },
+                        "dns_object_ratelimiting": {
+                            "blacklist_enabled": false,
+                            "enabled": false,
+                            "limit": 100,
+                            "locked": true
+                        },
+                        "dns_regex": {
+                            "match_direction": "query",
+                            "match_direction_locked": true
+                        },
+                        "dns_scoping": {
+                            "apply_on_match": true,
+                            "enabled": false
+                        },
+                        "http_malformed": {
+                            "enabled": true,
+                            "level": "low",
+                            "locked": true
+                        },
+                        "http_object": {
+                            "enabled": true,
+                            "limit": 10,
+                            "locked": true
+                        },
+                        "http_request": {
+                            "enabled": true,
+                            "limit": 100,
+                            "locked": true
+                        },
+                        "http_scoping": {
+                            "apply_on_match": true,
+                            "enabled": false
+                        },
+                        "ip_address_filterlist": {
+                            "blacklist_sources": true,
+                            "blacklist_sources_locked": true
+                        },
+                        "ip_location_filterlist": {
+                            "drop_matched_or_unmatched": "matched"
+                        },
+                        "packet_header_filtering": {
+                            "locked": true
+                        },
+                        "payload": {
+                            "blacklist_hosts": false,
+                            "match_src_port": false,
+                            "match_src_port_locked": false
+                        },
+                        "per_connection_flood_protection": {
+                            "enabled": false,
+                            "enforcement": "block",
+                            "locked": true,
+                            "maximum_bps": 0,
+                            "maximum_pps": 0
+                        },
+                        "protection_prefixes": [
+                            ""
+                        ],
+                        "protocol_baselines": {
+                            "locked": true
+                        },
+                        "shaping": {
+                            "enabled": false,
+                            "locked": true
+                        },
+                        "sip_malformed": {
+                            "enabled": true,
+                            "locked": true
+                        },
+                        "sip_request_limiting": {
+                            "enabled": true,
+                            "limit": 100,
+                            "locked": true
+                        },
+                        "tcp_connection_limiting": {
+                            "blacklist": true,
+                            "enabled": false,
+                            "ignore_idle": true,
+                            "locked": true
+                        },
+                        "tcp_connection_reset": {
+                            "enabled": true,
+                            "locked": true,
+                            "timeout": 90
+                        },
+                        "tcp_syn_auth": {
+                            "enabled": true,
+                            "idle_timeout": 60,
+                            "locked": true
+                        },
+                        "tls_negotiation": {
+                            "clients_can_alert": true,
+                            "max_cipher_suites": 100,
+                            "max_early_close": 25,
+                            "max_extensions": 25,
+                            "max_pend_secs": 30,
+                            "min_pend_secs": 15
+                        },
+                        "udp_reflection_amp": {
+                            "auto_transfer_misuse": false,
+                            "auto_transfer_misuse_dns": false,
+                            "blacklist_enabled": true,
+                            "chargen": {
+                                "enabled": true
+                            },
+                            "cldap": {
+                                "enabled": true
+                            },
+                            "dns": {
+                                "match_fcap": "bytes 2049..65535"
+                            },
+                            "enabled": true,
+                            "l2tp": {
+                                "enabled": true
+                            },
+                            "locked": true,
+                            "mdns": {
+                                "enabled": true
+                            },
+                            "memcached": {
+                                "enabled": true
+                            },
+                            "mssqlrs": {
+                                "enabled": true
+                            },
+                            "netbios": {
+                                "enabled": true
+                            },
+                            "ntp": {
+                                "enabled": true
+                            },
+                            "ripv1": {
+                                "enabled": true
+                            },
+                            "rpcbind": {
+                                "enabled": true
+                            },
+                            "snmp": {
+                                "enabled": true
+                            },
+                            "ssdp": {
+                                "enabled": true
+                            }
+                        },
+                        "udp_session_auth": {
+                            "enabled": false,
+                            "idle_session_timer": 60,
+                            "in_progress_period": 60,
+                            "locked": false,
+                            "retransmission_timer": 5
+                        },
+                        "zombie_detection": {
+                            "all_hosts": {
+                                "thresholds": {
+                                    "bps": 2000000,
+                                    "pps": 500
+                                }
+                            },
+                            "enabled": true,
+                            "locked": true
+                        }
+                    },
+                    "subtype": "tms",
+                    "system": true
+                },
+                "id": "2",
+                "links": {
+                    "self": "https://content.demisto.works:57585/api/sp/v7/mitigation_templates/2"
+                },
+                "relationships": {
+                    "tms_group": {
+                        "data": {
+                            "id": "3",
+                            "type": "tms_group"
+                        },
+                        "links": {
+                            "related": "https://content.demisto.works:57585/api/sp/v7/tms_groups/3"
+                        }
+                    }
+                },
+                "type": "mitigation_template"
+            },
+            {
+                "attributes": {
+                    "description": "Template contains countermeasures that support TMS deployments focused on VoIP Gateway Flood Protection",
+                    "ip_version": 4,
+                    "name": "VoIP Gateway Protection",
+                    "subobject": {
+                        "aif_http_url_regexp": {
+                            "aif_http_level": "low",
+                            "regexp_locked": false
+                        },
+                        "bgp_announce": true,
+                        "black_white_lists": {
+                            "blacklist_sources": false,
+                            "blacklist_sources_locked": true,
+                            "inline_filters": [
+                                "drop (proto icmp or proto tcp)"
+                            ]
+                        },
+                        "diversion_prefix_locked": true,
+                        "diversion_prefix_mode": "disabled",
+                        "diversion_prefixes": [
+                            ""
+                        ],
+                        "dns_object_ratelimiting": {
+                            "blacklist_enabled": false,
+                            "enabled": false,
+                            "limit": 100,
+                            "locked": true
+                        },
+                        "dns_regex": {
+                            "match_direction": "query",
+                            "match_direction_locked": true
+                        },
+                        "dns_scoping": {
+                            "apply_on_match": true,
+                            "enabled": false
+                        },
+                        "http_malformed": {
+                            "level": "low",
+                            "locked": false
+                        },
+                        "http_scoping": {
+                            "apply_on_match": true,
+                            "enabled": false
+                        },
+                        "ip_address_filterlist": {
+                            "blacklist_sources": true,
+                            "blacklist_sources_locked": true
+                        },
+                        "ip_location_filterlist": {
+                            "drop_matched_or_unmatched": "matched"
+                        },
+                        "packet_header_filtering": {
+                            "locked": true
+                        },
+                        "payload": {
+                            "blacklist_hosts": false,
+                            "match_src_port": false,
+                            "match_src_port_locked": false,
+                            "other_ip_protocols_locked": false,
+                            "regexp_uri_locked": false,
+                            "tcp_ports_locked": false,
+                            "udp_ports_locked": false
+                        },
+                        "per_connection_flood_protection": {
+                            "enabled": false,
+                            "enforcement": "block",
+                            "locked": true,
+                            "maximum_bps": 0,
+                            "maximum_pps": 0
+                        },
+                        "protection_prefixes": [
+                            ""
+                        ],
+                        "sip_malformed": {
+                            "enabled": true,
+                            "locked": true
+                        },
+                        "tcp_connection_limiting": {
+                            "blacklist": true,
+                            "enabled": false,
+                            "ignore_idle": true,
+                            "locked": true
+                        },
+                        "tls_negotiation": {
+                            "clients_can_alert": true,
+                            "max_cipher_suites": 100,
+                            "max_early_close": 25,
+                            "max_extensions": 25,
+                            "max_pend_secs": 30,
+                            "min_pend_secs": 15
+                        },
+                        "udp_reflection_amp": {
+                            "auto_transfer_misuse": false,
+                            "auto_transfer_misuse_dns": false,
+                            "blacklist_enabled": true,
+                            "dns": {
+                                "match_fcap": "bytes 2049..65535"
+                            },
+                            "enabled": false,
+                            "locked": true
+                        },
+                        "udp_session_auth": {
+                            "enabled": false,
+                            "idle_session_timer": 60,
+                            "in_progress_period": 60,
+                            "locked": false,
+                            "retransmission_timer": 5
+                        },
+                        "zombie_detection": {
+                            "all_hosts": {
+                                "thresholds": {
+                                    "bps": 500000,
+                                    "pps": 20
+                                }
+                            },
+                            "enabled": true
+                        }
+                    },
+                    "subtype": "tms",
+                    "system": true
+                },
+                "id": "3",
+                "links": {
+                    "self": "https://content.demisto.works:57585/api/sp/v7/mitigation_templates/3"
+                },
+                "relationships": {
+                    "tms_group": {
+                        "data": {
+                            "id": "3",
+                            "type": "tms_group"
+                        },
+                        "links": {
+                            "related": "https://content.demisto.works:57585/api/sp/v7/tms_groups/3"
+                        }
+                    }
+                },
+                "type": "mitigation_template"
+            }
+        ],
+        "links": {
+            "self": "https://content.demisto.works:57585/api/sp/v7/mitigation_templates/"
+        },
+        "meta": {
+            "api": "SP",
+            "api_version": "7",
+            "sp_build_id": "KG4K",
+            "sp_version": "9.3"
+        }
+    },
+    "routers": {
+        "data": [
+            {
+                "attributes": {
+                    "advanced_fallback_alg": "internal",
+                    "advanced_use_simpson_flowspec_redirect_ip": false,
+                    "bgp2_capabilities_labeled_unicast": false,
+                    "bgp_capabilities_l3vpn_flowspec_ipv4": false,
+                    "bgp_capabilities_l3vpn_flowspec_ipv6": false,
+                    "bgp_capabilities_labeled_unicast": false,
+                    "description": "Traffic-PCAP-CentOS - 192.168.1.116",
+                    "flow_alerting": true,
+                    "flow_export_ip": "192.168.1.116",
+                    "flow_flow_ignored": "off",
+                    "flow_flow_ignored_ipv6": "off",
+                    "flow_sample_rate": "1",
+                    "is_proxy": false,
+                    "license_type": "core",
+                    "name": "Traffic-PCAP-CentOS",
+                    "snmp_authprotocol": "md5",
+                    "snmp_priv_protocol": "DES",
+                    "snmp_security_level": "noAuthNoPriv",
+                    "snmp_version": 2
+                },
+                "id": "121",
+                "links": {
+                    "self": "https://content.demisto.works:57585/api/sp/v7/routers/121"
+                },
+                "relationships": {
+                    "collector_gid": {
+                        "data": {
+                            "id": "115",
+                            "type": "device"
+                        },
+                        "links": {
+                            "related": "https://content.demisto.works:57585/api/sp/v7/devices/115"
+                        }
+                    }
+                },
+                "type": "router"
+            },
+            {
+                "attributes": {
+                    "advanced_fallback_alg": "internal",
+                    "advanced_local_as": "44",
+                    "advanced_use_simpson_flowspec_redirect_ip": false,
+                    "bgp2_capabilities_labeled_unicast": false,
+                    "bgp_capabilities_flowspec": true,
+                    "bgp_capabilities_flowspec_ipv4": true,
+                    "bgp_capabilities_l3vpn_flowspec_ipv4": false,
+                    "bgp_capabilities_l3vpn_flowspec_ipv6": false,
+                    "bgp_capabilities_labeled_unicast": false,
+                    "bgp_capabilities_monitor_routes_ipv4": "primary",
+                    "bgp_ip_address": "192.168.1.124",
+                    "bgp_remote_as": "4",
+                    "bgp_session_name": "NetscoutProfile",
+                    "description": "To Netscout PANW FW Router",
+                    "flow_alerting": true,
+                    "flow_flow_ignored": "off",
+                    "flow_flow_ignored_ipv6": "off",
+                    "is_proxy": false,
+                    "license_type": "core",
+                    "name": "PANW-FW_Netscout",
+                    "snmp_authprotocol": "md5",
+                    "snmp_priv_protocol": "DES",
+                    "snmp_security_level": "noAuthNoPriv",
+                    "snmp_version": 2
+                },
+                "id": "186",
+                "links": {
+                    "self": "https://content.demisto.works:57585/api/sp/v7/routers/186"
+                },
+                "relationships": {
+                    "collector_gid": {
+                        "data": {
+                            "id": "115",
+                            "type": "device"
+                        },
+                        "links": {
+                            "related": "https://content.demisto.works:57585/api/sp/v7/devices/115"
+                        }
+                    }
+                },
+                "type": "router"
+            }
+        ],
+        "links": {
+            "self": "https://content.demisto.works:57585/api/sp/v7/routers/"
+        },
+        "meta": {
+            "api": "SP",
+            "api_version": "7",
+            "sp_build_id": "KG4K",
+            "sp_version": "9.3"
+        }
+    },
+    "managed_objects": {
+        "data": [
+            {
+                "attributes": {
+                    "autodetected": false,
+                    "automitigation_precise_protection_prefixes": false,
+                    "automitigation_precise_protection_prefixes_mit_on_query_failure": false,
+                    "custom_shared_host_detection_setting": true,
+                    "detection_network_country_enabled": false,
+                    "detection_network_enabled": false,
+                    "detection_profiled_autorate": false,
+                    "detection_profiled_enabled": false,
+                    "detection_profiled_fast_flood_enabled": false,
+                    "detection_profiled_outgoing_enabled": true,
+                    "detection_profiled_severity_duration": 300,
+                    "detection_profiled_severity_snmp_enabled": false,
+                    "detection_profiled_threshold_bandwidth": 2,
+                    "detection_profiled_threshold_packet_rate": 2,
+                    "detection_profiled_threshold_protocol": 2,
+                    "dynamic_match_enabled": false,
+                    "editable": true,
+                    "family": "customer",
+                    "match": "1.2.3.4/32",
+                    "match_enabled": true,
+                    "match_type": "cidr_blocks",
+                    "mitigation_automitigation": false,
+                    "mitigation_automitigation_stop_event": "after_alert_ends",
+                    "mitigation_automitigation_stop_minutes": 0,
+                    "mitigation_automitigation_tms_enabled": false,
+                    "mitigation_blackhole_auto_enabled": false,
+                    "mitigation_flowspec_auto_enabled": false,
+                    "name": "TestMO1",
+                    "num_children": 0,
+                    "parent_editable": false,
+                    "scrub_insight_mo_match": false,
+                    "tags": [
+                        "customer"
+                    ]
+                },
+                "id": "122",
+                "links": {
+                    "self": "https://content.demisto.works:57585/api/sp/v7/managed_objects/122"
+                },
+                "relationships": {
+                    "dynamic_match_values": {
+                        "data": {
+                            "id": "122",
+                            "type": "managed_object_dynamic_match_values"
+                        },
+                        "links": {
+                            "related": "https://content.demisto.works:57585/api/sp/v7/managed_objects/122/dynamic_match_values"
+                        }
+                    },
+                    "mitigation_templates_auto_ipv4": {
+                        "data": {
+                            "id": "2",
+                            "type": "mitigation_template"
+                        },
+                        "links": {
+                            "related": "https://content.demisto.works:57585/api/sp/v7/mitigation_templates/2"
+                        }
+                    },
+                    "mitigation_templates_auto_ipv6": {
+                        "data": {
+                            "id": "9",
+                            "type": "mitigation_template"
+                        },
+                        "links": {
+                            "related": "https://content.demisto.works:57585/api/sp/v7/mitigation_templates/9"
+                        }
+                    },
+                    "mitigation_templates_manual_ipv4": {
+                        "data": {
+                            "id": "1",
+                            "type": "mitigation_template"
+                        },
+                        "links": {
+                            "related": "https://content.demisto.works:57585/api/sp/v7/mitigation_templates/1"
+                        }
+                    },
+                    "mitigation_templates_manual_ipv6": {
+                        "data": {
+                            "id": "8",
+                            "type": "mitigation_template"
+                        },
+                        "links": {
+                            "related": "https://content.demisto.works:57585/api/sp/v7/mitigation_templates/8"
+                        }
+                    },
+                    "shared_host_detection_settings": {
+                        "data": {
+                            "id": "100",
+                            "type": "shared_host_detection_settings"
+                        },
+                        "links": {
+                            "related": "https://content.demisto.works:57585/api/sp/v7/shared_host_detection_settings/100"
+                        }
+                    }
+                },
+                "type": "managed_object"
+            }
+        ],
+        "links": {
+            "first": "https://content.demisto.works:57585/api/sp/v7/managed_objects/?perPage=50&page=1",
+            "last": "https://content.demisto.works:57585/api/sp/v7/managed_objects/?perPage=50&page=1",
+            "self": "https://content.demisto.works:57585/api/sp/v7/managed_objects/?perPage=50&page=1"
+        },
+        "meta": {
+            "api": "SP",
+            "api_version": "7",
+            "sp_build_id": "KG4K",
+            "sp_version": "9.3"
+        }
+    },
+    "tms_groups": {
+        "data": [
+            {
+                "attributes": {
+                    "bgp_communities": [],
+                    "check_available_bw": true,
+                    "check_bgp_peering": true,
+                    "check_group_allup": true,
+                    "default_bgp_offramp": true,
+                    "description": "Default all mitigation group. Mitigations will use all ports on all configured TMS devices.",
+                    "dns_auth_active_secondary_servers": [],
+                    "fail_open": false,
+                    "flowspec_communities": [],
+                    "flowspec_offramp": "",
+                    "flowspec_redirect_ipv4_destination": "",
+                    "flowspec_redirect_ipv4_type": "",
+                    "flowspec_redirect_ipv6_destination": "",
+                    "flowspec_redirect_ipv6_type": "",
+                    "l3vpn_flowspec_ipv4_route_distinguisher": "",
+                    "l3vpn_flowspec_ipv4_route_targets": [],
+                    "l3vpn_flowspec_ipv6_route_distinguisher": "",
+                    "l3vpn_flowspec_ipv6_route_targets": [],
+                    "member_limits_differ": false,
+                    "mitigation_orchestration": {
+                        "bandwidth_threshold_percent": 85,
+                        "enabled": false
+                    },
+                    "name": "All",
+                    "nexthop": "",
+                    "nexthop_v6": "",
+                    "system": true,
+                    "tms_group_type": ""
+                },
+                "id": "3",
+                "links": {
+                    "self": "https://content.demisto.works:57585/api/sp/v7/tms_groups/3"
+                },
+                "relationships": {
+                    "tms_ports": {
+                        "data": [
+                            {
+                                "id": "170",
+                                "type": "tms_port"
+                            },
+                            {
+                                "id": "171",
+                                "type": "tms_port"
+                            },
+                            {
+                                "id": "172",
+                                "type": "tms_port"
+                            },
+                            {
+                                "id": "173",
+                                "type": "tms_port"
+                            },
+                            {
+                                "id": "174",
+                                "type": "tms_port"
+                            },
+                            {
+                                "id": "175",
+                                "type": "tms_port"
+                            },
+                            {
+                                "id": "176",
+                                "type": "tms_port"
+                            },
+                            {
+                                "id": "177",
+                                "type": "tms_port"
+                            },
+                            {
+                                "id": "178",
+                                "type": "tms_port"
+                            },
+                            {
+                                "id": "179",
+                                "type": "tms_port"
+                            },
+                            {
+                                "id": "180",
+                                "type": "tms_port"
+                            },
+                            {
+                                "id": "181",
+                                "type": "tms_port"
+                            },
+                            {
+                                "id": "182",
+                                "type": "tms_port"
+                            },
+                            {
+                                "id": "183",
+                                "type": "tms_port"
+                            },
+                            {
+                                "id": "184",
+                                "type": "tms_port"
+                            },
+                            {
+                                "id": "185",
+                                "type": "tms_port"
+                            }
+                        ],
+                        "links": {
+                            "related": "https://content.demisto.works:57585/api/sp/v7/tms_ports/"
+                        }
+                    }
+                },
+                "type": "tms_group"
+            }
+        ],
+        "links": {
+            "self": "https://content.demisto.works:57585/api/sp/v7/tms_groups/"
+        },
+        "meta": {
+            "api": "SP",
+            "api_version": "7",
+            "sp_build_id": "KG4K",
+            "sp_version": "9.3"
+        }
+    },
+    "amount_of_incidents_vanilla_case": {
+        "data": [
+            {
+                "attributes": {
+                    "alert_class": "system",
+                    "alert_type": "device_system_error",
+                    "importance": 1,
+                    "ongoing": true,
+                    "start_time": "2021-04-04T05:41:15+00:00",
+                    "subobject": {
+                        "threshold": 70,
+                        "type": "memory_usage",
+                        "value": 71
+                    }
+                },
+                "id": "2468",
+                "links": {
+                    "self": "https://content.demisto.works:57585/api/sp/v7/alerts/2468?filter=%2Fdata%2Fattributes%2Fstart_time%3E2021-04-01T06%3A51%3A50.577153"
+                },
+                "relationships": {
+                    "device": {
+                        "data": {
+                            "id": "115",
+                            "type": "device"
+                        },
+                        "links": {
+                            "related": "https://content.demisto.works:57585/api/sp/v7/devices/115"
+                        }
+                    }
+                },
+                "type": "alert"
+            }
+        ],
+        "links": {
+            "first": "https://content.demisto.works:57585/api/sp/v7/alerts/?filter=%2Fdata%2Fattributes%2Fstart_time%3E2021-04-01T06%3A51%3A50.577153&perPage=1&page=1",
+            "last": "https://content.demisto.works:57585/api/sp/v7/alerts/?filter=%2Fdata%2Fattributes%2Fstart_time%3E2021-04-01T06%3A51%3A50.577153&perPage=1&page=25",
+            "next": "https://content.demisto.works:57585/api/sp/v7/alerts/?filter=%2Fdata%2Fattributes%2Fstart_time%3E2021-04-01T06%3A51%3A50.577153&perPage=1&page=2",
+            "self": "https://content.demisto.works:57585/api/sp/v7/alerts/?filter=%2Fdata%2Fattributes%2Fstart_time%3E2021-04-01T06%3A51%3A50.577153&perPage=1&page=1"
+        },
+        "meta": {
+            "api": "SP",
+            "api_version": "7",
+            "sp_build_id": "KG4K",
+            "sp_version": "9.3"
+        }
+    },
+    "amount_of_incidents_one_result": {
+        "data": [
+            {
+                "attributes": {
+                    "alert_class": "system",
+                    "alert_type": "device_system_error",
+                    "importance": 1,
+                    "ongoing": true,
+                    "start_time": "2021-04-04T05:41:15+00:00",
+                    "subobject": {
+                        "threshold": 70,
+                        "type": "memory_usage",
+                        "value": 71
+                    }
+                },
+                "id": "2468",
+                "links": {
+                    "self": "https://content.demisto.works:57585/api/sp/v7/alerts/2468?filter=%2Fdata%2Fattributes%2Fstart_time%3E2021-04-01T06%3A51%3A50.577153"
+                },
+                "relationships": {
+                    "device": {
+                        "data": {
+                            "id": "115",
+                            "type": "device"
+                        },
+                        "links": {
+                            "related": "https://content.demisto.works:57585/api/sp/v7/devices/115"
+                        }
+                    }
+                },
+                "type": "alert"
+            }
+        ],
+        "links": {
+            "first": "https://content.demisto.works:57585/api/sp/v7/alerts/?filter=%2Fdata%2Fattributes%2Fstart_time%3E2021-04-01T06%3A51%3A50.577153&perPage=1&page=1",
+            "last": "https://content.demisto.works:57585/api/sp/v7/alerts/?filter=%2Fdata%2Fattributes%2Fstart_time%3E2021-04-01T06%3A51%3A50.577153&perPage=1&page=1",
+            "self": "https://content.demisto.works:57585/api/sp/v7/alerts/?filter=%2Fdata%2Fattributes%2Fstart_time%3E2021-04-01T06%3A51%3A50.577153&perPage=1&page=1"
+        },
+        "meta": {
+            "api": "SP",
+            "api_version": "7",
+            "sp_build_id": "KG4K",
+            "sp_version": "9.3"
+        }
+    },
+    "amount_of_incidents_no_results": {
+    "data": [],
+    "links": {
+        "first": "https://content.demisto.works:57585/api/sp/v7/alerts/?filter=%2Fdata%2Fattributes%2Fstart_time%3E2021-04-04T10%3A00%3A02%2B00%3A00&perPage=1&page=1",
+        "self": "https://content.demisto.works:57585/api/sp/v7/alerts/?filter=%2Fdata%2Fattributes%2Fstart_time%3E2021-04-04T10%3A00%3A02%2B00%3A00&perPage=1&page=1"
+    },
+    "meta": {
+        "api": "SP",
+        "api_version": "7",
+        "sp_build_id": "KG4K",
+        "sp_version": "9.3"
+    }
+},
+    "amount_of_incidents_broken_last_page": {
+    "data": [],
+    "links": {
+        "first": "https://content.demisto.works:57585/api/sp/v7/alerts/?filter=%2Fdata%2Fattributes%2Fstart_time%3E2021-04-04T10%3A00%3A02%2B00%3A00&perPage=1&page=1",
+        "last": "https://content.demisto.works:57585/api/sp/v7/alerts/?filter=%2Fdata%2Fattributes%2Fstart_time%3E2021-04-04T10%3A00%3A02%2B00%3A00",
+        "self": "https://content.demisto.works:57585/api/sp/v7/alerts/?filter=%2Fdata%2Fattributes%2Fstart_time%3E2021-04-04T10%3A00%3A02%2B00%3A00&perPage=1&page=1"
+    },
+    "meta": {
+        "api": "SP",
+        "api_version": "7",
+        "sp_build_id": "KG4K",
+        "sp_version": "9.3"
+    }
+}
+}

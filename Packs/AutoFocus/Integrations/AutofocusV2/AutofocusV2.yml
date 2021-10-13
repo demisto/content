@@ -3,10 +3,25 @@ commonfields:
   id: AutoFocus V2
   version: -1
 configuration:
-- display: API Key
+- additionalinfo: TIM customers that upgraded to version 6.2 or above, can have this value pre-configured in their main account so no additional input is needed. To use this feature, upgrade your license so it includes the license key.
+  display: API Key
   name: api_key
-  required: true
+  required: false
   type: 4
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: B - Usually reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -15,22 +30,51 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: Suppress errors for non found indicators
+  name: handle_error
+  required: false
+  defaultvalue: true
+  type: 8
 - display: Additional malicious verdicts
   name: mark_as_malicious
   required: false
   type: 0
-description: Use the Palo Alto Networks AutoFocus integration to distinguish the most important threats from everyday commodity attacks.
+- additionalinfo: Create relationships between indicators as part of Enrichment.
+  defaultvalue: 'true'
+  display: Create relationships
+  name: create_relationships
+  required: false
+  type: 8
+description: Use the Palo Alto Networks AutoFocus integration to distinguish the most
+  important threats from everyday commodity attacks.
 display: Palo Alto Networks AutoFocus v2
 name: AutoFocus V2
 script:
   commands:
   - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Use XSOAR built-in polling to retrieve the result when it's ready.
+      isArray: false
+      name: polling
+      predefined:
+        - 'true'
+        - 'false'
     - default: false
-      description: The query for which to retrieve samples. For additional information on how to build your query using the AF GUI, see the detailed description section.
+      description: The query for which to retrieve samples. For additional information
+        on how to build your query using the AF GUI, see the detailed description
+        section.
       isArray: false
       name: query
       required: false
       secret: false
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+      defaultValue: '60'
     - default: false
       defaultValue: '30'
       description: The number of results to return.
@@ -73,9 +117,9 @@ script:
       isArray: false
       name: scope
       predefined:
-      - Private
-      - Public
-      - Global
+        - Private
+        - Public
+        - Global
       required: true
       secret: false
     - default: false
@@ -104,7 +148,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The Wildfire verdict. Can be "Malware", "Grayware", "Benign", or "Phishing".
+      description: The Wildfire verdict. Can be "Malware", "Grayware", "Benign", or
+        "Phishing".
       isArray: false
       name: wildfire_verdict
       predefined:
@@ -115,13 +160,17 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The date range of the creation date. Format: YYY Y-MM-DDTHH:MM:SS,YYYY-MM-DDTHH:MM:SS where the first date is the beginning and the second is the end. Example: 2019-09-09T00:00:00,2019-09-09T23:01:59'
+      description: 'The date range of the creation date. Format: YYY Y-MM-DDTHH:MM:SS,YYYY-MM-DDTHH:MM:SS
+        where the first date is the beginning and the second is the end. Example:
+        2019-09-09T00:00:00,2019-09-09T23:01:59'
       isArray: false
       name: first_seen
       required: false
       secret: false
     - default: false
-      description: 'The date range of the last updated date. Format: YYY Y-MM-DDTHH:MM:SS,YYYY-MM-DDTHH:MM:SS where the first date is the beginning and the second is the end. Example: 2019-09-09T00:00:00,2019-09-09T23:01:59'
+      description: 'The date range of the last updated date. Format: YYY Y-MM-DDTHH:MM:SS,YYYY-MM-DDTHH:MM:SS
+        where the first date is the beginning and the second is the end. Example:
+        2019-09-09T00:00:00,2019-09-09T23:01:59'
       isArray: false
       name: last_updated
       required: false
@@ -136,13 +185,25 @@ script:
       - 'false'
       required: false
       secret: false
+    - default: false
+      description: The AF Cookie for retrieving results of previous searches. The
+        AF Cookie expires 120 seconds after the search completes.
+      isArray: false
+      name: af_cookie
+      required: false
+      secret: false
     deprecated: false
-    description: Searches for samples in AutoFocus. To view results, run the autofocus-samples-search-results command with the returned AF Cookie. The AF Cookie expires 120 seconds after the search completes. `Autofocus Query Samples, Sessions and Tags` Playbook is recommended for querying and polling.
+    description: Searches for samples in AutoFocus. To view results, run the autofocus-samples-search-results
+      command with the returned AF Cookie. The AF Cookie expires 120 seconds after
+      the search completes. `Autofocus Query Samples, Sessions and Tags` Playbook
+      is recommended for querying and polling.
     execution: false
     name: autofocus-search-samples
+    polling: true
     outputs:
     - contextPath: AutoFocus.SamplesSearch.AFCookie
-      description: The AutoFocus search ID. Use this ID to retrieve search results. The AF Cookie expires 120 seconds after the search completes.
+      description: The AutoFocus search ID. Use this ID to retrieve search results.
+        The AF Cookie expires 120 seconds after the search completes.
       type: String
     - contextPath: AutoFocus.SamplesSearch.Status
       description: The search status. Can be "in progress" or "complete".
@@ -150,9 +211,103 @@ script:
     - contextPath: AutoFocus.SamplesSearch.SessionStart
       description: The time when the session began.
       type: Date
+    - contextPath: AutoFocus.SamplesResults.Size
+      description: The file size in bytes.
+      type: String
+    - contextPath: AutoFocus.SamplesResults.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: AutoFocus.SamplesResults.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: AutoFocus.SamplesResults.Created
+      description: The date that the file was created.
+      type: Date
+    - contextPath: AutoFocus.SamplesResults.Finished
+      description: Date finished.
+      type: Date
+    - contextPath: AutoFocus.SamplesResults.Region
+      description: Region of the sample.
+      type: String
+    - contextPath: AutoFocus.SamplesResults.FileType
+      description: The file type.
+      type: String
+    - contextPath: AutoFocus.SamplesResults.Tags
+      description: The tags attached to the sample.
+      type: String
+    - contextPath: AutoFocus.SamplesResults.Verdict
+      description: The verdict of the sample.
+      type: Number
+    - contextPath: AutoFocus.SamplesResults.TagGroups
+      description: Groups of relevant tags.
+      type: String
+    - contextPath: AutoFocus.SamplesSearch.Status
+      description: The search status. Can be "in progress" or "complete".
+      type: String
+    - contextPath: File.Size
+      description: The size of the file in bytes.
+      type: Number
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Type
+      description: The file type, as determined by libmagic (same as displayed in
+        file entries).
+      type: String
+    - contextPath: File.Tags
+      description: Tags of the file.
+      type: String
+    - contextPath: AutoFocus.SamplesResults.Artifact.b
+      description: How many set the artifact as benign.
+      type: Number
+    - contextPath: AutoFocus.SamplesResults.Artifact.g
+      description: How many set the artifact as grayware.
+      type: Number
+    - contextPath: AutoFocus.SamplesResults.Artifact.m
+      description: How many set the artifact as malicious.
+      type: Number
+    - contextPath: AutoFocus.SamplesResults.Artifact.confidence
+      description: Confidence in the decision.
+      type: String
+    - contextPath: AutoFocus.SamplesResults.Artifact.indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: AutoFocus.SamplesResults.Artifact.indicator_type
+      description: 'The indicator type, for example: Mutex, User agent, IPv4, Domain.'
+      type: String
+    - contextPath: AutoFocus.SamplesResults.ID
+      description: ID of sample search
+      type: String
   - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Use XSOAR built-in polling to retrieve the result when it's ready.
+      isArray: false
+      name: polling
+      predefined:
+        - 'true'
+        - 'false'
     - default: false
-      description: The query for which to retrieve samples. For additional information on how to build your query using the AF GUI, see the detailed description section.
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+      defaultValue: '60'
+    - default: false
+      description: The AF Cookie for retrieving the results of a previous search.
+        The AF Cookie expires 120 seconds after the search completes.
+      isArray: false
+      name: af_cookie
+      required: false
+      secret: false
+    - default: false
+      description: The query for which to retrieve samples. For additional information
+        on how to build your query using the AF GUI, see the detailed description
+        section.
       isArray: false
       name: query
       required: false
@@ -197,8 +352,8 @@ script:
       isArray: false
       name: order
       predefined:
-      - Ascending
-      - Descending
+        - Ascending
+        - Descending
       required: false
       secret: false
     - default: false
@@ -226,32 +381,41 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The date range in which to search for sessions. Format: YYYY-MM-DDTHH:MM:SS,YYYY-MM-DDTHH:MM:SS where the first date is the beginning and the second is the end. Example: 2019-09-09T00:00:00,2019-09-09T23:01:59'
+      description: 'The date range in which to search for sessions. Format: YYYY-MM-DDTHH:MM:SS,YYYY-MM-DDTHH:MM:SS
+          where the first date is the beginning and the second is the end. Example:
+          2019-09-09T00:00:00,2019-09-09T23:01:59'
       isArray: false
       name: time_range
       predefined:
-      - ''
+        - ''
       required: false
       secret: false
     - default: false
-      description: 'The date after which to search for sessions. Format: YYYY-MM-DDTHH:MM:SS Example: 2019-09-09T23:01:59'
+      description: 'The date after which to search for sessions. Format: YYYY-MM-DDTHH:MM:SS
+          Example: 2019-09-09T23:01:59'
       isArray: false
       name: time_after
       required: false
       secret: false
     - default: false
-      description: 'The date before which to search for sessions. Format: YYYY-MM-DDTHH:MM:SS Example: 2019-09-09T23:01:59'
+      description: 'The date before which to search for sessions. Format: YYYY-MM-DDTHH:MM:SS
+          Example: 2019-09-09T23:01:59'
       isArray: false
       name: time_before
       required: false
       secret: false
     deprecated: false
-    description: Searches for sessions in AutoFocus. To view results, run the autofocus-sessions-search-results command with the returned AF Cookie. The AF Cookie expires 120 seconds after the search completes. `Autofocus Query Samples, Sessions and Tags` Playbook is recommended for querying and polling.
+    description: Searches for sessions in AutoFocus. To view results, run the autofocus-sessions-search-results
+      command with the returned AF Cookie. The AF Cookie expires 120 seconds after
+      the search completes. `Autofocus Query Samples, Sessions and Tags` Playbook
+      is recommended for querying and polling.
     execution: false
+    polling: true
     name: autofocus-search-sessions
     outputs:
     - contextPath: AutoFocus.SessionsSearch.AFCookie
-      description: The AutoFocus search ID. Use this ID to get search results. The AF Cookie expires 120 seconds after the search completes.
+      description: The AutoFocus search ID. Use this ID to get search results. The
+        AF Cookie expires 120 seconds after the search completes.
       type: String
     - contextPath: AutoFocus.SessionsSearch.Status
       description: The search status. Can be "in progress" or "complete".
@@ -259,15 +423,59 @@ script:
     - contextPath: AutoFocus.SessionsSearch.SessionStart
       description: The time when the session began.
       type: Date
+    - contextPath: AutoFocus.SessionsResults.FileName
+      description: The name of the file..
+      type: String
+    - contextPath: AutoFocus.SessionsResults.ID
+      description: The session ID. Used to get session details.
+      type: String
+    - contextPath: AutoFocus.SessionsResults.Industry
+      description: The related industry.
+      type: String
+    - contextPath: AutoFocus.SessionsResults.Region
+      description: The regions of the sessions.
+      type: String
+    - contextPath: AutoFocus.SessionsResults.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: AutoFocus.SessionsResults.UploadSource
+      description: The source of the uploaded sample.
+      type: String
+    - contextPath: AutoFocus.SessionsResults.FileURL
+      description: The URL of the file.
+      type: String
+    - contextPath: AutoFocus.SessionsResults.Tags
+      description: Relevant tags.
+      type: String
+    - contextPath: AutoFocus.SessionsSearch.Status
+      description: The search status. Can be "in progress" or "complete".
+      type: String
+    - contextPath: File.Name
+      description: The full file name (including file extension).
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.MalwareFamily
+      description: The malware family associated with the file.
+      type: String
+    - contextPath: File.Tags
+      description: Tags of the file.
+      type: String
+    - contextPath: AutoFocus.SessionsResults.Seen
+      description: Session seen.
+      type: Date
   - arguments:
     - default: false
-      description: The AF Cookie for retrieving results of previous searches. The AF Cookie expires 120 seconds after the search completes.
+      description: The AF Cookie for retrieving results of previous searches. The
+        AF Cookie expires 120 seconds after the search completes.
       isArray: false
       name: af_cookie
       required: true
       secret: false
     deprecated: false
-    description: Returns results of a previous samples search. `Autofocus Query Samples, Sessions and Tags` Playbook is recommended for querying and polling.
+    description: Returns results of a previous samples search. `Autofocus Query Samples,
+      Sessions and Tags` Playbook is recommended for querying and polling.
     execution: false
     name: autofocus-samples-search-results
     outputs:
@@ -314,7 +522,8 @@ script:
       description: The SHA256 hash of the file.
       type: String
     - contextPath: File.Type
-      description: The file type, as determined by libmagic (same as displayed in file entries).
+      description: The file type, as determined by libmagic (same as displayed in
+        file entries).
       type: String
     - contextPath: File.Tags
       description: Tags of the file.
@@ -342,13 +551,15 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The AF Cookie for retrieving the results of a previous search. The AF Cookie expires 120 seconds after the search completes.
+      description: The AF Cookie for retrieving the results of a previous search.
+        The AF Cookie expires 120 seconds after the search completes.
       isArray: false
       name: af_cookie
       required: true
       secret: false
     deprecated: false
-    description: Returns results of a previous sessions search. `Autofocus Query Samples, Sessions and Tags` Playbook is recommended for querying and polling.
+    description: Returns results of a previous sessions search. `Autofocus Query Samples,
+      Sessions and Tags` Playbook is recommended for querying and polling.
     execution: false
     name: autofocus-sessions-search-results
     outputs:
@@ -384,6 +595,9 @@ script:
       type: String
     - contextPath: File.SHA256
       description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.MalwareFamily
+      description: The malware family associated with the file.
       type: String
     - contextPath: File.Tags
       description: Tags of the file.
@@ -439,7 +653,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The analysis environment. Can be "win7", "winxp", "android", "static_analyzer", "mac", or "bare_metal".
+      description: The analysis environment. Can be "win7", "winxp", "android", "static_analyzer",
+        "mac", or "bare_metal".
       isArray: false
       name: os
       predefined:
@@ -454,7 +669,9 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'True'
-      description: Whether to smartly filter the data. If "False", the data returned will not be smartly filtered, and will significantly reduce integration performance. We recommend setting this to "True".
+      description: Whether to smartly filter the data. If "False", the data returned
+        will not be smartly filtered, and will significantly reduce integration performance.
+        We recommend setting this to "True".
       isArray: false
       name: filter_data
       predefined:
@@ -463,7 +680,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns properties, behaviors, and activities observed for a sample. Run the command a single time to get the fields and operating systems under HTTP, Coverage, Behavior, Registry, Files, Processes, Connections, and DNS.
+    description: Returns properties, behaviors, and activities observed for a sample.
+      Run the command a single time to get the fields and operating systems under
+      HTTP, Coverage, Behavior, Registry, Files, Processes, Connections, and DNS.
     execution: false
     name: autofocus-sample-analysis
     outputs:
@@ -474,10 +693,12 @@ script:
       description: WildFire signatures that matched to the sample.
       type: Unknown
     - contextPath: AutoFocus.SampleAnalysis.Analysis.Behavior
-      description: 'Sample behavior: created or modified files, started a process, spawned new processes, modified the registry, or installed browser help objects.'
+      description: 'Sample behavior: created or modified files, started a process,
+        spawned new processes, modified the registry, or installed browser help objects.'
       type: Unknown
     - contextPath: AutoFocus.SampleAnalysis.Analysis.Registry
-      description: Registry settings and options that showed activity when the sample was executed in the analysis environment.
+      description: Registry settings and options that showed activity when the sample
+        was executed in the analysis environment.
       type: Unknown
     - contextPath: AutoFocus.SampleAnalysis.Analysis.Files
       description: Files that showed activity as a result of the sample being executed.
@@ -492,7 +713,9 @@ script:
       description: DNS activity observed when the sample was executed.
       type: Unknown
     - contextPath: AutoFocus.SampleAnalysis.Analysis.Mutex
-      description: The mutex created when the programs start is listed with the parent process if the sample generates other program threads when executed in the analysis environment.
+      description: The mutex created when the programs start is listed with the parent
+        process if the sample generates other program threads when executed in the
+        analysis environment.
       type: Unknown
   - arguments:
     - default: false
@@ -525,13 +748,15 @@ script:
       description: The organization that created the tag.
       type: String
     - contextPath: AutoFocus.Tag.Source
-      description: The organization or individual that discovered the threat that is defined in the tag.
+      description: The organization or individual that discovered the threat that
+        is defined in the tag.
       type: String
     - contextPath: AutoFocus.Tag.TagClass
       description: The classification of the tag.
       type: String
     - contextPath: AutoFocus.Tag.TagDefinitionStatus
-      description: The status of the tag definition ("enabled", "disabled", "removing", or "rescoping").
+      description: The status of the tag definition ("enabled", "disabled", "removing",
+        or "rescoping").
       type: String
     - contextPath: AutoFocus.Tag.TagGroup
       description: The tag group of the tag.
@@ -542,7 +767,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: Scope of the search. Can be "industry", "organization", "all", or "global".
+      description: Scope of the search. Can be "industry", "organization", "all",
+        or "global".
       isArray: false
       name: scope
       predefined:
@@ -554,7 +780,36 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Tag class. - Malware Family: group of malware that have shared properties or common functions. - Campaign:  targeted attack, which might include several incidents or sets of activities. - Actor: individual or group that initiates a campaign using malware families. - Exploit: an attack, which takes advantage of a software or network weakness, bug, or vulnerability to manipulate the behavior of the system. - Malicious Behavior: behavior that is not specific to a malware family or campaign, but indicates that your system has been compromised.'
+      description: Use XSOAR built-in polling to retrieve the result when it's ready.
+      isArray: false
+      name: polling
+      predefined:
+        - 'true'
+        - 'false'
+    - default: false
+      description: The AF Cookie for retrieving results of previous searches. The
+        AF Cookie expires 120 seconds after the search completes.
+      isArray: false
+      name: af_cookie
+      required: false
+      secret: false
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+      defaultValue: '40'
+    - auto: PREDEFINED
+      default: false
+      description: 'Tag class. - Malware Family: group of malware that have shared
+        properties or common functions. - Campaign:  targeted attack, which might
+        include several incidents or sets of activities. - Actor: individual or group
+        that initiates a campaign using malware families. - Exploit: an attack, which
+        takes advantage of a software or network weakness, bug, or vulnerability to
+        manipulate the behavior of the system. - Malicious Behavior: behavior that
+        is not specific to a malware family or campaign, but indicates that your system
+        has been compromised.'
       isArray: false
       name: class
       predefined:
@@ -568,7 +823,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: Whether the tag scope is "private". If "True", the tag scope is private. Default is "False".
+      description: Whether the tag scope is "private". If "True", the tag scope is
+        private. Default is "False".
       isArray: false
       name: private
       predefined:
@@ -579,7 +835,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: Whether the tag scope is "public". If "True", the tag scope is public. Default is "False".
+      description: Whether the tag scope is "public". If "True", the tag scope is
+        public. Default is "False".
       isArray: false
       name: public
       predefined:
@@ -590,7 +847,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: Whether the tag scope is "commodity". If "True", the tag scope is commodity. Default is "False".
+      description: Whether the tag scope is "commodity". If "True", the tag scope
+        is commodity. Default is "False".
       isArray: false
       name: commodity
       predefined:
@@ -601,7 +859,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: Whether the tag scope is "Unit42". If "True", the tag scope is unit42. Default is "False".
+      description: Whether the tag scope is "Unit42". If "True", the tag scope is
+        unit42. Default is "False".
       isArray: false
       name: unit42
       predefined:
@@ -610,12 +869,15 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Performs a search to identify the most popular tags. `Autofocus Query Samples, Sessions and Tags` Playbook is recommended for querying and polling.
+    description: Performs a search to identify the most popular tags. `Autofocus Query
+      Samples, Sessions and Tags` Playbook is recommended for querying and polling.
     execution: false
     name: autofocus-top-tags-search
+    polling: true
     outputs:
     - contextPath: AutoFocus.TopTagsSearch.AFCookie
-      description: AutoFocus search ID. Use this ID to get search results. The AF Cookie expires 120 seconds after the search completes.
+      description: AutoFocus search ID. Use this ID to get search results. The AF
+        Cookie expires 120 seconds after the search completes.
       type: String
     - contextPath: AutoFocus.TopTagsSearch.Status
       description: The search status. Can be "in progress" or "complete".
@@ -623,15 +885,32 @@ script:
     - contextPath: AutoFocus.SamplesSearch.SessionStart
       description: The time when the session began.
       type: Date
+    - contextPath: AutoFocus.TopTagsResults.Count
+      description: The number of samples that matched this tag.
+      type: Number
+    - contextPath: AutoFocus.TopTagsResults.PublicTagName
+      description: The public name of the tag. This is used as an ID of the tag.
+      type: String
+    - contextPath: AutoFocus.TopTagsResults.TagName
+      description: The simple name of the tag.
+      type: String
+    - contextPath: AutoFocus.TopTagsResults.Lasthit
+      description: The last encounter date of the tag.
+      type: Date
+    - contextPath: AutoFocus.TopTagsSearch.Status
+      description: The search status. Can be "in progress" or "complete".
+      type: String
   - arguments:
     - default: false
-      description: 'The AF Cookie for retrieving results of previous search. Note: The AF Cookie expires 120 seconds after the search completes.'
+      description: 'The AF Cookie for retrieving results of previous search. Note:
+        The AF Cookie expires 120 seconds after the search completes.'
       isArray: false
       name: af_cookie
       required: true
       secret: false
     deprecated: false
-    description: Returns the results of a previous top tags search. `Autofocus Query Samples, Sessions and Tags` Playbook is recommended for querying and polling.
+    description: Returns the results of a previous top tags search. `Autofocus Query
+      Samples, Sessions and Tags` Playbook is recommended for querying and polling.
     execution: false
     name: autofocus-top-tags-results
     outputs:
@@ -677,6 +956,21 @@ script:
     - contextPath: IP.Address
       description: The IP address.
       type: String
+    - contextPath: IP.Relationships.EntityA
+      description: The source of the relationship.
+      type: string
+    - contextPath: IP.Relationships.EntityB
+      description: The destination of the relationship.
+      type: string
+    - contextPath: IP.Relationships.Relationship
+      description: The name of the relationship.
+      type: string
+    - contextPath: IP.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: string
+    - contextPath: IP.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: string
     - contextPath: AutoFocus.IP.IndicatorValue
       description: The IP address.
       type: String
@@ -684,10 +978,17 @@ script:
       description: The indicator type.
       type: String
     - contextPath: AutoFocus.IP.LatestPanVerdicts
-      description: Latest verdicts from Palo Alto Networks products. Can be either PAN_DB or WF_SAMPLE(WildFire).
+      description: Latest verdicts from Palo Alto Networks products. Can be either
+        PAN_DB or WF_SAMPLE(WildFire).
       type: Unknown
     - contextPath: IP.Malicious.Vendor
       description: For malicious files, the vendor that made the decision.
+      type: String
+    - contextPath: IP.MalwareFamily
+      description: The malware family associated with the IP.
+      type: String
+    - contextPath: IP.Tags
+      description: Tags that are associated with the IP.
       type: String
     - contextPath: AutoFocus.IP.Tags.PublicTagName
       description: The public name of the tag. This is used as an ID of the tag.
@@ -699,7 +1000,8 @@ script:
       description: The organization that created the tag.
       type: String
     - contextPath: AutoFocus.IP.Tags.Source
-      description: The organization or individual that discovered the threat that is defined in the tag.
+      description: The organization or individual that discovered the threat that
+        is defined in the tag.
       type: String
     - contextPath: AutoFocus.IP.Tags.TagDefinitionScopeID
       description: The scope ID of the tag.
@@ -746,6 +1048,21 @@ script:
     - contextPath: URL.Data
       description: The URL address.
       type: String
+    - contextPath: URL.Relationships.EntityA
+      description: The source of the relationship.
+      type: string
+    - contextPath: URL.Relationships.EntityB
+      description: The destination of the relationship.
+      type: string
+    - contextPath: URL.Relationships.Relationship
+      description: The name of the relationship.
+      type: string
+    - contextPath: URL.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: string
+    - contextPath: URL.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: string
     - contextPath: AutoFocus.URL.IndicatorValue
       description: The URL value.
       type: String
@@ -753,10 +1070,17 @@ script:
       description: The indicator type.
       type: String
     - contextPath: AutoFocus.URL.LatestPanVerdicts
-      description: Latest verdicts from Palo Alto Networks products. Can be either PAN_DB or WF_SAMPLE(WildFire).
+      description: Latest verdicts from Palo Alto Networks products. Can be either
+        PAN_DB or WF_SAMPLE(WildFire).
       type: Unknown
     - contextPath: URL.Malicious.Vendor
       description: For malicious files, the vendor that made the decision.
+      type: String
+    - contextPath: URL.MalwareFamily
+      description: The malware family associated with the url.
+      type: String
+    - contextPath: URL.Tags
+      description: Tags that are associated with the url.
       type: String
     - contextPath: AutoFocus.URL.Tags.PublicTagName
       description: The public name of the tag. This is used as an ID of the tag.
@@ -768,7 +1092,8 @@ script:
       description: The organization that created the tag.
       type: String
     - contextPath: AutoFocus.URL.Tags.Source
-      description: The organization or individual that discovered the threat that is defined in the tag.
+      description: The organization or individual that discovered the threat that
+        is defined in the tag.
       type: String
     - contextPath: AutoFocus.URL.Tags.TagDefinitionScopeID
       description: The scope ID of the tag.
@@ -815,6 +1140,33 @@ script:
     - contextPath: File.SHA256
       description: SHA256 hash of the file.
       type: String
+    - contextPath: File.Relationships.EntityA
+      description: The source of the relationship.
+      type: string
+    - contextPath: File.Relationships.EntityB
+      description: The destination of the relationship.
+      type: string
+    - contextPath: File.Relationships.Relationship
+      description: The name of the relationship.
+      type: string
+    - contextPath: File.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: string
+    - contextPath: File.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: string
+    - contextPath: File.Tags.TagGroups.TagGroupName
+      description: The tag's group name.
+      type: String
+    - contextPath: File.Tags.Aliases
+      description: Aliases of the tags.
+      type: String
+    - contextPath: File.Tags.PublicTagName
+      description: The public name of the tag. This is usually used as the ID of the tag.
+      type: String
+    - contextPath: File.Tags.TagName
+      description: The simple name of the tag.
+      type: String
     - contextPath: AutoFocus.File.IndicatorValue
       description: SHA256 of the file.
       type: String
@@ -822,7 +1174,8 @@ script:
       description: The indicator type.
       type: String
     - contextPath: AutoFocus.File.LatestPanVerdicts
-      description: Latest verdicts from Palo Alto Networks products. Can be either PAN_DB or WF_SAMPLE(WildFire).
+      description: Latest verdicts from Palo Alto Networks products. Can be either
+        PAN_DB or WF_SAMPLE(WildFire).
       type: Unknown
     - contextPath: File.Malicious.Vendor
       description: For malicious files, the vendor that made the decision.
@@ -837,7 +1190,8 @@ script:
       description: The organization that created the tag.
       type: String
     - contextPath: AutoFocus.File.Tags.Source
-      description: The organization or individual that discovered the threat that is defined in the tag.
+      description: The organization or individual that discovered the threat that
+        is defined in the tag.
       type: String
     - contextPath: AutoFocus.File.Tags.TagDefinitionScopeID
       description: The scope ID of the tag.
@@ -873,16 +1227,14 @@ script:
       description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Score
-      description: The actual score.
+      description:
+        The actual score.
       type: Number
     - contextPath: DBotScore.Type
       description: The indicator type.
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
-      type: String
-    - contextPath: Domain.Name
-      description: The domain name.
       type: String
     - contextPath: AutoFocus.Domain.IndicatorValue
       description: The domain.
@@ -891,11 +1243,9 @@ script:
       description: The indicator type.
       type: String
     - contextPath: AutoFocus.Domain.LatestPanVerdicts
-      description: Latest verdicts from Palo Alto Networks products. Can be either PAN_DB or WF_SAMPLE(WildFire).
+      description: Latest verdicts from Palo Alto Networks products. Can be either
+        PAN_DB or WF_SAMPLE(WildFire).
       type: Unknown
-    - contextPath: Domain.Malicious.Vendor
-      description: For malicious files, the vendor that made the decision.
-      type: String
     - contextPath: AutoFocus.Domain.Tags.PublicTagName
       description: The public name of the tag. This is used as an ID of the tag.
       type: String
@@ -906,7 +1256,8 @@ script:
       description: The organization that created the tag.
       type: String
     - contextPath: AutoFocus.Domain.Tags.Source
-      description: The organization or individual that discovered the threat that is defined in the tag.
+      description: The organization or individual that discovered the threat that
+        is defined in the tag.
       type: String
     - contextPath: AutoFocus.Domain.Tags.TagDefinitionScopeID
       description: The scope ID of the tag.
@@ -953,6 +1304,57 @@ script:
     - contextPath: AutoFocus.Domain.WhoisRegistrant
       description: The name of the registrant.
       type: String
+    - contextPath: Domain.Name
+      description: 'The domain name, for example: "google.com".'
+      type: String
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision.
+      type: String
+    - contextPath: Domain.MalwareFamily
+      description: The malware family associated with the domain.
+      type: String
+    - contextPath: Domain.Relationships.EntityA
+      description: The source of the relationship.
+      type: string
+    - contextPath: Domain.Relationships.EntityB
+      description: The destination of the relationship.
+      type: string
+    - contextPath: Domain.Relationships.Relationship
+      description: The name of the relationship.
+      type: string
+    - contextPath: Domain.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: string
+    - contextPath: Domain.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: string
+    - contextPath: Domain.Tags
+      description: Tags that are associated with the domain.
+      type: String
+    - contextPath: Domain.CreationDate
+      description: The date that the domain was created.
+      type: Date
+    - contextPath: Domain.UpdatedDate
+      description: The date that the domain was last updated.
+      type: String
+    - contextPath: Domain.ExpirationDate
+      description: The expiration date of the domain.
+      type: Date
+    - contextPath: Domain.Admin.Country
+      description: The country of the domain administrator.
+      type: String
+    - contextPath: Domain.Admin.Email
+      description: The email address of the domain administrator.
+      type: String
+    - contextPath: Domain.Admin.Name
+      description: The name of the domain administrator.
+      type: String
+    - contextPath: Domain.Registrant.Name
+      description: The name of the registrant.
+      type: String
+    - contextPath: Domain.WHOIS.Registrar.Name
+      description: 'The name of the registrar, for example: "GoDaddy"'
+      type: String
   - arguments:
     - default: false
       description: The label of the exported list.
@@ -983,7 +1385,7 @@ script:
     - contextPath: Domain.Name
       description: The domain name.
       type: String
-  dockerimage: demisto/python3:3.9.1.14969
+  dockerimage: demisto/python3:3.9.7.24076
   isfetch: false
   longRunning: false
   longRunningPort: false

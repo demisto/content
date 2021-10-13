@@ -1,0 +1,30 @@
+{
+    "id": "incident_fraudwatchadditionalurls",
+    "version": -1,
+    "modified": "2021-02-08T14:00:44.710062Z",
+    "name": "FraudWatch Additional URLs",
+    "ownerOnly": false,
+    "cliName": "fraudwatchadditionalurls",
+    "type": "longText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "FraudWatch Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.0.0"
+}

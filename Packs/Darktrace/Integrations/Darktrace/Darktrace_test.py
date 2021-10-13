@@ -361,3 +361,100 @@ def test_get_entity_details(requests_mock):
 
     assert integration_response.outputs == expected_response
     assert integration_response.outputs_prefix == 'Darktrace.EntityDetails'
+
+
+def test_get_modelbreach_details(mocker):
+    """Tests the get-modelbreach-details command function.
+    Configures requests_mock instance to generate the appropriate
+    get_alert API response, loaded from a local JSON file. Checks
+    the output of the command function with the expected output.
+    """
+    from Darktrace import Client, get_breach_details_command
+
+    # GIVEN an integration is configured and you would like to find similar devices
+    mock_api_response = util_load_json('test_data/breach_details.json')
+    mocker.patch.object(Client, 'get_modelbreach_details', return_value=mock_api_response)
+
+    client = Client(
+        base_url='https://mock.darktrace.com',
+        verify=False,
+        auth=('examplepub', 'examplepri')
+    )
+
+    # WHEN the specified device id is 1 and there are 2 results max desired
+    args = {
+        'pbid': '123',
+        'count': '2',
+        'endtime': 1629803362
+    }
+
+    # THEN the context will be updated and information about similar devices will be fetched and pulled
+    integration_response = get_breach_details_command(client, args)
+    expected_response = util_load_json('test_data/formatted_breach_details.json')
+
+    assert integration_response.outputs == expected_response
+    assert integration_response.outputs_prefix == 'Darktrace.ModelBreach'
+
+
+def test_get_component(requests_mock):
+    """Tests the get-component command function.
+    Configures requests_mock instance to generate the appropriate
+    get_alert API response, loaded from a local JSON file. Checks
+    the output of the command function with the expected output.
+    """
+    from Darktrace import Client, get_component_command
+
+    # GIVEN an integration is configured and you would like to find similar devices
+    mock_api_response = util_load_json('test_data/component.json')
+    requests_mock.get('https://mock.darktrace.com/components/254503',
+                      json=mock_api_response)
+
+    client = Client(
+        base_url='https://mock.darktrace.com',
+        verify=False,
+        auth=('examplepub', 'examplepri')
+    )
+
+    # WHEN the specified device id is 1 and there are 2 results max desired
+    args = {
+        'cid': '254503'
+    }
+
+    # THEN the context will be updated and information about similar devices will be fetched and pulled
+    integration_response = get_component_command(client, args)
+    expected_response = util_load_json('test_data/formatted_component.json')
+
+    assert integration_response.outputs == expected_response
+    assert integration_response.outputs_prefix == 'Darktrace.Component'
+
+
+def test_get_model(requests_mock):
+    """Tests the get-model command function.
+    Configures requests_mock instance to generate the appropriate
+    get_alert API response, loaded from a local JSON file. Checks
+    the output of the command function with the expected output.
+    """
+    from Darktrace import Client, get_model_command
+
+    # GIVEN an integration is configured and you would like to find similar devices
+    mock_api_response = util_load_json('test_data/model.json')
+    requests_mock.get('https://mock.darktrace.com/models?uuid=80010119-6d7f-0000-0305-5e0000000325',
+                      json=mock_api_response)
+
+    client = Client(
+        base_url='https://mock.darktrace.com',
+        verify=False,
+        auth=('examplepub', 'examplepri')
+    )
+
+    # WHEN the specified device id is 1 and there are 2 results max desired
+    args = {
+        'uuid': '80010119-6d7f-0000-0305-5e0000000325'
+    }
+
+    # THEN the context will be updated and information about similar devices will be fetched and pulled
+    integration_response = get_model_command(client, args)
+    expected_response = util_load_json('test_data/formatted_model.json')
+
+    assert integration_response.outputs == expected_response
+    assert integration_response.outputs_prefix == 'Darktrace.Model'

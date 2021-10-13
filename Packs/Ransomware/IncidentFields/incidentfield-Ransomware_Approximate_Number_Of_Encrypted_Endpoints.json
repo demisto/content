@@ -1,0 +1,30 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Post Intrusion Ransomware"
+    ],
+    "caseInsensitive": true,
+    "cliName": "ransomwareapproximatenumberofencryptedendpoints",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "fieldCalcScript": "RansomwareHostWidget",
+    "group": 0,
+    "hidden": false,
+    "id": "incident_ransomwareapproximatenumberofencryptedendpoints",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Ransomware Approximate Number Of Encrypted Endpoints",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

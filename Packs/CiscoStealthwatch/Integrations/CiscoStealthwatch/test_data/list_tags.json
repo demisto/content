@@ -1,0 +1,168 @@
+{
+    "data": [
+        {
+            "displayName": "Internal Host Tags",
+            "id": 1
+        },
+        {
+            "displayName": "Catch All",
+            "id": 65534
+        },
+        {
+            "displayName": "By Function",
+            "id": 23
+        },
+        {
+            "displayName": "Client IP Ranges (DHCP Range)",
+            "id": 5
+        },
+        {
+            "displayName": "Trusted Users",
+            "id": 50076
+        },
+        {
+            "displayName": "Employee VPN ",
+            "id": 33
+        },
+        {
+            "displayName": "Employee Wired",
+            "id": 3
+        },
+        {
+            "displayName": "Employee Wireless",
+            "id": 44
+        },
+        {
+            "displayName": "Untrusted Users",
+            "id": 50077
+        },
+        {
+            "displayName": "Guest Wireless",
+            "id": 45
+        },
+        {
+            "displayName": "DMZ",
+            "id": 24
+        },
+        {
+            "displayName": "Internet Services",
+            "id": 50068
+        },
+        {
+            "displayName": "DNS Servers",
+            "id": 27
+        },
+        {
+            "displayName": "NAT Gateway",
+            "id": 51
+        },
+        {
+            "displayName": "Proxies",
+            "id": 11
+        },
+        {
+            "displayName": "Load Balancer VIPs",
+            "id": 50079
+        },
+        {
+            "displayName": "Internal Facing Load Balancer VIPs",
+            "id": 50080
+        },
+        {
+            "displayName": "Internet Facing Load Balancer VIPs",
+            "id": 50067
+        },
+        {
+            "displayName": "Network Scanners",
+            "id": 48
+        },
+        {
+            "displayName": "Other",
+            "id": 6
+        },
+        {
+            "displayName": "Broadcast",
+            "id": 18
+        },
+        {
+            "displayName": "Link-Local",
+            "id": 17
+        },
+        {
+            "displayName": "Localhost",
+            "id": 19
+        },
+        {
+            "displayName": "Multicast",
+            "id": 14
+        },
+        {
+            "displayName": "Servers",
+            "id": 2
+        },
+        {
+            "displayName": "Antivirus Servers",
+            "id": 25
+        },
+        {
+            "displayName": "Backup Servers",
+            "id": 26
+        },
+        {
+            "displayName": "Database Servers",
+            "id": 50075
+        },
+        {
+            "displayName": "DHCP Servers",
+            "id": 36
+        },
+        {
+            "displayName": "Domain Controllers",
+            "id": 38
+        },
+        {
+            "displayName": "File Servers",
+            "id": 28
+        },
+        {
+            "displayName": "Mail Servers",
+            "id": 30
+        },
+        {
+            "displayName": "NTP Servers",
+            "id": 31
+        },
+        {
+            "displayName": "SMS Servers",
+            "id": 50
+        },
+        {
+            "displayName": "Web Servers",
+            "id": 34
+        },
+        {
+            "displayName": "VoIP",
+            "id": 12
+        },
+        {
+            "displayName": "VoIP Endpoints",
+            "id": 37
+        },
+        {
+            "displayName": "VoIP Gateways",
+            "id": 13
+        },
+        {
+            "displayName": "By Location",
+            "id": 43
+        },
+        {
+            "displayName": "Protected Asset Monitoring",
+            "id": 10
+        },
+        {
+            "displayName": "Protected Trapped Hosts - Honeypot",
+            "id": 50069
+        }
+    ]
+}

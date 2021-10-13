@@ -13,6 +13,13 @@ configuration:
   defaultvalue: "600"
   type: 0
   required: true
+- display: Sync integration cache
+  name: sync
+  defaultvalue: "false"
+  type: 8
+  required: false
+  additionalinfo: Whether to sync the integration cache with the database (Available
+    from Cortex XSOAR 6.2.0).
 script:
   script: >
     function guid() {
@@ -24,21 +31,36 @@ script:
       return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
     }
 
+    var sync = params.sync;
 
     function setLock(guid, info) {
-        var integrationContext = getIntegrationContext() || {};
-        integrationContext[lockName] = {guid: guid, info: info};
-        setIntegrationContext(integrationContext);
-    }
-
-    function getLock() {
-        var integrationContext = getIntegrationContext() || {};
-        if (!integrationContext[lockName]) {
-            integrationContext[lockName] = {};
+        if (sync) {
+            var versionedIntegrationContext = getVersionedIntegrationContext(true, true) || {};
+            var integrationContext = versionedIntegrationContext.context;
+            integrationContext[lockName] = {guid: guid, info: info};
+            setVersionedIntegrationContext(integrationContext, true, versionedIntegrationContext.version);
+        } else {
+            var integrationContext = getIntegrationContext() || {};
+            integrationContext[lockName] = {guid: guid, info: info};
+            setIntegrationContext(integrationContext);
         }
-        return integrationContext[lockName];
     }
-
+    function getLock() {
+        if (sync) {
+            var versionedIntegrationContext = getVersionedIntegrationContext(true, true) || {};
+            var integrationContext = versionedIntegrationContext.context;
+            if (!integrationContext[lockName]) {
+                integrationContext[lockName] = {};
+            }
+            return integrationContext[lockName];
+        } else {
+            var integrationContext = getIntegrationContext() || {};
+            if (!integrationContext[lockName]) {
+                integrationContext[lockName] = {};
+            }
+            return integrationContext[lockName];
+        }
+    }
 
     var lockName = args.name || 'Default';
 
@@ -63,7 +85,11 @@ script:
                     continue;
                 }
                 if (!lock.guid) {
-                    setLock(guid, lockInfo);
+                    try {
+                        setLock(guid, lockInfo);
+                    } catch(err) {
+                        logDebug(err.message)
+                    }
                 }
             }
 
@@ -81,23 +107,23 @@ script:
             break;
 
         case 'demisto-lock-release':
-            integrationContext = getIntegrationContext();
+            integrationContext = getVersionedIntegrationContext(sync);
             integrationContext[lockName] = {};
-            setIntegrationContext(integrationContext);
+            setVersionedIntegrationContext(integrationContext, sync);
 
             var md = '### Demisto Locking Mechanism\n';
             md += 'Lock released successfully';
             return { ContentsFormat: formats.markdown, Type: entryTypes.note, Contents: md } ;
 
         case 'demisto-lock-release-all':
-            setIntegrationContext({});
+            setVersionedIntegrationContext({}, sync);
 
             var md = '### Demisto Locking Mechanism\n';
             md += 'All locks released successfully';
             return { ContentsFormat: formats.markdown, Type: entryTypes.note, Contents: md } ;
 
         case 'demisto-lock-info':
-            integrationContext = getIntegrationContext();
+            integrationContext = getVersionedIntegrationContext(sync);
             var obj = [];
 
             var res;

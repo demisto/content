@@ -345,7 +345,7 @@ def extension_context(oid: str, extension_name: str, critical: bool, extension_v
                 entry_type=_SCT_LOG_ENTRY_TYPE_NAME.get(presct.entry_type, presct.entry_type.value),
                 version=presct.version.value,
                 log_id=presct.log_id.hex(),
-                timestamp=presct.timestamp.strftime(format="%Y-%m-%dT%H:%M:%S.000Z"),
+                timestamp=presct.timestamp.strftime("%Y-%m-%dT%H:%M:%S.000Z"),
             ))
         return Common.CertificateExtension(
             extension_type=Common.CertificateExtension.ExtensionType.PRESIGNEDCERTIFICATETIMESTAMPS,
@@ -360,7 +360,7 @@ def extension_context(oid: str, extension_name: str, critical: bool, extension_v
                 entry_type=_SCT_LOG_ENTRY_TYPE_NAME.get(sct.entry_type, sct.entry_type.value),
                 version=sct.version.value,
                 log_id=sct.log_id.hex(),
-                timestamp=sct.timestamp.strftime(format="%Y-%m-%dT%H:%M:%S.000Z"),
+                timestamp=sct.timestamp.strftime("%Y-%m-%dT%H:%M:%S.000Z"),
             ))
         return Common.CertificateExtension(
             extension_type=Common.CertificateExtension.ExtensionType.SIGNEDCERTIFICATETIMESTAMPS,
@@ -414,7 +414,7 @@ def certificate_to_context(certificate: x509.Certificate) -> Common.Certificate:
         md5=certificate.fingerprint(hashes.MD5()).hex(),
         spki_sha256=spkisha256.finalize().hex(),
         extensions=extensions_contexts,
-        signature_algorithm=certificate.signature_hash_algorithm.name,
+        signature_algorithm=certificate.signature_hash_algorithm.name,  # type: ignore[union-attr]
         signature=certificate.signature.hex(),
         publickey=public_key_context(certificate.public_key()),
         dbot_score=Common.DBotScore(

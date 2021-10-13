@@ -63,11 +63,11 @@ class MsGraphClient:
     FILE_ATTACHMENT = '#microsoft.graph.fileAttachment'
 
     def __init__(self, self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url, use_ssl, proxy,
-                 ok_codes, mailbox_to_fetch, folder_to_fetch, first_fetch_interval, emails_fetch_limit):
+                 ok_codes, mailbox_to_fetch, folder_to_fetch, first_fetch_interval, emails_fetch_limit, timeout=10):
 
         self.ms_client = MicrosoftClient(self_deployed=self_deployed, tenant_id=tenant_id, auth_id=auth_and_token_url,
                                          enc_key=enc_key, app_name=app_name, base_url=base_url, verify=use_ssl,
-                                         proxy=proxy, ok_codes=ok_codes)
+                                         proxy=proxy, ok_codes=ok_codes, timeout=timeout)
 
         self._mailbox_to_fetch = mailbox_to_fetch
         self._folder_to_fetch = folder_to_fetch
@@ -109,12 +109,15 @@ class MsGraphClient:
         no_folder = f'/users/{user_id}/messages'
         with_folder = f'/users/{user_id}/{build_folders_path(folder_id)}/messages'
         pages_to_pull = demisto.args().get('pages_to_pull', 1)
+        page_size = demisto.args().get('page_size', 20)
+        odata = f'{odata}&$top={page_size}' if odata else f'$top={page_size}'
 
         if search:
-            odata = f'{odata}&$search="{search}"' if odata else f'$search="{search}"'
+            odata = f'{odata}&$search="{search}"'
         suffix = with_folder if folder_id else no_folder
         if odata:
             suffix += f'?{odata}'
+        demisto.debug(f"URL suffix is {suffix}")
         response = self.ms_client.http_request('GET', suffix)
         return self.pages_puller(response, assert_pages(pages_to_pull))
 
@@ -147,9 +150,11 @@ class MsGraphClient:
         Returns:
             dict:
         """
-        no_folder = f'/users/{user_id}/messages/{message_id}/attachments/{attachment_id}'
+        no_folder = f'/users/{user_id}/messages/{message_id}/attachments/{attachment_id}' \
+                    f'/?$expand=microsoft.graph.itemattachment/item'
         with_folder = (f'/users/{user_id}/{build_folders_path(folder_id)}/'  # type: ignore
-                       f'messages/{message_id}/attachments/{attachment_id}')
+                       f'messages/{message_id}/attachments/{attachment_id}/'
+                       f'?$expand=microsoft.graph.itemattachment/item')
         suffix = with_folder if folder_id else no_folder
         response = self.ms_client.http_request('GET', suffix)
         return response
@@ -376,7 +381,7 @@ class MsGraphClient:
                 '@odata.type': cls.FILE_ATTACHMENT,
                 'contentBytes': b64_encoded_data.decode('utf-8'),
                 'isInline': is_inline,
-                'name': attach_name if provided_names else uploaded_file_name,
+                'name': attach_name if provided_names or not uploaded_file_name else uploaded_file_name,
                 'size': file_size
             }
             file_attachments_result.append(attachment)
@@ -463,6 +468,22 @@ class MsGraphClient:
             message['internetMessageHeaders'] = MsGraphClient._build_headers_input(internet_message_headers)
 
         return message
+
+    @staticmethod
+    def build_message_to_reply(to_recipients, cc_recipients, bcc_recipients, subject, email_body, attach_ids,
+                               attach_names, attach_cids):
+        """
+        Builds a valid reply message dict.
+        For more information https://docs.microsoft.com/en-us/graph/api/resources/message?view=graph-rest-1.0
+        """
+        return {
+            'toRecipients': MsGraphClient._build_recipient_input(to_recipients),
+            'ccRecipients': MsGraphClient._build_recipient_input(cc_recipients),
+            'bccRecipients': MsGraphClient._build_recipient_input(bcc_recipients),
+            'subject': subject,
+            'bodyPreview': email_body[:255],
+            'attachments': MsGraphClient._build_file_attachments_input(attach_ids, attach_names, attach_cids, [])
+        }
 
     @staticmethod
     def parse_item_as_dict(email):
@@ -835,8 +856,10 @@ class MsGraphClient:
         exclude_ids = last_run.get('LAST_RUN_IDS', [])
         last_run_folder_path = last_run.get('LAST_RUN_FOLDER_PATH')
         folder_path_changed = (last_run_folder_path != self._folder_to_fetch)
+        last_run_account = last_run.get('LAST_RUN_ACCOUNT')
+        mailbox_to_fetch_changed = last_run_account != self._mailbox_to_fetch
 
-        if folder_path_changed:
+        if folder_path_changed or mailbox_to_fetch_changed:
             # detected folder path change, get new folder id
             folder_id = self._get_folder_by_path(self._mailbox_to_fetch, self._folder_to_fetch).get('id')
             demisto.info("MS-Graph-Listener: detected file path change, ignored last run.")
@@ -856,7 +879,8 @@ class MsGraphClient:
             'LAST_RUN_TIME': next_run_time,
             'LAST_RUN_IDS': fetched_emails_ids,
             'LAST_RUN_FOLDER_ID': folder_id,
-            'LAST_RUN_FOLDER_PATH': self._folder_to_fetch
+            'LAST_RUN_FOLDER_PATH': self._folder_to_fetch,
+            'LAST_RUN_ACCOUNT': self._mailbox_to_fetch,
         }
         demisto.info(f"MS-Graph-Listener: fetched {len(incidents)} incidents")
 
@@ -1017,11 +1041,14 @@ def build_mail_object(raw_response: Union[dict, list], user_id: str, get_body: b
             'Headers': 'internetMessageHeaders',
             'Flag': 'flag',
             'Importance': 'importance',
+            'InternetMessageID': 'internetMessageId',
+            'ConversationID': 'conversationId',
         }
 
         contact_properties = {
             'Sender': 'sender',
             'From': 'from',
+            'Recipients': 'toRecipients',
             'CCRecipients': 'ccRecipients',
             'BCCRecipients': 'bccRecipients',
             'ReplyTo': 'replyTo'
@@ -1112,16 +1139,28 @@ def list_mails_command(client: MsGraphClient, args):
     odata = args.get('odata')
 
     raw_response = client.list_mails(user_id, folder_id=folder_id, search=search, odata=odata)
+    last_page_response = raw_response[len(raw_response) - 1]
+    metadata = ''
+    next_page = last_page_response.get('@odata.nextLink')
+    if next_page:
+        metadata = '\nPay attention there are more results than shown. For more data please ' \
+                   'increase "pages_to_pull" argument'
+
     mail_context = build_mail_object(raw_response, user_id)
     entry_context = {}
     if mail_context:
         entry_context = {'MSGraphMail(val.ID === obj.ID)': mail_context}
+        if next_page:
+            # .NextPage.indexOf(\'http\')>=0 : will make sure the NextPage token will always be updated because it's a url
+            entry_context['MSGraphMail(val.NextPage.indexOf(\'http\')>=0)'] = {'NextPage': next_page}
 
         # human_readable builder
+        human_readable_header = f'{len(mail_context)} mails received {metadata}' if metadata \
+            else f'Total of {len(mail_context)} mails received'
         human_readable = tableToMarkdown(
-            f'Total of {len(mail_context)} mails received',
+            human_readable_header,
             mail_context,
-            headers=['Subject', 'From', 'SendTime', 'ID']
+            headers=['Subject', 'From', 'Recipients', 'SendTime', 'ID', 'InternetMessageID']
         )
     else:
         human_readable = '### No mails were found'
@@ -1150,14 +1189,49 @@ def delete_mail_command(client: MsGraphClient, args):
     return_outputs(human_readable, entry_context)
 
 
+def item_result_creator(raw_response, user_id) -> CommandResults:
+    item = raw_response.get('item', {})
+    item_type = item.get('@odata.type', '')
+    if 'message' in item_type:
+        message_id = raw_response.get('id')
+        item['id'] = message_id
+        mail_context = build_mail_object(item, user_id=user_id, get_body=True)
+        human_readable = tableToMarkdown(
+            f'Attachment ID {message_id} \n **message details:**',
+            mail_context,
+            headers=['ID', 'Subject', 'SendTime', 'Sender', 'From', 'HasAttachments', 'Body']
+        )
+        return CommandResults(outputs_prefix='MSGraphMail',
+                              outputs_key_field='ID',
+                              outputs=mail_context,
+                              readable_output=human_readable,
+                              raw_response=raw_response)
+    else:
+        human_readable = f'Integration does not support attachments from type {item_type}'
+        return CommandResults(readable_output=human_readable, raw_response=raw_response)
+
+
+def create_attachment(raw_response, user_id) -> Union[CommandResults, dict]:
+    attachment_type = raw_response.get('@odata.type', '')
+    # Documentation about the different attachment types
+    # https://docs.microsoft.com/en-us/graph/api/attachment-get?view=graph-rest-1.0&tabs=http
+    if 'itemAttachment' in attachment_type:
+        return item_result_creator(raw_response, user_id)
+    elif 'fileAttachment' in attachment_type:
+        return file_result_creator(raw_response)
+    else:
+        demisto.debug(f"Unsupported attachment type: {attachment_type}. Attachment was not added to incident")
+        return {}
+
+
 def get_attachment_command(client: MsGraphClient, args):
     message_id = args.get('message_id')
     user_id = args.get('user_id')
     folder_id = args.get('folder_id')
     attachment_id = args.get('attachment_id')
     raw_response = client.get_attachment(message_id, user_id, folder_id=folder_id, attachment_id=attachment_id)
-    entry_context = file_result_creator(raw_response)
-    demisto.results(entry_context)
+    attachment = create_attachment(raw_response, user_id)
+    return_results(attachment)
 
 
 def get_message_command(client: MsGraphClient, args):
@@ -1172,7 +1246,7 @@ def get_message_command(client: MsGraphClient, args):
     human_readable = tableToMarkdown(
         f'Results for message ID {message_id}',
         mail_context,
-        headers=['ID', 'Subject', 'SendTime', 'Sender', 'From', 'HasAttachments', 'Body']
+        headers=['ID', 'Subject', 'SendTime', 'Sender', 'From', 'Recipients', 'HasAttachments', 'Body']
     )
     return_outputs(
         human_readable,
@@ -1412,6 +1486,53 @@ def send_email_command(client: MsGraphClient, args):
     return_outputs(human_readable, ec)
 
 
+def prepare_outputs_for_reply_mail_command(reply, email_to, message_id):
+    reply.pop('attachments', None)
+    to_recipients, cc_recipients, bcc_recipients = build_recipients_human_readable(reply)
+    reply['toRecipients'] = to_recipients
+    reply['ccRecipients'] = cc_recipients
+    reply['bccRecipients'] = bcc_recipients
+    reply['ID'] = message_id
+
+    message_content = assign_params(**reply)
+    human_readable = tableToMarkdown(f'Replied message was successfully sent to {", ".join(email_to)} .',
+                                     message_content)
+
+    return CommandResults(
+        outputs_prefix="MicrosoftGraph",
+        readable_output=human_readable,
+        outputs_key_field="SentMail",
+        outputs=message_content,
+    )
+
+
+def reply_email_command(client: MsGraphClient, args):
+    """
+    Reply to an email from user's mailbox, the sent message will appear in Sent Items folder
+    """
+    email_to = argToList(args.get('to'))
+    email_from = args.get('from', client._mailbox_to_fetch)
+    message_id = args.get('inReplyTo')
+    email_body = args.get('body', "")
+    email_subject = args.get('subject', "")
+    email_subject = f'Re: {email_subject}'
+    attach_ids = argToList(args.get('attachIDs'))
+    email_cc = argToList(args.get('cc'))
+    email_bcc = argToList(args.get('bcc'))
+    html_body = args.get('htmlBody')
+    attach_names = argToList(args.get('attachNames'))
+    attach_cids = argToList(args.get('attachCIDs'))
+    message_body = html_body or email_body
+
+    suffix_endpoint = f'/users/{email_from}/messages/{message_id}/reply'
+    reply = client.build_message_to_reply(email_to, email_cc, email_bcc, email_subject, message_body, attach_ids,
+                                          attach_names, attach_cids)
+    client.ms_client.http_request('POST', suffix_endpoint, json_data={'message': reply, 'comment': message_body},
+                                  resp_type="text")
+
+    return prepare_outputs_for_reply_mail_command(reply, email_to, message_id)
+
+
 def reply_to_command(client: MsGraphClient, args):
     prepared_args = prepare_args('reply-to', args)
 
@@ -1455,10 +1576,11 @@ def main():
     folder_to_fetch = params.get('folder_to_fetch', 'Inbox')
     first_fetch_interval = params.get('first_fetch', '15 minutes')
     emails_fetch_limit = int(params.get('fetch_limit', '50'))
+    timeout = arg_to_number(params.get('timeout', '10') or '10')
 
     client: MsGraphClient = MsGraphClient(self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url,
                                           use_ssl, proxy, ok_codes, mailbox_to_fetch, folder_to_fetch,
-                                          first_fetch_interval, emails_fetch_limit)
+                                          first_fetch_interval, emails_fetch_limit, timeout)
 
     command = demisto.command()
     LOG(f'Command being called is {command}')
@@ -1503,6 +1625,8 @@ def main():
             send_draft_command(client, args)  # pylint: disable=E1123
         elif command == 'send-mail':
             send_email_command(client, args)
+        elif command == 'reply-mail':
+            return_results(reply_email_command(client, args))
     # Log exceptions
     except Exception as e:
         return_error(str(e))

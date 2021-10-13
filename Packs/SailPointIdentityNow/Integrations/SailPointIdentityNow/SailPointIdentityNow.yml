@@ -1,0 +1,699 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: SailPointIdentityNow
+  version: -1
+configuration:
+- additionalinfo: The FQDN/IP of the IdentityNow server to connect
+  display: IdentityNow Server URL (e.g. https://org.api.identitynow.com)
+  name: identitynow_url
+  required: true
+  type: 12
+- additionalinfo: Client Id for OAuth 2.0
+  display: Client Id (for OAuth 2.0)
+  hidden: false
+  name: client_id
+  required: true
+  type: 0
+- additionalinfo: Client Secret for OAuth 2.0
+  display: Client Secret (for OAuth 2.0)
+  hidden: false
+  name: client_secret
+  required: true
+  type: 4
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+description: The SailPoint Identity Security platform can be configured either on-prem/single
+  tenant SaaS, or multi-tenant. This package is intended to be used with the SaaS,
+  multi-tenant solution, IdentityNow.
+display: SailPoint IdentityNow
+name: SailPointIdentityNow
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Elastic search query for retrieving identities.
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - default: false
+      description: Offset into the full result set. Usually specified with limit to
+        paginate through the results.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      description: Max number of results to return. Maximum of 250.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Search for identity(identities) using elastic search query used by
+      IdentityNow Search Engine.
+    execution: false
+    name: identitynow-search-identities
+    outputs:
+    - contextPath: SailPointIdentityNow.Identity.id
+      description: The IdentityNow internal Id (uuid).
+      type: String
+    - contextPath: SailPointIdentityNow.Identity.name
+      description: Name of the identity.
+      type: String
+    - contextPath: SailPointIdentityNow.Identity.displayName
+      description: The display name of the identity.
+      type: String
+    - contextPath: SailPointIdentityNow.Identity.firstName
+      description: The first name of the identity.
+      type: String
+    - contextPath: SailPointIdentityNow.Identity.lastName
+      description: The last name of the identity.
+      type: String
+    - contextPath: SailPointIdentityNow.Identity.email
+      description: Email address of the Identity.
+      type: String
+    - contextPath: SailPointIdentityNow.Identity.created
+      description: Timestamp when the identity was created.
+      type: Date
+    - contextPath: SailPointIdentityNow.Identity.modified
+      description: Timestamp when the identity was last modified.
+      type: Date
+    - contextPath: SailPointIdentityNow.Identity.inactive
+      description: Indicates whether the identity is active.
+      type: Boolean
+    - contextPath: SailPointIdentityNow.Identity.protected
+      description: Indicates whether this identity is protected.
+      type: Boolean
+    - contextPath: SailPointIdentityNow.Identity.status
+      description: Status of this Identity.
+      type: String
+    - contextPath: SailPointIdentityNow.Identity.isManager
+      description: Indicates whether this identity is a manager.
+      type: Boolean
+    - contextPath: SailPointIdentityNow.Identity.identityProfile
+      description: Identity profile that maps this identity.
+      type: String
+    - contextPath: SailPointIdentityNow.Identity.source
+      description: Source that maps this identity.
+      type: String
+    - contextPath: SailPointIdentityNow.Identity.attributes
+      description: Map of variable number of attributes unique to this identity.
+      type: String
+    - contextPath: SailPointIdentityNow.Identity.accounts
+      description: Array of objects representing the accounts belonging to this identity.
+      type: String
+    - contextPath: SailPointIdentityNow.Identity.accountCount
+      description: Number of accounts belonging to this identity.
+      type: Number
+    - contextPath: SailPointIdentityNow.Identity.appCount
+      description: Number of applications belonging to this identity.
+      type: Number
+    - contextPath: SailPointIdentityNow.Identity.accessCount
+      description: Number of access objects belonging to this identity.
+      type: Number
+    - contextPath: SailPointIdentityNow.Identity.entitlementCount
+      description: Number of entitlements assigned to this identity.
+      type: Number
+    - contextPath: SailPointIdentityNow.Identity.roleCount
+      description: Number of roles assigned to this identity.
+      type: Number
+    - contextPath: SailPointIdentityNow.Identity.accessProfileCount
+      description: Number of access profiles assigned to this identity.
+      type: Number
+    - contextPath: SailPointIdentityNow.Identity.pod
+      description: Pod on which the organization that this identity belongs to resides
+        on.
+      type: String
+    - contextPath: SailPointIdentityNow.Identity.org
+      description: The organization that this identity belongs to.
+      type: String
+    - contextPath: SailPointIdentityNow.Identity.type
+      description: Type of object, will be "identity".
+      type: String
+  - arguments:
+    - default: false
+      description: Account Id of the user/identity(uuid).
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - default: false
+      description: Name of the user/identity on the account.
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - default: false
+      description: Native identity for the user account.
+      isArray: false
+      name: native_identity
+      required: false
+      secret: false
+    - default: false
+      description: Offset into the full result set. Usually specified with limit to
+        paginate through the results.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      description: Max number of results to return. Maximum of 250.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Get accounts by search/filter parameters (id, name, native_identity).
+    execution: false
+    name: identitynow-get-accounts
+    outputs:
+    - contextPath: SailPointIdentityNow.Account.id
+      description: The IdentityNow internal id (uuid).
+      type: String
+    - contextPath: SailPointIdentityNow.Account.name
+      description: Name of the identity on this account.
+      type: String
+    - contextPath: SailPointIdentityNow.Account.identityId
+      description: The IdentityNow internal identity id.
+      type: String
+    - contextPath: SailPointIdentityNow.Account.nativeIdentity
+      description: The IdentityNow internal native identity id.
+      type: String
+    - contextPath: SailPointIdentityNow.Account.sourceId
+      description: Source id that maps this account.
+      type: String
+    - contextPath: SailPointIdentityNow.Account.created
+      description: Timestamp when the account was created.
+      type: Date
+    - contextPath: SailPointIdentityNow.Account.modified
+      description: Timestamp when the account was last modified.
+      type: Date
+    - contextPath: SailPointIdentityNow.Account.attributes
+      description: Map of variable number of attributes unique to this account.
+      type: String
+    - contextPath: SailPointIdentityNow.Account.authoritative
+      description: Indicates whether the account is the true source for this identity.
+      type: Boolean
+    - contextPath: SailPointIdentityNow.Account.disabled
+      description: Indicates whether the account is disabled.
+      type: Boolean
+    - contextPath: SailPointIdentityNow.Account.locked
+      description: Indicates whether the account is locked.
+      type: Boolean
+    - contextPath: SailPointIdentityNow.Account.systemAccount
+      description: Indicates whether the account is a system account.
+      type: Boolean
+    - contextPath: SailPointIdentityNow.Account.uncorrelated
+      description: Indicates whether the account is uncorrelated.
+      type: Boolean
+    - contextPath: SailPointIdentityNow.Account.manuallyCorrelated
+      description: Indicates whether the account was manually correlated.
+      type: Boolean
+    - contextPath: SailPointIdentityNow.Account.hasEntitlements
+      description: Indicates whether the account has entitlement.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: Account activity Id (uuid).
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - default: false
+      description: The identity (uuid) that the activity was requested for (me indicates
+        current user).
+      isArray: false
+      name: requested_for
+      required: false
+      secret: false
+    - default: false
+      description: The identity (uuid) that requested the activity (me indicates current
+        user).
+      isArray: false
+      name: requested_by
+      required: false
+      secret: false
+    - default: false
+      description: The specified identity (uuid) will be either requester or target
+        of account activity (me indicates current user).
+      isArray: false
+      name: regarding_identity
+      required: false
+      secret: false
+    - default: false
+      description: Type of account activity.
+      isArray: false
+      name: type
+      required: false
+      secret: false
+    - default: false
+      description: Offset into the full result set. Usually specified with limit to
+        paginate through the results.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      description: Max number of results to return. Maximum of 250.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Get account activities by search/filter parameters (requested_for,
+      requested_by, regarding_identity, type).
+    execution: false
+    name: identitynow-get-accountactivities
+    outputs:
+    - contextPath: SailPointIdentityNow.AccountActivity.id
+      description: The IdentityNow internal id (uuid).
+      type: String
+    - contextPath: SailPointIdentityNow.AccountActivity.name
+      description: Name of the account activity.
+      type: String
+    - contextPath: SailPointIdentityNow.AccountActivity.created
+      description: Timestamp when the account activity was created.
+      type: Date
+    - contextPath: SailPointIdentityNow.AccountActivity.modified
+      description: Timestamp when the account activity was last modified.
+      type: Date
+    - contextPath: SailPointIdentityNow.AccountActivity.completed
+      description: Timestamp when the account activity was completed.
+      type: Date
+    - contextPath: SailPointIdentityNow.AccountActivity.completionStatus
+      description: Completion status of the activity.
+      type: String
+    - contextPath: SailPointIdentityNow.AccountActivity.type
+      description: Type of account activity.
+      type: String
+    - contextPath: SailPointIdentityNow.AccountActivity.requesterIdentitySummary
+      description: Information of the requester identity.
+      type: String
+    - contextPath: SailPointIdentityNow.AccountActivity.targetIdentitySummary
+      description: Information of the target identity.
+      type: String
+    - contextPath: SailPointIdentityNow.AccountActivity.items
+      description: List of items that were requested as part of the account activity.
+      type: String
+    - contextPath: SailPointIdentityNow.AccountActivity.executionStatus
+      description: Execution status of the account activity.
+      type: String
+    - contextPath: SailPointIdentityNow.AccountActivity.cancelable
+      description: Indicates whether the account activity is cancelable.
+      type: Boolean
+    - contextPath: SailPointIdentityNow.AccountActivity.cancelComment
+      description: Comments added while canceling the account activity.
+      type: String
+  - arguments:
+    - default: false
+      description: Elastic search query for retrieving identities.
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - default: false
+      description: Offset into the full result set. Usually specified with limit to
+        paginate through the results.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      description: Max number of results to return. Maximum of 250.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Search for access profile(s) using elastic search query used by IdentityNow
+      Search Engine.
+    execution: false
+    name: identitynow-search-accessprofiles
+    outputs:
+    - contextPath: SailPointIdentityNow.AccessProfile.id
+      description: The IdentityNow internal id of the access profile object.
+      type: String
+    - contextPath: SailPointIdentityNow.AccessProfile.name
+      description: Name of the access profile object.
+      type: String
+    - contextPath: SailPointIdentityNow.AccessProfile.description
+      description: User friendly description of the access profile.
+      type: String
+    - contextPath: SailPointIdentityNow.AccessProfile.source
+      description: Source of the access profile.
+      type: String
+    - contextPath: SailPointIdentityNow.AccessProfile.entitlements
+      description: Entitlements included in the access profile.
+      type: String
+    - contextPath: SailPointIdentityNow.AccessProfile.entitlementCount
+      description: Number of entitlements included in the access profile.
+      type: Number
+    - contextPath: SailPointIdentityNow.AccessProfile.created
+      description: Date when the access profile was created.
+      type: Date
+    - contextPath: SailPointIdentityNow.AccessProfile.modified
+      description: Date when the access profile was last modified.
+      type: Date
+    - contextPath: SailPointIdentityNow.AccessProfile.synced
+      description: Date when the access profile was last synced.
+      type: Date
+    - contextPath: SailPointIdentityNow.AccessProfile.enabled
+      description: Indicates whether the access profile is active (true/false).
+      type: Boolean
+    - contextPath: SailPointIdentityNow.AccessProfile.requestable
+      description: Indicates whether the access profile is requestable in IdentityNow.
+      type: Boolean
+    - contextPath: SailPointIdentityNow.AccessProfile.requestCommentsRequired
+      description: Indicates whether any request for this profile must contain comments.
+      type: Boolean
+    - contextPath: SailPointIdentityNow.AccessProfile.owner
+      description: Owner of the access profile.
+      type: String
+    - contextPath: SailPointIdentityNow.AccessProfile.pod
+      description: Pod that the organization containing the access profile belongs
+        to.
+      type: String
+    - contextPath: SailPointIdentityNow.AccessProfile.org
+      description: Name of the org on which the access profile exists.
+      type: String
+    - contextPath: SailPointIdentityNow.AccessProfile.type
+      description: Type of access profile, will be "accessprofile".
+      type: String
+  - arguments:
+    - default: false
+      description: Elastic search query for retrieving roles.
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - default: false
+      description: Offset into the full result set. Usually specified with limit to
+        paginate through the results.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      description: Max number of results to return. Maximum of 250.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Search for role(s) using elastic search query used by IdentityNow
+      Search Engine.
+    execution: false
+    name: identitynow-search-roles
+    outputs:
+    - contextPath: SailPointIdentityNow.Role.id
+      description: The IdentityNow internal id of the role object.
+      type: String
+    - contextPath: SailPointIdentityNow.Role.name
+      description: Name of the role.
+      type: String
+    - contextPath: SailPointIdentityNow.Role.description
+      description: Description of this role.
+      type: String
+    - contextPath: SailPointIdentityNow.Role.accessProfiles
+      description: Array of objects representing the access profiles that belong to
+        this role.
+      type: Unknown
+    - contextPath: SailPointIdentityNow.Role.accessProfileCount
+      description: Number indicated how many access profiles are attached to this
+        role.
+      type: Number
+    - contextPath: SailPointIdentityNow.Role.created
+      description: Timestamp when this role was created.
+      type: Date
+    - contextPath: SailPointIdentityNow.Role.modified
+      description: Timestamp when this role was last modified.
+      type: Date
+    - contextPath: SailPointIdentityNow.Role.synced
+      description: Timestamp when this role was last synced.
+      type: Date
+    - contextPath: SailPointIdentityNow.Role.enabled
+      description: Indicates whether this role is enabled.
+      type: Boolean
+    - contextPath: SailPointIdentityNow.Role.requestable
+      description: Indicates whether this role is requestable.
+      type: Boolean
+    - contextPath: SailPointIdentityNow.Role.requestCommentsRequired
+      description: Indicates whether comments are required when requesting this role.
+      type: Boolean
+    - contextPath: SailPointIdentityNow.Role.owner
+      description: Owner of the role.
+      type: String
+    - contextPath: SailPointIdentityNow.Role.pod
+      description: Pod on which the organization responsible for this role belongs.
+      type: String
+    - contextPath: SailPointIdentityNow.Role.org
+      description: Organization on which this role exists.
+      type: String
+    - contextPath: SailPointIdentityNow.Role.type
+      description: Type of object, will be "role".
+      type: String
+  - arguments:
+    - default: false
+      description: Elastic search query for retrieving entitlements.
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - default: false
+      description: Offset into the full result set. Usually specified with limit to
+        paginate through the results.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      description: Max number of results to return. Maximum of 250.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Search for entitlement(s) using elastic search query used by IdentityNow
+      Search Engine.
+    execution: false
+    name: identitynow-search-entitlements
+    outputs:
+    - contextPath: SailPointIdentityNow.Entitlement.id
+      description: The IdentityNow internal id of the entitlement object.
+      type: String
+    - contextPath: SailPointIdentityNow.Entitlement.name
+      description: Name of the entitlement object.
+      type: String
+    - contextPath: SailPointIdentityNow.Entitlement.displayName
+      description: Displayname of the entitlement object.
+      type: String
+    - contextPath: SailPointIdentityNow.Entitlement.description
+      description: Description of the entitlement.
+      type: String
+    - contextPath: SailPointIdentityNow.Entitlement.modified
+      description: Timestamp when the entitlement was last modified.
+      type: Date
+    - contextPath: SailPointIdentityNow.Entitlement.synced
+      description: Timestamp when the entitlement was last synced.
+      type: Date
+    - contextPath: SailPointIdentityNow.Entitlement.source
+      description: Source from which this entitlement was aggregated.
+      type: String
+    - contextPath: SailPointIdentityNow.Entitlement.privileged
+      description: Indicates this is a privileged entitlement.
+      type: Boolean
+    - contextPath: SailPointIdentityNow.Entitlement.identityCount
+      description: Indicates how many identities have this entitlement.
+      type: Number
+    - contextPath: SailPointIdentityNow.Entitlement.attribute
+      description: Name of the attribute type on the source.
+      type: String
+    - contextPath: SailPointIdentityNow.Entitlement.value
+      description: Value of the entitlement (its native identifier).
+      type: String
+    - contextPath: SailPointIdentityNow.Entitlement.schema
+      description: The source schema that this entitlement utilizes.
+      type: String
+    - contextPath: SailPointIdentityNow.Entitlement.pod
+      description: Pod on which the organization this entitlement belongs to is located.
+      type: String
+    - contextPath: SailPointIdentityNow.Entitlement.org
+      description: Organization on which the source of this entitlement resides.
+      type: String
+    - contextPath: SailPointIdentityNow.Entitlement.type
+      description: Type of object, will be "entitlement".
+      type: String
+  - arguments:
+    - default: false
+      description: Elastic search query for retrieving events.
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - default: false
+      description: Offset into the full result set. Usually specified with limit to
+        paginate through the results.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      description: Max number of results to return. Maximum of 250.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Search for event(s) using elastic search query used by IdentityNow
+      Search Engine.
+    execution: false
+    name: identitynow-search-events
+    outputs:
+    - contextPath: SailPointIdentityNow.Event.id
+      description: The IdentityNow internal id of the event object.
+      type: String
+    - contextPath: SailPointIdentityNow.Event.name
+      description: Name of the event.
+      type: String
+    - contextPath: SailPointIdentityNow.Event.stack
+      description: Component that triggered the event.
+      type: String
+    - contextPath: SailPointIdentityNow.Event.created
+      description: Timestamp when the event was created.
+      type: Date
+    - contextPath: SailPointIdentityNow.Event.synced
+      description: Timestamp when the event was last synced.
+      type: String
+    - contextPath: SailPointIdentityNow.Event.objects
+      description: Array of object types that were the target of this event.
+      type: Unknown
+    - contextPath: SailPointIdentityNow.Event.ipAddress
+      description: IP address that triggered this event.
+      type: String
+    - contextPath: SailPointIdentityNow.Event.technicalName
+      description: System name for the event.
+      type: String
+    - contextPath: SailPointIdentityNow.Event.target
+      description: Target of this event action.
+      type: String
+    - contextPath: SailPointIdentityNow.Event.actor
+      description: Entity that initiated the action that caused this event.
+      type: String
+    - contextPath: SailPointIdentityNow.Event.action
+      description: Action type of the event.
+      type: String
+    - contextPath: SailPointIdentityNow.Event.attributes
+      description: Attributes of other interesting information about this event, contextual
+        to the type.
+      type: String
+    - contextPath: SailPointIdentityNow.Event.operation
+      description: Operation performed that triggered event.
+      type: String
+    - contextPath: SailPointIdentityNow.Event.status
+      description: Status of the event.
+      type: String
+    - contextPath: SailPointIdentityNow.Event.pod
+      description: Pod on which the organization that the event exists.
+      type: String
+    - contextPath: SailPointIdentityNow.Event.org
+      description: Organization that initiated the event.
+      type: String
+    - contextPath: SailPointIdentityNow.Event.type
+      description: Type of event.
+      type: String
+  - arguments:
+    - default: false
+      description: Identity Id (uuid) for whom the access request is being made.
+      isArray: false
+      name: requested_for
+      required: true
+      secret: false
+    - default: false
+      description: Id (uuid) of the object (access profile or role).
+      isArray: false
+      name: requested_item
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Type of object (ACCESS_PROFILE or ROLE).
+      isArray: false
+      name: requested_item_type
+      predefined:
+      - ACCESS_PROFILE
+      - ROLE
+      required: true
+      secret: false
+    - default: false
+      description: Comments to attach to the item request.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    deprecated: false
+    description: Grant access request for a single object(access profile or role)
+      for a single user.
+    execution: false
+    name: identitynow-request-grant
+  - arguments:
+    - default: false
+      description: Identity Id (uuid) for whom the access request is being made.
+      isArray: false
+      name: requested_for
+      required: true
+      secret: false
+    - default: false
+      description: Id (uuid) of the object(access profile or role).
+      isArray: false
+      name: requested_item
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Type of object (ACCESS_PROFILE or ROLE).
+      isArray: false
+      name: requested_item_type
+      predefined:
+      - ACCESS_PROFILE
+      - ROLE
+      required: true
+      secret: false
+    - default: false
+      description: Comments to attach to the item request.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    deprecated: false
+    description: Revoke access request for a single object(access profile or role)
+      for a single user.
+    execution: false
+    name: identitynow-request-revoke
+  dockerimage: demisto/python3:3.9.7.24076
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- SailPointIdentityNow-Test
+defaultmapperin: SailPoint IdentityNow Trigger Mapper
+fromversion: 6.0.0

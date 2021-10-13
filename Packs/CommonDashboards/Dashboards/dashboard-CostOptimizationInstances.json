@@ -1,0 +1,639 @@
+{
+    "fromDate": "0001-01-01T00:00:00Z",
+    "fromDateLicense": "0001-01-01T00:00:00Z",
+    "id": "Cost Optimization Instances",
+    "layout": [
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "ff588500-ac29-11eb-98fe-2706b6bd2bbe",
+            "id": "ff588500-ac29-11eb-98fe-2706b6bd2bbe",
+            "reflectDimensions": false,
+            "w": 2,
+            "widget": {
+                "category": "",
+                "commitMessage": "",
+                "dataType": "metrics",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "description": "Commands executed",
+                "fromServerVersion": "",
+                "id": "number-of-used-commands",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-05-03T14:18:36.23324452Z",
+                "name": "Commands executed",
+                "packID": "",
+                "params": {
+                    "groupBy": [],
+                    "keys": [
+                        "sum|executionCount"
+                    ],
+                    "tableColumns": []
+                },
+                "prevName": "Count of Commands used",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:integration",
+                "shouldCommit": false,
+                "size": 0,
+                "sort": null,
+                "sortValues": null,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 2,
+                "widgetType": "number"
+            },
+            "x": 10,
+            "y": 3
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "510115b0-c206-11eb-80b4-59f9f28834c5",
+            "id": "510115b0-c206-11eb-80b4-59f9f28834c5",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "category": "",
+                "commitMessage": "",
+                "dataType": "metrics",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "fromServerVersion": "",
+                "id": "least-executed-commands",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-05-31T11:49:07.177490018Z",
+                "name": "Least executed Commands",
+                "packID": "",
+                "params": {
+                    "groupBy": [
+                        "command"
+                    ],
+                    "keys": [
+                        "sum|executionCount"
+                    ],
+                    "limitType": "bottom",
+                    "showOthers": false,
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "count",
+                            "position": 0
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "data",
+                            "position": 1
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "floatData",
+                            "position": 2
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "groups",
+                            "position": 3
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 4
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "color",
+                            "position": 5
+                        }
+                    ],
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "Least executed Commands",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:integration",
+                "shouldCommit": false,
+                "size": 5,
+                "sort": null,
+                "sortValues": null,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 7,
+                "widgetType": "column"
+            },
+            "x": 4,
+            "y": 0
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "62205310-c206-11eb-80b4-59f9f28834c5",
+            "id": "62205310-c206-11eb-80b4-59f9f28834c5",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "category": "",
+                "commitMessage": "",
+                "dataType": "metrics",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "description": "Top executed Commands",
+                "fromServerVersion": "",
+                "id": "command-execution-count-per-command",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-05-31T11:50:14.521631622Z",
+                "name": "Top executed Commands",
+                "packID": "",
+                "params": {
+                    "groupBy": [
+                        "command"
+                    ],
+                    "keys": [
+                        "sum|executionCount"
+                    ],
+                    "showOthers": false,
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "count",
+                            "position": 0
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "data",
+                            "position": 1
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "floatData",
+                            "position": 2
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "groups",
+                            "position": 3
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 4
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "pivot",
+                            "position": 5
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "color",
+                            "position": 6
+                        }
+                    ],
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "Top executed Commands",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:integration",
+                "shouldCommit": false,
+                "size": 5,
+                "sort": null,
+                "sortValues": null,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 6,
+                "widgetType": "column"
+            },
+            "x": 8,
+            "y": 0
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "2ce57580-c211-11eb-80b4-59f9f28834c5",
+            "id": "2ce57580-c211-11eb-80b4-59f9f28834c5",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "category": "",
+                "commitMessage": "",
+                "dataType": "metrics",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "fromServerVersion": "",
+                "id": "least-executed-commands-per-instance",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-05-31T13:07:37.522187996Z",
+                "name": "Least executed Commands per Instance",
+                "packID": "",
+                "params": {
+                    "groupBy": [
+                        "instance"
+                    ],
+                    "keys": [
+                        "sum|executionCount"
+                    ],
+                    "limitType": "bottom",
+                    "showOthers": false,
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "count",
+                            "position": 0
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "data",
+                            "position": 1
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "floatData",
+                            "position": 2
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "groups",
+                            "position": 3
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 4
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "color",
+                            "position": 5
+                        }
+                    ],
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "Least executed Commands per Instance",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:integration",
+                "shouldCommit": false,
+                "size": 5,
+                "sort": null,
+                "sortValues": null,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 6,
+                "widgetType": "column"
+            },
+            "x": 0,
+            "y": 0
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "444de400-c211-11eb-80b4-59f9f28834c5",
+            "id": "444de400-c211-11eb-80b4-59f9f28834c5",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "category": "",
+                "commitMessage": "",
+                "dataType": "metrics",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "fromServerVersion": "",
+                "id": "command-executions-per-integration-category",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-05-31T13:08:12.515578789Z",
+                "name": "Command executions per Integration Category",
+                "packID": "",
+                "params": {
+                    "groupBy": [
+                        "category"
+                    ],
+                    "keys": [
+                        "sum|executionCount"
+                    ],
+                    "showGraphValues": false,
+                    "showOthers": false,
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "count",
+                            "position": 0
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "data",
+                            "position": 1
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "floatData",
+                            "position": 2
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "groups",
+                            "position": 3
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 4
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "pivot",
+                            "position": 5
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "color",
+                            "position": 6
+                        }
+                    ],
+                    "valuesFormat": "regular"
+                },
+                "prevName": "Command executions per Integration Category",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:integration",
+                "shouldCommit": false,
+                "size": 5,
+                "sort": null,
+                "sortValues": null,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 6,
+                "widgetType": "pie"
+            },
+            "x": 0,
+            "y": 3
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "55bf6010-c211-11eb-80b4-59f9f28834c5",
+            "id": "55bf6010-c211-11eb-80b4-59f9f28834c5",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "category": "",
+                "commitMessage": "",
+                "dataType": "metrics",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "fromServerVersion": "",
+                "id": "command-executions-per-incident-type",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-05-31T13:08:43.855674914Z",
+                "name": "Command executions per Incident Type",
+                "packID": "",
+                "params": {
+                    "groupBy": [
+                        "incidentType"
+                    ],
+                    "keys": [
+                        "sum|executionCount"
+                    ],
+                    "limitType": "top"
+                },
+                "prevName": "Command executions per Incident Type",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:integration",
+                "shouldCommit": false,
+                "size": 5,
+                "sort": null,
+                "sortValues": null,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 3,
+                "widgetType": "pie"
+            },
+            "x": 4,
+            "y": 3
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "4ec854d0-c458-11eb-a1d3-231dd86e2d26",
+            "id": "4ec854d0-c458-11eb-a1d3-231dd86e2d26",
+            "reflectDimensions": true,
+            "w": 2,
+            "widget": {
+                "category": "",
+                "commitMessage": "",
+                "dataType": "metrics",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "description": "Command execution type",
+                "fromServerVersion": "",
+                "id": "command-count-auto-vs-manual",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-06-03T10:41:50.602231569Z",
+                "name": "Command execution type",
+                "packID": "",
+                "params": {
+                    "customGroupBy": [
+                        {
+                            "Manual": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "isManual",
+                                            "operator": "isTrue",
+                                            "type": "boolean"
+                                        }
+                                    ]
+                                ],
+                                "name": "Manual"
+                            },
+                            "Playbook Task": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "isManual",
+                                            "operator": "isFalse",
+                                            "type": "boolean"
+                                        }
+                                    ]
+                                ],
+                                "name": "Playbook Task"
+                            }
+                        }
+                    ],
+                    "groupBy": [
+                        "isManual"
+                    ],
+                    "keys": [
+                        "sum|executionCount"
+                    ],
+                    "showGraphValues": false,
+                    "showOthers": false,
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "count",
+                            "position": 0
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "data",
+                            "position": 1
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "floatData",
+                            "position": 2
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "groups",
+                            "position": 3
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 4
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "color",
+                            "position": 5
+                        }
+                    ],
+                    "valuesFormat": "regular"
+                },
+                "prevName": "Command execution type",
+                "primaryTerm": 5,
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:integration",
+                "sequenceNumber": 29457222,
+                "shouldCommit": false,
+                "size": 0,
+                "sort": null,
+                "sortValues": [
+                    "598774"
+                ],
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 3,
+                "widgetType": "pie"
+            },
+            "x": 8,
+            "y": 3
+        }
+    ],
+    "name": "Cost Optimization Instances",
+    "period": {
+        "by": "",
+        "byFrom": "days",
+        "byTo": "",
+        "field": "",
+        "fromValue": 7,
+        "toValue": null
+    },
+    "toDate": "0001-01-01T00:00:00Z",
+    "version": -1,
+    "fromVersion": "6.2.0",
+    "description": "Cost Optimization Instances",
+    "isPredefined": true
+}

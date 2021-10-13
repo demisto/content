@@ -7,13 +7,14 @@ In a web browser, go to **http://*demisto_address*:*listen_port***.
 
 
 ### Access the EDL Service by Instance Name (HTTPS)
-**The route will be open without security hardening and might expose you to network risks.**
+**Note: The EDL will be open to the same network the XSOAR Server is accessible. Make sure you are aware of the network risks. Enabling strong authentication is highly recommended if the route is open to the public.**
 
 To access the EDL service by instance name, make sure ***Instance execute external*** is enabled. 
 
-1. In Demisto, go to **Settings > About > Troubleshooting**.
-2. In the **Server Configuration** section, verify that the ***instance.execute.external*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external* and set the value to *true*. See [this documentation](https://xsoar.pan.dev/docs/integrations/long-running#invoking-http-integrations-via-cortex-xsoar-servers-route-handling) for further information.
-3. In a web browser, go to **https://*<demisto_address>*/instance/execute/*<instance_name>*** .
+1. In Cortex XSOAR, go to **Settings > About > Troubleshooting**.
+2. In the **Server Configuration** section, verify that the `instance.execute.external.<instance_name>` key is set to `true`. If this key does not exist, click **+ Add Server Configuration** and add the `instance.execute.external.<instance_name>` and set the value to `true`. See [this documentation](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for further information.
+3. In a web browser, go to `https://<cortex-xsoar_address>/instance/execute/<instance_name>/`.
+  * In Multi Tenant environments, go to `https://<cortex-xsoar_address>/acc-<account name>/instance/execute/<instance_name>/`
 
 
 ### Modify Request Parameters Through the URL
@@ -23,8 +24,8 @@ Use the following arguments in the URL to modify the request:
  * Example: https://{cortex-xsoar_instance}/instance/execute/{EDL_instance_name}?n=50
 2. **s** - The starting entry index from which to export the indicators.
  * Example: https://{cortex-xsoar_instance}/instance/execute/{EDL_instance_name}?s=10&n=50
-3. **q** - The query used to retrieve indicators from the system.
- * Example: https://{cortex-xsoar_instance}/instance/execute/{EDL_instance_name}?q="type:ip and sourceBrand:my_source"
+3. **q** - The query used to retrieve indicators from the system. Make sure to [URL encode](https://www.w3schools.com/tags/ref_urlencode.ASP).
+ * Example: https://{cortex-xsoar_instance}/instance/execute/{EDL_instance_name}?q=type:IP+and+reputation:Bad
 4. **sp** - If set will strip ports off URLs, otherwise will ignore URLs with ports.
  * Example: https://{cortex-xsoar_instance}/instance/execute/{EDL_instance_name}?v=panosurl&sp 
 5. **di** - If set will ignore URLs that are not compliant with PAN-OS URL format instead of being rewritten.

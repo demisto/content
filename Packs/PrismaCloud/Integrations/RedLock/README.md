@@ -6,20 +6,26 @@
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | Server URL | True |
+| url | Server API URL. See [here](https://api.docs.prismacloud.io/api/cloud/api-urls) for the relevant API URL for your tenant. | True |
 | username | API Access Key | True |
 | password | API Secret | True |
 | customer | Customer name | False |
-| proxy | Use system proxy settings | False |
-| unsecure | Trust any certificate \(not secure\) | False |
-| ruleName | Fetch only incidents matching this rule name | False |
-| policySeverity | Fetch only incidents with this severity | False |
 | isFetch | Fetch incidents | False |
 | incidentType | Incident type | False |
+| fetch_time | First fetch timestamp \(&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year\) | False |
+| ruleName | Fetch only incidents matching this rule name | False |
+| policyName | Fetch only incidents matching this policy name | False |
+| policySeverity | Fetch only incidents with this severity | False |
+| proxy | Use system proxy settings | False |
+| unsecure | Trust any certificate \(not secure\) | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+**Note:** Further info on creating access keys for Prisma Cloud is available [here](https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-admin/manage-prisma-cloud-administrators/create-access-keys.html).
+
+
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### redlock-search-alerts
 ***
@@ -443,7 +449,7 @@ Run RQL query on Prisma Cloud
 | Redlock.RQL.Response.AccountName | String | The cloud account name. | 
 | Redlock.RQL.Response.AllowDrillDown | Boolean | Flag to allow drill down. | 
 | Redlock.RQL.Response.CloudType | String | The cloud type. | 
-| Redlock.RQL.Response.Data | Object | The data object returned by the RQL response. Reference: https://api.docs.prismacloud.io/reference#search-config | 
+| Redlock.RQL.Response.Data | Object | The data object returned by the RQL response. Reference: https://api.docs.prismacloud.io/api/cloud/cspm/search/ | 
 | Redlock.RQL.Response.Deleted | Boolean | Flag if deleted. | 
 | Redlock.RQL.Response.HasAlert | Boolean | Flag to check if RQL response has alerts. | 
 | Redlock.RQL.Response.HasExtFindingRiskFactors | Boolean | Flag if query returns external risk factors. | 

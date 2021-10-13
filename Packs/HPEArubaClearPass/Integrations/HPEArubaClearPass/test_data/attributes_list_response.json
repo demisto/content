@@ -1,0 +1,27 @@
+{
+    "_links": {
+        "self": {
+            "href": "https://example:57345/api/attribute?calculate_count=false&offset=0&limit=25&sort=%2Bid&filter=%7B%7D"
+        },
+        "first": {
+            "href": "https://example:57345/api/attribute?calculate_count=false&offset=0&limit=25&sort=%2Bid&filter=%7B%7D"
+        }
+    },
+    "_embedded": {
+        "items": [
+            {
+                "id": 1,
+                "name": "Controller Id",
+                "entity_name": "Device",
+                "data_type": "String",
+                "mandatory": false,
+                "allow_multiple": true,
+                "_links": {
+                    "self": {
+                        "href": "https://content.demisto.works:57345/api/attribute/35"
+                    }
+                }
+            }
+        ]
+    }
+}

@@ -15,23 +15,20 @@
   <li>Get information about sensors, packages, actions, hosts etc.</li>
 </ul>
 <h2>Detailed Description</h2>
-<ul>
-  <li>Integration with Tanium REST API. Available from Tanium version 7.3.0. You can manage questions, actions, saved
-    questions, packages and sensor information.</li>
-  <li></li>
-  <li>## Configuration Parameters</li>
-  <li></li>
-  <li>**Hostname** </li>
-  <li>The network address of the Tanium server host.</li>
-  <li></li>
-  <li>**Domain** </li>
-  <li>The Tanium user domain. Relevant when there is more than one domain inside Tanium.</li>
-  <li></li>
-  <li>**Credentials** </li>
-  <li>The credentials should be the same as the Tanium client.</li>
+Integration with Tanium REST API. Available from Tanium version 7.3.0. You can manage questions, actions, saved
+    questions, packages and sensor information.
+
+  ## Configuration Parameters
+  <ul>
+  <li><i>Hostname</i>
+   - The network address of the Tanium server host.
+  <li><i>Domain </i>
+   - The Tanium user domain. Relevant when there is more than one domain inside Tanium.</li>
+  <li><i>Credentials </i>
+   - The credentials should be the same as the Tanium client.</li>
 </ul>
 
-<h2>Configure Tanium v2 on Demisto</h2>
+<h2>Configure Tanium v2 on Cortex XSOAR</h2>
 <ol>
   <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
     &nbsp;&gt;&nbsp;<strong>Servers &amp; Services</strong>.</li>
@@ -42,7 +39,7 @@
       <li><strong>Name</strong>: a textual name for the integration instance.</li>
       <li><strong>Hostname, IP address, or server URL.</strong></li>
       <li><strong>Domain</strong></li>
-      <li><strong>Credentials</strong></li>
+      <li><strong>Credentials OR API Token</strong></li>
       <li><strong>Trust any certificate (not secure)</strong></li>
       <li><strong>Use system proxy settings</strong></li>
     </ul>
@@ -51,9 +48,35 @@
     Click&nbsp;<strong>Test</strong>&nbsp;to validate the new instance.
   </li>
 </ol>
+<h2>Authentication Options</h2>
+<ol>
+    <li><strong>Basic Authentication -</strong> to authenticate using basic authentication fill in the username and
+     password
+     into the corresponding fields and leave the API Token field empty. The username and password should be the same
+      as the Tanium client.</li>
+    <li>
+    <strong>OAuth 2.0 Authentication -</strong> To use OAuth 2.0 follow the next steps:
+    <ol>
+    <li>Follow the instructions <a href= https://docs.tanium.com/platform_user/platform_user/console_api_tokens.html#add_API_tokens ><strong>here</strong></a>  to create an API token.
+    <li>Paste the generated API Token into the <strong>API Token</strong> parameter in the instance configuration, and leave the username
+        and password fields empty.</li>
+    <li>Click the <strong>Test</strong> button to validate the instance configuration.</li>
+    </ol>
+    </li>
+</ol>
+<strong>Notes:</strong>
+<ol>
+    <li><strong>Trusted IP Addresses:</strong> by default, the Tanium Server blocks API tokens from all addresses except
+     registered Tanium Module Servers. To add allowed IP addresses for any API token, add the IP addresses to the api_token_trusted_ip_address_list global setting. To add allowed IP addresses for an individual API token, specify the IP addresses in the trusted_ip_addresses field of the api_token object.</li>
+    <li><strong>Expiration Time:</strong> by default, an api_token is valid for seven days. To change the expiration timeframe, edit
+     the api_token_expiration_in_days global setting (minimum value is 1), or include a value with the expire_in_days field when you create the token.</li>
+    <li>To edit a global setting in the Tanium platform, go to <i>Administration</i> -> <i>Global
+     Settings</i> and search for the setting you would like to edit.</li>
+     <li>For more information see the <a href=https://docs.tanium.com/platform_user/platform_user/console_api_tokens.html><strong>Tanium documentation</strong></a>.</li>
+</ol>
 <h2>Commands</h2>
 <p>
-  You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+  You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
   After you successfully execute a command, a DBot message appears in the War Room with the command details.
 </p>
 <ol>
@@ -531,12 +554,6 @@
       </tr>
     </tbody>
   </table>
-
-  <!-- remove the following comments to manually add an image: -->
-  <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="tn-ask-question">2. tn-ask-question</h3>
@@ -625,11 +642,6 @@
   <p>
     New question created. ID = 50500
   </p>
-  <!-- remove the following comments to manually add an image: -->
-  <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="tn-get-question-result">3. tn-get-question-result</h3>
@@ -724,11 +736,6 @@
   <p>
     Question is still executing, Question id: 50477
   </p>
-  <!-- remove the following comments to manually add an image: -->
-  <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="tn-list-sensors">4. tn-list-sensors</h3>
@@ -954,12 +961,6 @@
       </tr>
     </tbody>
   </table>
-
-  <!-- remove the following comments to manually add an image: -->
-  <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="tn-get-sensor">5. tn-get-sensor</h3>
@@ -1236,12 +1237,6 @@
       </tr>
     </tbody>
   </table>
-
-  <!-- remove the following comments to manually add an image: -->
-  <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="tn-create-saved-question">6. tn-create-saved-question</h3>
@@ -1336,11 +1331,6 @@
   <p>
     Question saved. ID = 450
   </p>
-  <!-- remove the following comments to manually add an image: -->
-  <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="tn-list-saved-questions">7. tn-list-saved-questions</h3>
@@ -1571,12 +1561,6 @@
       </tr>
     </tbody>
   </table>
-
-  <!-- remove the following comments to manually add an image: -->
-  <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="tn-get-saved-question-result">8. tn-get-saved-question-result</h3>
@@ -1672,11 +1656,6 @@
   <p>
     **No entries.**
   </p>
-  <!-- remove the following comments to manually add an image: -->
-  <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="tn-get-system-status">9. tn-get-system-status</h3>
@@ -1834,12 +1813,6 @@
       </tr>
     </tbody>
   </table>
-
-  <!-- remove the following comments to manually add an image: -->
-  <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="tn-create-package">10. tn-create-package</h3>
@@ -2073,11 +2046,6 @@
   <p>
     **No entries.**
   </p>
-  <!-- remove the following comments to manually add an image: -->
-  <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="tn-list-packages">11. tn-list-packages</h3>
@@ -2295,12 +2263,6 @@
       </tr>
     </tbody>
   </table>
-
-  <!-- remove the following comments to manually add an image: -->
-  <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="tn-get-question-metadata">12. tn-get-question-metadata</h3>
@@ -2460,12 +2422,6 @@
       </tr>
     </tbody>
   </table>
-
-  <!-- remove the following comments to manually add an image: -->
-  <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="tn-list-saved-actions">13. tn-list-saved-actions</h3>
@@ -2725,12 +2681,6 @@
       </tr>
     </tbody>
   </table>
-
-  <!-- remove the following comments to manually add an image: -->
-  <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="tn-get-saved-action">14. tn-get-saved-action</h3>
@@ -2994,12 +2944,6 @@
       </tr>
     </tbody>
   </table>
-
-  <!-- remove the following comments to manually add an image: -->
-  <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="tn-get-saved-question-metadata">15. tn-get-saved-question-metadata</h3>
@@ -3232,12 +3176,6 @@
       </tr>
     </tbody>
   </table>
-
-  <!-- remove the following comments to manually add an image: -->
-  <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="tn-create-saved-action">16. tn-create-saved-action</h3>
@@ -3500,12 +3438,6 @@
       </tr>
     </tbody>
   </table>
-
-  <!-- remove the following comments to manually add an image: -->
-  <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="tn-create-action">17. tn-create-action</h3>
@@ -3790,12 +3722,6 @@
       </tr>
     </tbody>
   </table>
-
-  <!-- remove the following comments to manually add an image: -->
-  <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="tn-list-actions">18. tn-list-actions</h3>
@@ -4052,12 +3978,6 @@
       </tr>
     </tbody>
   </table>
-
-  <!-- remove the following comments to manually add an image: -->
-  <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="tn-get-action">19. tn-get-action</h3>
@@ -4312,12 +4232,6 @@
       </tr>
     </tbody>
   </table>
-
-  <!-- remove the following comments to manually add an image: -->
-  <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="tn-list-saved-actions-pending-approval">20. tn-list-saved-actions-pending-approval</h3>
@@ -4437,12 +4351,6 @@
       </tr>
     </tbody>
   </table>
-
-  <!-- remove the following comments to manually add an image: -->
-  <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="tn-get-group">21. tn-get-group</h3>
@@ -4573,12 +4481,6 @@
       </tr>
     </tbody>
   </table>
-
-  <!-- remove the following comments to manually add an image: -->
-  <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="tn-create-manual-group">22. tn-create-manual-group</h3>
@@ -4691,12 +4593,6 @@
       </tr>
     </tbody>
   </table>
-
-  <!-- remove the following comments to manually add an image: -->
-  <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="tn-create-filter-based-group">23. tn-create-filter-based-group</h3>
@@ -4798,12 +4694,6 @@
       </tr>
     </tbody>
   </table>
-
-  <!-- remove the following comments to manually add an image: -->
-  <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="tn-list-groups">24. tn-list-groups</h3>
@@ -4930,12 +4820,6 @@
       </tr>
     </tbody>
   </table>
-
-  <!-- remove the following comments to manually add an image: -->
-  <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="tn-delete-group">25. tn-delete-group</h3>
@@ -4998,11 +4882,6 @@ There are no context output for this command.
   <p>
     Group has been deleted. ID = 31822
   </p>
-  <!-- remove the following comments to manually add an image: -->
-  <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="tn-create-action-by-host">26. tn-create-action-by-host</h3>
@@ -5287,12 +5166,6 @@ There are no context output for this command.
       </tr>
     </tbody>
   </table>
-
-  <!-- remove the following comments to manually add an image: -->
-  <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 <h2>Additional Information</h2>
 <h2>Known Limitations</h2>

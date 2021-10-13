@@ -1,2 +1,9 @@
 [file:InsightIDR-TestPlaybook.yml]
 ignore=auto-test
+
+[file:README.md]
+ignore=RM104
+
+
+[file:Rapid7_InsightIDR.yml]
+ignore=BA108,BA109

@@ -8,7 +8,7 @@ This integration was integrated and tested with version 3.32 of Lacework
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| lacework_account | Lacework Account Name \(i.e. Subdomain of the URL: &amp;lt;ACCOUNT&amp;gt;.lacework.net\) | True |
+| lacework_account | Lacework Account Name \(i.e. Subdomain of the URL: ACCOUNT.lacework.net\) | True |
 | lacework_api_key | Lacework API Key | True |
 | lacework_api_secret | Lacework API Secret | True |
 | lacework_event_severity | Lacework Event Severity Threshold | True |
@@ -18,7 +18,7 @@ This integration was integrated and tested with version 3.32 of Lacework
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### lw-get-aws-compliance-assessment
 ***

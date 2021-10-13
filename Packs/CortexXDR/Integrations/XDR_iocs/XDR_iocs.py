@@ -38,8 +38,8 @@ class Client:
     tlp_color = None
     error_codes: Dict[int, str] = {
         500: 'XDR internal server error.',
-        401: 'Unauthorized access. An issue occurred during authentication. This can indicate an ' +    # noqa: W504
-             'incorrect key, id, or other invalid authentication parameters.',
+        401: 'Unauthorized access. An issue occurred during authentication. This can indicate an '    # noqa: W504
+             + 'incorrect key, id, or other invalid authentication parameters.',
         402: 'Unauthorized access. User does not have the required license type to run this API.',
         403: 'Unauthorized access. The provided API key does not have the required RBAC permissions to run this API.'
     }
@@ -47,7 +47,7 @@ class Client:
     def __init__(self, params: Dict):
         self._base_url: str = urljoin(params.get('url'), '/public_api/v1/indicators/')
         self._verify_cert: bool = not params.get('insecure', False)
-        self._headers: Dict = get_headers(params)
+        self._params = params
         handle_proxy()
 
     def http_request(self, url_suffix: str, requests_kwargs) -> Dict:
@@ -64,6 +64,11 @@ class Client:
         except json.decoder.JSONDecodeError as error:
             demisto.error(str(res.content))
             raise error
+
+    @property
+    def _headers(self):
+        # the header should be calculated at most 5 min before the request fired
+        return get_headers(self._params)
 
 
 def get_headers(params: Dict) -> Dict:
@@ -133,11 +138,15 @@ def create_file_sync(file_path, batch_size: int = 200):
 
 
 def get_iocs_size(query=None) -> int:
-    return demisto.searchIndicators(query=query if query else Client.query, page=0, size=1).get('total', 0)
+    search_indicators = IndicatorsSearcher()
+    return search_indicators.search_indicators_by_version(query=query if query else Client.query, size=1)\
+        .get('total', 0)
 
 
 def get_iocs(page=0, size=200, query=None) -> List:
-    return demisto.searchIndicators(query=query if query else Client.query, page=page, size=size).get('iocs', [])
+    search_indicators = IndicatorsSearcher(page=page)
+    return search_indicators.search_indicators_by_version(query=query if query else Client.query, size=size)\
+        .get('iocs', [])
 
 
 def demisto_expiration_to_xdr(expiration) -> int:
@@ -198,9 +207,13 @@ def demisto_ioc_to_xdr(ioc: Dict) -> Dict:
         vendors = demisto_vendors_to_xdr(ioc.get('moduleToFeedMap', {}))
         if vendors:
             xdr_ioc['vendors'] = vendors
-        threat_type = ioc.get('CustomFields', {}).get('threattypes', {}).get('threatcategory')
+
+        threat_type = ioc.get('CustomFields', {}).get('threattypes', {})
         if threat_type:
-            xdr_ioc['class'] = threat_type
+            threat_type = threat_type[0] if isinstance(threat_type, list) else threat_type
+            threat_type = threat_type.get('threatcategory')
+            if threat_type:
+                xdr_ioc['class'] = threat_type
         if ioc.get('CustomFields', {}).get('xdrstatus') == 'disabled':
             xdr_ioc['status'] = 'DISABLED'
         return xdr_ioc
@@ -259,7 +272,8 @@ def get_indicators(indicators: str) -> List:
         iocs: list = []
         not_found = []
         for indicator in indicators.split(','):
-            data = demisto.searchIndicators(value=indicator).get('iocs')
+            search_indicators = IndicatorsSearcher()
+            data = search_indicators.search_indicators_by_version(value=indicator).get('iocs')
             if data:
                 iocs.extend(data)
             else:
@@ -405,7 +419,8 @@ def get_indicator_xdr_score(indicator: str, xdr_server: int):
     xdr_local: int = 0
     score = 0
     if indicator:
-        ioc = demisto.searchIndicators(value=indicator).get('iocs')
+        search_indicators = IndicatorsSearcher()
+        ioc = search_indicators.search_indicators_by_version(value=indicator).get('iocs')
         if ioc:
             ioc = ioc[0]
             score = ioc.get('score', 0)

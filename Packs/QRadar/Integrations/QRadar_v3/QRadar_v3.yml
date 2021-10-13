@@ -1,0 +1,2967 @@
+commonfields:
+  id: QRadar v3
+  version: -1
+name: QRadar v3
+display: IBM QRadar v3
+category: Analytics & SIEM
+description: IBM QRadar SIEM helps security teams accurately detect and prioritize
+  threats across the enterprise, supports API versions 10.1 and above. Provides intelligent
+  insights that enable teams to respond quickly to reduce the impact of incidents.
+configuration:
+- display: Server URL
+  name: server
+  type: 0
+  required: true
+  additionalinfo: (e.g., https://192.168.0.1)
+- display: Username
+  name: credentials
+  type: 9
+  required: true
+- display: QRadar API Version
+  defaultvalue: 14.0
+  additionalinfo: API version of QRadar (e.g., '12.0'). Minimum API version is 10.1.
+  name: api_version
+  type: 0
+  required: true
+- display: Incident Type
+  name: incident_type
+  required: false
+  type: 13
+- defaultvalue: Fetch With All Events
+  display: Fetch mode
+  hidden: false
+  name: fetch_mode
+  options:
+  - Fetch Without Events
+  - Fetch With All Events
+  - Fetch Correlation Events Only
+  required: true
+  type: 15
+- defaultvalue: '20'
+  display: Maximum number of events per incident.
+  name: events_limit
+  required: false
+  type: 0
+  additionalinfo: The maximal amount of events to pull per incident.
+- defaultvalue: '20'
+  display: Number of offenses to pull per API call (max 50)
+  name: offenses_per_fetch
+  required: false
+  type: 0
+- display: Query to fetch offenses
+  name: query
+  required: false
+  type: 0
+  additionalinfo: Define a query to determine which offenses to fetch. E.g., "severity
+    >= 4 AND id > 5 AND status=OPEN".
+- defaultvalue: IPs And Assets
+  display: Incidents Enrichment
+  hidden: false
+  name: enrichment
+  options:
+  - IPs
+  - IPs And Assets
+  - None
+  required: true
+  type: 15
+  additionalinfo: IPs enrichment transforms IDs of the IPs of the offense to IP values.
+    Asset enrichment adds correlated assets to the fetched offenses.
+- defaultvalue: 'QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory),
+    CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip,
+    destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME("creEventList"),
+    sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation,
+    destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude,
+    eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP,
+    postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort, UTF8(payload),
+    starttime, devicetime'
+  display: 'Event fields to return from the events query (WARNING: This parameter
+    is correlated to the incoming mapper and changing the values may adversely affect
+    mapping).'
+  name: events_columns
+  required: false
+  additionalinfo: "The parameter uses the AQL SELECT syntax. For more information,\
+    \ see: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.4/com.ibm.qradar.doc/c_aql_intro.html"
+  type: 12
+- defaultvalue: No Mirroring
+  display: Mirroring Options
+  hidden: false
+  name: mirror_options
+  options:
+  - No Mirroring
+  - Mirror Offense
+  required: false
+  type: 15
+  additionalinfo: How mirroring from QRadar to Cortex XSOAR should be done, available
+    from QRadar 7.3.3 Fix Pack 3. For further explanation on how to check your QRadar
+    version, see the integration documentation at https://xsoar.pan.dev.
+- additionalinfo: When selected, closing the QRadar offense is mirrored in Cortex
+    XSOAR.
+  defaultvalue: 'false'
+  display: Close Mirrored XSOAR Incident
+  hidden: false
+  name: close_incident
+  required: false
+  type: 8
+- additionalinfo: Maximum number of incoming incidents to mirror each time.
+  defaultvalue: '100'
+  display: The number of incoming incidents to mirror each time
+  name: mirror_limit
+  required: false
+  type: 0
+- additionalinfo: Comma-separated configuration for advanced parameter values. E.g.,
+    EVENTS_INTERVAL_SECS=20,FETCH_SLEEP=5
+  display: Advanced Parameters
+  name: adv_params
+  required: false
+  type: 12
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+script:
+  commands:
+  - name: qradar-offenses-list
+    outputs:
+    - contextPath: QRadar.Offense.Description
+      description: Description of the offense.
+      type: String
+    - contextPath: QRadar.Offense.Rules.id
+      description: The ID of the rule.
+      type: Number
+    - contextPath: QRadar.Offense.Rules.type
+      description: The type of the rule.
+      type: String
+    - contextPath: QRadar.Offense.Rules.name
+      description: The name of the rule.
+      type: String
+    - contextPath: QRadar.Offense.EventCount
+      description: Number of events that are associated with the offense.
+      type: Number
+    - contextPath: QRadar.Offense.FlowCount
+      description: Number of flows that are associated with the offense.
+      type: Number
+    - contextPath: QRadar.Offense.AssignedTo
+      description: The user to whom the offense is assigned.
+      type: String
+    - contextPath: QRadar.Offense.Followup
+      description: Whether the offense is marked for follow-up.
+      type: Boolean
+    - contextPath: QRadar.Offense.SourceAddress
+      description: Source addresses (IPs if IPs enrich have been requested, else IDs
+        of the IPs) that are associated with the offense.
+      type: Number
+    - contextPath: QRadar.Offense.Protected
+      description: Whether the offense is protected.
+      type: Boolean
+    - contextPath: QRadar.Offense.ClosingUser
+      description: The user who closed the offense.
+      type: String
+    - contextPath: QRadar.Offense.DestinationHostname
+      description: Destination networks that are associated with the offense.
+      type: String
+    - contextPath: QRadar.Offense.CloseTime
+      description: Time when the offense was closed.
+      type: Date
+    - contextPath: QRadar.Offense.RemoteDestinationCount
+      description: Number of remote destinations that are associated with the offense.
+      type: Number
+    - contextPath: QRadar.Offense.StartTime
+      description: Date of the earliest item that contributed to the offense.
+      type: Date
+    - contextPath: QRadar.Offense.Magnitude
+      description: Magnitude of the offense.
+      type: Number
+    - contextPath: QRadar.Offense.LastUpdatedTime
+      description: Date of the most recent item that contributed to the offense.
+      type: String
+    - contextPath: QRadar.Offense.Credibility
+      description: Credibility of the offense.
+      type: Number
+    - contextPath: QRadar.Offense.ID
+      description: ID of the offense.
+      type: Number
+    - contextPath: QRadar.Offense.Categories
+      description: Event categories that are associated with the offense.
+      type: String
+    - contextPath: QRadar.Offense.Severity
+      description: Severity of the offense.
+      type: Number
+    - contextPath: QRadar.Offense.ClosingReason
+      description: Reason the offense was closed.
+      type: String
+    - contextPath: QRadar.Offense.OffenseType
+      description: Type of the offense.
+      type: String
+    - contextPath: QRadar.Offense.Relevance
+      description: Relevance of the offense.
+      type: Number
+    - contextPath: QRadar.Offense.OffenseSource
+      description: Source of the offense.
+      type: String
+    - contextPath: QRadar.Offense.DestinationAddress
+      description: Destination addresses (IPs if IPs enrichment have been requested,
+        else IDs of the IPs) that are associated with the offense.
+      type: Number
+    - contextPath: QRadar.Offense.Status
+      description: 'Status of the offense. Possible values: "OPEN", "HIDDEN", "CLOSED".'
+      type: String
+    - contextPath: QRadar.Offense.LinkToOffense
+      description: Link to the URL containing information about the offense.
+      type: String
+    - contextPath: QRadar.Offense.Assets
+      description: Assets correlated to the offense, if enrichment was requested.
+      type: String
+    arguments:
+    - name: offense_id
+      description: The offense ID to retrieve its details. Specify offense_id to get
+        details about a specific offense.
+    - name: enrichment
+      defaultValue: None
+      auto: PREDEFINED
+      predefined:
+      - IPs
+      - IPs And Assets
+      - None
+      description: IPs enrichment transforms IDs of the IPs of the offense to IP values.
+        Asset enrichment adds correlated assets to the fetched offenses.
+    - name: range
+      description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
+      defaultValue: 0-49
+    - name: filter
+      description: 'Query to filter offenses, e.g., "severity >= 4 AND id > 5 AND
+        status=OPEN". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
+    - name: fields
+      description: 'Comma-separated list of fields to retrieve in the response. Fields
+        that are not explicitly named are excluded. E.g., "id,severity,status". Specify
+        subfields in brackets and multiple fields in the same object separated by
+        commas. For a full list of available fields, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--siem-offenses-GET.html.'
+      isArray: true
+    description: Gets offenses from QRadar.
+  - name: qradar-offense-update
+    outputs:
+    - contextPath: QRadar.Offense.Description
+      description: Description of the offense.
+      type: String
+    - contextPath: QRadar.Offense.Rules.id
+      description: The ID of the rule.
+      type: Number
+    - contextPath: QRadar.Offense.Rules.type
+      description: The type of the rule.
+      type: String
+    - contextPath: QRadar.Offense.Rules.name
+      description: The name of the rule.
+      type: String
+    - contextPath: QRadar.Offense.EventCount
+      description: Number of events that are associated with the offense.
+      type: Number
+    - contextPath: QRadar.Offense.FlowCount
+      description: Number of flows that are associated with the offense.
+      type: Number
+    - contextPath: QRadar.Offense.AssignedTo
+      description: The user to whom the offense is assigned.
+      type: String
+    - contextPath: QRadar.Offense.Followup
+      description: Whether the offense is marked for follow-up.
+      type: Boolean
+    - contextPath: QRadar.Offense.SourceAddress
+      description: Source addresses (IPs if IPs enrich have been requested, else IDs
+        of the IPs) that are associated with the offense.
+      type: Number
+    - contextPath: QRadar.Offense.Protected
+      description: Whether the offense is protected.
+      type: Boolean
+    - contextPath: QRadar.Offense.ClosingUser
+      description: The user who closed the offense.
+      type: String
+    - contextPath: QRadar.Offense.DestinationHostname
+      description: Destination networks that are associated with the offense.
+      type: String
+    - contextPath: QRadar.Offense.CloseTime
+      description: Time when the offense was closed.
+      type: Date
+    - contextPath: QRadar.Offense.RemoteDestinationCount
+      description: Number of remote destinations that are associated with the offense.
+      type: Number
+    - contextPath: QRadar.Offense.StartTime
+      description: Date of the earliest item that contributed to the offense.
+      type: Date
+    - contextPath: QRadar.Offense.Magnitude
+      description: Magnitude of the offense.
+      type: Number
+    - contextPath: QRadar.Offense.LastUpdatedTime
+      description: Date of the most recent item that contributed to the offense.
+      type: String
+    - contextPath: QRadar.Offense.Credibility
+      description: Credibility of the offense.
+      type: Number
+    - contextPath: QRadar.Offense.ID
+      description: ID of the offense.
+      type: Number
+    - contextPath: QRadar.Offense.Categories
+      description: Event categories that are associated with the offense.
+      type: String
+    - contextPath: QRadar.Offense.Severity
+      description: Severity of the offense.
+      type: Number
+    - contextPath: QRadar.Offense.ClosingReason
+      description: Reason the offense was closed.
+      type: String
+    - contextPath: QRadar.Offense.OffenseType
+      description: Type of the offense.
+      type: String
+    - contextPath: QRadar.Offense.Relevance
+      description: Relevance of the offense.
+      type: Number
+    - contextPath: QRadar.Offense.OffenseSource
+      description: Source of the offense.
+      type: String
+    - contextPath: QRadar.Offense.DestinationAddress
+      description: Destination addresses (IPs if IPs enrichment have been requested,
+        else IDs of the IPs) that are associated with the offense.
+      type: Number
+    - contextPath: QRadar.Offense.Status
+      description: 'Status of the offense. Possible values: "OPEN", "HIDDEN", "CLOSED".'
+      type: String
+    - contextPath: QRadar.Offense.LinkToOffense
+      description: Link to the URL containing information about the offense.
+      type: String
+    - contextPath: QRadar.Offense.Assets
+      description: Assets correlated to the offense, if enrichment was requested.
+      type: String
+    arguments:
+    - name: offense_id
+      required: true
+      description: The ID of the offense to update.
+    - name: enrichment
+      defaultValue: None
+      auto: PREDEFINED
+      predefined:
+      - IPs
+      - IPs And Assets
+      - None
+      description: IPs enrichment transforms IDs of the IPs of the offense to IP values.
+        Asset enrichment adds correlated assets to the fetched offenses.
+    - name: protected
+      description: Whether the offense should be protected.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: follow_up
+      description: Whether the offense should be marked for follow-up.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - OPEN
+      - HIDDEN
+      - CLOSED
+      description: The new status for the offense. When the status of an offense is
+        set to CLOSED, a valid closing_reason_id must be provided. To hide an offense,
+        use the HIDDEN status. To show a previously hidden offense, use the OPEN status.
+    - name: closing_reason_id
+      description: The ID of a closing reason. You must provide a valid closing_reason_id
+        when you close an offense. For a full list of closing reason IDs, use the
+        'qradar-closing-reasons' command.
+    - default: false
+      description: 'The name of a closing reason. You must provide a valid closing_reason_name
+        when you close an offense. The default closing_reasons are: (1) False-Positive,
+        Tuned (2) Non-Issues (3) Policy Violation.'
+      isArray: false
+      name: closing_reason_name
+      required: false
+      secret: false
+    - name: assigned_to
+      description: User to assign the offense to.
+    - name: fields
+      description: 'Comma-separated list of fields to retrieve in the response. Fields
+        that are not explicitly named are excluded. E.g., "id,severity,status". Specify
+        subfields in brackets and multiple fields in the same object separated by
+        commas. For a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--siem-offenses-offense_id-POST.html'
+      isArray: true
+    description: Updates an offense.
+  - name: qradar-closing-reasons
+    description: Retrieves a list of offense closing reasons.
+    outputs:
+    - contextPath: QRadar.Offense.ClosingReasons.IsDeleted
+      description: Whether the closing reason is deleted. Deleted closing reasons
+        cannot be used to close an offense.
+      type: Boolean
+    - contextPath: QRadar.Offense.ClosingReasons.IsReserved
+      description: Whether the closing reason is reserved. Reserved closing reasons
+        cannot be used to close an offense.
+      type: Boolean
+    - contextPath: QRadar.Offense.ClosingReasons.Name
+      description: Name of the closing reason.
+      type: String
+    - contextPath: QRadar.Offense.ClosingReasons.ID
+      description: ID of the closing reason.
+      type: Number
+    arguments:
+    - name: closing_reason_id
+      required: false
+      description: The closing reason ID for which to retrieve its details. Specify
+        closing_reason_id to get details about a specific closing reason.
+    - name: include_reserved
+      required: false
+      description: If true, reserved closing reasons are included in the response.
+      defaultValue: "false"
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: include_deleted
+      required: false
+      description: If true, deleted closing reasons are included in the response.
+      defaultValue: "false"
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: range
+      description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
+      defaultValue: 0-49
+    - name: filter
+      description: 'Query to filter closing reasons, e.g. "id > 5". For reference
+        see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
+    - name: fields
+      description: 'Comma-separated list of fields to retrieve in the response. Fields
+        that are not explicitly named are excluded. E.g., "id,text". Specify subfields
+        in brackets and multiple fields in the same object separated by commas. For
+        a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--siem-offense_closing_reasons-GET.html'
+      isArray: true
+  - name: qradar-offense-notes-list
+    outputs:
+    - contextPath: QRadar.Note.Text
+      description: The text of the note.
+      type: String
+    - contextPath: QRadar.Note.CreateTime
+      description: Creation date of the note.
+      type: Date
+    - contextPath: QRadar.Note.ID
+      description: ID of the note.
+      type: Number
+    - contextPath: QRadar.Note.CreatedBy
+      description: The user who created the note.
+      type: String
+    description: Creates a note on an offense.
+    arguments:
+    - name: offense_id
+      required: true
+      description: The offense ID to retrieve the notes for.
+    - name: note_id
+      description: The note ID for which to retrieve its details. Specify note_id
+        to get details about a specific note.
+    - name: range
+      description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
+      defaultValue: 0-49
+    - name: filter
+      description: 'Query to filter offense notes, e.g., "username=admin". For reference,
+        see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
+    - name: fields
+      description: 'Comma-separated list of fields to retrieve in the response. Fields
+        that are not explicitly named are excluded. E.g., "username,note_text". Specify
+        subfields in brackets and multiple fields in the same object separated by
+        commas. For a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--siem-offenses-offense_id-notes-GET.html'
+      isArray: true
+  - name: qradar-offense-note-create
+    outputs:
+    - contextPath: QRadar.Note.Text
+      description: The text of the note.
+      type: String
+    - contextPath: QRadar.Note.CreateTime
+      description: Creation date of the note.
+      type: Date
+    - contextPath: QRadar.Note.ID
+      description: ID of the note.
+      type: Number
+    - contextPath: QRadar.Note.CreatedBy
+      description: The user who created the note.
+      type: String
+    description: Retrieves a list of notes for an offense.
+    arguments:
+    - name: offense_id
+      required: true
+      description: The offense ID to add the note to.
+    - name: note_text
+      required: true
+      description: The text of the note.
+    - name: fields
+      description: 'Comma-separated list of fields to retrieve in the response. Fields
+        that are not explicitly named are excluded. E.g., "username,note_text". Specify
+        subfields in brackets and multiple fields in the same object separated by
+        commas. For a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--siem-offenses-offense_id-notes-POST.html'
+      isArray: true
+  - name: qradar-rules-list
+    outputs:
+    - contextPath: QRadar.Rule.Owner
+      description: Owner of the rule.
+      type: String
+    - contextPath: QRadar.Rule.BaseHostID
+      description: ID of the host from which the rule's base capacity was determined.
+      type: Number
+    - contextPath: QRadar.Rule.CapacityTimestamp
+      description: Date when the rule's capacity values were last updated.
+      type: Number
+    - contextPath: QRadar.Rule.Origin
+      description: 'Origin of the rule. Possible values: "SYSTEM", "OVERRIDE", "USER".'
+      type: String
+    - contextPath: QRadar.Rule.CreationDate
+      description: Date when rule was created.
+      type: Date
+    - contextPath: QRadar.Rule.Type
+      description: 'Type of the rule. Possible values: "EVENT", "FLOW", "COMMON",
+        "USER".'
+      type: String
+    - contextPath: QRadar.Rule.Enabled
+      description: Whether rule is enabled.
+      type: Boolean
+    - contextPath: QRadar.Rule.ModificationDate
+      description: Date when the rule was last modified.
+      type: Date
+    - contextPath: QRadar.Rule.Name
+      description: Name of the rule.
+      type: String
+    - contextPath: QRadar.Rule.AverageCapacity
+      description: Moving average capacity in EPS of the rule across all hosts.
+      type: Number
+    - contextPath: QRadar.Rule.ID
+      description: ID of the rule.
+      type: Number
+    - contextPath: QRadar.Rule.BaseCapacity
+      description: Base capacity of the rule in events per second.
+      type: Number
+    description: Retrieves a list of rules.
+    arguments:
+    - name: rule_id
+      required: false
+      description: The rule ID for which to retrieve its details. Specify rule_id
+        to get details about a specific rule.
+    - name: rule_type
+      auto: PREDEFINED
+      predefined:
+      - EVENT
+      - FLOW
+      - COMMON
+      - USER
+      description: Retrieves rules corresponding to the specified rule type.
+    - name: range
+      description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
+      defaultValue: 0-49
+    - name: filter
+      description: 'Query by which to filter rules, e.g., "type=EVENT". For reference,
+        see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
+    - name: fields
+      description: 'Comma-separated list of fields to retrieve in the response. Fields
+        that are not explicitly named are excluded. E.g., "owner,identifier,origin".
+        Specify subfields in brackets and multiple fields in the same object separated
+        by commas. For a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi150.doc/15.0--analytics-rules-GET.html'
+      isArray: true
+  - name: qradar-rule-groups-list
+    outputs:
+    - contextPath: QRadar.RuleGroup.Owner
+      description: Owner of the group.
+      type: String
+    - contextPath: QRadar.RuleGroup.ModifiedTime
+      description: Date since the group was last modified.
+      type: Date
+    - contextPath: QRadar.RuleGroup.Level
+      description: Depth of the group in the group hierarchy.
+      type: Number
+    - contextPath: QRadar.RuleGroup.Name
+      description: Name of the group.
+      type: String
+    - contextPath: QRadar.RuleGroup.Description
+      description: Description of the group.
+      type: String
+    - contextPath: QRadar.RuleGroup.ID
+      description: ID of the group.
+      type: Number
+    - contextPath: QRadar.RuleGroup.ChildItems
+      description: Child items of the group.
+      type: String
+    - contextPath: QRadar.RuleGroup.ChildGroups
+      description: Child group IDs.
+      type: Number
+    - contextPath: QRadar.RuleGroup.Type
+      description: The type of the group.
+      type: String
+    - contextPath: QRadar.RuleGroup.ParentID
+      description: ID of the parent group.
+      type: Number
+    description: Retrieves a list of the rule groups.
+    arguments:
+    - name: rule_group_id
+      required: false
+      description: The rule group ID for which to retrieve its details. Specify rule_group_id
+        to get details about a specific rule group.
+    - name: range
+      description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
+      defaultValue: 0-49
+    - name: filter
+      description: 'Query by which to filter rules, e.g., "id >= 125". For reference,
+        see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
+    - name: fields
+      description: 'Comma-separated list of fields to retrieve in the response. Fields
+        that are not explicitly named are excluded. E.g., "owner,parent_id". Specify
+        subfields in brackets and multiple fields in the same object separated by
+        commas. For a full list of available fields, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--analytics-rule_groups-GET.html'
+      isArray: true
+  - name: qradar-assets-list
+    description: Retrieves assets list.
+    outputs:
+    - contextPath: Endpoint.Domain
+      description: DNS name.
+      type: String
+    - contextPath: Endpoint.OS
+      description: Asset operating system.
+      type: String
+    - contextPath: Endpoint.MACAddress
+      description: Asset MAC address.
+      type: String
+    - contextPath: Endpoint.IPAddress
+      description: IP addresses of the endpoint.
+      type: Unknown
+    - contextPath: QRadar.Asset.Interfaces.id
+      description: ID of the interface.
+      type: Number
+    - contextPath: QRadar.Asset.Interfaces.mac_address
+      description: MAC address of the interface. Null if unknown.
+      type: String
+    - contextPath: QRadar.Asset.Interfaces.ip_addresses.id
+      description: ID of the interface.
+      type: Number
+    - contextPath: QRadar.Asset.Interfaces.ip_addresses.network_id
+      description: Network ID of the network the IP belongs to.
+      type: Number
+    - contextPath: QRadar.Asset.Interfaces.ip_addresses.value
+      description: The IP address.
+      type: String
+    - contextPath: QRadar.Asset.Interfaces.ip_addresses.type
+      description: 'Type of IP address. Possible values: "IPV4", "IPV6".'
+      type: String
+    - contextPath: QRadar.Asset.Interfaces.ip_addresses.created
+      description: Date when the IP address was created.
+      type: Date
+    - contextPath: QRadar.Asset.Interfaces.ip_addresses.first_seen_scanner
+      description: Date when the IP address was first seen during a vulnerability
+        scan.
+      type: Date
+    - contextPath: QRadar.Asset.Interfaces.ip_addresses.first_seen_profiler
+      description: Date when the IP address was first seen in event or flow traffic.
+      type: Date
+    - contextPath: QRadar.Asset.Interfaces.ip_addresses.last_seen_scanner
+      description: Date when the IP address was most recently seen during a vulnerability
+        scan.
+      type: Date
+    - contextPath: QRadar.Asset.Interfaces.ip_addresses.last_seen_profiler
+      description: Date when the IP address was most recently seen in event or flow
+        traffic.
+      type: Date
+    - contextPath: QRadar.Asset.Products.id
+      description: The ID of this software product instance in QRadar's asset model.
+      type: Number
+    - contextPath: QRadar.Asset.Products.product_variant_id
+      description: The ID of this software product variant in QRadar's catalog of
+        products.
+      type: Number
+    - contextPath: QRadar.Asset.Products.first_seen_scanner
+      description: Date when the product was first seen during a vulnerability scan.
+      type: Date
+    - contextPath: QRadar.Asset.Products.first_seen_profiler
+      description: Date when the product was first seen in event or flow traffic.
+      type: Date
+    - contextPath: QRadar.Asset.Products.last_seen_scanner
+      description: Date when the product was most recently seen seen during a vulnerability
+        scan.
+      type: Date
+    - contextPath: QRadar.Asset.Products.last_seen_profiler
+      description: Date when the product was most recently seen in event or flow traffic.
+      type: Date
+    - contextPath: QRadar.Asset.VulnerabilityCount
+      description: The total number of vulnerabilities associated with this asset.
+      type: Number
+    - contextPath: QRadar.Asset.RiskScoreSum
+      description: The sum of the CVSS scores of the vulnerabilities on this asset.
+      type: Number
+    - contextPath: QRadar.Asset.Hostnames.last_seen_profiler
+      description: Date when the host was most recently seen in event or flow traffic.
+      type: Date
+    - contextPath: QRadar.Asset.Hostnames.created
+      description: Date when the host was created.
+      type: Date
+    - contextPath: QRadar.Asset.Hostnames.last_seen_scanner
+      description: Date when the host was most recently seen during a vulnerability
+        scan.
+      type: Date
+    - contextPath: QRadar.Asset.Hostnames.name
+      description: Name of the host.
+      type: String
+    - contextPath: QRadar.Asset.Hostnames.first_seen_scanner
+      description: Date when the host was first seen during a vulnerability scan.
+      type: Date
+    - contextPath: QRadar.Asset.Hostnames.id
+      description: ID of the host.
+      type: Number
+    - contextPath: QRadar.Asset.Hostnames.type
+      description: 'Type of the host. Possible values: "DNS", "NETBIOS", "NETBIOSGROUP".'
+      type: String
+    - contextPath: QRadar.Asset.Hostnames.first_seen_profiler
+      description: Date when the host was first seen in event or flow traffic.
+      type: Date
+    - contextPath: QRadar.Asset.ID
+      description: ID of the asset.
+      type: Number
+    - contextPath: QRadar.Asset.Users.last_seen_profiler
+      description: Date when the user was most recently seen in event or flow traffic.
+      type: Date
+    - contextPath: QRadar.Asset.Users.last_seen_scanner
+      description: Date when the user was most recently seen during a vulnerability
+        scan.
+      type: Date
+    - contextPath: QRadar.Asset.Users.first_seen_scanner
+      description: Date when the user was first seen during a vulnerability scan.
+      type: Date
+    - contextPath: QRadar.Asset.Users.id
+      description: ID of the user.
+      type: Number
+    - contextPath: QRadar.Asset.Users.first_seen_profiler
+      description: Date when the user was first seen in event or flow traffic.
+      type: Date
+    - contextPath: QRadar.Asset.Users.username
+      description: Name of the user.
+      type: String
+    - contextPath: QRadar.Asset.DomainID
+      description: ID of the domain this asset belongs to.
+      type: Number
+    - contextPath: QRadar.Asset.Properties.last_reported
+      description: Date when the property was last updated.
+      type: Date
+    - contextPath: QRadar.Asset.Properties.name
+      description: Name of the property.
+      type: String
+    - contextPath: QRadar.Asset.Properties.type_id
+      description: Type ID of the property.
+      type: Number
+    - contextPath: QRadar.Asset.Properties.id
+      description: ID of the property.
+      type: Number
+    - contextPath: QRadar.Asset.Properties.last_reported_by
+      description: The source of the most recent update to this property.
+      type: String
+    - contextPath: QRadar.Asset.Properties.value
+      description: Property value.
+      type: String
+    arguments:
+    - name: asset_id
+      required: false
+      description: The asset ID for which to retrieve its details. Specify asset_id
+        to get details about a specific asset.
+    - name: range
+      description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
+      defaultValue: 0-49
+    - name: filter
+      description: 'Query by which to filter assets, e.g., "domain_id=0". For reference,
+        see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
+    - name: fields
+      description: 'Comma-separated list of fields to retrieve in the response. Fields
+        that are not explicitly named are excluded. E.g., "id,interfaces,users,properties".
+        Specify subfields in brackets and multiple fields in the same object separated
+        by commas. For a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--asset_model-assets-GET.html'
+      isArray: true
+  - name: qradar-saved-searches-list
+    description: Retrieves a list of Ariel saved searches.
+    outputs:
+    - contextPath: QRadar.SavedSearch.Owner
+      description: Owner of the saved search.
+      type: String
+    - contextPath: QRadar.SavedSearch.Description
+      description: Description of the saved search.
+      type: String
+    - contextPath: QRadar.SavedSearch.CreationDate
+      description: Date when saved search was created.
+      type: Date
+    - contextPath: QRadar.SavedSearch.UID
+      description: UID of the saved search.
+      type: String
+    - contextPath: QRadar.SavedSearch.Database
+      description: The database of the Ariel saved search, events, or flows.
+      type: String
+    - contextPath: QRadar.SavedSearch.QuickSearch
+      description: Whether the saved search is a quick search.
+      type: Boolean
+    - contextPath: QRadar.SavedSearch.Name
+      description: Name of the saved search.
+      type: String
+    - contextPath: QRadar.SavedSearch.ModifiedDate
+      description: Date when the saved search was most recently modified.
+      type: Date
+    - contextPath: QRadar.SavedSearch.ID
+      description: ID of the saved search.
+      type: Number
+    - contextPath: QRadar.SavedSearch.AQL
+      description: The AQL query.
+      type: String
+    - contextPath: QRadar.SavedSearch.IsShared
+      description: Whether the saved search is shared with other users.
+      type: Boolean
+    arguments:
+    - name: saved_search_id
+      required: false
+      description: The saved search ID for which to retrieve its details. Specify
+        saved_search_id to get details about a specific saved search.
+    - name: timeout
+      required: false
+      defaultValue: 35
+      description: Number of seconds until timeout for the specified command.
+    - name: range
+      description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
+      defaultValue: 0-49
+    - name: filter
+      description: 'Query by which to filter saved searches, e.g., "database=EVENTS
+        and is_dashboard=true". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
+    - name: fields
+      description: 'Comma-separated list of fields to retrieve in the response. Fields
+        that are not explicitly named are excluded. E.g., "id,owner,description".
+        Specify subfields in brackets and multiple fields in the same object separated
+        by commas. For a full list of available fields, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--ariel-saved_searches-GET.html'
+      isArray: true
+  - name: qradar-searches-list
+    description: Retrieves the list of Ariel searches IDs. Search status and results
+      can be polled by sending the search ID to the 'qradar-search-status-get' and
+      'qradar-search-results-get' commands.
+    outputs:
+    - contextPath: QRadar.SearchID.SearchID
+      description: ID of the search.
+      type: String
+    arguments:
+    - name: range
+      description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
+      defaultValue: 0-49
+  - name: qradar-search-create
+    description: Creates a new asynchronous Ariel search. Returns the search ID. Search
+      status and results can be polled by sending the search ID to the 'qradar-search-status-get'
+      and 'qradar-search-results-get' commands. Accepts SELECT query expressions only.
+    outputs:
+    - contextPath: QRadar.Search.Status
+      description: Status of the newly created search.
+      type: String
+    - contextPath: QRadar.Search.ID
+      description: ID of the newly created search.
+      type: String
+    arguments:
+    - name: query_expression
+      required: false
+      description: The AQL query to execute. Mutually exclusive with saved_search_id.
+    - name: saved_search_id
+      required: false
+      description: Saved search ID to execute. Mutually exclusive with query_expression.
+        Saved search ID is the 'id' field returned by the 'qradar-saved-searches-list'
+        command.
+  - name: qradar-search-status-get
+    description: Retrieves status information for a search, based on the search ID.
+    outputs:
+    - contextPath: QRadar.Search.Status
+      description: Status of the search.
+      type: String
+    - contextPath: QRadar.Search.ID
+      description: ID of the search.
+      type: String
+    arguments:
+    - name: search_id
+      required: true
+      description: The identifier for an Ariel search.
+  - name: qradar-search-results-get
+    description: Retrieves search results.
+    outputs:
+    - contextPath: QRadar.Search.Result
+      description: The result of the search.
+      type: Unknown
+    arguments:
+    - name: search_id
+      required: true
+      description: The identifier for an Ariel search.
+    - name: output_path
+      required: false
+      description: Replaces the default context output path for the query result (QRadar.Search.Result).
+        E.g., for output_path=QRadar.Correlations, the result will be under the 'QRadar.Correlations'
+        key in the context data.
+    - name: range
+      description: 'Range of events to return. (e.g.: 0-20, 3-5, 3-3).'
+      defaultValue: 0-49
+  - name: qradar-reference-sets-list
+    description: Retrieves a list of reference sets.
+    outputs:
+    - contextPath: QRadar.Reference.TimeoutType
+      description: 'Timeout type of the reference set. Possible values: "UNKNOWN",
+        "FIRST_SEEN", "LAST_SEEN".'
+      type: String
+    - contextPath: QRadar.Reference.NumberOfElements
+      description: Number of elements in the reference set.
+      type: Number
+    - contextPath: QRadar.Reference.TimeToLive
+      description: Time left to live for the reference.
+      type: String
+    - contextPath: QRadar.Reference.Data.LastSeen
+      description: Date when this data was last seen.
+      type: Date
+    - contextPath: QRadar.Reference.Data.FirstSeen
+      description: Date when this data was first seen.
+      type: Date
+    - contextPath: QRadar.Reference.Data.Source
+      description: Source of this data.
+      type: String
+    - contextPath: QRadar.Reference.Data.Value
+      description: Data value.
+      type: String
+    - contextPath: QRadar.Reference.CreationTime
+      description: Date when the reference set was created.
+      type: Date
+    - contextPath: QRadar.Reference.Name
+      description: Name of the reference set.
+      type: String
+    - contextPath: QRadar.Reference.ElementType
+      description: Type of the elements in the reference set.
+      type: String
+    arguments:
+    - name: ref_name
+      required: false
+      description: The reference name of the reference set for which to retrieve its
+        details. Specify ref_name to get details about a specific reference set.
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'False'
+      description: If set to true will try to convert the data values to ISO-8601
+        string.
+      isArray: false
+      name: date_value
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - name: range
+      description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
+      defaultValue: 0-49
+    - name: filter
+      description: 'Query by which to filter reference sets, e.g., "timeout_type=FIRST_SEEN".
+        For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
+    - name: fields
+      description: 'Comma-separated list of fields to retrieve in the response. Fields
+        that are not explicitly named are excluded. E.g., "name,timeout_type". Specify
+        subfields in brackets and multiple fields in the same object separated by
+        commas. For a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--reference_data-sets-GET.html'
+      isArray: true
+  - name: qradar-reference-set-create
+    description: Creates a new reference set.
+    outputs:
+    - contextPath: QRadar.Reference.TimeoutType
+      description: 'Timeout type of the reference set. Possible values: "UNKNOWN",
+        "FIRST_SEEN", "LAST_SEEN".'
+      type: String
+    - contextPath: QRadar.Reference.NumberOfElements
+      description: Number of elements in the reference set.
+      type: Number
+    - contextPath: QRadar.Reference.TimeToLive
+      description: Time left to live for the reference.
+      type: String
+    - contextPath: QRadar.Reference.Data.LastSeen
+      description: Date when this data was last seen.
+      type: Date
+    - contextPath: QRadar.Reference.Data.FirstSeen
+      description: Date when this data was first seen.
+      type: Date
+    - contextPath: QRadar.Reference.Data.Source
+      description: Source of this data.
+      type: String
+    - contextPath: QRadar.Reference.Data.Value
+      description: Data value.
+      type: String
+    - contextPath: QRadar.Reference.CreationTime
+      description: Date when the reference set was created.
+      type: Date
+    - contextPath: QRadar.Reference.Name
+      description: Name of the reference set.
+      type: String
+    - contextPath: QRadar.Reference.ElementType
+      description: Type of the elements in the reference set.
+      type: String
+    arguments:
+    - name: ref_name
+      required: true
+      description: The name of the reference set to be created.
+    - name: element_type
+      auto: PREDEFINED
+      required: true
+      predefined:
+      - ALN
+      - ALNIC
+      - NUM
+      - IP
+      - PORT
+      - DATE
+      description: The element type for the values allowed in the reference set.
+    - name: timeout_type
+      description: Indicates if the time_to_live interval is based on when the data
+        was first seen or last seen.
+      auto: PREDEFINED
+      defaultValue: UNKNOWN
+      required: false
+      predefined:
+      - FIRST_SEEN
+      - LAST_SEEN
+      - UNKNOWN
+    - name: time_to_live
+      required: false
+      description: "The time to live interval, time range. for example: '1 month'\
+        \ or '5 minutes'"
+    - name: fields
+      description: 'Comma-separated list of fields to retrieve in the response. Fields
+        that are not explicitly named are excluded. E.g., "name,timeout_type". Specify
+        subfields in brackets and multiple fields in the same object separated by
+        commas. For a full list of available fields, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--reference_data-sets-POST.html'
+      isArray: true
+  - name: qradar-reference-set-delete
+    description: Removes a reference set or purges its contents.
+    arguments:
+    - name: ref_name
+      required: true
+      description: The name of the reference set to be deleted. Reference names can
+        be found by 'Name' field in 'qradar-reference-sets-list' command.
+    - name: purge_only
+      description: Indicates if the reference set should have its contents purged
+        (true), keeping the reference set structure. If the value is 'false', or not
+        specified the reference set is removed completely.
+      defaultValue: "false"
+      auto: PREDEFINED
+      required: false
+      predefined:
+      - 'true'
+      - 'false'
+  - name: qradar-reference-set-value-upsert
+    description: Adds or updates an element in a reference set.
+    outputs:
+    - contextPath: QRadar.Reference.TimeoutType
+      description: 'Timeout type of the reference set. Possible values: "UNKNOWN",
+        "FIRST_SEEN", "LAST_SEEN".'
+      type: String
+    - contextPath: QRadar.Reference.NumberOfElements
+      description: Number of elements in the reference set.
+      type: Number
+    - contextPath: QRadar.Reference.TimeToLive
+      description: Time left to live for the reference.
+      type: String
+    - contextPath: QRadar.Reference.Data.LastSeen
+      description: Date when this data was last seen.
+      type: Date
+    - contextPath: QRadar.Reference.Data.FirstSeen
+      description: Date when this data was first seen.
+      type: Date
+    - contextPath: QRadar.Reference.Data.Source
+      description: Source of this data.
+      type: String
+    - contextPath: QRadar.Reference.Data.Value
+      description: Data value.
+      type: String
+    - contextPath: QRadar.Reference.CreationTime
+      description: Date when the reference set was created.
+      type: Date
+    - contextPath: QRadar.Reference.Name
+      description: Name of the reference set.
+      type: String
+    - contextPath: QRadar.Reference.ElementType
+      description: Type of the elements in the reference set.
+      type: String
+    arguments:
+    - name: ref_name
+      required: true
+      description: The name of the reference set to add or update an element in. Reference
+        names can be found by the 'Name' field in the 'qradar-reference-sets-list'
+        command.
+    - name: value
+      required: true
+      description: "Comma-separated list of the values to add or update in the reference\
+        \ set. If the values are dates, the supported date formats are: epoch, ISO,\
+        \ and time range (<number> <time unit>', e.g., 12 hours, 7 days.)."
+      isArray: true
+    - name: source
+      required: false
+      description: An indication of where the data originated.
+      defaultValue: reference data api
+    - name: date_value
+      description: True if the specified value  type was date.
+      auto: PREDEFINED
+      required: false
+      predefined:
+      - 'true'
+      - 'false'
+    - name: fields
+      description: 'Comma-separated list of fields to retrieve in the response. Fields
+        that are not explicitly named are excluded. E.g., "name,timeout_type". Specify
+        subfields in brackets and multiple fields in the same object separated by
+        commas. For a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--reference_data-sets-name-POST.html'
+      isArray: true
+  - name: qradar-reference-set-value-delete
+    description: Removes a value from a reference set.
+    arguments:
+    - name: ref_name
+      required: true
+      description: The name of the reference set from which to remove a value. Reference
+        names can be found by the 'Name' field in the 'qradar-reference-sets-list'
+        command.
+    - name: value
+      required: true
+      description: "The value to remove from the reference set. If the specified value\
+        \ is date, the supported date formats are: epoch, ISO, and time range (<number>\
+        \ <time unit>, e.g., 12 hours, 7 days.)"
+    - name: date_value
+      description: True if the specified value type was date.
+      auto: PREDEFINED
+      required: false
+      predefined:
+      - 'True'
+      - 'False'
+  - name: qradar-domains-list
+    description: Gets the list of domains. You must have System Administrator or Security
+      Administrator permissions to call this endpoint if you are trying to retrieve
+      the details of all domains. You can retrieve details of domains that are assigned
+      to your Security Profile without having the System Administrator or Security
+      Administrator permissions. If you do not have the System Administrator or Security
+      Administrator permissions, then for each domain assigned to your security profile
+      you can only view the values for the ID and name fields. All other values return
+      null.
+    outputs:
+    - contextPath: QRadar.Domains.AssetScannerIDs
+      description: Asset scanner IDs that are associated with the domain.
+      type: Number
+    - contextPath: QRadar.Domains.CustomProperties
+      description: Custom properties of the domain.
+      type: Unknown
+    - contextPath: QRadar.Domains.Deleted
+      description: Whether the domain has been deleted.
+      type: Boolean
+    - contextPath: QRadar.Domains.Description
+      description: Description of the domain.
+      type: String
+    - contextPath: QRadar.Domains.EventCollectorIDs
+      description: Event collector IDs that are assigned to this domain.
+      type: Number
+    - contextPath: QRadar.Domains.FlowCollectorIDs
+      description: Flow collector IDs that are assigned to this domain.
+      type: Number
+    - contextPath: QRadar.Domains.FlowSourceIDs
+      description: Flow source IDs that are assigned to this domain.
+      type: Number
+    - contextPath: QRadar.Domains.ID
+      description: ID of the domain.
+      type: Number
+    - contextPath: QRadar.Domains.LogSourceGroupIDs
+      description: Log source group IDs that are assigned to this domain.
+      type: Number
+    - contextPath: QRadar.Domains.LogSourceIDs
+      description: Log source IDs that are assigned to this domain.
+      type: Number
+    - contextPath: QRadar.Domains.Name
+      description: Name of the domain.
+      type: String
+    - contextPath: QRadar.Domains.QVMScannerIDs
+      description: QVM scanner IDs that are assigned to this domain.
+      type: Number
+    - contextPath: QRadar.Domains.TenantID
+      description: ID of the tenant that this domain belongs to.
+      type: Number
+    arguments:
+    - name: domain_id
+      description: The domain ID from which to retrieve its details. Specify domain_id
+        to get details about a specific domain.
+    - name: range
+      description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
+      defaultValue: 0-49
+    - name: filter
+      description: 'Query by which to filter domains, e.g., "id > 3". For reference,
+        see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
+    - name: fields
+      description: 'Comma-separated list of fields to retrieve in the response. Fields
+        that are not explicitly named are excluded. E.g., "id,name". Specify subfields
+        in brackets and multiple fields in the same object separated by commas. For
+        a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--config-domain_management-domains-GET.html'
+      isArray: true
+  - name: qradar-indicators-upload
+    description: Uploads indicators to QRadar.
+    outputs:
+    - contextPath: QRadar.Reference.TimeoutType
+      description: 'Timeout type of the reference set. Possible values: "UNKNOWN",
+        "FIRST_SEEN", "LAST_SEEN".'
+      type: String
+    - contextPath: QRadar.Reference.NumberOfElements
+      description: Number of elements in the reference set.
+      type: Number
+    - contextPath: QRadar.Reference.TimeToLive
+      description: Time left to live for the reference.
+      type: String
+    - contextPath: QRadar.Reference.Data.LastSeen
+      description: Date when this data was last seen.
+      type: Date
+    - contextPath: QRadar.Reference.Data.FirstSeen
+      description: Date when this data was first seen.
+      type: Date
+    - contextPath: QRadar.Reference.Data.Source
+      description: Source of this data.
+      type: String
+    - contextPath: QRadar.Reference.Data.Value
+      description: Data value.
+      type: String
+    - contextPath: QRadar.Reference.CreationTime
+      description: Date when the reference set was created.
+      type: Date
+    - contextPath: QRadar.Reference.Name
+      description: Name of the reference set.
+      type: String
+    - contextPath: QRadar.Reference.ElementType
+      description: Type of the elements in the reference set.
+      type: String
+    arguments:
+    - name: ref_name
+      description: The name of set to add or update data in. Reference names can be
+        found by the 'Name' field in the 'qradar-reference-sets-list' command.
+      required: true
+    - name: query
+      description: The query for getting indicators from Cortex XSOAR.
+    - name: limit
+      defaultValue: 50
+      description: The maximum number of indicators to fetch from Cortex XSOAR.
+    - name: page
+      description: The page from which to get the indicators.
+    - name: fields
+      description: 'Comma-separated list of fields to retrieve in the response. Fields
+        that are not explicitly named are excluded. E.g., "name,timeout_type". Specify
+        subfields in brackets and multiple fields in the same object separated by
+        commas. For a full list of available fields, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--reference_data-maps-bulk_load-name-POST.html'
+      isArray: true
+  - name: qradar-geolocations-for-ip
+    description: Retrieves the MaxMind GeoIP data for the specified IP address.
+    outputs:
+    - contextPath: QRadar.GeoForIP.CityName
+      description: Name of the city that is associated with the IP address.
+      type: String
+    - contextPath: QRadar.GeoForIP.ContinentName
+      description: Name of the continent that is associated with the IP address.
+      type: String
+    - contextPath: QRadar.GeoForIP.LocationAccuracyRadius
+      description: The approximate accuracy radius in kilometers around the latitude
+        and longitude for the IP address.
+      type: Number
+    - contextPath: QRadar.GeoForIP.LocationAverageIncome
+      description: The average income associated with the IP address.
+      type: Number
+    - contextPath: QRadar.GeoForIP.LocationLatitude
+      description: The approximate latitude of the location associated with the IP
+        address.
+      type: Number
+    - contextPath: QRadar.GeoForIP.LocationTimezone
+      description: Timezone of the location.
+      type: String
+    - contextPath: QRadar.GeoForIP.LocationLongitude
+      description: The approximate longitude of the location associated with the IP
+        address.
+      type: Number
+    - contextPath: QRadar.GeoForIP.LocationMetroCode
+      description: The metro code associated with the IP address. These are only available
+        for IP addresses in the US. Returns the same metro codes as the Google AdWords
+        API.
+      type: Number
+    - contextPath: QRadar.GeoForIP.LocationPopulationDensity
+      description: The estimated number of people per square kilometer.
+      type: Number
+    - contextPath: QRadar.GeoForIP.PhysicalCountryIsoCode
+      description: ISO code of country where MaxMind believes the end user is located.
+      type: String
+    - contextPath: QRadar.GeoForIP.PhysicalCountryName
+      description: Name of country where MaxMind believes the end user is located.
+      type: String
+    - contextPath: QRadar.GeoForIP.RegisteredCountryIsoCode
+      description: ISO code of the country that the ISP has registered the IP address.
+      type: String
+    - contextPath: QRadar.GeoForIP.RegisteredCountryName
+      description: Name of the country that the ISP has registered the IP address.
+      type: String
+    - contextPath: QRadar.GeoForIP.RepresentedCountryIsoCode
+      description: ISO code of the country that is represented by users of the IP
+        address.
+      type: String
+    - contextPath: QRadar.GeoForIP.RepresentedCountryName
+      description: Name of the country that is represented by users of the IP address.
+      type: String
+    - contextPath: QRadar.GeoForIP.RepresentedCountryConfidence
+      description: Value between 0-100 that represents MaxMind's confidence that the
+        represented country is correct.
+      type: Number
+    - contextPath: QRadar.GeoForIP.IPAddress
+      description: IP address to look up.
+      type: String
+    - contextPath: QRadar.GeoForIP.Traits.autonomous_system_number
+      description: The autonomous system number associated with the IP address.
+      type: Number
+    - contextPath: QRadar.GeoForIP.Traits.autonomous_system_organization
+      description: The organization associated with the registered autonomous system
+        number for the IP address.
+      type: String
+    - contextPath: QRadar.GeoForIP.Traits.domain
+      description: The second level domain associated with the IP address.
+      type: String
+    - contextPath: QRadar.GeoForIP.Traits.internet_service_provider
+      description: The name of the internet service provider associated with the IP
+        address.
+      type: String
+    - contextPath: QRadar.GeoForIP.Traits.organization
+      description: The name of the organization associated with the IP address.
+      type: String
+    - contextPath: QRadar.GeoForIP.Traits.user_type
+      description: The user type associated with the IP address.
+      type: String
+    - contextPath: QRadar.GeoForIP.Coordinates
+      description: Latitude and longitude by MaxMind.
+      type: Number
+    - contextPath: QRadar.GeoForIP.PostalCode
+      description: The postal code associated with the IP address.
+      type: String
+    - contextPath: QRadar.GeoForIP.PostalCodeConfidence
+      description: Value between 0-100 that represents MaxMind's confidence that the
+        postal code is correct.
+      type: Number
+    arguments:
+    - name: ip
+      description: Comma-separated list of IPs fro which to retrieve their geolocation.
+      required: true
+      isArray: true
+    - name: fields
+      description: 'Comma-separated list of fields to retrieve in the response. Fields
+        that are not explicitly named are excluded. E.g., "continent,ip_address".
+        Specify subfields in brackets and multiple fields in the same object separated
+        by commas. For a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--services-geolocations-GET.html'
+      isArray: true
+  - name: qradar-log-sources-list
+    description: Retrieves a list of log sources.
+    outputs:
+    - contextPath: QRadar.LogSource.SendingIP
+      description: IP of the system which the log source is associated with, or fed
+        by.
+      type: String
+    - contextPath: QRadar.LogSource.Internal
+      description: Whether log source is internal.
+      type: Boolean
+    - contextPath: QRadar.LogSource.ProtocolParameters
+      description: Protocol parameters.
+      type: Unknown
+    - contextPath: QRadar.LogSource.Description
+      description: Description of the log source.
+      type: String
+    - contextPath: QRadar.LogSource.Enabled
+      description: Whether log source is enabled.
+      type: Boolean
+    - contextPath: QRadar.LogSource.GroupIDs
+      description: Log source group IDs.
+      type: Number
+    - contextPath: QRadar.LogSource.Credibility
+      description: Credibility of the log source.
+      type: Number
+    - contextPath: QRadar.LogSource.ID
+      description: ID of the log source.
+      type: Number
+    - contextPath: QRadar.LogSource.ProtocolTypeID
+      description: Protocol type used by log source.
+      type: Number
+    - contextPath: QRadar.LogSource.CreationDate
+      description: Date when log source was created.
+      type: Date
+    - contextPath: QRadar.LogSource.Name
+      description: Name of the log source.
+      type: String
+    - contextPath: QRadar.LogSource.AutoDiscovered
+      description: Whether log source was auto discovered.
+      type: Boolean
+    - contextPath: QRadar.LogSource.ModifiedDate
+      description: Date when log source was last modified.
+      type: Date
+    - contextPath: QRadar.LogSource.TypeID
+      description: The log source type.
+      type: Number
+    - contextPath: QRadar.LogSource.LastEventTime
+      description: Date when the last event was received by the log source.
+      type: Date
+    - contextPath: QRadar.LogSource.Gateway
+      description: Whether log source is configured as a gateway.
+      type: Boolean
+    - contextPath: QRadar.LogSource.Status
+      description: Status of the log source.
+      type: Unknown
+    arguments:
+    - name: qrd_encryption_algorithm
+      description: The algorithm to use for encrypting the sensitive data of this
+        endpoint.
+      auto: PREDEFINED
+      required: true
+      defaultValue: AES128
+      predefined:
+      - AES128
+      - AES256
+    - name: qrd_encryption_password
+      description: The password to use for encrypting the sensitive data of this endpoint.
+        If password was not given, random password will be generated.
+    - name: range
+      description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
+      defaultValue: 0-49
+    - name: filter
+      description: 'Query by which to filter log sources, e.g., "auto_discovered=false".
+        For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
+    - name: fields
+      description: 'Comma-separated list of fields to retrieve in the response. Fields
+        that are not explicitly named are excluded. E.g., "id,name,status". Specify
+        subfields in brackets and multiple fields in the same object separated by
+        commas. For a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--config-event_sources-log_source_management-log_sources-GET.html'
+      isArray: true
+  - name: qradar-get-custom-properties
+    description: Retrieves a list of event regex properties.
+    outputs:
+    - contextPath: QRadar.Properties.identifier
+      description: ID of the event regex property.
+      type: String
+    - contextPath: QRadar.Properties.modification_date
+      description: Date when the event regex property was last updated.
+      type: Date
+    - contextPath: QRadar.Properties.datetime_format
+      description: Date/time pattern that the event regex property matches.
+      type: String
+    - contextPath: QRadar.Properties.property_type
+      description: 'Property type. Possible values: "STRING", "NUMERIC", "IP", "PORT",
+        "TIME".'
+      type: String
+    - contextPath: QRadar.Properties.name
+      description: Name of the event regex property.
+      type: String
+    - contextPath: QRadar.Properties.auto_discovered
+      description: Whether the event regex property was auto discovered.
+      type: Boolean
+    - contextPath: QRadar.Properties.description
+      description: Description of the event regex property.
+      type: String
+    - contextPath: QRadar.Properties.id
+      description: ID of the event regex property.
+      type: Number
+    - contextPath: QRadar.Properties.use_for_rule_engine
+      description: Whether the event regex property is parsed when the event is received.
+      type: Boolean
+    - contextPath: QRadar.Properties.creation_date
+      description: Date when the event regex property was created.
+      type: Date
+    - contextPath: QRadar.Properties.locale
+      description: Language tag of what locale the property matches.
+      type: String
+    - contextPath: QRadar.Properties.username
+      description: The owner of the event regex property.
+      type: String
+    arguments:
+    - name: field_name
+      description: A comma-separated list of names of the exact properties to search
+        for.
+    - default: false
+      defaultValue: '25'
+      description: The maximum number of regex event properties to fetch.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list names of a properties to search for. Values
+        are case insensitive.
+      isArray: false
+      name: like_name
+      required: false
+      secret: false
+    - name: range
+      description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
+      defaultValue: 0-49
+    - name: filter
+      description: 'Query by which to filter regex properties, e.g., "auto_discovered=false".
+        For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
+    - name: fields
+      description: 'Comma-separated list of fields to retrieve in the response. Fields
+        that are not explicitly named are excluded. E.g., "id,gateway". Specify subfields
+        in brackets and multiple fields in the same object separated by commas. For
+        a full list of available fields, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--config-event_sources-custom_properties-regex_properties-GET.html'
+      isArray: true
+  - name: qradar-reset-last-run
+    description: Resets the fetch incidents last run value, which resets the fetch
+      to its initial fetch state. (Will try to fetch the first available offense).
+  - name: get-mapping-fields
+    description: Returns the list of fields for an incident type. This command should
+      be used for debugging purposes.
+  - arguments:
+    - default: false
+      description: The offense ID.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: Date string in local time representing the last time the incident
+        was updated. The incident is only returned if it was modified after the last
+        update time.
+      isArray: false
+      name: lastUpdate
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets remote data from a remote incident. This method does not update
+      the current incident, and should be used for debugging purposes.
+    execution: false
+    name: get-remote-data
+  - arguments:
+    - default: false
+      description: Date string in local time representing the last time the incident
+        was updated. The incident is only returned if it was modified after the last
+        update time.
+      isArray: false
+      name: lastUpdate
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns the list of incidents IDs that were modified since the last
+      update time. Note that this method is for debugging purposes. The get-modified-remote-data
+      command is used as part of the mirroring feature, which is available from version
+      6.1.
+    execution: false
+    name: get-modified-remote-data
+#    Deprecated commands, to support backward compatibility for QRadar v2.
+  - arguments:
+    - default: false
+      description: 'Query by which to filter offenses. For reference, consult: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html'
+      isArray: false
+      name: filter
+      required: false
+      secret: false
+    - default: false
+      description: 'If used, will filter all fields except for the specified ones.
+        Use this parameter to specify which fields you would like to get back in the
+        response. Fields that are not explicitly named, are excluded. Specify subfields
+        in brackets and multiple fields in the same object separated by commas. The
+        filter uses QRadar''s field names. For reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-GET.html'
+      isArray: false
+      name: fields
+      required: false
+      secret: false
+    - default: false
+      description: 'Range of results to return. e.g.: 0-20'
+      isArray: false
+      name: range
+      required: false
+      secret: false
+    - default: false
+      description: Table headers to use the human readable output (if none provided,
+        will show all table headers).
+      isArray: false
+      name: headers
+      required: false
+      secret: false
+    deprecated: false
+    hidden: true
+    description: Gets offenses from QRadar.
+    execution: false
+    name: qradar-offenses
+    outputs:
+    - contextPath: QRadar.Offense.Followup
+      description: Offense followup.
+      type: boolean
+    - contextPath: QRadar.Offense.Credibility
+      description: The credibility of the offense.
+      type: number
+    - contextPath: QRadar.Offense.Relevance
+      description: The relevance of the offense.
+      type: number
+    - contextPath: QRadar.Offense.Severity
+      description: The severity of the offense.
+      type: number
+    - contextPath: QRadar.Offense.SourceAddress
+      description: The source addresses that are associated with the offense.
+      type: Unknown
+    - contextPath: QRadar.Offense.DestinationAddress
+      description: The destination addresses that are associated with the offense.
+      type: Unknown
+    - contextPath: QRadar.Offense.AssignedTo
+      description: The user the offense is assigned to.
+      type: string
+    - contextPath: QRadar.Offense.StartTime
+      description: The time (ISO) when the offense was started.
+      type: date
+    - contextPath: QRadar.Offense.ID
+      description: The ID of the offense.
+      type: int
+    - contextPath: QRadar.Offense.DestinationHostname
+      description: Destintion hostname.
+      type: Unknown
+    - contextPath: QRadar.Offense.Description
+      description: The description of the offense.
+      type: string
+    - contextPath: QRadar.Offense.EventCount
+      description: The number of events that are associated with the offense.
+      type: number
+    - contextPath: QRadar.Offense.OffenseSource
+      description: The source of the offense.
+      type: string
+    - contextPath: QRadar.Offense.Status
+      description: The status of the offense. One of "OPEN", "HIDDEN", or "CLOSED".
+      type: string
+    - contextPath: QRadar.Offense.Magnitude
+      description: The magnitude of the offense.
+      type: number
+    - contextPath: QRadar.Offense.ClosingUser
+      description: The user that closed the offense.
+      type: string
+    - contextPath: QRadar.Offense.ClosingReason
+      description: The offense closing reason.
+      type: string
+    - contextPath: QRadar.Offense.CloseTime
+      description: The time when the offense was closed.
+      type: date
+    - contextPath: QRadar.Offense.LastUpdatedTime
+      description: The time (ISO) when the offense was last updated.
+      type: date
+    - contextPath: QRadar.Offense.Categories
+      description: Event categories that are associated with the offense.
+      type: Unknown
+    - contextPath: QRadar.Offense.FlowCount
+      description: The number of flows that are associated with the offense.
+      type: number
+    - contextPath: QRadar.Offense.FollowUp
+      description: Offense followup.
+      type: boolean
+    - contextPath: QRadar.Offense.OffenseType
+      description: A number that represents the offense type.
+      type: string
+    - contextPath: QRadar.Offense.Protected
+      description: Is the offense protected.
+      type: boolean
+    - contextPath: QRadar.Offense.RemoteDestinationCount
+      description: The remote destinations that are associated with the offesne. If
+        this value is greater than 0 that means your offense has a remote destination,
+        you will need to use QRadarFullSearch playbook with the following query -
+        SELECT destinationip FROM events WHERE inOffense(<offenseID>) GROUP BY destinationip
+      type: Unknown
+  - arguments:
+    - default: true
+      description: Offense ID
+      isArray: false
+      name: offense_id
+      required: true
+      secret: false
+    - default: false
+      description: 'Query to filter offense. For reference please consult: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html'
+      isArray: false
+      name: filter
+      required: false
+      secret: false
+    - default: false
+      description: 'If used, will filter all fields except for the specified ones.
+        Use this parameter to specify which fields you would like to get back in the
+        response. Fields that are not explicitly named are excluded. Specify subfields
+        in brackets and multiple fields in the same object separated by commas. The
+        filter uses QRadar''s field names, for reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-GET.html'
+      isArray: false
+      name: fields
+      required: false
+      secret: false
+    - default: false
+      description: Table headers to use the human readable output (if none provided,
+        will show all table headers).
+      isArray: false
+      name: headers
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets offense with matching offense ID from qradar.
+    execution: false
+    hidden: true
+    name: qradar-offense-by-id
+    outputs:
+    - contextPath: QRadar.Offense.Followup
+      description: Offense followup.
+      type: boolean
+    - contextPath: QRadar.Offense.Credibility
+      description: The credibility of the offense.
+      type: number
+    - contextPath: QRadar.Offense.Relevance
+      description: The relevance of the offense.
+      type: number
+    - contextPath: QRadar.Offense.Severity
+      description: The severity of the offense.
+      type: number
+    - contextPath: QRadar.Offense.SourceAddress
+      description: The source addresses that are associated with the offense.
+      type: Unknown
+    - contextPath: QRadar.Offense.DestinationAddress
+      description: The local destination addresses that are associated with the offense.
+        If your offense has a remote destination, you will need to use the QRadarFullSearch
+        playbook with the following query - SELECT destinationip FROM events WHERE
+        inOffense(<offenseID>) GROUP BY destinationip
+      type: Unknown
+    - contextPath: QRadar.Offense.RemoteDestinationCount
+      description: The remote destination that are associated with the offesne. If
+        this value is greater than 0, it means that your offense has a remote destination,
+        you will need to use the QRadarFullSearch playbook with the following query
+        - SELECT destinationip FROM events WHERE inOffense(<offenseID>) GROUP BY destinationip
+      type: Unknown
+    - contextPath: QRadar.Offense.AssignedTo
+      description: The user the offense is assigned to.
+      type: string
+    - contextPath: QRadar.Offense.StartTime
+      description: The time (ISO) when the offense was started.
+      type: date
+    - contextPath: QRadar.Offense.ID
+      description: The ID of the offense.
+      type: int
+    - contextPath: QRadar.Offense.DestinationHostname
+      description: Destintion hostname.
+      type: Unknown
+    - contextPath: QRadar.Offense.Description
+      description: The description of the offense.
+      type: string
+    - contextPath: QRadar.Offense.EventCount
+      description: The number of events that are associated with the offense.
+      type: number
+    - contextPath: QRadar.Offense.OffenseSource
+      description: The source of the offense.
+      type: string
+    - contextPath: QRadar.Offense.Status
+      description: The status of the offense. One of "OPEN", "HIDDEN", or "CLOSED".
+      type: string
+    - contextPath: QRadar.Offense.Magnitude
+      description: The magnitude of the offense.
+      type: number
+    - contextPath: QRadar.Offense.ClosingUser
+      description: The user that closed the offense.
+      type: string
+    - contextPath: QRadar.Offense.ClosingReason
+      description: The offense closing reason.
+      type: string
+    - contextPath: QRadar.Offense.CloseTime
+      description: The time when the offense was closed.
+      type: date
+    - contextPath: QRadar.Offense.LastUpdatedTime
+      description: The time (ISO) when the offense was last updated.
+      type: date
+    - contextPath: QRadar.Offense.Categories
+      description: Event categories that are associated with the offense.
+      type: Unknown
+    - contextPath: QRadar.Offense.FlowCount
+      description: The number of flows that are associated with the offense.
+      type: number
+    - contextPath: QRadar.Offense.FollowUp
+      description: Offense followup.
+      type: boolean
+    - contextPath: QRadar.Offense.OffenseType
+      description: A number that represents the offense type.
+      type: string
+    - contextPath: QRadar.Offense.Protected
+      description: Is the offense protected.
+      type: boolean
+  - arguments:
+    - default: true
+      description: The ID of the offense to update.
+      isArray: false
+      name: offense_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Set to true to protect the offense.
+      isArray: false
+      name: protected
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Set to true to set the follow up flag on the offense.
+      isArray: false
+      name: follow_up
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The new status for the offense.
+      isArray: false
+      name: status
+      predefined:
+      - OPEN
+      - HIDDEN
+      - CLOSED
+      required: false
+      secret: false
+    - default: false
+      description: 'The id of a closing reason. You must provide a valid closing_reason_name
+        when you close an offense. The default closing_reasons are: (1) False-Positive,
+        Tuned (2) Non-Issues (3) Policy Violation.'
+      isArray: false
+      name: closing_reason_id
+      required: false
+      secret: false
+    - default: false
+      description: 'The name of a closing reason. You must provide a valid closing_reason_name
+        when you close an offense. The default closing_reasons are: (1) False-Positive,
+        Tuned (2) Non-Issues (3) Policy Violation.'
+      isArray: false
+      name: closing_reason_name
+      required: false
+      secret: false
+    - default: false
+      description: A user to assign the offense to.
+      isArray: false
+      name: assigned_to
+      required: false
+      secret: false
+    - default: false
+      description: Use this parameter to specify which fields you would like to get
+        back in the response. Fields that are not named are excluded. Specify subfields
+        in brackets and multiple fields in the same object  separated by commas. Please
+        consult - https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-POST.html
+      isArray: false
+      name: fields
+      required: false
+      secret: false
+    deprecated: false
+    description: Update an offense.
+    execution: false
+    hidden: true
+    name: qradar-update-offense
+    outputs:
+    - contextPath: QRadar.Offense.Followup
+      description: Offense followup.
+      type: boolean
+    - contextPath: QRadar.Offense.Credibility
+      description: The credibility of the offense.
+      type: number
+    - contextPath: QRadar.Offense.Relevance
+      description: The relevance of the offense.
+      type: number
+    - contextPath: QRadar.Offense.Severity
+      description: The severity of the offense.
+      type: number
+    - contextPath: QRadar.Offense.SourceAddress
+      description: The source addresses that are associated with the offense.
+      type: Unknown
+    - contextPath: QRadar.Offense.DestinationAddress
+      description: The destination addresses that are associated with the offense.
+      type: Unknown
+    - contextPath: QRadar.Offense.AssignedTo
+      description: The user the offense is assigned to.
+      type: string
+    - contextPath: QRadar.Offense.StartTime
+      description: The time (ISO) when the offense was started.
+      type: date
+    - contextPath: QRadar.Offense.ID
+      description: The ID of the offense.
+      type: int
+    - contextPath: QRadar.Offense.DestinationHostname
+      description: Destintion hostname.
+      type: Unknown
+    - contextPath: QRadar.Offense.Description
+      description: The description of the offense.
+      type: string
+    - contextPath: QRadar.Offense.EventCount
+      description: The number of events that are associated with the offense.
+      type: number
+    - contextPath: QRadar.Offense.OffenseSource
+      description: The source of the offense.
+      type: string
+    - contextPath: QRadar.Offense.Status
+      description: The status of the offense. One of "OPEN", "HIDDEN", or "CLOSED".
+      type: string
+    - contextPath: QRadar.Offense.Magnitude
+      description: The magnitude of the offense.
+      type: number
+    - contextPath: QRadar.Offense.ClosingUser
+      description: The user that closed the offense.
+      type: string
+    - contextPath: QRadar.Offense.ClosingReason
+      description: The offense closing reason.
+      type: string
+    - contextPath: QRadar.Offense.CloseTime
+      description: The time when the offense was closed.
+      type: date
+    - contextPath: QRadar.Offense.LastUpdatedTime
+      description: The time (ISO) when the offense was last updated.
+      type: date
+    - contextPath: QRadar.Offense.Categories
+      description: Event categories that are associated with the offense.
+      type: Unknown
+    - contextPath: QRadar.Offense.FlowCount
+      description: The number of flows that are associated with the offense.
+      type: number
+    - contextPath: QRadar.Offense.FollowUp
+      description: Offense followup.
+      type: boolean
+    - contextPath: QRadar.Offense.OffenseType
+      description: A number that represents the offense type.
+      type: string
+    - contextPath: QRadar.Offense.Protected
+      description: Is the offense protected.
+      type: boolean
+    - contextPath: QRadar.Offense.RemoteDestinationCount
+      description: The remote destinations that are associated with the offesne. If
+        this value is greater than 0 that means your offense has a remote destination,
+        you will need to use QRadarFullSearch playbook with the following query -
+        SELECT destinationip FROM events WHERE inOffense(<offenseID>) GROUP BY destinationip
+      type: Unknown
+  - arguments:
+    - default: true
+      description: The query expressions in AQL (for more information about Ariel
+        Query Language, review "https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.0/com.ibm.qradar.doc/c_aql_intro.html")
+      isArray: false
+      name: query_expression
+      required: true
+      secret: false
+    - default: false
+      description: Table headers to use the human readable output (if none provided,
+        will show all table headers).
+      isArray: false
+      name: headers
+      required: false
+      secret: false
+    deprecated: false
+    description: Searches in QRadar using AQL. It is highly recommended to use the
+      playbook 'QRadarFullSearch' instead of this command - it will execute the search,
+      and will return the result.
+    execution: false
+    name: qradar-searches
+    hidden: true
+    outputs:
+    - contextPath: QRadar.Search.ID
+      description: Search ID.
+      type: number
+    - contextPath: QRadar.Search.Status
+      description: The status of the search.
+      type: string
+  - arguments:
+    - default: true
+      description: The search id.
+      isArray: false
+      name: search_id
+      required: true
+      secret: false
+    - default: false
+      description: Table headers to use the human readable output (if none provided,
+        will show all table headers).
+      isArray: false
+      name: headers
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets a specific search id and status.
+    execution: false
+    hidden: true
+    name: qradar-get-search
+    outputs:
+    - contextPath: QRadar.Search.ID
+      description: Search ID.
+      type: number
+    - contextPath: QRadar.Search.Status
+      description: The status of the search.
+      type: string
+  - arguments:
+    - default: true
+      description: The search id.
+      isArray: false
+      name: search_id
+      required: true
+      secret: false
+    - default: false
+      description: 'Range of results to return. e.g.: 0-20'
+      isArray: false
+      name: range
+      required: false
+      secret: false
+    - default: false
+      description: Table headers to use the human readable output (if none provided,
+        will show all table headers).
+      isArray: false
+      name: headers
+      required: false
+      secret: false
+    - default: false
+      description: Replaces the default context output path for the query result (QRadar.Search.Result).
+        e.g. for output_path=QRadar.Correlations the result will be under the key
+        "QRadar.Correlations" in the context data.
+      isArray: false
+      name: output_path
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets search results.
+    execution: false
+    hidden: true
+    name: qradar-get-search-results
+    outputs:
+    - contextPath: QRadar.Search.Result
+      description: The result of the search.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: 'Query to filter assets. For reference please consult: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html'
+      isArray: false
+      name: filter
+      required: false
+      secret: false
+    - default: false
+      description: 'If used, will filter all fields except for the specified ones.
+        Use this parameter to specify which fields you would like to get back in the
+        response. Fields that are not named are excluded. Specify subfields in brackets
+        and multiple fields in the same object separated by commas. The filter uses
+        QRadar''s field names, for reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--asset_model-assets-GET.html'
+      isArray: false
+      name: fields
+      required: false
+      secret: false
+    - default: false
+      description: 'Range of results to return. e.g.: 0-20'
+      isArray: false
+      name: range
+      required: false
+      secret: false
+    - default: false
+      description: Table headers to use the human readable output (if none provided,
+        will show all table headers).
+      isArray: false
+      name: headers
+      required: false
+      secret: false
+    deprecated: false
+    description: List all assets found in the model.
+    execution: false
+    hidden: true
+    name: qradar-get-assets
+    outputs:
+    - contextPath: QRadar.Asset.ID
+      description: The ID of the asset.
+      type: number
+    - contextPath: Endpoint.IPAddress
+      description: IP address of the asset.
+      type: Unknown
+    - contextPath: QRadar.Asset.Name.Value
+      description: Name of the asset.
+      type: string
+    - contextPath: Endpoint.OS
+      description: Asset OS.
+      type: number
+    - contextPath: QRadar.Asset.AggregatedCVSSScore.Value
+      description: CVSSScore.
+      type: number
+    - contextPath: QRadar.Asset.AggregatedCVSSScore.LastUser
+      description: Last user who updated the Aggregated CVSS Score.
+      type: string
+    - contextPath: QRadar.Asset.Weight.Value
+      description: Asset weight.
+      type: number
+    - contextPath: QRadar.Asset.Weight.LastUser
+      description: Last user who updated the weight.
+      type: string
+    - contextPath: QRadar.Asset.Name.LastUser
+      description: Last user who updated the name.
+      type: string
+  - arguments:
+    - default: true
+      description: The ID of the requested asset.
+      isArray: false
+      name: asset_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves the asset by id.
+    execution: false
+    hidden: true
+    name: qradar-get-asset-by-id
+    outputs:
+    - contextPath: QRadar.Asset.ID
+      description: The ID of the asset.
+      type: number
+    - contextPath: Endpoint.MACAddress
+      description: Asset MAC address.
+      type: Unknown
+    - contextPath: Endpoint.IPAddress
+      description: IP address of the endpoint.
+      type: Unknown
+    - contextPath: QRadar.Asset.ComplianceNotes.Value
+      description: Compliance notes.
+      type: string
+    - contextPath: QRadar.Asset.CompliancePlan.Value
+      description: Compliance plan.
+      type: string
+    - contextPath: QRadar.Asset.CollateralDamagePotential.Value
+      description: Collateral damage potential.
+      type: Unknown
+    - contextPath: QRadar.Asset.AggregatedCVSSScore.Value
+      description: CVSSScore.
+      type: number
+    - contextPath: QRadar.Asset.Name.Value
+      description: Name of the asset.
+      type: string
+    - contextPath: QRadar.Asset.GroupName
+      description: Name of the asset's group.
+      type: string
+    - contextPath: Endpoint.Domain
+      description: DNS name.
+      type: Unknown
+    - contextPath: Endpoint.OS
+      description: Asset OS.
+      type: Unknown
+    - contextPath: QRadar.Asset.Weight.Value
+      description: Asset weight.
+      type: number
+    - contextPath: QRadar.Asset.Vulnerabilities.Value
+      description: Vulnerabilities.
+      type: Unknown
+    - contextPath: QRadar.Asset.Location
+      description: Location.
+      type: string
+    - contextPath: QRadar.Asset.Description
+      description: The asset description.
+      type: string
+    - contextPath: QRadar.Asset.SwitchID
+      description: Switch ID.
+      type: number
+    - contextPath: QRadar.Asset.SwitchPort
+      description: Switch port.
+      type: number
+    - contextPath: QRadar.Asset.Name.LastUser
+      description: Last user who updated the name.
+      type: string
+    - contextPath: QRadar.Asset.AggregatedCVSSScore.LastUser
+      description: Last user who updated the Aggregated CVSS Score.
+      type: string
+    - contextPath: QRadar.Asset.Weight.LastUser
+      description: Last user who updated the weight.
+      type: string
+    - contextPath: QRadar.Asset.ComplianceNotes.LastUser
+      description: Last user who updated the compliance notes.
+      type: string
+    - contextPath: QRadar.Asset.CompliancePlan.LastUser
+      description: Last user who updated the compliance plan.
+      type: string
+    - contextPath: QRadar.Asset.CollateralDamagePotential.LastUser
+      description: Last user who updated the collateral damage potential.
+      type: string
+    - contextPath: QRadar.Asset.Vulnerabilities.LastUser
+      description: Last user who updated the vulnerabilities.
+      type: string
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: If true, reserved closing reasons are included in the response.
+      isArray: false
+      name: include_reserved
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: If true, deleted closing reasons are included in the response.
+      isArray: false
+      name: include_deleted
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: 'Query to filter results. For reference, consult: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html'
+      isArray: false
+      name: filter
+      required: false
+      secret: false
+    - default: false
+      description: 'If used, will filter all fields except for the specified ones.
+        Use this parameter to specify which fields you would like to get back in the
+        response. Fields that are not explicitly named are excluded. Specify subfields
+        in brackets and multiple fields in the same object separated by commas. The
+        filter uses QRadar''s field names. For reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offense_closing_reasons-GET.html'
+      isArray: false
+      name: fields
+      required: false
+      secret: false
+    - default: false
+      description: 'Range of results to return. e.g.: 0-20.'
+      isArray: false
+      name: range
+      required: false
+      secret: false
+    deprecated: false
+    hidden: true
+    description: Get closing reasons.
+    execution: false
+    name: qradar-get-closing-reasons
+    outputs:
+    - contextPath: QRadar.Offense.ClosingReasons.ID
+      description: Closing reason ID.
+      type: number
+    - contextPath: QRadar.Offense.ClosingReasons.Name
+      description: Closing reason name.
+      type: string
+  - arguments:
+    - default: true
+      description: The offense ID to retrieve the note from.
+      isArray: false
+      name: offense_id
+      required: true
+      secret: false
+    - default: false
+      description: The note ID.
+      isArray: false
+      name: note_id
+      required: false
+      secret: false
+    - default: false
+      description: 'If used, will filter all fields except for the specified ones.
+        Use this parameter to specify which fields you would like to get back in the
+        response. Fields that are not explicitly named are excluded. Specify subfields
+        in brackets and multiple fields in the same object separated by commas. The
+        filter uses QRadar''s field names. For reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-note_id-GET.html'
+      isArray: false
+      name: fields
+      required: false
+      secret: false
+    - default: false
+      description: Table headers to use the human readable output (if none provided,
+        will show all table headers).
+      isArray: false
+      name: headers
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieve a note for an offense.
+    execution: false
+    hidden: true
+    name: qradar-get-note
+    outputs:
+    - contextPath: QRadar.Note.ID
+      description: Note ID.
+      type: number
+    - contextPath: QRadar.Note.Text
+      description: Note text.
+      type: string
+    - contextPath: QRadar.Note.CreateTime
+      description: The creation time of the note.
+      type: date
+    - contextPath: QRadar.Note.CreatedBy
+      description: The user who created the note.
+      type: string
+  - arguments:
+    - default: true
+      description: The offense ID to add the note to.
+      isArray: false
+      name: offense_id
+      required: true
+      secret: false
+    - default: false
+      description: The note text.
+      isArray: false
+      name: note_text
+      required: true
+      secret: false
+    - default: false
+      description: 'If used, will filter all fields except for the specified ones.
+        Use this parameter to specify which fields you would like to get back in the
+        response. Fields that are not explicitly named are excluded. Specify subfields
+        in brackets and multiple fields in the same object separated by commas. The
+        filter uses QRadar''s field names. For reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-POST.html'
+      isArray: false
+      name: fields
+      required: false
+      secret: false
+    - default: false
+      description: Table headers to use the human readable output (if none provided,
+        will show all table headers).
+      isArray: false
+      name: headers
+      required: false
+      secret: false
+    deprecated: false
+    description: Create a note on an offense.
+    execution: false
+    hidden: true
+    name: qradar-create-note
+    outputs:
+    - contextPath: QRadar.Note.ID
+      description: Note ID.
+      type: number
+    - contextPath: QRadar.Note.Text
+      description: Note text.
+      type: string
+    - contextPath: QRadar.Note.CreateTime
+      description: The creation time of the note.
+      type: date
+    - contextPath: QRadar.Note.CreatedBy
+      description: The user who created the note.
+      type: string
+  - arguments:
+    - default: true
+      description: The name of the requestered reference.
+      isArray: false
+      name: ref_name
+      required: true
+      secret: false
+    - default: false
+      description: Table headers to use the human readable output (if none provided,
+        will show all table headers).
+      isArray: false
+      name: headers
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'False'
+      description: If set to true will try to convert the data values to ISO-8601
+        string.
+      isArray: false
+      name: date_value
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    deprecated: false
+    description: Information about the reference set that had data added or updated.
+      This returns the information set, but not the contained data. This feature is
+      supported from version 8.1 and upward.
+    execution: false
+    hidden: true
+    name: qradar-get-reference-by-name
+    outputs:
+    - contextPath: QRadar.Reference.Name
+      description: The name of the reference set.
+      type: string
+    - contextPath: QRadar.Reference.CreationTime
+      description: The creation time (ISO) of the reference.
+      type: date
+    - contextPath: QRadar.Reference.ElementType
+      description: Reference element type.
+      type: string
+    - contextPath: QRadar.Reference.NumberOfElements
+      description: Number of elements.
+      type: number
+    - contextPath: QRadar.Reference.TimeToLive
+      description: Reference time to live.
+      type: string
+    - contextPath: QRadar.Reference.TimeoutType
+      description: 'Reference timeout type. Valid values are: UNKNOWN, FIRST_SEEN,
+        LAST_SEEN'
+      type: string
+    - contextPath: QRadar.Reference.Data
+      description: Reference set items.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Reference name to be created.
+      isArray: false
+      name: ref_name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The element type for the values allowed in the reference set.
+        The allowed values are: ALN (alphanumeric), ALNIC (alphanumeric ignore case),
+        IP (IP address), NUM (numeric), PORT (port number) or DATE. Note that date
+        values need to be represented in milliseconds since the Unix Epoch January
+        1st 1970.'
+      isArray: false
+      name: element_type
+      predefined:
+      - ALN
+      - ALNIC
+      - IP
+      - NUM
+      - PORT
+      - DATE
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The allowed values are "FIRST_SEEN", LAST_SEEN and UNKNOWN. The
+        default value is UNKNOWN.
+      isArray: false
+      name: timeout_type
+      predefined:
+      - FIRST_SEEN
+      - LAST_SEEN
+      - UNKNOWN
+      required: false
+      secret: false
+    - default: false
+      description: 'The time to live interval, for example: "1 month" or "5 minutes".'
+      isArray: false
+      name: time_to_live
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a new reference set. If the provided name is already in use,
+      this command will fail.
+    execution: false
+    hidden: true
+    name: qradar-create-reference-set
+    outputs:
+    - contextPath: QRadar.Reference.CreationTime
+      description: Creation time of the reference set.
+      type: date
+    - contextPath: QRadar.Reference.ElementType
+      description: 'The element type for the values allowed in the reference set.
+        The allowed values are: ALN (alphanumeric), ALNIC (alphanumeric ignore case),
+        IP (IP address), NUM (numeric), PORT (port number) or DATE.'
+      type: string
+    - contextPath: QRadar.Reference.Name
+      description: Name of the reference set.
+      type: string
+    - contextPath: QRadar.Reference.NumberOfElements
+      description: Number of elements in the created reference set.
+      type: number
+    - contextPath: QRadar.Reference.TimeoutType
+      description: Timeout type of the reference. The allowed values are FIRST_SEEN,
+        LAST_SEEN and UNKNOWN.
+      type: string
+  - arguments:
+    - default: true
+      description: The name of reference set to delete.
+      isArray: false
+      name: ref_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Deletes a reference set corresponding to the name provided.
+    execution: false
+    hidden: true
+    name: qradar-delete-reference-set
+  - arguments:
+    - default: false
+      description: The name of the reference set to add or update a value in.
+      isArray: false
+      name: ref_name
+      required: true
+      secret: false
+    - default: false
+      description: 'The value/s to add or update in the reference set. Note: Date
+        values must be represented in epoch in reference sets (milliseconds since
+        the Unix Epoch January 1st 1970). If ''date_value'' is set to ''True'', then
+        the argument will be converted from date in format: ''%Y-%m-%dT%H:%M:%S.%f000Z''
+        (e.g. ''2018-11-06T08:56:41.000000Z'') to epoch.'
+      isArray: true
+      name: value
+      required: true
+      secret: false
+    - default: false
+      description: An indication of where the data originated. The default value is
+        'reference data api'.
+      isArray: false
+      name: source
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'False'
+      description: 'If set to True, will convert ''value'' argument from date in format:
+        ''%Y-%m-%dT%H:%M:%S.%f000Z'' (e.g. ''2018-11-06T08:56:41.000000Z'') to epoch.'
+      isArray: false
+      name: date_value
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    deprecated: false
+    hidden: true
+    description: Add or update a value in a reference set.
+    execution: false
+    name: qradar-create-reference-set-value
+    outputs:
+    - contextPath: QRadar.Reference.Name
+      description: The name of the reference set.
+      type: string
+    - contextPath: QRadar.Reference.CreationTime
+      description: The creation time (ISO) of the reference.
+      type: date
+    - contextPath: QRadar.Reference.ElementType
+      description: Reference element type.
+      type: string
+    - contextPath: QRadar.Reference.NumberOfElements
+      description: Number of elements.
+      type: number
+    - contextPath: QRadar.Reference.TimeoutType
+      description: 'Reference timeout type. One of: UNKNOWN, FIRST_SEEN, LAST_SEEN.'
+      type: string
+  - arguments:
+    - default: false
+      description: The name of the reference set to add or update a value in.
+      isArray: false
+      name: ref_name
+      required: true
+      secret: false
+    - default: false
+      description: 'A comma-separated list of values to add or update in the reference
+        set. Date values must be represented in milliseconds since the Unix Epoch
+        January 1st 1970.'
+      isArray: true
+      name: value
+      required: true
+      secret: false
+    - default: false
+      description: An indication of where the data originated. The default value is
+        'reference data api'.
+      isArray: false
+      name: source
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'False'
+      description: 'If set to True, will convert ''value'' argument from date in format:
+        ''%Y-%m-%dT%H:%M:%S.%f000Z'' (e.g. ''2018-11-06T08:56:41.000000Z'') to epoch.'
+      isArray: false
+      name: date_value
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    deprecated: false
+    hidden: true
+    description: Adds or updates a value in a reference set.
+    execution: false
+    name: qradar-update-reference-set-value
+    outputs:
+    - contextPath: QRadar.Reference.Name
+      description: The name of the reference set.
+      type: string
+    - contextPath: QRadar.Reference.CreationTime
+      description: The creation time (ISO) of the reference.
+      type: date
+    - contextPath: QRadar.Reference.ElementType
+      description: Reference element type.
+      type: string
+    - contextPath: QRadar.Reference.NumberOfElements
+      description: Number of elements.
+      type: number
+    - contextPath: QRadar.Reference.TimeoutType
+      description: 'Reference timeout type. One of: UNKNOWN, FIRST_SEEN, LAST_SEEN'
+      type: string
+  - arguments:
+    - default: false
+      description: The name of the reference set to remove a value from.
+      isArray: false
+      name: ref_name
+      required: true
+      secret: false
+    - default: false
+      description: The value to remove from the reference set.
+      isArray: false
+      name: value
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'False'
+      description: 'If set to True will convert ''value'' argument from date in format:
+        ''%Y-%m-%dT%H:%M:%S.%f000Z'' (e.g. ''2018-11-06T08:56:41.000000Z'') to epoch.'
+      isArray: false
+      name: date_value
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    deprecated: false
+    hidden: true
+    description: Deletes a value in a reference set.
+    execution: false
+    name: qradar-delete-reference-set-value
+    outputs:
+    - contextPath: QRadar.Reference.Name
+      description: The name of the reference set.
+      type: string
+    - contextPath: QRadar.Reference.CreationTime
+      description: The creation time (ISO) of the reference.
+      type: date
+    - contextPath: QRadar.Reference.ElementType
+      description: Reference element type.
+      type: string
+    - contextPath: QRadar.Reference.NumberOfElements
+      description: Number of elements.
+      type: number
+    - contextPath: QRadar.Reference.TimeoutType
+      description: 'Reference timeout type. One of: UNKNOWN, FIRST_SEEN, LAST_SEEN'
+      type: string
+  - arguments:
+    - default: false
+      description: 'If used, will filter all fields except for the specified ones.
+        Use this parameter to specify which fields you would like to get back in the
+        response. Fields that are not explicitly named are excluded. Specify subfields
+        in brackets and multiple fields in the same object are separated by commas.
+        The filter uses QRadar''s field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-note_id-GET.html'
+      isArray: false
+      name: fields
+      required: false
+      secret: false
+    - default: false
+      description: Number of results in return.
+      isArray: false
+      name: range
+      required: false
+      secret: false
+    - default: false
+      description: Query to filter offenses.
+      isArray: false
+      name: filter
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieve all Domains.
+    execution: false
+    hidden: true
+    name: qradar-get-domains
+    outputs:
+    - contextPath: QRadar.Domains.AssetScannerIDs
+      description: Array of Asset Scanner IDs.
+      type: Number
+    - contextPath: QRadar.Domains.CustomProperties
+      description: Custom properties of the domain.
+      type: String
+    - contextPath: QRadar.Domains.Deleted
+      description: Indicates if the domain is deleted.
+      type: Boolean
+    - contextPath: QRadar.Domains.Description
+      description: Description of the domain.
+      type: String
+    - contextPath: QRadar.Domains.EventCollectorIDs
+      description: Array of Event Collector IDs.
+      type: Number
+    - contextPath: QRadar.Domains.FlowCollectorIDs
+      description: Array of Flow Collector IDs.
+      type: Number
+    - contextPath: QRadar.Domains.FlowSourceIDs
+      description: Array of Flow Source IDs.
+      type: Number
+    - contextPath: QRadar.Domains.ID
+      description: ID of the domain.
+      type: Number
+    - contextPath: QRadar.Domains.LogSourceGroupIDs
+      description: Array of Log Source Group IDs.
+      type: Number
+    - contextPath: QRadar.Domains.LogSourceIDs
+      description: Array of Log Source IDs.
+      type: Number
+    - contextPath: QRadar.Domains.Name
+      description: Name of the Domain.
+      type: String
+    - contextPath: QRadar.Domains.QVMScannerIDs
+      description: Array of QVM Scanner IDs.
+      type: Number
+    - contextPath: QRadar.Domains.TenantID
+      description: ID of the Domain tenant.
+      type: Number
+  - arguments:
+    - default: false
+      description: ID of the domain.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: 'If used, will filter all fields except for the specified ones.
+        Use this parameter to specify which fields you would like to get back in the
+        response. Fields that are not explicitly named are excluded. Specify subfields
+        in brackets and multiple fields in the same object are separated by commas.
+        The filter uses QRadar''s field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-note_id-GET.html'
+      isArray: false
+      name: fields
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves Domain information By ID.
+    execution: false
+    hidden: true
+    name: qradar-get-domain-by-id
+    outputs:
+    - contextPath: QRadar.Domains.AssetScannerIDs
+      description: Array of Asset Scanner IDs.
+      type: Number
+    - contextPath: QRadar.Domains.CustomProperties
+      description: Custom properties of the domain.
+      type: String
+    - contextPath: QRadar.Domains.Deleted
+      description: Indicates if the domain is deleted.
+      type: Boolean
+    - contextPath: QRadar.Domains.Description
+      description: Description of the domain.
+      type: String
+    - contextPath: QRadar.Domains.EventCollectorIDs
+      description: Array of Event Collector IDs.
+      type: Number
+    - contextPath: QRadar.Domains.FlowCollectorIDs
+      description: Array of Flow Collector IDs.
+      type: Number
+    - contextPath: QRadar.Domains.FlowSourceIDs
+      description: Array of Flow Source IDs.
+      type: Number
+    - contextPath: QRadar.Domains.ID
+      description: ID of the domain.
+      type: Number
+    - contextPath: QRadar.Domains.LogSourceGroupIDs
+      description: Array of Log Source Group IDs.
+      type: Number
+    - contextPath: QRadar.Domains.LogSourceIDs
+      description: Array of Log Source IDs.
+      type: Number
+    - contextPath: QRadar.Domains.Name
+      description: Name of the Domain.
+      type: String
+    - contextPath: QRadar.Domains.QVMScannerIDs
+      description: Array of QVM Scanner IDs.
+      type: Number
+    - contextPath: QRadar.Domains.TenantID
+      description: ID of the Domain tenant.
+      type: Number
+  - arguments:
+    - default: false
+      description: The name of the reference set to add or update a value in. To create
+        a new reference set, you need to set the element type.
+      isArray: false
+      name: ref_name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The element type for the values permitted in the reference set.
+        Only required when creating a new reference set. The valid values are: ALN
+        (alphanumeric), ALNIC (alphanumeric ignore case), IP (IP address), NUM (numeric),
+        PORT (port number) or DATE. Note that date values need to be represented in
+        milliseconds since the Unix Epoch January 1st 1970.'
+      isArray: false
+      name: element_type
+      predefined:
+      - ALN
+      - ALNIC
+      - IP
+      - NUM
+      - PORT
+      - DATE
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The timeout_type can be "FIRST_SEEN", "LAST_SEEN", or "UNKNOWN".
+        The default value is UNKNOWN. Only required for creating a new reference set.
+      isArray: false
+      name: timeout_type
+      predefined:
+      - FIRST_SEEN
+      - LAST_SEEN
+      - UNKNOWN
+      required: false
+      secret: false
+    - default: false
+      description: 'The time to live interval, for example: "1 month" or "5 minutes".
+        Only required when creating a new reference set.'
+      isArray: false
+      name: time_to_live
+      required: false
+      secret: false
+    - default: false
+      description: The query for getting indicators.
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '1000'
+      description: The maximum number of indicators to return. The default value is
+        1000.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: The page from which to get the indicators.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    deprecated: false
+    description: Uploads indicators from Demisto to Qradar.
+    execution: false
+    hidden: true
+    name: qradar-upload-indicators
+  - arguments:
+    - default: false
+      description: Comma separated list. Source IPs to retrieve their data, E.g "192.168.0.1,192.160.0.2".
+      isArray: true
+      name: source_ip
+      required: false
+      secret: false
+    - default: false
+      description: 'Query to filter IPs. E.g, filter=`source_ip="192.168.0.1"`. For
+        reference please consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
+      isArray: false
+      name: filter
+      required: false
+      secret: false
+    - default: false
+      description: "If used, will filter all fields except for the ones specified.\
+        \ Use this argument to specify which fields should be returned in the response.\
+        \ Fields that are not named are excluded. Specify subfields in brackets and\
+        \ multiple fields in the same object separated by commas. The filter uses\
+        \ QRadar's field names, for reference, consult: https://www.ibm.com/docs/en/qradar-common?topic=endpoints-get-siemsource-addresses"
+      isArray: false
+      name: fields
+      required: false
+      secret: false
+    - default: false
+      description: 'Range of results to return. e.g.: 0-20'
+      isArray: false
+      name: range
+      required: false
+      secret: false
+    deprecated: false
+    description: Get Source IPs
+    execution: false
+    hidden: false
+    name: qradar-ips-source-get
+    outputs:
+    - contextPath: QRadar.SourceIP.ID
+      description: The ID of the destination address.
+      type: Number
+    - contextPath: QRadar.SourceIP.DomainID
+      description: The ID of associated domain.
+      type: String
+    - contextPath: QRadar.SourceIP.EventFlowCount
+      description: The number of events and flows that are associated with the destination
+        address.
+      type: Number
+    - contextPath: QRadar.SourceIP.FirstEventFlowSeen
+      description: Date when the first event or flow was seen.
+      type: Date
+    - contextPath: QRadar.SourceIP.LastEventFlowSeen
+      description: Date when the last event or flow was seen.
+      type: Date
+    - contextPath: QRadar.SourceIP.SourceIP
+      description: The IP address.
+      type: String
+    - contextPath: QRadar.SourceIP.Magnitude
+      description: The magnitude of the destination address.
+      type: Number
+    - contextPath: QRadar.SourceIP.Network
+      description: The network of the destination address.
+      type: String
+    - contextPath: QRadar.SourceIP.OffenseIDs
+      description: List of offense IDs the destination address is part of.
+      type: Unknown
+    - contextPath: QRadar.SourceIP.LocalDestinationAddressIDs
+      description: List of local destination address IDs associated with the source
+        address.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Comma separated list. Local destination IPs to retrieve their data,
+        E.g "192.168.0.1,192.160.0.2".
+      isArray: true
+      name: local_destination_ip
+      required: false
+      secret: false
+    - default: false
+      description: 'Query to filter IPs. E.g, filter=`local_destination_ip="192.168.0.1"`
+        For reference please consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
+      isArray: false
+      name: filter
+      required: false
+      secret: false
+    - default: false
+      description: "If used, will filter all fields except for the ones specified.\
+        \ Use this argument to specify which fields should be returned in the response.\
+        \ Fields that are not named are excluded. Specify subfields in brackets and\
+        \ multiple fields in the same object separated by commas. The filter uses\
+        \ QRadar's field names, for reference, consult: https://www.ibm.com/docs/en/qradar-common?topic=endpoints-get-siemlocal-destination-addresses"
+      isArray: false
+      name: fields
+      required: false
+      secret: false
+    - default: false
+      description: 'Range of results to return. e.g.: 0-20'
+      isArray: false
+      name: range
+      required: false
+      secret: false
+    deprecated: false
+    description: Get Source IPs
+    execution: false
+    hidden: false
+    name: qradar-ips-local-destination-get
+    outputs:
+    - contextPath: QRadar.LocalDestinationIP.ID
+      description: The ID of the destination address.
+      type: Number
+    - contextPath: QRadar.LocalDestinationIP.DomainID
+      description: The ID of associated domain.
+      type: String
+    - contextPath: QRadar.LocalDestinationIP.EventFlowCount
+      description: The number of events and flows that are associated with the destination
+        address.
+      type: Number
+    - contextPath: QRadar.LocalDestinationIP.FirstEventFlowSeen
+      description: Date when the first event or flow was seen.
+      type: Date
+    - contextPath: QRadar.LocalDestinationIP.LastEventFlowSeen
+      description: Date when the last event or flow was seen.
+      type: Date
+    - contextPath: QRadar.LocalDestinationIP.LocalDestinationIP
+      description: The IP address.
+      type: String
+    - contextPath: QRadar.LocalDestinationIP.Magnitude
+      description: The magnitude of the destination address.
+      type: Number
+    - contextPath: QRadar.LocalDestinationIP.Network
+      description: The network of the destination address.
+      type: String
+    - contextPath: QRadar.LocalDestinationIP.OffenseIDs
+      description: List of offense IDs the destination address is part of.
+      type: Unknown
+    - contextPath: QRadar.LocalDestinationIP.SourceAddressIDs
+      description: List of source address IDs associated with the destination address.
+      type: Unknown
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.9.7.24076
+  feed: false
+  isfetch: false
+  isremotesyncin: true
+  longRunning: true
+  longRunningPort: false
+  isFetchSamples: true
+  ismappable: true
+fromversion: 5.5.0
+defaultmapperin: QRadar - Generic Incoming Mapper
+defaultclassifier: QRadar
+tests:
+- QRadar_v3-test

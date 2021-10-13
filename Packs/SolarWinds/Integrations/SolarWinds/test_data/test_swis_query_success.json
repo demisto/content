@@ -1,0 +1,36 @@
+{
+  "http_mock": {
+    "results": [
+        {
+            "NodeID": 1,
+            "ObjectSubType": "Agent",
+            "IPAddress": "10.0.6.166",
+            "IPAddressType": "IPv4",
+            "DynamicIP": false,
+            "Caption": "WIN-MV956AU5BSN",
+            "NodeDescription": "Hardware: Intel64 Family 6 Model 58 Stepping 0 AT/AT COMPATIBLE - Software: Windows Version 10.0 (Build 14393 Multiprocessor Free)",
+            "Description": "Windows 2016 Server"
+        },
+        {
+            "NodeID": 3,
+            "ObjectSubType": "SNMP",
+            "IPAddress": "127.0.0.1",
+            "IPAddressType": "IPv4",
+            "DynamicIP": false,
+            "Caption": "temporary",
+            "Description": "Unknown"
+        },
+        {
+            "NodeID": 4,
+            "ObjectSubType": "Agent",
+            "IPAddress": "10.0.9.95",
+            "IPAddressType": "IPv4",
+            "DynamicIP": false,
+            "Caption": "WIN-F33QQT6UPU5",
+            "NodeDescription": "Hardware: Intel64 Family 6 Model 58 Stepping 0 AT/AT COMPATIBLE - Software: Windows Version 10.0 (Build 14393 Multiprocessor Free)",
+            "Description": "Windows 2016 Server"
+        }
+    ]
+  },
+    "readable": "### Query Result\n|Caption|Description|Dynamic IP|IP Address|IP Address Type|Node Description|Node ID|Object Sub Type|\n|---|---|---|---|---|---|---|---|\n| WIN-MV956AU5BSN | Windows 2016 Server | false | 10.0.6.166 | IPv4 | Hardware: Intel64 Family 6 Model 58 Stepping 0 AT/AT COMPATIBLE - Software: Windows Version 10.0 (Build 14393 Multiprocessor Free) | 1 | Agent |\n| temporary | Unknown | false | 127.0.0.1 | IPv4 |  | 3 | SNMP |\n| WIN-F33QQT6UPU5 | Windows 2016 Server | false | 10.0.9.95 | IPv4 | Hardware: Intel64 Family 6 Model 58 Stepping 0 AT/AT COMPATIBLE - Software: Windows Version 10.0 (Build 14393 Multiprocessor Free) | 4 | Agent |\n"
+}

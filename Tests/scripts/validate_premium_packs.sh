@@ -4,17 +4,25 @@
 set -e
 
 EXTRACT_FOLDER=$(mktemp -d)
-GCS_PATH=$(mktemp)
-CIRCLE_BRANCH=${CIRCLE_BRANCH:-unknown}
-echo $GCS_MARKET_KEY > $GCS_PATH
+BRANCH=${CI_COMMIT_BRANCH:-unknown}
 
-GCS_MARKET_BUCKET="marketplace-dist"
 SECRET_CONF_PATH="./conf_secret.json"
 
+# ====== BUCKET CONFIGURATION ======
+
+if [[ -z $STORAGE_BASE_PATH ]]; then
+  if [[ $GCS_MARKET_BUCKET == $GCS_PRODUCTION_BUCKET ]]; then
+   STORAGE_BASE_PATH="content"
+  else
+    STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/content"
+  fi
+fi
 # ====== RUN VALIDATIONS ======
 
-echo "Validating index file."
-python3 ./Tests/scripts/validate_index.py -sa "$GCS_PATH" -e "$EXTRACT_FOLDER" -pb "$GCS_MARKET_BUCKET"
+echo "Validating index file in bucket at path gs://$GCS_MARKET_BUCKET/$STORAGE_BASE_PATH/packs"
 
-echo "Validating premium packs in server against index file."
-python3 ./Tests/scripts/validate_premium_packs.py -sa "$GCS_PATH" -e "$EXTRACT_FOLDER" -pb "$GCS_MARKET_BUCKET" -s "$SECRET_CONF_PATH" -a "$1"
+python3 ./Tests/scripts/validate_index.py -sa "$GCS_MARKET_KEY" -e "$EXTRACT_FOLDER" -pb "$GCS_MARKET_BUCKET" -sb "$STORAGE_BASE_PATH/packs" -c "$BRANCH"
+
+echo "Validating premium packs in server against index file in bucket at path gs://$GCS_MARKET_BUCKET/$STORAGE_BASE_PATH/packs."
+
+python3 ./Tests/scripts/validate_premium_packs.py -sa "$GCS_MARKET_KEY" -e "$EXTRACT_FOLDER" -pb "$GCS_MARKET_BUCKET" -s "$SECRET_CONF_PATH" -a "$1" -sb "$STORAGE_BASE_PATH/packs"

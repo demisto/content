@@ -31,7 +31,8 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
+    fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -44,10 +45,10 @@ configuration:
 - display: ''
   name: feedExpirationPolicy
   options:
-    - never
-    - interval
-    - indicatorType
-    - suddenDeath
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
   required: false
   type: 17
 - display: ''
@@ -81,6 +82,16 @@ configuration:
   name: collection_to_fetch
   required: false
   type: 0
+- additionalinfo: Incremental feeds pull only new or modified indicators that have
+    been sent from the integration. As the determination if the indicator is new or
+    modified happens on the 3rd-party vendor's side, and only indicators that are
+    new or modified are sent to Cortex XSOAR, all indicators coming from these feeds
+    are labeled new or modified.
+  display: Incremental Feed
+  name: feedIncremental
+  defaultvalue: 'false'
+  required: false
+  type: 8
 - additionalinfo: When enabled, fetch-indicators will try to fetch the entire feed
     for every fetch. When disabled, fetch-indicators will try to fetch just the latest
     entries (since the last fetch).
@@ -165,9 +176,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: Fetch only indicators that were added to the server after the given time.
-        Please provide a <number> and <time unit> of type minute/hour/day. For example,
-        1 minute, 12 hour, 24 days.
+      description: Fetch only indicators that were added to the server after the given
+        time. Please provide a <number> and <time unit> of type minute/hour/day. For
+        example, 1 minute, 12 hour, 24 days.
       isArray: false
       name: added_after
       required: false
@@ -198,11 +209,11 @@ script:
     - contextPath: TAXII2.Collections.Name
       description: Collection Name.
       type: String
-  - deprecated: false
+  - deprecated: true
     description: 'WARNING: This command will reset your fetch history.'
     execution: false
     name: taxii2-reset-fetch-indicators
-  dockerimage: demisto/taxii2:1.0.0.13859
+  dockerimage: demisto/taxii2:1.0.0.19258
   feed: true
   isfetch: false
   longRunning: false
@@ -214,3 +225,4 @@ script:
 tests:
 - TAXII 2 Feed Test
 fromversion: 5.5.0
+autoUpdateDockerImage: false

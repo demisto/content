@@ -1,26 +1,26 @@
 <!-- HTML_DOC -->
 <p>ArcSight Logger delivers a universal log management solution that unifies searching, reporting, alerting, and analysis across any type of enterprise machine data.</p>
-<p>The Demisto-ArcSight Logger integration allows you to run a search session, refine or limit the search and retrieve a list of events detected in the search.</p>
-<p>To set up Arcsight Logger to work with Demisto:</p>
+<p>The Cortex XSOAR-ArcSight Logger integration allows you to run a search session, refine or limit the search and retrieve a list of events detected in the search.</p>
+<p>To set up Arcsight Logger to work with Cortex XSOAR:</p>
 <ul>
 <li>Make sure you have the Arcsight Logger server url.</li>
 <li>Make sure you have credentials for Arcsight Logger.</li>
 </ul>
-<h3>To set up the integration on Demisto:</h3>
+<h3>To set up the integration on Cortex XSOAR:</h3>
 <ol>
 <li>Go to ‘Settings &gt; Integrations &gt; Servers &amp; Services’</li>
 <li>Locate ‘ArcSight Logger’ by searching for it using the search box on the top of the page.</li>
 <li>Click ‘Add instance’ to create and configure a new integration. You should configure the following settings:<br><strong>Name</strong>: A textual name for the integration instance.<br><strong>Server URL and Port</strong>: The API server URL and port number.<br><strong>Credentials and Password</strong>: User and password used to access ArcSight Logger.<br>
 <div class="field">
 <div class="demisto-checkbox ui checkbox ">
-<label class="checkbox-label" title="Import events as incidents"><label class="checkbox-label" title="Import events as incidents"><strong>Import events as incidents</strong> - Mark </label></label><label class="checkbox-label" title="Import events as incidents">to automatically create Demisto incidents from ArcSight Logger events. <br><strong>Incident type</strong>: Choose the incident type from the drop-down list. This incident type will be triggered when an event is received from the integration.  <br><strong>Events query</strong> - The events query received from the integration.  </label>
+<label class="checkbox-label" title="Import events as incidents"><label class="checkbox-label" title="Import events as incidents"><strong>Import events as incidents</strong> - Mark </label></label><label class="checkbox-label" title="Import events as incidents">to automatically create Cortex XSOAR incidents from ArcSight Logger events. <br><strong>Incident type</strong>: Choose the incident type from the drop-down list. This incident type will be triggered when an event is received from the integration.  <br><strong>Events query</strong> - The events query received from the integration.  </label>
 </div>
-<div class="demisto-checkbox ui checkbox "><label class="checkbox-label" title="Do not validate server certificate (insecure)"><strong>Do not validate server certificate (insecure)</strong> - Select to avoid server certification validation. You may want to do this in case Demisto cannot validate the integration server certificate (due to missing CA certificate).</label></div>
+<div class="demisto-checkbox ui checkbox "><label class="checkbox-label" title="Do not validate server certificate (insecure)"><strong>Do not validate server certificate (insecure)</strong> - Select to avoid server certification validation. You may want to do this in case Cortex XSOAR cannot validate the integration server certificate (due to missing CA certificate).</label></div>
 <div class="demisto-checkbox ui checkbox ">
-<strong>Use system proxy settings</strong>: Select whether to communicate via the system proxy server or not.<br><strong>Demisto engine</strong>: If relevant, select the engine that acts as a proxy to the server.<br>Engines are used when you need to access a remote network segments and there are network devices such as proxies, firewalls, etc. that prevent the Demisto server from accessing the remote networks.<br>For more information on Demisto engines see:<br><a href="https://support.demisto.com/hc/en-us/articles/226274727-Settings-Integrations-Engines">https://demisto.zendesk.com/hc/en-us/articles/226274727-Settings-Integrations-Engines</a><br><strong>Require users to enter additional password:</strong> Select whether you’d like an additional step where users are required to authenticate themselves with a password.</div>
+<strong>Use system proxy settings</strong>: Select whether to communicate via the system proxy server or not.<br><strong>Cortex XSOAR engine</strong>: If relevant, select the engine that acts as a proxy to the server.<br>Engines are used when you need to access a remote network segments and there are network devices such as proxies, firewalls, etc. that prevent the Cortex XSOAR server from accessing the remote networks.<br>For more information on Cortex XSOAR engines see:<br><a href="https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/engines">https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/engines</a><br><strong>Require users to enter additional password:</strong> Select whether you’d like an additional step where users are required to authenticate themselves with a password.</div>
 </div>
 </li>
-<li>Press the ‘Test’ button to validate connection.<br>If you are experiencing issues with the service configuration, please contact Demisto support at <a href="mailto:support@demisto.com">support@demisto.com</a>
+<li>Press the ‘Test’ button to validate connection.
 </li>
 <li>After completing the test successfully, press the ‘Done’ button.</li>
 </ol>

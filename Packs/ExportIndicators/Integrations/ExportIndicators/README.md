@@ -5,14 +5,14 @@ Use the Export Indicators Service integration to provide an endpoint with a list
 1. Export a list of malicious IPs to block via a firewall.
 2. Export a list of indicators to a service such as Splunk, using a supported output format.
 
-## Configure ExportIndicators on Demisto
+## Configure ExportIndicators on Cortex XSOAR
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
 2. Search for ExportIndicators.
 3. Click __Add instance__ to create and configure a new integration instance.
     * __Name__: a textual name for the integration instance.
-    * __Indicator Query__: The query to run to update its list. To view expected results, you can run the following command from the Demisto CLI
+    * __Indicator Query__: The query to run to update its list. To view expected results, you can run the following command from the Cortex XSOAR CLI
     `!findIndicators query=<your query>`
     * __Outbound Format__: The default format of the entries in the service. Supported formats: text, json, json-seq, csv, XSOAR json, XSOAR json-seq, XSOAR csv, PAN-OS URL, Symantec ProxySG and McAfee Web Gateway.
     * __List Size__: Max amount of entries in the service instance.
@@ -23,7 +23,7 @@ Use the Export Indicators Service integration to provide an endpoint with a list
     * __Show CSV Formats as Text__: If checked, csv and XSOAR-csv formats will create a textual web page instead of downloading a csv file.
     * __Listen Port__: Will run the *Export Indicators Service* on this port from within Cortex XSOAR. If you have multiple Export Indicators Service integration instances, make sure to use **different listening ports** to separate the outbound feeds.
     * __Certificate (Required for HTTPS)__: HTTPS Certificate provided by pasting its values into this field.
-    * __Private Key (Required for HTTPS)__: HTTPS private key provided by pasting its valuies into this field.
+    * __Private Key (Required for HTTPS)__: HTTPS private key provided by pasting its values into this field.
     * __HTTP Server__: Ignores certificate and private key, and will run the export indicators service
     in HTTP. (Not recommended.)
     * __Username__: The username with which to authenticate when fetching the indicators.
@@ -45,7 +45,7 @@ Use the Export Indicators Service integration to provide an endpoint with a list
 
 To access the Export Indicators service by instance name, make sure ***Instance execute external*** is enabled. 
 
-1. In Demisto, go to **Settings > About > Troubleshooting**.
+1. In Cortex XSOAR, go to **Settings > About > Troubleshooting**.
 2. In the **Server Configuration** section, verify that the ***instance.execute.external*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external* and set the value to *true*. See [this documentation](https://xsoar.pan.dev/docs/integrations/long-running#invoking-http-integrations-via-cortex-xsoar-servers-route-handling) for further information.
 3. In a web browser, go to `https://*<demisto_address>*/instance/execute/*<instance_name>*` .
 
@@ -71,6 +71,8 @@ Use the following arguments in the URL to change the request:
 | ca | Only with `proxysg` format. The categories which will be exported. Indicators not falling to these categories will be classified as the default category. | `https://{server_host}/instance/execute/{instance_name}?v=proxysg&ca=category1,category2` |
 | tr | Whether to collapse IPs. 0 - to not collapse, 1 - collapse to ranges or 2 - collapse to CIDRs | `https://{server_host}/instance/execute/{instance_name}?q="type:ip and sourceBrand:my_source"&tr=1` |
 | tx | Whether to output `csv` or `xsoar-csv` formats as textual web pages. | `https://{server_host}/instance/execute/{instance_name}?v=xsoar-csv&tx` |
+| sf | The field by which to sort the indicators by. Only applicable with the `so` argument. | `lastSeen` |
+| so | The direction by which to order the indicators. The options are `asc` or `desc`. Only applicable with the `sf` argument. | `asc` |
 
 
 ##### Base Command
@@ -92,6 +94,8 @@ Use the following arguments in the URL to change the request:
 | category_default | For use with Symantec ProxySG format - set the default category for the output. | Optional |
 | collapse_ips | Whether to collapse IPs, and if so - to ranges or CIDRs | Optional |
 | csv_text | If True, will output csv and XSOAR-csv formats as textual web pages | Optional |
+| sort_field | The field by which to sort the indicators by. Only applicable with the `sort_order` argument. | Optional |
+| sort_order | The direction by which to order the indicators. The options are `asc` or `desc`. Only applicable with the `sort_field` argument. | Optional |
  
 
 ##### Context Output

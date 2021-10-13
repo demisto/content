@@ -1,0 +1,207 @@
+id: O365-SecurityAndCompliance-ContextResults-Test
+version: -1
+name: O365-SecurityAndCompliance-ContextResults-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: bc5d54e5-8d49-4e18-8d4f-e1090db01b73
+    type: start
+    task:
+      id: bc5d54e5-8d49-4e18-8d4f-e1090db01b73
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: e74ab211-19a0-4330-8e49-c5a182b0ad4c
+    type: playbook
+    task:
+      id: e74ab211-19a0-4330-8e49-c5a182b0ad4c
+      version: -1
+      name: O365 - Security And Compliance - Search
+      playbookName: O365 - Security And Compliance - Search
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      ' exchange_location_exclusion': {}
+      allow_not_found_exchange_locations:
+        simple: "true"
+      case: {}
+      description: {}
+      exchange_location:
+        simple: All
+      force:
+        simple: "false"
+      kql:
+        simple: test
+      polling_interval:
+        simple: "1"
+      polling_timeout:
+        simple: "10"
+      preview:
+        simple: "true"
+      public_folder_location: {}
+      search_name: {}
+      share_point_location: {}
+      share_point_location_exclusion: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 3b57f8af-4f25-4bd0-89b7-d1cc302b42ba
+    type: condition
+    task:
+      id: 3b57f8af-4f25-4bd0-89b7-d1cc302b42ba
+      version: -1
+      name: Validate Search Action Context Output
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.[0]
+                accessor: Type
+            iscontext: true
+        - operator: isExists
+          left:
+            value:
+              complex:
+                root: O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.[0]
+                accessor: Location
+            iscontext: true
+        - operator: isExists
+          left:
+            value:
+              complex:
+                root: O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.[0]
+                accessor: DataLink
+            iscontext: true
+        - operator: isExists
+          left:
+            value:
+              complex:
+                root: O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.[0]
+                accessor: ReceivedTime
+            iscontext: true
+        - operator: isExists
+          left:
+            value:
+              complex:
+                root: O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.[0]
+                accessor: Sender
+            iscontext: true
+        - operator: isExists
+          left:
+            value:
+              complex:
+                root: O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.[0]
+                accessor: Size
+            iscontext: true
+        - operator: isExists
+          left:
+            value:
+              complex:
+                root: O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.[0]
+                accessor: Subject
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: dff854c3-6bdc-48c5-887f-af666b604735
+    type: title
+    task:
+      id: dff854c3-6bdc-48c5-887f-af666b604735
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 622.5,
+        "x": -80,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.5.0
+description: This playbook tests the context output of the Search Action Results output.

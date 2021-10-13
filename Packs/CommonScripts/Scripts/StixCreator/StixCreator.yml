@@ -1,0 +1,50 @@
+commonfields:
+  id: StixCreator
+  version: -1
+name: StixCreator
+script: ''
+type: python
+tags: []
+comment: Gets a list of indicators from the indicators argument, and generates a JSON
+  file in STIX 2.0 format.
+enabled: true
+args:
+- name: indicators
+  required: true
+  description: A JSON object of all indicators and their fields, indicator index mapped
+    to Demisto indicator fields.
+- name: doubleBackslash
+  default: true
+  description: Adds a second backslash to all existing backslashes in the value field.
+  defaultValue: "true"
+outputs:
+- contextPath: StixExportedIndicators.created
+  description: The date/time that the indicator was created.
+  type: date
+- contextPath: StixExportedIndicators.firstSeen
+  description: The date/time that the indicator was first seen.
+  type: date
+- contextPath: StixExportedIndicators.source
+  description: The source system for this indicator.
+  type: string
+- contextPath: StixExportedIndicators.type
+  description: The STIX type (always exported as "indicator").
+  type: string
+- contextPath: StixExportedIndicators.pattern
+  description: ' The type and value of indicators, for example: URL, IPv4, domain,email,
+    and so on. '
+  type: string
+- contextPath: StixExportedIndicators.score
+  description: The STIX impact score ("High", "Medium", "None", or "Not Specified")
+  type: string
+- contextPath: StixExportedIndicators.modified
+  description: The date/time that the indicator was last seen.
+  type: date
+scripttarget: 0
+runonce: false
+dockerimage: demisto/stix2:1.0.0.19258
+subtype: python3
+runas: DBotWeakRole
+tests:
+- StixCreator-Test
+fromversion: 5.0.0

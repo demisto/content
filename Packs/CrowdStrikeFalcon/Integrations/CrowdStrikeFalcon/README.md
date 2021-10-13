@@ -11,7 +11,7 @@ The CrowdStrike Falcon OAuth 2 API integration (formerly Falcon Firehose API), e
 | url | Server URL \(e.g., https://api.crowdstrike.com\) | True |
 | client_id | Client ID | True |
 | secret | Secret | True |
-| fetch_time | First fetch timestamp \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., 12 hours, 7 days\) | False |
+| fetch_time | First fetch timestamp \(`<number>` `<time unit>`, e.g., 12 hours, 7 days\) | False |
 | incidents_per_fetch | Max incidents per fetch | False |
 | fetch_query | Fetch query | False |
 | isFetch | Fetch incidents | False |
@@ -57,7 +57,17 @@ Searches for devices that match the query.
 | CrowdStrike.Device.FirstSeen | String | The first time the device was seen. | 
 | CrowdStrike.Device.LastSeen | String | The last time the device was seen. | 
 | CrowdStrike.Device.PolicyType | String | The policy type of the device. | 
- 
+| CrowdStrike.Device.Status | String | The device status. | 
+| Endpoint.Hostname | String | The endpoint's hostname. | 
+| Endpoint.OS | String | The endpoint's operation system. | 
+| Endpoint.OSVersion | String | The endpoint's operation system version. | 
+| Endpoint.IPAddress | String | The endpoint's IP address. | 
+| Endpoint.ID | String | The endpoint's ID. | 
+| Endpoint.Status | String | The endpoint's status. | 
+| Endpoint.IsIsolated | String | The endpoint's isolation status. | 
+| Endpoint.MACAddress | String | The endpoint's MAC address. | 
+| Endpoint.Vendor | String | The integration name of the endpoint vendor. | 
+
 
 #### Command Example
 
@@ -75,7 +85,8 @@ Searches for devices that match the query.
                 "LastSeen": "2019-03-28T02:36:41Z", 
                 "OS": "Mojave (10.14)", 
                 "ID": "336474ea6a524e7c68575f6508d84781", 
-                "FirstSeen": "2017-12-28T22:38:11Z"
+                "FirstSeen": "2017-12-28T22:38:11Z",
+                "Status": "contained"
             }, 
             {
                 "ExternalIP": "94.188.164.68", 
@@ -85,7 +96,28 @@ Searches for devices that match the query.
                 "LastSeen": "2019-03-17T10:03:17Z", 
                 "OS": "Mojave (10.14)", 
                 "ID": "459146dbe524472e73751a43c63324f3", 
-                "FirstSeen": "2017-12-10T11:01:20Z"
+                "FirstSeen": "2017-12-10T11:01:20Z",
+                "Status": "contained"
+            }
+        ],
+      "Endpoint(val.ID === obj.ID)": [
+            {
+              "Hostname": "154.132.82-test-co.in-addr.arpa",
+              "ID": "336474ea6a524e7c68575f6508d84781",
+              "IPAddress": "192.168.1.76", 
+              "OS": "Mojave (10.14)",
+              "Status": "Online",
+              "￿Vendor": "CrowdStrike Falcon",
+              "￿MACAddress": "1-1-1-1"
+            },
+            {
+              "Hostname": "154.132.82-test-co.in-addr.arpa", 
+              "ID": "459146dbe524472e73751a43c63324f3",
+              "IPAddress": "172.22.14.237", 
+              "OS": "Mojave (10.14)", 
+              "Status": "Online",
+              "￿Vendor": "CrowdStrike Falcon",
+              "￿MACAddress": "1-1-1-1"
             }
         ]
     }
@@ -94,11 +126,10 @@ Searches for devices that match the query.
 
 ### Devices
 
-| ID | Hostname | OS | Mac Address | Local IP | External IP | First Seen | Last Seen |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| 336474ea6a524e7c68575f6508d84781 | 154.132.82-test-co.in-addr.arpa | Mojave (10.14) | 8c-85-90-3d-ed-3e | 192.168.1.76 | 94.188.164.68 | 2017-12-28T22:38:11Z | 2019-03-28T02:36:41Z |
-| 459146dbe524472e73751a43c63324f3 | 154.132.82-test-co.in-addr.arpa | Mojave (10.14) | f0-18-98-74-8c-31 | 172.22.14.237 | 94.188.164.68 | 2017-12-10T11:01:20Z | 2019-03-17T10:03:17Z |
-
+| ID | Hostname | OS | Mac Address | Local IP | External IP | First Seen | Last Seen | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 336474ea6a524e7c68575f6508d84781 | 154.132.82-test-co.in-addr.arpa | Mojave (10.14) | 8c-85-90-3d-ed-3e | 192.168.1.76 | 94.188.164.68 | 2017-12-28T22:38:11Z | 2019-03-28T02:36:41Z | contained |
+| 459146dbe524472e73751a43c63324f3 | 154.132.82-test-co.in-addr.arpa | Mojave (10.14) | f0-18-98-74-8c-31 | 172.22.14.237 | 94.188.164.68 | 2017-12-10T11:01:20Z | 2019-03-17T10:03:17Z | contained |
  
 
 ### 2. Get a behavior
@@ -1984,3 +2015,1044 @@ Lists incident summaries.
 
 #### Command Example
 ```!cs-falcon-list-incident-summaries```
+
+
+### 34. Endpoint
+***
+Lists incident summaries.
+
+#### Base Command
+
+`endpoint`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Endpoint ID. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Endpoint.Hostname | String | The endpoint's hostname. | 
+| Endpoint.OS | String | The endpoint's operation system. | 
+| Endpoint.OSVersion | String | The endpoint's operation system version. | 
+| Endpoint.IPAddress | String | The endpoint's IP address. | 
+| Endpoint.ID | String | The endpoint's ID. | 
+| Endpoint.Status | String | The endpoint's status. | 
+| Endpoint.IsIsolated | String | The endpoint's isolation status. | 
+| Endpoint.MACAddress | String | The endpoint's MAC address. | 
+| Endpoint.Vendor | String | The integration name of the endpoint vendor. | 
+
+
+#### Command Example
+```!endpoint id=15dbb9d5fe9f61eb46e829d986```
+
+#### Context Example
+```json
+{
+  "Endpoint":
+    {
+      "Hostname": "Hostname",
+      "ID": "15dbb9d5fe9f61eb46e829d986",
+      "IPAddress": "1.1.1.1",
+      "OS": "Windows",
+      "OSVersion": "Windows Server 2019",
+      "Status": "Online",
+      "￿Vendor": "CrowdStrike Falcon",
+      "￿MACAddress": "1-1-1-1"
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Endpoints
+>|ID|IPAddress|OS|OSVersion|Hostname|Status|MACAddress|Vendor
+>|---|---|---|---|---|---|---|---|
+>| 15dbb9d8f06b45fe9f61eb46e829d986 | 1.1.1.1 | Windows | Windows Server 2019| Hostname | Online | 1-1-1-1 | CrowdStrike Falcon|\n"
+### cs-falcon-create-host-group
+***
+Create a host group
+
+
+#### Base Command
+
+`cs-falcon-create-host-group`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name of the host. | Required | 
+| group_type | The group type of the group. Can be 'static' or 'dynamic'. Possible values are: static, dynamic. | Optional | 
+| description | The description of the host. | Optional | 
+| assignment_rule | The assignment rule. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.HostGroup.id | String | The ID of the host group. | 
+| CrowdStrike.HostGroup.group_type | String | The group type of the host group. | 
+| CrowdStrike.HostGroup.name | String | The name of the host group. | 
+| CrowdStrike.HostGroup.description | String | The description of the host group. | 
+| CrowdStrike.HostGroup.created_by | String | The client that created the host group. | 
+| CrowdStrike.HostGroup.created_timestamp | Date | 'The datetime when the host group was created in ISO time format. For example: 2019-10-17T13:41:48.487520845Z.' | 
+| CrowdStrike.HostGroup.modified_by | String | The client that modified the host group. | 
+| CrowdStrike.HostGroup.modified_timestamp | Date | 'The datetime when the host group was last modified in ISO time format. For example: 2019-10-17T13:41:48.487520845Z.' | 
+
+
+#### Command Example
+```!cs-falcon-create-host-group name="test_name_1" description="test_description" group_type=static```
+
+#### Context Example
+```json
+{
+    "CrowdStrike": {
+        "HostGroup": {
+            "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+            "created_timestamp": "2021-08-25T08:02:02.060242909Z",
+            "description": "test_description",
+            "group_type": "static",
+            "id": "f82edc8a565d432a8114ebdbf255f5b2",
+            "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+            "modified_timestamp": "2021-08-25T08:02:02.060242909Z",
+            "name": "test_name_1"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results
+>|created_by|created_timestamp|description|group_type|id|modified_by|modified_timestamp|name|
+>|---|---|---|---|---|---|---|---|
+>| api-client-id:2bf188d347e44e08946f2e61ef590c24 | 2021-08-25T08:02:02.060242909Z | test_description | static | f82edc8a565d432a8114ebdbf255f5b2 | api-client-id:2bf188d347e44e08946f2e61ef590c24 | 2021-08-25T08:02:02.060242909Z | test_name_1 |
+
+### cs-falcon-update-host-group
+***
+Update a host group.
+
+
+#### Base Command
+
+`cs-falcon-update-host-group`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_group_id | The ID of the host group. | Required | 
+| name | The name of the host group. | Optional | 
+| description | The description of the host group. | Optional | 
+| assignment_rule | The assignment rule. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.HostGroup.id | String | The ID of the host group. | 
+| CrowdStrike.HostGroup.group_type | String | The group type of the host group. | 
+| CrowdStrike.HostGroup.name | String | The name of the host group. | 
+| CrowdStrike.HostGroup.description | String | The description of the host group. | 
+| CrowdStrike.HostGroup.created_by | String | The client that created the host group. | 
+| CrowdStrike.HostGroup.created_timestamp | Date | 'The datetime when the host group was created in ISO time format. For
+        example: 2019-10-17T13:41:48.487520845Z.' | 
+| CrowdStrike.HostGroup.modified_by | String | The client that modified the host group. | 
+| CrowdStrike.HostGroup.modified_timestamp | Date | 'The datetime when the host group was last modified in ISO time format.
+        For example: 2019-10-17T13:41:48.487520845Z.' | 
+
+
+#### Command Example
+```!cs-falcon-update-host-group host_group_id=4902d5686bed41ba88a37439f38913ba name="test_name_update_1" description="test_description_update"```
+
+#### Context Example
+```json
+{
+    "CrowdStrike": {
+        "HostGroup": {
+            "assignment_rule": "device_id:[''],hostname:['']",
+            "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+            "created_timestamp": "2021-08-22T07:48:35.111070562Z",
+            "description": "test_description_update",
+            "group_type": "static",
+            "id": "4902d5686bed41ba88a37439f38913ba",
+            "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+            "modified_timestamp": "2021-08-25T08:02:05.295663156Z",
+            "name": "test_name_update_1"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results
+>|assignment_rule|created_by|created_timestamp|description|group_type|id|modified_by|modified_timestamp|name|
+>|---|---|---|---|---|---|---|---|---|
+>| device_id:[''],hostname:[''] | api-client-id:2bf188d347e44e08946f2e61ef590c24 | 2021-08-22T07:48:35.111070562Z | test_description_update | static | 4902d5686bed41ba88a37439f38913ba | api-client-id:2bf188d347e44e08946f2e61ef590c24 | 2021-08-25T08:02:05.295663156Z | test_name_update_1 |
+
+### cs-falcon-list-host-group-members
+***
+Get the list of host group members.
+
+
+#### Base Command
+
+`cs-falcon-list-host-group-members`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_group_id | The ID of the host group. | Optional | 
+| filter | The query by which to filter the devices that belong to the host group. | Optional | 
+| offset | Page offset. | Optional | 
+| limit | Maximum number of results on a page. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.Device.ID | String | The ID of the device. | 
+| CrowdStrike.Device.LocalIP | String | The local IP address of the device. | 
+| CrowdStrike.Device.ExternalIP | String | The external IP address of the device. | 
+| CrowdStrike.Device.Hostname | String | The host name of the device. | 
+| CrowdStrike.Device.OS | String | The operating system of the device. | 
+| CrowdStrike.Device.MacAddress | String | The MAC address of the device. | 
+| CrowdStrike.Device.FirstSeen | String | The first time the device was seen. | 
+| CrowdStrike.Device.LastSeen | String | The last time the device was seen. | 
+| CrowdStrike.Device.Status | String | The device status. | 
+
+
+#### Command Example
+```!cs-falcon-list-host-group-members```
+
+#### Context Example
+```json
+{
+    "CrowdStrike": {
+        "Device": [
+            {
+                "ExternalIP": "35.224.136.145",
+                "FirstSeen": "2021-08-12T16:13:26Z",
+                "Hostname": "FALCON-CROWDSTR",
+                "ID": "75b2dba7ba8d450da481ed6830cc9d9d",
+                "LastSeen": "2021-08-23T04:59:48Z",
+                "LocalIP": "10.128.0.21",
+                "MacAddress": "42-01-0a-80-00-15",
+                "OS": "Windows Server 2019",
+                "Status": "normal"
+            },
+            {
+                "ExternalIP": "35.224.136.145",
+                "FirstSeen": "2020-02-10T12:40:18Z",
+                "Hostname": "FALCON-CROWDSTR",
+                "ID": "15dbb9d8f06b45fe9f61eb46e829d986",
+                "LastSeen": "2021-08-25T07:42:47Z",
+                "LocalIP": "10.128.0.7",
+                "MacAddress": "42-01-0a-80-00-07",
+                "OS": "Windows Server 2019",
+                "Status": "contained"
+            },
+            {
+                "ExternalIP": "35.224.136.145",
+                "FirstSeen": "2021-08-23T05:04:41Z",
+                "Hostname": "INSTANCE-1",
+                "ID": "046761c46ec84f40b27b6f79ce7cd32c",
+                "LastSeen": "2021-08-25T07:49:06Z",
+                "LocalIP": "10.128.0.20",
+                "MacAddress": "42-01-0a-80-00-14",
+                "OS": "Windows Server 2019",
+                "Status": "normal"
+            },
+            {
+                "ExternalIP": "35.224.136.145",
+                "FirstSeen": "2021-08-11T13:57:29Z",
+                "Hostname": "INSTANCE-1",
+                "ID": "07007dd3f95c4d628fb097072bf7f7f3",
+                "LastSeen": "2021-08-23T04:45:37Z",
+                "LocalIP": "10.128.0.20",
+                "MacAddress": "42-01-0a-80-00-14",
+                "OS": "Windows Server 2019",
+                "Status": "normal"
+            },
+            {
+                "ExternalIP": "35.224.136.145",
+                "FirstSeen": "2021-08-08T11:33:21Z",
+                "Hostname": "falcon-crowdstrike-sensor-centos7",
+                "ID": "0bde2c4645294245aca522971ccc44c4",
+                "LastSeen": "2021-08-25T07:50:47Z",
+                "LocalIP": "10.128.0.19",
+                "MacAddress": "42-01-0a-80-00-13",
+                "OS": "CentOS 7.9",
+                "Status": "normal"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Devices
+>|ID|External IP|Local IP|Hostname|OS|Mac Address|First Seen|Last Seen|Status|
+>|---|---|---|---|---|---|---|---|---|
+>| 0bde2c4645294245aca522971ccc44c4 | 35.224.136.145 | 10.128.0.19 | falcon-crowdstrike-sensor-centos7 | CentOS 7.9 | 42-01-0a-80-00-13 | 2021-08-08T11:33:21Z | 2021-08-25T07:50:47Z | normal |
+
+### cs-falcon-add-host-group-members
+***
+Add host group members.
+
+
+#### Base Command
+
+`cs-falcon-add-host-group-members`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_group_id | The ID of the host group. | Required | 
+| host_ids | A comma-separated list of host agent IDs to run commands.(The list of host agent IDs can be retrieved by running the 'cs-falcon-search-device' command.) | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.HostGroup.id | String | The ID of the host group. | 
+| CrowdStrike.HostGroup.group_type | String | The group type of the host group. | 
+| CrowdStrike.HostGroup.name | String | The name of the host group. | 
+| CrowdStrike.HostGroup.description | String | The description of the host group. | 
+| CrowdStrike.HostGroup.created_by | String | The client that created the host group. | 
+| CrowdStrike.HostGroup.created_timestamp | Date | 'The datetime when the host group was created in ISO time format. For
+        example: 2019-10-17T13:41:48.487520845Z.' | 
+| CrowdStrike.HostGroup.modified_by | String | The client that modified the host group. | 
+| CrowdStrike.HostGroup.modified_timestamp | Date | 'The datetime when the host group was last modified in ISO time format.
+        For example: 2019-10-17T13:41:48.487520845Z.' | 
+
+
+#### Command Example
+```!cs-falcon-add-host-group-members host_group_id="4902d5686bed41ba88a37439f38913ba" host_ids="0bde2c4645294245aca522971ccc44c4"```
+
+#### Context Example
+```json
+{
+    "CrowdStrike": {
+        "HostGroup": {
+            "assignment_rule": "device_id:[''],hostname:['falcon-crowdstrike-sensor-centos7','']",
+            "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+            "created_timestamp": "2021-08-22T07:48:35.111070562Z",
+            "description": "test_description_update",
+            "group_type": "static",
+            "id": "4902d5686bed41ba88a37439f38913ba",
+            "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+            "modified_timestamp": "2021-08-25T08:02:05.295663156Z",
+            "name": "test_name_update_1"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results
+>|assignment_rule|created_by|created_timestamp|description|group_type|id|modified_by|modified_timestamp|name|
+>|---|---|---|---|---|---|---|---|---|
+>| device_id:[''],hostname:['falcon-crowdstrike-sensor-centos7',''] | api-client-id:2bf188d347e44e08946f2e61ef590c24 | 2021-08-22T07:48:35.111070562Z | test_description_update | static | 4902d5686bed41ba88a37439f38913ba | api-client-id:2bf188d347e44e08946f2e61ef590c24 | 2021-08-25T08:02:05.295663156Z | test_name_update_1 |
+
+### cs-falcon-remove-host-group-members
+***
+Remove host group members.
+
+
+#### Base Command
+
+`cs-falcon-remove-host-group-members`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_group_id | The ID of the host group. | Required | 
+| host_ids | A comma-separated list of host agent IDs to run commands. (The list of host agent IDs can be retrieved by running the 'cs-falcon-search-device' command.)| Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.HostGroup.id | String | The ID of the host group. | 
+| CrowdStrike.HostGroup.group_type | String | The group type of the host group. | 
+| CrowdStrike.HostGroup.name | String | The name of the host group. | 
+| CrowdStrike.HostGroup.description | String | The description of the host group. | 
+| CrowdStrike.HostGroup.created_by | String | The client that created the host group. | 
+| CrowdStrike.HostGroup.created_timestamp | Date | 'The datetime when the host group was created in ISO time format. For
+        example: 2019-10-17T13:41:48.487520845Z.' | 
+| CrowdStrike.HostGroup.modified_by | String | The client that modified the host group. | 
+| CrowdStrike.HostGroup.modified_timestamp | Date | 'The datetime when the host group was last modified in ISO time format.
+        For example: 2019-10-17T13:41:48.487520845Z.' | 
+
+
+#### Command Example
+```!cs-falcon-remove-host-group-members host_group_id="4902d5686bed41ba88a37439f38913ba" host_ids="0bde2c4645294245aca522971ccc44c4"```
+
+#### Context Example
+```json
+{
+    "CrowdStrike": {
+        "HostGroup": {
+            "assignment_rule": "device_id:[''],hostname:['']",
+            "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+            "created_timestamp": "2021-08-22T07:48:35.111070562Z",
+            "description": "test_description_update",
+            "group_type": "static",
+            "id": "4902d5686bed41ba88a37439f38913ba",
+            "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+            "modified_timestamp": "2021-08-25T08:02:05.295663156Z",
+            "name": "test_name_update_1"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results
+>|assignment_rule|created_by|created_timestamp|description|group_type|id|modified_by|modified_timestamp|name|
+>|---|---|---|---|---|---|---|---|---|
+>| device_id:[''],hostname:[''] | api-client-id:2bf188d347e44e08946f2e61ef590c24 | 2021-08-22T07:48:35.111070562Z | test_description_update | static | 4902d5686bed41ba88a37439f38913ba | api-client-id:2bf188d347e44e08946f2e61ef590c24 | 2021-08-25T08:02:05.295663156Z | test_name_update_1 |
+
+### cs-falcon-resolve-incident
+***
+Resolve incidents
+
+
+#### Base Command
+
+`cs-falcon-resolve-incident`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ids | A comma-separated list of incident IDs. | Required | 
+| status | The new status of the incident. Can be "New", "In Progress", "Reopened", "Closed". Possible values are: New, In Progress, Reopened, Closed. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!cs-falcon-resolve-incident ids="inc:0bde2c4645294245aca522971ccc44c4:f3825bf7df684237a1eb62b39124ebef,inc:07007dd3f95c4d628fb097072bf7f7f3:ecd5c5acd4f042e59be2f990e9ada258" status="Closed"```
+
+#### Human Readable Output
+
+>inc:0bde2c4645294245aca522971ccc44c4:f3825bf7df684237a1eb62b39124ebef changed successfully to Closed
+>inc:07007dd3f95c4d628fb097072bf7f7f3:ecd5c5acd4f042e59be2f990e9ada258 changed successfully to Closed
+### cs-falcon-list-host-groups
+***
+List the available host groups.
+
+
+#### Base Command
+
+`cs-falcon-list-host-groups`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| filter | The query by which to filter the devices that belong to the host group. | Optional | 
+| offset | Page offset. | Optional | 
+| limit | Maximum number of results on a page. Default is 50. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.HostGroup.id | String | The ID of the host group. | 
+| CrowdStrike.HostGroup.group_type | String | The group type of the host group. | 
+| CrowdStrike.HostGroup.name | String | The name of the host group. | 
+| CrowdStrike.HostGroup.description | String | The description of the host group. | 
+| CrowdStrike.HostGroup.created_by | String | The client that created the host group. | 
+| CrowdStrike.HostGroup.created_timestamp | Date | The datetime when the host group was created in ISO time format. For example: 2019-10-17T13:41:48.487520845Z. | 
+| CrowdStrike.HostGroup.modified_by | String | The client that modified the host group. | 
+| CrowdStrike.HostGroup.modified_timestamp | Date | The datetime when the host group was last modified in ISO time format. For example: 2019-10-17T13:41:48.487520845Z. | 
+
+
+#### Command Example
+```!cs-falcon-list-host-groups```
+
+#### Context Example
+```json
+{
+    "CrowdStrike": {
+        "HostGroup": [
+            {
+                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_timestamp": "2021-08-23T14:35:23.765624811Z",
+                "description": "description",
+                "group_type": "static",
+                "id": "d70fa742d28a4e6cb0d33b7af599783d",
+                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "modified_timestamp": "2021-08-23T14:35:23.765624811Z",
+                "name": "InnerServicesModuleMon Aug 23 2021"
+            },
+            {
+                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_timestamp": "2021-08-23T14:35:25.506030441Z",
+                "description": "description",
+                "group_type": "static",
+                "id": "d0ff99dfd3884fba87424c03686e45b6",
+                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "modified_timestamp": "2021-08-23T14:35:25.506030441Z",
+                "name": "Rasterize_default_instanceMon Aug 23 2021"
+            },
+            {
+                "assignment_rule": "device_id:[''],hostname:['','FALCON-CROWDSTR']",
+                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_timestamp": "2021-07-27T12:34:59.13917402Z",
+                "description": "",
+                "group_type": "static",
+                "id": "1fc2e6e1e9c24c5d8d9ce52a9fa8e507",
+                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "modified_timestamp": "2021-07-27T12:34:59.13917402Z",
+                "name": "Static by id group test"
+            },
+            {
+                "assignment_rule": "device_id:[],hostname:[]",
+                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_timestamp": "2021-07-27T12:24:18.364057533Z",
+                "description": "Group test",
+                "group_type": "static",
+                "id": "11dbab2a65054041b4e949768aaed0df",
+                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "modified_timestamp": "2021-07-27T12:24:18.364057533Z",
+                "name": "Static group test"
+            },
+            {
+                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_timestamp": "2021-08-23T14:35:26.069515348Z",
+                "description": "description",
+                "group_type": "static",
+                "id": "09c88625e1ab49e4bbd525f836f610a7",
+                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "modified_timestamp": "2021-08-23T14:35:26.069515348Z",
+                "name": "ad-loginMon Aug 23 2021"
+            },
+            {
+                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_timestamp": "2021-08-23T14:35:25.556897468Z",
+                "description": "description",
+                "group_type": "static",
+                "id": "af0e040d7bb04af7bb00da83e4c0e8f2",
+                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "modified_timestamp": "2021-08-23T14:35:25.556897468Z",
+                "name": "ad-queryMon Aug 23 2021"
+            },
+            {
+                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_timestamp": "2021-08-23T14:35:23.737307612Z",
+                "description": "description",
+                "group_type": "static",
+                "id": "09d2a0d3db384021906db6d3c3a2afcb",
+                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "modified_timestamp": "2021-08-23T14:35:23.737307612Z",
+                "name": "d2Mon Aug 23 2021"
+            },
+            {
+                "created_by": "akrupnik@paloaltonetworks.com",
+                "created_timestamp": "2021-07-27T12:27:43.503021999Z",
+                "description": "dhfh",
+                "group_type": "staticByID",
+                "id": "79843d26a16c4530becc218a791f642c",
+                "modified_by": "akrupnik@paloaltonetworks.com",
+                "modified_timestamp": "2021-07-27T12:27:43.503021999Z",
+                "name": "ddfxgh"
+            },
+            {
+                "assignment_rule": "device.hostname:'FALCON-CROWDSTR'",
+                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_timestamp": "2021-07-27T12:46:39.058352326Z",
+                "description": "",
+                "group_type": "dynamic",
+                "id": "5d88a39652d24de2be42b14b427cc9e3",
+                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "modified_timestamp": "2021-07-27T12:46:39.058352326Z",
+                "name": "dynamic 1 group test"
+            },
+            {
+                "assignment_rule": "lkjlk:'FalconGroupingTags/example_tag'",
+                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_timestamp": "2021-08-23T13:12:56.338590022Z",
+                "description": "",
+                "group_type": "dynamic",
+                "id": "2f2d825c1bdb42338531c1679557aa1e",
+                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "modified_timestamp": "2021-08-23T13:12:56.338590022Z",
+                "name": "dynamic 13523 group test"
+            },
+            {
+                "assignment_rule": "lkjlk:'FalconGroupingTags/example_tag'",
+                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_timestamp": "2021-07-27T14:02:05.538065349Z",
+                "description": "",
+                "group_type": "dynamic",
+                "id": "cefe41dfa96a4e60bb1f08b98e1ba232",
+                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "modified_timestamp": "2021-07-27T14:02:05.538065349Z",
+                "name": "dynamic 1353 group test"
+            },
+            {
+                "assignment_rule": "tags:'FalconGroupingTags/example_tag'",
+                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_timestamp": "2021-07-27T12:41:33.127997409Z",
+                "description": "",
+                "group_type": "dynamic",
+                "id": "9e9c3cf9a9664d0c8c5c7d8b38546635",
+                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "modified_timestamp": "2021-07-27T12:41:33.127997409Z",
+                "name": "dynamic 2 group test"
+            },
+            {
+                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_timestamp": "2021-08-23T14:35:23.7402217Z",
+                "description": "description",
+                "group_type": "static",
+                "id": "f43a275267d74157bbb33bf69d640c4d",
+                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "modified_timestamp": "2021-08-23T14:35:23.7402217Z",
+                "name": "fcm_default_instanceMon Aug 23 2021"
+            },
+            {
+                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_timestamp": "2021-08-11T09:55:23.801049103Z",
+                "description": "ilan test",
+                "group_type": "dynamic",
+                "id": "370322c647374bb298a6a14374bbdfd5",
+                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "modified_timestamp": "2021-08-11T09:55:23.801049103Z",
+                "name": "ilan"
+            },
+            {
+                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_timestamp": "2021-08-12T11:24:51.434863056Z",
+                "description": "ilan test",
+                "group_type": "dynamic",
+                "id": "545f5d385b494f3ebf355adefed8ed4a",
+                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "modified_timestamp": "2021-08-12T11:24:51.434863056Z",
+                "name": "ilan 2"
+            },
+            {
+                "assignment_rule": "device_id:[''],hostname:['FALCON-CROWDSTR']",
+                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_timestamp": "2021-08-12T11:55:57.943490809Z",
+                "description": "ilan test",
+                "group_type": "dynamic",
+                "id": "d99b77530ef34a6a8718a60817d72a8f",
+                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "modified_timestamp": "2021-08-12T11:55:57.943490809Z",
+                "name": "ilan 23"
+            },
+            {
+                "assignment_rule": "",
+                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_timestamp": "2021-08-17T11:28:39.855075106Z",
+                "description": "after change",
+                "group_type": "dynamic",
+                "id": "8a3c2cdeb7524a109bbb44f64b3da814",
+                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "modified_timestamp": "2021-08-23T09:26:15.351650252Z",
+                "name": "ilan 2345"
+            },
+            {
+                "assignment_rule": "device_id:[''],hostname:['']",
+                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_timestamp": "2021-08-17T11:58:42.453661998Z",
+                "description": "ilan test",
+                "group_type": "static",
+                "id": "b1a0cd73ecab411581cbe467fc3319f5",
+                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "modified_timestamp": "2021-08-17T11:58:42.453661998Z",
+                "name": "ilan 23e"
+            },
+            {
+                "assignment_rule": "device_id:[''],hostname:['']",
+                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_timestamp": "2021-08-11T13:54:59.695821727Z",
+                "description": "",
+                "group_type": "static",
+                "id": "d3fd5d87d317419db20f17dcf6f0d81e",
+                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "modified_timestamp": "2021-08-11T13:54:59.695821727Z",
+                "name": "ilan test 2"
+            },
+            {
+                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_timestamp": "2021-08-12T10:56:49.2127345Z",
+                "description": "ilan test",
+                "group_type": "dynamic",
+                "id": "c2c49a308ed446589222b4e30131bee0",
+                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "modified_timestamp": "2021-08-12T11:35:35.76509212Z",
+                "name": "ilan2"
+            },
+            {
+                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_timestamp": "2021-08-23T14:35:23.766284685Z",
+                "description": "description",
+                "group_type": "static",
+                "id": "39def881ea5846f2a2f763bad8ee3468",
+                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "modified_timestamp": "2021-08-23T14:35:23.766284685Z",
+                "name": "splunkMon Aug 23 2021"
+            },
+            {
+                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_timestamp": "2021-08-23T15:09:15.36414377Z",
+                "description": "description",
+                "group_type": "static",
+                "id": "7fb5e2b9f1af477f985d4760a92affe4",
+                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "modified_timestamp": "2021-08-23T15:09:15.36414377Z",
+                "name": "test_1629731353498"
+            },
+            {
+                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_timestamp": "2021-08-23T15:12:20.69203954Z",
+                "description": "description",
+                "group_type": "static",
+                "id": "5a47bfc13dc34576a9ba7134744855a7",
+                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "modified_timestamp": "2021-08-23T15:12:20.69203954Z",
+                "name": "test_1629731538458"
+            },
+            {
+                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_timestamp": "2021-08-23T15:14:20.650781714Z",
+                "description": "description2",
+                "group_type": "static",
+                "id": "be91aa4837614069a7452023f19164af",
+                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "modified_timestamp": "2021-08-23T15:14:23.026511269Z",
+                "name": "test_16297316587261629731658726"
+            },
+            {
+                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_timestamp": "2021-08-23T15:18:53.896505566Z",
+                "description": "description2",
+                "group_type": "static",
+                "id": "f2f7132beb0743b4889921149a97ca6b",
+                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "modified_timestamp": "2021-08-23T15:18:56.2598933Z",
+                "name": "test_16297319320381629731932038"
+            },
+            {
+                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_timestamp": "2021-08-23T15:19:51.91067257Z",
+                "description": "description2",
+                "group_type": "static",
+                "id": "055de83f2f704b5f85d7ddbc2a163697",
+                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "modified_timestamp": "2021-08-23T15:19:54.269898808Z",
+                "name": "test_16297319902371629731990237"
+            },
+            {
+                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_timestamp": "2021-08-23T15:25:42.99601887Z",
+                "description": "description",
+                "group_type": "static",
+                "id": "9b22f3c6b5864d17b54740a067a0ed17",
+                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "modified_timestamp": "2021-08-23T15:25:42.99601887Z",
+                "name": "test_1629732339973"
+            },
+            {
+                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_timestamp": "2021-08-23T15:26:12.280379354Z",
+                "description": "description2",
+                "group_type": "static",
+                "id": "c929e5f5b5fd4b8ab71ceb4af853cbc0",
+                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "modified_timestamp": "2021-08-23T15:26:14.973676462Z",
+                "name": "test_16297323698941629732369894"
+            },
+            {
+                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_timestamp": "2021-08-23T15:26:58.717706381Z",
+                "description": "description2",
+                "group_type": "static",
+                "id": "d9539d6a273b4f3dbfb1746e7e0c2ec6",
+                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "modified_timestamp": "2021-08-23T15:27:01.648623079Z",
+                "name": "test_16297324168771629732416877"
+            },
+            {
+                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_timestamp": "2021-08-23T15:28:18.674512647Z",
+                "description": "description2",
+                "group_type": "static",
+                "id": "bc4572145fe148059d4a709206232dbc",
+                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "modified_timestamp": "2021-08-23T15:28:21.781563212Z",
+                "name": "test_16297324965761629732496576"
+            },
+            {
+                "assignment_rule": "device_id:[''],hostname:['FALCON-CROWDSTR','INSTANCE-1','falcon-crowdstrike-sensor-centos7']",
+                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_timestamp": "2021-08-23T15:31:41.142748214Z",
+                "description": "description2",
+                "group_type": "static",
+                "id": "af60190df8d4437c96ae8d1ef946f3cf",
+                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "modified_timestamp": "2021-08-23T15:31:43.800147323Z",
+                "name": "test_16297326990981629732699098"
+            },
+            {
+                "assignment_rule": "device_id:[''],hostname:['']",
+                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_timestamp": "2021-08-23T15:34:20.195778795Z",
+                "description": "description2",
+                "group_type": "static",
+                "id": "b0fe6af9bad34688844daf3cec6acef0",
+                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "modified_timestamp": "2021-08-23T15:34:23.212828317Z",
+                "name": "test_16297328579781629732857978"
+            },
+            {
+                "assignment_rule": "device_id:[''],hostname:['']",
+                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_timestamp": "2021-08-23T15:34:55.837119719Z",
+                "description": "description2",
+                "group_type": "static",
+                "id": "9dd1ecf3cdb540a48a82660be22f1039",
+                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "modified_timestamp": "2021-08-23T15:34:58.490114093Z",
+                "name": "test_16297328938791629732893879"
+            },
+            {
+                "assignment_rule": "device_id:[''],hostname:['']",
+                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_timestamp": "2021-08-23T15:37:42.911344704Z",
+                "description": "description2",
+                "group_type": "static",
+                "id": "1bcd536b2b4545b9b9373aa29e8ee676",
+                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "modified_timestamp": "2021-08-23T15:37:45.620464598Z",
+                "name": "test_16297330605301629733060530"
+            },
+            {
+                "assignment_rule": "device_id:[''],hostname:['']",
+                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_timestamp": "2021-08-24T07:05:55.813475476Z",
+                "description": "description2",
+                "group_type": "static",
+                "id": "9333f3df1b2b4905ae4abc532a438cdb",
+                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "modified_timestamp": "2021-08-24T07:05:58.805702883Z",
+                "name": "test_16297887501421629788750142"
+            },
+            {
+                "assignment_rule": "device_id:[''],hostname:['']",
+                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_timestamp": "2021-08-24T07:07:30.422517324Z",
+                "description": "description2",
+                "group_type": "static",
+                "id": "d193ffdeac4f45afbdeb2f0b3ebcb78c",
+                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "modified_timestamp": "2021-08-24T07:07:34.291988227Z",
+                "name": "test_16297888481381629788848138"
+            },
+            {
+                "assignment_rule": "device_id:[''],hostname:['']",
+                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_timestamp": "2021-08-24T08:03:15.522772079Z",
+                "description": "description2",
+                "group_type": "static",
+                "id": "ee2bbca82b44413dab8ddb112e34454a",
+                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "modified_timestamp": "2021-08-24T08:03:18.622015517Z",
+                "name": "test_16297921932741629792193274"
+            },
+            {
+                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_timestamp": "2021-08-26T09:09:52.379925975Z",
+                "description": "description",
+                "group_type": "static",
+                "id": "ba4f6fd641784dc787f4a19f0488e400",
+                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "modified_timestamp": "2021-08-26T09:09:52.379925975Z",
+                "name": "test_1629967211800"
+            },
+            {
+                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_timestamp": "2021-08-26T12:34:36.934507422Z",
+                "description": "description",
+                "group_type": "static",
+                "id": "beabe1b9a09d4591bff9d080a96e46e3",
+                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "modified_timestamp": "2021-08-26T12:34:36.934507422Z",
+                "name": "test_162996721180000"
+            },
+            {
+                "assignment_rule": "device_id:[''],hostname:['']",
+                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_timestamp": "2021-08-26T08:46:09.996065663Z",
+                "description": "description2",
+                "group_type": "static",
+                "id": "a853d878f8e94093b42cd49e04e7f7f6",
+                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "modified_timestamp": "2021-08-26T08:46:11.572092204Z",
+                "name": "test_16299675695531629967569553"
+            },
+            {
+                "assignment_rule": "device_id:[''],hostname:['']",
+                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_timestamp": "2021-08-26T08:53:15.35181954Z",
+                "description": "description2",
+                "group_type": "static",
+                "id": "95dd4fd340054a108e8363d2bf5d6e5e",
+                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "modified_timestamp": "2021-08-26T08:53:17.041535905Z",
+                "name": "test_16299679949831629967994983"
+            },
+            {
+                "assignment_rule": "device_id:[''],hostname:['']",
+                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_timestamp": "2021-08-26T08:59:52.639696743Z",
+                "description": "description2",
+                "group_type": "static",
+                "id": "e512275c2dc1450ea6133d7c6e77cae5",
+                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "modified_timestamp": "2021-08-26T08:59:54.538170036Z",
+                "name": "test_16299683923121629968392312"
+            },
+            {
+                "assignment_rule": "device_id:[''],hostname:['']",
+                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_timestamp": "2021-08-26T09:06:21.891707157Z",
+                "description": "description2",
+                "group_type": "static",
+                "id": "724cf2a7106241b4a3d4139d2a264f11",
+                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "modified_timestamp": "2021-08-26T09:06:23.846219163Z",
+                "name": "test_16299687814871629968781487"
+            },
+            {
+                "assignment_rule": "device_id:[''],hostname:['']",
+                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_timestamp": "2021-08-26T09:12:53.982989Z",
+                "description": "description2",
+                "group_type": "static",
+                "id": "e8f2ec25841e4d93bb07dbe6aa326742",
+                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "modified_timestamp": "2021-08-26T09:12:55.571265187Z",
+                "name": "test_16299691732871629969173287"
+            },
+            {
+                "assignment_rule": "device_id:[''],hostname:['']",
+                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_timestamp": "2021-08-26T09:17:58.206157753Z",
+                "description": "description2",
+                "group_type": "static",
+                "id": "25141ce104e445849d05a4149ea019ea",
+                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "modified_timestamp": "2021-08-26T09:17:59.659515838Z",
+                "name": "test_16299694779051629969477905"
+            },
+            {
+                "assignment_rule": "device_id:[''],hostname:['']",
+                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_timestamp": "2021-08-26T09:19:23.276267291Z",
+                "description": "description2",
+                "group_type": "static",
+                "id": "09bfcc12e3b046ddaea45a5d216f9581",
+                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "modified_timestamp": "2021-08-26T09:19:25.318976241Z",
+                "name": "test_16299695623981629969562398"
+            },
+            {
+                "assignment_rule": "device_id:[''],hostname:['']",
+                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_timestamp": "2021-08-26T09:26:22.538367707Z",
+                "description": "description2",
+                "group_type": "static",
+                "id": "62e4b5a4764e4313b540664b5be3fea2",
+                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "modified_timestamp": "2021-08-26T09:26:25.085214782Z",
+                "name": "test_16299699813871629969981387"
+            },
+            {
+                "assignment_rule": "device_id:[''],hostname:['']",
+                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_timestamp": "2021-08-26T09:33:46.303790983Z",
+                "description": "description2",
+                "group_type": "static",
+                "id": "b214e5c58229462b96e580c5934c20db",
+                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "modified_timestamp": "2021-08-26T09:33:48.288311235Z",
+                "name": "test_16299704254441629970425444"
+            },
+            {
+                "assignment_rule": "device_id:[''],hostname:['']",
+                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_timestamp": "2021-08-26T09:55:09.157561612Z",
+                "description": "description2",
+                "group_type": "static",
+                "id": "9a7291431c3046ccb7b750240f924854",
+                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "modified_timestamp": "2021-08-26T09:55:10.741852436Z",
+                "name": "test_16299717065381629971706538"
+            },
+            {
+                "assignment_rule": "device_id:[''],hostname:['']",
+                "created_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "created_timestamp": "2021-08-26T10:02:50.175530821Z",
+                "description": "description2",
+                "group_type": "static",
+                "id": "29ae859b9a01409d83bf7fb7f7a04c69",
+                "modified_by": "api-client-id:2bf188d347e44e08946f2e61ef590c24",
+                "modified_timestamp": "2021-08-26T10:02:52.026307768Z",
+                "name": "test_16299721694081629972169408"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results
+>|assignment_rule|created_by|created_timestamp|description|group_type|id|modified_by|modified_timestamp|name|
+>|---|---|---|---|---|---|---|---|---|
+>| device_id:[''],hostname:[''] | api-client-id:2bf188d347e44e08946f2e61ef590c24 | 2021-08-26T10:02:50.175530821Z | description2 | static | 29ae859b9a01409d83bf7fb7f7a04c69 | api-client-id:2bf188d347e44e08946f2e61ef590c24 | 2021-08-26T10:02:52.026307768Z | test_16299721694081629972169408 |
+
+### cs-falcon-delete-host-groups
+***
+Delete the requested host groups.
+
+
+#### Base Command
+
+`cs-falcon-delete-host-groups`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_group_id | A comma-separated list of the IDs of the host groups to be deleted. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!cs-falcon-delete-host-groups host_group_id=29ae859b9a01409d83bf7fb7f7a04c69,9a7291431c3046ccb7b750240f924854```
+
+#### Human Readable Output
+
+>host group id 29ae859b9a01409d83bf7fb7f7a04c69 deleted successfully
+>host group id 9a7291431c3046ccb7b750240f924854 deleted successfully

@@ -13,6 +13,7 @@ import time
 import json
 import os
 import re
+
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -1067,7 +1068,7 @@ def containment_request(agent_id):
         api_version = int(VERSION[-1])
     except Exception as exc:
         raise ValueError('Invalid version was set: {} - {}'.format(VERSION, str(exc)))
-    if api_version > 3:
+    if api_version >= 3:
         http_request(
             'POST',
             url,
@@ -1211,7 +1212,7 @@ def get_alert():
         'Contents': alert,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': '{}\n{}'.format(alert_table, event_table),
+        'HumanReadable': u'{}\n{}'.format(alert_table, event_table),
         'EntryContext': {
             "FireEyeHX.Alerts(obj._id==val._id)": alert
         }
@@ -2350,11 +2351,14 @@ def fetch_incidents():
 
     last_run = demisto.getLastRun()
     alerts = []  # type: List[Dict[str, str]]
+    fetch_limit = int(demisto.params().get('fetch_limit') or '100')
+
     if last_run and last_run.get('min_id'):
         # get all alerts with id greater than min_id
         alerts = get_all_alerts(
             min_id=last_run.get('min_id'),
-            sort='_id+ascending'
+            sort='_id+ascending',
+            limit=fetch_limit
         )
         # results are sorted in ascending order - the last alert holds the greatest id
         min_id = alerts[-1].get('_id') if alerts else None
@@ -2362,7 +2366,7 @@ def fetch_incidents():
         # get the last 100 alerts
         alerts = get_all_alerts(
             sort='_id+descending',
-            limit=100
+            limit=fetch_limit
         )
         # results are sorted in descending order - the first alert holds the greatest id
         min_id = alerts[0].get('_id') if alerts else None
@@ -2392,7 +2396,7 @@ def parse_alert_to_incident(alert):
     if isinstance(event_values, dict):
         indicator = event_values.get(event_indicator, '')
 
-    incident_name = '{event_type_parsed}: {indicator}'.format(
+    incident_name = u'{event_type_parsed}: {indicator}'.format(
         event_type_parsed=re.sub("([a-z])([A-Z])", "\g<1> \g<2>", event_type).title(),
         indicator=indicator
     )

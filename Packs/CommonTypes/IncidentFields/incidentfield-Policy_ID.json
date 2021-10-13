@@ -6,7 +6,9 @@
 		"AWS CloudTrail Misconfiguration",
 		"AWS IAM Policy Misconfiguration",
 		"AWS EC2 Instance Misconfiguration",
-        "Tripwire File Change"
+		"Tripwire File Change",
+		"Carbon Black Endpoint Standard",
+		"Saas Security Incident"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,
@@ -38,7 +40,8 @@
 		"AWS CloudTrail Misconfiguration",
 		"AWS IAM Policy Misconfiguration",
 		"AWS EC2 Instance Misconfiguration",
-        "Tripwire File Change"
+        "Tripwire File Change",
+		"Saas Security Incident"
 	],
 	"threshold": 72,
 	"type": "shortText",

@@ -1,0 +1,1186 @@
+description: |-
+  This playbook is intended to be run as an adhoc job to quickly create a custom content bundle with only selected items from the servers custom content.
+
+  Then you can import this new zip on the other XSOAR server.
+
+  Create a Job with the Type “XSOAR Dev to Prod”, and select this playbook to get started. For more information on Jobs: https://xsoar.pan.dev/docs/incidents/incident-jobs
+id: JOB - XSOAR - Export Selected Custom Content
+inputs: []
+name: JOB - XSOAR - Export Selected Custom Content
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7922fd1f-dbe0-4fa3-8eff-eba023351715
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 7922fd1f-dbe0-4fa3-8eff-eba023351715
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 340
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    reputationcalc: 1
+    scriptarguments:
+      description:
+        simple: custom content bundle from Dev
+      filename: {}
+      uri:
+        simple: /content/bundle
+      using:
+        simple: Demisto Dev
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Demisto REST API
+      description: Download files from Demisto server
+      id: 3fb995fa-a0bf-4054-8f8c-d829a5ceb5d2
+      iscommand: true
+      name: Download Custom Content Bundle from Dev
+      script: Demisto REST API|||demisto-api-download
+      tags:
+      - devcontent
+      type: regular
+      version: -1
+    taskid: 3fb995fa-a0bf-4054-8f8c-d829a5ceb5d2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 642.5,
+          "y": 1200
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 916f6772-41c6-4f98-8b26-e02847307bce
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 916f6772-41c6-4f98-8b26-e02847307bce
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 120,
+          "y": 2490
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "10"
+      "yes":
+      - "21"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      instanceName:
+        simple: Demisto Dev
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks if the provided Demisto REST API instance is available for
+        the XSOAR Simple Dev to Prod workflow.
+      id: 7f36491b-0d32-469e-8a27-fd14a6f045c5
+      iscommand: false
+      name: Is the Demisto Dev REST API integration instance enabled?
+      script: IsDemistoRestAPIInstanceAvailable
+      type: condition
+      version: -1
+    taskid: 7f36491b-0d32-469e-8a27-fd14a6f045c5
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 760
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: "# Setup Demisto Dev\n\nPlease setup a single instance of the Demisto\
+        \ REST API Integration for your Development server to continue using this\
+        \ playbook. \n\nThis instance must be named **Demisto Dev**.\n\nRerun this\
+        \ playbook once completed. \n"
+      id: e09f3cae-5301-451b-85ca-138e4ca93bbf
+      iscommand: false
+      name: Enable Demisto Dev - Demisto REST API integration instance to continue
+      type: regular
+      version: -1
+    taskid: e09f3cae-5301-451b-85ca-138e4ca93bbf
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -317.5,
+          "y": 1040
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    reputationcalc: 1
+    scriptarguments:
+      action: {}
+      entry_id:
+        complex:
+          accessor: EntryID
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: File.Extension
+              operator: isEqualString
+              right:
+                value:
+                  simple: gz
+          root: File
+      file_names: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Parse the content bundle from dev
+      id: 66f99526-0385-443a-80e5-dd89529dea49
+      iscommand: false
+      name: Parse Dev Content Bundle
+      script: CustomContentBundleWizardry
+      type: regular
+      version: -1
+    taskid: 66f99526-0385-443a-80e5-dd89529dea49
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 642.5,
+          "y": 1385
+        }
+      }
+  "13":
+    form:
+      description: Select the custom content items you want to migrate
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Custom Content
+        options: []
+        optionsarg:
+        - simple: ${CustomContent}
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: Select one or more custom content items to bundle
+        type: multiSelect
+      sender: ""
+      title: Select Custom Content
+      totalanswers: 0
+    id: "13"
+    ignoreworker: false
+    message:
+      bcc:
+      body:
+        simple: Select the custom content items you want to migrate
+      cc:
+      format: ""
+      methods: []
+      subject:
+      timings:
+        completeafterreplies: 1
+        retriescount: 2
+        retriesinterval: 360
+      to:
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Select content items that you want to migrate
+      id: 9cf0328c-9e6d-458f-829e-879e2eaa6f5b
+      iscommand: false
+      name: Select Content to Migrate
+      type: collection
+      version: -1
+    taskid: 9cf0328c-9e6d-458f-829e-879e2eaa6f5b
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 642.5,
+          "y": 1560
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    reputationcalc: 1
+    scriptarguments:
+      action:
+        simple: exportfiles
+      entry_id:
+        complex:
+          accessor: EntryID
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: File.Extension
+              operator: isEqualString
+              right:
+                value:
+                  simple: gz
+          root: File
+      file_names:
+        complex:
+          accessor: "0"
+          root: Select Custom Content.Answers
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Export the selected content items from the dev content bundle
+      id: c6e4bab4-3f16-471f-8a07-3c3cad15c156
+      iscommand: false
+      name: Export Selected Files from Dev Content Bundle
+      script: CustomContentBundleWizardry
+      type: regular
+      version: -1
+    taskid: c6e4bab4-3f16-471f-8a07-3c3cad15c156
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 642.5,
+          "y": 1940
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: true
+    quietmode: 0
+    reputationcalc: 1
+    scriptarguments:
+      entryID:
+        complex:
+          accessor: EntryID
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: File.Name
+              operator: inList
+              right:
+                iscontext: true
+                value:
+                  simple: Select Custom Content.Answers.0
+          root: File
+      password: {}
+      zipName:
+        simple: xsoar-custom-content
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Zip a file and upload to war room
+      id: e1ab6f78-d0eb-4346-8abc-68ced7abedd5
+      iscommand: false
+      name: Create Selected Content Bundle
+      script: ZipFile
+      tags:
+      - selectedcontent
+      type: regular
+      version: -1
+    taskid: e1ab6f78-d0eb-4346-8abc-68ced7abedd5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 642.5,
+          "y": 2105
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    reputationcalc: 1
+    scriptarguments:
+      value:
+        simple: Download Content ${ZipFile.ZippedFile} and upload to Prod!
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: b9624d9b-8120-4dbd-8a2d-882974536fc5
+      iscommand: false
+      name: Download Content ${ZipFile.ZippedFile} and upload to Prod!
+      script: Print
+      type: regular
+      version: -1
+    taskid: b9624d9b-8120-4dbd-8a2d-882974536fc5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 642.5,
+          "y": 2280
+        }
+      }
+  "17":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Select Custom Content.Answers.0
+          operator: isNotEmpty
+      label: "yes"
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check to ensure the user selected content items to export
+      id: 104dc8b1-c095-4b71-80a0-ee35abfdc92a
+      iscommand: false
+      name: Are there selected content items to export?
+      type: condition
+      version: -1
+    taskid: 104dc8b1-c095-4b71-80a0-ee35abfdc92a
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 642.5,
+          "y": 1735
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      accountgroups: {}
+      accountid: {}
+      accountinformationbreached: {}
+      accountname: {}
+      addLabels: {}
+      addcctoemail: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedindividualscontactinformation: {}
+      agentid: {}
+      alertid: {}
+      alertname: {}
+      app: {}
+      appchannelname: {}
+      appendMultiSelect: {}
+      appendTags: {}
+      applicationid: {}
+      applicationname: {}
+      appmessage: {}
+      approximatenumberofaffecteddatasubjects: {}
+      assetid: {}
+      assettable: {}
+      assigneduser: {}
+      assignmentgroup: {}
+      associatedmaliciousdomains: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      attackerhostisolated: {}
+      attackeripblocked: {}
+      attorneygeneralnotification: {}
+      behaviourobjective: {}
+      behaviourscenario: {}
+      behaviourtactic: {}
+      blockedaction: {}
+      blockedusers: {}
+      boxsourcecreatedbyid: {}
+      boxsourcecreatedbyname: {}
+      boxsourceownerid: {}
+      boxsourceownername: {}
+      boxsourceparentid: {}
+      boxsourceparentname: {}
+      breachconfirmation: {}
+      bugtraq: {}
+      caller: {}
+      categorycount: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      closetime: {}
+      closingreason: {}
+      closinguser: {}
+      cloudservice: {}
+      commandline: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      compliancenotes: {}
+      consumerreportingagenciesnotification: {}
+      contactaddress: {}
+      contactemailaddress: {}
+      contactname: {}
+      contacttelephonenumber: {}
+      coolhtml: {}
+      costcenter: {}
+      costcentercode: {}
+      country: {}
+      countryname: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      createddatefailedincidents: {}
+      credibilityoffense: {}
+      criticalassets: {}
+      crowdstrikebehaviourdetails: {}
+      crowdstrikedevicedetails: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      cvssavailabilityrequirement: {}
+      cvsscollateraldamagepotential: {}
+      cvssconfidentialityrequirement: {}
+      cvssintegrityrequirement: {}
+      cymulateimmediatethreatsattackid: {}
+      cymulateimmediatethreatsfiletype: {}
+      cymulateimmediatethreatsid: {}
+      cymulateimmediatethreatsmitigations: {}
+      cymulateimmediatethreatsmodule: {}
+      cymulateimmediatethreatspayloadname: {}
+      cymulateimmediatethreatsstatus: {}
+      cymulateimmediatethreatsvector: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      dbotMirrorDirection: {}
+      dbotMirrorId: {}
+      dbotMirrorInstance: {}
+      dbotMirrorTags: {}
+      dbotprediction: {}
+      dbotpredictionprobability: {}
+      dbottextsuggestionhighlighted: {}
+      deleteEmptyField: {}
+      demoboolean: {}
+      democustomfield: {}
+      demogridfield: {}
+      demomultiselect: {}
+      demosingleselect: {}
+      department: {}
+      descriptionasset: {}
+      descriptionoffense: {}
+      dest: {}
+      desthostname: {}
+      destinationgeolocation: {}
+      destinationhostname: {}
+      destinationip: {}
+      destinationipoffense: {}
+      destinationips: {}
+      destinationipv6: {}
+      destinationmacaddress: {}
+      destinationnetwork: {}
+      destinationnetworkoffense: {}
+      destinationport: {}
+      destinationports: {}
+      destntdomain: {}
+      destos: {}
+      details: {}
+      detectedexternalhosts: {}
+      detectedexternalips: {}
+      detectedinternalhosts: {}
+      detectedinternalips: {}
+      detectedusers: {}
+      detectionendtime: {}
+      detectionid: {}
+      detectionticketed: {}
+      detectionupdatetime: {}
+      detectionurl: {}
+      deviceexternalip: {}
+      devicehash: {}
+      deviceid: {}
+      devicelocalip: {}
+      devicemodel: {}
+      devicename: {}
+      devicetime: {}
+      displayname: {}
+      dnsname: {}
+      domainoffense: {}
+      dpoemailaddress: {}
+      dponotification: {}
+      dstports: {}
+      duration: {}
+      email: {}
+      emailaddress: {}
+      emailauthenticitycheck: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailgeneratedcode: {}
+      emailheaders: {}
+      emailhtml: {}
+      emailhtmlimage: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emaillabels: {}
+      emaillatestmessage: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      employeedisplayname: {}
+      employeeemail: {}
+      employeemanageremail: {}
+      errorcode: {}
+      errormessage: {}
+      escalation: {}
+      eventaction: {}
+      eventdescriptions: {}
+      eventid: {}
+      eventnames: {}
+      events: {}
+      eventtype: {}
+      exactlywhathappenedandatwhattimes: {}
+      expanseactivitystatus: {}
+      expanseasset: {}
+      expanseassetorganizationunit: {}
+      expanseassetowner: {}
+      expanseassignee: {}
+      expansebehaviorrule: {}
+      expansebusinessunit: {}
+      expansebusinessunits: {}
+      expansecategory: {}
+      expansecertificate: {}
+      expansecreated: {}
+      expansedomain: {}
+      expanseexposuretype: {}
+      expansegeolocation: {}
+      expanseinitialevidence: {}
+      expanseip: {}
+      expanseissueid: {}
+      expanseissuetype: {}
+      expanselatestevidence: {}
+      expansemlfeatures: {}
+      expansemodified: {}
+      expanseport: {}
+      expansepriority: {}
+      expanseprogressstatus: {}
+      expanseprotocol: {}
+      expanseprovider: {}
+      expanserawjsonevent: {}
+      expanseregion: {}
+      expanseservice: {}
+      expanseseverity: {}
+      expanseshadowit: {}
+      expansetags: {}
+      externaladdresses: {}
+      extrahopapplianceid: {}
+      extrahophostname: {}
+      failedincidentscreateddate: {}
+      filehash: {}
+      filehashblocked: {}
+      filename: {}
+      filepath: {}
+      filesize: {}
+      financialinformationbreached: {}
+      firstname: {}
+      firstseen: {}
+      followup: {}
+      givenname: {}
+      healthinsurancebreached: {}
+      helloworldid: {}
+      helloworldstatus: {}
+      helloworldtype: {}
+      highlevelcategories: {}
+      hostname: {}
+      howcouldinformationsharingwithotherorganizationshavebeenimproved: {}
+      howwastheincidentcontainedanderadicated: {}
+      howwelldidstaffandmanagementperformindealingwiththeincidentwerethedocumentedproceduresfollowedweretheyadequate: {}
+      id: {}
+      idasset: {}
+      idoffense: {}
+      incomingmirrorerror: {}
+      individualsnotification: {}
+      infectedhostnames: {}
+      infectedhosts: {}
+      integrationscategories: {}
+      integrationsfailedcategories: {}
+      integrationstestgrid: {}
+      internaladdresses: {}
+      investigationstage: {}
+      ipaddressasset: {}
+      isolated: {}
+      isthedatasubjecttodpia: {}
+      jobcode: {}
+      jobfamily: {}
+      jobfunction: {}
+      labels: {}
+      lastmirroredintime: {}
+      lastmodifiedby: {}
+      lastmodifiedon: {}
+      lastname: {}
+      lastseen: {}
+      lastupdatetime: {}
+      leadership: {}
+      likelyimpact: {}
+      linktooffense: {}
+      listofrulesevent: {}
+      listofrulesoffense: {}
+      location: {}
+      locationasset: {}
+      locationregion: {}
+      loginattemptcount: {}
+      logsource: {}
+      logsourcename: {}
+      logsourcetype: {}
+      lowlevelcategoriesevents: {}
+      lowlevelcategoriesoffense: {}
+      macaddress: {}
+      macaddressasset: {}
+      magnitudeoffense: {}
+      maliciousbehavior: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      maliciousdomainsblocked: {}
+      malwarefamily: {}
+      malwarename: {}
+      managementnotification: {}
+      manageremail: {}
+      manageremailaddress: {}
+      managername: {}
+      md5: {}
+      measurestomitigate: {}
+      medianotification: {}
+      medicalinformationbreached: {}
+      mobiledevicemodel: {}
+      mobilephone: {}
+      name: {}
+      niststage: {}
+      numberofentriesiderrors: {}
+      numberofeventsinoffense: {}
+      numberoffailedincidents: {}
+      numberoffetchedevents: {}
+      numberofflows: {}
+      numberoflogsources: {}
+      numberofports: {}
+      numberofuniqueports: {}
+      occurred: {}
+      offenseinactive: {}
+      os: {}
+      osversion: {}
+      otherpiidatabreached: {}
+      outgoingmirrorerror: {}
+      outofftheoffice: {}
+      owner: {}
+      parentprocessid: {}
+      participants: {}
+      passwordexpirationstatus: {}
+      passwordresetuser: {}
+      personalemail: {}
+      phase: {}
+      phishingsubtype: {}
+      phonenumber: {}
+      pid: {}
+      piidatatype: {}
+      playbooknameswithfailedtasks: {}
+      playbooksfailedcommands: {}
+      playbookswithfailedtasks: {}
+      playbooktaskserrors: {}
+      policydeleted: {}
+      policydescription: {}
+      policydetails: {}
+      policyid: {}
+      policyrecommendation: {}
+      policyremediable: {}
+      policyseverity: {}
+      policytype: {}
+      portsblocked: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      postnatdestinationip: {}
+      postnatdestinationport: {}
+      postnatsourceip: {}
+      postnatsourceport: {}
+      prenatdestinationport: {}
+      prenatsourceip: {}
+      prenatsourceport: {}
+      prismacloudcomputeactivitytype: {}
+      prismacloudcomputeappid: {}
+      prismacloudcomputecategory: {}
+      prismacloudcomputecollections: {}
+      prismacloudcomputecommand: {}
+      prismacloudcomputecontainer: {}
+      prismacloudcomputecredentialid: {}
+      prismacloudcomputedistribution: {}
+      prismacloudcomputeerror: {}
+      prismacloudcomputeforensic: {}
+      prismacloudcomputefqdn: {}
+      prismacloudcomputefunction: {}
+      prismacloudcomputehost: {}
+      prismacloudcomputeimage: {}
+      prismacloudcomputeinteractive: {}
+      prismacloudcomputekubernetesresource: {}
+      prismacloudcomputelabels: {}
+      prismacloudcomputeline: {}
+      prismacloudcomputelogfile: {}
+      prismacloudcomputemarkdown: {}
+      prismacloudcomputemessage: {}
+      prismacloudcomputeproject: {}
+      prismacloudcomputeprotected: {}
+      prismacloudcomputeprovider: {}
+      prismacloudcomputerawalertjson: {}
+      prismacloudcomputeregion: {}
+      prismacloudcomputeregistry: {}
+      prismacloudcomputerule: {}
+      prismacloudcomputeruntime: {}
+      prismacloudcomputeservice: {}
+      prismacloudcomputeservicetype: {}
+      prismacloudcomputetotal: {}
+      prismacloudcomputetype: {}
+      prismacloudcomputeuser: {}
+      prismacloudid: {}
+      prismacloudreason: {}
+      prismacloudrules: {}
+      prismacloudstatus: {}
+      prismacloudtime: {}
+      proofpointclassification: {}
+      proofpointcompletelyrewritten: {}
+      proofpointimpostorscore: {}
+      proofpointmalwarescore: {}
+      proofpointphishscore: {}
+      proofpointspamscore: {}
+      proofpointthreatsinfomap: {}
+      protocol: {}
+      protocolevent: {}
+      protocols: {}
+      quarantined: {}
+      rating: {}
+      rawevent: {}
+      rawparticipants: {}
+      region: {}
+      regionid: {}
+      relevanceoffense: {}
+      replacePlaybook: {}
+      reporteremailaddress: {}
+      residentnotificationoption: {}
+      residentsemailaddress: {}
+      resourceapiname: {}
+      resourcecloudtype: {}
+      resourceid: {}
+      resourcename: {}
+      resourcetype: {}
+      riskrating: {}
+      riskscore: {}
+      roles: {}
+      rrn: {}
+      samaccountname: {}
+      sansstage: {}
+      scansourcetype: {}
+      secretarynotification: {}
+      sectorofaffectedparty: {}
+      servicenowassignedto: {}
+      servicenowassignmentgroup: {}
+      servicenowcaller: {}
+      servicenowcallerid: {}
+      servicenowcategory: {}
+      servicenowclosedby: {}
+      servicenowcloseddate: {}
+      servicenowdescription: {}
+      servicenowduedate: {}
+      servicenowescalation: {}
+      servicenowimpact: {}
+      servicenownotify: {}
+      servicenowopeneddate: {}
+      servicenowpriority: {}
+      servicenowresolutioncode: {}
+      servicenowresolutionnotes: {}
+      servicenowresolvedtime: {}
+      servicenowseverity: {}
+      servicenowstate: {}
+      servicenowticketnumber: {}
+      servicenowurgency: {}
+      severity:
+        simple: "0.5"
+      severityoffense: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      shadowitaccountowneremail: {}
+      shadowitaccountownername: {}
+      shadowitbilledtocorp: {}
+      shadowitcertificate: {}
+      shadowitcloudaccountid: {}
+      shadowitcloudaccounttype: {}
+      shadowitfqdn: {}
+      shadowitip: {}
+      shadowitorganizationalunit: {}
+      shadowitoucontactemail: {}
+      shadowitoucontactname: {}
+      shadowitport: {}
+      shadowitprovider: {}
+      shadowitregion: {}
+      shadowitrisk: {}
+      shadowitsactionedservice: {}
+      shadowitsensitivedata: {}
+      shadowitservice: {}
+      shadowitservicepurpose: {}
+      shadowitsource: {}
+      shadowitusersuggestions: {}
+      shiftmanagerbriefing: {}
+      shiftopenincidents: {}
+      signature: {}
+      similarincident: {}
+      similarincidents: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      skuname: {}
+      skutier: {}
+      sla: {}
+      slaField: {}
+      sourcegeolocation: {}
+      sourcehostname: {}
+      sourceip: {}
+      sourceipoffense: {}
+      sourceips: {}
+      sourceipv6: {}
+      sourcemacaddress: {}
+      sourcenetwork: {}
+      sourcenetworkoffense: {}
+      sourceport: {}
+      sourceusername: {}
+      src: {}
+      srchostname: {}
+      srcntdomain: {}
+      srcos: {}
+      srcports: {}
+      srcuser: {}
+      starttime: {}
+      state: {}
+      statecisonotification: {}
+      statewherethebreachtookplace: {}
+      statusoffense: {}
+      streetaddress: {}
+      subcategory: {}
+      subscriptionassignedby: {}
+      subscriptioncreatedby: {}
+      subscriptioncreatedon: {}
+      subscriptiondescription: {}
+      subscriptionid: {}
+      subscriptionname: {}
+      subscriptiontype: {}
+      subscriptionupdatedby: {}
+      subscriptionupdatedon: {}
+      subtype: {}
+      successfullogin: {}
+      suggestionsanddiscussionofhowtoimprovetheteam: {}
+      surname: {}
+      switchidasset: {}
+      switchportidasset: {}
+      systemdefault: {}
+      systems: {}
+      targetfirewallversion: {}
+      teamname: {}
+      technicalowner: {}
+      technicalownercontact: {}
+      technicaluser: {}
+      telephoneno: {}
+      tempgrid: {}
+      tenantname: {}
+      terminatedaction: {}
+      threatactor: {}
+      ticketacknowledgeddate: {}
+      ticketcloseddate: {}
+      ticketnumber: {}
+      ticketopeneddate: {}
+      title: {}
+      tojointhemeeting: {}
+      tostartthemeeting: {}
+      totalfailedinstances: {}
+      totalgoodinstances: {}
+      totalinstances: {}
+      trafficdirection: {}
+      trainingmultiselect: {}
+      trainingshorttext: {}
+      trainingteams: {}
+      triggeredsecurityprofile: {}
+      type: {}
+      typeoffense: {}
+      unassignedincidents: {}
+      uniquebiometricdatabreached: {}
+      uniqueidentificationnumberbreached: {}
+      uniqueports: {}
+      urlsslverification: {}
+      user: {}
+      useraccountcontrol: {}
+      userdisabledstatus: {}
+      userid: {}
+      username: {}
+      usernamecountoffense: {}
+      usernames: {}
+      vendorid: {}
+      vendorproduct: {}
+      vpcid: {}
+      vulnerabilitycategory: {}
+      wereanystepsoractionstakenthatmighthaveinhibitedtherecovery: {}
+      whatadditionaltoolsorresourcesareneededtodetectanalyzeandmitigatefutureincidents: {}
+      whataretheareasthatneedimprovement: {}
+      whatcorrectiveactionscanpreventsimilarincidentsinthefuture: {}
+      whatinformationwasneededsooner: {}
+      whatprecursorsorindicatorsshouldbewatchedforinthefuturetodetectsimilarincidents: {}
+      whatwasthescopeoftheincident: {}
+      whatwastheworkperformedduringrecovery: {}
+      whatweretheareaswherethecirtteamswereeffective: {}
+      whatwouldthestaffandmanagementdodifferentlythenexttimeasimilarincidentoccurs: {}
+      whenwastheproblemfirstdetectedandbywhom: {}
+      whereisdatahosted: {}
+      workphone: {}
+      xdralertcount: {}
+      xdralerts: {}
+      xdrassigneduseremail: {}
+      xdrassigneduserprettyname: {}
+      xdrdescription: {}
+      xdrdetectiontime: {}
+      xdrdevicecontrolviolations: {}
+      xdrdisconnectedendpoints: {}
+      xdrfileartifacts: {}
+      xdrhighseverityalertcount: {}
+      xdrhostcount: {}
+      xdrincidentid: {}
+      xdrlowseverityalertcount: {}
+      xdrmanualseverity: {}
+      xdrmediumseverityalertcount: {}
+      xdrmodificationtime: {}
+      xdrnetworkartifacts: {}
+      xdrnotes: {}
+      xdrresolvecomment: {}
+      xdrstatus: {}
+      xdrstatusv2: {}
+      xdrurl: {}
+      xdrusercount: {}
+      xsoarReadOnlyRoles: {}
+      xsoardevinstancename:
+        simple: Demisto Dev
+      xsoardevtoprodmethod:
+        simple: Manual
+      xsoarprodinstancename: {}
+      zipcode: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 6db6e88b-0e57-400e-858b-082522f3e68a
+      iscommand: true
+      name: Set fields for XSOAR Dev to Prod Layout
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 6db6e88b-0e57-400e-858b-082522f3e68a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 540
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes:
+        simple: Job's Done
+      closeReason:
+        simple: Other
+      democlosefield: {}
+      emailclassification: {}
+      id: {}
+      incomingmirrorerror: {}
+      outgoingmirrorerror: {}
+      phishingsubtype: {}
+      xsoartrainingpackuseful: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 4b370d8e-ea57-4b38-8e16-8eb0963931bd
+      iscommand: true
+      name: Close Job
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 4b370d8e-ea57-4b38-8e16-8eb0963931bd
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 120,
+          "y": 2650
+        }
+      }
+  "21":
+    id: "21"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 24e57e13-556b-4281-8ec9-26a8f8c1a2fb
+      iscommand: false
+      name: Start Export Custom Content Workflow
+      type: title
+      version: -1
+      description: ''
+    taskid: 24e57e13-556b-4281-8ec9-26a8f8c1a2fb
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 642.5,
+          "y": 1040
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2405,
+        "width": 1340,
+        "x": -317.5,
+        "y": 340
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

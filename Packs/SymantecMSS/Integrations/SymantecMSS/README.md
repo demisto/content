@@ -1,5 +1,5 @@
 <!-- HTML_DOC -->
-<p>Use the Symantec Managed Security Services (Symantec MSS) integration to create Demisto incidents from Symantec incidents.</p>
+<p>Use the Symantec Managed Security Services (Symantec MSS) integration to create Cortex XSOAR incidents from Symantec incidents.</p>
 <h2>Prerequisites</h2>
 <ol>
 <li>Export a Production certificate that enables you to access your organization’s information in<br>SWS (<a href="https://api.monitoredsecurity.com/SWS/" rel="nofollow">https://api.monitoredsecurity.com/SWS/</a>) .p12 format.</li>
@@ -8,7 +8,7 @@
 <p>If not authorized, make sure that the exported .p12 certificate is for the production API and not the test API.</p>
 <p>Verify that you can make HTTPS requests from your machine.</p>
 <p>Make sure you use the correct proxy, and enable it in the configuration.</p>
-<h2>Configure the Symantec MSS Integration on Demisto</h2>
+<h2>Configure the Symantec MSS Integration on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for Symantec MSS.</li>
@@ -26,7 +26,7 @@
 <li><strong>Fetch Incidents</strong></li>
 <li>
 <strong>Incident type</strong>: Incident type to trigger incident creation.</li>
-<li><strong>Demisto engine</strong></li>
+<li><strong>Cortex XSOAR engine</strong></li>
 </ul>
 </li>
 <li>Click <strong>Test</strong> to to validate that the certificate is authenticated and the SWS server is responsive.</li>
@@ -37,7 +37,7 @@
 <ul>
 <li>Close an incident, change it's resolution to "Resolved" and assign to a person named "John"<br>Example: "!symantec-mss-update-incident number=123 resolution=Resolved status=Closed assignPerson=John"</li>
 <li>Query for a specific incident (Incident number 1 in this example)<br>Example: "!symantec-mss-get-incident number=1"</li>
-<li>Retreive a list of alerts and them as incidents into Demisto<br>Check "Import events as incidents" when configuring the integration.<br>To get a list of incidents from the War Room, since 2017, with severity of "Informational" or "Warning" from the source IP "127.0.0.1", with a maximum of 20 entries: "!symantec-mss-incidents-list time=2017-01-01T00:00:00.000Z severities=Informational,Warning max=20 sourceIp=127.0.0.1"</li>
+<li>Retreive a list of alerts and them as incidents into Cortex XSOAR<br>Check "Import events as incidents" when configuring the integration.<br>To get a list of incidents from the War Room, since 2017, with severity of "Informational" or "Warning" from the source IP "127.0.0.1", with a maximum of 20 entries: "!symantec-mss-incidents-list time=2017-01-01T00:00:00.000Z severities=Informational,Warning max=20 sourceIp=127.0.0.1"</li>
 </ul>
 <h2>Commands</h2>
 <ol>

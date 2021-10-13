@@ -17,7 +17,7 @@ This integration was integrated and tested with enterprise version of PassiveTot
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### pt-whois-search
 ***
@@ -972,6 +972,10 @@ Provides data enrichment for domains.
 | PassiveTotal.Domain.techPostalCode | String | The postal code of the domain tech. | 
 | PassiveTotal.Domain.techCountry | String | The country of the domain tech. | 
 | PassiveTotal.Domain.techTelephone | String | The telephone number of the domain tech. | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Score | Number | The actual DBot score. | 
 
 
 #### Command Example
@@ -1099,3 +1103,483 @@ Provides data enrichment for domains.
 >|Domain|WHOIS Server|Registrar|Contact Email|Name Servers|Registrant|Admin|Tech|Creation Date (GMT)|Expire Date (GMT)|Updated Date (GMT)|Last Scanned (GMT)|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| riskiq.com | whois.godaddy.com | GODADDY.COM, LLC | domains@riskiq.com | luke.ns.cloudflare.com, serena.ns.cloudflare.com | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** domains@riskiq.com,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** domains@riskiq.com,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** domains@riskiq.com,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | 2006-01-11T16:00:00.000-0800 | 2017-01-11T16:00:00.000-0800 | 2014-12-08T16:00:00.000-0800 | 2016-09-27T09:40:31.180-0700 |
+
+### pt-get-services
+
+***
+Retrieves exposed services on the recently open ports for an IP address.
+
+#### Base Command
+
+`pt-get-services`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ip | IP address for which the user wants to search services for. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PassiveTotal.Service.ip | String | IP address of the service. | 
+| PassiveTotal.Service.portNumber | Number | Port number on which recent services were running or current services are running. | 
+| PassiveTotal.Service.firstSeen | Date | The date and time when the service was started for the first time on the port. | 
+| PassiveTotal.Service.lastSeen | Date | The date and time when the service was most recently used on the port. | 
+| PassiveTotal.Service.lastScan | Date | The date and time when the system performed the last scan to check whether any service is running on the port or not. | 
+| PassiveTotal.Service.count | Number | The total number of times service was used on the port. | 
+| PassiveTotal.Service.status | String | The status of the service. | 
+| PassiveTotal.Service.protocol | String | The protocol used by the service. | 
+| PassiveTotal.Service.banners.banner | String | The description of the banner generated as a result of scanning. Can be in HTML format. | 
+| PassiveTotal.Service.banners.scanType | String | The type of scan when the banner was generated. | 
+| PassiveTotal.Service.banners.firstSeen | Date | The date and time when the scan started. | 
+| PassiveTotal.Service.banners.lastSeen | Date | The date and time when the scan ended. | 
+| PassiveTotal.Service.banners.count | Number | The total number of times the same label was generated while scanning. | 
+| PassiveTotal.Service.currentServices.firstSeen | Date | The date and time when the current service started. | 
+| PassiveTotal.Service.currentServices.lastSeen | Date | The date and time when the current service was most recently used. | 
+| PassiveTotal.Service.currentServices.version | String | The version of the current service. | 
+| PassiveTotal.Service.currentServices.category | String | The category of the current service. | 
+| PassiveTotal.Service.currentServices.label | String | The label of the current service. | 
+| PassiveTotal.Service.recentServices.firstSeen | Date | The date and time when the recent service started. | 
+| PassiveTotal.Service.recentServices.lastSeen | Date | The date and time when the recent service was most recently used. | 
+| PassiveTotal.Service.recentServices.version | String | The version of the recent service. | 
+| PassiveTotal.Service.recentServices.category | String | The category of the recent service. | 
+| PassiveTotal.Service.recentServices.label | String | The label of the recent service. | 
+| PassiveTotal.Service.mostRecentSslCert.firstSeen | Date | The timestamp in epoch when the most recent SSL certificate was identified by the system. | 
+| PassiveTotal.Service.mostRecentSslCert.lastSeen | Date | The timestamp in epoch when the most recent SSL certificate was last used. | 
+| PassiveTotal.Service.mostRecentSslCert.fingerprint | String | A fingerprint detail from the most recent SSL certificate. | 
+| PassiveTotal.Service.mostRecentSslCert.sslVersion | String | The version of the most recent SSL certificate. | 
+| PassiveTotal.Service.mostRecentSslCert.expirationDate | Date | The expiry date and time  of the most recent SSL certificate in GMT. | 
+| PassiveTotal.Service.mostRecentSslCert.issueDate | Date | The date and time in GMT when the most recent SSL certificate was issued. | 
+| PassiveTotal.Service.mostRecentSslCert.sha1 | String | Sha1 of the most recent SSL certificate. | 
+| PassiveTotal.Service.mostRecentSslCert.serialNumber | String | The serial Number of the most recent SSL certificate. | 
+| PassiveTotal.Service.mostRecentSslCert.subjectCountry | String | The name of the Country of the subject of the most recent SSL certificate. | 
+| PassiveTotal.Service.mostRecentSslCert.issuerCommonName | String | The common name of the issuer of most recent SSL certificate. | 
+| PassiveTotal.Service.mostRecentSslCert.issuerProvince | String | The province of the issuer of the most recent SSL certificate. | 
+| PassiveTotal.Service.mostRecentSslCert.subjectStateOrProvinceName | String | The state or province name of the subject of the most recent SSL certificate. | 
+| PassiveTotal.Service.mostRecentSslCert.subjectStreetAddress | String | The street address of the subject of the most recent SSL certificate. | 
+| PassiveTotal.Service.mostRecentSslCert.issuerStateOrProvinceName | String | The state or province name of the issuer of the most recent SSL certificate. | 
+| PassiveTotal.Service.mostRecentSslCert.subjectSurname | String | The surname of the subject of the most recent SSL certificate. | 
+| PassiveTotal.Service.mostRecentSslCert.issuerCountry | String | The country of the issuer of the most recent SSL certificate. | 
+| PassiveTotal.Service.mostRecentSslCert.subjectLocalityName | String | The subject locality name of the most recent SSL certificate. | 
+| PassiveTotal.Service.mostRecentSslCert.subjectAlternativeNames | String | List of alternative names of the subject of the most recent SSL certificate. |
+| PassiveTotal.Service.mostRecentSslCert.issuerOrganizationUnitName | String | The name organization unit of the issuer of the most recent SSL certificate. | 
+| PassiveTotal.Service.mostRecentSslCert.issuerOrganizationName | String | The  organization name of the issuer of the most recent SSL certificate. | 
+| PassiveTotal.Service.mostRecentSslCert.subjectEmailAddress | String | Email Address of the subject of the most recent SSL certificate. | 
+| PassiveTotal.Service.mostRecentSslCert.subjectOrganizationName | String | The organization name of the subject of the most recent SSL certificate. | 
+| PassiveTotal.Service.mostRecentSslCert.issuerLocalityName | String | The name of the locality of the issuer of the most recent SSL certificate. | 
+| PassiveTotal.Service.mostRecentSslCert.subjectCommonName | String | Common name of the subject of the most recent SSL certificate. | 
+| PassiveTotal.Service.mostRecentSslCert.subjectProvince | String | The province of the subject of the most recent SSL certificate. | 
+| PassiveTotal.Service.mostRecentSslCert.issuerGivenName | String | The given name of the issuer of the most recent SSL certificate. | 
+| PassiveTotal.Service.mostRecentSslCert.subjectOrganizationUnitName | String | Subject organization unit name of the most recent SSL certificate. | 
+| PassiveTotal.Service.mostRecentSslCert.issuerEmailAddress | String | The email address of the issuer of the most recent SSL certificate. | 
+| PassiveTotal.Service.mostRecentSslCert.subjectGivenName | String | Given name of the subject of the the most recent SSL certificate. | 
+| PassiveTotal.Service.mostRecentSslCert.subjectSerialNumber | String | The serial number of the subject of the most recent SSL certificate. | 
+| PassiveTotal.Service.mostRecentSslCert.issuerStreetAddress | String | The street Address of the issuer of the most recent SSL certificate. | 
+| PassiveTotal.Service.mostRecentSslCert.issuerSerialNumber | String | The serial number of the issuer of the most recent SSL certificate. | 
+| PassiveTotal.Service.mostRecentSslCert.issuerSurname | String | The surname of the issuer of the most recent SSL certificate. | 
+
+#### Command Example
+
+```!pt-get-services ip=1.1.1.1```
+
+#### Context Example
+
+```json
+{
+  "PassiveTotal": {
+    "Service": [
+      {
+        "count": 42335,
+        "currentServices": [
+          {
+            "label": "Other Service"
+          }
+        ],
+        "firstSeen": "2018-03-28 12:04:21",
+        "ip": "1.1.1.1",
+        "lastScan": "2021-03-06 02:28:14",
+        "lastSeen": "2021-03-04 05:11:29",
+        "portNumber": 53,
+        "protocol": "UDP",
+        "status": "filtered"
+      },
+      {
+        "banners": [
+          {
+            "banner": "<html>\r\n<head><title>301 Moved Permanently</title></head>\r\n<body>\r\n<center><h1>301 Moved Permanently</h1></center>\r\n<hr><center>cloudflare</center>\r\n</body>\r\n</html>\r\n",
+            "count": 3,
+            "firstSeen": "2021-03-05 13:56:20",
+            "lastSeen": "2021-03-06 00:20:32",
+            "scanType": "http"
+          }
+        ],
+        "count": 1386,
+        "currentServices": [
+          {
+            "category": "Server",
+            "firstSeen": "2019-06-18 13:45:42",
+            "label": "CloudFlare",
+            "lastSeen": "2021-03-10 07:58:44"
+          },
+          {
+            "category": "Server",
+            "firstSeen": "2020-07-09 16:19:47",
+            "label": "cloudflare",
+            "lastSeen": "2021-03-10 05:59:33"
+          },
+          {
+            "category": "Server",
+            "firstSeen": "2018-07-02 11:46:37",
+            "label": "yunjiasu-nginx",
+            "lastSeen": "2021-03-09 02:26:20"
+          }
+        ],
+        "firstSeen": "2018-04-01 00:38:56",
+        "ip": "1.1.1.1",
+        "lastScan": "2021-03-06 13:27:15",
+        "lastSeen": "2021-03-06 00:20:32",
+        "portNumber": 80,
+        "protocol": "TCP",
+        "recentServices": [
+          {
+            "category": "Server",
+            "firstSeen": "2020-03-18 20:37:06",
+            "label": "BigIP",
+            "lastSeen": "2021-03-05 21:31:27"
+          },
+          {
+            "category": "Server",
+            "firstSeen": "2020-06-11 11:50:49",
+            "label": "F5 BIG-IP load balancer httpd",
+            "lastSeen": "2021-03-05 21:31:27"
+          },
+          {
+            "category": "Server",
+            "firstSeen": "2020-10-27 12:39:22",
+            "label": "OpenResty web app server",
+            "lastSeen": "2021-02-27 19:59:14"
+          },
+          {
+            "category": "Server",
+            "firstSeen": "2019-02-09 11:59:43",
+            "label": "openresty",
+            "lastSeen": "2021-02-27 19:59:14"
+          },
+          {
+            "category": "Server",
+            "firstSeen": "2018-08-05 00:56:16",
+            "label": "Apache",
+            "lastSeen": "2020-11-09 07:02:20"
+          }
+        ],
+        "status": "open"
+      },
+      {
+        "count": 41,
+        "currentServices": [
+          {
+            "label": "Other Service"
+          }
+        ],
+        "firstSeen": "2020-02-29 04:02:09",
+        "ip": "1.1.1.1",
+        "lastScan": "2021-03-06 06:51:11",
+        "lastSeen": "2021-02-27 16:00:28",
+        "portNumber": 111,
+        "protocol": "UDP",
+        "status": "closed"
+      }
+    ]
+  }
+}
+```
+
+#### Human Readable Output
+
+> ### Total Retrieved Record(s) 13
+> ### Services
+>|Port Number|Protocol|Status|Current Service Labels|First Seen Date (GMT)|Last Seen Date (GMT)|Last Scanned Date (GMT)|
+>|---|---|---|---|---|---|---|
+>| 53 | UDP | filtered | Other Service | 2018-03-28 12:04:21 | 2021-03-04 05:11:29 | 2021-03-06 02:28:14 |
+>| 80 | TCP | open | CloudFlare, cloudflare, yunjiasu-nginx | 2018-04-01 00:38:56 | 2021-03-06 00:20:32 | 2021-03-06 13:27:15 |
+>| 111 | UDP | closed | Other Service | 2020-02-29 04:02:09 | 2021-02-27 16:00:28 | 2021-03-06 06:51:11 |
+
+### pt-get-whois
+***
+Gets WHOIS information records based on queries.
+
+
+#### Base Command
+
+`pt-get-whois`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query | Query value to use in the request. For example: riskiq.com, 1.1.1.1 | Required | 
+| history | Whether to return historical results. Valid values: true, false. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PassiveTotal.WHOIS.domain | String | The domain name. For example: 'google.com'. | 
+| PassiveTotal.WHOIS.registrar | String | The name of the registrar of the domain. | 
+| PassiveTotal.WHOIS.whoisServer | String | WHOIS server name where the details of domain registrations belong. | 
+| PassiveTotal.WHOIS.registered | Date | The date that the domain was registered. | 
+| PassiveTotal.WHOIS.expiresAt | Date | The expiration date of the domain. | 
+| PassiveTotal.WHOIS.registryUpdatedAt | Date | The date when the registry was last updated. | 
+| PassiveTotal.WHOIS.lastLoadedAt | Date | Last loaded date of WHOIS database. | 
+| PassiveTotal.WHOIS.nameServers | String | Name servers of the domain. | 
+| PassiveTotal.WHOIS.organization | String | The organization of the domain. | 
+| PassiveTotal.WHOIS.name | String | Name of the domain. | 
+| PassiveTotal.WHOIS.telephone | String | Telephone number fetched from whois details of the domain. | 
+| PassiveTotal.WHOIS.contactEmail | String | Contact Email address of the domain owner. | 
+| PassiveTotal.WHOIS.registrantEmail | String | The name of the domain registrant. | 
+| PassiveTotal.WHOIS.registrantFax | String | The fax number of the domain registrant. | 
+| PassiveTotal.WHOIS.registrantName | String | The name of the domain registrant. | 
+| PassiveTotal.WHOIS.registrantOrganization | String | The organizations of the domain registrant. | 
+| PassiveTotal.WHOIS.registrantStreet | String | The street of the domain registrant. | 
+| PassiveTotal.WHOIS.registrantCity | String | The city of the domain registrant. | 
+| PassiveTotal.WHOIS.registrantState | String | The state of the domain registrant. | 
+| PassiveTotal.WHOIS.registrantPostalCode | String | The postal code of the domain registrant. | 
+| PassiveTotal.WHOIS.registrantCountry | String | The country of the domain registrant. | 
+| PassiveTotal.WHOIS.registrantTelephone | String | The telephone number of the domain registrant. | 
+| PassiveTotal.WHOIS.adminEmail | String | The email address of the domain administrator. | 
+| PassiveTotal.WHOIS.adminFax | String | The fax number of the domain administrator. | 
+| PassiveTotal.WHOIS.adminName | String | The name of the domain administrator. | 
+| PassiveTotal.WHOIS.adminOrganization | String | The organizations of the domain administrator. | 
+| PassiveTotal.WHOIS.adminStreet | String | The street of the domain administrator. | 
+| PassiveTotal.WHOIS.adminCity | String | The city of the domain administrator. | 
+| PassiveTotal.WHOIS.adminState | String | The state of the domain administrator. | 
+| PassiveTotal.WHOIS.adminPostalCode | String | The postal code of the domain administrator. | 
+| PassiveTotal.WHOIS.adminCountry | String | The country of the domain administrator. | 
+| PassiveTotal.WHOIS.adminTelephone | String | The telephone number of the domain administrator. | 
+| PassiveTotal.WHOIS.billingEmail | String | The email address of the domain billing. | 
+| PassiveTotal.WHOIS.billingFax | String | The fax number of the domain billing. | 
+| PassiveTotal.WHOIS.billingName | String | The name of the domain billing. | 
+| PassiveTotal.WHOIS.billingOrganization | String | The organizations of the domain billing. | 
+| PassiveTotal.WHOIS.billingStreet | String | The street of the domain billing. | 
+| PassiveTotal.WHOIS.billingCity | String | The city of the domain billing. | 
+| PassiveTotal.WHOIS.billingState | String | The state of the domain billing. | 
+| PassiveTotal.WHOIS.billingPostalCode | String | The postal code of the domain billing. | 
+| PassiveTotal.WHOIS.billingCountry | String | The country of the domain billing. | 
+| PassiveTotal.WHOIS.billingTelephone | String | The telephone number of the domain billing. | 
+| PassiveTotal.WHOIS.techEmail | String | The email address of the domain tech. | 
+| PassiveTotal.WHOIS.techFax | String | The fax number of the domain tech. | 
+| PassiveTotal.WHOIS.techName | String | The name of the domain tech. | 
+| PassiveTotal.WHOIS.techOrganization | String | The organizations of domain tech. | 
+| PassiveTotal.WHOIS.techStreet | String | The street of the domain tech. | 
+| PassiveTotal.WHOIS.techCity | String | The city of the domain tech. | 
+| PassiveTotal.WHOIS.techState | String | The state of the domain tech. | 
+| PassiveTotal.WHOIS.techPostalCode | String | The postal code of the domain tech. | 
+| PassiveTotal.WHOIS.techCountry | String | The country of the domain tech. | 
+| PassiveTotal.WHOIS.techTelephone | String | The telephone number of the domain tech. | 
+
+
+#### Command Example
+```!pt-get-whois query=riskiq.com```
+
+#### Context Example
+```
+{
+    "PassiveTotal": {
+        "WHOIS": {
+            "adminCity": "san francisco",
+            "adminCountry": "us",
+            "adminEmail": "domains@riskiq.com",
+            "adminName": "Risk IQ",
+            "adminOrganization": "RiskIQ, Inc.",
+            "adminPostalCode": "94111",
+            "adminState": "california",
+            "adminStreet": "22 Battery Street\n10th Floor",
+            "adminTelephone": "18884154447",
+            "contactEmail": "domains@riskiq.com",
+            "domain": "riskiq.com",
+            "expiresAt": "2017-01-11T16:00:00.000-0800",
+            "lastLoadedAt": "2016-09-27T09:40:31.180-0700",
+            "name": "Risk IQ",
+            "nameServers": [
+                "luke.ns.cloudflare.com",
+                "serena.ns.cloudflare.com"
+            ],
+            "organization": "RiskIQ, Inc.",
+            "registered": "2006-01-11T16:00:00.000-0800",
+            "registrantCity": "san francisco",
+            "registrantCountry": "us",
+            "registrantEmail": "domains@riskiq.com",
+            "registrantName": "Risk IQ",
+            "registrantOrganization": "RiskIQ, Inc.",
+            "registrantPostalCode": "94111",
+            "registrantState": "california",
+            "registrantStreet": "22 Battery Street\n10th Floor",
+            "registrantTelephone": "18884154447",
+            "registrar": "GODADDY.COM, LLC",
+            "registryUpdatedAt": "2014-12-08T16:00:00.000-0800",
+            "techCity": "san francisco",
+            "techCountry": "us",
+            "techEmail": "domains@riskiq.com",
+            "techName": "Risk IQ",
+            "techOrganization": "RiskIQ, Inc.",
+            "techPostalCode": "94111",
+            "techState": "california",
+            "techStreet": "22 Battery Street\n10th Floor",
+            "techTelephone": "18884154447",
+            "telephone": "18884154447",
+            "whoisServer": "whois.godaddy.com"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Total Retrieved Record(s): 1
+>### Associated Domains
+>|Domain|WHOIS Server|Registrar|Contact Email|Name Servers|Registrant|Admin|Tech|Creation Date (GMT)|Expire Date (GMT)|Updated Date (GMT)|Last Scanned (GMT)|
+>|---|---|---|---|---|---|---|---|---|---|---|---|
+>| riskiq.com | whois.godaddy.com | GODADDY.COM, LLC | domains@riskiq.com | luke.ns.cloudflare.com, serena.ns.cloudflare.com | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** domains@riskiq.com,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** domains@riskiq.com,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** domains@riskiq.com,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | 2006-01-11T16:00:00.000-0800 | 2017-01-11T16:00:00.000-0800 | 2014-12-08T16:00:00.000-0800 | 2016-09-27T09:40:31.180-0700 |
+
+
+### pt-get-cookies
+***
+Retrieves cookies addresses or hostname information based on cookie name or domain.
+
+
+#### Base Command
+
+`pt-get-cookies`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| search_by | Search cookies information by name or domain. Valid values: 1. get addresses by cookie domain, 2. get addresses by cookie name, 3. get hosts by cookie domain, 4. get hosts by cookie name. | Required | 
+| query | Name or domain of cookie the user wants to search for. | Required | 
+| page | Page number for paging through results. Each page contains 2000 values. Default is 0. | Optional | 
+| sort | Field to sort the results on. Valid values: last seen, first seen. Default is last seen. | Optional | 
+| order | Order to return the results in. Valid values: asc, desc. Default is desc. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PassiveTotal.Cookie.hostname | String | The hostname/IP of the machine on which the cookie was found. | 
+| PassiveTotal.Cookie.cookieName | String | The name of the cookie that was found on the host. | 
+| PassiveTotal.Cookie.cookieDomain | String | The domain from which the cookie originated from. | 
+| PassiveTotal.Cookie.firstSeen | Date | The date and time when the cookie was first observed. | 
+| PassiveTotal.Cookie.lastSeen | Date | The date and time when the cookie was most recently observed. | 
+
+
+#### Command Example
+```!pt-get-cookies search_by="get hosts by cookie name" query=dummyCookie```
+
+#### Context Example
+```json
+{
+    "PassiveTotal": {
+        "Cookie": [
+            {
+                "cookieDomain": "dummy.domain",
+                "cookieName": "dummyCookie",
+                "firstSeen": "2016-11-22 03:36:07",
+                "hostname": "dummy.domain",
+                "lastSeen": "2017-07-27 21:05:10"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Total Record(s): 1
+>### Total Retrieved Record(s): 1
+>### Cookies
+>|Hostname|Cookie Name|Cookie Domain|First Seen Date (GMT)|Last Seen Date (GMT)|
+>|---|---|---|---|---|
+>| dummy.domain | dummyCookie | dummy.domain | 2019-04-02 01:53:50 | 2021-01-22 07:15:13 |
+
+
+### pt-get-articles
+***
+Retrieves information related to articles for a specific indicator.
+
+
+#### Base Command
+
+`pt-get-articles`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query | Indicator value to search for in articles. For example: riskiq.com, 1.1.1.1 | Required | 
+| type | Type of the indicator. For example: domain, ip, url | Optional |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PassiveTotal.Article.guid | String | The global unique ID of the article. | 
+| PassiveTotal.Article.title | String | The title of the article. | 
+| PassiveTotal.Article.summary | String | The summary of the article. | 
+| PassiveTotal.Article.type | String | The type of an article. | 
+| PassiveTotal.Article.publishedDate | Date | The date and time on which the article was published. | 
+| PassiveTotal.Article.link | String | The link of the article for getting more details. | 
+| PassiveTotal.Article.categories | Unknown | An array of categories of the article. | 
+| PassiveTotal.Article.tags | Unknown | An array of tags for the article. | 
+| PassiveTotal.Article.indicators.type | String | The type of the indicator. | 
+| PassiveTotal.Article.indicators.count | Number | Total number of indicators of a particular type. | 
+| PassiveTotal.Article.indicators.values | Unknown | An array of values related to indicators. | 
+| PassiveTotal.Article.indicators.source | String | The source of the indicator. | 
+
+
+#### Command Example
+```!pt-get-articles query=dummy.com```
+
+#### Context Example
+```json
+{
+    "PassiveTotal": {
+        "Article": {
+            "categories": [
+                "Categories 1",
+                "Categories 2"
+            ],
+            "guid": "12e123b1",
+            "indicators": [
+                {
+                    "count": 1,
+                    "source": "public",
+                    "type": "domain",
+                    "values": [
+                        "dummy.com"
+                    ]
+                }
+            ],
+            "link": "https://community.riskiq.com/article/12e123b1",
+            "publishedDate": "Mon Aug 29 20:00:00 VET 2016",
+            "summary": "Did you know that you can get all kinds of free stuff, just by giving out your personal information? The internet is full of these fake reward scams which RiskIQ's sytems surface every hour of the day.",
+            "tags": [
+                "fake rewards",
+                "playstation",
+                "scam"
+            ],
+            "title": "Free PlayStations on the Internet are Probably an Online Scam",
+            "type": "public"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Total Retrieved Record(s): 1
+>### Article(s)
+>|GUID|Title|Summary|Type|Tags|Categories|Article Link|Published Date (GMT)|
+>|---|---|---|---|---|---|---|---|
+>| 12e123b1 | Free PlayStations on the Internet are Probably an Online Scam | Did you know that you can get all kinds of free stuff, just by giving out your personal information? The internet is full of these fake reward scams which RiskIQ's sytems surface every hour of the day. | public | fake rewards, playstation, scam | Categories 1, Categories 2 | https://community.riskiq.com/article/12e123b1 | Mon Aug 29 20:00:00 VET 2016 |

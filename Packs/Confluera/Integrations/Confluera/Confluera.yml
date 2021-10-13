@@ -1,0 +1,65 @@
+commonfields:
+  id: Confluera
+  version: -1
+name: Confluera
+display: Confluera
+category: Network Security
+description: This is the confluera Iq-Hub integration with cortex.
+configuration:
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- display: IQ-HUB Url
+  name: url
+  type: 0
+  required: true
+  additionalinfo: Confluera iq-hub portal address, the integration should connect
+    to.
+- display: Username
+  name: username
+  type: 9
+  required: true
+  additionalinfo: The username required to authenticate to the service.
+script:
+  script: '-'
+  type: python
+  commands:
+  - name: confluera-fetch-detections
+    arguments:
+    - name: hours
+      description: 'Specifies the time duration for which detections need to be fetched '
+      defaultValue: "72"
+    outputs:
+    - contextPath: Confluera.Detections
+      description: Detections Response
+    description: Fetches list of detections in confluera for past x hours.
+  - name: confluera-fetch-progressions
+    arguments:
+    - name: hours
+      description: 'Specifies the time duration for which progressions need to be
+        fetched '
+      defaultValue: "72"
+    outputs:
+    - contextPath: Confluera.Progressions
+      description: Progressions response
+    description: Fetches list of progressions in confluera for past x hours.
+  - name: confluera-fetch-trail-details
+    arguments:
+    - name: trail_id
+      required: true
+      description: Id of a detection in iq-hub protal.
+    outputs:
+    - contextPath: Confluera.TrailDetails
+      description: Progression Details
+    description: Fetches progression details of which provided trailId is a part of.
+  dockerimage: demisto/python3:3.9.7.24076
+  runonce: false
+  subtype: python3
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

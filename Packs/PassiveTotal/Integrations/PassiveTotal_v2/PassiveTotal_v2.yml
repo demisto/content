@@ -293,6 +293,187 @@ script:
       description: The telephone number of the domain tech.
       type: String
   - arguments:
+    - default: false
+      description: 'Query value to use in the request. For example: riskiq.com, 1.1.1.1'
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: |-
+        Whether to return historical results.
+        Valid values: true, false.
+      isArray: false
+      name: history
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets WHOIS information records based on queries.
+    execution: false
+    name: pt-get-whois
+    outputs:
+    - contextPath: PassiveTotal.WHOIS.domain
+      description: 'The domain name. For example: ''google.com''.'
+      type: String
+    - contextPath: PassiveTotal.WHOIS.registrar
+      description: The name of the registrar of the domain.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.whoisServer
+      description: WHOIS server name where the details of domain registrations belong.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.registered
+      description: The date that the domain was registered.
+      type: Date
+    - contextPath: PassiveTotal.WHOIS.expiresAt
+      description: The expiration date of the domain.
+      type: Date
+    - contextPath: PassiveTotal.WHOIS.registryUpdatedAt
+      description: The date when the registry was last updated.
+      type: Date
+    - contextPath: PassiveTotal.WHOIS.lastLoadedAt
+      description: Last loaded date of WHOIS database.
+      type: Date
+    - contextPath: PassiveTotal.WHOIS.nameServers
+      description: Name servers of the domain.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.organization
+      description: The organization of the domain.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.name
+      description: Name of the domain.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.telephone
+      description: Telephone number fetched from whois details of the domain.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.contactEmail
+      description: Contact Email address of the domain owner.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.registrantEmail
+      description: The email address of the domain registrant.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.registrantFax
+      description: The fax number of the domain registrant.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.registrantName
+      description: The name of the domain registrant.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.registrantOrganization
+      description: The organizations of the domain registrant.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.registrantStreet
+      description: The street of the domain registrant.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.registrantCity
+      description: The city of the domain registrant.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.registrantState
+      description: The state of the domain registrant.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.registrantPostalCode
+      description: The postal code of the domain registrant.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.registrantCountry
+      description: The country of the domain registrant.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.registrantTelephone
+      description: The telephone number of the domain registrant.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.adminEmail
+      description: The email address of the domain administrator.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.adminFax
+      description: The fax number of the domain administrator.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.adminName
+      description: The name of the domain administrator.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.adminOrganization
+      description: The organizations of the domain administrator.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.adminStreet
+      description: The street of the domain administrator.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.adminCity
+      description: The city of the domain administrator.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.adminState
+      description: The state of the domain administrator.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.adminPostalCode
+      description: The postal code of the domain administrator.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.adminCountry
+      description: The country of the domain administrator.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.adminTelephone
+      description: The telephone number of the domain administrator.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.billingEmail
+      description: The email address of the domain billing.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.billingFax
+      description: The fax number of the domain billing.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.billingName
+      description: The name of the domain billing.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.billingOrganization
+      description: The organizations of the domain billing.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.billingStreet
+      description: The street of the domain billing.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.billingCity
+      description: The city of the domain billing.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.billingState
+      description: The state of the domain billing.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.billingPostalCode
+      description: The postal code of the domain billing.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.billingCountry
+      description: The country of the domain billing.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.billingTelephone
+      description: The telephone number of the domain billing.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.techEmail
+      description: The email address of the domain tech.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.techFax
+      description: The fax number of the domain tech.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.techName
+      description: The name of the domain tech.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.techOrganization
+      description: The organizations of domain tech.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.techStreet
+      description: The street of the domain tech.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.techCity
+      description: The city of the domain tech.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.techState
+      description: The state of the domain tech.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.techPostalCode
+      description: The postal code of the domain tech.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.techCountry
+      description: The country of the domain tech.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.techTelephone
+      description: The telephone number of the domain tech.
+      type: String
+  - arguments:
     - default: true
       description: Domain or IP address you want to search components for.
       isArray: false
@@ -709,6 +890,15 @@ script:
     execution: false
     name: domain
     outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the DBot score.
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
     - contextPath: Domain.Name
       description: 'The domain name, for example: ''google.com''.'
       type: String
@@ -934,7 +1124,331 @@ script:
     - contextPath: PassiveTotal.Domain.techTelephone
       description: The telephone number of the domain tech.
       type: String
-  dockerimage: demisto/python3:3.8.6.12176
+  - arguments:
+    - default: false
+      description: 'Indicator value to search for in articles. For example: riskiq.com,
+        1.1.1.1'
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - default: false
+      description: 'Type of the indicator. For example: domain, ip, url'
+      isArray: false
+      name: type
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves information related to articles for a specific indicator.
+    execution: false
+    name: pt-get-articles
+    outputs:
+    - contextPath: PassiveTotal.Article.guid
+      description: The global unique ID of the article.
+      type: String
+    - contextPath: PassiveTotal.Article.title
+      description: The title of the article.
+      type: String
+    - contextPath: PassiveTotal.Article.summary
+      description: The summary of the article.
+      type: String
+    - contextPath: PassiveTotal.Article.type
+      description: The type of an article.
+      type: String
+    - contextPath: PassiveTotal.Article.publishedDate
+      description: The date and time on which the article was published.
+      type: Date
+    - contextPath: PassiveTotal.Article.link
+      description: The link of the article for getting more details.
+      type: String
+    - contextPath: PassiveTotal.Article.categories
+      description: An array of categories of the article.
+      type: Unknown
+    - contextPath: PassiveTotal.Article.tags
+      description: An array of tags for the article.
+      type: Unknown
+    - contextPath: PassiveTotal.Article.indicators.type
+      description: The type of the indicator.
+      type: String
+    - contextPath: PassiveTotal.Article.indicators.count
+      description: Total number of indicators of a particular type.
+      type: Number
+    - contextPath: PassiveTotal.Article.indicators.values
+      description: An array of values related to indicators.
+      type: Unknown
+    - contextPath: PassiveTotal.Article.indicators.source
+      description: The source of the indicator.
+      type: String
+  - arguments:
+    - default: true
+      description: IP address for which the user wants to search services for.
+      isArray: false
+      name: ip
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves exposed services on the recently open ports for an IP address.
+    execution: false
+    name: pt-get-services
+    outputs:
+    - contextPath: PassiveTotal.Service.ip
+      description: IP address of the service.
+      type: String
+    - contextPath: PassiveTotal.Service.portNumber
+      description: Port number on which recent services were running or current services
+        are running.
+      type: Number
+    - contextPath: PassiveTotal.Service.firstSeen
+      description: The date and time when the service was started for the first time
+        on the port.
+      type: Date
+    - contextPath: PassiveTotal.Service.lastSeen
+      description: The date and time when the service was most recently used on the
+        port.
+      type: Date
+    - contextPath: PassiveTotal.Service.lastScan
+      description: The date and time when the system performed the last scan to check
+        whether any service is running on the port or not.
+      type: Date
+    - contextPath: PassiveTotal.Service.count
+      description: The total number of times service was used on the port.
+      type: Number
+    - contextPath: PassiveTotal.Service.status
+      description: The status of the service.
+      type: String
+    - contextPath: PassiveTotal.Service.protocol
+      description: The protocol used by the service.
+      type: String
+    - contextPath: PassiveTotal.Service.banners.banner
+      description: The description of the banner generated as a result of scanning.
+        Can be in HTML format.
+      type: String
+    - contextPath: PassiveTotal.Service.banners.scanType
+      description: The type of scan when the banner was generated.
+      type: String
+    - contextPath: PassiveTotal.Service.banners.firstSeen
+      description: The date and time when the scan started.
+      type: Date
+    - contextPath: PassiveTotal.Service.banners.lastSeen
+      description: The date and time when the scan ended.
+      type: Date
+    - contextPath: PassiveTotal.Service.banners.count
+      description: The total number of times the same label was generated while scanning.
+      type: Number
+    - contextPath: PassiveTotal.Service.currentServices.firstSeen
+      description: The date and time when the current service started.
+      type: Date
+    - contextPath: PassiveTotal.Service.currentServices.lastSeen
+      description: The date and time when the current service was most recently used.
+      type: Date
+    - contextPath: PassiveTotal.Service.currentServices.version
+      description: The version of the current service.
+      type: String
+    - contextPath: PassiveTotal.Service.currentServices.category
+      description: The category of the current service.
+      type: String
+    - contextPath: PassiveTotal.Service.currentServices.label
+      description: The label of the current service.
+      type: String
+    - contextPath: PassiveTotal.Service.recentServices.firstSeen
+      description: The date and time when the recent service started.
+      type: Date
+    - contextPath: PassiveTotal.Service.recentServices.lastSeen
+      description: The date and time when the recent service was most recently used.
+      type: Date
+    - contextPath: PassiveTotal.Service.recentServices.version
+      description: The version of the recent service.
+      type: String
+    - contextPath: PassiveTotal.Service.recentServices.category
+      description: The category of the recent service.
+      type: String
+    - contextPath: PassiveTotal.Service.recentServices.label
+      description: The label of the recent service.
+      type: String
+    - contextPath: PassiveTotal.Service.mostRecentSslCert.firstSeen
+      description: The timestamp in epoch when the most recent SSL certificate was
+        identified by the system.
+      type: Date
+    - contextPath: PassiveTotal.Service.mostRecentSslCert.lastSeen
+      description: The timestamp in epoch when the most recent SSL certificate was
+        last used.
+      type: Date
+    - contextPath: PassiveTotal.Service.mostRecentSslCert.fingerprint
+      description: A fingerprint detail from the most recent SSL certificate.
+      type: String
+    - contextPath: PassiveTotal.Service.mostRecentSslCert.sslVersion
+      description: The version of the most recent SSL certificate.
+      type: String
+    - contextPath: PassiveTotal.Service.mostRecentSslCert.expirationDate
+      description: The expiry date and time  of the most recent SSL certificate in
+        GMT.
+      type: Date
+    - contextPath: PassiveTotal.Service.mostRecentSslCert.issueDate
+      description: The date and time in GMT when the most recent SSL certificate was
+        issued.
+      type: Date
+    - contextPath: PassiveTotal.Service.mostRecentSslCert.sha1
+      description: Sha1 of the most recent SSL certificate.
+      type: String
+    - contextPath: PassiveTotal.Service.mostRecentSslCert.serialNumber
+      description: The serial Number of the most recent SSL certificate.
+      type: String
+    - contextPath: PassiveTotal.Service.mostRecentSslCert.subjectCountry
+      description: The name of the Country of the subject of the most recent SSL certificate.
+      type: String
+    - contextPath: PassiveTotal.Service.mostRecentSslCert.issuerCommonName
+      description: The common name of the issuer of most recent SSL certificate.
+      type: String
+    - contextPath: PassiveTotal.Service.mostRecentSslCert.issuerProvince
+      description: The province of the issuer of the most recent SSL certificate.
+      type: String
+    - contextPath: PassiveTotal.Service.mostRecentSslCert.subjectStateOrProvinceName
+      description: The state or province name of the subject of the most recent SSL
+        certificate.
+      type: String
+    - contextPath: PassiveTotal.Service.mostRecentSslCert.subjectStreetAddress
+      description: The street address of the subject of the most recent SSL certificate.
+      type: String
+    - contextPath: PassiveTotal.Service.mostRecentSslCert.issuerStateOrProvinceName
+      description: The state or province name of the issuer of the most recent SSL
+        certificate.
+      type: String
+    - contextPath: PassiveTotal.Service.mostRecentSslCert.subjectSurname
+      description: The surname of the subject of the most recent SSL certificate.
+      type: String
+    - contextPath: PassiveTotal.Service.mostRecentSslCert.issuerCountry
+      description: The country of the issuer of the most recent SSL certificate.
+      type: String
+    - contextPath: PassiveTotal.Service.mostRecentSslCert.subjectLocalityName
+      description: The subject locality name of the most recent SSL certificate.
+      type: String
+    - contextPath: PassiveTotal.Service.mostRecentSslCert.subjectAlternativeNames
+      description: List of alternative names of the subject of the most recent SSL
+        certificate.
+      type: String
+    - contextPath: PassiveTotal.Service.mostRecentSslCert.issuerOrganizationUnitName
+      description: The name organization unit of the issuer of the most recent SSL
+        certificate.
+      type: String
+    - contextPath: PassiveTotal.Service.mostRecentSslCert.issuerOrganizationName
+      description: The  organization name of the issuer of the most recent SSL certificate.
+      type: String
+    - contextPath: PassiveTotal.Service.mostRecentSslCert.subjectEmailAddress
+      description: Email Address of the subject of the most recent SSL certificate.
+      type: String
+    - contextPath: PassiveTotal.Service.mostRecentSslCert.subjectOrganizationName
+      description: The organization name of the subject of the most recent SSL certificate.
+      type: String
+    - contextPath: PassiveTotal.Service.mostRecentSslCert.issuerLocalityName
+      description: The name of the locality of the issuer of the most recent SSL certificate.
+      type: String
+    - contextPath: PassiveTotal.Service.mostRecentSslCert.subjectCommonName
+      description: Common name of the subject of the most recent SSL certificate.
+      type: String
+    - contextPath: PassiveTotal.Service.mostRecentSslCert.subjectProvince
+      description: The province of the subject of the most recent SSL certificate.
+      type: String
+    - contextPath: PassiveTotal.Service.mostRecentSslCert.issuerGivenName
+      description: The given name of the issuer of the most recent SSL certificate.
+      type: String
+    - contextPath: PassiveTotal.Service.mostRecentSslCert.subjectOrganizationUnitName
+      description: Subject organization unit name of the most recent SSL certificate.
+      type: String
+    - contextPath: PassiveTotal.Service.mostRecentSslCert.issuerEmailAddress
+      description: The email address of the issuer of the most recent SSL certificate.
+      type: String
+    - contextPath: PassiveTotal.Service.mostRecentSslCert.subjectGivenName
+      description: Given name of the subject of the the most recent SSL certificate.
+      type: String
+    - contextPath: PassiveTotal.Service.mostRecentSslCert.subjectSerialNumber
+      description: The serial number of the subject of the most recent SSL certificate.
+      type: String
+    - contextPath: PassiveTotal.Service.mostRecentSslCert.issuerStreetAddress
+      description: The street Address of the issuer of the most recent SSL certificate.
+      type: String
+    - contextPath: PassiveTotal.Service.mostRecentSslCert.issuerSerialNumber
+      description: The serial number of the issuer of the most recent SSL certificate.
+      type: String
+    - contextPath: PassiveTotal.Service.mostRecentSslCert.issuerSurname
+      description: The surname of the issuer of the most recent SSL certificate.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: |-
+        Search cookies information by name or domain.
+        Valid values:
+        1. get addresses by cookie domain
+        2. get addresses by cookie name
+        3. get hosts by cookie domain
+        4. get hosts by cookie name
+      isArray: false
+      name: search_by
+      predefined:
+      - get addresses by cookie domain
+      - get addresses by cookie name
+      - get hosts by cookie domain
+      - get hosts by cookie name
+      required: true
+      secret: false
+    - default: false
+      description: Name or domain of cookie the user wants to search for.
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Page number for paging through results. Each page contains 2000
+        values.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: last seen
+      description: 'Field to sort the results on. Valid values: last seen, first seen.'
+      isArray: false
+      name: sort
+      predefined:
+      - last seen
+      - first seen
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: desc
+      description: 'Order to return the results in. Valid values: asc, desc'
+      isArray: false
+      name: order
+      predefined:
+      - desc
+      - asc
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves cookies addresses or hostname information based on cookie
+      name or domain.
+    execution: false
+    name: pt-get-cookies
+    outputs:
+    - contextPath: PassiveTotal.Cookie.hostname
+      description: The hostname/IP of the machine on which the cookie was found.
+      type: String
+    - contextPath: PassiveTotal.Cookie.cookieName
+      description: The name of the cookie that was found on the host.
+      type: String
+    - contextPath: PassiveTotal.Cookie.cookieDomain
+      description: The domain from which the cookie originated from.
+      type: String
+    - contextPath: PassiveTotal.Cookie.firstSeen
+      description: The date and time when the cookie was first observed.
+      type: Date
+    - contextPath: PassiveTotal.Cookie.lastSeen
+      description: The date and time when the cookie was most recently observed.
+      type: Date
+  dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: false
   longRunning: false

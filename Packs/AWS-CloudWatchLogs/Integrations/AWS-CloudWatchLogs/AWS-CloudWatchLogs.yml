@@ -1,0 +1,530 @@
+commonfields:
+  id: AWS - CloudWatchLogs
+  version: -1
+name: AWS - CloudWatchLogs
+display: AWS - CloudWatchLogs
+category: IT Services
+description: Amazon Web Services CloudWatch Logs (logs).
+configuration:
+- display: Default Region
+  name: defaultRegion
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Role Arn
+  name: roleArn
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Role Session Name
+  name: roleSessionName
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Role Session Duration
+  name: sessionDuration
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Access Key
+  name: access_key
+  required: false
+  type: 0
+- display: Secret Key
+  name: secret_key
+  required: false
+  type: 4
+- display: Timeout
+  name: timeout
+  additionalinfo: The time in seconds till a timeout exception is reached. You can
+    specify just the read timeout (for example 60) or also the connect timeout followed
+    after a comma (for example 60,10). If a connect timeout is not specified, a default
+    of 10 second will be used.
+  defaultvalue: 60,10
+  required: false
+  type: 0
+- display: Retries
+  name: retries
+  defaultvalue: 5
+  additionalinfo: "The maximum number of retry attempts when connection or throttling errors
+  are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10.
+  Note: Increasing the number of retries will increase the execution time."
+  required: false
+  type: 0
+script:
+  script: ''
+  type: python
+  subtype: python2
+  commands:
+  - name: aws-logs-create-log-group
+    arguments:
+    - name: logGroupName
+      required: true
+      description: The name of the log group.
+    - name: kmsKeyId
+      description: The Amazon Resource Name (ARN) of the CMK to use when encrypting
+        log data.
+    - name: region
+      description: The AWS Region, if not specified the default region will be used.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    description: Creates a log group with the specified name.
+    execution: true
+  - name: aws-logs-create-log-stream
+    arguments:
+    - name: logGroupName
+      required: true
+      description: The name of the log group.
+    - name: logStreamName
+      required: true
+      description: The name of the log stream.
+    - name: region
+      description: The AWS Region, if not specified the default region will be used.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    description: Creates a log stream for the specified log group.
+    execution: true
+  - name: aws-logs-delete-log-group
+    arguments:
+    - name: logGroupName
+      required: true
+      description: The name of the log group.
+    - name: region
+      description: The AWS Region, if not specified the default region will be used.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    description: Deletes the specified log group and permanently deletes all the archived
+      log events associated with the log group.
+    execution: true
+  - name: aws-logs-delete-log-stream
+    arguments:
+    - name: logGroupName
+      required: true
+      description: The name of the log group.
+    - name: logStreamName
+      required: true
+      description: The name of the log stream.
+    - name: region
+      description: The AWS Region, if not specified the default region will be used.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    description: Deletes the specified log stream and permanently deletes all the
+      archived log events associated with the log stream.
+    execution: true
+  - name: aws-logs-filter-log-events
+    arguments:
+    - name: logGroupName
+      required: true
+      description: The name of the log group.
+    - name: logStreamNames
+      description: Optional list of log stream names. Separated by comma.
+    - name: startTime
+      description: The start of the time range, expressed as the number of milliseconds
+        after Jan 1, 1970 00:00:00 UTC (Unix Time). Events with a time stamp before
+        this time are not returned.
+    - name: endTime
+      description: The end of the time range, expressed as the number of milliseconds
+        after Jan 1, 1970 00:00:00 UTC (Unix Time). Events with a time stamp later
+        than this time are not returned.
+    - name: filterPattern
+      description: The filter pattern to use. If not provided, all the events are
+        matched.
+    - name: limit
+      description: The maximum number of events to return. The default is 10,000 events.
+    - name: interleaved
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: If the value is true, the operation makes a best effort to provide
+        responses that contain events from multiple log streams within the log group,
+        interleaved in a single response. If the value is false, all the matched log
+        events in the first log stream are searched first, then those in the next
+        log stream, and so on. The default is false.
+    - name: region
+      description: The AWS Region, if not specified the default region will be used.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    outputs:
+    - contextPath: AWS.CloudWatchLogs.Events.LogStreamName
+      description: The name of the log stream this event belongs to.
+      type: string
+    - contextPath: AWS.CloudWatchLogs.Events.Timestamp
+      description: The time the event occurred, expressed as the number of milliseconds
+        after Jan 1, 1970 00:00:00 UTC.
+      type: date
+    - contextPath: AWS.CloudWatchLogs.Events.Message
+      description: The data contained in the log event.
+      type: string
+    - contextPath: AWS.CloudWatchLogs.Events.IngestionTime
+      description: The time the event was ingested, expressed as the number of milliseconds
+        after Jan 1, 1970 00:00:00 UTC.
+      type: date
+    - contextPath: AWS.CloudWatchLogs.Events.EventId
+      description: The ID of the event.
+      type: string
+    description: Lists log events from the specified log group. You can list all the
+      log events or filter the results using a filter pattern, a time range, and the
+      name of the log stream.
+  - name: aws-logs-describe-log-groups
+    arguments:
+    - name: logGroupNamePrefix
+      description: The prefix to match.
+    - name: limit
+      description: The maximum number of items returned. If you don't specify a value,
+        the default is up to 50 items.
+    - name: region
+      description: The AWS Region, if not specified the default region will be used.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    outputs:
+    - contextPath: AWS.CloudWatchLogs.LogGroups.LogGroupName
+      description: The name of the log group.
+      type: string
+    - contextPath: AWS.CloudWatchLogs.LogGroups.CreationTime
+      description: The creation time of the log group, expressed as the number of
+        milliseconds after Jan 1, 1970 00:00:00 UTC.
+      type: number
+    - contextPath: AWS.CloudWatchLogs.LogGroups.RetentionInDays
+      description: The number of days to retain the log events in the specified log
+        group.
+      type: number
+    - contextPath: AWS.CloudWatchLogs.LogGroups.MetricFilterCount
+      description: The number of metric filters.
+      type: number
+    - contextPath: AWS.CloudWatchLogs.LogGroups.Arn
+      description: The Amazon Resource Name (ARN) of the log group.
+      type: string
+    - contextPath: AWS.CloudWatchLogs.LogGroups.StoredBytes
+      description: The number of bytes stored.
+      type: number
+    - contextPath: AWS.CloudWatchLogs.LogGroups.KmsKeyId
+      description: The Amazon Resource Name (ARN) of the CMK to use when encrypting
+        log data.
+      type: string
+    description: Lists the specified log groups. You can list all your log groups
+      or filter the results by prefix. The results are ASCII-sorted by log group name.
+  - name: aws-logs-describe-log-streams
+    arguments:
+    - name: logGroupName
+      required: true
+      description: The name of the log group.
+    - name: logStreamNamePrefix
+      description: The prefix to match. If orderBy is LastEventTime ,you cannot specify
+        this parameter.
+    - name: orderBy
+      auto: PREDEFINED
+      predefined:
+      - LogStreamName
+      - LastEventTime
+      description: If the value is LogStreamName , the results are ordered by log
+        stream name. If the value is LastEventTime , the results are ordered by the
+        event time. The default value is LogStreamName .If you order the results by
+        event time, you cannot specify the logStreamNamePrefix parameter.
+    - name: limit
+      description: The maximum number of items returned. If you don't specify a value,
+        the default is up to 50 items.
+    - name: region
+      description: The AWS Region, if not specified the default region will be used.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    outputs:
+    - contextPath: AWS.CloudWatchLogs.LogGroups.LogStreams.LogGroupName
+      description: The Name of the log group.
+      type: string
+    - contextPath: AWS.CloudWatchLogs.LogGroups.LogStreams.LogStreamName
+      description: The name of the log stream.
+      type: string
+    - contextPath: AWS.CloudWatchLogs.LogGroups.LogStreams.CreationTime
+      description: The creation time of the stream, expressed as the number of milliseconds
+        after Jan 1, 1970 00:00:00 UTC.
+      type: number
+    - contextPath: AWS.CloudWatchLogs.LogGroups.LogStreams.Arn
+      description: The Amazon Resource Name (ARN) of the log stream.
+      type: string
+    - contextPath: AWS.CloudWatchLogs.LogGroups.LogStreams.FirstEventTimestamp
+      description: The time of the first event, expressed as the number of milliseconds
+        after Jan 1, 1970 00:00:00 UTC.
+      type: date
+    - contextPath: AWS.CloudWatchLogs.LogGroups.LogStreams.LastEventTimestamp
+      description: the time of the most recent log event in the log stream in CloudWatch
+        Logs. This number is expressed as the number of milliseconds after Jan 1,
+        1970 00:00:00 UTC. lastEventTime updates on an eventual consistency basis.
+        It typically updates in less than an hour from ingestion, but may take longer
+        in some rare situations.
+      type: date
+    - contextPath: AWS.CloudWatchLogs.LogGroups.LogStreams.LastIngestionTime
+      description: The ingestion time, expressed as the number of milliseconds after
+        Jan 1, 1970 00:00:00 UTC.
+      type: date
+    - contextPath: AWS.CloudWatchLogs.LogGroups.LogStreams.UploadSequenceToken
+      description: The sequence token.
+      type: string
+    - contextPath: AWS.CloudWatchLogs.LogGroups.LogStreams.StoredBytes
+      description: The number of bytes stored.
+      type: number
+    description: Lists the log streams for the specified log group. You can list all
+      the log streams or filter the results by prefix. You can also control how the
+      results are ordered.
+  - name: aws-logs-put-retention-policy
+    arguments:
+    - name: logGroupName
+      required: true
+      description: The name of the log group.
+    - name: retentionInDays
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      - "3"
+      - "5"
+      - "7"
+      - "14"
+      - "30"
+      - "60"
+      - "90"
+      - "120"
+      - "150"
+      - "180"
+      - "365"
+      - "400"
+      - "545"
+      - "731"
+      - "1827"
+      - "3653"
+      description: The number of days to retain the log events in the specified log
+        group.
+    - name: region
+      description: The AWS Region, if not specified the default region will be used.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    description: Sets the retention of the specified log group. A retention policy
+      allows you to configure the number of days for which to retain log events in
+      the specified log group.
+    execution: true
+  - name: aws-logs-delete-retention-policy
+    arguments:
+    - name: logGroupName
+      required: true
+      description: The name of the log group.
+    - name: region
+      description: The AWS Region, if not specified the default region will be used.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    description: Deletes the specified retention policy.  Log events do not expire
+      if they belong to log groups without a retention policy.
+    execution: true
+  - name: aws-logs-put-log-events
+    arguments:
+    - name: logGroupName
+      required: true
+      description: The name of the log group.
+    - name: logStreamName
+      required: true
+      description: The name of the log stream.
+    - name: timestamp
+      required: true
+      description: The time the event occurred, expressed as the number of milliseconds
+        fter Jan 1, 1970 00:00:00 UTC. (Unix Time)
+    - name: message
+      required: true
+      description: The raw event message.
+    - name: sequenceToken
+      description: The sequence token obtained from the response of the previous PutLogEvents
+        call. An upload in a newly created log stream does not require a sequence
+        token. You can also get the sequence token using DescribeLogStreams . If you
+        call PutLogEvents twice within a narrow time period using the same value for
+        sequenceToken , both calls may be successful, or one may be rejected.
+    - name: region
+      description: The AWS Region, if not specified the default region will be used.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    outputs:
+    - contextPath: AWS.CloudWatchLogs.PutLogEvents.NextSequenceToken
+      description: The next sequence token.
+      type: string
+    description: Uploads a batch of log events to the specified log stream. You must
+      include the sequence token obtained from the response of the previous call.
+      An upload in a newly created log stream does not require a sequence token. You
+      can also get the sequence token using DescribeLogStreams . If you call PutLogEvents
+      twice within a narrow time period using the same value for sequenceToken , both
+      calls may be successful, or one may be rejected.
+    execution: true
+  - name: aws-logs-put-metric-filter
+    arguments:
+    - name: logGroupName
+      required: true
+      description: The name of the log group.
+    - name: filterName
+      required: true
+      description: A name for the metric filter.
+    - name: filterPattern
+      required: true
+      description: A filter pattern for extracting metric data out of ingested log
+        events.
+    - name: metricName
+      required: true
+      description: The name of the CloudWatch metric.
+    - name: metricNamespace
+      required: true
+      description: The namespace of the CloudWatch metric.
+    - name: metricValue
+      required: true
+      description: The value to publish to the CloudWatch metric when a filter pattern
+        matches a log event.
+    - name: region
+      description: The AWS Region, if not specified the default region will be used.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    description: Creates or updates a metric filter and associates it with the specified
+      log group. Metric filters allow you to configure rules to extract metric data
+      from log events ingested through PutLogEvents .
+    execution: true
+  - name: aws-logs-delete-metric-filter
+    arguments:
+    - name: logGroupName
+      required: true
+      description: The name of the log group.
+    - name: filterName
+      required: true
+      description: The name of the metric filter.
+    - name: region
+      description: The AWS Region, if not specified the default region will be used.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    description: Deletes the specified metric filter.
+    execution: true
+  - name: aws-logs-describe-metric-filters
+    arguments:
+    - name: logGroupName
+      description: The name of the log group.
+    - name: filterNamePrefix
+      description: The prefix to match.
+    - name: metricName
+      description: Filters results to include only those with the specified metric
+        name. If you include this parameter in your request, you must also include
+        the metricNamespace parameter.
+    - name: metricNamespace
+      description: Filters results to include only those in the specified namespace.
+        If you include this parameter in your request, you must also include the metricName
+        parameter.
+    - name: region
+      description: The AWS Region, if not specified the default region will be used.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    outputs:
+    - contextPath: AWS.CloudWatchLogs.MetricFilters.filterName
+      description: The name of the metric filter.
+      type: string
+    - contextPath: AWS.CloudWatchLogs.MetricFilters.filterPattern
+      description: A symbolic description of how CloudWatch Logs should interpret
+        the data in each log event. For example, a log event may contain time stamps,
+        IP addresses, strings, and so on. You use the filter pattern to specify what
+        to look for in the log event message.
+      type: string
+    - contextPath: AWS.CloudWatchLogs.MetricFilters.metricTransformations.metricName
+      description: The name of the CloudWatch metric.
+      type: string
+    - contextPath: AWS.CloudWatchLogs.MetricFilters.metricTransformations.metricNamespace
+      description: The namespace of the CloudWatch metric.
+      type: string
+    - contextPath: AWS.CloudWatchLogs.MetricFilters.metricTransformations.metricValue
+      description: The value to publish to the CloudWatch metric when a filter pattern
+        matches a log event.
+      type: string
+    - contextPath: AWS.CloudWatchLogs.MetricFilters.metricTransformations.defaultValue
+      description: The value to emit when a filter pattern does not match a log event.
+        This value can be null.
+      type: string
+    - contextPath: AWS.CloudWatchLogs.MetricFilters.creationTime
+      description: The creation time of the metric filter, expressed as the number
+        of milliseconds after Jan 1, 1970 00:00:00 UTC.
+      type: date
+    - contextPath: AWS.CloudWatchLogs.MetricFilters.logGroupName
+      description: The name of the log group.
+      type: string
+    description: Lists the specified metric filters. You can list all the metric filters
+      or filter the results by log name, prefix, metric name, or metric namespace.
+  dockerimage: demisto/boto3:2.0.0.24033
+  runonce: false
+tests:
+- No Tests
+fromversion: 5.0.0

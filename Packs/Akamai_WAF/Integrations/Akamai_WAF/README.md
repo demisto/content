@@ -3,7 +3,7 @@ and Bot Manager. This integration was integrated and tested with [Network Lists 
 
 ##  Playbooks
 
-* Akamai WAF Network list activate generic polling
+* Akamai WAF Network list activate generic polling.
 
 ## Use Cases
 
@@ -24,9 +24,9 @@ The Akamai WAF integration allows you to manage a common set of lists for use in
 4.  Assign API key to the relevant users group, and assign on next page `Read/Write` access for `Network Lists`.
 5.  Save configuration and go to API detail you created.
 6. Press `new credentials` and download or copy it.
-7. Now use the credentials for configure Akamai WAF in Demisto
+7. Now use the credentials for configure Akamai WAF in Cortex XSOAR
 
-## Configure Akamai WAF on Demisto
+## Configure Akamai WAF on Cortex XSOAR
 
 1.  Navigate to **Settings** > **Integrations**  > **Servers & Services**.
 2.  Search for Akamai WAF.
@@ -42,7 +42,7 @@ The Akamai WAF integration allows you to manage a common set of lists for use in
 
 ## Commands
 
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 1.  Returns a list of all network lists available for an authenticated user who belongs to a group: [akamai-get-network-lists](#akamai-get-network-lists)
 2.  Gets a network list by the network list ID: [akamai-get-network-list-by-id](###akamai-get-network-lists)
@@ -55,7 +55,7 @@ You can execute these commands from the Demisto CLI, as part of an automation, o
 
 * * *
 
-1. ### akamai-get-network-lists
+### akamai-get-network-lists
 
 Returns a list of all network lists available for an authenticated user who belongs to a group.
 
@@ -76,19 +76,19 @@ Returns a list of all network lists available for an authenticated user who belo
 
 |**Path**|**Type**|**Description**|
 |--- |--- |--- |
-|Akamai.NetworkLists.Name|String|The network list name.|
-|Akamai.NetworkLists.Type|String|The network list type.|
-|Akamai.NetworkLists.UniqueID|String|The network list unique ID.|
-|Akamai.NetworkLists.ElementCount|String|The network list elements coun.t|
-|Akamai.NetworkLists.CreateDate|Date|The network list creation date.|
-|Akamai.NetworkLists.CreatedBy|String|The network list creator.|
-|Akamai.NetworkLists.ExpeditedProductionActivationStatus|String|The expedited production activation status.|
-|Akamai.NetworkLists.ExpeditedStagingActivationStatus|String|The expedited staging activation status.|
-|Akamai.NetworkLists.ProductionActivationStatus|String|The production activation status.|
-|Akamai.NetworkLists.StagingActivationStatus|String|The staging activation status.|
-|Akamai.NetworkLists.UpdateDate|String|The date that the network list was updated.|
-|Akamai.NetworkLists.UpdatedBy|String|The last user that updated the network list.|
-|Akamai.NetworkLists.Elements|String|The number of elements in the list.|
+| Akamai.NetworkLists.Lists.Name | String | The network list name. |
+| Akamai.NetworkLists.Lists.Type | String | The network list type. |
+| Akamai.NetworkLists.Lists.UniqueID | String | The network list unique ID. |
+| Akamai.NetworkLists.Lists.ElementCount | String | The network list elements count. |
+| Akamai.NetworkLists.Lists.CreateDate | Date | The network list creation date. |
+| Akamai.NetworkLists.Lists.CreatedBy | String | The network list creator. |
+| Akamai.NetworkLists.Lists.ExpeditedProductionActivationStatus | String | The expedited production activation status. |
+| Akamai.NetworkLists.Lists.ExpeditedStagingActivationStatus | String | The expedited staging activation status. |
+| Akamai.NetworkLists.Lists.ProductionActivationStatus | String | The production activation status. |
+| Akamai.NetworkLists.Lists.StagingActivationStatus | String | The staging activation status. |
+| Akamai.NetworkLists.Lists.UpdateDate | String | The date that the network list was updated. |
+| Akamai.NetworkLists.Lists.UpdatedBy | String | The last user that updated the network list. |
+| Akamai.NetworkLists.Lists.Elements | String | The number of elements in the list. |
 
 ##### Command Example
 
@@ -160,7 +160,7 @@ Returns a list of all network lists available for an authenticated user who belo
 
 * * *
 
-2. ### akamai-get-network-list-by-id
+### akamai-get-network-list-by-id
 
 Gets a network list by the network list ID.
 
@@ -178,19 +178,19 @@ Gets a network list by the network list ID.
 
 |**Path**|**Type**|**Description**|
 |--- |--- |--- |
-|Akamai.NetworkLists.Name|String|The network list name.|
-|Akamai.NetworkLists.Type|String|The network list type.|
-|Akamai.NetworkLists.UniqueID|String|The network list unique ID.|
-|Akamai.NetworkLists.ElementCount|String|The network list elements.|
-|Akamai.NetworkLists.CreateDate|Date|The network list creation date.|
-|Akamai.NetworkLists.CreatedBy|String|The network list creator.|
-|Akamai.NetworkLists.ExpeditedProductionActivationStatus|String|The expedited production activation status.|
-|Akamai.NetworkLists.ExpeditedStagingActivationStatus|String|The expedited staging activation status.|
-|Akamai.NetworkLists.ProductionActivationStatus|String|The production activation status.|
-|Akamai.NetworkLists.StagingActivationStatus|String|The staging activation status.|
-|Akamai.NetworkLists.UpdateDate|String|The date that the network list was updated.|
-|Akamai.NetworkLists.UpdatedBy|String|The last user that updated the network list.|
-|Akamai.NetworkLists.Elements|String|The number of elements in the list.|
+| Akamai.NetworkLists.Lists.Name | String | The network list name. |
+| Akamai.NetworkLists.Lists.Type | String | The network list type. |
+| Akamai.NetworkLists.Lists.UniqueID | String | The network list unique ID. |
+| Akamai.NetworkLists.Lists.ElementCount | String | The network list elements. |
+| Akamai.NetworkLists.Lists.CreateDate | Date | The network list creation date. |
+| Akamai.NetworkLists.Lists.CreatedBy | String | The network list creator. |
+| Akamai.NetworkLists.Lists.ExpeditedProductionActivationStatus | String | The expedited production activation status. |
+| Akamai.NetworkLists.Lists.ExpeditedStagingActivationStatus | String | The expedited staging activation status. |
+| Akamai.NetworkLists.Lists.ProductionActivationStatus | String | The production activation status. |
+| Akamai.NetworkLists.Lists.StagingActivationStatus | String | The staging activation status. |
+| Akamai.NetworkLists.Lists.UpdateDate | String | The date that the network list was updated. |
+| Akamai.NetworkLists.Lists.UpdatedBy | String | The last user that updated the network list. |
+| Akamai.NetworkLists.Lists.Elements | String | The number of elements in the list. |
 
 
 ##### Command Example
@@ -236,7 +236,7 @@ Gets a network list by the network list ID.
 
 * * *
 
-3. ### akamai-create-network-list
+### akamai-create-network-list
 
 Creates a new network list. Supports TXT file upload for elements.
 
@@ -258,11 +258,11 @@ Creates a new network list. Supports TXT file upload for elements.
 
 |**Path**|**Type**|**Description**|
 |--- |--- |--- |
-|Akamai.NetworkLists.Name|String|The network list name.|
-|Akamai.NetworkLists.UniqueID|String|The ID of the network list to create.|
-|Akamai.NetworkLists.Type|String|The network list type.|
-|Akamai.NetworkLists.ElementCount|Number|Number of element in the list.|
-|Akamai.NetworkLists.Elements|String|Elements in the list.|
+| Akamai.NetworkLists.Lists.Name | String | The network list name. |
+| Akamai.NetworkLists.Lists.UniqueID | String | The ID of the network list to create. |
+| Akamai.NetworkLists.Lists.Type | String | The network list type. |
+| Akamai.NetworkLists.Lists.ElementCount | Number | Number of element in the list. |
+| Akamai.NetworkLists.Lists.Elements | String | Elements in the list. |
 
 ##### Command Example
 
@@ -297,7 +297,7 @@ Creates a new network list. Supports TXT file upload for elements.
 
 * * *
 
-4. ### akamai-delete-network-list
+### akamai-delete-network-list
 
 Deletes the specified network list.
 
@@ -332,7 +332,7 @@ Akamai WAF - network list **69856_NEW** deleted.
 
 * * *
 
-5. ### akamai-activate-network-list
+### akamai-activate-network-list
 
 Activates a network list on the specified environment.
 
@@ -370,7 +370,7 @@ Akamai WAF  - network list **69989_TEST** already active on **PRODUCTION**
 
 * * *
 
-6. ### akamai-add-elements-to-network-list
+### akamai-add-elements-to-network-list
 
 Adds elements to the specified network list.
 
@@ -411,7 +411,7 @@ There are no context output for this command.
 
 * * *
 
-7. ### akamai-remove-element-from-network-list
+### akamai-remove-element-from-network-list
 
 Removes elements from the specified network list.
 
@@ -446,9 +446,9 @@ Akamai WAF - element **8.8.8.8** removed from network list **69988_TEST** succes
 
 * * *
 
-8. ### akamai-get-network-list-activation-status
+### akamai-get-network-list-activation-status
 
-Gets the activation status of the specified network list
+Gets the activation status of the specified network list.
 
 ##### Base Command
 
@@ -464,10 +464,10 @@ Gets the activation status of the specified network list
 ##### Context Output
 
 |**Path**|**Type**|**Description**|
-|--- |--- |--- |
-|Akamai.NetworkLists.ActivationStatus.UniqueID|String|The network list name.|
-|Akamai.NetworkLists.ActivationStatus.Status|String|The network list enviorment activation status.|
-|Akamai.NetworkLists.ActivationStatus.Enviorment|String|TThe network list enviorment.|
+| --- | --- | --- |
+| Akamai.NetworkLists.ActivationStatus.UniqueID | String | The network list name. |
+| Akamai.NetworkLists.ActivationStatus.StagingStatus | String | The network list environment activation status. |
+| Akamai.NetworkLists.ActivationStatus.ProductionStatus | String | The network list environment. |
 
 ##### Command Example
 

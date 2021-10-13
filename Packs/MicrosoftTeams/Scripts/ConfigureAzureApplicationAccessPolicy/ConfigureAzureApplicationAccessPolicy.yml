@@ -1,0 +1,50 @@
+args:
+- default: false
+  description: The login admin's password.
+  isArray: false
+  name: password
+  required: true
+  secret: true
+- default: false
+  description: The login admin's username.
+  isArray: false
+  name: username
+  required: true
+  secret: false
+- default: false
+  description: The relevant app's ID from the app studio.
+  isArray: false
+  name: app_id
+  required: false
+  secret: false
+- default: false
+  description: The email of the user who will get permissions to create a meeting.
+  isArray: false
+  name: identity
+  required: false
+  secret: false
+comment: This script grants a user the permissions needed to create a Teams meeting.
+  It connects to MS Teams, creating an application access policy to a chosen application and then grants a user permissions.
+commonfields:
+  id: ConfigureAzureApplicationAccessPolicy
+  version: -1
+enabled: false
+name: ConfigureAzureApplicationAccessPolicy
+outputs:
+- contextPath: ConfigureAzureApplicationAccessPolicy.Status
+  description: Whether the access policy was given.
+  type: String
+- contextPath: ConfigureAzureApplicationAccessPolicy.Account
+  description: The email of the user who received permissions to create a meeting.
+  type: String
+- contextPath: ConfigureAzureApplicationAccessPolicy.AppID
+  description: The relevant app's ID from the app studio.
+  type: String
+script: '-'
+system: false
+timeout: '0'
+type: powershell
+dockerimage: demisto/powershell-teams:1.0.0.22275
+fromversion: 5.5.0
+tests:
+- No test

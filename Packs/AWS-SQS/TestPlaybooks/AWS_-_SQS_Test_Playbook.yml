@@ -1,0 +1,486 @@
+id: AWS - SQS Test Playbook
+version: 9
+vcShouldKeepItemLegacyProdMachine: false
+name: AWS - SQS Test Playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 023cdb5c-ca62-4314-816d-329e1a7cb12e
+    type: start
+    task:
+      id: 023cdb5c-ca62-4314-816d-329e1a7cb12e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 4a686278-252d-49a3-8716-d92d51ebea00
+    type: regular
+    task:
+      id: 4a686278-252d-49a3-8716-d92d51ebea00
+      version: -1
+      name: aws-sqs-create-queue
+      description: Creates a new standard or FIFO queue. You can pass one or more
+        attributes in the request.
+      script: AWS - SQS|||aws-sqs-create-queue
+      type: regular
+      iscommand: true
+      brand: AWS - SQS
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      queueName:
+        simple: testplaybook
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 14c793a0-7829-410b-8b90-ca1b92bef68b
+    type: regular
+    task:
+      id: 14c793a0-7829-410b-8b90-ca1b92bef68b
+      version: -1
+      name: aws-sqs-get-queue-url
+      description: Returns the URL of an existing queue. To access a queue that belongs
+        to another AWS account, use the queueOwnerAWSAccountId parameter to specify
+        the account ID of the queues owner. The queues owner must grant you permission
+        to access the queue.
+      script: AWS - SQS|||aws-sqs-get-queue-url
+      type: regular
+      iscommand: true
+      brand: AWS - SQS
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      queueName:
+        simple: testplaybook
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 33a1cd6d-7d84-48f2-8447-4394a5fbdd58
+    type: regular
+    task:
+      id: 33a1cd6d-7d84-48f2-8447-4394a5fbdd58
+      version: -1
+      name: aws-sqs-list-queues
+      description: Returns a list of your queues. The maximum number of queues that
+        can be returned is 1,000. If you specify a value for the optional QueueNamePrefix
+        parameter, only queues with a name that begins with the specified value are
+        returned.
+      script: AWS - SQS|||aws-sqs-list-queues
+      type: regular
+      iscommand: true
+      brand: AWS - SQS
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      queueNamePrefix:
+        simple: testplaybook
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: e3ba55e2-7bd8-4c1e-8868-a654ea00918d
+    type: regular
+    task:
+      id: e3ba55e2-7bd8-4c1e-8868-a654ea00918d
+      version: -1
+      name: aws-sqs-send-message
+      description: Delivers a message to the specified queue.
+      script: AWS - SQS|||aws-sqs-send-message
+      type: regular
+      iscommand: true
+      brand: AWS - SQS
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      messageBody:
+        simple: test
+      queueUrl:
+        simple: ${AWS.SQS.Queues.QueueUrl}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: a30390b8-5bed-49e9-81d3-d7f4f2abd88a
+    type: regular
+    task:
+      id: a30390b8-5bed-49e9-81d3-d7f4f2abd88a
+      version: -1
+      name: aws-sqs-purge-queue
+      description: Deletes the messages in a queue specified by the QueueURL parameter.
+      script: AWS - SQS|||aws-sqs-purge-queue
+      type: regular
+      iscommand: true
+      brand: AWS - SQS
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      queueUrl:
+        simple: ${AWS.SQS.Queues.QueueUrl}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 310dc223-0c6a-455c-8a8c-b8986a15a598
+    type: regular
+    task:
+      id: 310dc223-0c6a-455c-8a8c-b8986a15a598
+      version: -1
+      name: aws-sqs-delete-queue
+      description: Deletes the queue specified by the QueueUrl , regardless of the
+        queue's contents. If the specified queue doesn't exist, Amazon SQS returns
+        a successful response.
+      script: AWS - SQS|||aws-sqs-delete-queue
+      type: regular
+      iscommand: true
+      brand: AWS - SQS
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      queueUrl:
+        simple: ${AWS.SQS.Queues.QueueUrl}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 8efe466e-5658-40a1-859c-5b3ce091006c
+    type: condition
+    task:
+      id: 8efe466e-5658-40a1-859c-5b3ce091006c
+      version: -1
+      name: VerifyContext- create queue
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: AWS.SQS.Queues.QueueUrl
+            iscontext: true
+          right:
+            value:
+              simple: testplaybook
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 268a494b-0f70-47cf-8f54-8cd13e87efd9
+    type: condition
+    task:
+      id: 268a494b-0f70-47cf-8f54-8cd13e87efd9
+      version: -1
+      name: VerifyContext- get queue
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: AWS.SQS.Queues
+                accessor: QueueUrl
+                transformers:
+                - operator: FirstArrayElement
+            iscontext: true
+          right:
+            value:
+              simple: testplaybook
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: da544074-3d61-4fab-8b2a-8aa81ce19965
+    type: condition
+    task:
+      id: da544074-3d61-4fab-8b2a-8aa81ce19965
+      version: -1
+      name: VerifyContext - list queues
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: AWS.SQS.Queues
+                accessor: QueueUrl
+                transformers:
+                - operator: FirstArrayElement
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: AWS.SQS.Queues
+                accessor: QueueUrl
+                transformers:
+                - operator: FirstArrayElement
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 8769079b-e451-465c-8a52-19967a5da770
+    type: condition
+    task:
+      id: 8769079b-e451-465c-8a52-19967a5da770
+      version: -1
+      name: VerifyContext- send message
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: AWS.SQS.Queues.SentMessages
+                accessor: MessageId
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 40f98a6c-31a3-47e1-8043-029da868ecb8
+    type: title
+    task:
+      id: 40f98a6c-31a3-47e1-8043-029da868ecb8
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1975,
+        "width": 380,
+        "x": 265,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

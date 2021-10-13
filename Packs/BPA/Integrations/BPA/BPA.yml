@@ -3,7 +3,7 @@ commonfields:
   id: BPA
   version: -1
 configuration:
-- display: Panorama Server URL (e.g., https://192.168.0.1)
+- display: Server URL (either Firewall or Panorama). e.g., https://192.168.0.1
   name: server
   required: true
   type: 0
@@ -102,8 +102,15 @@ script:
       - 'true'
       required: false
       secret: false
+    - default: false
+      defaultValue: '120'
+      description: The timeout for the request. Default is 120.
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
     deprecated: false
-    description: Submits a job to the BPA job queue.
+    description: Submits a job to the BPA job queue. PAN-OS devices with large configuration files may take a few minutes for the job to be submitted.
     execution: false
     name: pan-os-bpa-submit-job
     outputs:
@@ -173,7 +180,7 @@ script:
     - contextPath: InfoFile.Extension
       description: File extension.
       type: string
-  dockerimage: demisto/python3:3.9.1.14969
+  dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: false
   longRunning: false

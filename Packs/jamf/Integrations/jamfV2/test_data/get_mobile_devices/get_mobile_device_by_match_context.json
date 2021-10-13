@@ -1,0 +1,18 @@
+[{
+  "id": 53,
+  "name": "Device 10",
+  "udid": "ab12cdc060a311e490b812df261f2c7e",
+  "serial_number": "AB44CDCA60A3",
+  "mac_address": "A1:96:9D:16:A6:3E",
+  "wifi_mac_address": "A1:96:9D:16:A6:3E",
+  "username": "user80",
+  "realname": "User 80",
+  "email": "User80@email.com",
+  "email_address": "User80@email.com",
+  "room": "1847 Mintwood Place, Apt. B",
+  "position": "",
+  "building": "",
+  "building_name": "",
+  "department": "",
+  "department_name": ""
+}]

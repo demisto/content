@@ -6,7 +6,7 @@ This automation extracts all possible files from a PCAP file.
 | --- | --- |
 | Script Type | python3 |
 | Tags | pcap, file, Utility |
-| Demisto Version | 5.0.0 |
+| Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
 ---

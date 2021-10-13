@@ -1,6 +1,6 @@
 Automate Detection and Response to Network Threats and data leakage in your organization with Fidelis Elevate Network Integration.
 This integration was integrated and tested with version 9.2.4 of Fidelis Elevate Network
-## Configure Fidelis Elevate Network on Demisto
+## Configure Fidelis Elevate Network on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Fidelis Elevate Network.
@@ -18,7 +18,7 @@ This integration was integrated and tested with version 9.2.4 of Fidelis Elevate
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### fidelis-get-alert
 ***

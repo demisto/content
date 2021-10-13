@@ -9,7 +9,7 @@ Vectra API is available for administrators and developers to integrate Vectra's 
 <li>c_score and t_score fields changed to certainty and threat accordingly</li>
 </ul><h2>Fetch Incidents</h2>
 <p>You can Fetch only Detections with Greater/Equal Certainty score and Threat score</p>
-<h2>Configure Vectra v2 on Demisto</h2>
+<h2>Configure Vectra v2 on Cortex XSOAR</h2>
 <ol>
   <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
   &nbsp;&gt;&nbsp;<strong>Servers &amp; Services</strong>.</li>
@@ -37,7 +37,7 @@ Vectra API is available for administrators and developers to integrate Vectra's 
 </ol>
 <h2>Commands</h2>
 <p>
-  You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+  You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
   After you successfully execute a command, a DBot message appears in the War Room with the command details.
 </p>
 <ol>
@@ -427,12 +427,6 @@ Vectra API is available for administrators and developers to integrate Vectra's 
     </tr>
   </tbody>
 </table>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3>2. vectra-get-hosts</h3>
@@ -728,12 +722,6 @@ Vectra API is available for administrators and developers to integrate Vectra's 
     </tr>
   </tbody>
 </table>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3>3. vectra-triage</h3>
@@ -860,11 +848,6 @@ No output examples
 <p>
 Couldn't find any results
 </p>
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3>4. vectra-get-host-by-id</h3>
@@ -948,12 +931,6 @@ There are no context output for this command.
     </tr>
   </tbody>
 </table>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3>5. vectra-get-detection-by-id</h3>
@@ -989,12 +966,6 @@ There are no context output for this command.
 </table>
 
 <p>&nbsp;</p>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3>6. vectra-get-users</h3>
@@ -1057,13 +1028,6 @@ There are no context output for this command.
 <p>
   <code>!vectra-get-users</code>
 </p>
-
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3>7. vectra-get-proxies</h3>
@@ -1157,11 +1121,6 @@ There are no context output for this command.
 <p>
 Couldn't find any results
 </p>
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3>8. vectra-get-threatfeed</h3>
@@ -1291,12 +1250,6 @@ Couldn't find any results
     </tr>
   </tbody>
 </table>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3>9. vectra-search</h3>

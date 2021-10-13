@@ -1,0 +1,146 @@
+{
+    "meta": {
+        "query_time": 1.5230555030000001,
+        "pagination": {
+            "offset": 0,
+            "limit": 2,
+            "total": 11
+        },
+        "powered_by": "msa-api",
+        "trace_id": "b18f911b-f0a0-471d-9a0e-2eab8f651591"
+    },
+    "resources": [
+        {
+            "id": "domain_abc",
+            "indicator": "abc",
+            "type": "domain",
+            "deleted": false,
+            "published_date": 1532708005,
+            "last_updated": 1612244501,
+            "reports": [
+                "CSA-123"
+            ],
+            "actors": [
+                "GOBLINPANDA"
+            ],
+            "malware_families": [],
+            "kill_chains": [],
+            "ip_address_types": [],
+            "domain_types": [],
+            "malicious_confidence": "medium",
+            "_marker": "123",
+            "labels": [
+                {
+                    "name": "MaliciousConfidence/Medium",
+                    "created_on": 1532708005,
+                    "last_valid_on": 1612244501
+                },
+                {
+                    "name": "Actor/GOBLINPANDA",
+                    "created_on": 1532708004,
+                    "last_valid_on": 1588311187
+                }
+            ],
+            "relations": [
+                {
+                    "id": "ip_address_1.1.1.1",
+                    "indicator": "1.1.1.1",
+                    "type": "ip_address",
+                    "created_date": 1532712929,
+                    "last_valid_date": 1532712929
+                }
+            ],
+            "targets": [],
+            "threat_types": [
+                "Suspicious",
+                "Targeted"
+            ],
+            "vulnerabilities": []
+        },
+        {
+            "id": "domain_abc1",
+            "indicator": "abc1",
+            "type": "domain",
+            "deleted": false,
+            "published_date": 1573579421,
+            "last_updated": 1612070569,
+            "reports": [],
+            "actors": [],
+            "malware_families": [
+                "Gootkit"
+            ],
+            "kill_chains": [
+                "C2"
+            ],
+            "ip_address_types": [],
+            "domain_types": [],
+            "malicious_confidence": "high",
+            "_marker": "1234",
+            "labels": [
+                {
+                    "name": "Malware/Gootkit",
+                    "created_on": 1588309967,
+                    "last_valid_on": 1588309967
+                }
+            ],
+            "relations": [
+                {
+                    "id": "hash_sha256_1234567890",
+                    "indicator": "1234567890",
+                    "type": "hash_sha256",
+                    "created_date": 1609238446,
+                    "last_valid_date": 1609238446
+                }
+            ],
+            "targets": [],
+            "threat_types": [
+                "Criminal",
+                "Banking"
+            ],
+            "vulnerabilities": []
+        },
+        {
+            "id": "file_abc1",
+            "indicator": "abc1",
+            "type": "hash_md5",
+            "deleted": false,
+            "published_date": 1573579421,
+            "last_updated": 1612070569,
+            "reports": [],
+            "actors": [],
+            "malware_families": [
+                "Gootkit"
+            ],
+            "kill_chains": [
+                "C2"
+            ],
+            "ip_address_types": [],
+            "domain_types": [],
+            "malicious_confidence": "high",
+            "_marker": "1234",
+            "labels": [
+                {
+                    "name": "Malware/Gootkit",
+                    "created_on": 1588309967,
+                    "last_valid_on": 1588309967
+                }
+            ],
+            "relations": [
+                {
+                    "id": "hash_sha256_1234567890",
+                    "indicator": "1234567890",
+                    "type": "hash_sha256",
+                    "created_date": 1609238446,
+                    "last_valid_date": 1609238446
+                }
+            ],
+            "targets": [],
+            "threat_types": [
+                "Criminal",
+                "Banking"
+            ],
+            "vulnerabilities": []
+        }
+    ],
+    "errors": []
+}

@@ -1,13 +1,13 @@
 <!-- HTML_DOC -->
 <h2>Overview</h2>
-<p>Use the AlphaSOC Wisdom domain enrichment and threat intelligence plugin for Demisto to retrieve flags from the AlphaSOC threat intelligence service. Once installed, you can use Demisto commands to retrieve category and feature data (known as flags) from AlphaSOC to enrich data within Demisto and guide runbooks (e.g. flagging a known C2 domain, phishing destination, a domain associated with unwanted programs, or a benign domain that is trusted by AlphaSOC).</p>
+<p>Use the AlphaSOC Wisdom domain enrichment and threat intelligence plugin for Cortex XSOAR to retrieve flags from the AlphaSOC threat intelligence service. Once installed, you can use Cortex XSOAR commands to retrieve category and feature data (known as flags) from AlphaSOC to enrich data within Cortex XSOAR and guide runbooks (e.g. flagging a known C2 domain, phishing destination, a domain associated with unwanted programs, or a benign domain that is trusted by AlphaSOC).</p>
 <p> </p>
 <hr>
 <h2>Prerequisites</h2>
 <p>This integration requires an AlphaSOC API key. Navigate to <a href="https://alphasoc.com/wisdom/">https://alphasoc.com/wisdom/</a> to generate the API key. You can use the key for 30 days to evaluate the integration and additional context that AlphaSOC provides.</p>
 <p>If you run into any problems using the integration, or wish to discuss licensing and API use beyond the 30 day evaluation period for the AlphaSOC Wisdom service, contact the <a href="mailto:support@alphasoc.com" target="_blank" rel="noopener">AlphaSOC support team</a>.</p>
 <hr>
-<h2>Configure the AlphaSOC integration on Demisto</h2>
+<h2>Configure the AlphaSOC integration on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for AlphaSOC Wisdom.</li>
@@ -22,7 +22,7 @@
 </ol>
 <hr>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_422050772161529842440330">Return a list of flags assigned to a domain: wisdom-domain-flags</a></li>
 <li><a href="#h_254254248331529856911360">Return a list of flags assigned to an IP connection: wisdom-ip-flags</a></li>

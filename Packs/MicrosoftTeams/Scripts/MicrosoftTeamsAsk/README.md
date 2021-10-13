@@ -36,7 +36,7 @@ There are no outputs for this script.
 
 The MicrosoftTeamsAsk script sends a message, such as operation approval or information retrieval, in a question format from Cortex XSOAR to Microsoft Teams. The message must have at least two options. For example, "yes" and "no".
 
-After the question is answered in Microsoft Teams, the response is sent to the Demisto server, which appears as a conditional task in a playbook with response options as conditions. Depending on the response, the workflow may continue. For example, you define the following arguments: 
+After the question is answered in Microsoft Teams, the response is sent to the Cortex XSOAR server, which appears as a conditional task in a playbook with response options as conditions. Depending on the response, the workflow may continue. For example, you define the following arguments: 
 
 * `option1`: yes
 * `option2`: no 

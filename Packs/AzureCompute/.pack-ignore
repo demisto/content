@@ -1,0 +1,5 @@
+[file:AzureCompute_v2.yml]
+ignore=BA108,BA109,DS107
+
+[file:README.md]
+ignore=RM106

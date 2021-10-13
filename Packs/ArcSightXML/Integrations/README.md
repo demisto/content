@@ -3,9 +3,9 @@
         <div class="article-content">
           <div class="article-body"><h2>Overview</h2>
 <hr>
-<p>Use the ArcSight XML integration to fetch cases from ArcSight and create incidents Demisto using XML files. ArcSight exports cases and security events as XML to a specified folder and Demisto fetches the emails from the folder and creates an incident in Demisto for each case.</p>
-<p><strong>Important: </strong> The integration should be executed in native Python, not Docker, because the program must have direct access to the folder, otherwise will not be fetched. You can use an engine, but make sure the engine does not use Docker. If the folder is on the Demisto server then you can use <code>python.executable=python</code>.</p>
-<h2>Configure ArcSight XML on Demisto</h2>
+<p>Use the ArcSight XML integration to fetch cases from ArcSight and create incidents Cortex XSOAR using XML files. ArcSight exports cases and security events as XML to a specified folder and Cortex XSOAR fetches the emails from the folder and creates an incident in Cortex XSOAR for each case.</p>
+<p><strong>Important: </strong> The integration should be executed in native Python, not Docker, because the program must have direct access to the folder, otherwise will not be fetched. You can use an engine, but make sure the engine does not use Docker. If the folder is on the Cortex XSOAR server then you can use <code>python.executable=python</code>.</p>
+<h2>Configure ArcSight XML on Cortex XSOAR</h2>
 <hr>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
@@ -23,10 +23,10 @@
 </ol>
 <h2>Fetched Incidents Data</h2>
 <hr>
-<p>The integration polls the specified folder every minute. When there is an XML file in the folder, the integration loads that file, parses the Security Events/Cases, and converts the cases to incidents in Demisto. The integration will delete those XML files.</p>
+<p>The integration polls the specified folder every minute. When there is an XML file in the folder, the integration loads that file, parses the Security Events/Cases, and converts the cases to incidents in Cortex XSOAR. The integration will delete those XML files.</p>
 <h2>Commands</h2>
 <hr>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li>Update a case: arcsight-update-case</li>
 </ol>

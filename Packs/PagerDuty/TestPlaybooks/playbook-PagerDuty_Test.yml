@@ -5,14 +5,15 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 1d0f5e12-b317-4475-8b8e-a8cd665c0de7
+    taskid: ba55eac2-9563-44c7-80b9-1eca0c1c4502
     type: start
     task:
-      id: 1d0f5e12-b317-4475-8b8e-a8cd665c0de7
+      id: ba55eac2-9563-44c7-80b9-1eca0c1c4502
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "7"
@@ -20,7 +21,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 50
         }
       }
@@ -31,10 +32,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: e4df299a-5255-4fd9-8d71-650a68a27233
+    taskid: b43a4c0f-782b-4f2b-8871-792b251ac4cf
     type: regular
     task:
-      id: e4df299a-5255-4fd9-8d71-650a68a27233
+      id: b43a4c0f-782b-4f2b-8871-792b251ac4cf
       version: -1
       name: Get on call users
       script: '|||PagerDuty-get-users-on-call-now'
@@ -44,13 +45,11 @@ tasks:
     nexttasks:
       '#none#':
       - "2"
-    scriptarguments:
-      query: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 865
         }
       }
@@ -61,10 +60,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: a681fe78-7e3b-4823-8f01-9dfebc518ec6
+    taskid: 4a78dbcb-aeb4-49a2-84d6-62d44747ca51
     type: regular
     task:
-      id: a681fe78-7e3b-4823-8f01-9dfebc518ec6
+      id: 4a78dbcb-aeb4-49a2-84d6-62d44747ca51
       version: -1
       name: Verify context
       scriptName: VerifyContext
@@ -75,15 +74,13 @@ tasks:
       '#none#':
       - "11"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: PagerDutyUser.ID
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 1040
         }
       }
@@ -94,10 +91,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 505be58d-eefe-4cb5-8d90-1e517170639f
+    taskid: a0d43d3f-8652-47c2-898a-d692f6c026af
     type: regular
     task:
-      id: 505be58d-eefe-4cb5-8d90-1e517170639f
+      id: a0d43d3f-8652-47c2-898a-d692f6c026af
       version: -1
       name: Get schedules
       script: '|||PagerDuty-get-all-schedules'
@@ -107,14 +104,11 @@ tasks:
     nexttasks:
       '#none#':
       - "4"
-    scriptarguments:
-      query: {}
-      requesterID: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 340
         }
       }
@@ -125,10 +119,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 01a29c56-9ded-4cee-8baa-6c0c19205d8a
+    taskid: 9bad9def-2786-4386-84a9-39df11ebc47e
     type: regular
     task:
-      id: 01a29c56-9ded-4cee-8baa-6c0c19205d8a
+      id: 9bad9def-2786-4386-84a9-39df11ebc47e
       version: -1
       name: Verify Context
       scriptName: VerifyContext
@@ -139,15 +133,13 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: PagerDuty.Schedules
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 515
         }
       }
@@ -158,10 +150,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: be3c9739-b46f-4494-89b7-4e4cbc890e71
+    taskid: 42eaf758-a10c-4d6d-830a-6945a7e8c2aa
     type: regular
     task:
-      id: be3c9739-b46f-4494-89b7-4e4cbc890e71
+      id: 42eaf758-a10c-4d6d-830a-6945a7e8c2aa
       version: -1
       name: 'Get Incidents '
       script: '|||PagerDuty-incidents'
@@ -171,16 +163,11 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
-    scriptarguments:
-      since: {}
-      sortBy: {}
-      status: {}
-      until: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 690
         }
       }
@@ -191,15 +178,16 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 854c3348-dffb-450b-8563-3fcde76d5a5e
+    taskid: 16387f83-da47-409d-8f9f-16e1ce082313
     type: title
     task:
-      id: 854c3348-dffb-450b-8563-3fcde76d5a5e
+      id: 16387f83-da47-409d-8f9f-16e1ce082313
       version: -1
       name: PagerDuty Commands
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -207,7 +195,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 195
         }
       }
@@ -218,21 +206,22 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 53f842f8-6d41-430b-8054-d710584b6e3e
+    taskid: 5ebc98bb-d9bd-4a9d-8f71-64f3661eb508
     type: title
     task:
-      id: 53f842f8-6d41-430b-8054-d710584b6e3e
+      id: 5ebc98bb-d9bd-4a9d-8f71-64f3661eb508
       version: -1
       name: End of test
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3315
+          "x": 265,
+          "y": 4365
         }
       }
     note: false
@@ -242,10 +231,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: 05065412-7502-44c1-86e1-f2538a95420b
+    taskid: dd8e3ead-2874-493e-8e19-6f044bbf3295
     type: regular
     task:
-      id: 05065412-7502-44c1-86e1-f2538a95420b
+      id: dd8e3ead-2874-493e-8e19-6f044bbf3295
       version: -1
       name: Get on call users- schedule_ids
       script: '|||PagerDuty-get-users-on-call-now'
@@ -256,16 +245,13 @@ tasks:
       '#none#':
       - "12"
     scriptarguments:
-      escalation_policy_ids: {}
-      limit: {}
-      query: {}
       schedule_ids:
         simple: PFE1I5O,PO93R76
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 1390
         }
       }
@@ -276,10 +262,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: a45088ff-5f6f-467a-8786-0637279875da
+    taskid: 05f9642b-528a-47fa-8af5-cdf2fa53b874
     type: regular
     task:
-      id: a45088ff-5f6f-467a-8786-0637279875da
+      id: 05f9642b-528a-47fa-8af5-cdf2fa53b874
       version: -1
       name: Clear context
       description: Delete field from context
@@ -293,15 +279,11 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 1215
         }
       }
@@ -312,10 +294,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: a4912b92-3f33-4735-8118-598f388f92fc
+    taskid: 850421a7-abef-4523-8e95-92780f21b7d1
     type: condition
     task:
-      id: a4912b92-3f33-4735-8118-598f388f92fc
+      id: 850421a7-abef-4523-8e95-92780f21b7d1
       version: -1
       name: Verify context
       type: condition
@@ -351,7 +333,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 1565
         }
       }
@@ -362,10 +344,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: ff31cdb1-7353-45c5-8bb3-67124805300c
+    taskid: dd84af6d-c1fc-4977-8c6f-b7b3d1af9bbe
     type: regular
     task:
-      id: ff31cdb1-7353-45c5-8bb3-67124805300c
+      id: dd84af6d-c1fc-4977-8c6f-b7b3d1af9bbe
       version: -1
       name: Get on call users-escalation_policy_ids
       description: Returns the names and details of current on call personnel
@@ -379,13 +361,11 @@ tasks:
     scriptarguments:
       escalation_policy_ids:
         simple: PJUYEWG
-      limit: {}
-      schedule_ids: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 1740
         }
       }
@@ -396,10 +376,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 36b072ab-e031-40fc-8e64-f4a9731a1fbd
+    taskid: 1fb8ea9d-6eeb-4e36-88b4-90ec98b89f3e
     type: condition
     task:
-      id: 36b072ab-e031-40fc-8e64-f4a9731a1fbd
+      id: 1fb8ea9d-6eeb-4e36-88b4-90ec98b89f3e
       version: -1
       name: Verify context
       type: condition
@@ -425,7 +405,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 1915
         }
       }
@@ -436,10 +416,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: 16429770-4272-4af6-8224-296e5c438cab
+    taskid: 4660906b-abfc-44f9-8276-357e178fdf44
     type: regular
     task:
-      id: 16429770-4272-4af6-8224-296e5c438cab
+      id: 4660906b-abfc-44f9-8276-357e178fdf44
       version: -1
       name: Clear context
       description: Delete field from context
@@ -453,15 +433,11 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 2090
         }
       }
@@ -472,10 +448,10 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: 2c1e418e-f2ce-4a58-8e41-b05b64f0fb9e
+    taskid: 23129cf1-9d7c-41fc-8c7b-e40dbc7b9053
     type: regular
     task:
-      id: 2c1e418e-f2ce-4a58-8e41-b05b64f0fb9e
+      id: 23129cf1-9d7c-41fc-8c7b-e40dbc7b9053
       version: -1
       name: Set escalation_policy_ids in context
       description: Sets a value into the context with the given context key
@@ -487,7 +463,6 @@ tasks:
       '#none#':
       - "17"
     scriptarguments:
-      append: {}
       key:
         simple: escalation_policy_ids
       value:
@@ -496,7 +471,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 2265
         }
       }
@@ -507,10 +482,10 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: 53260adf-0016-49a5-8a0b-c110e9833f76
+    taskid: f870d41e-5e04-4682-8f96-e77a4bc7e054
     type: regular
     task:
-      id: 53260adf-0016-49a5-8a0b-c110e9833f76
+      id: f870d41e-5e04-4682-8f96-e77a4bc7e054
       version: -1
       name: Get on call users-escalation_policy_ids
       description: Returns the names and details of current on call personnel
@@ -524,13 +499,11 @@ tasks:
     scriptarguments:
       escalation_policy_ids:
         simple: ${escalation_policy_ids}
-      limit: {}
-      schedule_ids: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 2440
         }
       }
@@ -541,10 +514,10 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: fb2a48f8-7fc0-4b6a-8501-070b757cd339
+    taskid: e6305929-a137-4e64-80a3-f4e32547992e
     type: condition
     task:
-      id: fb2a48f8-7fc0-4b6a-8501-070b757cd339
+      id: e6305929-a137-4e64-80a3-f4e32547992e
       version: -1
       name: Verify context
       type: condition
@@ -580,7 +553,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 2615
         }
       }
@@ -591,10 +564,10 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: 0dc64057-20f3-4102-8892-bcde6c406e62
+    taskid: 8c05eab9-4920-4ac1-8628-ca68480a4062
     type: regular
     task:
-      id: 0dc64057-20f3-4102-8892-bcde6c406e62
+      id: 8c05eab9-4920-4ac1-8628-ca68480a4062
       version: -1
       name: Clear context
       description: Delete field from context
@@ -608,15 +581,11 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 2790
         }
       }
@@ -627,10 +596,10 @@ tasks:
     quietmode: 0
   "20":
     id: "20"
-    taskid: 525a7927-ce70-4a17-8fdd-ec542574e682
+    taskid: df399c85-70a3-4909-875a-2cee857a9044
     type: regular
     task:
-      id: 525a7927-ce70-4a17-8fdd-ec542574e682
+      id: df399c85-70a3-4909-875a-2cee857a9044
       version: -1
       name: Submit event
       description: Creates a new event/incident in PagerDuty(In order to use this
@@ -645,12 +614,6 @@ tasks:
     scriptarguments:
       action:
         simple: trigger
-      component: {}
-      description: {}
-      event_class: {}
-      group: {}
-      incident_key: {}
-      serviceKey: {}
       severity:
         simple: info
       source:
@@ -661,7 +624,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 2965
         }
       }
@@ -672,10 +635,10 @@ tasks:
     quietmode: 0
   "21":
     id: "21"
-    taskid: b5292631-ae5b-40eb-8bfd-e22f9ff34ec1
+    taskid: 569d9d1d-a491-46e0-8df5-b837bd39c736
     type: condition
     task:
-      id: b5292631-ae5b-40eb-8bfd-e22f9ff34ec1
+      id: 569d9d1d-a491-46e0-8df5-b837bd39c736
       version: -1
       name: Verify event submission outputs
       type: condition
@@ -683,7 +646,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "9"
+      - "24"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -704,8 +667,240 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 3140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 25e37e5f-36f7-4587-8f3d-a0462d69431d
+    type: regular
+    task:
+      id: 25e37e5f-36f7-4587-8f3d-a0462d69431d
+      version: -1
+      name: Get Submitted Incident info
+      description: Shows incidents in PagerDuty. Default status parameters are triggered,acknowledged
+      script: '|||PagerDuty-incidents'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      incident_key:
+        complex:
+          root: PagerDuty.Event.incident_key
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 317d3072-6683-42bf-8898-ab2957f71ebf
+    type: condition
+    task:
+      id: 317d3072-6683-42bf-8898-ab2957f71ebf
+      version: -1
+      name: Verify Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "25"
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PagerDuty.Incidents.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3665
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 7ecf5871-9ea8-4b11-8f79-1f3c396c585b
+    type: regular
+    task:
+      id: 7ecf5871-9ea8-4b11-8f79-1f3c396c585b
+      version: -1
+      name: Sleep 3 sec for incident to update
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      seconds:
+        simple: "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3315
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 101b333c-000b-4c5b-80d8-7e29edd2370a
+    type: regular
+    task:
+      id: 101b333c-000b-4c5b-80d8-7e29edd2370a
+      version: -1
+      name: Untitled Task
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      message:
+        simple: Incident key is wrong
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 64fa948c-bd55-4968-8741-de4dd58eb3eb
+    type: regular
+    task:
+      id: 64fa948c-bd55-4968-8741-de4dd58eb3eb
+      version: -1
+      name: Ack the submitted event
+      description: Acknowledges an existing event in PagerDuty
+      script: '|||PagerDuty-acknowledge-event'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      incident_key:
+        complex:
+          root: PagerDuty.Event.incident_key
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: f864a009-407c-4b83-8413-1681a26f9d81
+    type: regular
+    task:
+      id: f864a009-407c-4b83-8413-1681a26f9d81
+      version: -1
+      name: Resolve the submitted event
+      description: Resolves an existing event in PagerDuty
+      script: '|||PagerDuty-resolve-event'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      incident_key:
+        complex:
+          root: PagerDuty.Event.incident_key
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: f7a2dde9-a3ce-4432-8dda-8a5c6270e272
+    type: regular
+    task:
+      id: f7a2dde9-a3ce-4432-8dda-8a5c6270e272
+      version: -1
+      name: Sleep 3 sec for incident to update
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      seconds:
+        simple: "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4015
         }
       }
     note: false
@@ -718,8 +913,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3330,
-        "width": 380,
+        "height": 4380,
+        "width": 810,
         "x": 50,
         "y": 50
       }
@@ -728,3 +923,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+description: test

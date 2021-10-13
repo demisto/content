@@ -60,7 +60,7 @@ class Client:
         entries = self.datetime_to_str(entries)
         return entries
 
-    def query(self, collection: str, query: dict, limit: int = 50, sort_str: str = '', fields: Optional[str] = None)\
+    def query(self, collection: str, query: dict, limit: int = 50, sort_str: str = '', fields: Optional[str] = None) \
             -> List[dict]:
         collection_obj = self.get_collection(collection)
         if fields:
@@ -146,6 +146,13 @@ class Client:
 
     def drop_collection(self, collection):
         return self.db.drop_collection(collection)
+
+    def pipeline_query(self, collection: str, pipeline: Union[Dict[Any, Any], List[Any]]) -> List[dict]:
+        collection_obj = self.get_collection(collection)
+        entries = collection_obj.aggregate(pipeline=pipeline)
+        entries = self.datetime_to_str(entries)
+        entries = [self.normalize_id(entry) for entry in entries]
+        return entries
 
 
 def convert_id_to_object_id(entries: Union[List[dict], dict]) -> Union[List[dict], dict]:
@@ -260,7 +267,7 @@ def get_entry_by_id_command(
 
 
 def search_query(client: Client, collection: str, query: str, limit: str, sort: str = '', fields: str = None,
-                 **kwargs)\
+                 **kwargs) \
         -> Tuple[str, dict, list]:
     # test if query is a valid json
     try:
@@ -433,6 +440,35 @@ def drop_collection_command(
     return f'MongoDB: Collection \'{collection}` has been successfully dropped.', None
 
 
+def pipeline_query_command(client: Client, collection: str, pipeline: str, limit: str = '50', offset: str = '0',
+                           **kwargs) -> Tuple[str, dict, list]:
+    limit = arg_to_number(limit)
+    offset = arg_to_number(offset)
+    try:
+        json_pipeline = validate_json_objects(json.loads(pipeline))
+        raw_response = client.pipeline_query(
+            collection=collection,
+            pipeline=json_pipeline,
+        )
+    except JSONDecodeError:
+        raise DemistoException('The `pipeline` argument is not a valid json.')
+
+    if raw_response:
+        raw_response = raw_response[offset:(offset + limit)]  # type: ignore
+        readable_outputs = tableToMarkdown(
+            f'Total of {len(raw_response)} entries were found in MongoDB collection: `{collection}` '
+            f'with pipeline: {pipeline}:',
+            t=[entry.get('_id') for entry in raw_response],
+            headers=['_id'],
+        )
+        for item in raw_response:
+            item.update({'collection': collection})
+        outputs = {CONTEXT_KEY: raw_response}
+        return readable_outputs, outputs, raw_response
+    else:
+        return 'MongoDB: No results found', {}, raw_response
+
+
 def main():
     params = demisto.params()
     args = demisto.args()
@@ -455,6 +491,7 @@ def main():
         'mongodb-list-collections': list_collections_command,
         'mongodb-create-collection': create_collection_command,
         'mongodb-drop-collection': drop_collection_command,
+        'mongodb-pipeline-query': pipeline_query_command
     }
     try:
         return_outputs(*commands[command](client, **args))  # type: ignore[operator]
@@ -462,5 +499,5 @@ def main():
         return_error(f'MongoDB: {str(e)}', error=e)
 
 
-if __name__ in ('builtins', '__builtin__'):
+if __name__ in ('builtins', '__builtin__', '__main__'):
     main()

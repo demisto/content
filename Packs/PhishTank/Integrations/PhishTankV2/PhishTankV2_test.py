@@ -6,9 +6,13 @@ from PhishTankV2 import is_number, Client
 from PhishTankV2 import remove_last_slash, is_reload_needed, reload
 from PhishTankV2 import phishtank_status_command, url_command
 
+from CommonServerPython import DBotScoreReliability
 
-def create_client(proxy: bool = False, verify: bool = False, fetch_interval_hours: str = "1"):
-    return Client(proxy=proxy, verify=verify, fetch_interval_hours=fetch_interval_hours)
+
+def create_client(proxy: bool = False, verify: bool = False, fetch_interval_hours: str = "1",
+                  reliability: str = DBotScoreReliability.A_PLUS):
+    return Client(proxy=proxy, verify=verify, fetch_interval_hours=fetch_interval_hours, use_https=False,
+                  reliability=reliability)
 
 
 @pytest.mark.parametrize('number, output', [("True", False), ('432', True), ("str", False),
@@ -46,12 +50,12 @@ def test_remove_last_slash(url, output):
 
 
 @pytest.mark.parametrize('client,data,output', [
-    (Client(False, False, "2"), {}, True),
-    (Client(False, False, "1"),
+    (Client(False, False, "2", False, DBotScoreReliability.B), {}, True),
+    (Client(False, False, "1", False, DBotScoreReliability.A),
      {"list": {"id": 200}, "timestamp": 1601542800000}, False),
-    (Client(False, False, "2"),
+    (Client(False, False, "2", False, DBotScoreReliability.C),
      {"list": {"id": 200}, "timestamp": 1601542800000}, False),
-    (Client(False, False, "0.5"),
+    (Client(False, False, "0.5", False, DBotScoreReliability.B),
      {"list": {"id": 200}, "timestamp": 1601542800000}, True),
 ])
 def test_is_reloaded_needed(client, data, output):
@@ -124,7 +128,7 @@ def test_reload(mocker, url, status_code, data, expected_result):
         - Returns the processed dictionary
     """
     mocker.patch.object(Client, "get_http_request", return_value=data)
-    client = create_client(False, False, "1")
+    client = create_client(False, False, "1", DBotScoreReliability.B)
     if status_code == 200 or status_code == 509:
         got_data = reload(client)
         assert got_data == expected_result
@@ -224,7 +228,7 @@ def test_url_command(mocker, data, url, expected_score, expected_table):
         - validating that the IOC score is as expected
         - validating the returned human readable
     """
-    client = create_client(False, False, "1")
+    client = create_client(False, False, "1", DBotScoreReliability.C)
     mocker.patch.object(demisto, "results")
     mocker.patch('PhishTankV2.get_url_data', return_value=(data, url[0]))
     command_results = url_command(client, url)
@@ -234,6 +238,7 @@ def test_url_command(mocker, data, url, expected_score, expected_table):
     dbot_key = 'DBotScore(val.Indicator && val.Indicator == obj.Indicator &&' \
                ' val.Vendor == obj.Vendor && val.Type == obj.Type)'
     assert output.get(dbot_key, [])[0].get('Score') == expected_score
+    assert output.get(dbot_key, [])[0].get('Reliability') == DBotScoreReliability.C
 
     # validate human readable
     hr_ = command_results[0].to_context().get('HumanReadable', {})

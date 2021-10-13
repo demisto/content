@@ -1,9 +1,6 @@
 from CommonServerPython import *
 
-reload(sys)
-sys.setdefaultencoding('utf-8')  # pylint: disable=E1101
-
-requests.packages.urllib3.disable_warnings()
+import os
 
 URL = demisto.getParam('server')
 if URL[-1] != '/':
@@ -212,10 +209,20 @@ def hash_identifier(hash_val):
 
 def extract_tags(tags):
     pretty_tags = []
-    string_format = "ID: {0} - Name: {1}"
+    string_format = u"ID: {0} - Name: {1}"
     for tag in tags:
         pretty_tags.append(string_format.format(tag.get('_id'), tag.get('Name')))
     return pretty_tags
+
+
+def unicode_to_str_recur(obj):
+    if isinstance(obj, dict):
+        obj = {unicode_to_str_recur(k): unicode_to_str_recur(v) for k, v in obj.iteritems()}
+    elif isinstance(obj, list):
+        obj = map(unicode_to_str_recur, obj)
+    elif isinstance(obj, unicode):
+        obj = obj.encode('utf-8')
+    return obj
 
 
 def get_alerts():
@@ -230,7 +237,8 @@ def get_alerts():
         'Type': entryTypes['note'],
         'EntryContext': {'IntSights.Alerts(val.ID === obj.ID)': alerts_context},
         'Contents': alerts_context,
-        'HumanReadable': tableToMarkdown('IntSights Alerts', alerts_human_readable, headers=headers, removeNull=False),
+        'HumanReadable': tableToMarkdown('IntSights Alerts', unicode_to_str_recur(alerts_human_readable),
+                                         headers=headers, removeNull=False),
         'ContentsFormat': formats['json']
     })
 
@@ -701,19 +709,182 @@ def search_for_ioc():
             }
         )
     else:
-        results_for_no_content('IOC Information')
+        results_for_no_content('IOC Information', 'Could not get any results.')
 
 
-def results_for_no_content(cmd_name):
+def results_for_no_content(cmd_name, additional_information):
     demisto.results(
         {
             'Type': entryTypes['note'],
             'EntryContext': {'IntSights': {}},
             'Contents': {},
-            'HumanReadable': '### {} \n\n Could not get any results.'.format(cmd_name),
+            'HumanReadable': '### {} \n\n {}'.format(cmd_name, additional_information),
             'ContentsFormat': formats['json']
         }
     )
+
+
+def ioc_enrichment_to_readable(ioc_data):
+    """
+    Convert IOC to readable format
+    """
+    ioc_context = {
+        'Type': demisto.get(ioc_data, 'Data.Type'),
+        'Value': demisto.get(ioc_data, 'Data.Value'),
+        'FirstSeen': demisto.get(ioc_data, 'Data.FirstSeen'),
+        'LastSeen': demisto.get(ioc_data, 'Data.LastSeen'),
+        'Status': demisto.get(ioc_data, 'Status'),
+        'Severity': demisto.get(ioc_data, 'Data.Severity.Value'),
+        'RelatedMalwares': demisto.get(ioc_data, 'Data.RelatedMalwares'),
+        'Sources': demisto.get(ioc_data, 'Data.Sources'),
+        'IsKnownIoc': demisto.get(ioc_data, 'Data.IsKnownIoc'),
+        'RelatedThreatActors': demisto.get(ioc_data, 'Data.RelatedThreatActors'),
+        'SystemTags': demisto.get(ioc_data, 'Data.SystemTags'),
+        'Tags': demisto.get(ioc_data, 'Data.Tags'),
+        'Whitelisted': demisto.get(ioc_data, 'Data.Whitelisted'),
+        'OriginalValue': demisto.get(ioc_data, 'Data.OriginalValue'),
+
+    }
+    ioc_readable = {
+        'Type': demisto.get(ioc_data, 'Data.Type'),
+        'Value': demisto.get(ioc_data, 'Data.Value'),
+        'FirstSeen': demisto.get(ioc_data, 'Data.FirstSeen'),
+        'LastSeen': demisto.get(ioc_data, 'Data.LastSeen'),
+        'Status': demisto.get(ioc_data, 'Status'),
+        'Severity': demisto.get(ioc_data, 'Data.Severity.Value'),
+        'RelatedMalwares': demisto.get(ioc_data, 'Data.RelatedMalwares'),
+        'Sources': demisto.get(ioc_data, 'Data.Sources'),
+        'IsKnownIoc': demisto.get(ioc_data, 'Data.IsKnownIoc'),
+        'RelatedThreatActors': demisto.get(ioc_data, 'Data.RelatedThreatActors'),
+        'SystemTags': demisto.get(ioc_data, 'Data.SystemTags'),
+        'Tags': demisto.get(ioc_data, 'Data.Tags'),
+        'Whitelisted': demisto.get(ioc_data, 'Data.Whitelisted'),
+        'OriginalValue': demisto.get(ioc_data, 'OriginalValue'),
+
+    }
+    dbot_score = {
+        'Indicator': ioc_context['Value'],
+        'Type': IOC_TYPE_TO_DBOT_TYPE[ioc_context['Type']],
+        'Vendor': 'IntSights',
+        'Score': translate_severity(ioc_readable['Severity'])
+    }
+    malicious_dict = {
+        'Vendor': 'IntSights',
+        'Description': 'IntSights severity level is High'
+    }
+    domain = {}
+    if ioc_context['Type'] == 'Domains':
+        domain['Name'] = ioc_context['Value']
+        if translate_severity(ioc_readable['Severity']) == 3:
+            domain['Malicious'] = malicious_dict
+        domain['DNS'] = demisto.get(ioc_data, 'Data.DnsRecords')
+        domain['Resolutions'] = demisto.get(ioc_data, 'Data.Resolutions')
+        domain['Subdomains'] = demisto.get(ioc_data, 'Data.Subdomains')
+        domain['WHOIS/History'] = demisto.get(ioc_data, 'Data.Whois.History')
+        domain['WHOIS'] = {
+            'Registrant': {
+                'Name': demisto.get(ioc_data, 'Data.Whois.Current.RegistrantDetails.Name'),
+                'Email': demisto.get(ioc_data, 'Data.Whois.Current.RegistrantDetails.Email'),
+                'Phone': demisto.get(ioc_data, 'Data.Whois.Current.RegistrantDetails.Telephone'),
+            },
+            'DomainStatus': ', '.join(demisto.get(ioc_data, 'Data.Whois.Current.RegistrationDetails.Statuses')),
+            'NameServers': ', '.join(demisto.get(ioc_data, 'Data.Whois.Current.RegistrationDetails.NameServers')),
+            'CreationDate': demisto.get(ioc_data, 'Data.Whois.Current.RegistrationDetails.CreatedDate'),
+            'UpdatedDate': demisto.get(ioc_data, 'Data.Whois.Current.RegistrationDetails.UpdatedDate'),
+            'ExpirationDate': demisto.get(ioc_data, 'Data.Whois.Current.RegistrationDetails.ExpiresDate')
+        }
+
+    ip_info = {}
+    if ioc_context['Type'] == 'IpAddresses':
+        ip_info['Address'] = ioc_context['Value']
+        if translate_severity(ioc_readable['Severity']) == 3:
+            ip_info['Malicious'] = malicious_dict
+
+        ip_info['IpDetails'] = demisto.get(ioc_data, 'Data.IpDetails')
+        ip_info['RelatedHashes'] = demisto.get(ioc_data, 'Data.RelatedHashes')
+        ip_info['WHOIS'] = {
+            'NetworkDetails': demisto.get(ioc_data, 'Data.Whois.NetworkDetails'),
+            'RegistrantDetails': demisto.get(ioc_data, 'Data.Whois.RegistrantDetails')
+        }
+
+    url_info = {}
+    if ioc_context['Type'] == 'Urls':
+        url_info['Data'] = ioc_context['Value']
+        if translate_severity(ioc_readable['Severity']) == 3:
+            url_info['Malicious'] = malicious_dict
+
+        url_info['AntivirusDetectedEngines'] = demisto.get(ioc_data, 'Data.AntivirusDetectedEngines')
+        url_info['AntivirusDetectionRatio'] = demisto.get(ioc_data, 'Data.AntivirusDetectionRatio')
+        url_info['AntivirusDetections'] = demisto.get(ioc_data, 'Data.AntivirusDetections')
+        url_info['AntivirusScanDate'] = demisto.get(ioc_data, 'Data.AntivirusScanDate')
+        url_info['RelatedHashes'] = {
+            'communicating': demisto.get(ioc_data, 'Data.RelatedHashes.communicating'),
+            'downloaded': demisto.get(ioc_data, 'Data.RelatedHashes.downloaded'),
+            'referencing': demisto.get(ioc_data, 'Data.RelatedHashes.referencing'),
+        }
+
+    hash_info = {}
+    if ioc_context['Type'] == 'Hashes':
+        hash_info['Name'] = ioc_context['Value']
+        hash_info[hash_identifier(ioc_context['Value'])] = ioc_context['Value']
+        if translate_severity(ioc_readable['Severity']) == 3:
+            hash_info['Malicious'] = malicious_dict
+
+        hash_info['AntivirusDetectedEngines'] = demisto.get(ioc_data, 'Data.AntivirusDetectedEngines')
+        hash_info['AntivirusDetectionRatio'] = demisto.get(ioc_data, 'Data.AntivirusDetectionRatio')
+        hash_info['AntivirusDetections'] = demisto.get(ioc_data, 'Data.AntivirusDetections')
+        hash_info['AntivirusScanDate'] = demisto.get(ioc_data, 'Data.AntivirusScanDate')
+
+    return ioc_context, ioc_readable, dbot_score, domain, ip_info, url_info, hash_info
+
+
+def request_for_ioc_enrichment():
+    """
+    Request for IOC enrichment
+    """
+    ioc_value = demisto.getArg('value')
+    request_url = 'public/v1/iocs/enrich/{}'.format(ioc_value)
+
+    response = http_request('GET', request_url, json_response=True)
+    status = response.get('Status')
+    if status == 'Done':
+        ioc_context, ioc_readable, dbot_score, domain, ip_info, url_info, hash_info = ioc_enrichment_to_readable(response)
+
+        demisto.results(
+            {
+                'Type': entryTypes['note'],
+                'EntryContext': {
+                    'IntSights.Iocs(val.ID === obj.ID)': ioc_context,
+                    'DBotScore': dbot_score,
+                    'Domain': domain,
+                    'IP': ip_info,
+                    'URL': url_info,
+                    'File': hash_info
+                },
+                'Contents': response,
+                'HumanReadable': tableToMarkdown('IOC Enrichment', ioc_readable),
+                'ContentsFormat': formats['json']
+            }
+        )
+    elif status == 'Queued' or status == 'InProgress':
+        demisto.results(
+            {
+                'Type': entryTypes['note'],
+                'EntryContext': {
+                    'IntSights.Iocs(val.ID === obj.ID)': {
+                        'Value': demisto.get(response, 'OriginalValue'),
+                        'Status': demisto.get(response, 'Status')
+                    },
+                },
+                'Contents': response,
+                'ContentsFormat': formats['json']
+            }
+        )
+    elif status == 'QuotaExceeded':
+        raise Exception('Could not get any results. Reason: Quota exceded.')
+    else:
+        reason = response.get('FailedReason', '')
+        raise Exception('Could not get any results. Reason: {}.'.format(reason))
 
 
 def translate_severity(sev):
@@ -731,7 +902,6 @@ def fetch_incidents():
     """
     Fetch incidents for Demisto
     """
-    now = int((datetime.utcnow() - datetime.utcfromtimestamp(0)).total_seconds() * 1000)
     last_run = demisto.getLastRun()
     demisto.info("IntSight fetch last run time is: {}".format(str(last_run)))
     if not last_run or 'time' not in last_run:
@@ -739,6 +909,7 @@ def fetch_incidents():
     else:
         fetch_delta = last_run.get('time')
 
+    current_fetch = fetch_delta
     alert_type = demisto.getParam('type')
     min_severity_level = demisto.params().get('severity_level', 'All')
     if min_severity_level not in SEVERITY_LEVEL:
@@ -756,8 +927,12 @@ def fetch_incidents():
                     'severity': translate_severity(alert.get('Severity')),
                     'rawJSON': json.dumps(alert)
                 })
+                alert_timestamp = date_to_timestamp(alert.get('FoundDate'), date_format='%Y-%m-%dT%H:%M:%S.%fZ')
+                if alert_timestamp > current_fetch:
+                    current_fetch = alert_timestamp
+
     demisto.incidents(incidents)
-    demisto.setLastRun({'time': now})
+    demisto.setLastRun({'time': current_fetch + 1000})
 
 
 def get_iocs():
@@ -883,6 +1058,7 @@ def get_ioc_blocklist_status():
 
 def get_mssp_sub_accounts():
     account_id = demisto.getParam('credentials')['identifier']
+    MSSP_ACCOUNT_ID = demisto.getParam('mssp_sub_account_id')
     accounts = http_request('GET', 'public/v1/mssp/customers', json_response=True)
     if not accounts:
         return_error("intsights-mssp-get-sub-accounts failed to return data.")
@@ -967,6 +1143,8 @@ try:
         get_alert_by_id()
     elif demisto.command() == 'intsights-get-ioc-by-value':
         search_for_ioc()
+    elif demisto.command() == 'intsights-request-ioc-enrichment':
+        request_for_ioc_enrichment()
     elif demisto.command() == 'intsights-get-iocs':
         get_iocs()
     elif demisto.command() == 'intsights-alert-takedown-request':
@@ -979,6 +1157,8 @@ try:
         update_ioc_blocklist_status()
     elif demisto.command() == 'intsights-close-alert':
         close_alert()
+    elif demisto.command() == 'intsights-test-action':
+        pass
     else:
         raise Exception('Unrecognized command: ' + demisto.command())
 except Exception as err:

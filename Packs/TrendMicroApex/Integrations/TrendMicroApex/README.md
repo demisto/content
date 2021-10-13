@@ -1,10 +1,10 @@
-Trend Micro Apex central automation to manage agents and User-Defined Suspicious Objects
+Trend Micro Apex One central automation to manage agents and User-Defined Suspicious Objects
 
-This integration was integrated and tested with version 2019 hotfix 5449 of Trend Micro Apex Central
-## Configure Trend Micro Apex on Cortex XSOAR
+This integration was integrated and tested with version 2019 hotfix 5449 of Trend Micro Apex One Central
+## Configure Trend Micro Apex One on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Trend Micro Apex.
+2. Search for Trend Micro Apex One.
 3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
@@ -17,11 +17,11 @@ This integration was integrated and tested with version 2019 hotfix 5449 of Tren
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### trendmicro-apex-udso-list
 ***
-Retrieve a list of User-Defined Suspicious Objects from the Apex Central server.
+Retrieve a list of User-Defined Suspicious Objects from the Apex One Central server.
 
 
 #### Base Command
@@ -322,7 +322,7 @@ Retrieves a maximum of 1000 logs of detection types from the server. The `Patter
 
 #### Human Readable Output
 
->### Trend Micro Apex - Web Violation Logs
+>### Trend Micro Apex One - Web Violation Logs
 >|EventName|EventID|CreationTime|LogVersion|ApplianceVersion|ApplianceProduct|ApplianceVendor|
 >|---|---|---|---|---|---|---|
 >| 36 | WB:36 | Jun 21 2020 07:56:09 GMT+00:00 | 0 | 2019 | Apex Central | Trend Micro |
@@ -364,7 +364,7 @@ There is no context output for this command.
 
 ### trendmicro-apex-managed-servers-list
 ***
-Retrieves a list of managed product servers reporting to Apex Central.
+Retrieves a list of managed product servers reporting to Apex One Central.
 
 
 #### Base Command
@@ -516,7 +516,7 @@ Retrieves a list of Security Agents.
 
 #### Human Readable Output
 
->### Trend Micro Apex Agents List
+>### Trend Micro Apex One Agents List
 >|Capabilities|Entity Id|Folder Path|Host Name|Ip Address List|Isolation Status|Mac Address List|Managing Server Id|Product|
 >|---|---|---|---|---|---|---|---|---|
 >| cmd_restore_isolated_agent,<br/>cmd_isolate_agent,<br/>cmd_relocate_agent,<br/>cmd_uninstall_agent | b59e624c-2cf0-4180-83d7-e08abbf9ad54 | Workgroup | TRENDMICROAPEX- | 8.8.8.8 | normal | 42-01-0A-80-00-0B | B220EB61-6240-44B4-9B94-4AC3F22E6A62 | SLF_PRODUCT_OFFICESCAN_CE |
@@ -734,7 +734,7 @@ Retrieves a list of all investigation results.
     "TrendMicroApex": {
         "InvestigationResult": {
             "agentCount": 1,
-            "creator": "Demisto-PANW",
+            "creator": "Cortex XSOAR-PANW",
             "errorServers": "[]",
             "finishTime": "1969-12-31T23:59:59+00:00",
             "matchedAgentCount": 0,
@@ -775,5 +775,5 @@ Retrieves a list of all investigation results.
 >### Investigation result list:
 >|name|scanSummaryId|scanSummaryGuid|submitTime|serverGuidList|creator|
 >|---|---|---|---|---|---|
->| this is a test | 3 | 6161bf10-f073-4762-bd10-088b0f68ad1d | 2020-09-13T12:24:05+00:00 | B220EB61-6240-44B4-9B94-4AC3F22E6A62 | Demisto-PANW |
+>| this is a test | 3 | 6161bf10-f073-4762-bd10-088b0f68ad1d | 2020-09-13T12:24:05+00:00 | B220EB61-6240-44B4-9B94-4AC3F22E6A62 | Cortex XSOAR-PANW |
 

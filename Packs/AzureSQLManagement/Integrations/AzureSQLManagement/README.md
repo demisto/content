@@ -8,6 +8,16 @@ In both options below, the [device authorization grant flow](https://docs.micros
 
 In order to connect to the Azure SQL Management using either Cortex XSOAR Azure App or the Self-Deployed Azure App:
 1. Fill in the required parameters.
+   
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Application ID |  | True |
+    | Subscription ID |  | True |
+    | Resource Group Name |  | True |
+    | Azure AD endpoint | Azure AD endpoint associated with a national cloud. | False |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
+   
 2. Run the ***!azure-sql-auth-start*** command. 
 3. Follow the instructions that appear.
 4. Run the ***!azure-sql-auth-complete*** command.
@@ -168,7 +178,7 @@ Lists all the servers.
 {
     "AzureSQL": {
         "Server": {
-            "administratorLogin": "demistoadmin",
+            "administratorLogin": "xsoaradmin",
             "fullyQualifiedDomainName": "sqlintegration.database.windows.net",
             "id": "/subscriptions/0123456789/resourceGroups/sql-integration/providers/Microsoft.Sql/servers/sqlintegration",
             "kind": "v12.0",
@@ -190,7 +200,7 @@ Lists all the servers.
 >### Servers List
 >|Administrator Login|Fully Qualified Domain Name|Id|Kind|Location|Name|Public Network Access|State|Type|Version|
 >|---|---|---|---|---|---|---|---|---|---|
->| demistoadmin | sqlintegration.database.windows.net | /subscriptions/0123456789/resourceGroups/sql-integration/providers/Microsoft.Sql/servers/sqlintegration | v12.0 | eastus | sqlintegration | Enabled | Ready | Microsoft.Sql/servers | 12.0 |
+>| xsoaradmin | sqlintegration.database.windows.net | /subscriptions/0123456789/resourceGroups/sql-integration/providers/Microsoft.Sql/servers/sqlintegration | v12.0 | eastus | sqlintegration | Enabled | Ready | Microsoft.Sql/servers | 12.0 |
 
 
 ### azure-sql-db-list
@@ -488,7 +498,7 @@ Creates or updates the database's auditing policy.
 | server_name | Server name. | Required | 
 | db_name | Database name. | Required | 
 | state | Set the state of the policy. Possible values: "Enable" or "Disable". When *state* is enabled, *storage_endpoint* or *is_azure_monitor_target_enabled* are required. | Required | 
-| audit_actions_groups | Comma-separated list of actions groups and actions to audit. For all possible values, see the integration documentation at https://xsoar.pan.dev/reference/integrations/Azure-SQL-Management. | Optional | 
+| audit_actions_groups | Comma-separated list of actions groups and actions to audit. For all possible values, see the integration documentation at https://docs.microsoft.com/en-us/sql/relational-databases/security/auditing/sql-server-audit-action-groups-and-actions?view=sql-server-ver15. | Optional | 
 | is_azure_monitor_target_enabled | Whether audit events are sent to the Azure Monitor. Possible values: "true" and "false". | Optional | 
 | is_storage_secondary_key_in_use | Whether the storage Account Access Key value is the storage's secondary key. Possible values: "true" and "false". | Optional | 
 | queue_delay_ms | Time in milliseconds that can elapse before audit actions are forced to be processed. The default minimum value is 1000 (1 second). | Optional | 

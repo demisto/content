@@ -1,0 +1,15 @@
+{
+    "details": "GIB Compromised IMEI",
+    "disabled": false,
+    "expiration": 0,
+    "file": false,
+    "id": "GIB Compromised IMEI",
+    "layout": "GIB Compromised IMEI Layout",
+    "locked": false,
+    "mergeContext": false,
+    "regex": "",
+    "system": false,
+    "updateAfter": 0,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

@@ -1,0 +1,208 @@
+.push-rule:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+
+
+trigger-private-build:
+  tags:
+    - gke
+  needs: []
+  stage: unittests-and-validations
+  extends:
+    - .default-job-settings
+  rules:
+    - if: '$SKIP_PRIVATE_BUILD == "true"'
+      when: never
+    - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+    - if: '$NIGHTLY'
+  script:
+    - echo "====Trigger Private Build===="
+    - python3 Utils/trigger_private_build.py --github-token $GITHUB_TOKEN
+    - python3 Utils/get_private_build_status.py --github-token $GITHUB_TOKEN
+
+
+run-unittests-and-lint:
+  extends:
+    - .run-unittests-and-lint
+  rules:
+    - if: '$NIGHTLY'
+
+
+run-validations:
+  extends:
+    - .run-validations
+  rules:
+    - if: '$NIGHTLY'
+
+
+create-instances:
+  tags:
+    - gke
+  extends:
+    - .default-job-settings
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+    - if: '$NIGHTLY'
+    - if: '$INSTANCE_TESTS'
+  cache:
+    policy: pull-push
+  needs: []
+  stage: create-instances
+  script:
+    - !reference [.download-demisto-conf]
+    - !reference [.create-id-set]
+    - section_start "Create Release Notes and Common Server Documentation"
+    - echo "Creating Release Notes and Content Descriptor"
+    - python3 Utils/release_notes_generator.py $CONTENT_VERSION $GIT_SHA1 $CI_BUILD_ID --output $ARTIFACTS_FOLDER/packs-release-notes.md --github-token $GITHUB_TOKEN
+    - cp content-descriptor.json $ARTIFACTS_FOLDER
+    - ./Documentation/commonServerDocs.sh
+    - section_end "Create Release Notes and Common Server Documentation"
+    - section_start "Create Content Artifacts and Update Conf"
+    - demisto-sdk create-content-artifacts -a $ARTIFACTS_FOLDER --cpus 8 --content_version $CONTENT_VERSION >> $ARTIFACTS_FOLDER/logs/create_content_artifacts.log
+    - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY"
+    - successful_feature_branch_build=$(gsutil ls "gs://xsoar-ci-artifacts/content/$FEATURE_BRANCH_NAME/*" | tail -n 1 | grep -o -E "content/$FEATURE_BRANCH_NAME/[0-9]*")
+    - echo $successful_feature_branch_build
+    - python3 Utils/merge_content_new_zip.py -f $FEATURE_BRANCH_NAME -b $successful_feature_branch_build
+    - zip -j $ARTIFACTS_FOLDER/uploadable_packs.zip $ARTIFACTS_FOLDER/uploadable_packs/* >> $ARTIFACTS_FOLDER/logs/zipping_uploadable_packs.log || ((($? > 0)) && echo "failed to zip the uploadable packs, ignoring the failure")
+    - rm -rf $ARTIFACTS_FOLDER/uploadable_packs
+    - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
+    - section_end "Create Content Artifacts and Update Conf"
+    - section_start "Collect Tests and Content Packs"
+    - |
+      if [ -n "${INSTANCE_TESTS}" ]; then
+        echo "Skipping - not running in INSTANCE_TESTS build"
+      else
+        [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
+        python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY
+      fi
+    - section_end "Collect Tests and Content Packs"
+    - section_start "Calculate Packs Dependencies"
+    - python3 ./Tests/Marketplace/packs_dependencies.py -i ./Tests/id_set.json -o $ARTIFACTS_FOLDER/packs_dependencies.json
+    - section_end "Calculate Packs Dependencies"
+    - section_start "Prepare Content Packs for Testing"
+    - ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_BUCKET" "$STORAGE_BASE_PATH"
+    - section_end "Prepare Content Packs for Testing"
+    - section_start "Create Instances"
+    - |
+      [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=300
+      python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -timetolive $TTL -outfile "$ARTIFACTS_FOLDER/env_results.json"
+    - section_end "Create Instances"
+    - section_start "Upload Artifacts to GCP"
+    - ./Tests/scripts/upload_artifacts.sh
+    - section_end "Upload Artifacts to GCP"
+
+
+.test_content_on_server_instances_base:
+  tags:
+    - gke
+  extends:
+    - .default-job-settings
+    - .push-rule
+  needs: ["create-instances"]
+  stage: run-instances
+  script:
+    - EXIT_CODE=0
+    - !reference [.download-demisto-conf]
+    - export TEMP=$(cat $ARTIFACTS_FOLDER/filter_envs.json | jq ".\"$INSTANCE_ROLE\"")
+# If instance was not created
+    - |
+      if [[ "$TEMP" != "true" && -z "${NIGHTLY}" ]]; then
+        echo "Instance with role $INSTANCE_ROLE was not created"
+        exit 0
+      fi
+    - !reference [.open-ssh-tunnel]
+    - python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
+    - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
+    - cp -f $ARTIFACTS_FOLDER/conf.json Tests/conf.json
+    - echo Going to sleep for 60 seconds to allow server finish indexing
+    - sleep 60
+    - ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
+    - |
+      if [[ -f ./Tests/failed_tests.txt ]]; then
+        cp ./Tests/failed_tests.txt $ARTIFACTS_FOLDER/failed_tests.txt
+      fi
+    - |
+      if [ -z "${TIME_TO_LIVE}" -a "$CI_PIPELINE_SOURCE" = "contrib" ]; then
+        TIME_TO_LIVE=300
+      fi
+      python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE" || EXIT_CODE=$?
+    - exit $EXIT_CODE
+
+
+server_5_0:
+  extends: .test_content_on_server_instances_base
+  variables:
+    INSTANCE_ROLE: "Server 5.0"
+
+
+server_5_5:
+  extends: .test_content_on_server_instances_base
+  variables:
+    INSTANCE_ROLE: "Server 5.5"
+
+
+server_6_0:
+  extends: .test_content_on_server_instances_base
+  #  No need to trigger in case of release branch
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
+  variables:
+    INSTANCE_ROLE: "Server 6.0"
+
+
+server_6_1:
+  extends: .test_content_on_server_instances_base
+  #  No need to trigger in case of release branch
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
+  variables:
+    INSTANCE_ROLE: "Server 6.1"
+
+
+server_6_2:
+  extends: .test_content_on_server_instances_base
+  #  No need to trigger in case of release branch
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
+  variables:
+    INSTANCE_ROLE: "Server 6.2"
+
+
+server_master:
+  extends:
+    - .test_content_on_server_instances_base
+  #  No need to trigger in case of release branch
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
+    - if: '$NIGHTLY'
+      when: always
+  variables:
+    INSTANCE_ROLE: "Server Master"
+
+
+fan-in-nightly:
+  tags:
+    - gke
+  stage: fan-in
+  rules:
+    - if: '$NIGHTLY'
+      when: always
+  script:
+    - echo "fan in"
+
+
+slack-notify-nightly-build:
+  extends:
+    - .trigger-slack-notification
+  rules:
+    - if: '$NIGHTLY'
+      when: always
+  variables:
+    PIPELINE_TO_QUERY: $CI_PIPELINE_ID
+    WORKFLOW: 'Content Nightly'
+    JOB_NAME: 'fan-in-nightly'
+    # Passes the environment variable from the parent pipeline to the child which can be useful for cases
+    # when triggering pipeline with alternate env variable value passed in the API call
+    SLACK_CHANNEL: $SLACK_CHANNEL

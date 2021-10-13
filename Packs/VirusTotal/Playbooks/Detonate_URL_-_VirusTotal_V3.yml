@@ -1,0 +1,334 @@
+id: Detonate URL - VirusTotal (API v3)
+version: -1
+name: Detonate URL - VirusTotal (API v3)
+description: Detonate URL through VirusTotal (API v3) integration.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 86e2dc19-6b2a-4c94-8564-7014fb0e2da8
+    type: start
+    task:
+      id: 86e2dc19-6b2a-4c94-8564-7014fb0e2da8
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 17262ca9-15d6-4d3b-85a1-4f5d91128b2b
+    type: condition
+    task:
+      description: ""
+      id: 17262ca9-15d6-4d3b-85a1-4f5d91128b2b
+      version: -1
+      name: Is VirusTotal (API v3) enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: VirusTotal (API v3)
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 7cf30ee8-4521-460c-8c42-aa0ece81265b
+    type: condition
+    task:
+      description: ""
+      id: 7cf30ee8-4521-460c-8c42-aa0ece81265b
+      version: -1
+      name: Is there a URL to detonate?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.URL
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: fa9b4bec-d46a-498e-8da9-b89518218731
+    type: regular
+    task:
+      id: fa9b4bec-d46a-498e-8da9-b89518218731
+      version: -1
+      name: Send URL to VirusTotal
+      description: Scans a specified URL. Use vt-analysis-get to get the scan results.
+      script: VirusTotal (API v3)|||url-scan
+      type: regular
+      iscommand: true
+      brand: VirusTotal (API v3)
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      url:
+        complex:
+          root: inputs.URL
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 4c8c6c5e-28d9-4843-8031-57596a5f2504
+    type: playbook
+    task:
+      id: 4c8c6c5e-28d9-4843-8031-57596a5f2504
+      version: -1
+      name: GenericPolling
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        complex:
+          root: VirusTotal.Submission
+          accessor: id
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: id
+      PollingCommandName:
+        simple: vt-analysis-get
+      Timeout:
+        simple: "10"
+      dt:
+        simple: VirusTotal.Analysis.data.attributes(val.status != 'completed')
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 99077345-9d21-4d96-88bd-d8003b009cf7
+    type: regular
+    task:
+      id: 99077345-9d21-4d96-88bd-d8003b009cf7
+      version: -1
+      name: Get analysis from VirusTotal
+      description: Retrives resolutions of the given ip.
+      script: VirusTotal (API v3)|||vt-analysis-get
+      type: regular
+      iscommand: true
+      brand: VirusTotal (API v3)
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      extended_data: {}
+      id:
+        complex:
+          root: VirusTotal.Submission
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: b8f2766b-7395-4a9a-8577-40502aa55ceb
+    type: title
+    task:
+      id: b8f2766b-7395-4a9a-8577-40502aa55ceb
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1095,
+        "width": 605,
+        "x": 50,
+        "y": 40
+      }
+    }
+  }
+inputs:
+- key: URL
+  value:
+    complex:
+      root: URL
+      accessor: Data
+  required: false
+  description: Entry ID of the file to detonate
+  playbookInputQuery: null
+outputs:
+- contextPath: VirusTotal.Analysis.data.attributes.stats.harmless
+  description: Number of engines found the indicator harmless.
+  type: number
+- contextPath: VirusTotal.Analysis.data.attributes.stats.malicious
+  description: Number of engines found the indicator malicious.
+  type: number
+- contextPath: VirusTotal.Analysis.data.attributes.stats.suspicious
+  description: Number of engines found the indicator suspicious.
+  type: number
+- contextPath: VirusTotal.Analysis.data.attributes.stats.timeout
+  description: Number of engines found the indicator timeout.
+  type: number
+- contextPath: VirusTotal.Analysis.data.attributes.stats.undetected
+  description: Number of engines found the indicator undetected.
+  type: number
+- contextPath: VirusTotal.Analysis.data.attributes.date
+  description: Date of the analysis in epoch
+  type: number
+- contextPath: VirusTotal.Analysis.data.attributes.status
+  description: Status of the analysis
+  type: string
+- contextPath: VirusTotal.Analysis.data.id
+  description: ID of the analysis.
+  type: string
+- contextPath: VirusTotal.Analysis.data.type
+  description: Type of object (analysis)
+  type: string
+- contextPath: VirusTotal.Analysis.meta.url_info.id
+  description: ID of the url
+  type: string
+- contextPath: VirusTotal.Analysis.meta.url_info.url
+  description: The URL
+  type: string
+- contextPath: VirusTotal.Analysis.id
+  description: The analysis ID.
+  type: string
+fromversion: "5.5.0"
+tests:
+- VirusTotal (API v3) Detonate Test

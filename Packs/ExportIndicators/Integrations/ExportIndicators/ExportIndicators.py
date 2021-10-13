@@ -1,30 +1,19 @@
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
 import re
-import json
-import traceback
 from base64 import b64decode
-from multiprocessing import Process
-from gevent.pywsgi import WSGIServer
-from tempfile import NamedTemporaryFile
 from flask import Flask, Response, request
-from netaddr import IPAddress, iprange_to_cidrs
-from ssl import SSLContext, SSLError, PROTOCOL_TLSv1_2
-from typing import Callable, List, Any, cast, Dict, Tuple
-
-
-class Handler:
-    @staticmethod
-    def write(msg):
-        demisto.info(msg)
-
+from netaddr import IPAddress, IPSet
+from typing import Callable, Any, cast, Dict, Tuple
+from math import ceil
+import dateparser
 
 ''' GLOBAL VARIABLES '''
 INTEGRATION_NAME: str = 'Export Indicators Service'
 PAGE_SIZE: int = 200
-DEMISTO_LOGGER: Handler = Handler()
 APP: Flask = Flask('demisto-export_iocs')
 CTX_VALUES_KEY: str = 'dmst_export_iocs_values'
 CTX_MIMETYPE_KEY: str = 'dmst_export_iocs_mimetype'
@@ -69,10 +58,14 @@ DONT_COLLAPSE = "Don't Collapse"
 COLLAPSE_TO_CIDR = "To CIDRs"
 COLLAPSE_TO_RANGES = "To Ranges"
 
+SORT_ASCENDING = 'asc'
+SORT_DESCENDING = 'desc'
+
 _PROTOCOL_REMOVAL = re.compile(r'^(?:[a-z]+:)*//')
 _PORT_REMOVAL = re.compile(r'^([a-z0-9\-\.]+)(?:\:[0-9]+)*')
 _INVALID_TOKEN_REMOVAL = re.compile(r'(?:[^\./+=\?&]+\*[^\./+=\?&]*)|(?:[^\./+=\?&]*\*[^\./+=\?&]+)')
 _BROAD_PATTERN = re.compile(r'^(?:\*\.)+[a-zA-Z]+(?::[0-9]+)?$')
+
 
 '''Request Arguments Class'''
 
@@ -81,7 +74,8 @@ class RequestArguments:
     def __init__(self, query: str, out_format: str = FORMAT_TEXT, limit: int = 10000, offset: int = 0,
                  mwg_type: str = 'string', strip_port: bool = False, drop_invalids: bool = False,
                  category_default: str = 'bc_category', category_attribute: str = '',
-                 collapse_ips: str = DONT_COLLAPSE, csv_text: bool = False):
+                 collapse_ips: str = DONT_COLLAPSE, csv_text: bool = False, sort_field: str = '',
+                 sort_order: str = ''):
 
         self.query = query
         self.out_format = out_format
@@ -94,6 +88,8 @@ class RequestArguments:
         self.category_attribute = []  # type:List
         self.collapse_ips = collapse_ips
         self.csv_text = csv_text
+        self.sort_field = sort_field
+        self.sort_order = sort_order
 
         if category_attribute is not None:
             category_attribute_list = category_attribute.split(',')
@@ -101,7 +97,7 @@ class RequestArguments:
             if len(category_attribute_list) != 1 or '' not in category_attribute_list:
                 self.category_attribute = category_attribute_list
 
-    def is_request_change(self, last_update_data):
+    def is_request_change(self, last_update_data: Dict):
         if self.limit != last_update_data.get('last_limit'):
             return True
 
@@ -132,6 +128,12 @@ class RequestArguments:
         elif self.csv_text != last_update_data.get('csv_text'):
             return True
 
+        elif self.sort_field != last_update_data.get('sort_field'):
+            return True
+
+        elif self.sort_order != last_update_data.get('sort_order'):
+            return True
+
         return False
 
 
@@ -151,59 +153,57 @@ def list_to_str(inp_list: list, delimiter: str = ',', map_func: Callable = str) 
     return str_res
 
 
-def get_params_port(params: dict = demisto.params()) -> int:
+def sort_iocs(request_args: RequestArguments, iocs: list) -> list:
     """
-    Gets port from the integration parameters
+    Sorts the IoCs according to the sort field and order.
+    Returns: Sorted List of IoCs, if sorting arguments are defined.
     """
-    port_mapping: str = params.get('longRunningPort', '')
-    err_msg: str
-    port: int
-    if port_mapping:
-        err_msg = f'Listen Port must be an integer. {port_mapping} is not valid.'
-        if ':' in port_mapping:
-            port = try_parse_integer(port_mapping.split(':')[1], err_msg)
-        else:
-            port = try_parse_integer(port_mapping, err_msg)
-    else:
-        raise ValueError('Please provide a Listen Port.')
-    return port
+    try:
+        if request_args.sort_field:
+            if request_args.sort_order == SORT_ASCENDING:
+                return sorted(iocs, key=lambda ioc: ioc[request_args.sort_field], reverse=False)
+            elif request_args.sort_order == SORT_DESCENDING:
+                return sorted(iocs, key=lambda ioc: ioc[request_args.sort_field], reverse=True)
+    except KeyError:
+        demisto.debug('ExportIndicators - Could not sort IoCs, please verify that you entered the correct field name.\n'
+                      f'Field used: {request_args.sort_field}')
+    except Exception as e:
+        demisto.debug(f'ExportIndicators - Could not sort IoCs due to an unknown error.\n{e}')
+
+    return iocs
 
 
-def refresh_outbound_context(request_args: RequestArguments) -> str:
+def refresh_outbound_context(request_args: RequestArguments, on_demand: bool = False) -> str:
     """
-    Refresh the cache values and format using an indicator_query to call demisto.searchIndicators
+    Refresh the values and format using an indicator_query to call demisto.searchIndicators
+    Update integration cache only in case of running on demand
     Returns: List(IoCs in output format)
     """
     now = datetime.now()
     # poll indicators into list from demisto
-    iocs = find_indicators_with_limit(request_args.query, request_args.limit, request_args.offset)
-    out_dict, actual_indicator_amount = create_values_for_returned_dict(iocs, request_args)
-
-    # if in CSV format - the "indicator" header
-    if request_args.out_format in [FORMAT_CSV, FORMAT_XSOAR_CSV]:
-        actual_indicator_amount = actual_indicator_amount - 1
-
-    # re-polling in case formatting or ip collapse caused a lack in results
-    while actual_indicator_amount < request_args.limit:
-        # from where to start the new poll and how many results should be fetched
-        new_offset = len(iocs) + request_args.offset + actual_indicator_amount - 1
-        new_limit = request_args.limit - actual_indicator_amount
-
-        # poll additional indicators into list from demisto
-        new_iocs = find_indicators_with_limit(request_args.query, new_limit, new_offset)
-
-        # in case no additional indicators exist - exit
-        if len(new_iocs) == 0:
+    iocs = []
+    out_dict: dict = {}
+    limit = request_args.offset + request_args.limit
+    indicator_searcher = IndicatorsSearcher(
+        query=request_args.query,
+        size=PAGE_SIZE
+    )
+    while True:
+        indicator_searcher.limit = limit + 100  # fetch more indicators to reduce chances of search after truncation
+        new_iocs = find_indicators_with_limit(indicator_searcher)[request_args.offset:limit]
+        if not new_iocs:
             break
-
-        # add the new results to the existing results
         iocs += new_iocs
-
+        iocs = sort_iocs(request_args, iocs)
         # reformat the output
         out_dict, actual_indicator_amount = create_values_for_returned_dict(iocs, request_args)
-
-        if request_args.out_format == FORMAT_CSV:
+        if request_args.out_format in [FORMAT_CSV, FORMAT_XSOAR_CSV]:
             actual_indicator_amount = actual_indicator_amount - 1
+        if actual_indicator_amount >= len(iocs) or (indicator_searcher.total and indicator_searcher.total <= limit):
+            # continue searching iocs if 1) iocs was truncated or 2) got all available iocs
+            break
+        # advance search window with gap size
+        limit += (limit - actual_indicator_amount)
 
     if request_args.out_format == FORMAT_JSON:
         out_dict[CTX_MIMETYPE_KEY] = MIMETYPE_JSON
@@ -221,64 +221,37 @@ def refresh_outbound_context(request_args: RequestArguments) -> str:
     else:
         out_dict[CTX_MIMETYPE_KEY] = MIMETYPE_TEXT
 
-    demisto.setIntegrationContext({
-        "last_output": out_dict,
-        'last_run': date_to_timestamp(now),
-        'last_limit': request_args.limit,
-        'last_offset': request_args.offset,
-        'last_format': request_args.out_format,
-        'last_query': request_args.query,
-        'current_iocs': iocs,
-        'mwg_type': request_args.mwg_type,
-        'drop_invalids': request_args.drop_invalids,
-        'strip_port': request_args.strip_port,
-        'category_default': request_args.category_default,
-        'category_attribute': request_args.category_attribute,
-        'collapse_ips': request_args.collapse_ips,
-        'csv_text': request_args.csv_text
-    })
-    return out_dict[CTX_VALUES_KEY]
+    if on_demand:
+        set_integration_context({
+            "last_output": out_dict,
+            'last_run': date_to_timestamp(now),
+            'last_limit': request_args.limit,
+            'last_offset': request_args.offset,
+            'last_format': request_args.out_format,
+            'last_query': request_args.query,
+            'current_iocs': iocs,
+            'mwg_type': request_args.mwg_type,
+            'drop_invalids': request_args.drop_invalids,
+            'strip_port': request_args.strip_port,
+            'category_default': request_args.category_default,
+            'category_attribute': request_args.category_attribute,
+            'collapse_ips': request_args.collapse_ips,
+            'csv_text': request_args.csv_text,
+            'sort_field': request_args.sort_field,
+            'sort_order': request_args.sort_order,
+        })
+    return out_dict[CTX_VALUES_KEY] if CTX_VALUES_KEY in out_dict else []
 
 
-def find_indicators_with_limit(indicator_query: str, limit: int, offset: int) -> list:
+def find_indicators_with_limit(indicator_searcher: IndicatorsSearcher) -> list:
     """
     Finds indicators using demisto.searchIndicators
     """
-    # calculate the starting page (each page holds 200 entries)
-    if offset:
-        next_page = int(offset / PAGE_SIZE)
-
-        # set the offset from the starting page
-        offset_in_page = offset - (PAGE_SIZE * next_page)
-
-    else:
-        next_page = 0
-        offset_in_page = 0
-
-    iocs, _ = find_indicators_with_limit_loop(indicator_query, limit, next_page=next_page)
-
-    # if offset in page is bigger than the amount of results returned return empty list
-    if len(iocs) <= offset_in_page:
-        return []
-
-    return iocs[offset_in_page:limit + offset_in_page]
-
-
-def find_indicators_with_limit_loop(indicator_query: str, limit: int, total_fetched: int = 0, next_page: int = 0,
-                                    last_found_len: int = PAGE_SIZE):
-    """
-    Finds indicators using while loop with demisto.searchIndicators, and returns result and last page
-    """
     iocs: List[dict] = []
-    if not last_found_len:
-        last_found_len = total_fetched
-    while last_found_len == PAGE_SIZE and limit and total_fetched < limit:
-        fetched_iocs = demisto.searchIndicators(query=indicator_query, page=next_page, size=PAGE_SIZE).get('iocs')
+    for ioc_res in indicator_searcher:
+        fetched_iocs = ioc_res.get('iocs') or []
         iocs.extend(fetched_iocs)
-        last_found_len = len(fetched_iocs)
-        total_fetched += last_found_len
-        next_page += 1
-    return iocs, next_page
+    return iocs
 
 
 def ip_groups_to_cidrs(ip_range_groups: list):
@@ -291,42 +264,20 @@ def ip_groups_to_cidrs(ip_range_groups: list):
         list. a list of CIDRs.
     """
     ip_ranges = []  # type:List
-    for group in ip_range_groups:
+    for cidr in ip_range_groups:
         # handle single ips
-        if len(group) == 1:
-            ip_ranges.append(str(group[0]))
+        if len(cidr) == 1:
+            # CIDR with a single IP appears with "/32" suffix so handle them differently
+            ip_ranges.append(str(cidr[0]))
             continue
 
-        min_ip = group[0]
-        max_ip = group[-1]
-        moved_ip = False
-        # CIDR must begin with an even LSB
-        # if the first ip does not - separate it from the rest of the range
-        if (int(str(min_ip).split('.')[-1]) % 2) != 0:
-            ip_ranges.append(str(min_ip))
-            min_ip = group[1]
-            moved_ip = True
-
-        # CIDR must end with uneven LSB
-        # if the last ip does not - separate it from the rest of the range
-        if (int(str(max_ip).split('.')[-1]) % 2) == 0:
-            ip_ranges.append(str(max_ip))
-            max_ip = group[-2]
-            moved_ip = True
-
-        # if both min and max ips were shifted and there are only 2 ips in the range
-        # we added both ips by the shift and now we move to the next  range
-        if moved_ip and len(group) == 2:
-            continue
-
-        else:
-            ip_ranges.append(str(iprange_to_cidrs(min_ip, max_ip)[0].cidr))
+        ip_ranges.append(str(cidr))
 
     return ip_ranges
 
 
 def ip_groups_to_ranges(ip_range_groups: list):
-    """Collapse ip groups list to ranges
+    """Collapse ip groups list to ranges.
 
     Args:
         ip_range_groups (list): a list of lists containing connected IPs
@@ -341,14 +292,12 @@ def ip_groups_to_ranges(ip_range_groups: list):
             ip_ranges.append(str(group[0]))
             continue
 
-        min_ip = group[0]
-        max_ip = group[-1]
-        ip_ranges.append(str(min_ip) + "-" + str(max_ip))
+        ip_ranges.append(str(group))
 
     return ip_ranges
 
 
-def ips_to_ranges(ips: list, collapse_ips):
+def ips_to_ranges(ips: list, collapse_ips: str):
     """Collapse IPs to Ranges or CIDRs.
 
     Args:
@@ -358,36 +307,14 @@ def ips_to_ranges(ips: list, collapse_ips):
     Returns:
         list. a list to Ranges or CIDRs.
     """
-    ips_range_groups = []  # type:List
-    ips = sorted(ips)
-    if len(ips) > 0:
-        ips_range_groups.append([ips[0]])
-
-    if len(ips) > 1:
-        for ip in ips[1:]:
-            appended = False
-
-            if len(ips_range_groups) == 0:
-                ips_range_groups.append([ip])
-                continue
-
-            for group in ips_range_groups:
-                if IPAddress(int(ip) + 1) in group or IPAddress(int(ip) - 1) in group:
-                    group.append(ip)
-                    sorted(group)
-                    appended = True
-
-            if not appended:
-                ips_range_groups.append([ip])
-
-    for group in ips_range_groups:
-        sorted(group)
 
     if collapse_ips == COLLAPSE_TO_RANGES:
+        ips_range_groups = IPSet(ips).iter_ipranges()
         return ip_groups_to_ranges(ips_range_groups)
 
     else:
-        return ip_groups_to_cidrs(ips_range_groups)
+        cidrs = IPSet(ips).iter_cidrs()
+        return ip_groups_to_cidrs(cidrs)
 
 
 def panos_url_formatting(iocs: list, drop_invalids: bool, strip_port: bool):
@@ -395,6 +322,8 @@ def panos_url_formatting(iocs: list, drop_invalids: bool, strip_port: bool):
     for indicator_data in iocs:
         # only format URLs and Domains
         indicator = indicator_data.get('value')
+        if not indicator:
+            continue
         if indicator_data.get('indicator_type') in ['URL', 'Domain', 'DomainGlob']:
             indicator = indicator.lower()
 
@@ -439,8 +368,9 @@ def panos_url_formatting(iocs: list, drop_invalids: bool, strip_port: bool):
 def create_json_out_format(iocs: list):
     formatted_indicators = []  # type:List
     for indicator_data in iocs:
-        json_format_indicator = json_format_single_indicator(indicator_data)
-        formatted_indicators.append(json_format_indicator)
+        if indicator_data.get("value"):
+            json_format_indicator = json_format_single_indicator(indicator_data)
+            formatted_indicators.append(json_format_indicator)
 
     return {CTX_VALUES_KEY: json.dumps(formatted_indicators)}
 
@@ -465,24 +395,25 @@ def add_indicator_to_category(indicator, category, category_dict):
     return category_dict
 
 
-def create_proxysg_out_format(iocs: list, category_attribute: list, category_default='bc_category'):
+def create_proxysg_out_format(iocs: list, category_attribute: list, category_default: str = 'bc_category'):
     formatted_indicators = ''
     category_dict = {}  # type:Dict
     num_of_returned_indicators = 0
 
     for indicator in iocs:
-        if indicator.get('indicator_type') in ['URL', 'Domain', 'DomainGlob']:
+        if indicator.get('indicator_type') in ['URL', 'Domain', 'DomainGlob'] and indicator.get('value'):
+            stripped_indicator = _PROTOCOL_REMOVAL.sub('', indicator.get('value'))
             indicator_proxysg_category = indicator.get('proxysgcategory')
             # if a ProxySG Category is set and it is in the category_attribute list or that the attribute list is empty
             # than list add the indicator to it's category list
             if indicator_proxysg_category is not None and \
                     (indicator_proxysg_category in category_attribute or len(category_attribute) == 0):
-                category_dict = add_indicator_to_category(indicator.get('value'), indicator_proxysg_category,
+                category_dict = add_indicator_to_category(stripped_indicator, indicator_proxysg_category,
                                                           category_dict)
 
             else:
                 # if ProxySG Category is not set or does not exist in the category_attribute list
-                category_dict = add_indicator_to_category(indicator.get('value'), category_default, category_dict)
+                category_dict = add_indicator_to_category(stripped_indicator, category_default, category_dict)
 
     for category, indicator_list in category_dict.items():
         sub_output_string = f"define category {category}\n"
@@ -500,6 +431,8 @@ def create_proxysg_out_format(iocs: list, category_attribute: list, category_def
 def create_mwg_out_format(iocs: list, mwg_type: str) -> dict:
     formatted_indicators = []  # type:List
     for indicator in iocs:
+        if not indicator.get('value'):
+            continue
         value = "\"" + indicator.get('value') + "\""
         sources = indicator.get('sourceBrands')
         if sources:
@@ -591,15 +524,18 @@ def create_values_for_returned_dict(iocs: list, request_args: RequestArguments) 
 
 def get_outbound_mimetype() -> str:
     """Returns the mimetype of the export_iocs"""
-    ctx = demisto.getIntegrationContext().get('last_output', {})
+    ctx = get_integration_context().get('last_output', {})
     return ctx.get(CTX_MIMETYPE_KEY, 'text/plain')
 
 
 def get_outbound_ioc_values(on_demand, request_args: RequestArguments,
-                            last_update_data={}, cache_refresh_rate=None) -> str:
+                            last_update_data=None, cache_refresh_rate=None) -> str:
     """
     Get the ioc list to return in the list
     """
+    if last_update_data is None:
+        last_update_data = {}
+
     last_update = last_update_data.get('last_run')
     last_query = last_update_data.get('last_query')
     current_iocs = last_update_data.get('current_iocs')
@@ -637,12 +573,12 @@ def get_ioc_values_str_from_context(request_args: RequestArguments, iocs=None) -
 
         iocs = iocs[request_args.offset: request_args.limit + request_args.offset]
         returned_dict, _ = create_values_for_returned_dict(iocs, request_args=request_args)
-        current_cache = demisto.getIntegrationContext()
+        current_cache = get_integration_context()
         current_cache['last_output'] = returned_dict
-        demisto.setIntegrationContext(current_cache)
+        set_integration_context(current_cache)
 
     else:
-        returned_dict = demisto.getIntegrationContext().get('last_output', {})
+        returned_dict = get_integration_context().get('last_output', {})
 
     return returned_dict.get(CTX_VALUES_KEY, '')
 
@@ -695,6 +631,8 @@ def get_request_args(params):
     category_attribute = request.args.get('ca', params.get('category_attribute', ''))
     collapse_ips = request.args.get('tr', params.get('collapse_ips', DONT_COLLAPSE))
     csv_text = request.args.get('tx', params.get('csv_text', False))
+    sort_field = request.args.get('sf', params.get('sort_field'))
+    sort_order = request.args.get('so', params.get('sort_order'))
 
     # handle flags
     if strip_port is not None and strip_port == '':
@@ -753,7 +691,7 @@ def get_request_args(params):
             raise DemistoException(CTX_MWG_TYPE_ERR_MSG)
 
     return RequestArguments(query, out_format, limit, offset, mwg_type, strip_port, drop_invalids, category_default,
-                            category_attribute, collapse_ips, csv_text)
+                            category_attribute, collapse_ips, csv_text, sort_field, sort_order)
 
 
 @APP.route('/', methods=['GET'])
@@ -772,26 +710,57 @@ def route_list_values() -> Response:
             if not validate_basic_authentication(headers, username, password):
                 err_msg: str = 'Basic authentication failed. Make sure you are using the right credentials.'
                 demisto.debug(err_msg)
-                return Response(err_msg, status=401)
+                return Response(err_msg, status=401, mimetype='text/plain', headers=[
+                    ('WWW-Authenticate', 'Basic realm="Login Required"'),
+                ])
 
         request_args = get_request_args(params)
+        created = datetime.now(timezone.utc)
+        cache_refresh_rate = params.get('cache_refresh_rate')
 
         values = get_outbound_ioc_values(
             on_demand=params.get('on_demand'),
-            last_update_data=demisto.getIntegrationContext(),
-            cache_refresh_rate=params.get('cache_refresh_rate'),
+            last_update_data=get_integration_context(),
+            cache_refresh_rate=cache_refresh_rate,
             request_args=request_args
         )
+        query_time = (datetime.now(timezone.utc) - created).total_seconds()
 
-        if not demisto.getIntegrationContext() and params.get('on_demand'):
+        if not get_integration_context() and params.get('on_demand'):
             values = 'You are running in On-Demand mode - please run !eis-update command to initialize the ' \
                      'export process'
 
         elif not values:
             values = "No Results Found For the Query"
 
+        # if the case there are strings to add to the EDL, add them if the output type is text
+        if request_args.out_format == FORMAT_TEXT:
+            append_str = params.get("append_string")
+            prepend_str = params.get("prepend_string")
+            if append_str:
+                append_str = append_str.replace("\\n", "\n")
+                values = f"{values}{append_str}"
+            if prepend_str:
+                prepend_str = prepend_str.replace("\\n", "\n")
+                values = f"{prepend_str}\n{values}"
+
         mimetype = get_outbound_mimetype()
-        return Response(values, status=200, mimetype=mimetype)
+
+        list_size = 0
+        if values.strip():
+            list_size = values.count('\n') + 1  # add 1 as last line doesn't have a \n
+        max_age = ceil((datetime.now() - dateparser.parse(cache_refresh_rate)).total_seconds())  # type: ignore[operator]
+        demisto.debug(f'Returning exported indicators list of size: [{list_size}], created: [{created}], '
+                      f'query time seconds: [{query_time}], max age: [{max_age}]')
+        resp = Response(values, status=200, mimetype=mimetype, headers=[
+            ('X-ExportIndicators-Created', created.isoformat()),
+            ('X-ExportIndicators-Query-Time-Secs', "{:.3f}".format(query_time)),
+            ('X-ExportIndicators-Size', str(list_size))
+        ])
+        resp.cache_control.max_age = max_age
+        resp.cache_control[
+            'stale-if-error'] = '600'  # number of seconds we are willing to serve stale content when there is an error
+        return resp
 
     except Exception:
         return Response(traceback.format_exc(), status=400, mimetype='text/plain')
@@ -810,9 +779,6 @@ def test_module(args, params):
     on_demand = params.get('on_demand', None)
     if not on_demand:
         try_parse_integer(params.get('list_size'), CTX_LIMIT_ERR_MSG)  # validate export_iocs Size was set
-        query = params.get('indicators_query')  # validate indicators_query isn't empty
-        if not query:
-            raise ValueError('"Indicator Query" is required. Provide a valid query.')
         cache_refresh_rate = params.get('cache_refresh_rate', '')
         if not cache_refresh_rate:
             raise ValueError(CTX_MISSING_REFRESH_ERR_MSG)
@@ -827,73 +793,14 @@ def test_module(args, params):
                 'Invalid time unit for the Refresh Rate. Must be minutes, hours, days, months, or years.')
         parse_date_range(cache_refresh_rate, to_timestamp=True)
     run_long_running(params, is_test=True)
-    return 'ok', {}, {}
-
-
-def run_long_running(params, is_test=False):
-    """
-    Start the long running server
-    :param params: Demisto params
-    :param is_test: Indicates whether it's test-module run or regular run
-    :return: None
-    """
-    certificate: str = params.get('certificate', '')
-    private_key: str = params.get('key', '')
-
-    certificate_path = str()
-    private_key_path = str()
-
-    try:
-        port = get_params_port(params)
-        ssl_args = dict()
-
-        if (certificate and not private_key) or (private_key and not certificate):
-            raise DemistoException('If using HTTPS connection, both certificate and private key should be provided.')
-
-        if certificate and private_key:
-            certificate_file = NamedTemporaryFile(delete=False)
-            certificate_path = certificate_file.name
-            certificate_file.write(bytes(certificate, 'utf-8'))
-            certificate_file.close()
-
-            private_key_file = NamedTemporaryFile(delete=False)
-            private_key_path = private_key_file.name
-            private_key_file.write(bytes(private_key, 'utf-8'))
-            private_key_file.close()
-            context = SSLContext(PROTOCOL_TLSv1_2)
-            context.load_cert_chain(certificate_path, private_key_path)
-            ssl_args['ssl_context'] = context
-            demisto.debug('Starting HTTPS Server')
-        else:
-            demisto.debug('Starting HTTP Server')
-
-        server = WSGIServer(('', port), APP, **ssl_args, log=DEMISTO_LOGGER)
-        if is_test:
-            server_process = Process(target=server.serve_forever)
-            server_process.start()
-            time.sleep(5)
-            server_process.terminate()
-        else:
-            server.serve_forever()
-    except SSLError as e:
-        ssl_err_message = f'Failed to validate certificate and/or private key: {str(e)}'
-        demisto.error(ssl_err_message)
-        raise ValueError(ssl_err_message)
-    except Exception as e:
-        demisto.error(f'An error occurred in long running loop: {str(e)}')
-        raise ValueError(str(e))
-    finally:
-        if certificate_path:
-            os.unlink(certificate_path)
-        if private_key_path:
-            os.unlink(private_key_path)
+    return 'ok'
 
 
 def update_outbound_command(args, params):
     """
     Updates the export_iocs values and format on demand
     """
-    on_demand = demisto.params().get('on_demand')
+    on_demand = params.get('on_demand')
     if not on_demand:
         raise DemistoException(
             '"Update exported IOCs On Demand" is off. If you want to update manually please toggle it on.')
@@ -914,11 +821,13 @@ def update_outbound_command(args, params):
     category_default = args.get('category_default')
     collapse_ips = args.get('collapse_ips')
     csv_text = args.get('csv_text') == 'True'
+    sort_field = args.get('sort_field')
+    sort_order = args.get('sort_order')
 
     request_args = RequestArguments(query, out_format, limit, offset, mwg_type, strip_port, drop_invalids,
-                                    category_default, category_attribute, collapse_ips, csv_text)
+                                    category_default, category_attribute, collapse_ips, csv_text, sort_field, sort_order)
 
-    indicators = refresh_outbound_context(request_args)
+    indicators = refresh_outbound_context(request_args, on_demand=on_demand)
     if indicators:
         hr = tableToMarkdown('List was updated successfully with the following values', indicators,
                              ['Indicators']) if print_indicators == 'true' else 'List was updated successfully'
@@ -926,7 +835,7 @@ def update_outbound_command(args, params):
     else:
         hr = "No Results Found For the Query"
 
-    return hr, {}, indicators
+    return CommandResults(readable_output=hr, raw_response=indicators)
 
 
 def main():
@@ -953,12 +862,17 @@ def main():
     try:
         if command == 'long-running-execution':
             run_long_running(params)
+        elif command in commands:
+            return_results(commands[command](demisto.args(), params))
         else:
-            readable_output, outputs, raw_response = commands[command](demisto.args(), params)
-            return_outputs(readable_output, outputs, raw_response)
+            raise NotImplementedError(f'Command "{command}" is not implemented.')
     except Exception as e:
+        demisto.error(traceback.format_exc())
         err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
         return_error(err_msg)
+
+
+from NGINXApiModule import *  # noqa: E402
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:

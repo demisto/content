@@ -1,0 +1,81 @@
+id: MicrosoftGraphMail-Test_dev_no_oproxy
+version: -1
+name: MicrosoftGraphMail-Test_dev_no_oproxy
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 99b7e464-5dfb-4715-880a-d865db68fa3d
+    type: start
+    task:
+      id: 99b7e464-5dfb-4715-880a-d865db68fa3d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "1":
+    id: "1"
+    taskid: 7c2def6a-d379-4c4e-b447-3e5f5de277e4
+    type: regular
+    task:
+      id: 7c2def6a-d379-4c4e-b447-3e5f5de277e4
+      version: -1
+      name: set playbook to MicrosoftGraphMail-Test
+      description: set playbook for current incident to MicrosoftGraphMail-Test
+      script: Builtin|||setPlaybook
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      incidentId:
+        simple: ${incident.id}
+      name:
+        simple: MicrosoftGraphMail-Test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 275,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+description: ''

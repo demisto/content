@@ -34,26 +34,39 @@ configuration:
   name: incidentType
   required: false
   type: 13
-description: FireEye Endpoint Security is an integrated solution that detects what others miss and protects endpoint against known and unknown threats. The HX Demisto integration provides access to information about endpoints, acquisitions, alerts, indicators, and containment. Customers can extract critical data and effectively operate security operations automated playbook
+- defaultvalue: '100'
+  display: Fetch limit
+  hidden: false
+  name: fetch_limit
+  required: false
+  type: 0
+description: FireEye Endpoint Security is an integrated solution that detects what
+  others miss and protects endpoint against known and unknown threats. The HX Demisto
+  integration provides access to information about endpoints, acquisitions, alerts,
+  indicators, and containment. Customers can extract critical data and effectively
+  operate security operations automated playbook
 display: FireEye HX
 name: FireEye HX
 script:
   commands:
   - arguments:
     - default: false
-      description: The host name to be contained. If the hostName is not specified, the agentId must be specified.
+      description: The host name to be contained. If the hostName is not specified,
+        the agentId must be specified.
       isArray: false
       name: hostName
       required: false
       secret: false
     - default: false
-      description: The agent id running on the host to be contained. If the agentId is not specified, the hostName must be specified.
+      description: The agent id running on the host to be contained. If the agentId
+        is not specified, the hostName must be specified.
       isArray: false
       name: agentId
       required: false
       secret: false
     deprecated: false
-    description: Apply containment for a specific host, so that it no longer has access to other systems.
+    description: Apply containment for a specific host, so that it no longer has access
+      to other systems.
     execution: false
     name: fireeye-hx-host-containment
     outputs:
@@ -109,7 +122,8 @@ script:
       description: The time stamp of the last alert for the host.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.last_exploit_block_timestamp
-      description: Time when the last exploit was blocked on the host. The value is null if no exploits have been blocked.
+      description: Time when the last exploit was blocked on the host. The value is
+        null if no exploits have been blocked.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.os.product_name
       description: Specific operating system
@@ -125,13 +139,15 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: The host name to be contained. If the hostName is not specified, the agentId must be specified.
+      description: The host name to be contained. If the hostName is not specified,
+        the agentId must be specified.
       isArray: false
       name: hostName
       required: false
       secret: false
     - default: false
-      description: The agent id running on the host to be contained. If the agentId is not specified, the hostName must be specified.
+      description: The agent id running on the host to be contained. If the agentId
+        is not specified, the hostName must be specified.
       isArray: false
       name: agentId
       required: false
@@ -193,7 +209,8 @@ script:
       description: The time stamp of the last alert for the host.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.last_exploit_block_timestamp
-      description: Time when the last exploit was blocked on the host. The value is null if no exploits have been blocked.
+      description: Time when the last exploit was blocked on the host. The value is
+        null if no exploits have been blocked.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.os.product_name
       description: Specific operating system
@@ -210,7 +227,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: Identifies which alerts result from indicators with the specified share mode.
+      description: Identifies which alerts result from indicators with the specified
+        share mode.
       isArray: false
       name: hasShareMode
       predefined:
@@ -262,7 +280,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Filter that returns only records with an AlertId field value great than the minId value
+      description: Filter that returns only records with an AlertId field value great than the minId value.
       isArray: false
       name: minId
       required: false
@@ -301,12 +319,6 @@ script:
       required: false
       secret: false
     - default: false
-      description: Return only records with id greater than minId
-      isArray: false
-      name: minId
-      required: false
-      secret: false
-    - default: false
       description: Limit the results returned
       isArray: false
       name: limit
@@ -338,7 +350,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get a list of alerts, use the different arguments to filter the results returned.
+    description: Get a list of alerts, use the different arguments to filter the results
+      returned.
     execution: false
     name: fireeye-hx-get-alerts
     outputs:
@@ -386,7 +399,8 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: The alert id. The alert id is listed in the output of 'get-alerts' command.
+      description: The alert id. The alert id is listed in the output of 'get-alerts'
+        command.
       isArray: false
       name: alertId
       required: false
@@ -403,14 +417,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: The searchTerm can be any name, category, signature, source, or condition value.
+      description: The searchTerm can be any name, category, signature, source, or
+        condition value.
       isArray: false
       name: searchTerm
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Determines who can see the indicator. You must belong to the correct authorization group .
+      description: Determines who can see the indicator. You must belong to the correct
+        authorization group .
       isArray: false
       name: shareMode
       predefined:
@@ -548,13 +564,15 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: The agent ID. If the agent ID is not specified, the host Name must be specified.
+      description: The agent ID. If the agent ID is not specified, the host Name must
+        be specified.
       isArray: false
       name: agentId
       required: false
       secret: false
     - default: false
-      description: The host name. If the host name is not specified, the agent ID must be specified.
+      description: The host name. If the host name is not specified, the agent ID
+        must be specified.
       isArray: false
       name: hostName
       required: false
@@ -616,7 +634,8 @@ script:
       description: The time stamp of the last alert for the host.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.last_exploit_block_timestamp
-      description: Time when the last exploit was blocked on the host. The value is null if no exploits have been blocked.
+      description: Time when the last exploit was blocked on the host. The value is
+        null if no exploits have been blocked.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.os.product_name
       description: Specific operating system
@@ -699,7 +718,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether to aqcuire the file using the API or RAW. By default, raw file will be acquired. Use API option when file is encrypted.
+      description: Whether to aqcuire the file using the API or RAW. By default, raw
+        file will be acquired. Use API option when file is encrypted.
       isArray: false
       name: acquireUsing
       predefined:
@@ -708,19 +728,22 @@ script:
       required: false
       secret: false
     - default: false
-      description: The agent ID associated with the host that holds the file. If the hostName is not specified, the agentId must be specified.
+      description: The agent ID associated with the host that holds the file. If the
+        hostName is not specified, the agentId must be specified.
       isArray: false
       name: agentId
       required: false
       secret: false
     - default: false
-      description: The host that holds the file. If the agentId is not specified, hostName must be specified.
+      description: The host that holds the file. If the agentId is not specified,
+        hostName must be specified.
       isArray: false
       name: hostName
       required: false
       secret: false
     deprecated: false
-    description: Aquire a specific file as a password protected zip file. The password for unlocking the zip file is 'unzip-me'.
+    description: Aquire a specific file as a password protected zip file. The password
+      for unlocking the zip file is 'unzip-me'.
     execution: false
     name: fireeye-hx-file-acquisition
     outputs:
@@ -761,7 +784,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The script name. If the Acquisition script is specified, the script name must be specified as well.
+      description: The script name. If the Acquisition script is specified, the script
+        name must be specified as well.
       isArray: false
       name: scriptName
       required: false
@@ -778,19 +802,22 @@ script:
       required: false
       secret: false
     - default: false
-      description: The agent ID. If the host name is not specified, the agent ID must be specified.
+      description: The agent ID. If the host name is not specified, the agent ID must
+        be specified.
       isArray: false
       name: agentId
       required: false
       secret: false
     - default: false
-      description: The host name. If the agent ID is not specified, the host name must be specified.
+      description: The host name. If the agent ID is not specified, the host name
+        must be specified.
       isArray: false
       name: hostName
       required: false
       secret: false
     deprecated: false
-    description: Start a data acquisition process to gather artifacts from the system disk and memory. The data is fetched as mans file.
+    description: Start a data acquisition process to gather artifacts from the system
+      disk and memory. The data is fetched as mans file.
     execution: false
     name: fireeye-hx-data-acquisition
     outputs:
@@ -923,7 +950,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Method in which search should be stopped after finding <limit> number of results
+      description: Method in which search should be stopped after finding <limit>
+        number of results
       isArray: false
       name: stopSearch
       predefined:
@@ -932,7 +960,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Search endpoints to check all hosts or a subset of hosts for a specific file or indicator.
+    description: Search endpoints to check all hosts or a subset of hosts for a specific
+      file or indicator.
     execution: false
     name: fireeye-hx-search
     outputs:
@@ -1034,25 +1063,30 @@ script:
       required: false
       secret: false
     - default: false
-      description: Specifies which record to start with in the response. The offset value must be an unsigned 32-bit integer. The default is 0.
+      description: Specifies which record to start with in the response. The offset
+        value must be an unsigned 32-bit integer. The default is 0.
       isArray: false
       name: offset
       required: false
       secret: false
     - default: false
-      description: Specifies how many records are returned. The limit value must be an unsigned 32-bit integer. The default is 50.
+      description: Specifies how many records are returned. The limit value must be
+        an unsigned 32-bit integer. The default is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: Searches the names of all host sets connected to the specified HX appliance.
+      description: Searches the names of all host sets connected to the specified
+        HX appliance.
       isArray: false
       name: search
       required: false
       secret: false
     - default: false
-      description: Sorts the results by the specified field in ascending or descending order. The default is sorting by name in ascending order. Sortable fields are _id (host set ID) and name (host set name).
+      description: Sorts the results by the specified field in ascending or descending
+        order. The default is sorting by name in ascending order. Sortable fields
+        are _id (host set ID) and name (host set name).
       isArray: false
       name: sort
       required: false
@@ -1190,13 +1224,15 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'A list of conditions to add. The list can include a list of IPv4 addresses, MD5 files, and domain names. For example: example.netexample.orgexample.lol'
+      description: 'A list of conditions to add. The list can include a list of IPv4
+        addresses, MD5 files, and domain names. For example: example.netexample.orgexample.lol'
       isArray: false
       name: condition
       required: true
       secret: false
     deprecated: false
-    description: Add conditions to an indicator. Conditions can be MD5, hash values, domain names and IP addresses.
+    description: Add conditions to an indicator. Conditions can be MD5, hash values,
+      domain names and IP addresses.
     execution: false
     name: fireeye-hx-append-conditions
   - deprecated: false
@@ -1256,7 +1292,8 @@ script:
       description: The time stamp of the last alert for the host.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.last_exploit_block_timestamp
-      description: Time when the last exploit was blocked on the host. The value is null if no exploits have been blocked.
+      description: Time when the last exploit was blocked on the host. The value is
+        null if no exploits have been blocked.
       type: Unknown
     - contextPath: FireEyeHX.Hosts.os.product_name
       description: Specific operating system
@@ -1278,6 +1315,7 @@ script:
   script: '-'
   subtype: python3
   type: python
+  dockerimage: demisto/python3:3.9.7.24076
 tests:
 - FireEye HX Test
 fromversion: 5.0.0

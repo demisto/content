@@ -7,7 +7,7 @@ Retrieves users who are currently out of the office. The script use the OutOfOff
 | --- | --- |
 | Script Type | python3 |
 | Tags | Shift Management, widget |
-| Demisto Version | 5.5.0 |
+| Cortex XSOAR Version | 5.5.0 |
 
 ## Used In
 ---

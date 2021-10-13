@@ -1,0 +1,161 @@
+id: bc993d1a-98f5-4554-8075-68a38004c119
+fromversion: 5.0.0
+version: 5
+vcShouldKeepItemLegacyProdMachine: false
+name: Gamma Warning Notice
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6db9dfce-b93b-4c5e-8e26-ad5b9748cf34
+    type: start
+    task:
+      id: 6db9dfce-b93b-4c5e-8e26-ad5b9748cf34
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 1fc404a3-fd88-40b9-83ca-82403ec6a0c3
+    type: regular
+    task:
+      id: 1fc404a3-fd88-40b9-83ca-82403ec6a0c3
+      version: -1
+      name: Send Slack notification to user
+      description: Sends a message to a user, group, or channel.
+      script: '|||send-notification'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      blocks: {}
+      channel: {}
+      entry: {}
+      ignoreAddURL: {}
+      message:
+        simple: Hello, you are receiving this notice because you shared information
+          inappropriately through unapproved channels. Please reach out to your Information
+          Security team for more information.
+      threadID: {}
+      to:
+        simple: ${ExtractedIndicators.Email}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 2cebe0b4-8db8-4574-8abe-323b670db093
+    type: regular
+    task:
+      id: 2cebe0b4-8db8-4574-8abe-323b670db093
+      version: -1
+      name: closeInvestigation
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes:
+        simple: 'File in question: ${incident.labels.file_labels_map}. More information
+          available at ${incident.labels.dashboard_url}'
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id: {}
+      incomingmirrorerror: {}
+      outgoingmirrorerror: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: b6f40d22-ebe7-4486-82b4-eb6dbed515a7
+    type: regular
+    task:
+      id: b6f40d22-ebe7-4486-82b4-eb6dbed515a7
+      version: -1
+      name: Extract User Details
+      description: commands.local.cmd.extract.indicators
+      script: Builtin|||extractIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      entryID: {}
+      filePath: {}
+      investigationID: {}
+      text:
+        simple: ${incident}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 590,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

@@ -1,6 +1,7 @@
 import requests_mock
 from CSVFeedApiModule import *
 import io
+import pytest
 
 
 def test_get_indicators_1():
@@ -150,12 +151,20 @@ def test_get_feed_content():
             assert client.get_feed_content_divided_to_lines(url, raw_response) == expected_output
 
 
-def test_date_format_parsing():
-    formatted_date = date_format_parsing('2020-02-01 12:13:14')
-    assert formatted_date == '2020-02-01T12:13:14Z'
-
-    formatted_date = date_format_parsing('2020-02-01 12:13:14.11111')
-    assert formatted_date == '2020-02-01T12:13:14Z'
+@pytest.mark.parametrize('date_string,expected_result', [
+    ("2020-02-10 13:39:14", '2020-02-10T13:39:14Z'), ("2020-02-10T13:39:14", '2020-02-10T13:39:14Z'),
+    ("2020-02-10 13:39:14.123", '2020-02-10T13:39:14Z'), ("2020-02-10T13:39:14.123", '2020-02-10T13:39:14Z'),
+    ("2020-02-10T13:39:14Z", '2020-02-10T13:39:14Z'), ("2020-11-01T04:16:13-04:00", '2020-11-01T08:16:13Z')])
+def test_date_format_parsing(date_string, expected_result):
+    """
+    Given
+    - A string represting a date.
+    When
+    - running date_format_parsing on the date.
+    Then
+    - Ensure the datestring is converted to the ISO-8601 format.
+    """
+    assert expected_result == date_format_parsing(date_string)
 
 
 class TestTagsParam:
@@ -261,3 +270,102 @@ def test_create_fields_mapping():
         'Country': 'United States',
         'Count': 'Low'
     }
+
+
+def test_get_indicators_with_relations():
+    """
+    Given:
+    - Raw json of the csv row extracted
+
+    When:
+    - Fetching indicators from csv rows
+    - create_relationships param is set to True
+
+    Then:
+    - Validate the returned list of indicators have relations.
+    """
+
+    feed_url_to_config = {
+        'https://ipstack.com': {
+            'fieldnames': ['value', 'a'],
+            'indicator_type': 'IP',
+            'relationship_entity_b_type': 'IP',
+            'relationship_name': 'resolved-from',
+            'mapping': {
+                'AAA': 'a',
+                'relationship_entity_b': ('a', r'.*used\s+by\s(.*?)\s', None),
+            }
+        }
+    }
+    expected_res = [{'value': 'test.com', 'type': 'IP',
+                     'rawJSON': {'value': 'test.com', 'a': 'Domain used by Test c&c',
+                                 None: ['2021-04-22 06:03',
+                                        'https://test.com/manual/test-iplist.txt'],
+                                 'type': 'IP'},
+                     'fields': {'AAA': 'Domain used by Test c&c', 'relationship_entity_b': 'Test',
+                                'tags': []},
+                     'relationships': [
+                         {'name': 'resolved-from', 'reverseName': 'resolves-to', 'type': 'IndicatorToIndicator',
+                          'entityA': 'test.com', 'entityAFamily': 'Indicator', 'entityAType': 'IP',
+                          'entityB': 'Test', 'entityBFamily': 'Indicator', 'entityBType': 'IP',
+                          'fields': {}}]}]
+
+    ip_ranges = 'test.com,Domain used by Test c&c,2021-04-22 06:03,https://test.com/manual/test-iplist.txt'
+
+    with requests_mock.Mocker() as m:
+        itype = 'IP'
+        m.get('https://ipstack.com', content=ip_ranges.encode('utf8'))
+        client = Client(
+            url="https://ipstack.com",
+            feed_url_to_config=feed_url_to_config
+        )
+        indicators = fetch_indicators_command(client, default_indicator_type=itype, auto_detect=False,
+                                              limit=35, create_relationships=True)
+        assert indicators == expected_res
+
+
+def test_get_indicators_without_relations():
+    """
+    Given:
+    - Raw json of the csv row extracted
+
+    When:
+    - Fetching indicators from csv rows
+    - create_relationships param is set to False
+
+    Then:
+    - Validate the returned list of indicators dont return relationships.
+    """
+
+    feed_url_to_config = {
+        'https://ipstack.com': {
+            'fieldnames': ['value', 'a'],
+            'indicator_type': 'IP',
+            'relationship_entity_b_type': 'IP',
+            'relationship_name': 'resolved-from',
+            'mapping': {
+                'AAA': 'a',
+                'relationship_entity_b': ('a', r'.*used\s+by\s(.*?)\s', None),
+            }
+        }
+    }
+    expected_res = [{'value': 'test.com', 'type': 'IP',
+                     'rawJSON': {'value': 'test.com', 'a': 'Domain used by Test c&c',
+                                 None: ['2021-04-22 06:03',
+                                        'https://test.com/manual/test-iplist.txt'],
+                                 'type': 'IP'},
+                     'fields': {'AAA': 'Domain used by Test c&c', 'relationship_entity_b': 'Test',
+                                'tags': []}, 'relationships': []}]
+
+    ip_ranges = 'test.com,Domain used by Test c&c,2021-04-22 06:03,https://test.com/manual/test-iplist.txt'
+
+    with requests_mock.Mocker() as m:
+        itype = 'IP'
+        m.get('https://ipstack.com', content=ip_ranges.encode('utf8'))
+        client = Client(
+            url="https://ipstack.com",
+            feed_url_to_config=feed_url_to_config
+        )
+        indicators = fetch_indicators_command(client, default_indicator_type=itype, auto_detect=False,
+                                              limit=35, create_relationships=False)
+        assert indicators == expected_res

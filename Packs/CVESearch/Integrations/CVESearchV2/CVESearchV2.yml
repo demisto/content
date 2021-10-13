@@ -1,56 +1,37 @@
+category: Vulnerability Management
 commonfields:
   id: CVE Search v2
   version: -1
-name: CVE Search v2
-display: CVE Search v2
-category: Vulnerability Management
-description: Searches for CVE information using circl.lu.
 configuration:
-- display: Server URL
+- defaultvalue: https://cve.circl.lu/api/
+  display: Server URL
   name: url
-  defaultvalue: https://cve.circl.lu/api/
-  type: 0
   required: true
+  type: 0
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
-  type: 8
   required: false
+  type: 8
 - display: Trust any certificate (not secure)
   name: insecure
-  type: 8
   required: false
+  type: 8
+description: Searches for CVE information using circl.lu.
+display: CVE Search v2
+name: CVE Search v2
 script:
   commands:
-  - name: cve-latest
-    arguments:
-    - name: limit
+  - arguments:
+    - default: false
+      description: The maximum number of CVEs to display.
+      isArray: false
+      name: limit
       required: false
-      default: false
-      description: 'The maximum number of CVEs to display.'
-    outputs:
-    - contextPath: CVE.ID
-      description: The ID of the CVE.
-      type: String
-    - contextPath: CVE.CVSS
-      description: The CVSS score of the CVE.
-      type: number
-    - contextPath: CVE.Published
-      description: The date the CVE was published.
-      type: Date
-    - contextPath: CVE.Modified
-      description: The date that the CVE was last modified.
-      type: Date
-    - contextPath: CVE.Description
-      description: The description of the CVE.
-      type: String
+      secret: false
+    deprecated: false
     description: Returns the latest updated CVEs.
-  - name: cve
-    arguments:
-    - name: cve_id
-      required: true
-      default: true
-      description: 'The CVE ID. For example: CVE-2014-1234.'
+    execution: false
+    name: cve-latest
     outputs:
     - contextPath: CVE.ID
       description: The ID of the CVE.
@@ -67,8 +48,58 @@ script:
     - contextPath: CVE.Description
       description: The description of the CVE.
       type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator value.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The indicator score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor reporting the score of the indicator.
+      type: String
+  - arguments:
+    - default: true
+      description: 'The CVE ID. For example: CVE-2014-1234.'
+      isArray: true
+      name: cve_id
+      required: true
+      secret: false
+    deprecated: false
     description: Returns CVE information by CVE ID.
-  dockerimage: demisto/python3:3.9.1.14969
+    execution: false
+    name: cve
+    outputs:
+    - contextPath: CVE.ID
+      description: The ID of the CVE.
+      type: String
+    - contextPath: CVE.CVSS
+      description: The CVSS score of the CVE.
+      type: number
+    - contextPath: CVE.Published
+      description: The date the CVE was published.
+      type: Date
+    - contextPath: CVE.Modified
+      description: The date that the CVE was last modified.
+      type: Date
+    - contextPath: CVE.Description
+      description: The description of the CVE.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator value.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The indicator score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor reporting the score of the indicator.
+      type: String
+  dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: false
   longRunning: false
@@ -78,5 +109,5 @@ script:
   subtype: python3
   type: python
 tests:
-- "CVE Search v2 - Test"
+- CVE Search v2 - Test
 fromversion: 5.0.0

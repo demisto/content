@@ -2913,7 +2913,7 @@ tlds = {
         "host": "whois.nic.immobilien"
     },
     "in": {
-        "host": "whois.inregistry.net"
+        "host": "in.whois-servers.net"
     },
     "inc": {
         "_group": "uniregistry",
@@ -8274,7 +8274,7 @@ def is_good_query_result(raw_result):
     return 'NOT FOUND' not in raw_result and 'No match' not in raw_result
 
 
-def create_outputs(whois_result, domain, query=None):
+def create_outputs(whois_result, domain, reliability, query=None):
     md = {'Name': domain}
     ec = {'Name': domain,
           'QueryResult': is_good_query_result(str(whois_result.get('raw', 'NOT FOUND')))}
@@ -8319,6 +8319,7 @@ def create_outputs(whois_result, domain, query=None):
         ec.update({'Registrar': {'Name': whois_result.get('registrar')}})
         standard_ec['WHOIS']['Registrar'] = whois_result.get('registrar')
         md['Registrar'] = whois_result.get('registrar')
+        standard_ec['Registrar'] = {'Name': whois_result.get('registrar')}
     if 'id' in whois_result:
         ec['ID'] = whois_result.get('id')
         md['ID'] = whois_result.get('id')
@@ -8326,24 +8327,38 @@ def create_outputs(whois_result, domain, query=None):
         contacts = whois_result['contacts']
         if 'registrant' in contacts and contacts['registrant'] is not None:
             md['Registrant'] = contacts['registrant']
-            standard_ec['Registrant'] = contacts['registrant']
+            standard_ec['Registrant'] = contacts['registrant'].copy()
+            for key, val in contacts['registrant'].items():
+                standard_ec['Registrant'][key.capitalize()] = val
             ec['Registrant'] = contacts['registrant']
+            if 'organization' in contacts['registrant']:
+                standard_ec['Organization'] = contacts['registrant']['organization']
         if 'admin' in contacts and contacts['admin'] is not None:
             md['Administrator'] = contacts['admin']
             ec['Administrator'] = contacts['admin']
-            standard_ec['Admin'] = {key.capitalize(): val for key, val in contacts['admin'].items()}
-            standard_ec['Admin'] = contacts['admin']
+            standard_ec['Admin'] = contacts['admin'].copy()
+            for key, val in contacts['admin'].items():
+                standard_ec['Admin'][key.capitalize()] = val
             standard_ec['WHOIS']['Admin'] = contacts['admin']
         if 'tech' in contacts and contacts['tech'] is not None:
             md['Tech Admin'] = contacts['tech']
             ec['TechAdmin'] = contacts['tech']
+            standard_ec['Tech'] = {}
+            if 'country' in contacts['tech']:
+                standard_ec['Tech']['Country'] = contacts['tech']['country']
+            if 'email' in contacts['tech']:
+                standard_ec['Tech']['Email'] = contacts['tech']['email']
+            if 'organization' in contacts['tech']:
+                standard_ec['Tech']['Organization'] = contacts['tech']['organization']
         if 'billing' in contacts and contacts['billing'] is not None:
             md['Billing Admin'] = contacts['billing']
             ec['BillingAdmin'] = contacts['billing']
+            standard_ec['Billing'] = contacts['billing']
     if 'emails' in whois_result:
         ec['Emails'] = whois_result.get('emails')
         md['Emails'] = whois_result.get('emails')
-
+        standard_ec['FeedRelatedIndicators'] = [{'type': 'Email', 'value': email}
+                                                for email in whois_result.get('emails')]
     ec['QueryStatus'] = 'Success'
     md['QueryStatus'] = 'Success'
 
@@ -8351,51 +8366,96 @@ def create_outputs(whois_result, domain, query=None):
     standard_ec['Whois'] = ec
     standard_ec['Whois']['QueryValue'] = query
 
-    dbot_score = {
-        'Score': 0,
-        'Indicator': domain,
-        'Type': 'domain',
-        'Vendor': 'Whois'
-    }
-    return md, standard_ec, dbot_score
+    dbot_score = Common.DBotScore(indicator=domain, indicator_type='domain', integration_name='Whois', score=0,
+                                  reliability=reliability)
+
+    return md, standard_ec, dbot_score.to_context()
 
 
 '''COMMANDS'''
 
 
-def domain_command():
+def domain_command(reliability):
     domains = demisto.args().get('domain', [])
     for domain in argToList(domains):
         whois_result = get_whois(domain)
-        md, standard_ec, dbot_score = create_outputs(whois_result, domain)
+        md, standard_ec, dbot_score = create_outputs(whois_result, domain, reliability)
+        dbot_score.update({Common.Domain.CONTEXT_PATH: standard_ec})
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['markdown'],
             'Contents': str(whois_result),
             'HumanReadable': tableToMarkdown('Whois results for {}'.format(domain), md),
-            'EntryContext': {
-                'Domain(val.Name && val.Name == obj.Name)': standard_ec,
-                'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor && val.Vendor == obj.Vendor)':
-                    dbot_score
-            }
+            'EntryContext': dbot_score,
         })
 
 
-def whois_command():
+def get_whois_ip(ip):
+    from urllib2 import build_opener, ProxyHandler
+    from ipwhois import IPWhois
+    proxy_opener = None
+    if demisto.params().get('proxy'):
+        proxies = assign_params(http=handle_proxy().get('http'), https=handle_proxy().get('https'))
+        handler = ProxyHandler(proxies)
+        proxy_opener = build_opener(handler)
+        ip_obj = IPWhois(ip, proxy_opener=proxy_opener)
+    else:
+        ip_obj = IPWhois(ip)
+
+    return ip_obj.lookup_rdap(depth=1)
+
+
+def ip_command(ips, reliability):
+    results = []
+    for ip in argToList(ips):
+        response = get_whois_ip(ip)
+
+        dbot_score = Common.DBotScore(
+            indicator=ip,
+            indicator_type=DBotScoreType.IP,
+            integration_name='Whois',
+            score=Common.DBotScore.NONE,
+            reliability=reliability
+        )
+        related_feed = Common.FeedRelatedIndicators(
+            value=response.get('network', {}).get('cidr'),
+            indicator_type='CIDR'
+        )
+        ip_output = Common.IP(
+            ip=ip,
+            asn=response.get('asn'),
+            geo_country=response.get('asn_country_code'),
+            organization_name=response.get('asn_description'),
+            dbot_score=dbot_score,
+            feed_related_indicators=[related_feed]
+        )
+        result = CommandResults(
+            outputs_prefix='Whois.IP',
+            outputs_key_field='query',
+            outputs=response,
+            readable_output=tableToMarkdown('Whois results:', response,
+                                            ['query', 'asn', 'asn_cidr', 'asn_country_code', 'asn_date',
+                                             'asn_description']),
+            raw_response=response,
+            indicator=ip_output
+        )
+
+        results.append(result)
+    return results
+
+
+def whois_command(reliability):
     query = demisto.args().get('query')
     domain = get_domain_from_query(query)
     whois_result = get_whois(domain)
-    md, standard_ec, dbot_score = create_outputs(whois_result, domain, query)
+    md, standard_ec, dbot_score = create_outputs(whois_result, domain, reliability, query)
+    dbot_score.update({Common.Domain.CONTEXT_PATH: standard_ec})
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['markdown'],
         'Contents': str(whois_result),
         'HumanReadable': tableToMarkdown('Whois results for {}'.format(domain), md),
-        'EntryContext': {
-            'Domain(val.Name && val.Name == obj.Name)': standard_ec,
-            'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor && val.Vendor == obj.Vendor)':
-                dbot_score
-        }
+        'EntryContext': dbot_score,
     })
 
 
@@ -8421,12 +8481,12 @@ def setup_proxy():
     }
     proxy_url = demisto.params().get('proxy_url')
     def_scheme = 'socks5h'
-    if proxy_url == 'system_http':
-        system_proxy = handle_proxy('proxy_url')
+    if proxy_url == 'system_http' or not proxy_url and demisto.params().get('proxy'):
+        system_proxy = handle_proxy('proxy')
         # use system proxy. Prefer https and fallback to http
         proxy_url = system_proxy.get('https') if system_proxy.get('https') else system_proxy.get('http')
         def_scheme = 'http'
-    if not proxy_url:
+    if not proxy_url and not demisto.params().get('proxy'):
         return
     scheme, host = (def_scheme, proxy_url) if '://' not in proxy_url else proxy_url.split('://')
     host, port = (host, None) if ':' not in host else host.split(':')
@@ -8438,28 +8498,40 @@ def setup_proxy():
     socks.set_default_proxy(proxy_type[0], host, port, proxy_type[1])
     socket.socket = socks.socksocket  # type: ignore
 
-
 ''' EXECUTION CODE '''
 
 
 def main():
     LOG('command is {}'.format(str(demisto.command())))
-    org_socket = socket.socket
     command = demisto.command()
+
+    reliability = demisto.params().get('integrationReliability')
+    reliability = reliability if reliability else DBotScoreReliability.B
+
+    if DBotScoreReliability.is_valid_type(reliability):
+        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+    else:
+        raise Exception("Please provide a valid value for the Source Reliability parameter.")
+
     try:
-        setup_proxy()
-        if command == 'test-module':
-            test_command()
-        elif command == 'whois':
-            whois_command()
-        elif command == 'domain':
-            domain_command()
+        if command == 'ip':
+            return_results(ip_command(demisto.args().get('ip'), reliability))
+        else:
+            org_socket = socket.socket
+            setup_proxy()
+            if command == 'test-module':
+                test_command()
+            elif command == 'whois':
+                whois_command(reliability)
+            elif command == 'domain':
+                domain_command(reliability)
     except Exception as e:
         LOG(e)
         return_error(str(e))
     finally:
-        socks.set_default_proxy()  # clear proxy settings
-        socket.socket = org_socket  # type: ignore
+        if command != 'ip':
+            socks.set_default_proxy()  # clear proxy settings
+            socket.socket = org_socket  # type: ignore
 
 
 # python2 uses __builtin__ python3 uses builtins

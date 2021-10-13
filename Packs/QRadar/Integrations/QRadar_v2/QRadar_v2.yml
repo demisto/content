@@ -31,7 +31,8 @@ configuration:
   name: query
   required: false
   type: 0
-  additionalinfo: "Define a query to determine which offenses to fetch. e.g. status=OPEN. See ? for more details."
+  additionalinfo: "Define a query to determine which offenses to fetch. e.g. status=OPEN.\
+    \ See ? for more details."
 - defaultvalue: '20'
   display: Number of offenses to pull per API call (max 50)
   name: offenses_per_fetch
@@ -43,7 +44,8 @@ configuration:
   name: ip_enrich
   required: false
   type: 8
-  additionalinfo: "IP values related to the offense are returned from the API as ID values. Enable this parameter the IDs to IP values."
+  additionalinfo: "IP values related to the offense are returned from the API as ID\
+    \ values. Enable this parameter the IDs to IP values."
 - defaultvalue: 'true'
   display: Incident Asset Enrichment
   hidden: false
@@ -51,8 +53,17 @@ configuration:
   required: false
   type: 8
   additionalinfo: "Enable this to fetch assets that correlate to the fetched offenses."
-- defaultvalue: 'QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME("creEventList"), sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime'
-  display: Event fields to return from the events query (CAUTION this parameter is correlated to the incoming mapper, and changing the values may adversely affect mapping)
+- defaultvalue: 'QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory),
+    CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip,
+    destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME("creEventList"),
+    sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation,
+    destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude,
+    eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP,
+    postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort, UTF8(payload),
+    starttime, devicetime'
+  display: Event fields to return from the events query (CAUTION this parameter is
+    correlated to the incoming mapper, and changing the values may adversely affect
+    mapping)
   name: events_columns
   required: false
   additionalinfo: "The parameter uses the AQL SELECT syntax. For more info see: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.3/com.ibm.qradar.doc/c_aql_intro.html"
@@ -72,13 +83,17 @@ configuration:
   name: events_limit
   required: false
   type: 0
-- additionalinfo: Comma-separated configuration for advanced parameters values.
-    e.g. EVENTS_INTERVAL_SECS=20,FETCH_SLEEP=5
+  additionalinfo: This field is require when running as ‘long running instance’ -
+    please set the max amount of events to fetch.
+- additionalinfo: Comma-separated configuration for advanced parameters values. e.g.
+    EVENTS_INTERVAL_SECS=20,FETCH_SLEEP=5
   display: Advanced Parameters
   name: adv_params
   required: false
   type: 12
-description: 'Fetch offenses from QRadar using Cortex XSOAR. You can fetch the offenses with their related events and assets by creating a comma-separated list of event fields.'
+description: 'Fetch offenses from QRadar using Cortex XSOAR. Supports API versions
+  until 10.0. You can fetch the offenses with their related events and assets by creating
+  a comma-separated list of event fields.'
 display: IBM QRadar v2
 name: QRadar_v2
 script:
@@ -93,9 +108,9 @@ script:
     - default: false
       description: 'If used, will filter all fields except for the specified ones.
         Use this parameter to specify which fields you would like to get back in the
-        response. Fields that are not explicitly named, are excluded. Specify subfields in brackets
-        and multiple fields in the same object separated by commas. The filter
-        uses QRadar''s field names. For reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-GET.html'
+        response. Fields that are not explicitly named, are excluded. Specify subfields
+        in brackets and multiple fields in the same object separated by commas. The
+        filter uses QRadar''s field names. For reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-GET.html'
       isArray: false
       name: fields
       required: false
@@ -174,9 +189,9 @@ script:
     - default: false
       description: 'If used, will filter all fields except for the specified ones.
         Use this parameter to specify which fields you would like to get back in the
-        response. Fields that are not explicitly named are excluded. Specify subfields in brackets
-        and multiple fields in the same object separated by commas. The filter
-        uses QRadar''s field names, for reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-GET.html'
+        response. Fields that are not explicitly named are excluded. Specify subfields
+        in brackets and multiple fields in the same object separated by commas. The
+        filter uses QRadar''s field names, for reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-GET.html'
       isArray: false
       name: fields
       required: false
@@ -214,8 +229,8 @@ script:
     - contextPath: QRadar.Offense.RemoteDestinationCount
       description: The remote destination that are associated with the offesne. If
         this value is greater than 0, it means that your offense has a remote destination,
-        you will need to use the QRadarFullSearch playbook with the following query -
-        SELECT destinationip FROM events WHERE inOffense(<offenseID>) GROUP BY destinationip
+        you will need to use the QRadarFullSearch playbook with the following query
+        - SELECT destinationip FROM events WHERE inOffense(<offenseID>) GROUP BY destinationip
       type: Unknown
     - contextPath: QRadar.Offense.AssignedTo
       description: The user the offense is assigned to.
@@ -423,8 +438,8 @@ script:
     - default: false
       description: Use this parameter to specify which fields you would like to get
         back in the response. Fields that are not named are excluded. Specify subfields
-        in brackets and multiple fields in the same object  separated by commas.
-        Please consult - https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-POST.html
+        in brackets and multiple fields in the same object  separated by commas. Please
+        consult - https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-POST.html
       isArray: false
       name: fields
       required: false
@@ -514,8 +529,8 @@ script:
       description: 'If used, will filter all fields except for the specified ones.
         Use this parameter to specify which fields you would like to get back in the
         response. Fields that are not named are excluded. Specify subfields in brackets
-        and multiple fields in the same object separated by commas. The filter
-        uses QRadar''s field names, for reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--asset_model-assets-GET.html'
+        and multiple fields in the same object separated by commas. The filter uses
+        QRadar''s field names, for reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--asset_model-assets-GET.html'
       isArray: false
       name: fields
       required: false
@@ -681,9 +696,9 @@ script:
     - default: false
       description: 'If used, will filter all fields except for the specified ones.
         Use this parameter to specify which fields you would like to get back in the
-        response. Fields that are not explicitly named are excluded. Specify subfields in brackets
-        and multiple fields in the same object separated by commas. The filter
-        uses QRadar''s field names. For reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offense_closing_reasons-GET.html'
+        response. Fields that are not explicitly named are excluded. Specify subfields
+        in brackets and multiple fields in the same object separated by commas. The
+        filter uses QRadar''s field names. For reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offense_closing_reasons-GET.html'
       isArray: false
       name: fields
       required: false
@@ -721,9 +736,9 @@ script:
     - default: false
       description: 'If used, will filter all fields except for the specified ones.
         Use this parameter to specify which fields you would like to get back in the
-        response. Fields that are not explicitly named are excluded. Specify subfields in brackets
-        and multiple fields in the same object separated by commas. The filter
-        uses QRadar''s field names. For reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-POST.html'
+        response. Fields that are not explicitly named are excluded. Specify subfields
+        in brackets and multiple fields in the same object separated by commas. The
+        filter uses QRadar''s field names. For reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-POST.html'
       isArray: false
       name: fields
       required: false
@@ -768,9 +783,9 @@ script:
     - default: false
       description: 'If used, will filter all fields except for the specified ones.
         Use this parameter to specify which fields you would like to get back in the
-        response. Fields that are not explicitly named are excluded. Specify subfields in brackets
-        and multiple fields in the same object separated by commas. The filter
-        uses QRadar''s field names. For reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-note_id-GET.html'
+        response. Fields that are not explicitly named are excluded. Specify subfields
+        in brackets and multiple fields in the same object separated by commas. The
+        filter uses QRadar''s field names. For reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-note_id-GET.html'
       isArray: false
       name: fields
       required: false
@@ -827,8 +842,8 @@ script:
       secret: false
     deprecated: false
     description: Information about the reference set that had data added or updated.
-      This returns the information set, but not the contained data. This feature is supported
-      from version 8.1 and upward.
+      This returns the information set, but not the contained data. This feature is
+      supported from version 8.1 and upward.
     execution: false
     name: qradar-get-reference-by-name
     outputs:
@@ -848,7 +863,8 @@ script:
       description: Reference time to live.
       type: string
     - contextPath: QRadar.Reference.TimeoutType
-      description: 'Reference timeout type. Valid values are: UNKNOWN, FIRST_SEEN, LAST_SEEN'
+      description: 'Reference timeout type. Valid values are: UNKNOWN, FIRST_SEEN,
+        LAST_SEEN'
       type: string
     - contextPath: QRadar.Reference.Data
       description: Reference set items.
@@ -1090,9 +1106,9 @@ script:
     - default: false
       description: 'If used, will filter all fields except for the specified ones.
         Use this parameter to specify which fields you would like to get back in the
-        response. Fields that are not explicitly named are excluded. Specify subfields in brackets
-        and multiple fields in the same object are separated by commas. The filter
-        uses QRadar''s field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-note_id-GET.html'
+        response. Fields that are not explicitly named are excluded. Specify subfields
+        in brackets and multiple fields in the same object are separated by commas.
+        The filter uses QRadar''s field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-note_id-GET.html'
       isArray: false
       name: fields
       required: false
@@ -1163,9 +1179,9 @@ script:
     - default: false
       description: 'If used, will filter all fields except for the specified ones.
         Use this parameter to specify which fields you would like to get back in the
-        response. Fields that are not explicitly named are excluded. Specify subfields in brackets
-        and multiple fields in the same object are separated by commas. The filter
-        uses QRadar''s field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-note_id-GET.html'
+        response. Fields that are not explicitly named are excluded. Specify subfields
+        in brackets and multiple fields in the same object are separated by commas.
+        The filter uses QRadar''s field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-note_id-GET.html'
       isArray: false
       name: fields
       required: false
@@ -1303,22 +1319,24 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of names of an exact properties to search for.
+      description: A comma-separated list of names of an exact properties to search
+        for.
       isArray: true
       name: field_name
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of fields that specifies the fields that are
-        returned by the command output. When not given, will return all. Options are
-        identifier, name, id, locale, datetime_format, description, username, property_type,
-        auto_discovered, use_for_rule_engine.
+      description: A comma-separated list of fields that specifies the fields that
+        are returned by the command output. When not given, will return all. Options
+        are identifier, name, id, locale, datetime_format, description, username,
+        property_type, auto_discovered, use_for_rule_engine.
       isArray: false
       name: fields
       required: false
       secret: false
     - default: false
-      description: A comma-separated list names of a properties to search for. Values are case insensitive.
+      description: A comma-separated list names of a properties to search for. Values
+        are case insensitive.
       isArray: false
       name: like_name
       required: false
@@ -1364,8 +1382,8 @@ script:
       description: The name of the event regex property.
       type: String
     - contextPath: QRadar.Properties.property_type
-      description: The property type (STRING, NUMERIC, IP, PORT, TIME) of the event regex
-        property.
+      description: The property type (STRING, NUMERIC, IP, PORT, TIME) of the event
+        regex property.
       type: String
     - contextPath: QRadar.Properties.use_for_rule_engine
       description: The flag to indicate if the event regex property is parsed when
@@ -1374,7 +1392,7 @@ script:
     - contextPath: QRadar.Properties.username
       description: The owner of the event regex property.
       type: String
-  dockerimage: demisto/python3:3.9.1.14969
+  dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: false
   longRunning: true
@@ -1388,3 +1406,5 @@ script:
 defaultmapperin: QRadar-mapper
 defaultclassifier: QRadar
 fromversion: 6.0.0
+tests:
+- test_Qradar_v2

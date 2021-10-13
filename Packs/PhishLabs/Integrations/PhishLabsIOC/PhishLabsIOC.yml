@@ -12,6 +12,20 @@ configuration:
   name: credentials
   required: true
   type: 9
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: B - Usually reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -46,7 +60,8 @@ script:
   - arguments:
     - default: false
       defaultValue: 1h
-      description: Duration (from now) for which to pull updated data, for example, "1d", "1h" or "10m".
+      description: Duration (from now) for which to pull updated data, for example,
+        "1d", "1h" or "10m".
       isArray: false
       name: since
       required: false
@@ -71,7 +86,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Removes the protocol part from indicators, when the rule can be applied.
+      description: Removes the protocol part from indicators, when the rule can be
+        applied.
       isArray: false
       name: remove_protocol
       predefined:
@@ -82,7 +98,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Removes the query string part from indicators, when the rules can be applied.
+      description: Removes the query string part from indicators, when the rules can
+        be applied.
       isArray: false
       name: remove_query
       predefined:
@@ -232,7 +249,8 @@ script:
       secret: false
     - default: false
       defaultValue: 1h
-      description: Duration (from now) for which to pull updated data, for example, "1d", "1h" or "10m".
+      description: Duration (from now) for which to pull updated data, for example,
+        "1d", "1h" or "10m".
       isArray: false
       name: since
       required: false
@@ -269,7 +287,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Removes the protocol part from indicators, when the rule can be applied.
+      description: Removes the protocol part from indicators, when the rule can be
+        applied.
       isArray: false
       name: remove_protocol
       predefined:
@@ -280,7 +299,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Removes the query string part from indicators, when the rules can be applied.
+      description: Removes the query string part from indicators, when the rules can
+        be applied.
       isArray: false
       name: remove_query
       predefined:
@@ -289,7 +309,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Retrieves indicators from a speicifed PhishLabs incident. To fetch incidents to Demisto, enable fetching incidents.
+    description: Retrieves indicators from a speicifed PhishLabs incident. To fetch
+      incidents to Demisto, enable fetching incidents.
     execution: false
     name: phishlabs-get-incident-indicators
     outputs:
@@ -446,12 +467,15 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: number
-  dockerimage: demisto/python3:3.7.5.4328
+  dockerimage: demisto/python3:3.9.7.24076
+  feed: false
   isfetch: true
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python3
+  type: python
 tests:
 - PhishLabsIOC TestPlaybook
 fromversion: 5.0.0

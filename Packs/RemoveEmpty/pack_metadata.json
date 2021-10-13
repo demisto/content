@@ -1,0 +1,17 @@
+{
+    "name": "RemoveEmpty",
+    "description": "Remove empty items from the array.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Masahiko Inoue",
+    "url": "",
+    "email": "",
+    "created": "2021-07-09T01:48:46Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "spearmin10"
+    ]
+}

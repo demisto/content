@@ -1,17 +1,4 @@
-Generates mock reports and events from Workday. Use these for testing and development.
-
-To use this integration for testing:
-1. Create an instance.
-    1. Add a listening port 
-    2. Select the **Long running instance** checkbox.
-2. Take the server URL and listening port that you entered in the integration settings for example (http://localhost:9000/) and configure the **Workday_IAM** instance and invoke *fetch_incidents*.
-
-For more information about how to configure the long running integration go to [Long Running HTTP Integrations](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke).
-
-
-This integration uses mock reports (simulates the real reports from Workday).
-You can use the **generate-event** command to get various report types (hire, update, terminate, and rehire).
-To use the generate-event command, the email must be an email from the mock reports.
+Generates mock reports and events for Workday IAM. Use these for testing and development.
 
 ## Configure Workday_IAM_Event_Generator on Cortex XSOAR
 
@@ -19,43 +6,141 @@ To use the generate-event command, the email must be an email from the mock repo
 2. Search for Workday_IAM_Event_Generator.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | longRunning | Long running instance | False |
-    | longRunningPort | Port mapping \(Port mapping (port or host port:docker port)) | False |
-    | incidentType | Incident type | False |
+    | **Parameter** | **Required** |
+    | --- | --- |
+    | Long running instance | True |
+    | Port mapping (&lt;port&gt; or &lt;host port&gt;:&lt;docker port&gt;) | True |
+    | Incident type | False |
 
+4. Click **Test** to validate the URLs, token, and connection.
+
+## Create an instance
+
+To configure a long running integration to be accessed via Cortex XSOAR Server's https endpoint perform the following:
+
+1. Configure the long running integration to listen on a unique port
+2. Add the following advanced Server parameter:
+    - Name: instance.execute.external.<instance_name>
+    - Value: true
+
+    For example for an instance named edl set the following:
+    Name: instance.execute.external.workday_iam_event_generator_instance_1
+    Value: true
+    
+    **Note**: The instance name is configured via the Name parameter of the integration. 
+    
+You will then be able to access the long running integration via the Cortex XSOAR Server's HTTPS endpoint. The route to the integration will be available at:
+https://<server_hostname>/instance/execute/<instance_name>
+
+Use this URL to configure `Workday_IAM` integration and invoke *Fetch_incidents*
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### generate-event
+### workday-generate-hire-event
 ***
-Generate workday event.
+Generate workday new hire event.
 
-To use the generate-event command with the email argument, the email must be an email from the mock reports.
+After running this command, a new incident will be created of type: ``IAM - New Hire``
+
+
 
 #### Base Command
 
-`generate-event`
+`workday-generate-hire-event`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| event_type | The event type. Possible values are: hire, update, terminate, rehire. | Required | 
-| user_email | The user email for the event. | Optional | 
+| user_email | The user email for the event. | Required | 
+| first_name | The new user first name. | Optional | 
+| last_name | The new user last name. | Optional | 
 
-
-#### Context Output
-
-There is no context output for this command.
 
 #### Command Example
-```!generate-event event_type=hire ```
+```!workday-generate-hire-event user_email=testing@test.com first_name=John last_name=Smith```
 
 #### Human Readable Output
-There is no Human Readable output for this command.
 
+>Successfully generated the new hire event.
+
+### workday-generate-update-event
+***
+Generate workday update event.
+
+After running this command, a new incident will be created of type: ``IAM - Update User``
+
+
+#### Base Command
+
+`workday-generate-update-event`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_email | The user email for the event. | Required | 
+| title | The user updated title. | Optional | 
+| city | The user city. | Optional | 
+| street_address | The updated street address. | Optional | 
+| last_day_of_work | The last hire date for the user.  For example: "06/15/2020". This will trigger "terminate" event. | Optional | 
+
+
+#### Command Example
+```!workday-generate-update-event user_email=panw@test.com city="Tel Aviv" title="Software Engineer"```
+
+#### Human Readable Output
+
+>Successfully generated the Update user event.
+
+### workday-generate-rehire-event
+***
+Generate workday rehire event.
+
+After running this command, a new incident will be created of type: ``IAM - Rehire User``
+
+
+#### Base Command
+
+`workday-generate-rehire-event`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_email | The user email for the event. | Required | 
+
+
+#### Command Example
+```!workday-generate-rehire-event user_email=panw@testing.com```
+
+#### Human Readable Output
+
+>Successfully generated the rehire user event.
+
+### workday-generate-terminate-event
+***
+Generate workday terminate event.
+
+After running this command, a new incident will be created of type: ``IAM - Terminate User``
+
+
+#### Base Command
+
+`workday-generate-terminate-event`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| last_day_of_work | The last hire date of the user. For example: "06/15/2020". The default is today. | Optional | 
+| user_email | The user email to termniate. | Required | 
+| termination_date | The user termination date. For example: "06/15/2020". The default is today. | Optional | 
+
+
+#### Command Example
+```!workday-generate-terminate-event user_email=panw@testing.com```
+
+#### Human Readable Output
+
+>Successfully generated the Terminate user event.
 
 ### initialize-context
 ***
@@ -69,13 +154,9 @@ Reset the integration context to fetch the first run reports.
 
 There are no input arguments for this command.
 
-#### Context Output
-
-There is no context output for this command.
-
 #### Command Example
 ```!initialize-context ```
 
 #### Human Readable Output
-The integration context has been initialized.
+>The integration context has been initialized.
 

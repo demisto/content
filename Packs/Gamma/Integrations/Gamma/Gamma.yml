@@ -1,0 +1,180 @@
+category: Network Security
+commonfields:
+  id: Gamma
+  version: -1
+configuration:
+- additionalinfo: URL of the Gamma API to query
+  defaultvalue: https://app.gamma.ai
+  display: Server URL (e.g. https://example.net)
+  name: url
+  required: true
+  type: 0
+- display: Gamma API Key
+  hidden: false
+  name: api_key
+  required: true
+  type: 4
+- additionalinfo: Enter the violation ID to begin fetching from. If empty, the API
+    will default to your first violation
+  display: Starting Violation
+  hidden: false
+  name: first_fetch
+  required: false
+  type: 0
+- additionalinfo: Enter a number of results for each fetch to return. The number must
+    be between 1 and 100.
+  defaultvalue: '10'
+  display: Results per fetch
+  hidden: false
+  name: max_fetch
+  required: false
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+description: Query and update violations in Gamma
+display: Gamma
+name: Gamma
+script:
+  commands:
+  - arguments:
+    - default: false
+      defaultValue: '1'
+      description: Violation ID to begin pulling from. Defaults to the earliest existing
+        violation for your account.
+      isArray: false
+      name: minimum_violation
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: 'Upper limit for retrieving violations (max: 100)'
+      isArray: false
+      name: limit
+      required: true
+      secret: false
+    deprecated: false
+    description: Get a list of violations
+    execution: false
+    name: gamma-get-violation-list
+    outputs:
+      - contextPath: GammaViolation.violation_id
+        description: Violation ID
+        type: Number
+      - contextPath: GammaViolation.file_labels_map
+        description: List of Files and corresponding DLP labels in reference to the DLP violation
+        type: Array
+      - contextPath: GammaViolation.text_labels
+        description: List of DLP labels in reference to the DLP violation
+        type: Array
+      - contextPath: GammaViolation.violation_status
+        description: Violation status, one of 'OPEN', 'RESOLVED', 'IGNORED'
+        type: String
+      - contextPath: GammaViolation.violation_category
+        description: Category of the violation e.g. PII, Secrets, GDPR/CCPA, etc.
+        type: String
+      - contextPath: GammaViolation.violation_event_timestamp
+        description: Timestamp of violation in epoch milliseconds
+        type: Number
+      - contextPath: GammaViolation.user
+        description: JSON field containing optional information about user
+        type: String
+      - contextPath: GammaViolation.dashboard_url
+        description: Gamma dashboard URL
+        type: String
+      - contextPath: GammaViolation.app_name
+        description: Name of the application where the violation is found
+        type: String
+  - arguments:
+    - default: false
+      description: Violation ID to retrieve
+      isArray: false
+      name: violation
+      required: true
+      secret: false
+    deprecated: false
+    description: Get a specific violation
+    execution: false
+    name: gamma-get-violation
+    outputs:
+      - contextPath: GammaViolation.violation_id
+        description: Violation ID
+        type: Number
+      - contextPath: GammaViolation.file_labels_map
+        description: List of Files and corresponding DLP labels in reference to the DLP violation
+        type: Array
+      - contextPath: GammaViolation.text_labels
+        description: List of DLP labels in reference to the DLP violation
+        type: Array
+      - contextPath: GammaViolation.violation_status
+        description: Violation status, one of 'OPEN', 'RESOLVED', 'IGNORED'
+        type: String
+      - contextPath: GammaViolation.violation_category
+        description: Category of the violation e.g. PII, Secrets, GDPR/CCPA, etc.
+        type: String
+      - contextPath: GammaViolation.violation_event_timestamp
+        description: Timestamp of violation in epoch milliseconds
+        type: Number
+      - contextPath: GammaViolation.user
+        description: JSON field containing optional information about user
+        type: String
+      - contextPath: GammaViolation.dashboard_url
+        description: Gamma dashboard URL
+        type: String
+      - contextPath: GammaViolation.app_name
+        description: Name of the application where the violation is found
+        type: String
+  - arguments:
+    - default: false
+      description: Violation ID to update
+      isArray: false
+      name: violation
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Status of the violation
+      isArray: false
+      name: status
+      predefined:
+      - OPEN
+      - RESOLVED
+      - IGNORED
+      required: true
+      secret: false
+    - default: true
+      defaultValue: None
+      description: Any notes to add to a violation. It will overwrite existing notes.
+      isArray: false
+      name: notes
+      required: false
+      secret: false
+    deprecated: false
+    description: Update a specific violation
+    execution: false
+    name: gamma-update-violation
+  dockerimage: demisto/python3:3.9.7.24076
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 5.0.0
+tests:
+- No test - unit test

@@ -16,9 +16,10 @@ For more information, refer to the [Identity Lifecycle Management article](https
 | apitoken | API Token \(see Detailed Instructions\) | True |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
-| create-user-enabled | `iam-create-user` Command Enabled | False |
-| update-user-enabled | `iam-update-user` Command Enabled | False |
-| disable-user-enabled | `iam-disable-user` Command Enabled | False |
+| create-user-enabled | Allow creating users | False |
+| update-user-enabled | Allow updating users | False |
+| enable-user-enabled | Allow enabling users | False |
+| disable-user-enabled | Allow disabling users | False |
 | create-if-not-exists | Automatically create user if not found in update command | False |
 | mapper-in | Incoming Mapper | True |
 | mapper-out | Outgoing Mapper | True |
@@ -290,6 +291,43 @@ Returns a list of Okta applications data.
 | 0ob8zlypk6GVPRr2T0h7 | workday | Workday - Preview | ![](https://op1static.oktacdn.com/fs/bcg/4/gfsnda403rf16Qe790h7) |
 | 0oabz0ozy5dDpEKyA0h7 | workday | Workday - Prod - DryRun | ![](https://op1static.oktacdn.com/fs/bcg/4/gfsnda403rf16Qe790h7) |
 | 0oae3ioe51sQ64Aui2h7 | workday | Workday - Impl1 | ![](https://op1static.oktacdn.com/fs/bcg/4/gfsnda403rf16Qe790h7) |
+
+
+### okta-list-user-applications
+***
+Returns a list of Okta applications data.
+
+
+#### Base Command
+
+`okta-iam-list-user-applications`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | ID of the user for which to get the information. | Required |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Okta.Application.ID | string | ID of the application. | 
+| Okta.Application.Name | string | Name of the application. | 
+| Okta.Application.Label | string | Label of the application. | 
+| Okta.Application.Status | string | Status of the application. | 
+
+
+#### Command Example
+``` !okta-iam-list-user-applications user_id=00ux9v19bvTfQIjur0h7" ```
+
+#### Human Readable Output
+### Okta User Applications
+|ID|Name|Label|Status|
+|---|---|---|---|
+| 0ob8zlypk6GVPRr2T0h7 | active_directory | pantest.local | ACTIVE|
+| 0oabz0ozy5dDpEKyA0h7 | test_app | martsheet Test App | ACTIVE |
+
 
 ### okta-iam-get-configuration
 ***

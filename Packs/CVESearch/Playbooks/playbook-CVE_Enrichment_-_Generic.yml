@@ -2,7 +2,7 @@ id: cve_enrichment_-_generic
 version: -1
 name: CVE Enrichment - Generic
 fromversion: 5.0.0
-description: Enrich CVE using one or more integrations.
+description: Deprecated. Use "CVE Enrichment - Generic v2" playbook instead. Enrich CVE using one or more integrations.
 starttaskid: "0"
 tasks:
   "0":
@@ -275,6 +275,7 @@ tasks:
           "y": 690
         }
       }
+    skipunavailable: true
   "8":
     id: "8"
     taskid: a8dc9bc9-7c74-4b59-86a4-aa7c09063fd0
@@ -395,3 +396,4 @@ outputs:
   type: string
 tests:
 - No tests (auto formatted)
+deprecated: true

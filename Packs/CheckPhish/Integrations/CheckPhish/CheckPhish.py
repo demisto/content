@@ -12,12 +12,6 @@ requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
-BASE_URL = demisto.params()['url']
-API_KEY = demisto.params().get('token')
-GOOD_DISP = argToList(demisto.params().get('good_disp'))
-SUSP_DISP = argToList(demisto.params().get('susp_disp'))
-BAD_DISP = argToList(demisto.params().get('bad_disp'))
-USE_SSL = not demisto.params().get('insecure', False)
 
 HEADERS = {
     'Content-Type': 'application/json',
@@ -51,11 +45,11 @@ DEFAULT_BAD_DISP = {
 ''' HELPER FUNCTIONS '''
 
 
-def http_request(method, url, params=None, data=None):
+def http_request(method, url, use_ssl, params=None, data=None):
     res = requests.request(
         method,
         url,
-        verify=USE_SSL,
+        verify=use_ssl,
         params=params,
         data=data,
         headers=HEADERS
@@ -71,14 +65,14 @@ def http_request(method, url, params=None, data=None):
         return_error('Failed to parse response from service, received the following error:\n{}'.format(str(err)))
 
 
-def unite_dispositions():
-    for disp in GOOD_DISP:
+def unite_dispositions(good_disp, susp_disp, bad_disp):
+    for disp in good_disp:
         DEFAULT_GOOD_DISP.add(disp)
 
-    for disp in SUSP_DISP:
+    for disp in susp_disp:
         DEFAULT_SUSP_DISP.add(disp)
 
-    for disp in BAD_DISP:
+    for disp in bad_disp:
         DEFAULT_BAD_DISP.add(disp)
 
 
@@ -95,23 +89,26 @@ def get_dbot_score(disposition):
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
-def test_module():
+def test_module(**kwargs):
     query = {
-        'apiKey': API_KEY,
+        'apiKey': kwargs.get('api_key'),
         'urlInfo': {'url': 'https://www.google.com'}
     }
-    res = http_request('POST', BASE_URL, data=json.dumps(query))
+    res = http_request('POST', kwargs.get('base_url'), kwargs.get('use_ssl'), data=json.dumps(query))
     if res and 'errorMessage' not in res:
         return 'ok'
 
     return res['errorMessage']  # the errorMessage field contains the error message
 
 
-def submit_to_checkphish(url):
+def submit_to_checkphish(url, api_key, base_url, use_ssl):
     """ Submit a URL for analysis in CheckPhish
 
     Args:
         url(str): URL to be sent to CheckPhish for analysis
+        api_key: api key for the authorization
+        base_url: url for the API request
+        use_ssl: for the http request
 
     Returns:
         (str). jobID retrieved from CheckPhish for the URL
@@ -122,11 +119,11 @@ def submit_to_checkphish(url):
 
     if re.match(urlRegex, url):
         query = {
-            'apiKey': API_KEY,
+            'apiKey': api_key,
             'urlInfo': {'url': url},
             'scanType': 'full'
         }
-        res = http_request('POST', BASE_URL, data=json.dumps(query))
+        res = http_request('POST', base_url, use_ssl, data=json.dumps(query))
 
         return res['jobID']
 
@@ -134,12 +131,12 @@ def submit_to_checkphish(url):
         return_error(url + ' is not a valid url')
 
 
-def is_job_ready_checkphish(jobID):
+def is_job_ready_checkphish(jobID, api_key, base_url, use_ssl):
     query = {
-        'apiKey': API_KEY,
+        'apiKey': api_key,
         'jobID': jobID
     }
-    res = http_request('POST', BASE_URL + STATUS_SUFFIX, data=json.dumps(query))
+    res = http_request('POST', base_url + STATUS_SUFFIX, use_ssl, data=json.dumps(query))
 
     if res and res['status'] == DONE_STATUS:
         return True
@@ -147,12 +144,12 @@ def is_job_ready_checkphish(jobID):
     return False
 
 
-def get_result_checkphish(jobID):
+def get_result_checkphish(jobID, api_key, base_url, use_ssl, reliability):
     query = {
-        'apiKey': API_KEY,
+        'apiKey': api_key,
         'jobID': jobID
     }
-    res = http_request('POST', BASE_URL + STATUS_SUFFIX, data=json.dumps(query))
+    res = http_request('POST', base_url + STATUS_SUFFIX, use_ssl, data=json.dumps(query))
 
     if res and 'errorMessage' not in res:
         result = {
@@ -177,7 +174,8 @@ def get_result_checkphish(jobID):
             'Type': 'url',
             'Vendor': 'CheckPhish',
             'Indicator': result['url'],
-            'Score': get_dbot_score(result['disposition'])
+            'Score': get_dbot_score(result['disposition']),
+            'Reliability': reliability
         }
 
         context = {
@@ -196,19 +194,20 @@ def get_result_checkphish(jobID):
         return_error('Error getting job status')
 
 
-def checkphish_check_urls():
+def checkphish_check_urls(**kwargs):
     urls = argToList(demisto.args().get('url'))
     job_ids = []
 
     for url in urls:
-        submit = submit_to_checkphish(url)
+        submit = submit_to_checkphish(url, kwargs.get('api_key'), kwargs.get('base_url'), kwargs.get('use_ssl'))
         if submit:
             job_ids.append(submit)
 
     while len(job_ids):
         for job_id in job_ids[:]:
-            if is_job_ready_checkphish(job_id):
-                get_result_checkphish(job_id)
+            if is_job_ready_checkphish(job_id, kwargs.get('api_key'), kwargs.get('base_url'), kwargs.get('use_ssl')):
+                get_result_checkphish(job_id, kwargs.get('api_key'), kwargs.get('base_url'), kwargs.get('use_ssl'),
+                                      kwargs.get('reliability'))
                 job_ids.remove(job_id)
 
 
@@ -216,17 +215,46 @@ def checkphish_check_urls():
 
 LOG('Command being called is %s' % (demisto.command()))
 handle_proxy()
-unite_dispositions()
 
-try:
-    if demisto.command() == 'test-module':
-        demisto.results(test_module())
 
-    elif demisto.command() == 'CheckPhish-check-urls':
-        checkphish_check_urls()
+def main():
 
-# Log exceptions
-except Exception as e:
-    LOG(str(e))
-    LOG.print_log()
-    raise
+    demisto_params = demisto.params()
+
+    good_disp = argToList(demisto_params.get('good_disp'))
+    susp_disp = argToList(demisto_params.get('susp_disp'))
+    bad_disp = argToList(demisto_params.get('bad_disp'))
+
+    unite_dispositions(good_disp, susp_disp, bad_disp)
+
+    reliability = demisto_params.get('integrationReliability')
+    reliability = reliability if reliability else DBotScoreReliability.B
+
+    if DBotScoreReliability.is_valid_type(reliability):
+        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+    else:
+        raise Exception("Please provide a valid value for the Source Reliability parameter.")
+
+    params = {
+        'base_url': demisto_params['url'],
+        'api_key': demisto_params.get('token'),
+        'use_ssl': not demisto_params.get('insecure', False),
+        'reliability': reliability
+    }
+
+    try:
+        if demisto.command() == 'test-module':
+            demisto.results(test_module(**params))
+
+        elif demisto.command() in ['CheckPhish-check-urls', 'url']:
+            checkphish_check_urls(**params)
+
+    # Log exceptions
+    except Exception as e:
+        LOG(str(e))
+        LOG.print_log()
+        raise
+
+
+if __name__ in ['__main__', '__builtin__', 'builtins']:
+    main()

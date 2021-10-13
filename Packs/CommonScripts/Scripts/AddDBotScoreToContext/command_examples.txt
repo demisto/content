@@ -1,0 +1,1 @@
+!AddDBotScoreToContext indicator=paloaltonetworks.com indicatorType=domain score=3 vendor=`Word of Mouth` reliability="A - Completely reliable"

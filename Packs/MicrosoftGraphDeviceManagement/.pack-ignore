@@ -1,0 +1,5 @@
+[file:playbook-Microsoft_Graph_DeviceManagement_Test.yml]
+ignore=auto-test
+
+[file:MicrosoftGraphDeviceManagement.yml]
+ignore=DS107

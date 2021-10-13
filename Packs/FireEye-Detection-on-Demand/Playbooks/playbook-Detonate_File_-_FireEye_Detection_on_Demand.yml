@@ -1,0 +1,299 @@
+id: Detonate File - FireEye Detection on Demand
+version: -1
+name: Detonate File - FireEye Detection on Demand
+description: Detonate one or more files using the FireEye Detection on Demand integration.  This
+  playbook returns relevant reports to the War Room and file reputations to the context
+  data.
+fromversion: 6.0.0
+starttaskid: "0"
+tests:
+  - No tests
+tasks:
+  "0":
+    id: "0"
+    taskid: 67dbb24b-003f-4490-81a9-5a7a400fdc14
+    type: start
+    task:
+      id: 67dbb24b-003f-4490-81a9-5a7a400fdc14
+      version: -1
+      name: ""
+      description: ''
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 04290307-5a7a-49a2-8e2e-758abc9bfb90
+    type: regular
+    task:
+      id: 04290307-5a7a-49a2-8e2e-758abc9bfb90
+      version: -1
+      name: fireeye-dod-submit-file
+      description: Submits file to FireEye Detection on Demand for analysis
+      script: '|||fireeye-dod-submit-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      entryID:
+        simple: ${File.EntryID}
+      fileExtraction: {}
+      memoryDump: {}
+      param: {}
+      password: {}
+      pcap: {}
+      screenshot: {}
+      video: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 1ae3a453-3f4a-407e-87fc-86f57e9833b2
+    type: regular
+    task:
+      id: 1ae3a453-3f4a-407e-87fc-86f57e9833b2
+      version: -1
+      name: fireeye-dod-get-reports
+      description: Retrieves one or more reports of file scans
+      script: '|||fireeye-dod-get-reports'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      extended_report: {}
+      get_artifact: {}
+      get_screenshot: {}
+      report_ids:
+        simple: ${FireEyeDoD.Scan.report_id}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 776e9a6c-ff82-4e53-8a52-2565a92eeaf1
+    type: condition
+    task:
+      id: 776e9a6c-ff82-4e53-8a52-2565a92eeaf1
+      version: -1
+      name: Is there a file to detonate?
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.File
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: e33db8a3-b47f-4493-87e2-6ec12062f675
+    type: regular
+    task:
+      id: e33db8a3-b47f-4493-87e2-6ec12062f675
+      version: -1
+      name: Set file to context
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      append: {}
+      key:
+        simple: File
+      stringify: {}
+      value:
+        simple: ${inputs.File}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: f96e5c12-86a1-496c-8bf9-afc3d88b5f43
+    type: playbook
+    task:
+      id: f96e5c12-86a1-496c-8bf9-afc3d88b5f43
+      version: -1
+      name: GenericPolling
+      description: ''
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        simple: ${FireEyeDoD.Scan.report_id}
+      Interval:
+        simple: ${inputs.Interval}
+      PollingCommandArgName:
+        simple: report_ids
+      PollingCommandName:
+        simple: fireeye-dod-get-reports
+      Timeout:
+        simple: ${inputs.Timeout}
+      dt:
+        simple: FireEyeDoD.Scan(val.overall_status != 'DONE').report_id
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: a7dd7859-9553-41ee-8345-f7db7c7b39c9
+    type: title
+    task:
+      id: a7dd7859-9553-41ee-8345-f7db7c7b39c9
+      version: -1
+      name: Done
+      type: title
+      description: ''
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 320,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "3_4_yes": 0.9
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1065,
+        "width": 620,
+        "x": 320,
+        "y": 10
+      }
+    }
+  }
+inputs:
+- key: File
+  value:
+    simple: ${File}
+  required: false
+  description: File object of the file to detonate
+  playbookInputQuery: null
+- key: Interval
+  value:
+    simple: "1"
+  required: false
+  description: Polling frequency - how often the polling command should run (minutes)
+  playbookInputQuery: null
+- key: Timeout
+  value:
+    simple: "30"
+  required: false
+  description: How much time to wait before a timeout occurs  (minutes)
+  playbookInputQuery: null
+outputs:
+- contextPath: File
+  description: The File object
+  type: unknown

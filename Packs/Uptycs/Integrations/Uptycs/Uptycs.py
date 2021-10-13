@@ -45,9 +45,8 @@ def generate_headers(key, secret):
     header = {}
     utcnow = datetime.utcnow()
     date = utcnow.strftime("%a, %d %b %Y %H:%M:%S GMT")
-    auth_var = jwt.encode({'iss': key}, secret, algorithm='HS256').\
-        decode('utf-8')
-    authorization = "Bearer %s" % auth_var
+    auth_var = jwt.encode({'iss': key}, secret, algorithm='HS256')
+    authorization = "Bearer " + str(auth_var)
     header['date'] = date
     header['Authorization'] = authorization
     return header

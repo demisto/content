@@ -1,0 +1,11 @@
+{
+  "id": "/subscriptions/subscription_id/resourceGroups/resource_groups/providers/Microsoft.Storage/storageAccounts/account_name/blobServices/default/containers/test",
+  "name": "test",
+  "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+  "properties": {
+    "deleted": false,
+    "remainingRetentionDays": 0,
+    "hasImmutabilityPolicy": false,
+    "hasLegalHold": false
+  }
+}

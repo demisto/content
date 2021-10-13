@@ -108,6 +108,12 @@ configuration:
   name: polling_timeout
   required: true
   type: 0
+- defaultvalue: 'true'
+  additionalinfo: Create relationships between indicators as part of Enrichment.
+  display: Create relationships
+  name: create_relationships
+  required: false
+  type: 8
 description: Use the Bambenek Consulting feed integration to fetch indicators from
   the feed.
 display: Bambenek Consulting Feed
@@ -132,7 +138,7 @@ script:
     description: Gets the feed indicators.
     execution: false
     name: bambenek-get-indicators
-  dockerimage: demisto/python3:3.8.6.14516
+  dockerimage: demisto/python3:3.9.7.24076
   feed: true
   isfetch: false
   longRunning: false

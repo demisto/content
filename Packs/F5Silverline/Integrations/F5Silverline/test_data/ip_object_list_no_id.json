@@ -1,0 +1,35 @@
+{
+  "data": [
+    {
+      "id": "id1",
+      "type": "ip_objects",
+      "attributes": {
+        "ip": "1.2.3.4",
+        "mask": "32",
+        "duration": 0,
+        "expires_at": "None",
+        "list_target": "proxy"
+      },
+      "links": {
+        "self": "https://portal.f5silverline.com/api/v1/ip_lists/denylist/ip_objects/id1?list_target=proxy"
+      },
+      "meta": {
+        "note": "test",
+        "tags": [
+          "cpu",
+          "pp"
+        ],
+        "created_at": "2021-04-22T07:18:28.162Z",
+        "updated_at": "2021-04-22T07:18:28.162Z"
+      }
+    }
+  ],
+  "links": {
+    "links": {
+      "self": "https://portal.f5silverline.com/api/v1/ip_lists/allowlist/ip_objects?page[number]=1&page[size]=1",
+      "first": "https://portal.f5silverline.com/api/v1/ip_lists/allowlist/ip_objects?page[number]=1&page[size]=1",
+      "last": "https://portal.f5silverline.com/api/v1/ip_lists/allowlist/ip_objects?page[number]=20&page[size]=1",
+      "next": "https://portal.f5silverline.com/api/v1/ip_lists/allowlist/ip_objects?page[number]=2&page[size]=1"
+    }
+  }
+}

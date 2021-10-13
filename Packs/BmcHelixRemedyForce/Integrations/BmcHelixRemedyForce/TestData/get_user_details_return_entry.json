@@ -47,7 +47,7 @@
   },
   "HumanReadable": "### Total retrieved user(s): 5\n|Id|Username|First Name|Last Name|Email|Department|Is Staff|\n|---|---|---|---|---|---|---|\n| ID | username | first name | last name | email | department | true |\n| ID | username | first name | last name | email | department | true |\n",
   "EntryContext": {
-    "BmcRemedyforce.User(val.Id == obj.Id)": [
+    "BmcRemedyforce.User(val.Id && val.Id == obj.Id)": [
       {
         "Id": "ID",
         "Name": "name",
@@ -71,6 +71,7 @@
     ]
   },
   "IndicatorTimeline": [],
+  "Relationships": [],
   "IgnoreAutoExtract": false,
   "Note": false
 }

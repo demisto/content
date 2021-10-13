@@ -21,9 +21,14 @@ class Client(BaseClient):
           password (str): password for the API key (required for authentication).
           use_ssl (bool): specifies whether to verify the SSL certificate or not.
           use_proxy (bool): specifies if to use Demisto proxy settings.
+          reliability (str): reliability string.
+          create_relationships (bool): Whether to create relationships.
     """
 
-    def __init__(self, url: str, api_key: str, password: str, use_ssl: bool, use_proxy: bool):
+    def __init__(self, url: str, api_key: str, password: str, use_ssl: bool, use_proxy: bool,
+                 reliability: str = DBotScoreReliability.C, create_relationships: bool = True):
+        self.reliability = reliability
+        self.create_relationships = create_relationships
         super().__init__(url, verify=use_ssl, proxy=use_proxy, headers={'Accept': 'application/json'},
                          auth=(api_key, password))
 
@@ -83,11 +88,12 @@ def calculate_score(score: int, threshold: int) -> int:
     return 1
 
 
-def get_cve_results(cve_id: str, report: dict, threshold: int) -> Tuple[str, dict, dict]:
+def get_cve_results(client: Client, cve_id: str, report: dict, threshold: int) -> Tuple[str, dict, dict]:
     """
     Formats CVE report from X-Force Exchange into Demisto's outputs.
 
     Args:
+        client (Client): X-Force Exchange client.
         cve_id (str): the id (code) of the CVE.
         report (dict): the report from X-Force Exchange about the CVE.
         threshold (int): the score threshold configured by the user.
@@ -102,7 +108,8 @@ def get_cve_results(cve_id: str, report: dict, threshold: int) -> Tuple[str, dic
                'Published': report.get('reported'),
                'Description': report.get('description')}
     dbot_score = {'Indicator': cve_id, 'Type': 'cve', 'Vendor': 'XFE',
-                  'Score': calculate_score(round(report.get('risk_level', 0)), threshold)}
+                  'Score': calculate_score(round(report.get('risk_level', 0)), threshold),
+                  'Reliability': client.reliability}
     additional_headers = ['xfdbid', 'risk_level', 'reported', 'cvss', 'tagname', 'stdcode',
                           'title', 'description', 'platforms_affected', 'exploitability']
     additional_info = {string_to_context_key(field): report.get(field) for field in additional_headers}
@@ -166,10 +173,10 @@ def ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
         outputs = {'Address': report['ip'],
                    'Score': report.get('score'),
                    'Geo': {'Country': report.get('geo', {}).get('country', '')}}
-        additional_info = {string_to_context_key(field): report[field] for field in
-                           ['reason', 'reasonDescription', 'subnets']}
+        additional_info: dict = {string_to_context_key(field): report.get(field) for field in
+                                 ['reason', 'reasonDescription', 'subnets']}
         dbot_score = {'Indicator': report['ip'], 'Type': 'ip', 'Vendor': 'XFE',
-                      'Score': calculate_score(report['score'], threshold)}
+                      'Score': calculate_score(report['score'], threshold), 'Reliability': client.reliability}
 
         if dbot_score['Score'] == 3:
             outputs['Malicious'] = {'Vendor': 'XFE', 'Description': additional_info['Reasondescription']}
@@ -178,9 +185,13 @@ def ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
         context[f'XFE.{outputPaths["ip"]}'].append(additional_info)
         context[DBOT_SCORE_KEY].append(dbot_score)
 
+        reason = f'{additional_info["Reason"]}:\n{additional_info["Reasondescription"]}' \
+            if additional_info["Reason"] else 'Reason not found.'
+        subnets = additional_info.get('Subnets', [])
+        subnets_list = [subnet.get('subnet') for subnet in subnets]
         table = {'Score': report['score'],
-                 'Reason': f'{additional_info["Reason"]}:\n{additional_info["Reasondescription"]}',
-                 'Subnets': ', '.join(subnet.get('subnet') for subnet in additional_info['Subnets'])}
+                 'Reason': reason,
+                 'Subnets': ', '.join(subnets_list)}
         markdown += tableToMarkdown(f'X-Force IP Reputation for: {report["ip"]}\n'
                                     f'{XFORCE_URL}/ip/{report["ip"]}', table, removeNull=True)
         reports.append(report)
@@ -218,7 +229,8 @@ def domain_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any
                 'Indicator': report['url'],
                 'Type': 'domain',
                 'Vendor': 'XFE',
-                'Score': calculate_score(report.get('score', 0), threshold)
+                'Score': calculate_score(report.get('score', 0), threshold),
+                'Reliability': client.reliability
             }
 
             if dbot_score['Score'] == 3:
@@ -270,7 +282,7 @@ def url_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
             continue
         outputs = {'Data': report['url']}
         dbot_score = {'Indicator': report['url'], 'Type': 'url', 'Vendor': 'XFE',
-                      'Score': calculate_score(report['score'], threshold)}
+                      'Score': calculate_score(report['score'], threshold), 'Reliability': client.reliability}
 
         if dbot_score['Score'] == 3:
             outputs['Malicious'] = {'Vendor': 'XFE'}
@@ -316,7 +328,7 @@ def cve_search_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict,
 
     for report in reports:
         cve_id = report.get('stdcode', [''])[0]
-        markdown, context, _ = get_cve_results(cve_id, report, threshold)
+        markdown, context, _ = get_cve_results(client, cve_id, report, threshold)
 
         for key, value in context.items():
             total_context[key].append(value)
@@ -350,7 +362,7 @@ def cve_get_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, An
 
     for cve_id in argToList(args.get('cve_id')):
         report = client.cve_report(cve_id)
-        cve_markdown, cve_context, _ = get_cve_results(args['cve_id'], report[0], threshold)
+        cve_markdown, cve_context, _ = get_cve_results(client, args['cve_id'], report[0], threshold)
 
         markdown += cve_markdown
         context[outputPaths['cve']].append(cve_context[outputPaths['cve']])
@@ -362,7 +374,7 @@ def cve_get_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, An
     return markdown, context, reports
 
 
-def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+def file_command(client: Client, args: Dict[str, str]) -> List[CommandResults]:
     """
     Executes file hash enrichment against X-Force Exchange.
 
@@ -371,46 +383,53 @@ def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
         args (Dict[str, str]): the arguments for the command.
 
     Returns:
-         str: human readable presentation of the file hash report.
-         dict: the results to return into Demisto's context.
-         Any: the raw data from X-Force Exchange client (used for debugging).
+         List of CommandResults.
     """
-
     context: dict = defaultdict(list)
-    markdown = ''
-    reports = []
+    relationship: list = []
+    command_results: List[CommandResults] = []
 
     for file_hash in argToList(args.get('file')):
         try:
             report = client.file_report(file_hash)
         except Exception as err:
             if 'Error in API call [404] - Not Found' in str(err):
-                markdown += f'File: {file_hash} not found\n'
+                command_results.append(CommandResults(readable_output=f'File: {file_hash} not found\n'))
                 continue
             else:
                 raise
 
-        hash_type = report['type']
-
         scores = {'high': 3, 'medium': 2, 'low': 1}
-
-        file_context = build_dbot_entry(file_hash, indicator_type=report['type'],
-                                        vendor='XFE', score=scores.get(report['risk'], 0))
-
-        if outputPaths['file'] in file_context:
-            context[outputPaths['file']].append(file_context[outputPaths['file']])
-
-        if outputPaths['dbotscore'] in file_context:
-            context[DBOT_SCORE_KEY].append(file_context[outputPaths['dbotscore']])
-
-        file_key = f'XFE.{outputPaths["file"]}'
+        dbot_score = Common.DBotScore(indicator=file_hash, indicator_type=DBotScoreType.FILE,
+                                      integration_name='XFE', score=scores.get(report['risk'], 0),
+                                      reliability=client.reliability)
 
         report_data = report['origins'].get('external', {})
         family_value = report_data.get('family')
-
         hash_info = {**report['origins'], 'Family': family_value,
                      'FamilyMembers': report_data.get('familyMembers')}
-        context[file_key] = hash_info
+        if client.create_relationships:
+            malware = dict_safe_get(hash_info, ['external', 'family'], [])
+            if malware and isinstance(malware, list):
+                malware = malware[0]
+                relationship = [EntityRelationship(name=EntityRelationship.Relationships.RELATED_TO,
+                                                   entity_a=file_hash,
+                                                   entity_a_type=FeedIndicatorType.File,
+                                                   entity_b=malware,
+                                                   entity_b_type=FeedIndicatorType.indicator_type_by_server_version(
+                                                       "STIX Malware"),
+                                                   source_reliability=client.reliability,
+                                                   brand='XFE')]
+
+        hash_type = get_hash_type(file_hash)  # if file_hash found, has to be md5, sha1 or sha256
+        if hash_type == 'md5':
+            file = Common.File(md5=file_hash, dbot_score=dbot_score, relationships=relationship)
+        elif hash_type == 'sha1':
+            file = Common.File(sha1=file_hash, dbot_score=dbot_score, relationships=relationship)
+        elif hash_type == 'sha256':
+            file = Common.File(sha256=file_hash, dbot_score=dbot_score, relationships=relationship)
+
+        context[f'XFE.{outputPaths["file"]}'] = hash_info
 
         download_servers = ','.join(server['ip'] for server in hash_info.get('downloadServers', {}).get('rows', []))
         cnc_servers = ','.join(server['domain'] for server in hash_info.get('CnCServers', {}).get('rows', []))
@@ -418,11 +437,17 @@ def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
                  'Source': hash_info.get('external', {}).get('source'),
                  'Created Date': report_data.get('firstSeen'),
                  'Type': hash_info.get('external', {}).get('malwareType')}
-        markdown += tableToMarkdown(f'X-Force {hash_type} Reputation for {args.get("file")}\n'
-                                    f'{XFORCE_URL}/malware/{args.get("file")}', table, removeNull=True)
-        reports.append(report)
+        markdown = tableToMarkdown(f'X-Force {hash_type} Reputation for {args.get("file")}\n'
+                                   f'{XFORCE_URL}/malware/{args.get("file")}', table, removeNull=True)
 
-    return markdown, context, reports
+        command_results.append(CommandResults(
+            readable_output=markdown,
+            outputs=context,
+            indicator=file,
+            raw_response=report,
+            relationships=relationship
+        ))
+    return command_results
 
 
 def whois_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
@@ -472,10 +497,21 @@ def main():
     params = demisto.params()
     credentials = params.get('credentials')
 
+    reliability = params.get('integrationReliability')
+    reliability = reliability if reliability else DBotScoreReliability.C
+
+    if DBotScoreReliability.is_valid_type(reliability):
+        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+    else:
+        raise Exception("Please provide a valid value for the Source Reliability parameter.")
+
     client = Client(params.get('url'),
                     credentials.get('identifier'), credentials.get('password'),
                     use_ssl=not params.get('insecure', False),
-                    use_proxy=params.get('proxy', False))
+                    use_proxy=params.get('proxy', False),
+                    reliability=reliability,
+                    create_relationships=argToBoolean(params.get('create_relationships')))
+
     commands = {
         'ip': ip_command,
         'url': url_command,
@@ -493,6 +529,8 @@ def main():
     try:
         if command == 'test-module':
             return_results(test_module(client))
+        elif command == 'file':
+            return_results(commands[command](client, demisto.args()))
         elif command in commands:
             return_outputs(*commands[command](client, demisto.args()))
         else:

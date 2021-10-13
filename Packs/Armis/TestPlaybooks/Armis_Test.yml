@@ -1,0 +1,907 @@
+id: Armis-Test
+version: -1
+name: Armis-Test
+description: Armis test playbook. Has inputs for alert id and device id. Change to
+  fit your instance.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 30d2d8b2-fe31-4ebd-86ff-5c90a4baea13
+    type: start
+    task:
+      id: 30d2d8b2-fe31-4ebd-86ff-5c90a4baea13
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "#none#":
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 7fbd84ce-252a-4ed8-84d3-ecbe5c97b85b
+    type: regular
+    task:
+      id: 7fbd84ce-252a-4ed8-84d3-ecbe5c97b85b
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: c10103c8-c8cf-4582-8fe8-7c48c4e7442d
+    type: regular
+    task:
+      id: c10103c8-c8cf-4582-8fe8-7c48c4e7442d
+      version: -1
+      name: armis-search-alerts
+      script: "|||armis-search-alerts"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "3"
+    scriptarguments:
+      alert_id:
+        simple: ${inputs.alert_id}
+      alert_type: {}
+      max_results: {}
+      severity: {}
+      status: {}
+      time_frame:
+        simple: 90 days
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 52d3b92d-e73c-4ff3-82e5-20eaead24bd7
+    type: condition
+    task:
+      id: 52d3b92d-e73c-4ff3-82e5-20eaead24bd7
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Alert.alertId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Alert.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Alert.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Alert.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Alert.time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Alert.title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Alert.type
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: dfc7a80a-0f6a-4552-80ca-0b8c8591b110
+    type: regular
+    task:
+      id: dfc7a80a-0f6a-4552-80ca-0b8c8591b110
+      version: -1
+      name: armis-update-alert-status to suppressed
+      script: "|||armis-update-alert-status"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "21"
+    scriptarguments:
+      alert_id:
+        simple: ${inputs.alert_id}
+      status:
+        simple: SUPPRESSED
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 5fdf971c-89f3-400c-8ed2-be1c423660ba
+    type: regular
+    task:
+      id: 5fdf971c-89f3-400c-8ed2-be1c423660ba
+      version: -1
+      name: armis-search-alerts-by-aql-string
+      script: "|||armis-search-alerts-by-aql-string"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "27"
+    scriptarguments:
+      aql_string:
+        simple: alertId:(${inputs.alert_id}) timeFrame:"90 days"
+      max_results: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: dc21cc1a-eb12-4d0f-8b01-a4a55ce1c29e
+    type: regular
+    task:
+      id: dc21cc1a-eb12-4d0f-8b01-a4a55ce1c29e
+      version: -1
+      name: armis-tag-device
+      script: "|||armis-tag-device"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "23"
+    scriptarguments:
+      device_id:
+        simple: ${inputs.device_id}
+      tags:
+        simple: test_playbook_tag
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 1e5a1a35-9527-4e8f-8dc2-f34cc5d16c14
+    type: regular
+    task:
+      id: 1e5a1a35-9527-4e8f-8dc2-f34cc5d16c14
+      version: -1
+      name: armis-untag-device
+      script: "|||armis-untag-device"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "25"
+    scriptarguments:
+      device_id:
+        simple: ${inputs.device_id}
+      tags:
+        simple: test_playbook_tag
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 2d49d268-7e70-436c-8a6f-c83da48236c3
+    type: regular
+    task:
+      id: 2d49d268-7e70-436c-8a6f-c83da48236c3
+      version: -1
+      name: armis-search-devices
+      script: "|||armis-search-devices"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "10"
+    scriptarguments:
+      device_id:
+        simple: ${inputs.device_id}
+      device_type: {}
+      ip_address: {}
+      mac_address: {}
+      max_results: {}
+      name: {}
+      risk_level: {}
+      time_frame:
+        simple: 90 days
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: dc8a9b5a-ec40-4a5d-8756-a982aa487614
+    type: condition
+    task:
+      id: dc8a9b5a-ec40-4a5d-8756-a982aa487614
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Device.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Device.type
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 3f01a0ce-ac7a-4c50-88e0-900a3a58e8aa
+    type: regular
+    task:
+      id: 3f01a0ce-ac7a-4c50-88e0-900a3a58e8aa
+      version: -1
+      name: armis-search-devices-by-aql
+      script: "|||armis-search-devices-by-aql"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "28"
+    scriptarguments:
+      aql_string:
+        simple: deviceId(${inputs.device_id}) timeFrame:"90 days"
+      max_results: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 9d82e0ed-e459-4117-8563-b8fba1eeb15b
+    type: title
+    task:
+      id: 9d82e0ed-e459-4117-8563-b8fba1eeb15b
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 21b91865-df8d-44ac-818d-80d43287ef62
+    type: regular
+    task:
+      id: 21b91865-df8d-44ac-818d-80d43287ef62
+      version: -1
+      name: armis-update-alert-status to resolved
+      script: "|||armis-update-alert-status"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "22"
+    scriptarguments:
+      alert_id:
+        simple: ${inputs.alert_id}
+      status:
+        simple: RESOLVED
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 87ab03c0-480d-4476-8007-5db983a81d6f
+    type: condition
+    task:
+      id: 87ab03c0-480d-4476-8007-5db983a81d6f
+      version: -1
+      name: Verify Alert is Resolved
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Armis.Alert.status
+            iscontext: true
+          right:
+            value:
+              simple: Resolved
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: ef069c29-532e-4d92-84e9-e20b44134f77
+    type: condition
+    task:
+      id: ef069c29-532e-4d92-84e9-e20b44134f77
+      version: -1
+      name: Verify Alert is Suppressed
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Armis.Alert.status
+            iscontext: true
+          right:
+            value:
+              simple: Suppressed
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: b7db6531-021d-44ef-85d5-39ea63945c24
+    type: regular
+    task:
+      id: b7db6531-021d-44ef-85d5-39ea63945c24
+      version: -1
+      name: armis-search-alerts
+      script: "|||armis-search-alerts"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "17"
+    scriptarguments:
+      alert_id:
+        simple: ${inputs.alert_id}
+      alert_type: {}
+      max_results: {}
+      severity: {}
+      status: {}
+      time_frame:
+        simple: 90 days
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 8cc658c0-cead-4d2f-8d5a-1897452ba88c
+    type: regular
+    task:
+      id: 8cc658c0-cead-4d2f-8d5a-1897452ba88c
+      version: -1
+      name: armis-search-alerts
+      script: "|||armis-search-alerts"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "16"
+    scriptarguments:
+      alert_id:
+        simple: ${inputs.alert_id}
+      alert_type: {}
+      max_results: {}
+      severity: {}
+      status: {}
+      time_frame:
+        simple: 90 days
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: fc273924-35b1-4ee6-8502-8082326227b3
+    type: regular
+    task:
+      id: fc273924-35b1-4ee6-8502-8082326227b3
+      version: -1
+      name: armis-search-devices
+      script: "|||armis-search-devices"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "24"
+    scriptarguments:
+      device_id:
+        simple: ${inputs.device_id}
+      device_type: {}
+      ip_address: {}
+      mac_address: {}
+      max_results: {}
+      name: {}
+      risk_level: {}
+      time_frame:
+        simple: 90 days
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: b2ab3bef-38f2-446a-89e7-91edbb35e235
+    type: condition
+    task:
+      id: b2ab3bef-38f2-446a-89e7-91edbb35e235
+      version: -1
+      name: Verify Device is tagged
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${Armis.Device.tags}
+            iscontext: true
+          right:
+            value:
+              simple: test_playbook_tag
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: e78ad758-4eb7-49f4-838f-57ed9cdd493c
+    type: regular
+    task:
+      id: e78ad758-4eb7-49f4-838f-57ed9cdd493c
+      version: -1
+      name: armis-search-devices
+      script: "|||armis-search-devices"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "26"
+    scriptarguments:
+      device_id:
+        simple: ${inputs.device_id}
+      device_type: {}
+      ip_address: {}
+      mac_address: {}
+      max_results: {}
+      name: {}
+      risk_level: {}
+      time_frame:
+        simple: 90 days
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 92ffd42d-cf5e-448e-8828-08f07c71a141
+    type: condition
+    task:
+      id: 92ffd42d-cf5e-448e-8828-08f07c71a141
+      version: -1
+      name: Verify Device is untagged
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: ${Armis.Device.tags}
+            iscontext: true
+          right:
+            value:
+              simple: test_playbook_tag
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: a19d991b-3fa0-4f44-8711-6520c0114b5b
+    type: condition
+    task:
+      id: a19d991b-3fa0-4f44-8711-6520c0114b5b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Alert.alertId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Alert.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Alert.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Alert.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Alert.time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Alert.title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Alert.type
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 57c2f2af-9e9a-474c-8f0a-4b82636b22f7
+    type: condition
+    task:
+      id: 57c2f2af-9e9a-474c-8f0a-4b82636b22f7
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Device.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Armis.Device.type
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3605,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: alert_id
+  value:
+    simple: "4043"
+  required: true
+  description: ""
+  playbookInputQuery:
+- key: device_id
+  value:
+    simple: "463"
+  required: true
+  description: ""
+  playbookInputQuery:
+outputs: []
+fromversion: 5.0.0

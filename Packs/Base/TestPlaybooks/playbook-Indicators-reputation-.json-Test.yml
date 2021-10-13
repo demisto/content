@@ -1,20 +1,22 @@
 id: Indicators reputation-.json Test
-fromversion: 5.5.0
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Indicators-reputation-Test
 description: Test our repution*.json regexes in misc folder
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 7ee8ea37-5ca0-4f68-81d9-b1477337a63f
+    taskid: 5663aed1-e502-4e49-89a8-c5d037192f08
     type: start
     task:
-      id: 7ee8ea37-5ca0-4f68-81d9-b1477337a63f
+      id: 5663aed1-e502-4e49-89a8-c5d037192f08
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "9"
@@ -33,15 +35,16 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 601e815b-95d5-497c-8cdb-168272504fe1
+    taskid: cd1099e8-dfe0-463b-8611-18fa86703319
     type: title
     task:
-      id: 601e815b-95d5-497c-8cdb-168272504fe1
+      id: cd1099e8-dfe0-463b-8611-18fa86703319
       version: -1
       name: FIle
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "67"
@@ -60,10 +63,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: db1761be-9d21-4694-8e14-ab58fc265bea
+    taskid: 4abf96af-c264-49ea-8e24-d313c62e233b
     type: regular
     task:
-      id: db1761be-9d21-4694-8e14-ab58fc265bea
+      id: 4abf96af-c264-49ea-8e24-d313c62e233b
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -77,10 +80,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -96,10 +95,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: 43511ca6-a7eb-423e-834b-a47abce01722
+    taskid: 1438a1e3-3329-4229-8902-63011370553f
     type: regular
     task:
-      id: 43511ca6-a7eb-423e-834b-a47abce01722
+      id: 1438a1e3-3329-4229-8902-63011370553f
       version: -1
       name: Set valid emails
       description: Sets a value into the context with the given context key
@@ -111,12 +110,11 @@ tasks:
       '#none#':
       - "11"
     scriptarguments:
-      append: {}
       key:
         simple: valid_emails
       value:
         simple: '"support@threatx.com", "foo@test.com", "5c530c1b.1c69fb81.bd826.0eff@mx.google.com",
-          "woo@demisto.com", "this.is@email.format"'
+          "woo@demisto.com", "this.is@email.format", "test[@]test.com", "1c69fb81.bd826.0eff[@]mx.google.com"'
     separatecontext: false
     view: |-
       {
@@ -132,10 +130,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 54402c6f-318c-417b-856c-935694ea82e4
+    taskid: 188dc3e9-7c0d-493a-83a2-a652d32c3eb5
     type: regular
     task:
-      id: 54402c6f-318c-417b-856c-935694ea82e4
+      id: 188dc3e9-7c0d-493a-83a2-a652d32c3eb5
       version: -1
       name: Print valid emails
       description: Prints text to war room (Markdown supported)
@@ -165,10 +163,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: d04895e7-5e76-4606-8810-dda844a05164
+    taskid: 5c5ca689-3599-4ef3-8caa-5d1cc12f97e7
     type: condition
     task:
-      id: d04895e7-5e76-4606-8810-dda844a05164
+      id: 5c5ca689-3599-4ef3-8caa-5d1cc12f97e7
       version: -1
       name: check auto extract emails
       type: condition
@@ -221,6 +219,22 @@ tasks:
           right:
             value:
               simple: foo@test.com
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${Account.Email.Address}
+            iscontext: true
+          right:
+            value:
+              simple: test@test.com
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${Account.Email.Address}
+            iscontext: true
+          right:
+            value:
+              simple: 1c69fb81.bd826.0eff@mx.google.com
     view: |-
       {
         "position": {
@@ -235,10 +249,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 7118774f-8939-4683-890b-d318f01727b2
+    taskid: 446931ff-41a9-4a67-81ba-6c1e7eb3a2d5
     type: regular
     task:
-      id: 7118774f-8939-4683-890b-d318f01727b2
+      id: 446931ff-41a9-4a67-81ba-6c1e7eb3a2d5
       version: -1
       name: set invalid emails
       description: Sets a value into the context with the given context key
@@ -250,13 +264,13 @@ tasks:
       '#none#':
       - "14"
     scriptarguments:
-      append: {}
       key:
         simple: invalid_emails
       value:
         simple: '"go.microsoft.com", "#@%^%#$@#$@#.com" "@example.com", "Joe Smith
           <email@example.com>", "email.example.com", "email@example@example.com",
-          ".email@example.com", "あいうえお@example.com"'
+          ".email@example.com", "あいうえお@example.com", "#[@]%^%#$[@]#.com" "[@]test.com",
+          "email[@]test[@]example.com"'
     separatecontext: false
     view: |-
       {
@@ -272,10 +286,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 30dec116-4aef-48dc-88cc-ba3754460172
+    taskid: 605a3d2d-61f8-49e8-8d24-f388f580dc86
     type: regular
     task:
-      id: 30dec116-4aef-48dc-88cc-ba3754460172
+      id: 605a3d2d-61f8-49e8-8d24-f388f580dc86
       version: -1
       name: Print invalid emails
       description: Prints text to war room (Markdown supported)
@@ -305,10 +319,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: f0531cf4-b2ba-488c-839f-e5488dbb6867
+    taskid: 1d99ff76-e9cd-49f1-89cf-85787f699e31
     type: condition
     task:
-      id: f0531cf4-b2ba-488c-839f-e5488dbb6867
+      id: 1d99ff76-e9cd-49f1-89cf-85787f699e31
       version: -1
       name: check non extraction of invalid emails
       type: condition
@@ -385,6 +399,30 @@ tasks:
           right:
             value:
               simple: あいうえお@example.com
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: ${Account.Email.Address}
+            iscontext: true
+          right:
+            value:
+              simple: email@test@example.com
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: ${Account.Email.Address}
+            iscontext: true
+          right:
+            value:
+              simple: '@test.com'
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: ${Account.Email.Address}
+            iscontext: true
+          right:
+            value:
+              simple: '#@%^%#$@#.com'
     view: |-
       {
         "position": {
@@ -399,15 +437,16 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: 8a56b05e-4f7c-4aa3-866f-ba1380f66bd5
+    taskid: 9b6360f5-e684-4f41-82d3-cf41d82d632f
     type: title
     task:
-      id: 8a56b05e-4f7c-4aa3-866f-ba1380f66bd5
+      id: 9b6360f5-e684-4f41-82d3-cf41d82d632f
       version: -1
       name: Email
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "10"
@@ -426,10 +465,10 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: 35c407e2-71cc-48e8-86c0-2563d635dcd0
+    taskid: 7476629e-915c-4038-8d01-268176b63271
     type: regular
     task:
-      id: 35c407e2-71cc-48e8-86c0-2563d635dcd0
+      id: 7476629e-915c-4038-8d01-268176b63271
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -443,10 +482,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -462,15 +497,16 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: d923927c-43b6-492e-859c-44de52e5292b
+    taskid: 90321828-46e0-4d81-8b23-ecd6c97961be
     type: title
     task:
-      id: d923927c-43b6-492e-859c-44de52e5292b
+      id: 90321828-46e0-4d81-8b23-ecd6c97961be
       version: -1
       name: Domain
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "20"
@@ -489,10 +525,10 @@ tasks:
     quietmode: 0
   "20":
     id: "20"
-    taskid: 740a76ad-95b2-43d3-8ffe-e379f5d81f88
+    taskid: 5c18d964-9e7a-4ec5-818e-305fb0781354
     type: regular
     task:
-      id: 740a76ad-95b2-43d3-8ffe-e379f5d81f88
+      id: 5c18d964-9e7a-4ec5-818e-305fb0781354
       version: -1
       name: Set vaild domains
       description: Sets a value into the context with the given context key
@@ -504,7 +540,6 @@ tasks:
       '#none#':
       - "21"
     scriptarguments:
-      append: {}
       key:
         simple: valid_domains
       value:
@@ -525,10 +560,10 @@ tasks:
     quietmode: 0
   "21":
     id: "21"
-    taskid: dc3b02fa-2ef1-4776-8782-b9a569d73570
+    taskid: 3c4f0d9e-52eb-4a55-8a67-c01fc8aad344
     type: regular
     task:
-      id: dc3b02fa-2ef1-4776-8782-b9a569d73570
+      id: 3c4f0d9e-52eb-4a55-8a67-c01fc8aad344
       version: -1
       name: Print valid domains
       description: Prints text to war room (Markdown supported)
@@ -560,10 +595,10 @@ tasks:
     quietmode: 0
   "22":
     id: "22"
-    taskid: c8922fee-1465-4921-8c76-cebf97224c55
+    taskid: 5a598810-da2a-4149-8e89-05a547ecd382
     type: condition
     task:
-      id: c8922fee-1465-4921-8c76-cebf97224c55
+      id: 5a598810-da2a-4149-8e89-05a547ecd382
       version: -1
       name: check auto extract domains
       type: condition
@@ -662,10 +697,10 @@ tasks:
     quietmode: 0
   "23":
     id: "23"
-    taskid: 6a9210d1-acac-4fbf-84c6-fa4d85fc26fb
+    taskid: 8a11ede0-c879-44af-851b-5c0298b15338
     type: regular
     task:
-      id: 6a9210d1-acac-4fbf-84c6-fa4d85fc26fb
+      id: 8a11ede0-c879-44af-851b-5c0298b15338
       version: -1
       name: Set invalid domains
       description: Sets a value into the context with the given context key
@@ -677,7 +712,6 @@ tasks:
       '#none#':
       - "24"
     scriptarguments:
-      append: {}
       key:
         simple: invalid_domains
       value:
@@ -697,10 +731,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: 43a141e1-f993-4ddf-86e1-6dd375e5f68b
+    taskid: 2a0a90d3-e997-4358-888a-b9153acc93f8
     type: regular
     task:
-      id: 43a141e1-f993-4ddf-86e1-6dd375e5f68b
+      id: 2a0a90d3-e997-4358-888a-b9153acc93f8
       version: -1
       name: Print invalid domains
       description: Prints text to war room (Markdown supported)
@@ -730,10 +764,10 @@ tasks:
     quietmode: 0
   "25":
     id: "25"
-    taskid: b80df3a7-1ce6-49a5-8f8f-9b3fd777b64e
+    taskid: 3b812793-83c8-4240-8532-c685dbb10602
     type: condition
     task:
-      id: b80df3a7-1ce6-49a5-8f8f-9b3fd777b64e
+      id: 3b812793-83c8-4240-8532-c685dbb10602
       version: -1
       name: check non extraction of invalid domains
       type: condition
@@ -776,10 +810,10 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: 853090ea-75dc-457d-8f75-b31204118eb0
+    taskid: b59baa48-413c-4f8e-8463-84fd448a4078
     type: regular
     task:
-      id: 853090ea-75dc-457d-8f75-b31204118eb0
+      id: b59baa48-413c-4f8e-8463-84fd448a4078
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -793,10 +827,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -812,15 +842,16 @@ tasks:
     quietmode: 0
   "27":
     id: "27"
-    taskid: 7fe6ccdf-1cd4-499d-8a95-ef6760bad09e
+    taskid: e487b7f0-7b3b-4220-882f-e26f8393a47a
     type: title
     task:
-      id: 7fe6ccdf-1cd4-499d-8a95-ef6760bad09e
+      id: e487b7f0-7b3b-4220-882f-e26f8393a47a
       version: -1
       name: URL
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "28"
@@ -839,10 +870,10 @@ tasks:
     quietmode: 0
   "28":
     id: "28"
-    taskid: 4243c570-9b2a-4c69-8ace-4abde218cc07
+    taskid: 7ac8a6b9-6a50-472a-8839-c4eb747c0a4e
     type: regular
     task:
-      id: 4243c570-9b2a-4c69-8ace-4abde218cc07
+      id: 7ac8a6b9-6a50-472a-8839-c4eb747c0a4e
       version: -1
       name: Set valid URLs
       description: Sets a value into the context with the given context key
@@ -854,13 +885,13 @@ tasks:
       '#none#':
       - "29"
     scriptarguments:
-      append: {}
       key:
         simple: valid_urls
       value:
         simple: '"http:\\example.com", "http:example.com", "www.ru.wikipedia.org/wiki/Елизавета_I",
           "www.golang.org/pkg/regexp/syntax/", "www.mock.com?e=P6wGLG", "www.bücher.de",
-          "www.mock.com?gbdfs", "https://very.non.malicious.link.com/?url=https://hs-493391.t.myspot.net/e2t/c/*W18tsYF1kx8GnW3gMqC22tNDpb0/*VyTf3G8Z5tzsW6ZtJVm16pm9y0/5/f18dQhb0Sjvg8YHtdnW4yW9Gg7wXdkxW1226P22BplFbW4X4JfH3tD-KTW2K4V9Y8–HBkW8-26zT54WmDkW8-y12S8HbRxPN8k1dMQpSBF3N8WhTQ1JVPWnW58jdzV55F8NJW1TxP_c3-zX8TW1h4tYc1ZJc7nW9dSlS635rgClW93-JnT6rY-3sW2KQ2YY1Gk5btW360lT36pzHWBW79p91d2tk5vHW2z_scn6x2RKSW5-lMJc5tl56XW4rg-x22m3yw6W4ygqRJ3bHG73W4XqJc33wXgzKW30W3q936dSQMW2B2Mrq5WdvG4W4rq3_c3Rjc3wW3HcVw66skpxGW4VJsm45Wh0RvW4rV7dB6mRlwJW6MqkD43Hzf02W3jvrZM4kZvVwW61S2h-82G-VBN8yRlRqrPpMvVrJh2D4kxR3rW69_fvX4rHWjtN7mNJrsch-NYW2XGkjn2GD9D7W49WgNP6ZGyNkN5mdMt3bhl36W9c2TH44VyT05W7-fpqd9kRtWfW2pglVT6vc-Z6VJtGSY2XT6Ms0&data=02\|01\|bark@demisto.com\|097990af37d940aab90608d65127c465\|8b86a65e3c3a44068ac319a6b5cc52bc\|1\|0\|636785628577804533&sdata=nSdMICDRUwP60OgXBo79s8rQUywrWxaYdr7BKPeXamo=&reserved=0","http://test.com#fragment3","http://test.com#fragment3/","http://test.com#fragment3#fragment3"'
+          "https://Test.com/this''that" "http://_23_11.redacted.com./#redactedredactedredacted",
+          "www.mock.com?gbdfs", "https://very.non.malicious.link.com/?url=https://hs-493391.t.myspot.net/e2t/c/*W18tsYF1kx8GnW3gMqC22tNDpb0/*VyTf3G8Z5tzsW6ZtJVm16pm9y0/5/f18dQhb0Sjvg8YHtdnW4yW9Gg7wXdkxW1226P22BplFbW4X4JfH3tD-KTW2K4V9Y8–HBkW8-26zT54WmDkW8-y12S8HbRxPN8k1dMQpSBF3N8WhTQ1JVPWnW58jdzV55F8NJW1TxP_c3-zX8TW1h4tYc1ZJc7nW9dSlS635rgClW93-JnT6rY-3sW2KQ2YY1Gk5btW360lT36pzHWBW79p91d2tk5vHW2z_scn6x2RKSW5-lMJc5tl56XW4rg-x22m3yw6W4ygqRJ3bHG73W4XqJc33wXgzKW30W3q936dSQMW2B2Mrq5WdvG4W4rq3_c3Rjc3wW3HcVw66skpxGW4VJsm45Wh0RvW4rV7dB6mRlwJW6MqkD43Hzf02W3jvrZM4kZvVwW61S2h-82G-VBN8yRlRqrPpMvVrJh2D4kxR3rW69_fvX4rHWjtN7mNJrsch-NYW2XGkjn2GD9D7W49WgNP6ZGyNkN5mdMt3bhl36W9c2TH44VyT05W7-fpqd9kRtWfW2pglVT6vc-Z6VJtGSY2XT6Ms0&data=02\|01\|bark@demisto.com\|097990af37d940aab90608d65127c465\|8b86a65e3c3a44068ac319a6b5cc52bc\|1\|0\|636785628577804533&sdata=nSdMICDRUwP60OgXBo79s8rQUywrWxaYdr7BKPeXamo=&reserved=0","http://test.com#fragment3","http://test.com#fragment3/","http://test.com#fragment3#fragment3","(http://www.foo.bar/taz?())"'
     separatecontext: false
     view: |-
       {
@@ -876,10 +907,10 @@ tasks:
     quietmode: 0
   "29":
     id: "29"
-    taskid: f1cde9dd-d4c4-48b5-8e11-7dad1bd3ed43
+    taskid: c845045d-f3e9-4a67-82c8-21619f968049
     type: regular
     task:
-      id: f1cde9dd-d4c4-48b5-8e11-7dad1bd3ed43
+      id: c845045d-f3e9-4a67-82c8-21619f968049
       version: -1
       name: Print valid URLs
       description: Prints text to war room (Markdown supported)
@@ -909,10 +940,10 @@ tasks:
     quietmode: 0
   "30":
     id: "30"
-    taskid: fbfe2307-086d-452f-8082-40e148f489f3
+    taskid: fc84fe1e-d95c-4554-86a8-ff533d54bb63
     type: condition
     task:
-      id: fbfe2307-086d-452f-8082-40e148f489f3
+      id: fc84fe1e-d95c-4554-86a8-ff533d54bb63
       version: -1
       name: Check auto-extract
       type: condition
@@ -1005,6 +1036,38 @@ tasks:
           right:
             value:
               simple: http://test.com#fragment3#fragment3
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: http://_23_11.redacted.com
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: http://www.foo.bar/taz?()
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: http://www.foo.bar/taz?())
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: https://Test.com/this'that
     view: |-
       {
         "position": {
@@ -1019,10 +1082,10 @@ tasks:
     quietmode: 0
   "31":
     id: "31"
-    taskid: 5c9ee46d-6734-403b-8d8b-ca9e8f51be78
+    taskid: 2596c1db-4587-4ba4-8638-1d98fa5d5fd2
     type: regular
     task:
-      id: 5c9ee46d-6734-403b-8d8b-ca9e8f51be78
+      id: 2596c1db-4587-4ba4-8638-1d98fa5d5fd2
       version: -1
       name: Set invalid URLs
       description: Sets a value into the context with the given context key
@@ -1034,12 +1097,11 @@ tasks:
       '#none#':
       - "32"
     scriptarguments:
-      append: {}
       key:
         simple: invalid_urls
       value:
         simple: '"http://3628126748", "http://.www.foo.bar/",, "http:// shouldfail.com",
-          "http://foo.bar/foo(bar)baz quux"'
+          "http://foo.bar/foo(bar)baz quux","http://www.foo.bar/baz?x=3())"'
     separatecontext: false
     view: |-
       {
@@ -1055,10 +1117,10 @@ tasks:
     quietmode: 0
   "32":
     id: "32"
-    taskid: d581043b-2428-46de-8837-fd942408047e
+    taskid: 12744c04-72e1-4c7c-86a8-6088dabcfdd3
     type: regular
     task:
-      id: d581043b-2428-46de-8837-fd942408047e
+      id: 12744c04-72e1-4c7c-86a8-6088dabcfdd3
       version: -1
       name: Print invalid URLs
       description: Prints text to war room (Markdown supported)
@@ -1088,10 +1150,10 @@ tasks:
     quietmode: 0
   "33":
     id: "33"
-    taskid: 1a33f3d4-98d1-4dd0-8c04-ac99795fd290
+    taskid: 814c9e44-fb9b-483a-8ebc-ff0c0876d824
     type: condition
     task:
-      id: 1a33f3d4-98d1-4dd0-8c04-ac99795fd290
+      id: 814c9e44-fb9b-483a-8ebc-ff0c0876d824
       version: -1
       name: Check non extraction of invalid URLs
       type: condition
@@ -1136,6 +1198,14 @@ tasks:
           right:
             value:
               simple: http://foo.bar/foo(bar)baz quux
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: http://www.foo.bar/baz?x=3())
     view: |-
       {
         "position": {
@@ -1150,10 +1220,10 @@ tasks:
     quietmode: 0
   "34":
     id: "34"
-    taskid: bb22a044-4411-434b-8d49-dffe90b3f067
+    taskid: 771f459a-14fa-4b7a-8f4f-2df32aabadbb
     type: title
     task:
-      id: bb22a044-4411-434b-8d49-dffe90b3f067
+      id: 771f459a-14fa-4b7a-8f4f-2df32aabadbb
       version: -1
       name: IP
       description: IP
@@ -1178,10 +1248,10 @@ tasks:
     quietmode: 0
   "35":
     id: "35"
-    taskid: f63b8e92-7e0b-4348-8460-b5b2d7af2751
+    taskid: ef355c3e-32f6-4ef8-8d16-d14355a98cc1
     type: regular
     task:
-      id: f63b8e92-7e0b-4348-8460-b5b2d7af2751
+      id: ef355c3e-32f6-4ef8-8d16-d14355a98cc1
       version: -1
       name: Set valid IPs
       description: Sets a value into the context with the given context key
@@ -1193,7 +1263,6 @@ tasks:
       '#none#':
       - "36"
     scriptarguments:
-      append: {}
       key:
         simple: valid_ips
       value:
@@ -1213,10 +1282,10 @@ tasks:
     quietmode: 0
   "36":
     id: "36"
-    taskid: a6dcc60c-71e5-44a4-8ace-21bc11b86429
+    taskid: 0041c754-2ff7-4a7c-866a-e4cc631a5312
     type: regular
     task:
-      id: a6dcc60c-71e5-44a4-8ace-21bc11b86429
+      id: 0041c754-2ff7-4a7c-866a-e4cc631a5312
       version: -1
       name: Print valid IPs
       description: Prints text to war room (Markdown supported)
@@ -1246,10 +1315,10 @@ tasks:
     quietmode: 0
   "37":
     id: "37"
-    taskid: 38148036-3e1a-4c2b-8ab7-f82bba09843f
+    taskid: 7d4ac60f-44e3-4bc9-8b0f-18f96b0e4bed
     type: condition
     task:
-      id: 38148036-3e1a-4c2b-8ab7-f82bba09843f
+      id: 7d4ac60f-44e3-4bc9-8b0f-18f96b0e4bed
       version: -1
       name: Check auto-extract
       type: condition
@@ -1308,10 +1377,10 @@ tasks:
     quietmode: 0
   "38":
     id: "38"
-    taskid: 9d9a71b3-6f52-4abc-8b78-a2749f93a400
+    taskid: 84c7f5a0-a669-4004-8f6e-14ca04784af5
     type: regular
     task:
-      id: 9d9a71b3-6f52-4abc-8b78-a2749f93a400
+      id: 84c7f5a0-a669-4004-8f6e-14ca04784af5
       version: -1
       name: Set invalid IPs
       description: Sets a value into the context with the given context key
@@ -1323,7 +1392,6 @@ tasks:
       '#none#':
       - "39"
     scriptarguments:
-      append: {}
       key:
         simple: invalid_ips
       value:
@@ -1344,10 +1412,10 @@ tasks:
     quietmode: 0
   "39":
     id: "39"
-    taskid: 8c392cb0-e868-4376-8348-a1a2e33ecafa
+    taskid: 418d33d7-6a97-4bdf-8566-55cc7c75206f
     type: regular
     task:
-      id: 8c392cb0-e868-4376-8348-a1a2e33ecafa
+      id: 418d33d7-6a97-4bdf-8566-55cc7c75206f
       version: -1
       name: Print invalid IPs
       description: Prints text to war room (Markdown supported)
@@ -1377,10 +1445,10 @@ tasks:
     quietmode: 0
   "40":
     id: "40"
-    taskid: f47c4518-4052-4d26-845f-d37c7811e99f
+    taskid: b7b24fe4-bdf8-4995-89a5-38d9159064ad
     type: condition
     task:
-      id: f47c4518-4052-4d26-845f-d37c7811e99f
+      id: b7b24fe4-bdf8-4995-89a5-38d9159064ad
       version: -1
       name: Check non extraction of invalid IPs
       type: condition
@@ -1471,10 +1539,10 @@ tasks:
     quietmode: 0
   "41":
     id: "41"
-    taskid: eb169950-7368-4e05-8de5-ca6a93c1fa9b
+    taskid: db3b094c-dc02-4af0-8a19-538d973e2e23
     type: regular
     task:
-      id: eb169950-7368-4e05-8de5-ca6a93c1fa9b
+      id: db3b094c-dc02-4af0-8a19-538d973e2e23
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1488,10 +1556,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -1507,15 +1571,16 @@ tasks:
     quietmode: 0
   "42":
     id: "42"
-    taskid: e2406d63-8c14-4824-80cb-f9a1af3da90a
+    taskid: 9535f156-44f8-4a6e-8eb8-aeaec0b88c90
     type: title
     task:
-      id: e2406d63-8c14-4824-80cb-f9a1af3da90a
+      id: 9535f156-44f8-4a6e-8eb8-aeaec0b88c90
       version: -1
       name: IPv4 CIDR
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "43"
@@ -1534,10 +1599,10 @@ tasks:
     quietmode: 0
   "43":
     id: "43"
-    taskid: a14e8472-3022-4473-8349-31b936af1bc8
+    taskid: cffadda6-ddfd-4c55-8fc5-93c5b5e1cdee
     type: regular
     task:
-      id: a14e8472-3022-4473-8349-31b936af1bc8
+      id: cffadda6-ddfd-4c55-8fc5-93c5b5e1cdee
       version: -1
       name: Set valid IPv4s CIDR
       description: Sets a value into the context with the given context key
@@ -1549,7 +1614,6 @@ tasks:
       '#none#':
       - "44"
     scriptarguments:
-      append: {}
       key:
         simple: valid_ipv4s_cidr
       value:
@@ -1569,10 +1633,10 @@ tasks:
     quietmode: 0
   "44":
     id: "44"
-    taskid: 21f43c35-f701-4b26-88e6-0ac0cd1842d1
+    taskid: 5b589ddc-ef62-496f-846b-a4b2add699a4
     type: regular
     task:
-      id: 21f43c35-f701-4b26-88e6-0ac0cd1842d1
+      id: 5b589ddc-ef62-496f-846b-a4b2add699a4
       version: -1
       name: Print valid IPv4s CIDR
       description: Prints text to war room (Markdown supported)
@@ -1602,10 +1666,10 @@ tasks:
     quietmode: 0
   "45":
     id: "45"
-    taskid: 3de3c8b2-daa5-46c8-8b23-20770c8f3dc7
+    taskid: d2dd2569-3f23-466c-82da-511df3c8fdd5
     type: condition
     task:
-      id: 3de3c8b2-daa5-46c8-8b23-20770c8f3dc7
+      id: d2dd2569-3f23-466c-82da-511df3c8fdd5
       version: -1
       name: Check auto-extract
       type: condition
@@ -1664,10 +1728,10 @@ tasks:
     quietmode: 0
   "46":
     id: "46"
-    taskid: d23e49ab-19a9-459e-8983-d05a3a8eb9a2
+    taskid: 8357fab8-1ce0-43b6-8e98-a8a2ac770b06
     type: regular
     task:
-      id: d23e49ab-19a9-459e-8983-d05a3a8eb9a2
+      id: 8357fab8-1ce0-43b6-8e98-a8a2ac770b06
       version: -1
       name: Set invalid IPv4s CIDR
       description: Sets a value into the context with the given context key
@@ -1679,7 +1743,6 @@ tasks:
       '#none#':
       - "47"
     scriptarguments:
-      append: {}
       key:
         simple: invalid_ipv4s_cidr
       value:
@@ -1699,10 +1762,10 @@ tasks:
     quietmode: 0
   "47":
     id: "47"
-    taskid: 16b330c5-a653-4250-8dba-781f3d2eb9b9
+    taskid: f67cb38c-f7fa-44b5-88be-32f506516731
     type: regular
     task:
-      id: 16b330c5-a653-4250-8dba-781f3d2eb9b9
+      id: f67cb38c-f7fa-44b5-88be-32f506516731
       version: -1
       name: Print invalid IPv4s CIDR
       description: Prints text to war room (Markdown supported)
@@ -1732,10 +1795,10 @@ tasks:
     quietmode: 0
   "48":
     id: "48"
-    taskid: 483bcf36-915e-45a9-84c7-02a3b24c49c0
+    taskid: 33831939-44b1-437c-86e1-0f18aa98008b
     type: condition
     task:
-      id: 483bcf36-915e-45a9-84c7-02a3b24c49c0
+      id: 33831939-44b1-437c-86e1-0f18aa98008b
       version: -1
       name: Check non extraction of invalid IPv4s CIDR
       type: condition
@@ -1786,15 +1849,16 @@ tasks:
     quietmode: 0
   "49":
     id: "49"
-    taskid: d84ba754-3b3d-408f-82c9-4149ce992df3
+    taskid: 689f1d8d-0a68-4331-8b1c-dfb7c4b0371f
     type: title
     task:
-      id: d84ba754-3b3d-408f-82c9-4149ce992df3
+      id: 689f1d8d-0a68-4331-8b1c-dfb7c4b0371f
       version: -1
       name: IPv6
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "73"
@@ -1813,10 +1877,10 @@ tasks:
     quietmode: 0
   "51":
     id: "51"
-    taskid: ca65d0b7-bfe9-452b-8b3e-c19099f90f4f
+    taskid: 9e98f699-5ee2-4b80-86f2-bf622ee59d31
     type: regular
     task:
-      id: ca65d0b7-bfe9-452b-8b3e-c19099f90f4f
+      id: 9e98f699-5ee2-4b80-86f2-bf622ee59d31
       version: -1
       name: Print valid IPv6s
       description: Prints text to war room (Markdown supported)
@@ -1846,10 +1910,10 @@ tasks:
     quietmode: 0
   "52":
     id: "52"
-    taskid: 1c092e7d-eaeb-4e3a-8e30-d40469816624
+    taskid: 5c5654b9-118c-4562-86a8-6f54cd4dd5d6
     type: condition
     task:
-      id: 1c092e7d-eaeb-4e3a-8e30-d40469816624
+      id: 5c5654b9-118c-4562-86a8-6f54cd4dd5d6
       version: -1
       name: Check auto-extract
       type: condition
@@ -1908,10 +1972,10 @@ tasks:
     quietmode: 0
   "53":
     id: "53"
-    taskid: f344f332-a3c9-4023-8e3a-f5708adcf325
+    taskid: c5faf14c-9bba-40fe-8d29-82112b84a1dc
     type: regular
     task:
-      id: f344f332-a3c9-4023-8e3a-f5708adcf325
+      id: c5faf14c-9bba-40fe-8d29-82112b84a1dc
       version: -1
       name: Set invalid IPv6s
       description: Sets a value into the context with the given context key
@@ -1923,7 +1987,6 @@ tasks:
       '#none#':
       - "54"
     scriptarguments:
-      append: {}
       key:
         simple: invalid_ipv6s
       value:
@@ -1944,10 +2007,10 @@ tasks:
     quietmode: 0
   "54":
     id: "54"
-    taskid: 8b4c9b6e-6659-412b-8d91-62ef5c022221
+    taskid: 42e6c1b7-728e-4f17-8dcc-3774c48af5b9
     type: regular
     task:
-      id: 8b4c9b6e-6659-412b-8d91-62ef5c022221
+      id: 42e6c1b7-728e-4f17-8dcc-3774c48af5b9
       version: -1
       name: Print invalid IPv6s
       description: Prints text to war room (Markdown supported)
@@ -1977,10 +2040,10 @@ tasks:
     quietmode: 0
   "55":
     id: "55"
-    taskid: c8da3bef-59cd-4ad7-877c-d8705d1dd7be
+    taskid: 9351e757-9879-4cdc-876f-5feb87f1fe56
     type: condition
     task:
-      id: c8da3bef-59cd-4ad7-877c-d8705d1dd7be
+      id: 9351e757-9879-4cdc-876f-5feb87f1fe56
       version: -1
       name: Check non extraction of invalid IPv6s
       type: condition
@@ -2031,15 +2094,16 @@ tasks:
     quietmode: 0
   "56":
     id: "56"
-    taskid: b9ff275d-1ccc-48bc-8ccc-0ba54c48ec4d
+    taskid: 3689fdbf-4655-4c09-8cb8-a23c8ab9bf65
     type: title
     task:
-      id: b9ff275d-1ccc-48bc-8ccc-0ba54c48ec4d
+      id: 3689fdbf-4655-4c09-8cb8-a23c8ab9bf65
       version: -1
       name: IPV6 CIDR
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "57"
@@ -2058,10 +2122,10 @@ tasks:
     quietmode: 0
   "57":
     id: "57"
-    taskid: f5af390a-1b6c-4825-8759-e5e8e1b93b93
+    taskid: 46625843-1a33-4a83-8655-a45c685bd980
     type: regular
     task:
-      id: f5af390a-1b6c-4825-8759-e5e8e1b93b93
+      id: 46625843-1a33-4a83-8655-a45c685bd980
       version: -1
       name: Set valid IPv6s CIDR
       description: Sets a value into the context with the given context key
@@ -2073,7 +2137,6 @@ tasks:
       '#none#':
       - "58"
     scriptarguments:
-      append: {}
       key:
         simple: valid_ipv6s_cidr
       value:
@@ -2093,10 +2156,10 @@ tasks:
     quietmode: 0
   "58":
     id: "58"
-    taskid: b8a183bc-147d-4073-8f79-7f186fc0680c
+    taskid: 290c5928-0418-45fd-8d0f-b99a3492129b
     type: regular
     task:
-      id: b8a183bc-147d-4073-8f79-7f186fc0680c
+      id: 290c5928-0418-45fd-8d0f-b99a3492129b
       version: -1
       name: Print valid IPv6s CIDR
       description: Prints text to war room (Markdown supported)
@@ -2126,10 +2189,10 @@ tasks:
     quietmode: 0
   "59":
     id: "59"
-    taskid: 228132fb-864d-465a-8684-81e8e6185b52
+    taskid: 2af5e8aa-77c5-444e-8025-a2cbf0448101
     type: condition
     task:
-      id: 228132fb-864d-465a-8684-81e8e6185b52
+      id: 2af5e8aa-77c5-444e-8025-a2cbf0448101
       version: -1
       name: Check auto-extract
       type: condition
@@ -2164,10 +2227,10 @@ tasks:
     quietmode: 0
   "60":
     id: "60"
-    taskid: 33edd1a9-be4f-4f7a-85d9-502cddcb11bd
+    taskid: 1387ecb2-32f8-4105-80f3-0a6e633e4cbe
     type: regular
     task:
-      id: 33edd1a9-be4f-4f7a-85d9-502cddcb11bd
+      id: 1387ecb2-32f8-4105-80f3-0a6e633e4cbe
       version: -1
       name: Set invalid IPv6s CIDR
       description: Sets a value into the context with the given context key
@@ -2179,7 +2242,6 @@ tasks:
       '#none#':
       - "61"
     scriptarguments:
-      append: {}
       key:
         simple: invalid_ipv6s_cidr
       value:
@@ -2199,10 +2261,10 @@ tasks:
     quietmode: 0
   "61":
     id: "61"
-    taskid: 5c03c7ef-b269-482c-84cf-0fb5c781690b
+    taskid: 7d288870-706a-44da-847a-8d4a5b63db7c
     type: regular
     task:
-      id: 5c03c7ef-b269-482c-84cf-0fb5c781690b
+      id: 7d288870-706a-44da-847a-8d4a5b63db7c
       version: -1
       name: Print invalid IPv6s CIDR
       description: Prints text to war room (Markdown supported)
@@ -2232,10 +2294,10 @@ tasks:
     quietmode: 0
   "62":
     id: "62"
-    taskid: 27ccffde-4981-4d10-84d8-c453b24e65bf
+    taskid: 4039d4f6-8853-40c2-849e-f4444718c38e
     type: condition
     task:
-      id: 27ccffde-4981-4d10-84d8-c453b24e65bf
+      id: 4039d4f6-8853-40c2-849e-f4444718c38e
       version: -1
       name: Check non extraction of invalid IPv6s CIDR
       type: condition
@@ -2270,10 +2332,10 @@ tasks:
     quietmode: 0
   "63":
     id: "63"
-    taskid: d076a541-e5d7-4cd3-88f4-95723a9ee3cd
+    taskid: 2c9d68f7-70e2-47d2-8ca4-bf2ca4cb13e3
     type: regular
     task:
-      id: d076a541-e5d7-4cd3-88f4-95723a9ee3cd
+      id: 2c9d68f7-70e2-47d2-8ca4-bf2ca4cb13e3
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -2287,10 +2349,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -2306,10 +2364,10 @@ tasks:
     quietmode: 0
   "64":
     id: "64"
-    taskid: e51c165d-2585-40f4-87fd-761cb8868de2
+    taskid: 442c6ad5-39b5-46b9-85b9-91d49bc12efe
     type: regular
     task:
-      id: e51c165d-2585-40f4-87fd-761cb8868de2
+      id: 442c6ad5-39b5-46b9-85b9-91d49bc12efe
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -2323,10 +2381,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -2342,10 +2396,10 @@ tasks:
     quietmode: 0
   "65":
     id: "65"
-    taskid: b656e055-2298-42f3-8a6e-fb69d92a7a3c
+    taskid: 0f8faf45-8547-47e5-87b0-dbd8d92d3a33
     type: regular
     task:
-      id: b656e055-2298-42f3-8a6e-fb69d92a7a3c
+      id: 0f8faf45-8547-47e5-87b0-dbd8d92d3a33
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -2359,10 +2413,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -2378,10 +2428,10 @@ tasks:
     quietmode: 0
   "66":
     id: "66"
-    taskid: 8c1294fb-68d9-41c8-8fff-6aad30bef850
+    taskid: 6be860cb-dbe9-41d4-85db-44c1f443d8e0
     type: regular
     task:
-      id: 8c1294fb-68d9-41c8-8fff-6aad30bef850
+      id: 6be860cb-dbe9-41d4-85db-44c1f443d8e0
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -2395,10 +2445,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -2414,10 +2460,10 @@ tasks:
     quietmode: 0
   "67":
     id: "67"
-    taskid: f7a064ac-214b-42c2-8223-dc6aa3276a84
+    taskid: 96af5fdb-8172-4ca7-818f-910a5be73d7b
     type: regular
     task:
-      id: f7a064ac-214b-42c2-8223-dc6aa3276a84
+      id: 96af5fdb-8172-4ca7-818f-910a5be73d7b
       version: -1
       name: Set valid File
       description: Sets a value into the context with the given context key
@@ -2429,10 +2475,8 @@ tasks:
       '#none#':
       - "68"
     scriptarguments:
-      append: {}
       key:
         simple: valid_file
-      stringify: {}
       value:
         simple: 2AA7B11DA27EB0B8F9B9716CB0E0DA167328FDA58598FDC39040822EAA32484E09E5AF656B991B9EACCA6F3FB10481076527D2FFC2167932034688F3CF7EE7D4
     separatecontext: false
@@ -2450,10 +2494,10 @@ tasks:
     quietmode: 0
   "68":
     id: "68"
-    taskid: 23e111e1-4bcf-4589-8e16-383df84fb195
+    taskid: 6baa1d3a-bd07-437c-8211-2e8f9b8fa4cd
     type: regular
     task:
-      id: 23e111e1-4bcf-4589-8e16-383df84fb195
+      id: 6baa1d3a-bd07-437c-8211-2e8f9b8fa4cd
       version: -1
       name: Print valid File
       description: Prints text to war room (Markdown supported)
@@ -2483,10 +2527,10 @@ tasks:
     quietmode: 0
   "69":
     id: "69"
-    taskid: c82aebfa-6f11-4178-873f-3b069a4c57f2
+    taskid: b6ffcb0f-7130-4f8c-8a5d-dccad71c8646
     type: condition
     task:
-      id: c82aebfa-6f11-4178-873f-3b069a4c57f2
+      id: b6ffcb0f-7130-4f8c-8a5d-dccad71c8646
       version: -1
       name: Check auto-extract
       type: condition
@@ -2521,10 +2565,10 @@ tasks:
     quietmode: 0
   "70":
     id: "70"
-    taskid: 04540163-04fa-4218-8b71-75393614682b
+    taskid: f1b876d0-d1bd-43bf-879f-da44249c6744
     type: regular
     task:
-      id: 04540163-04fa-4218-8b71-75393614682b
+      id: f1b876d0-d1bd-43bf-879f-da44249c6744
       version: -1
       name: Untitled Task
       description: Delete field from context
@@ -2538,10 +2582,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -2557,10 +2597,10 @@ tasks:
     quietmode: 0
   "71":
     id: "71"
-    taskid: 71047f57-0d0d-4946-8935-33a073eabab5
+    taskid: 49b4ab9c-62f8-4635-8ec3-1bd87cd1ed1c
     type: regular
     task:
-      id: 71047f57-0d0d-4946-8935-33a073eabab5
+      id: 49b4ab9c-62f8-4635-8ec3-1bd87cd1ed1c
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -2574,10 +2614,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -2593,15 +2629,16 @@ tasks:
     quietmode: 0
   "72":
     id: "72"
-    taskid: cd64c265-bb51-43eb-84e7-d3e54f635f7b
+    taskid: 15c989c3-5055-4cb7-861b-7d0696a13239
     type: title
     task:
-      id: cd64c265-bb51-43eb-84e7-d3e54f635f7b
+      id: 15c989c3-5055-4cb7-861b-7d0696a13239
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -2617,10 +2654,10 @@ tasks:
     quietmode: 0
   "73":
     id: "73"
-    taskid: 48f22dbc-43c3-4113-8526-c18420f93df8
+    taskid: 41d45870-f34b-40d1-8b28-5382193a9ac6
     type: regular
     task:
-      id: 48f22dbc-43c3-4113-8526-c18420f93df8
+      id: 41d45870-f34b-40d1-8b28-5382193a9ac6
       version: -1
       name: Set valid IPv6s
       description: Sets a value into the context with the given context key
@@ -2632,10 +2669,8 @@ tasks:
       '#none#':
       - "51"
     scriptarguments:
-      append: {}
       key:
         simple: valid_ipv6s
-      stringify: {}
       value:
         simple: '"2001:db8:85a3:8d3:1319:8a2e:370:7348", "2001:db8::ff00:42:8329",
           "1a:2b::4c:5:6:7:8", "1a:2b::4c:5abc"'
@@ -2669,3 +2704,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

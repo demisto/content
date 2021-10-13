@@ -9,6 +9,7 @@ The RSA Archer GRC Platform provides a common foundation for managing policies, 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | url | Server URL \(e.g. https://example.net\) | True |
+| api_endpoint | api endpoint, Warning: add only if you have other API Endpoint | True |
 | credentials | Username | True |
 | isFetch | Fetch incidents | False |
 | incidentType | Incident type | False |
@@ -23,8 +24,10 @@ The RSA Archer GRC Platform provides a common foundation for managing policies, 
 | fields_to_fetch | List of fields from the application to gets into the incident | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+Note: the api_endpoint parameter should be used only if you have another API endpoint.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### archer-search-applications
 ***
@@ -490,8 +493,8 @@ There is no context output for this command.
 
 ### archer-update-record
 ***
-Updates existing content record in the given application
-
+Updates existing content record in the given application.
+When updating a record, it is important to pay attention to the way the values are sent through the argument - fieldsToValues. For more information regarding this argument see archer-create-record description.
 
 #### Base Command
 
@@ -810,7 +813,7 @@ To associate to a record, must provide all of the following arguments: applicati
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entryId | The entry id of the file in Demisto's context | Required | 
+| entryId | The entry id of the file in Cortex XSOAR's context | Required | 
 | contentId | The Content (record) ID to update.| Optional | 
 | applicationId | ID of the application which we want to upload the file to. | Optional | 
 | associatedField | Archer field name to associate the file with. | Optional
@@ -833,7 +836,7 @@ There is no context output for this command.
 
 ### archer-get-file
 ***
-Downloads file from Archer to Demisto's war room context
+Downloads file from Archer to Cortex XSOAR's war room context
 
 
 #### Base Command
@@ -954,7 +957,8 @@ Search for records inside the given application
 | numericOperator | Numeric search operator | Optional | 
 | dateOperator | Date search operator | Optional | 
 | fieldsToGet | Fields to fetch from the the application | Optional | 
-| fullData | Get an extended responses with all of the data regarding this search. For example, "fullData=true" | Required | 
+| fullData | Get an extended responses with all of the data regarding this search. For example, "fullData=true" | Required |
+| isDescending | Whether to order by descending order. Possible values are: "true", "false". | Optional |
 
 
 #### Context Output

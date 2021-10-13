@@ -1,0 +1,5 @@
+[file:playbook-SMB_test.yml]
+ignore=auto-test
+
+[file:SMB_v2.yml]
+ignore=BA108,BA109

@@ -11,7 +11,7 @@
 <h2>Prerequisites</h2>
 <p>Access your TruSTAR environment to obtain an API key and an API secret.</p>
 <p>Navigate to <strong>Settings </strong>&gt; <strong>API </strong>&gt; <strong>API Credentials</strong>.</p>
-<h2>Configure TruSTAR on Demisto</h2>
+<h2>Configure TruSTAR on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for TruSTAR.</li>
@@ -38,7 +38,7 @@
 <li>Click <strong>Test </strong>to validate connectivity and credentials.</li>
 </ol>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_3942468361528291405689">Return a list of related indicators: trustar-related-indicators</a></li>
 <li><a href="#h_151383312491528291448872">Trending indicators: trustar-trending-indicators</a></li>

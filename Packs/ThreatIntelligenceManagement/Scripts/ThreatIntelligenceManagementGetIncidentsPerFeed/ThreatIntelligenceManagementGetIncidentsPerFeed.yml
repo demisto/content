@@ -11,5 +11,6 @@ subtype: python3
 system: false
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.8.2.6920
+dockerimage: demisto/python3:3.9.7.24076
+runas: DBotRole
 fromversion: 5.5.0

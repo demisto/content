@@ -5,18 +5,17 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 66fc7d94-533b-4d6a-8253-8ab932c40b2b
+    taskid: adb46772-86cc-4173-84e5-dd9c1fc715d1
     type: start
     task:
-      id: 66fc7d94-533b-4d6a-8253-8ab932c40b2b
+      id: adb46772-86cc-4173-84e5-dd9c1fc715d1
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
-      - "1"
+        - "1"
     separatecontext: false
     view: |-
       {
@@ -30,12 +29,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: fdd10253-9d43-46b2-87cf-959b2f5c9a53
+    taskid: cca99c7e-4955-40de-8977-b6f5caccb29c
     type: regular
     task:
-      id: fdd10253-9d43-46b2-87cf-959b2f5c9a53
+      id: cca99c7e-4955-40de-8977-b6f5caccb29c
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -45,14 +46,10 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
+        - "19"
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -66,12 +63,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 380f75f0-4407-41fd-8ec6-a13f3a8255bc
+    taskid: 13cccc0a-5eae-4302-810e-a785bc6a7a99
     type: regular
     task:
-      id: 380f75f0-4407-41fd-8ec6-a13f3a8255bc
+      id: 13cccc0a-5eae-4302-810e-a785bc6a7a99
       version: -1
       name: List Teams
       description: Returns all the groups that have teams in an organization.
@@ -81,7 +80,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+        - "3"
     separatecontext: false
     view: |-
       {
@@ -95,12 +94,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 56cc2bc9-8515-4723-8882-496633bbe683
+    taskid: 62fdb3a9-3b5b-494f-8120-8fe2f03e44cd
     type: condition
     task:
-      id: 56cc2bc9-8515-4723-8882-496633bbe683
+      id: 62fdb3a9-3b5b-494f-8120-8fe2f03e44cd
       version: -1
       name: Verify Created Team Is In List Outputs
       type: condition
@@ -108,28 +109,28 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "6"
+        - "6"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: MicrosoftTeams.Team
-                filters:
-                - - operator: containsGeneral
-                    left:
-                      value:
-                        simple: MicrosoftTeams.Team.displayName
-                      iscontext: true
-                    right:
-                      value:
-                        simple: GeneratedUUID
-                      iscontext: true
-                accessor: id
-            iscontext: true
+      - label: "yes"
+        condition:
+          - - operator: isExists
+              left:
+                value:
+                  complex:
+                    root: MicrosoftTeams.Team
+                    filters:
+                      - - operator: containsGeneral
+                          left:
+                            value:
+                              simple: MicrosoftTeams.Team.displayName
+                            iscontext: true
+                          right:
+                            value:
+                              simple: GeneratedUUID
+                            iscontext: true
+                    accessor: id
+                iscontext: true
     view: |-
       {
         "position": {
@@ -142,12 +143,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 1a10e0f4-229b-45d6-8d3e-25f97bdd2e77
+    taskid: c05e933a-5baa-4a79-8f8f-69091483f628
     type: regular
     task:
-      id: 1a10e0f4-229b-45d6-8d3e-25f97bdd2e77
+      id: c05e933a-5baa-4a79-8f8f-69091483f628
       version: -1
       name: Create Team
       description: Creates a new team.
@@ -157,27 +160,12 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+        - "5"
     scriptarguments:
-      allow_channel_mentions: {}
-      allow_guests_create_channels: {}
-      allow_guests_delete_channels: {}
-      allow_members_add_remove_apps: {}
-      allow_members_add_remove_connectors: {}
-      allow_members_add_remove_tabs: {}
-      allow_members_create_channels: {}
-      allow_members_create_private_channels: {}
-      allow_members_delete_channels: {}
-      allow_owner_delete_messages: {}
-      allow_team_mentions: {}
-      allow_user_delete_messages: {}
-      allow_user_edit_messages: {}
-      description: {}
       display_name:
         simple: TestTeam${GeneratedUUID}
       owner:
         simple: 3fa9f28b-eb0e-463a-ba7b-8089fe9991e2
-      visibility: {}
     separatecontext: false
     view: |-
       {
@@ -191,12 +179,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: d64c5076-021b-41f6-8faf-51b6a96d7232
+    taskid: dd550439-6d61-4403-8a31-cd255e1e2dd7
     type: regular
     task:
-      id: d64c5076-021b-41f6-8faf-51b6a96d7232
+      id: dd550439-6d61-4403-8a31-cd255e1e2dd7
       version: -1
       name: Sleep to wait for team to get created
       description: Sleep for X seconds
@@ -206,10 +196,10 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+        - "2"
     scriptarguments:
       seconds:
-        simple: "10"
+        simple: "60"
     separatecontext: false
     view: |-
       {
@@ -223,12 +213,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 48e33273-e8f1-48d2-8ae9-2ba02601f3d5
+    taskid: d40c3054-49e5-4a19-8e4a-8786ab97d09f
     type: regular
     task:
-      id: 48e33273-e8f1-48d2-8ae9-2ba02601f3d5
+      id: d40c3054-49e5-4a19-8e4a-8786ab97d09f
       version: -1
       name: Update Team Description
       description: Update the properties of the specified team.
@@ -238,24 +230,10 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+        - "7"
     scriptarguments:
-      allow_channel_mentions: {}
-      allow_guests_create_channels: {}
-      allow_guests_delete_channels: {}
-      allow_members_add_remove_apps: {}
-      allow_members_add_remove_connectors: {}
-      allow_members_add_remove_tabs: {}
-      allow_members_create_channels: {}
-      allow_members_create_private_channels: {}
-      allow_members_delete_channels: {}
-      allow_owner_delete_messages: {}
-      allow_team_mentions: {}
-      allow_user_delete_messages: {}
-      allow_user_edit_messages: {}
       description:
         simple: UpdatedDescription
-      display_name: {}
       retry-count:
         simple: "3"
       retry-interval:
@@ -264,17 +242,16 @@ tasks:
         complex:
           root: MicrosoftTeams.Team
           filters:
-          - - operator: containsGeneral
-              left:
-                value:
-                  simple: MicrosoftTeams.Team.displayName
-                iscontext: true
-              right:
-                value:
-                  simple: GeneratedUUID
-                iscontext: true
+            - - operator: containsGeneral
+                left:
+                  value:
+                    simple: MicrosoftTeams.Team.displayName
+                  iscontext: true
+                right:
+                  value:
+                    simple: GeneratedUUID
+                  iscontext: true
           accessor: id
-      visibility: {}
     separatecontext: false
     view: |-
       {
@@ -288,12 +265,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 9bfc4a26-b341-4440-8382-a3310b39b30b
+    taskid: c5cdbf2a-220b-418e-88db-22e040b03aa5
     type: regular
     task:
-      id: 9bfc4a26-b341-4440-8382-a3310b39b30b
+      id: c5cdbf2a-220b-418e-88db-22e040b03aa5
       version: -1
       name: Get Team
       description: Retrieve the properties and relationships of the specified team.
@@ -303,7 +282,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "10"
+        - "10"
     scriptarguments:
       retry-count:
         simple: "3"
@@ -313,15 +292,15 @@ tasks:
         complex:
           root: MicrosoftTeams.Team
           filters:
-          - - operator: containsGeneral
-              left:
-                value:
-                  simple: MicrosoftTeams.Team.displayName
-                iscontext: true
-              right:
-                value:
-                  simple: GeneratedUUID
-                iscontext: true
+            - - operator: containsGeneral
+                left:
+                  value:
+                    simple: MicrosoftTeams.Team.displayName
+                  iscontext: true
+                right:
+                  value:
+                    simple: GeneratedUUID
+                  iscontext: true
           accessor: id
     separatecontext: false
     view: |-
@@ -336,12 +315,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: a94a949f-ff6d-4099-8dad-9c101893c8e3
+    taskid: b204728f-72b1-475d-8194-ede34b288bbb
     type: regular
     task:
-      id: a94a949f-ff6d-4099-8dad-9c101893c8e3
+      id: b204728f-72b1-475d-8194-ede34b288bbb
       version: -1
       name: Clone Team
       description: Create a copy of a team. This operation also creates a copy of
@@ -352,13 +333,8 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "33"
+        - "33"
     scriptarguments:
-      clone_apps: {}
-      clone_channels: {}
-      clone_settings: {}
-      clone_tabs: {}
-      description: {}
       display_name:
         simple: ClonedTestTeam${GeneratedUUID.[1]}
       retry-count:
@@ -369,17 +345,16 @@ tasks:
         complex:
           root: MicrosoftTeams.Team
           filters:
-          - - operator: containsGeneral
-              left:
-                value:
-                  simple: MicrosoftTeams.Team.displayName
-                iscontext: true
-              right:
-                value:
-                  simple: GeneratedUUID.[0]
-                iscontext: true
+            - - operator: containsGeneral
+                left:
+                  value:
+                    simple: MicrosoftTeams.Team.displayName
+                  iscontext: true
+                right:
+                  value:
+                    simple: GeneratedUUID.[0]
+                  iscontext: true
           accessor: id
-      visibility: {}
     separatecontext: false
     view: |-
       {
@@ -393,12 +368,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 2012e1c5-3afc-40bc-891f-ae376fa93628
+    taskid: 7b23f993-9a60-4c7a-8799-5f2b1a695845
     type: condition
     task:
-      id: 2012e1c5-3afc-40bc-891f-ae376fa93628
+      id: 7b23f993-9a60-4c7a-8799-5f2b1a695845
       version: -1
       name: Verify Team Description Was Updated
       type: condition
@@ -406,31 +383,31 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "20"
+        - "20"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: MicrosoftTeams.Team
-                filters:
-                - - operator: containsGeneral
-                    left:
-                      value:
-                        simple: MicrosoftTeams.Team.displayName
-                      iscontext: true
-                    right:
-                      value:
-                        simple: TestTeam${GeneratedUUID}
-                      iscontext: true
-                accessor: description
-            iscontext: true
-          right:
-            value:
-              simple: UpdatedDescription
+      - label: "yes"
+        condition:
+          - - operator: isEqualString
+              left:
+                value:
+                  complex:
+                    root: MicrosoftTeams.Team
+                    filters:
+                      - - operator: containsGeneral
+                          left:
+                            value:
+                              simple: MicrosoftTeams.Team.displayName
+                            iscontext: true
+                          right:
+                            value:
+                              simple: TestTeam${GeneratedUUID}
+                            iscontext: true
+                    accessor: description
+                iscontext: true
+              right:
+                value:
+                  simple: UpdatedDescription
     view: |-
       {
         "position": {
@@ -443,12 +420,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 8665fde6-13f8-429b-8074-261759003bfa
+    taskid: 5ae55d28-5811-4f2b-87e7-c3576dc6e243
     type: regular
     task:
-      id: 8665fde6-13f8-429b-8074-261759003bfa
+      id: 5ae55d28-5811-4f2b-87e7-c3576dc6e243
       version: -1
       name: List Teams
       description: Returns all the groups that have teams in an organization.
@@ -458,7 +437,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "32"
+        - "32"
     separatecontext: false
     view: |-
       {
@@ -472,12 +451,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 5ef92d1c-beb1-4ac4-8036-9b7272e16dab
+    taskid: 74320466-f968-4764-8da0-423c9384ce72
     type: regular
     task:
-      id: 5ef92d1c-beb1-4ac4-8036-9b7272e16dab
+      id: 74320466-f968-4764-8da0-423c9384ce72
       version: -1
       name: Archive the cloned team
       description: Archive the specified team. When a team is archived, users can
@@ -493,7 +474,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "13"
+        - "13"
     scriptarguments:
       retry-count:
         simple: "3"
@@ -503,63 +484,15 @@ tasks:
         complex:
           root: MicrosoftTeams.Team
           filters:
-          - - operator: containsGeneral
-              left:
-                value:
-                  simple: MicrosoftTeams.Team.displayName
-                iscontext: true
-              right:
-                value:
-                  simple: GeneratedUUID.[1]
-                iscontext: true
-          accessor: id
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3870
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "13":
-    id: "13"
-    taskid: 551332ad-6fbc-4d8c-859a-b4c3dcf6c1d9
-    type: regular
-    task:
-      id: 551332ad-6fbc-4d8c-859a-b4c3dcf6c1d9
-      version: -1
-      name: Get the cloned team
-      description: Retrieve the properties and relationships of the specified team.
-      script: '|||microsoft-teams-team-get'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "14"
-    scriptarguments:
-      retry-count:
-        simple: "3"
-      retry-interval:
-        simple: "5"
-      team_id:
-        complex:
-          root: MicrosoftTeams.Team
-          filters:
-          - - operator: containsGeneral
-              left:
-                value:
-                  simple: MicrosoftTeams.Team.displayName
-                iscontext: true
-              right:
-                value:
-                  simple: GeneratedUUID.[1]
-                iscontext: true
+            - - operator: containsGeneral
+                left:
+                  value:
+                    simple: MicrosoftTeams.Team.displayName
+                  iscontext: true
+                right:
+                  value:
+                    simple: GeneratedUUID.[1]
+                  iscontext: true
           accessor: id
     separatecontext: false
     view: |-
@@ -574,41 +507,44 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "14":
-    id: "14"
-    taskid: 857a7129-f68d-48a3-8769-9753b874ea88
-    type: condition
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 764471e7-d730-44c7-898b-9d543da1ba40
+    type: regular
     task:
-      id: 857a7129-f68d-48a3-8769-9753b874ea88
+      id: 764471e7-d730-44c7-898b-9d543da1ba40
       version: -1
-      name: Verify Cloned Team Is Archived
-      type: condition
-      iscommand: false
+      name: Get the cloned team
+      description: Retrieve the properties and relationships of the specified team.
+      script: '|||microsoft-teams-team-get'
+      type: regular
+      iscommand: true
       brand: ""
     nexttasks:
-      "yes":
-      - "21"
+      '#none#':
+        - "14"
+    scriptarguments:
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "5"
+      team_id:
+        complex:
+          root: MicrosoftTeams.Team
+          filters:
+            - - operator: containsGeneral
+                left:
+                  value:
+                    simple: MicrosoftTeams.Team.displayName
+                  iscontext: true
+                right:
+                  value:
+                    simple: GeneratedUUID.[1]
+                  iscontext: true
+          accessor: id
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isTrue
-          left:
-            value:
-              complex:
-                root: MicrosoftTeams.Team
-                filters:
-                - - operator: containsGeneral
-                    left:
-                      value:
-                        simple: MicrosoftTeams.Team.displayName
-                      iscontext: true
-                    right:
-                      value:
-                        simple: GeneratedUUID.[1]
-                      iscontext: true
-                accessor: isArchived
-            iscontext: true
     view: |-
       {
         "position": {
@@ -621,12 +557,63 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 0777cc2b-aea1-4f19-8599-bfd5a8111ad4
+    type: condition
+    task:
+      id: 0777cc2b-aea1-4f19-8599-bfd5a8111ad4
+      version: -1
+      name: Verify Cloned Team Is Archived
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+        - "21"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isTrue
+              left:
+                value:
+                  complex:
+                    root: MicrosoftTeams.Team
+                    filters:
+                      - - operator: containsGeneral
+                          left:
+                            value:
+                              simple: MicrosoftTeams.Team.displayName
+                            iscontext: true
+                          right:
+                            value:
+                              simple: GeneratedUUID.[1]
+                            iscontext: true
+                    accessor: isArchived
+                iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 1000f8d8-78d9-43c8-89cc-c7fec8b7e6cf
+    taskid: 2d1c6086-65f5-438c-827a-98d11c374d34
     type: regular
     task:
-      id: 1000f8d8-78d9-43c8-89cc-c7fec8b7e6cf
+      id: 2d1c6086-65f5-438c-827a-98d11c374d34
       version: -1
       name: Unarchive the cloned team
       description: Restore an archived team. This restores the users' ability to send
@@ -639,7 +626,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "16"
+        - "16"
     scriptarguments:
       retry-count:
         simple: "3"
@@ -649,63 +636,15 @@ tasks:
         complex:
           root: MicrosoftTeams.Team
           filters:
-          - - operator: containsGeneral
-              left:
-                value:
-                  simple: MicrosoftTeams.Team.displayName
-                iscontext: true
-              right:
-                value:
-                  simple: GeneratedUUID.[1]
-                iscontext: true
-          accessor: id
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 4570
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "16":
-    id: "16"
-    taskid: 0b9608bd-7258-4774-86bc-cc5c2a4a7962
-    type: regular
-    task:
-      id: 0b9608bd-7258-4774-86bc-cc5c2a4a7962
-      version: -1
-      name: Get the cloned team
-      description: Retrieve the properties and relationships of the specified team.
-      script: '|||microsoft-teams-team-get'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "17"
-    scriptarguments:
-      retry-count:
-        simple: "3"
-      retry-interval:
-        simple: "5"
-      team_id:
-        complex:
-          root: MicrosoftTeams.Team
-          filters:
-          - - operator: containsGeneral
-              left:
-                value:
-                  simple: MicrosoftTeams.Team.displayName
-                iscontext: true
-              right:
-                value:
-                  simple: GeneratedUUID.[1]
-                iscontext: true
+            - - operator: containsGeneral
+                left:
+                  value:
+                    simple: MicrosoftTeams.Team.displayName
+                  iscontext: true
+                right:
+                  value:
+                    simple: GeneratedUUID.[1]
+                  iscontext: true
           accessor: id
     separatecontext: false
     view: |-
@@ -720,41 +659,44 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "17":
-    id: "17"
-    taskid: e4dd20a5-22a6-4d31-86e6-c0605982288a
-    type: condition
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: c5128143-8b9c-4d06-8d56-b54f75fe20ea
+    type: regular
     task:
-      id: e4dd20a5-22a6-4d31-86e6-c0605982288a
+      id: c5128143-8b9c-4d06-8d56-b54f75fe20ea
       version: -1
-      name: Verify Cloned Team Is unarchived
-      type: condition
-      iscommand: false
+      name: Get the cloned team
+      description: Retrieve the properties and relationships of the specified team.
+      script: '|||microsoft-teams-team-get'
+      type: regular
+      iscommand: true
       brand: ""
     nexttasks:
-      "yes":
-      - "18"
+      '#none#':
+        - "17"
+    scriptarguments:
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "5"
+      team_id:
+        complex:
+          root: MicrosoftTeams.Team
+          filters:
+            - - operator: containsGeneral
+                left:
+                  value:
+                    simple: MicrosoftTeams.Team.displayName
+                  iscontext: true
+                right:
+                  value:
+                    simple: GeneratedUUID.[1]
+                  iscontext: true
+          accessor: id
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isFalse
-          left:
-            value:
-              complex:
-                root: MicrosoftTeams.Team
-                filters:
-                - - operator: containsGeneral
-                    left:
-                      value:
-                        simple: MicrosoftTeams.Team.displayName
-                      iscontext: true
-                    right:
-                      value:
-                        simple: GeneratedUUID.[1]
-                      iscontext: true
-                accessor: isArchived
-            iscontext: true
     view: |-
       {
         "position": {
@@ -767,43 +709,43 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "18":
-    id: "18"
-    taskid: 531e6eb3-d2d4-46cb-8111-6237bba56583
-    type: regular
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: b7b62ca1-40db-45ea-8cda-f10c036b4fc9
+    type: condition
     task:
-      id: 531e6eb3-d2d4-46cb-8111-6237bba56583
+      id: b7b62ca1-40db-45ea-8cda-f10c036b4fc9
       version: -1
-      name: Delete the cloned team
-      description: 'Deletes a group. Note: it might take time for the team to disappear
-        from the teams list.'
-      script: '|||microsoft-teams-team-delete'
-      type: regular
-      iscommand: true
+      name: Verify Cloned Team Is unarchived
+      type: condition
+      iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
-      - "22"
-    scriptarguments:
-      retry-count:
-        simple: "3"
-      retry-interval:
-        simple: "5"
-      team_id:
-        complex:
-          root: MicrosoftTeams.Team
-          filters:
-          - - operator: containsGeneral
+      "yes":
+        - "18"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isFalse
               left:
                 value:
-                  simple: MicrosoftTeams.Team.displayName
+                  complex:
+                    root: MicrosoftTeams.Team
+                    filters:
+                      - - operator: containsGeneral
+                          left:
+                            value:
+                              simple: MicrosoftTeams.Team.displayName
+                            iscontext: true
+                          right:
+                            value:
+                              simple: GeneratedUUID.[1]
+                            iscontext: true
+                    accessor: isArchived
                 iscontext: true
-              right:
-                value:
-                  simple: GeneratedUUID.[1]
-                iscontext: true
-          accessor: id
-    separatecontext: false
     view: |-
       {
         "position": {
@@ -816,104 +758,16 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "19":
-    id: "19"
-    taskid: da57dfa5-5513-4d2a-8d48-42f643467ee8
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 3c87f0b0-e38d-4320-8736-efaa4c4a84b9
     type: regular
     task:
-      id: da57dfa5-5513-4d2a-8d48-42f643467ee8
+      id: 3c87f0b0-e38d-4320-8736-efaa4c4a84b9
       version: -1
-      name: Generate UUID
-      description: Generates a random UUID (UUID 4).
-      scriptName: GenerateRandomUUID
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "20":
-    id: "20"
-    taskid: cc791cc5-3f7c-40b1-827f-e35fa83a50f9
-    type: regular
-    task:
-      id: cc791cc5-3f7c-40b1-827f-e35fa83a50f9
-      version: -1
-      name: Generate UUID
-      description: Generates a random UUID (UUID 4).
-      scriptName: GenerateRandomUUID
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "9"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1770
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "21":
-    id: "21"
-    taskid: abfefe38-dd40-4ab3-84f8-37d65b5b2cde
-    type: regular
-    task:
-      id: abfefe38-dd40-4ab3-84f8-37d65b5b2cde
-      version: -1
-      name: Sleep before unarchiving
-      description: Sleep for X seconds
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      seconds:
-        simple: "10"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 4395
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "22":
-    id: "22"
-    taskid: 884f4d1d-9c57-4dca-8130-d7323dce4e15
-    type: regular
-    task:
-      id: 884f4d1d-9c57-4dca-8130-d7323dce4e15
-      version: -1
-      name: Delete the test team
+      name: Delete the cloned team
       description: 'Deletes a group. Note: it might take time for the team to disappear
         from the teams list.'
       script: '|||microsoft-teams-team-delete'
@@ -922,7 +776,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "23"
+        - "22"
     scriptarguments:
       retry-count:
         simple: "3"
@@ -932,15 +786,15 @@ tasks:
         complex:
           root: MicrosoftTeams.Team
           filters:
-          - - operator: containsGeneral
-              left:
-                value:
-                  simple: MicrosoftTeams.Team.displayName
-                iscontext: true
-              right:
-                value:
-                  simple: GeneratedUUID.[0]
-                iscontext: true
+            - - operator: containsGeneral
+                left:
+                  value:
+                    simple: MicrosoftTeams.Team.displayName
+                  iscontext: true
+                right:
+                  value:
+                    simple: GeneratedUUID.[1]
+                  iscontext: true
           accessor: id
     separatecontext: false
     view: |-
@@ -955,18 +809,140 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "23":
-    id: "23"
-    taskid: 94b0db7e-d5b8-4e5b-8098-d269847ec452
-    type: title
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 68fe37e0-5211-4a1f-8719-f109719e0b40
+    type: regular
     task:
-      id: 94b0db7e-d5b8-4e5b-8098-d269847ec452
+      id: 68fe37e0-5211-4a1f-8719-f109719e0b40
       version: -1
-      name: Success
-      type: title
+      name: Generate UUID
+      description: Generates a random UUID (UUID 4).
+      scriptName: GenerateRandomUUID
+      type: regular
       iscommand: false
       brand: ""
-      description: ''
+    nexttasks:
+      '#none#':
+        - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 915b74c5-dc15-47e8-8364-d79a4bf8b20f
+    type: regular
+    task:
+      id: 915b74c5-dc15-47e8-8364-d79a4bf8b20f
+      version: -1
+      name: Generate UUID
+      description: Generates a random UUID (UUID 4).
+      scriptName: GenerateRandomUUID
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: ffb5c97c-dd56-46b0-8076-d33f5cceee28
+    type: regular
+    task:
+      id: ffb5c97c-dd56-46b0-8076-d33f5cceee28
+      version: -1
+      name: Sleep before unarchiving
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "15"
+    scriptarguments:
+      seconds:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 3a0f9d27-4021-47fc-8b03-46a91f5c809a
+    type: regular
+    task:
+      id: 3a0f9d27-4021-47fc-8b03-46a91f5c809a
+      version: -1
+      name: Delete the test team
+      description: 'Deletes a group. Note: it might take time for the team to disappear
+        from the teams list.'
+      script: '|||microsoft-teams-team-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "23"
+    scriptarguments:
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "5"
+      team_id:
+        complex:
+          root: MicrosoftTeams.Team
+          filters:
+            - - operator: containsGeneral
+                left:
+                  value:
+                    simple: MicrosoftTeams.Team.displayName
+                  iscontext: true
+                right:
+                  value:
+                    simple: GeneratedUUID.[0]
+                  iscontext: true
+          accessor: id
     separatecontext: false
     view: |-
       {
@@ -980,12 +956,40 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: c8272549-4991-4b07-814a-c7f14da7facc
+    type: title
+    task:
+      id: c8272549-4991-4b07-814a-c7f14da7facc
+      version: -1
+      name: Success
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: da8c02cd-7268-470e-828e-1509aa1bb363
+    taskid: 92171367-3ea9-46b1-8141-b8215d486ad1
     type: regular
     task:
-      id: da8c02cd-7268-470e-828e-1509aa1bb363
+      id: 92171367-3ea9-46b1-8141-b8215d486ad1
       version: -1
       name: List Cloned Team Members
       description: Returns the members of the specified team.
@@ -995,7 +999,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "26"
+        - "26"
     scriptarguments:
       retry-count:
         simple: "3"
@@ -1005,22 +1009,22 @@ tasks:
         complex:
           root: MicrosoftTeams.Team
           filters:
-          - - operator: containsGeneral
-              left:
-                value:
-                  simple: MicrosoftTeams.Team.displayName
-                iscontext: true
-              right:
-                value:
-                  simple: GeneratedUUID.[1]
-                iscontext: true
+            - - operator: containsGeneral
+                left:
+                  value:
+                    simple: MicrosoftTeams.Team.displayName
+                  iscontext: true
+                right:
+                  value:
+                    simple: GeneratedUUID.[1]
+                  iscontext: true
           accessor: id
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2820
+          "y": 2995
         }
       }
     note: false
@@ -1028,12 +1032,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: abb0670f-76a4-4233-877a-8638a2431c4f
+    taskid: 6b2915c5-4ec0-4fd5-815c-e9198beb1851
     type: regular
     task:
-      id: abb0670f-76a4-4233-877a-8638a2431c4f
+      id: 6b2915c5-4ec0-4fd5-815c-e9198beb1851
       version: -1
       name: Add demistodev team member the cloned team
       description: Add a user to be a team member.
@@ -1043,9 +1049,8 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "24"
+        - "34"
     scriptarguments:
-      is_owner: {}
       retry-count:
         simple: "3"
       retry-interval:
@@ -1054,15 +1059,15 @@ tasks:
         complex:
           root: MicrosoftTeams.Team
           filters:
-          - - operator: containsGeneral
-              left:
-                value:
-                  simple: MicrosoftTeams.Team.displayName
-                iscontext: true
-              right:
-                value:
-                  simple: GeneratedUUID.[1]
-                iscontext: true
+            - - operator: containsGeneral
+                left:
+                  value:
+                    simple: MicrosoftTeams.Team.displayName
+                  iscontext: true
+                right:
+                  value:
+                    simple: GeneratedUUID.[1]
+                  iscontext: true
           accessor: id
       user_id:
         simple: 2827c1e7-edb6-4529-b50d-25984e968637
@@ -1079,12 +1084,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: e08f7260-a3e5-48ab-811f-5b543d0e8ad2
+    taskid: f7984774-a010-4f14-83e1-2c6552e7e31d
     type: condition
     task:
-      id: e08f7260-a3e5-48ab-811f-5b543d0e8ad2
+      id: f7984774-a010-4f14-83e1-2c6552e7e31d
       version: -1
       name: Verify demistodev is a team member
       type: condition
@@ -1092,55 +1099,12 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "27"
+        - "27"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: MicrosoftTeams.TeamMember.displayName
-            iscontext: true
-          right:
-            value:
-              simple: demisto dev
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2995
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "27":
-    id: "27"
-    taskid: c8469ac8-4756-4208-8078-aba289dd2f03
-    type: regular
-    task:
-      id: c8469ac8-4756-4208-8078-aba289dd2f03
-      version: -1
-      name: Make demistodev team owner
-      description: Updates a team member.
-      script: '|||microsoft-teams-member-update'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "28"
-    scriptarguments:
-      is_owner:
-        simple: "true"
-      membership_id:
-        complex:
-          root: MicrosoftTeams.TeamMember
-          filters:
-          - - operator: isEqualString
+      - label: "yes"
+        condition:
+          - - operator: containsGeneral
               left:
                 value:
                   simple: MicrosoftTeams.TeamMember.displayName
@@ -1148,31 +1112,6 @@ tasks:
               right:
                 value:
                   simple: demisto dev
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: MicrosoftTeams.TeamMember.teamId
-                iscontext: true
-              right:
-                value:
-                  simple: ClonedTeam.id
-                iscontext: true
-          accessor: id
-      team_id:
-        complex:
-          root: MicrosoftTeams.Team
-          filters:
-          - - operator: containsGeneral
-              left:
-                value:
-                  simple: MicrosoftTeams.Team.displayName
-                iscontext: true
-              right:
-                value:
-                  simple: GeneratedUUID.[1]
-                iscontext: true
-          accessor: id
-    separatecontext: false
     view: |-
       {
         "position": {
@@ -1185,58 +1124,62 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "28":
-    id: "28"
-    taskid: 4e988040-bb27-48b8-8fbf-a30356e14961
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 7477a291-740c-4e7b-8968-0cfcf522ff44
     type: regular
     task:
-      id: 4e988040-bb27-48b8-8fbf-a30356e14961
+      id: 7477a291-740c-4e7b-8968-0cfcf522ff44
       version: -1
-      name: Get demistodev team member
-      description: Gets a member of a team.
-      script: '|||microsoft-teams-member-get'
+      name: Make demistodev team owner
+      description: Updates a team member.
+      script: '|||microsoft-teams-member-update'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "29"
+        - "28"
     scriptarguments:
+      is_owner:
+        simple: "true"
       membership_id:
         complex:
           root: MicrosoftTeams.TeamMember
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: MicrosoftTeams.TeamMember.displayName
-                iscontext: true
-              right:
-                value:
-                  simple: demisto dev
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: MicrosoftTeams.TeamMember.teamId
-                iscontext: true
-              right:
-                value:
-                  simple: ClonedTeam.id
-                iscontext: true
+            - - operator: isEqualString
+                left:
+                  value:
+                    simple: MicrosoftTeams.TeamMember.displayName
+                  iscontext: true
+                right:
+                  value:
+                    simple: demisto dev
+            - - operator: isEqualString
+                left:
+                  value:
+                    simple: MicrosoftTeams.TeamMember.teamId
+                  iscontext: true
+                right:
+                  value:
+                    simple: ClonedTeam.id
+                  iscontext: true
           accessor: id
       team_id:
         complex:
           root: MicrosoftTeams.Team
           filters:
-          - - operator: containsGeneral
-              left:
-                value:
-                  simple: MicrosoftTeams.Team.displayName
-                iscontext: true
-              right:
-                value:
-                  simple: GeneratedUUID.[1]
-                iscontext: true
+            - - operator: containsGeneral
+                left:
+                  value:
+                    simple: MicrosoftTeams.Team.displayName
+                  iscontext: true
+                right:
+                  value:
+                    simple: GeneratedUUID.[1]
+                  iscontext: true
           accessor: id
     separatecontext: false
     view: |-
@@ -1251,43 +1194,62 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "29":
-    id: "29"
-    taskid: 774cdc02-94ba-4269-809f-0f38fa9d49fc
-    type: condition
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: d891abc6-6826-46af-8b96-92480756cdc2
+    type: regular
     task:
-      id: 774cdc02-94ba-4269-809f-0f38fa9d49fc
+      id: d891abc6-6826-46af-8b96-92480756cdc2
       version: -1
-      name: Verify demistodev is a team owner
-      type: condition
-      iscommand: false
+      name: Get demistodev team member
+      description: Gets a member of a team.
+      script: '|||microsoft-teams-member-get'
+      type: regular
+      iscommand: true
       brand: ""
     nexttasks:
-      "yes":
-      - "31"
+      '#none#':
+        - "29"
+    scriptarguments:
+      membership_id:
+        complex:
+          root: MicrosoftTeams.TeamMember
+          filters:
+            - - operator: isEqualString
+                left:
+                  value:
+                    simple: MicrosoftTeams.TeamMember.displayName
+                  iscontext: true
+                right:
+                  value:
+                    simple: demisto dev
+            - - operator: isEqualString
+                left:
+                  value:
+                    simple: MicrosoftTeams.TeamMember.teamId
+                  iscontext: true
+                right:
+                  value:
+                    simple: ClonedTeam.id
+                  iscontext: true
+          accessor: id
+      team_id:
+        complex:
+          root: MicrosoftTeams.Team
+          filters:
+            - - operator: containsGeneral
+                left:
+                  value:
+                    simple: MicrosoftTeams.Team.displayName
+                  iscontext: true
+                right:
+                  value:
+                    simple: GeneratedUUID.[1]
+                  iscontext: true
+          accessor: id
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              complex:
-                root: MicrosoftTeams.TeamMember
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: MicrosoftTeams.TeamMember.displayName
-                      iscontext: true
-                    right:
-                      value:
-                        simple: demisto dev
-                accessor: roles
-            iscontext: true
-          right:
-            value:
-              simple: owner
     view: |-
       {
         "position": {
@@ -1300,27 +1262,45 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "31":
-    id: "31"
-    taskid: df37f979-bdbe-40d8-8375-de40acb7f733
-    type: regular
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: c221f0a4-4fe4-4e90-8edb-b1c7e3851373
+    type: condition
     task:
-      id: df37f979-bdbe-40d8-8375-de40acb7f733
+      id: c221f0a4-4fe4-4e90-8edb-b1c7e3851373
       version: -1
-      name: List demistodev joined teams
-      description: Get the teams in Microsoft Teams that the user is a direct member
-        of.
-      script: '|||microsoft-teams-teams-list-joined'
-      type: regular
-      iscommand: true
+      name: Verify demistodev is a team owner
+      type: condition
+      iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
-      - "12"
-    scriptarguments:
-      user_id:
-        simple: 2827c1e7-edb6-4529-b50d-25984e968637
+      "yes":
+        - "31"
     separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: containsGeneral
+              left:
+                value:
+                  complex:
+                    root: MicrosoftTeams.TeamMember
+                    filters:
+                      - - operator: isEqualString
+                          left:
+                            value:
+                              simple: MicrosoftTeams.TeamMember.displayName
+                            iscontext: true
+                          right:
+                            value:
+                              simple: demisto dev
+                    accessor: roles
+                iscontext: true
+              right:
+                value:
+                  simple: owner
     view: |-
       {
         "position": {
@@ -1333,12 +1313,49 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "32":
-    id: "32"
-    taskid: b994fe91-77b7-4d1d-83dd-c8957cd72161
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 4e264766-108a-436c-892c-972888a36319
     type: regular
     task:
-      id: b994fe91-77b7-4d1d-83dd-c8957cd72161
+      id: 4e264766-108a-436c-892c-972888a36319
+      version: -1
+      name: List demistodev joined teams
+      description: Get the teams in Microsoft Teams that the user is a direct member
+        of.
+      script: '|||microsoft-teams-teams-list-joined'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "12"
+    scriptarguments:
+      user_id:
+        simple: 2827c1e7-edb6-4529-b50d-25984e968637
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 762ead3b-1e82-4a68-8d9a-1bc565a03eb5
+    type: regular
+    task:
+      id: 762ead3b-1e82-4a68-8d9a-1bc565a03eb5
       version: -1
       name: Get the cloned team
       description: Retrieve the properties and relationships of the specified team.
@@ -1348,7 +1365,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "25"
+        - "25"
     scriptarguments:
       extend-context:
         simple: ClonedTeam=
@@ -1360,15 +1377,15 @@ tasks:
         complex:
           root: MicrosoftTeams.Team
           filters:
-          - - operator: containsGeneral
-              left:
-                value:
-                  simple: MicrosoftTeams.Team.displayName
-                iscontext: true
-              right:
-                value:
-                  simple: GeneratedUUID.[1]
-                iscontext: true
+            - - operator: containsGeneral
+                left:
+                  value:
+                    simple: MicrosoftTeams.Team.displayName
+                  iscontext: true
+                right:
+                  value:
+                    simple: GeneratedUUID.[1]
+                  iscontext: true
           accessor: id
     separatecontext: false
     view: |-
@@ -1383,12 +1400,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 28f0bd76-defb-4d80-8c42-6dffc768342f
+    taskid: 1797bcf9-4f9f-4094-81a7-cc74bdd47858
     type: regular
     task:
-      id: 28f0bd76-defb-4d80-8c42-6dffc768342f
+      id: 1797bcf9-4f9f-4094-81a7-cc74bdd47858
       version: -1
       name: Sleep to wait for the team to get cloned
       description: Sleep for X seconds
@@ -1398,7 +1417,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "11"
+        - "11"
     scriptarguments:
       seconds:
         simple: "30"
@@ -1415,13 +1434,49 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-system: true
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: dcff1e5c-5b1d-466e-812c-4821d3a9d3e5
+    type: regular
+    task:
+      id: dcff1e5c-5b1d-466e-812c-4821d3a9d3e5
+      version: -1
+      name: Sleep to wait for demistodev to be become a team member of the cloned
+        team
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "24"
+    scriptarguments:
+      seconds:
+        simple: "60"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 5460,
+        "height": 5635,
         "width": 380,
         "x": 50,
         "y": 50

@@ -12,6 +12,20 @@ configuration:
   name: api_key
   required: false
   type: 4
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: C - Fairly reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
 - display: Use system proxy settings
   name: proxy
   required: false
@@ -29,7 +43,7 @@ script:
   - arguments:
     - default: true
       description: IP address to check
-      isArray: false
+      isArray: true
       name: ip
       required: true
       secret: false
@@ -99,7 +113,7 @@ script:
   - arguments:
     - default: true
       description: Domain address to check.
-      isArray: false
+      isArray: true
       name: domain
       required: true
       secret: false
@@ -187,7 +201,7 @@ script:
   - arguments:
     - default: true
       description: URL address to check.
-      isArray: false
+      isArray: true
       name: url
       required: true
       secret: false
@@ -272,7 +286,7 @@ script:
   - arguments:
     - default: true
       description: SHA256 hash to check.
-      isArray: false
+      isArray: true
       name: file
       required: true
       secret: false
@@ -381,7 +395,7 @@ script:
     - contextPath: File.Tags
       description: Attribute to label an IoC.
       type: String
-  dockerimage: demisto/python3:3.9.1.14969
+  dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: false
   longRunning: false

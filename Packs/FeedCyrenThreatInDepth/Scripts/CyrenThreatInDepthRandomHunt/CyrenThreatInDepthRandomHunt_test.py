@@ -28,18 +28,18 @@ FIND_INDICATORS_EMPTY = [
 ]
 
 
-def executeCommand(findIndicatorsResult=FIND_INDICATORS_NORMAL,
-                   findIndicatorsError=False,
-                   getUsersError=False,
-                   createNewIncidentError=False,
-                   investigateError=False):
+def executeCommand(find_indicators_result=FIND_INDICATORS_NORMAL,
+                   find_indicators_error=False,
+                   get_users_error=False,
+                   create_new_incident_error=False,
+                   investigate_error=False):
     def inner(command, args=None):
         if command == "findIndicators":
-            if findIndicatorsError:
+            if find_indicators_error:
                 return ERROR
-            return findIndicatorsResult
+            return find_indicators_result
         elif command == "getUsers":
-            if getUsersError:
+            if get_users_error:
                 return ERROR
             return [
                 {
@@ -50,7 +50,7 @@ def executeCommand(findIndicatorsResult=FIND_INDICATORS_NORMAL,
                 }
             ]
         elif command == "createNewIncident":
-            if createNewIncidentError:
+            if create_new_incident_error:
                 return ERROR
             return [
                 {
@@ -62,7 +62,7 @@ def executeCommand(findIndicatorsResult=FIND_INDICATORS_NORMAL,
                 }
             ]
         elif command == "investigate":
-            if investigateError:
+            if investigate_error:
                 return ERROR
             return [
                 {
@@ -130,7 +130,7 @@ def test_create_random_hunt_incident_find_indicators_error(mocker):
     """
     from CyrenThreatInDepthRandomHunt import create_random_hunt_incident
 
-    mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand(findIndicatorsError=True))
+    mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand(find_indicators_error=True))
     with pytest.raises(DemistoException):
         create_random_hunt_incident(dict())
 
@@ -143,7 +143,7 @@ def test_create_random_hunt_incident_find_indicators_empty(mocker):
     """
     from CyrenThreatInDepthRandomHunt import create_random_hunt_incident
 
-    mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand(findIndicatorsResult=FIND_INDICATORS_EMPTY))
+    mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand(find_indicators_result=FIND_INDICATORS_EMPTY))
     result = create_random_hunt_incident(dict())
 
     assert "Could not find any indicators for " in result.readable_output
@@ -157,7 +157,7 @@ def test_create_random_hunt_incident_get_current_user_error(mocker):
     """
     from CyrenThreatInDepthRandomHunt import create_random_hunt_incident
 
-    mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand(getUsersError=True))
+    mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand(get_users_error=True))
     result = create_random_hunt_incident(dict())
 
     assert result.readable_output == ("Successfully created incident Cyren Threat InDepth Threat Hunt.\n"
@@ -172,7 +172,7 @@ def test_create_random_hunt_incident_create_new_incident_error(mocker):
     """
     from CyrenThreatInDepthRandomHunt import create_random_hunt_incident
 
-    mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand(createNewIncidentError=True))
+    mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand(create_new_incident_error=True))
 
     with pytest.raises(DemistoException):
         create_random_hunt_incident(dict())
@@ -186,7 +186,7 @@ def test_create_random_hunt_incident_investigate_error(mocker):
     """
     from CyrenThreatInDepthRandomHunt import create_random_hunt_incident
 
-    mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand(investigateError=True))
+    mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand(investigate_error=True))
     result = create_random_hunt_incident(dict())
 
     assert result.readable_output == ("Successfully created incident Cyren Threat InDepth Threat Hunt.\n"

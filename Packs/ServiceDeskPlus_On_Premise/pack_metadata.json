@@ -1,0 +1,28 @@
+{
+    "name": "Manage Engine Service Desk Plus (On-Premise)",
+    "description": "Deprecated. Please Use the Service Desk Plus pack instead.",
+    "support": "xsoar",
+    "currentVersion": "1.0.4",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2021-01-21T17:06:14Z",
+    "categories": [
+        "Case Management"
+    ],
+    "tags": [
+        "IT",
+        "Incident Handling",
+        "Incident Mirroring"
+    ],
+    "useCases": [
+        "Case Management",
+        "IT Services"
+    ],
+    "keywords": [
+        "Service",
+        "ServiceDesk",
+        "ServiceDeskPlus",
+        "ManageEngine"
+    ]
+}

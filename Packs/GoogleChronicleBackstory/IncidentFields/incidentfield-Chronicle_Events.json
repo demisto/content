@@ -1,0 +1,82 @@
+{
+    "id": "incident_chronicleevents",
+    "version": -1,
+    "modified": "2021-01-18T14:30:19.305355583+05:30",
+    "name": "Chronicle Events",
+    "ownerOnly": false,
+    "description": "List of chronicle UDM events.",
+    "cliName": "chronicleevents",
+    "type": "grid",
+    "closeForm": false,
+    "editForm": false,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Chronicle User Alert",
+        "Chronicle Rule Detection"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "columns": [
+        {
+            "key": "eventtimestamp",
+            "displayName": "Event Timestamp",
+            "type": "date",
+            "required": false,
+            "script": "",
+            "width": 231,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "eventtype",
+            "displayName": "Event Type",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 223,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "principalassetidentifier",
+            "displayName": "Principal Asset Identifier",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 230,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "targetassetidentifier",
+            "displayName": "Target Asset Identifier",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 180,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        }
+    ],
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.0.0"
+}

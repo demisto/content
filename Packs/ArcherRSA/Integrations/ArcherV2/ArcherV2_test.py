@@ -2,10 +2,10 @@ import copy
 from datetime import datetime, timezone
 
 import pytest
-
+from CommonServerPython import DemistoException
 import demistomock as demisto
 from ArcherV2 import Client, extract_from_xml, generate_field_contents, get_errors_from_res, generate_field_value, \
-    fetch_incidents, get_fetch_time, parser
+    fetch_incidents, get_fetch_time, parser, OCCURRED_FORMAT, search_records_by_report_command
 
 BASE_URL = 'https://test.com/'
 
@@ -46,13 +46,13 @@ FIELD_DEFINITION_RES = [
     }
 ]
 
-GET_LEVELS_BY_APP = [
-    {'level': 123, 'mapping': {'1': {
+GET_LEVELS_BY_APP = {
+    'level': 123, 'mapping': {'1': {
         'Type': 7, 'Name': 'External Links', 'FieldId': "1", 'IsRequired': False, 'RelatedValuesListId': None},
         '2': {
             'Type': 1, 'Name': 'Device Name', 'FieldId': "2",
             'IsRequired': True, 'RelatedValuesListId': 8}
-    }}]
+    }}
 
 GET_FIElD_DEFINITION_RES = {
     "RequestedObject": {"RelatedValuesListId": 62},
@@ -147,6 +147,36 @@ INCIDENT_RECORD = {
     }
 }
 
+INCIDENT_RECORD_US_TZ = {
+    "record": {
+        "Id": "227603",
+        "Title": "Test",
+        "created date": "2/25/2021 8:45:55 AM"
+    },
+    "raw": {
+        "@contentId": "227603",
+        "@levelId": "67",
+        "@levelGuid": "b0c2d9a1-167c-4fee-ad91-4b4e7b098b4b",
+        "@moduleId": "75",
+        "@parentId": "0",
+        "Field": [
+            {
+                "@id": "35339",
+                "@guid": "9c5e3de1-299b-430f-998a-185ad86e2e79",
+                "@type": "1",
+                "#text": "Test"
+            },
+            {
+                "@id": "53075",
+                "@guid": "9c5e3de1-299b-430f-998a-185ad86e2e80",
+                "@type": "21",
+                "@xmlConvertedValue": "2021-02-25T08:45:55.977Z",
+                "#text": "2/25/2021 8:45:55 AM"
+            }
+        ]
+    }
+}
+
 SEARCH_RECORDS_RES = \
     '<?xml version="1.0" encoding="utf-8"?>' + \
     '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"' \
@@ -182,6 +212,65 @@ GET_RESPONSE_NOT_SUCCESSFUL_JSON = {"IsSuccessful": False, "RequestedObject": No
 
 GET_RESPONSE_SUCCESSFUL_JSON = {"IsSuccessful": True, "RequestedObject": {'SessionToken': 'session-id'}}
 
+SEARCH_RECORDS_BY_REPORT_RES = \
+    '<Records count="18">' + \
+    '<Metadata>' + \
+    '    <FieldDefinitions>' + \
+    '       <FieldDefinition id="1580" name="Policy Name" alias="Policy_Name"/>' + \
+    '        <FieldDefinition id="1583" name="Policy Statement"' + \
+    '                         alias="Policy_Statement"/>' + \
+    '    </FieldDefinitions>' + \
+    '</Metadata>' + \
+    '<LevelCounts>' + \
+    '    <LevelCount id="3" count="18"/>' + \
+    '</LevelCounts>' + \
+    '<Record contentId="1720" levelId="3" moduleId="65" parentId="0">' + \
+    '    <Field id="1580" type="1">00.0 Introduction</Field>' + \
+    '    <Field id="1583" type="1">Information' + \
+    '    </Field>' + \
+    '</Record>' + \
+    '</Records>'
+
+MOCK_READABLE_SEARCH_RECORDS_BY_REPORT = "### Search records by report results\n|Id|Policy Name|Policy " \
+                                         "Statement|\n|---|---|---|\n| 1720 | 00.0 Introduction | Information |\n"
+
+MOCK_RESULTS_SEARCH_RECORDS_BY_REPORT = {
+    'Records': {'@count': '18', 'Metadata': {'FieldDefinitions': {
+        'FieldDefinition': [{'@id': '1580', '@name': 'Policy Name', '@alias': 'Policy_Name'},
+                            {'@id': '1583', '@name': 'Policy Statement', '@alias': 'Policy_Statement'}]}},
+                'LevelCounts': {'LevelCount': {'@id': '3', '@count': '18'}},
+                'Record': {'@contentId': '1720', '@levelId': '3',
+                           '@moduleId': '65',
+                           '@parentId': '0',
+                           'Field': [{'@id': '1580', '@type': '1',
+                                      '#text': '00.0 Introduction'},
+                                     {'@id': '1583', '@type': '1',
+                                      '#text': "Information"}]}}
+}
+
+GET_LEVEL_RES_2 = [
+    {
+        "RequestedObject": {
+            "Type": 1,
+            "Id": 1580,
+            "LevelId": 3,
+            "Name": "Policy Name",
+            "Alias": "Policy_Name"
+        },
+        "IsSuccessful": True
+    },
+    {
+        "RequestedObject": {
+            "Type": 1,
+            "Id": 1583,
+            "LevelId": 3,
+            "Name": "Policy Statement",
+            "Alias": "Policy_Statement"
+        },
+        "IsSuccessful": True
+    }
+]
+
 
 class TestArcherV2:
     def test_extract_from_xml(self):
@@ -189,8 +278,8 @@ class TestArcherV2:
         assert field_id == '6969'
 
     def test_get_level_by_app_id(self, requests_mock):
-        requests_mock.post(BASE_URL + 'api/core/security/login', json={'RequestedObject': {'SessionToken': 'session-id',
-                                                                                           }, 'IsSuccessful': True})
+        requests_mock.post(BASE_URL + 'api/core/security/login',
+                           json={'RequestedObject': {'SessionToken': 'session-id'}, 'IsSuccessful': True})
         requests_mock.get(BASE_URL + 'api/core/system/level/module/1', json=GET_LEVEL_RES)
         requests_mock.get(BASE_URL + 'api/core/system/fielddefinition/level/123', json=FIELD_DEFINITION_RES)
         client = Client(BASE_URL, '', '', '', '')
@@ -214,9 +303,28 @@ class TestArcherV2:
                 client.update_session()
             assert e
 
+    def test_update_session_fail_parsing(self, mocker):
+        """
+        Given:
+            an exception raised from _http_request who failed to pares json object
+        When:
+            - initiating session
+        Then:
+            - Raise exception with message to check the provided url
+        """
+        mocker.patch.object(Client, '_http_request', side_effect=DemistoException("Failed to parse json object from "
+                                                                                  "response: b\"<html><head><script>"
+                                                                                  "window.top.location='/Default.aspx';"
+                                                                                  "</script></head><body>"
+                                                                                  "</body></html>"))
+        client = Client(BASE_URL, '', '', '', '')
+        with pytest.raises(DemistoException) as e:
+            client.update_session()
+        assert "Check the given URL, it can be a redirect issue" in str(e.value)
+
     def test_generate_field_contents(self):
         client = Client(BASE_URL, '', '', '', '')
-        field = generate_field_contents(client, '{"Device Name":"Macbook"}', GET_LEVELS_BY_APP[0]['mapping'])
+        field = generate_field_contents(client, '{"Device Name":"Macbook"}', GET_LEVELS_BY_APP['mapping'])
         assert field == {'2': {'Type': 1, 'Value': 'Macbook', 'FieldId': '2'}}
 
     def test_get_errors_from_res(self):
@@ -225,7 +333,7 @@ class TestArcherV2:
 
     def test_get_record_failed(self, requests_mock):
         requests_mock.post(BASE_URL + 'api/core/security/login',
-                           json={'RequestedObject': {'SessionToken': 'session-id'}})
+                           json={'RequestedObject': {'SessionToken': 'session-id'}, 'IsSuccessful': True})
         requests_mock.get(BASE_URL + 'api/core/content/1010', json=GET_RECORD_RES_failed)
         client = Client(BASE_URL, '', '', '', '')
         record, res, errors = client.get_record(75, 1010)
@@ -235,7 +343,7 @@ class TestArcherV2:
 
     def test_get_record_success(self, requests_mock):
         requests_mock.post(BASE_URL + 'api/core/security/login',
-                           json={'RequestedObject': {'SessionToken': 'session-id'}})
+                           json={'RequestedObject': {'SessionToken': 'session-id'}, 'IsSuccessful': True})
         requests_mock.get(BASE_URL + 'api/core/content/1010', json=GET_RECORD_RES_SUCCESS)
         requests_mock.get(BASE_URL + 'api/core/system/level/module/1', json=GET_LEVEL_RES)
         requests_mock.get(BASE_URL + 'api/core/system/fielddefinition/level/123', json=FIELD_DEFINITION_RES)
@@ -256,7 +364,7 @@ class TestArcherV2:
 
     def test_search_records(self, requests_mock):
         requests_mock.post(BASE_URL + 'api/core/security/login',
-                           json={'RequestedObject': {'SessionToken': 'session-id'}})
+                           json={'RequestedObject': {'SessionToken': 'session-id'}, 'IsSuccessful': True})
         requests_mock.post(BASE_URL + 'ws/general.asmx', text=GET_TOKEN_SOAP)
 
         requests_mock.get(BASE_URL + 'api/core/system/level/module/1', json=GET_LEVEL_RES)
@@ -275,7 +383,7 @@ class TestArcherV2:
         demisto.setIntegrationContext(cache)
 
         requests_mock.post(BASE_URL + 'api/core/security/login',
-                           json={'RequestedObject': {'SessionToken': 'session-id'}})
+                           json={'RequestedObject': {'SessionToken': 'session-id'}, 'IsSuccessful': True})
         requests_mock.get(BASE_URL + 'api/core/system/fielddefinition/304', json=GET_FIElD_DEFINITION_RES)
         requests_mock.get(BASE_URL + 'api/core/system/valueslistvalue/valueslist/62', json=VALUE_LIST_RES)
         client = Client(BASE_URL, '', '', '', '')
@@ -294,7 +402,7 @@ class TestArcherV2:
         demisto.setIntegrationContext(cache)
 
         requests_mock.post(BASE_URL + 'api/core/security/login',
-                           json={'RequestedObject': {'SessionToken': 'session-id'}})
+                           json={'RequestedObject': {'SessionToken': 'session-id'}, 'IsSuccessful': True})
         requests_mock.get(BASE_URL + 'api/core/system/fielddefinition/304', json=GET_FIElD_DEFINITION_RES)
         requests_mock.get(BASE_URL + 'api/core/system/valueslistvalue/valueslist/62', json=VALUE_LIST_RES)
 
@@ -313,10 +421,39 @@ class TestArcherV2:
                                {"Name": "google", "URL": "https://google.com"}]
 
     def test_generate_field_users_groups_input(self):
+        """
+        Given:
+            Valid value from dictionary type under "fieldsToValues" argument
+
+        When:
+            - running archer-update-record
+
+        Then:
+            - assert fields are generated correctly
+
+        """
         client = Client(BASE_URL, '', '', '', '')
         field_key, field_value = generate_field_value(client, "", {'Type': 8}, {"users": [20], "groups": [30]})
         assert field_key == 'Value'
         assert field_value == {"UserList": [{"ID": 20}], "GroupList": [{"ID": 30}]}
+
+    def test_generate_invalid_field_users_groups_input(self):
+        """
+        Given:
+            Invalid value under "fieldsToValues" argument with type 8 (lists)
+
+        When:
+            - running archer-update-record
+
+        Then:
+            - Raise exception indicates that the value is not with the right format
+
+        """
+        client = Client(BASE_URL, '', '', '', '')
+        with pytest.raises(DemistoException) as e:
+            generate_field_value(client, "test", {'Type': 8}, 'user1, user2')
+        assert "The value of the field: test must be a dictionary type and include a list under \"users\" key or " \
+               "\"groups\" key e.g: {\"Policy Owner\":{\"users\":[20],\"groups\":[30]}}" in str(e.value)
 
     @pytest.mark.parametrize('field_value, result', [
         ([1, 2], [{"ContentID": 1}, {"ContentID": 2}]),
@@ -529,3 +666,58 @@ class TestArcherV2:
         incidents, next_fetch = fetch_incidents(client, params, last_fetch, '305')
         assert last_fetch == next_fetch
         assert not incidents, 'Should not get new incidents.'
+
+    def test_same_record_returned_in_two_fetches(self, mocker):
+        """
+        Given:
+            - Same record returned in 2 fetch queries
+        When:
+            - Fetching incidents (2 iterations)
+        Then:
+            Check that the new next fetch is greater than last_fetch on both calls.
+            Check the wanted next_fetch is equals to the date in the incident in both calls.
+            Assert occurred time
+        """
+        client = Client(BASE_URL, '', '', '', '')
+        mocker.patch.object(
+            client, 'search_records', side_effect=[
+                ([INCIDENT_RECORD_US_TZ], {}),
+                ([INCIDENT_RECORD_US_TZ], {})
+            ]
+        )
+        params = {
+            'applicationId': '75',
+            'applicationDateField': 'created date'
+        }
+        field_time_id = '53075'
+        first_fetch = parser('2021-02-24T08:45:55Z')
+        incidents, first_next_fetch = fetch_incidents(client, params, first_fetch, field_time_id)
+        assert first_fetch < first_next_fetch
+        assert first_next_fetch == datetime(2021, 2, 25, 8, 45, 55, 977000, tzinfo=timezone.utc)
+        assert incidents[0]['occurred'] == '2021-02-25T08:45:55.977Z'
+        # first_next_fetch_dt simulates the set to last_run done in fetch-incidents
+        first_next_fetch_dt = parser(first_next_fetch.strftime(OCCURRED_FORMAT))
+        incidents, second_next_fetch = fetch_incidents(client, params, first_next_fetch_dt, field_time_id)
+        assert first_next_fetch == datetime(2021, 2, 25, 8, 45, 55, 977000, tzinfo=timezone.utc)
+        assert not incidents
+
+    def test_search_records_by_report_command(self, mocker):
+        """
+            Given:
+                - search_records_by_report_command command args
+            When:
+                - run search_records_by_report_command
+            Then:
+                - Verify response outputs
+                - verify response readable output
+        """
+
+        mock_args = {'reportGuid': 'id'}
+        client = Client(BASE_URL, '', '', '', '')
+        mocker.patch.object(client, 'do_soap_request',
+                            return_value=[SEARCH_RECORDS_BY_REPORT_RES, SEARCH_RECORDS_BY_REPORT_RES])
+        mocker.patch.object(client, 'do_request', return_value=GET_LEVEL_RES_2)
+        mocker.patch.object(demisto, 'results')
+        search_records_by_report_command(client, mock_args)
+        assert demisto.results.call_args_list[0][0][0]['HumanReadable'] == MOCK_READABLE_SEARCH_RECORDS_BY_REPORT
+        assert demisto.results.call_args_list[0][0][0]['Contents'] == MOCK_RESULTS_SEARCH_RECORDS_BY_REPORT

@@ -12,6 +12,20 @@ configuration:
   name: token
   required: true
   type: 4
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: B - Usually reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -35,22 +49,13 @@ script:
       isArray: true
       name: file
       required: false
-      secret: false
-    - default: false
-      description: MD5 hash to check.
+    - description: MD5 hash to check.
       isArray: true
       name: md5
-      required: false
-      secret: false
-    - default: false
-      description: SHA256 hash to check.
+    - description: SHA256 hash to check.
       isArray: true
       name: sha256
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieve results for a file hash using WildFire
-    execution: false
     name: file
     outputs:
     - contextPath: File.Name
@@ -110,16 +115,56 @@ script:
     - contextPath: InfoFile.Type
       description: The report file type.
       type: string
+    - contextPath: File.FeedRelatedIndicators.value
+      description: Indicators that are associated with the File.
+      type: String
+    - contextPath: File.FeedRelatedIndicators.type
+      description: The type of the indicators that are associated with the File.
+      type: String
+    - contextPath: File.Tags
+      description: Tags that are associated with the File.
+      type: String
+    - contextPath: File.Behavior.details
+      description: File behavior details.
+      type: String
+    - contextPath: File.Behavior.action
+      description: File behavior action.
+      type: String
   - arguments:
-    - default: false
-      description: ID of the entry containing the file to upload
+    - description: ID of the entry containing the file to upload
       isArray: true
       name: upload
-      required: true
-      secret: false
-    deprecated: false
+    - auto: PREDEFINED
+      description: Use XSOAR built-in polling to retrieve the result when it's ready.
+      name: polling
+      predefined:
+      - 'true'
+      - 'false'
+    - defaultValue: '60'
+      description: Interval in seconds between each poll.
+      name: interval_in_seconds
+    - deprecated: true
+      description: Used for the inner polling flow, for uploading a file use the 'upload'
+        argument instead
+      isArray: true
+      name: md5
+    - auto: PREDEFINED
+      defaultValue: pdf
+      description: Request a structured report. Possible values are "XML" and "PDF".
+        Only relevant when polling=true.
+      name: format
+      predefined:
+      - xml
+      - pdf
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Receive extended information from WildFire. Only relevant when
+        polling=true.
+      name: verbose
+      predefined:
+      - 'true'
+      - 'false'
     description: Uploads a file to WildFire for analysis.
-    execution: false
     name: wildfire-upload
     outputs:
     - contextPath: WildFire.Report.MD5
@@ -137,16 +182,136 @@ script:
     - contextPath: WildFire.Report.Status
       description: The status of the submission.
       type: string
+    - contextPath: File.Name
+      description: Name of the file.
+      type: string
+    - contextPath: File.Type
+      description: 'File type, for example: "PE"'
+      type: string
+    - contextPath: File.Size
+      description: Size of the file.
+      type: number
+    - contextPath: File.MD5
+      description: MD5 hash of the file.
+      type: string
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file.
+      type: string
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file.
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision.
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the report file.
+      type: string
+    - contextPath: InfoFile.Extension
+      description: The extension of the report file.
+      type: string
+    - contextPath: InfoFile.Name
+      description: The name of the report file.
+      type: string
+    - contextPath: InfoFile.Info
+      description: Details of the report file.
+      type: string
+    - contextPath: InfoFile.Size
+      description: The size of the report file.
+      type: number
+    - contextPath: InfoFile.Type
+      description: The report file type.
+      type: string
+    - contextPath: WildFire.Report.Network.UDP.IP
+      description: Submission related IPs, in UDP protocol.
+      type: string
+    - contextPath: WildFire.Report.Network.UDP.Port
+      description: Submission related ports, in UDP protocol.
+      type: string
+    - contextPath: WildFire.Report.Network.TCP.IP
+      description: Submission related IPs, in TCP protocol.
+      type: string
+    - contextPath: WildFire.Report.Network.TCP.Port
+      description: Submission related ports, in TCP protocol.
+      type: string
+    - contextPath: WildFire.Report.Network.DNS.Query
+      description: Submission DNS queries.
+      type: string
+    - contextPath: WildFire.Report.Network.DNS.Response
+      description: Submission DNS responses.
+      type: string
+    - contextPath: WildFire.Report.Evidence.md5
+      description: Submission evidence MD5 hash.
+      type: string
+    - contextPath: WildFire.Report.Evidence.Text
+      description: Submission evidence text.
+      type: string
+    - contextPath: WildFire.Report.detection_reasons.description
+      description: Reason for the detection verdict.
+      type: string
+    - contextPath: WildFire.Report.detection_reasons.name
+      description: Name of the detection.
+      type: string
+    - contextPath: WildFire.Report.detection_reasons.type
+      description: Type of the detection.
+      type: string
+    - contextPath: WildFire.Report.detection_reasons.verdict
+      description: Verdict of the detection.
+      type: string
+    - contextPath: WildFire.Report.detection_reasons.artifacts
+      description: Artifacts of the detection reasons.
+      type: unknown
+    - contextPath: WildFire.Report.iocs
+      description: Associated IOCs.
+      type: unknown
+    - contextPath: WildFire.Report.verdict
+      description: The verdict of the report.
+      type: string
+    polling: true
   - arguments:
-    - default: false
-      description: URL of the remote file to upload.
-      isArray: false
+    - description: URL of the remote file to upload.
       name: upload
-      required: true
-      secret: false
-    deprecated: false
+    - deprecated: true
+      description: Used for the inner polling flow, for uploading a url use the 'upload'
+        argument instead.
+      name: url
+    - auto: PREDEFINED
+      description: Use XSOAR built-in polling to retrieve the result when it's ready.
+      name: polling
+      predefined:
+      - 'true'
+      - 'false'
+    - defaultValue: '60'
+      description: Interval in seconds between each poll.
+      name: interval_in_seconds
+    - auto: PREDEFINED
+      defaultValue: pdf
+      description: Request a structured report (XML or PDF). Only relevant for when
+        using polling=true.
+      name: format
+      predefined:
+      - xml
+      - pdf
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Receive extended information from WildFire. Only relevant for when
+        using polling=true.
+      name: verbose
+      predefined:
+      - 'true'
+      - 'false'
     description: Uploads the URL of a remote file to WildFire for analysis.
-    execution: false
     name: wildfire-upload-file-url
     outputs:
     - contextPath: WildFire.Report.MD5
@@ -161,58 +326,132 @@ script:
     - contextPath: WildFire.Report.URL
       description: URL of the submission.
       type: string
+    - contextPath: File.Name
+      description: Name of the file.
+      type: string
+    - contextPath: File.Type
+      description: 'File type, for example: "PE"'
+      type: string
+    - contextPath: File.Size
+      description: Size of the file.
+      type: number
+    - contextPath: File.MD5
+      description: MD5 hash of the file.
+      type: string
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file.
+      type: string
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file.
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision.
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the report file.
+      type: string
+    - contextPath: InfoFile.Extension
+      description: The extension of the report file.
+      type: string
+    - contextPath: InfoFile.Name
+      description: The name of the report file.
+      type: string
+    - contextPath: InfoFile.Info
+      description: Details of the report file.
+      type: string
+    - contextPath: InfoFile.Size
+      description: The size of the report file.
+      type: number
+    - contextPath: InfoFile.Type
+      description: The report file type.
+      type: string
+    - contextPath: WildFire.Report.Network.UDP.IP
+      description: Submission related IPs, in UDP protocol.
+      type: string
+    - contextPath: WildFire.Report.Network.UDP.Port
+      description: Submission related ports, in UDP protocol.
+      type: string
+    - contextPath: WildFire.Report.Network.TCP.IP
+      description: Submission related IPs, in TCP protocol.
+      type: string
+    - contextPath: WildFire.Report.Network.TCP.Port
+      description: Submission related ports, in TCP protocol.
+      type: string
+    - contextPath: WildFire.Report.Network.DNS.Query
+      description: Submission DNS queries.
+      type: string
+    - contextPath: WildFire.Report.Network.DNS.Response
+      description: Submission DNS responses.
+      type: string
+    - contextPath: WildFire.Report.Evidence.md5
+      description: Submission evidence MD5 hash.
+      type: string
+    - contextPath: WildFire.Report.Evidence.Text
+      description: Submission evidence text.
+      type: string
+    - contextPath: WildFire.Report.detection_reasons.description
+      description: Reason for the detection verdict.
+      type: string
+    - contextPath: WildFire.Report.detection_reasons.name
+      description: Name of the detection.
+      type: string
+    - contextPath: WildFire.Report.detection_reasons.type
+      description: Type of the detection.
+      type: string
+    - contextPath: WildFire.Report.detection_reasons.verdict
+      description: Verdict of the detection.
+      type: string
+    - contextPath: WildFire.Report.detection_reasons.artifacts
+      description: Artifacts of the detection reasons.
+      type: unknown
+    - contextPath: WildFire.Report.iocs
+      description: Associated IOCs.
+      type: unknown
+    - contextPath: WildFire.Report.verdict
+      description: The verdict of the report.
+      type: string
+    polling: true
   - arguments:
-    - default: false
-      description: MD5 hash to check.
+    - description: MD5 hash to check.
       isArray: true
       name: md5
-      required: false
-      secret: false
-    - default: false
-      description: SHA256 hash to check
+    - description: SHA256 hash to check
       isArray: true
       name: sha256
-      required: false
-      secret: false
-    - default: false
-      description: Deprecated - Use the sha256 argument instead.
+    - description: Deprecated - Use the sha256 argument instead.
       isArray: true
       name: hash
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: pdf
       description: Request a structured report (XML or PDF).
-      isArray: false
       name: format
       predefined:
       - xml
       - pdf
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Receive extended information from WildFire.
-      isArray: false
       name: verbose
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: |-
-        Retrieves results for a URL using WildFire. Currently, this is only supported in US cloud.
-        The report format is in JSON.
+    - description: Retrieves results for a URL using WildFire. The report format is
+        in JSON.
       isArray: true
       name: url
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves results for a file hash using WildFire.
-    execution: false
     name: wildfire-report
     outputs:
     - contextPath: File.Name
@@ -296,16 +535,33 @@ script:
     - contextPath: WildFire.Report.Evidence.Text
       description: Submission evidence text.
       type: string
+    - contextPath: WildFire.Report.detection_reasons.description
+      description: Reason for the detection verdict.
+      type: string
+    - contextPath: WildFire.Report.detection_reasons.name
+      description: Name of the detection.
+      type: string
+    - contextPath: WildFire.Report.detection_reasons.type
+      description: Type of the detection.
+      type: string
+    - contextPath: WildFire.Report.detection_reasons.verdict
+      description: Verdict of the detection.
+      type: string
+    - contextPath: WildFire.Report.detection_reasons.artifacts
+      description: Artifacts of the detection reasons.
+      type: unknown
+    - contextPath: WildFire.Report.iocs
+      description: Associated IOCs.
+      type: unknown
+    - contextPath: WildFire.Report.verdict
+      description: The verdict of the report.
+      type: string
   - arguments:
-    - default: false
-      description: Hash to get the verdict for.
+    - description: Hash to get the verdict for.
       isArray: true
       name: hash
       required: true
-      secret: false
-    deprecated: false
     description: Returns a verdict for a hash.
-    execution: false
     name: wildfire-get-verdict
     outputs:
     - contextPath: WildFire.Verdicts.MD5
@@ -333,21 +589,15 @@ script:
       description: The actual score.
       type: number
   - arguments:
-    - default: false
-      description: EntryID of the text file that contains multiple hashes. Limit is 500 hashes.
+    - description: EntryID of the text file that contains multiple hashes. Limit is
+        500 hashes.
       isArray: true
       name: EntryID
-      required: false
-      secret: false
-    - default: false
-      description: A list of hashes to get verdicts for.
+    - description: A list of hashes to get verdicts for.
       isArray: true
       name: hash_list
-      required: false
-      secret: false
-    deprecated: false
-    description: Returns a verdict regarding multiple hashes, stored in a TXT file or given as list.
-    execution: false
+    description: Returns a verdict regarding multiple hashes, stored in a TXT file
+      or given as list.
     name: wildfire-get-verdicts
     outputs:
     - contextPath: WildFire.Verdicts.MD5
@@ -375,22 +625,47 @@ script:
       description: The actual score.
       type: number
   - arguments:
-    - default: false
-      description: URL to submit to WildFire.
+    - description: URL to submit to WildFire.
       isArray: true
       name: upload
-      required: true
-      secret: false
-    deprecated: false
+    - deprecated: true
+      description: Used for the inner polling flow, for uploading a url use the 'upload'
+        argument instead.
+      isArray: true
+      name: url
+    - auto: PREDEFINED
+      description: Use XSOAR built-in polling to retrieve the result when it's ready.
+      name: polling
+      predefined:
+      - 'true'
+      - 'false'
+    - defaultValue: '60'
+      description: Interval in seconds between each poll.
+      name: interval_in_seconds
+    - auto: PREDEFINED
+      defaultValue: pdf
+      description: Request a structured report (XML or PDF). Only relevant for when
+        using polling=true.
+      name: format
+      predefined:
+      - xml
+      - pdf
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Receive extended information from WildFire. Only relevant for when
+        using polling=true.
+      name: verbose
+      predefined:
+      - 'true'
+      - 'false'
     description: Uploads a URL of a webpage to WildFire for analysis.
-    execution: false
     name: wildfire-upload-url
     outputs:
     - contextPath: WildFire.Report.MD5
       description: MD5 of the submission.
       type: string
     - contextPath: WildFire.Report.SHA256
-      description: SHA256 of the submission.
+      description: SHA256 of the report.
       type: string
     - contextPath: WildFire.Report.Status
       description: The status of the submission.
@@ -398,32 +673,151 @@ script:
     - contextPath: WildFire.Report.URL
       description: URL of the submission.
       type: string
+    - contextPath: File.Name
+      description: Name of the file.
+      type: string
+    - contextPath: File.Type
+      description: 'File type, for example: "PE"'
+      type: string
+    - contextPath: File.Size
+      description: Size of the file.
+      type: number
+    - contextPath: File.MD5
+      description: MD5 hash of the file.
+      type: string
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file.
+      type: string
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file.
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision.
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the report file.
+      type: string
+    - contextPath: InfoFile.Extension
+      description: The extension of the report file.
+      type: string
+    - contextPath: InfoFile.Name
+      description: The name of the report file.
+      type: string
+    - contextPath: InfoFile.Info
+      description: Details of the report file.
+      type: string
+    - contextPath: InfoFile.Size
+      description: The size of the report file.
+      type: number
+    - contextPath: InfoFile.Type
+      description: The report file type.
+      type: string
+    - contextPath: WildFire.Report.Network.UDP.IP
+      description: Submission related IPs, in UDP protocol.
+      type: string
+    - contextPath: WildFire.Report.Network.UDP.Port
+      description: Submission related ports, in UDP protocol.
+      type: string
+    - contextPath: WildFire.Report.Network.TCP.IP
+      description: Submission related IPs, in TCP protocol.
+      type: string
+    - contextPath: WildFire.Report.Network.TCP.Port
+      description: Submission related ports, in TCP protocol.
+      type: string
+    - contextPath: WildFire.Report.Network.DNS.Query
+      description: Submission DNS queries.
+      type: string
+    - contextPath: WildFire.Report.Network.DNS.Response
+      description: Submission DNS responses.
+      type: string
+    - contextPath: WildFire.Report.Evidence.md5
+      description: Submission evidence MD5 hash.
+      type: string
+    - contextPath: WildFire.Report.Evidence.Text
+      description: Submission evidence text.
+      type: string
+    - contextPath: WildFire.Report.detection_reasons.description
+      description: Reason for the detection verdict.
+      type: string
+    - contextPath: WildFire.Report.detection_reasons.name
+      description: Name of the detection.
+      type: string
+    - contextPath: WildFire.Report.detection_reasons.type
+      description: Type of the detection.
+      type: string
+    - contextPath: WildFire.Report.detection_reasons.verdict
+      description: Verdict of the detection.
+      type: string
+    - contextPath: WildFire.Report.detection_reasons.artifacts
+      description: Artifacts of the detection reasons.
+      type: unknown
+    - contextPath: WildFire.Report.iocs
+      description: Associated IOCs.
+      type: unknown
+    - contextPath: WildFire.Report.verdict
+      description: The verdict of the report.
+      type: string
+    polling: true
   - arguments:
-    - default: false
-      description: MD5 hash of the sample.
+    - description: MD5 hash of the sample.
       isArray: true
       name: md5
-      required: false
-      secret: false
-    - default: false
-      description: SHA256 hash of the sample.
-      isArray: false
+    - description: SHA256 hash of the sample.
       name: sha256
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves a sample.
-    execution: false
     name: wildfire-get-sample
-  dockerimage: demisto/python3:3.9.1.14969
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  - arguments:
+    - description: URL of the webpage.
+      isArray: true
+      name: url
+      required: true
+    - auto: PREDEFINED
+      description: Whether to download as screenshots or as downloadable files. if
+        not specified, both will be downloaded.
+      name: types
+      predefined:
+      - download_files
+      - screenshot
+    description: Get web artifacts for a URL webpage. An empty tgz will be returned,
+      no matter what the verdict, or even if the URL is malformed.
+    name: wildfire-get-url-webartifacts
+    outputs:
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the webartifacts.
+      type: String
+    - contextPath: InfoFile.Extension
+      description: Extension of the webartifacts.
+      type: string
+    - contextPath: InfoFile.Name
+      description: Name of the webartifacts.
+      type: string
+    - contextPath: InfoFile.Info
+      description: Details of the webartifacts.
+      type: string
+    - contextPath: InfoFile.Size
+      description: Size of the webartifacts.
+      type: number
+    - contextPath: InfoFile.Type
+      description: The webartifacts file type.
+      type: string
+  dockerimage: demisto/python3:3.9.7.24076
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
+fromversion: 5.0.0
 tests:
 - Wildfire Test
-fromversion: 5.0.0
+- Detonate File - WildFire - Test

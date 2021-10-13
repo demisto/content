@@ -1,0 +1,55 @@
+category: Utilities
+commonfields:
+  id: XSOAR Storage
+  version: -1
+configuration:
+- defaultvalue: "1024"
+  display: Max Size of Store in bytes (Maximum of 1024000)
+  name: maxsize
+  required: true
+  type: 0
+description: Facilitates the storage and retrieval of key/value pairs within XSOAR.
+display: XSOAR Storage
+name: XSOAR Storage
+script:
+  commands:
+  - arguments:
+    - description: The namespace to retrieve keys from.
+      name: namespace
+    description: List the keys available.
+    name: xsoar-store-list
+    outputs:
+    - contextPath: XSOAR.Store
+      description: The namespace and keys.
+      type: string
+  - arguments:
+    - description: The key to store data under.
+      name: key
+      required: true
+    - description: The data to store.
+      name: data
+      required: true
+    - description: The namespace to store data in.
+      name: namespace
+    description: Places data in the store under the provided key.
+    name: xsoar-store-put
+  - arguments:
+    - description: The Key value.
+      name: key
+      required: true
+    - description: The namespace to retrieve data from.
+      name: namespace
+    description: Retrieve data stored in the provided key.
+    name: xsoar-store-get
+    outputs:
+    - contextPath: XSOAR.Store
+      description: The data retrieved from the key.
+      type: string
+  dockerimage: demisto/python3:3.9.7.24076
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

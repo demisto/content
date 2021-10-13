@@ -7,6 +7,10 @@ configuration:
   name: service_account_json
   required: true
   type: 4
+- display: Default Bucket
+  name: default_bucket
+  required: false
+  type: 0
 - display: Use system proxy settings
   name: proxy
   required: false
@@ -39,10 +43,10 @@ script:
       type: String
   - arguments:
     - default: true
-      description: Name of the bucket to retrieve.
+      description: Name of the bucket to retrieve. If not specified, operation will be performed on the default bucket parameter.
       isArray: false
       name: bucket_name
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Retrieves bucket information.
@@ -123,10 +127,10 @@ script:
     name: gcs-delete-bucket
   - arguments:
     - default: true
-      description: Name of the bucket in which to list objects.
+      description: Name of the bucket in which to list objects. If not specified, operation will be performed on the default bucket parameter.
       isArray: false
       name: bucket_name
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Retrieves the list of objects in a bucket.
@@ -171,10 +175,10 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Name of the bucket in which the object resides.
+      description: Name of the bucket in which the object resides. If not specified, operation will be performed on the default bucket parameter.
       isArray: false
       name: bucket_name
-      required: true
+      required: false
       secret: false
     - default: true
       description: Name of the object to download.
@@ -200,10 +204,10 @@ script:
       required: true
       secret: false
     - default: false
-      description: Name of the bucket in which to upload the object.
+      description: Name of the bucket in which to upload the object. If not specified, operation will be performed on the default bucket parameter.
       isArray: false
       name: bucket_name
-      required: true
+      required: false
       secret: false
     - default: false
       description: Name of the uploaded object within the bucket.
@@ -231,10 +235,10 @@ script:
     name: gcs-upload-file
   - arguments:
     - default: true
-      description: Name of the bucket for the Access Control List.
+      description: Name of the bucket for the Access Control List. If not specified, operation will be performed on the default bucket parameter.
       isArray: false
       name: bucket_name
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Retrieves the Access Control List of a bucket.
@@ -258,10 +262,10 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Name of the bucket in which to modify the Access Control List.
+      description: Name of the bucket in which to modify the Access Control List. If not specified, operation will be performed on the default bucket parameter.
       isArray: false
       name: bucket_name
-      required: true
+      required: false
       secret: false
     - default: true
       description: |-
@@ -295,10 +299,10 @@ script:
     name: gcs-create-bucket-policy
   - arguments:
     - default: false
-      description: Name of the bucket in which to modify the Access Control List.
+      description: Name of the bucket in which to modify the Access Control List. If not specified, operation will be performed on the default bucket parameter.
       isArray: false
       name: bucket_name
-      required: true
+      required: false
       secret: false
     - default: true
       description: |-
@@ -332,10 +336,10 @@ script:
     name: gcs-put-bucket-policy
   - arguments:
     - default: false
-      description: Name of the bucket in which to modify the Access Control List.
+      description: Name of the bucket in which to modify the Access Control List. If not specified, operation will be performed on the default bucket parameter.
       isArray: false
       name: bucket_name
-      required: true
+      required: false
       secret: false
     - default: true
       description: |-
@@ -356,10 +360,10 @@ script:
     name: gcs-delete-bucket-policy
   - arguments:
     - default: false
-      description: Name of the bucket in which the object resides.
+      description: Name of the bucket in which the object resides. If not specified, operation will be performed on the default bucket parameter.
       isArray: false
       name: bucket_name
-      required: true
+      required: false
       secret: false
     - default: true
       description: Name of the object in which to list access controls.
@@ -392,10 +396,10 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Name of the bucket in which the object resides.
+      description: Name of the bucket in which the object resides. If not specified, operation will be performed on the default bucket parameter.
       isArray: false
       name: bucket_name
-      required: true
+      required: false
       secret: false
     - default: false
       description: Name of the object in which to modify the Access control List.
@@ -434,10 +438,10 @@ script:
     name: gcs-create-bucket-object-policy
   - arguments:
     - default: false
-      description: Name of the bucket in which the object resides.
+      description: Name of the bucket in which the object resides. If not specified, operation will be performed on the default bucket parameter.
       isArray: false
       name: bucket_name
-      required: true
+      required: false
       secret: false
     - default: false
       description: Name of the object in which to modify access controls.
@@ -476,10 +480,10 @@ script:
     name: gcs-put-bucket-object-policy
   - arguments:
     - default: false
-      description: Name of the bucket in which the object resides.
+      description: Name of the bucket in which the object resides. If not specified, operation will be performed on the default bucket parameter.
       isArray: false
       name: bucket_name
-      required: true
+      required: false
       secret: false
     - default: false
       description: Name of the object in which to modify access controls.
@@ -504,7 +508,7 @@ script:
     description: Removes an entity from an object's Access Control List.
     execution: false
     name: gcs-delete-bucket-object-policy
-  dockerimage: demisto/google-cloud-storage:1.0.0.1734
+  dockerimage: demisto/google-cloud-storage:1.0.0.24037
   isfetch: false
   longRunning: false
   longRunningPort: false

@@ -8,6 +8,7 @@ import requests
 ''' GLOBAL VARS '''
 ''' GLOBAL VARS '''
 USE_SSL = not demisto.params().get('insecure', False)
+handle_proxy()
 
 EMAIL = demisto.params()['Email']
 TOKEN = demisto.params()['Token']

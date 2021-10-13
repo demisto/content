@@ -1,0 +1,31 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "FireEye EX Alert",
+        "FireEye NX Alert",
+        "FireEye NX IPS Event"
+    ],
+    "caseInsensitive": true,
+    "cliName": "fireeyec2host",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_fireeyec2host",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "FireEye C2 Host",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "5.0.0"
+}

@@ -3,9 +3,10 @@ commonfields:
   id: Palo Alto Networks Threat Vault
   version: -1
 configuration:
-- display: API Key
+- additionalinfo: TIM customers that upgraded to version 6.2 or above, can have this value pre-configured in their main account so no additional input is needed. To use this feature, upgrade your license so it includes the license key.
+  display: API Key
   name: api_key
-  required: true
+  required: false
   type: 4
 - display: Trust any certificate (not secure)
   name: insecure
@@ -196,6 +197,7 @@ script:
       type: String
   - arguments:
     - default: true
+      isArray: true
       name: ip
       required: false
       description: IP address to query, e.g., !ip 1.1.1.1
@@ -371,7 +373,7 @@ script:
     - contextPath: ThreatVault.Searchf.signatures
       description: A list of all the signatures found for this specific search.
       type: Unknown
-  dockerimage: demisto/python3:3.9.1.14969
+  dockerimage: demisto/python3:3.9.7.24076
   isfetch: false
   longRunning: false
   longRunningPort: false

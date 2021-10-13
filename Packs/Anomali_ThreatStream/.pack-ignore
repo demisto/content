@@ -1,0 +1,8 @@
+[file:README.md]
+ignore=RM104
+
+[file:Anomali_ThreatStream_v2.yml]
+ignore=BA108,BA109
+
+[file:integration-AnomaliThreatStream.yml]
+ignore=IN144

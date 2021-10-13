@@ -4,7 +4,7 @@ commonfields:
 name: AWS - ACM
 display: AWS - ACM
 category: IT Services
-description: Amazon Web Services Certificate Manager Service (acm)
+description: Amazon Web Services Certificate Manager Service (ACM)
 configuration:
 - display: Role Arn
   name: roleArn
@@ -47,6 +47,23 @@ configuration:
   name: secret_key
   required: false
   type: 4
+- display: Timeout
+  name: timeout
+  additionalinfo: The time in seconds till a timeout exception is reached. You can
+    specify just the read timeout (for example 60) or also the connect timeout followed
+    after a comma (for example 60,10). If a connect timeout is not specified, a default
+    of 10 second will be used.
+  defaultvalue: 60,10
+  required: false
+  type: 0
+- display: Retries
+  name: retries
+  defaultvalue: 5
+  additionalinfo: "The maximum number of retry attempts when connection or throttling errors
+  are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10.
+  Note: Increasing the number of retries will increase the execution time."
+  required: false
+  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -485,6 +502,8 @@ script:
       - sa-east-1
       - eu-north-1
       - eu-west-3
+      - us-gov-east-1
+      - us-gov-west-1
       required: false
       secret: false
     - name: roleArn
@@ -510,7 +529,7 @@ script:
       in that order. The certificate and certificate chain are base64 encoded. If
       you want to decode the certificate to see the individual fields, you can use
       OpenSSL.
-  dockerimage: demisto/boto3py3:1.0.0.13191
+  dockerimage: demisto/boto3py3:1.0.0.24037
   runonce: false
   subtype: python3
 tests:

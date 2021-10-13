@@ -29,9 +29,10 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: File exchange with an SMB server.
-display: Server Message Block (SMB)
+description: Deprecated. Use the Server Message Block (SMB) v2 integration instead.
+display: Server Message Block (SMB) (Deprecated)
 name: Server Message Block (SMB)
+deprecated: true
 script:
   commands:
   - arguments:
@@ -84,7 +85,7 @@ script:
     - contextPath: File.MD5
       description: MD5 hash of the file.
       type: string
-    deprecated: false
+    deprecated: true
     description: Downloads a file from the SMB server.
     execution: false
     name: smb-download
@@ -108,7 +109,7 @@ script:
     - name: content
       default: false
       description: File content to send to the share. Ignored if EntryID argument is specified.
-    deprecated: false
+    deprecated: true
     description: Uploads a file to the SMB server.
     execution: false
     name: smb-upload

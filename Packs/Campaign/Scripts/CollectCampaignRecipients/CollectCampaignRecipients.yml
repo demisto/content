@@ -1,0 +1,18 @@
+commonfields:
+  id: CollectCampaignRecipients
+  version: -1
+dockerimage: demisto/python3:3.9.7.24076
+enabled: true
+name: CollectCampaignRecipients
+runas: DBotRole
+runonce: false
+script: ''
+comment: Collect the recipients from all campaign incidents.
+scripttarget: 0
+subtype: python3
+tags:
+- field-change-triggered
+type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

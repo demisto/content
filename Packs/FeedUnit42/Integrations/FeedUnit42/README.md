@@ -1,5 +1,7 @@
 Unit42 feed of published IOCs, which contains known malicious indicators.
 
+Note: Install the MITRE ATT&CK pack if you want the feed to create MITRE ATT&CK indicators in your environment from the the STIX reports.
+
 ## Configure Unit42 Feed on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -12,9 +14,9 @@ Unit42 feed of published IOCs, which contains known malicious indicators.
 | feed | Fetch indicators | False |
 | feedReputation | Indicator Reputation | False |
 | feedReliability | Source Reliability | True |
-| tlp_color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at https://us-cert.cisa.gov/tlp | False |
-| feedExpirationPolicy |  | False |
-| feedExpirationInterval |  | False |
+| tlp_color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at https://us-cert.cisa.gov/tlp. | False |
+| feedExpirationPolicy | The feed’s expiration policy. | False |
+| feedExpirationInterval | The interval after which the feed expires. | False |
 | feedFetchInterval | Feed Fetch Interval | False |
 | feedBypassExclusionList | Bypass exclusion list | False |
 | feedTags | Tags | False |
@@ -23,7 +25,7 @@ Unit42 feed of published IOCs, which contains known malicious indicators.
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### unit42-get-indicators
 ***

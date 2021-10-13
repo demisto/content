@@ -30,17 +30,19 @@ def id_set_file_exists_in_bucket(public_storage_bucket, storage_id_set_path):
     return blob.exists()
 
 
-def download_private_id_set_from_gcp(public_storage_bucket):
+def download_private_id_set_from_gcp(public_storage_bucket, storage_base_path):
     """Downloads private ID set file from cloud storage.
 
     Args:
         public_storage_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where private_id_set.json
         is stored.
+        storage_base_path (str): The storage base path of the bucket.
     Returns:
         str: private ID set file full path.
     """
 
-    storage_id_set_path = 'content/private_id_set.json'
+    storage_id_set_path = os.path.join(storage_base_path, 'content/private_id_set.json') if storage_base_path else \
+        'content/private_id_set.json'
     private_artifacts_path = '/home/runner/work/content-private/content-private/content/artifacts'
     private_id_set_path = private_artifacts_path + '/private_id_set.json'
 
@@ -77,6 +79,8 @@ def option_handler():
                               "For more information go to: "
                               "https://googleapis.dev/python/google-api-core/latest/auth.html"),
                         required=False)
+    parser.add_argument('-sb', '--storage_base_path', help="Storage base path of the bucket.",
+                        required=False)
 
     # disable-secrets-detection-end
     return parser.parse_args()
@@ -86,9 +90,10 @@ def main():
     options = option_handler()
     service_account = options.service_account
     storage_client = init_storage_client(service_account)
+    storage_base_path = options.storage_base_path
     public_bucket_name = options.public_bucket_name
     public_storage_bucket = storage_client.bucket(public_bucket_name)
-    private_id_set = download_private_id_set_from_gcp(public_storage_bucket)
+    private_id_set = download_private_id_set_from_gcp(public_storage_bucket, storage_base_path)
     return private_id_set
 
 

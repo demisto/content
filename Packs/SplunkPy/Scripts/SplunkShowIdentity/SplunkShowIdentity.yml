@@ -1,0 +1,21 @@
+commonfields:
+  id: SplunkShowIdentity
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.9.7.24076
+enabled: true
+name: SplunkShowIdentity
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- dynamic-section
+type: python
+fromversion: 6.0.0
+comment: Automation to display identity objects from Splunk. 
+tests:
+- No tests (auto formatted)

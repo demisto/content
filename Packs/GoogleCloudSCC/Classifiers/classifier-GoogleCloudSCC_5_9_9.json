@@ -1,0 +1,716 @@
+{
+ "brandName": "GoogleCloudSCC",
+ "custom": true,
+ "feed": false,
+ "id": "GoogleCloudSCC",
+ "isDefault": false,
+ "keyTypeMap": {
+  "Google Cloud SCC Finding": "Google Cloud SCC Finding"
+ },
+ "mapping": {
+  "Google Cloud SCC Finding": {
+   "dontMapEventToLabels": false,
+   "internalMapping": {
+    "Alert Name": {
+     "complex": null,
+     "simple": "finding.sourceProperties.alert_name"
+    },
+    "Destination IP": {
+     "complex": {
+      "accessor": "dstip",
+      "filters": [
+
+      ],
+      "root": "finding.sourceProperties",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "Event Type": {
+     "complex": null,
+     "simple": "finding.sourceProperties.event_type"
+    },
+    "GoogleCloudSCC Asset DisplayName": {
+     "complex": null,
+     "simple": "resource.projectDisplayName"
+    },
+    "GoogleCloudSCC Finding Category": {
+     "complex": null,
+     "simple": "finding.category"
+    },
+    "GoogleCloudSCC Finding CreateTime": {
+     "complex": {
+      "accessor": "createTime",
+      "filters": [
+
+      ],
+      "root": "finding",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "GoogleCloudSCC Finding EventTime": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "finding.eventTime",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "GoogleCloudSCC Finding ExternalURI": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "finding.externalUri",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "GoogleCloudSCC Finding FirstDiscovered": {
+     "complex": null,
+     "simple": "finding.createTime"
+    },
+    "GoogleCloudSCC Finding MostRecentlySeen": {
+     "complex": null,
+     "simple": "finding.eventTime"
+    },
+    "GoogleCloudSCC Finding Name": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "finding.name",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "GoogleCloudSCC Finding Parent": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "finding.parent",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "GoogleCloudSCC Finding SourceProperties AccessMethod": {
+     "complex": null,
+     "simple": "finding.sourceProperties.access_method"
+    },
+    "GoogleCloudSCC Finding SourceProperties Acked": {
+     "complex": null,
+     "simple": "finding.sourceProperties.acked"
+    },
+    "GoogleCloudSCC Finding SourceProperties ActivationTrigger": {
+     "complex": null,
+     "simple": "finding.sourceProperties.ActivationTrigger"
+    },
+    "GoogleCloudSCC Finding SourceProperties Alert": {
+     "complex": {
+      "accessor": "alert",
+      "filters": [
+
+      ],
+      "root": "finding.sourceProperties",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "GoogleCloudSCC Finding SourceProperties AlertType": {
+     "complex": null,
+     "simple": "finding.sourceProperties.alert_type"
+    },
+    "GoogleCloudSCC Finding SourceProperties App": {
+     "complex": {
+      "accessor": "app",
+      "filters": [
+
+      ],
+      "root": "finding.sourceProperties",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "GoogleCloudSCC Finding SourceProperties AppCategory": {
+     "complex": {
+      "accessor": "appcategory",
+      "filters": [
+
+      ],
+      "root": "finding.sourceProperties",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "GoogleCloudSCC Finding SourceProperties AppSessionId": {
+     "complex": {
+      "accessor": "app_session_id",
+      "filters": [
+
+      ],
+      "root": "finding.sourceProperties",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "GoogleCloudSCC Finding SourceProperties Browser": {
+     "complex": {
+      "accessor": "browser",
+      "filters": [
+
+      ],
+      "root": "finding.sourceProperties",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "GoogleCloudSCC Finding SourceProperties Browser Version": {
+     "complex": null,
+     "simple": "finding.sourceProperties.browser_version"
+    },
+    "GoogleCloudSCC Finding SourceProperties BrowserSessionId": {
+     "complex": null,
+     "simple": "finding.sourceProperties.browser_session_id"
+    },
+    "GoogleCloudSCC Finding SourceProperties CCI": {
+     "complex": {
+      "accessor": "cci",
+      "filters": [
+
+      ],
+      "root": "finding.sourceProperties",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "GoogleCloudSCC Finding SourceProperties CCL": {
+     "complex": {
+      "accessor": "ccl",
+      "filters": [
+
+      ],
+      "root": "finding.sourceProperties",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "GoogleCloudSCC Finding SourceProperties ClientBytes": {
+     "complex": null,
+     "simple": "finding.sourceProperties.client_bytes"
+    },
+    "GoogleCloudSCC Finding SourceProperties Count": {
+     "complex": {
+      "accessor": "count",
+      "filters": [
+
+      ],
+      "root": "finding.sourceProperties",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "GoogleCloudSCC Finding SourceProperties Device": {
+     "complex": {
+      "accessor": "device",
+      "filters": [
+
+      ],
+      "root": "finding.sourceProperties",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "GoogleCloudSCC Finding SourceProperties Domain": {
+     "complex": null,
+     "simple": "finding.sourceProperties.domain"
+    },
+    "GoogleCloudSCC Finding SourceProperties DstCountry": {
+     "complex": {
+      "accessor": "dst_country",
+      "filters": [
+
+      ],
+      "root": "finding.sourceProperties",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "GoogleCloudSCC Finding SourceProperties DstGeoipSrc": {
+     "complex": {
+      "accessor": "dst_geoip_src",
+      "filters": [
+
+      ],
+      "root": "finding.sourceProperties",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "GoogleCloudSCC Finding SourceProperties DstIP": {
+     "complex": {
+      "accessor": "dstip",
+      "filters": [
+
+      ],
+      "root": "finding.sourceProperties",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "GoogleCloudSCC Finding SourceProperties DstLocation": {
+     "complex": {
+      "accessor": "dst_location",
+      "filters": [
+
+      ],
+      "root": "finding.sourceProperties",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "GoogleCloudSCC Finding SourceProperties DstRegion": {
+     "complex": {
+      "accessor": "dst_region",
+      "filters": [
+
+      ],
+      "root": "finding.sourceProperties",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "GoogleCloudSCC Finding SourceProperties DstTimezone": {
+     "complex": null,
+     "simple": "finding.sourceProperties.dst_timezone"
+    },
+    "GoogleCloudSCC Finding SourceProperties DstZipcode": {
+     "complex": {
+      "accessor": "dst_zipcode",
+      "filters": [
+
+      ],
+      "root": "finding.sourceProperties",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "GoogleCloudSCC Finding SourceProperties EventType": {
+     "complex": null,
+     "simple": "finding.sourceProperties.event_type"
+    },
+    "GoogleCloudSCC Finding SourceProperties ExceptionInstructions": {
+     "complex": null,
+     "simple": "finding.sourceProperties.ExceptionInstructions"
+    },
+    "GoogleCloudSCC Finding SourceProperties ExposedService": {
+     "complex": null,
+     "simple": "finding.sourceProperties.ExposedService"
+    },
+    "GoogleCloudSCC Finding SourceProperties HostName": {
+     "complex": null,
+     "simple": "finding.sourceProperties.hostname"
+    },
+    "GoogleCloudSCC Finding SourceProperties ID": {
+     "complex": null,
+     "simple": "finding.sourceProperties.id"
+    },
+    "GoogleCloudSCC Finding SourceProperties InsertionEpochTimestamp": {
+     "complex": null,
+     "simple": "finding.sourceProperties.insertion_epoch_timestamp"
+    },
+    "GoogleCloudSCC Finding SourceProperties LastApp": {
+     "complex": null,
+     "simple": "finding.sourceProperties.last_app"
+    },
+    "GoogleCloudSCC Finding SourceProperties LastCountry": {
+     "complex": null,
+     "simple": "finding.sourceProperties.last_country"
+    },
+    "GoogleCloudSCC Finding SourceProperties LastDevice": {
+     "complex": null,
+     "simple": "finding.sourceProperties.last_device"
+    },
+    "GoogleCloudSCC Finding SourceProperties LastLocation": {
+     "complex": null,
+     "simple": "finding.sourceProperties.last_location"
+    },
+    "GoogleCloudSCC Finding SourceProperties LastRegion": {
+     "complex": null,
+     "simple": "finding.sourceProperties.last_region"
+    },
+    "GoogleCloudSCC Finding SourceProperties MfaDetails": {
+     "complex": {
+      "accessor": "MfaDetails",
+      "filters": [
+
+      ],
+      "root": "custom",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "GoogleCloudSCC Finding SourceProperties NumBytes": {
+     "complex": null,
+     "simple": "finding.sourceProperties.numbytes"
+    },
+    "GoogleCloudSCC Finding SourceProperties OrganizationUnit": {
+     "complex": null,
+     "simple": "finding.sourceProperties.organization_unit"
+    },
+    "GoogleCloudSCC Finding SourceProperties OrigTy": {
+     "complex": null,
+     "simple": "finding.sourceProperties.orig_ty"
+    },
+    "GoogleCloudSCC Finding SourceProperties Page": {
+     "complex": null,
+     "simple": "finding.sourceProperties.page"
+    },
+    "GoogleCloudSCC Finding SourceProperties PageDuration": {
+     "complex": null,
+     "simple": "finding.sourceProperties.page_duration"
+    },
+    "GoogleCloudSCC Finding SourceProperties PageEndtime": {
+     "complex": null,
+     "simple": "finding.sourceProperties.page_endtime"
+    },
+    "GoogleCloudSCC Finding SourceProperties PageId": {
+     "complex": null,
+     "simple": "finding.sourceProperties.page_id"
+    },
+    "GoogleCloudSCC Finding SourceProperties PageStarttime": {
+     "complex": null,
+     "simple": "finding.sourceProperties.page_starttime"
+    },
+    "GoogleCloudSCC Finding SourceProperties ProfileId": {
+     "complex": null,
+     "simple": "finding.sourceProperties.profile_id"
+    },
+    "GoogleCloudSCC Finding SourceProperties ProjectId": {
+     "complex": null,
+     "simple": "finding.sourceProperties.ProjectId"
+    },
+    "GoogleCloudSCC Finding SourceProperties ReactivationCount": {
+     "complex": null,
+     "simple": "finding.sourceProperties.ReactivationCount"
+    },
+    "GoogleCloudSCC Finding SourceProperties ReqCnt": {
+     "complex": null,
+     "simple": "finding.sourceProperties.req_cnt"
+    },
+    "GoogleCloudSCC Finding SourceProperties RespCnt": {
+     "complex": null,
+     "simple": "finding.sourceProperties.resp_cnt"
+    },
+    "GoogleCloudSCC Finding SourceProperties RiskLevel": {
+     "complex": null,
+     "simple": "finding.sourceProperties.risk_level"
+    },
+    "GoogleCloudSCC Finding SourceProperties RiskLevelId": {
+     "complex": null,
+     "simple": "finding.sourceProperties.risk_level_id"
+    },
+    "GoogleCloudSCC Finding SourceProperties ScannerName": {
+     "complex": null,
+     "simple": "finding.sourceProperties.ScannerName"
+    },
+    "GoogleCloudSCC Finding SourceProperties ServerBytes": {
+     "complex": null,
+     "simple": "finding.sourceProperties.server_bytes"
+    },
+    "GoogleCloudSCC Finding SourceProperties Severity": {
+     "complex": null,
+     "simple": "finding.sourceProperties.severity"
+    },
+    "GoogleCloudSCC Finding SourceProperties SeverityLevel": {
+     "complex": null,
+     "simple": "finding.sourceProperties.SeverityLevel"
+    },
+    "GoogleCloudSCC Finding SourceProperties Site": {
+     "complex": null,
+     "simple": "finding.sourceProperties.site"
+    },
+    "GoogleCloudSCC Finding SourceProperties SlcLatitude": {
+     "complex": null,
+     "simple": "finding.sourceProperties.slc_latitude"
+    },
+    "GoogleCloudSCC Finding SourceProperties SlcLongitute": {
+     "complex": null,
+     "simple": "finding.sourceProperties.slc_longitude"
+    },
+    "GoogleCloudSCC Finding SourceProperties SrcCountry": {
+     "complex": {
+      "accessor": "src_country",
+      "filters": [
+
+      ],
+      "root": "finding.sourceProperties",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "GoogleCloudSCC Finding SourceProperties SrcGeoIpSrc": {
+     "complex": null,
+     "simple": "finding.sourceProperties.src_geoip_src"
+    },
+    "GoogleCloudSCC Finding SourceProperties SrcLocation": {
+     "complex": null,
+     "simple": "finding.sourceProperties.src_location"
+    },
+    "GoogleCloudSCC Finding SourceProperties SrcRegion": {
+     "complex": null,
+     "simple": "finding.sourceProperties.src_region"
+    },
+    "GoogleCloudSCC Finding SourceProperties SrcTimezone": {
+     "complex": null,
+     "simple": "finding.sourceProperties.src_timezone"
+    },
+    "GoogleCloudSCC Finding SourceProperties SrcZipcode": {
+     "complex": null,
+     "simple": "finding.sourceProperties.src_zipcode"
+    },
+    "GoogleCloudSCC Finding SourceProperties TenantName": {
+     "complex": null,
+     "simple": "finding.sourceProperties.tenant_name"
+    },
+    "GoogleCloudSCC Finding SourceProperties Threshold": {
+     "complex": null,
+     "simple": "finding.sourceProperties.threshold"
+    },
+    "GoogleCloudSCC Finding SourceProperties Timestamp": {
+     "complex": null,
+     "simple": "finding.sourceProperties.timestamp"
+    },
+    "GoogleCloudSCC Finding SourceProperties TrafficType": {
+     "complex": null,
+     "simple": "finding.sourceProperties.traffic_type"
+    },
+    "GoogleCloudSCC Finding SourceProperties UrNormalized": {
+     "complex": null,
+     "simple": "finding.sourceProperties.ur_normalized"
+    },
+    "GoogleCloudSCC Finding SourceProperties User": {
+     "complex": null,
+     "simple": "finding.sourceProperties.user"
+    },
+    "GoogleCloudSCC Finding SourceProperties UserAgent": {
+     "complex": null,
+     "simple": "finding.sourceProperties.useragent"
+    },
+    "GoogleCloudSCC Finding SourceProperties UserGenerated": {
+     "complex": null,
+     "simple": "finding.sourceProperties.user_generated"
+    },
+    "GoogleCloudSCC Finding SourceProperties UserIP": {
+     "complex": null,
+     "simple": "finding.sourceProperties.userip"
+    },
+    "GoogleCloudSCC Finding SourceProperties UserKey": {
+     "complex": null,
+     "simple": "finding.sourceProperties.userkey"
+    },
+    "GoogleCloudSCC Finding URL": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "finding_url",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "GoogleCloudSCC Overview": {
+     "complex": null,
+     "simple": "finding.sourceProperties.Explanation"
+    },
+    "GoogleCloudSCC Resource ParentDisplayName": {
+     "complex": null,
+     "simple": "resource.parentDisplayName"
+    },
+    "GoogleCloudSCC Recommendation": {
+     "complex": null,
+     "simple": "finding.sourceProperties.Recommendation"
+    },
+    "GoogleCloudSCC Resource Name": {
+     "complex": null,
+     "simple": "resource.name"
+    },
+    "GoogleCloudSCC Resource ParentName": {
+     "complex": null,
+     "simple": "resource.parent"
+    },
+    "GoogleCloudSCC Resource Project DisplayName": {
+     "complex": {
+      "accessor": "projectDisplayName",
+      "filters": [
+
+      ],
+      "root": "resource",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "GoogleCloudSCC Resource ProjectName": {
+     "complex": {
+      "accessor": "project",
+      "filters": [
+
+      ],
+      "root": "resource",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "GoogleCloudSCC Security Marks": {
+     "complex": {
+      "accessor": "securityMarks",
+      "filters": [
+
+      ],
+      "root": "custom",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "OS": {
+     "complex": {
+      "accessor": "os",
+      "filters": [
+
+      ],
+      "root": "finding.sourceProperties",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "OS Version": {
+     "complex": null,
+     "simple": "finding.sourceProperties.os_version"
+    },
+    "Source IP": {
+     "complex": {
+      "accessor": "srcip",
+      "filters": [
+
+      ],
+      "root": "finding.sourceProperties",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "State": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "finding.state",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "category": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "finding.category",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "severity": {
+     "complex": {
+      "accessor": "severity",
+      "filters": [
+
+      ],
+      "root": "finding",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    }
+   }
+  }
+ },
+ "transformer": {
+  "complex": null,
+  "simple": ".=\"Google Cloud SCC Finding\""
+ },
+ "version": -1,
+ "fromVersion": "5.0.0",
+ "toVersion": "5.9.9"
+}

@@ -1,6 +1,9 @@
 commonfields:
   id: ExtFilter
   version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
 name: ExtFilter
 script: ''
 type: python
@@ -63,6 +66,7 @@ args:
   - doesn't match caseless
   - doesn't start with
   - doesn't start with caseless
+  - 'email-header: decode'
   - ends with
   - ends with caseless
   - equals
@@ -73,6 +77,8 @@ args:
   - greater or equal
   - greater than
   - if-then-else
+  - in
+  - in caseless
   - in caseless list
   - in list
   - in range
@@ -98,6 +104,8 @@ args:
   - matches caseless
   - matches conditions of
   - matches expressions of
+  - not in
+  - not in caseless
   - not in caseless list
   - not in list
   - 'regex: contains'
@@ -138,16 +146,18 @@ args:
   - 'wildcard: matches any caseless string of'
   - 'wildcard: matches any string of'
   - 'wildcard: matches caseless'
+  - is individually transformed with
+  - is collectively transformed with
   description: 'Filter Operation: value is filtered by,is filtered by,keeps,doesn''t
     keep,is,isn''t,equals,doesn''t equal,greater or equal,greater than,less or equal,less
     than,in range,starts with,starts with caseless,doesn''t start with,doesn''t start
-    with caseless,ends with,ends with caseless,doesn''t end with,doesn''t end with
-    caseless,includes,includes caseless,doesn''t include,doesn''t include caseless,finds,finds
-    caseless,doesn''t find,doesn''t find caseless,matches,matches caseless,doesn''t
-    match,doesn''t match caseless,matches wildcard,matches caseless wildcard,doesn''t
-    match wildcard,doesn''t match caseless wildcard,matches regex,matches caseless
-    regex,doesn''t match regex,doesn''t match caseless regex,in list,in caseless list,not
-    in list,not in caseless list,contains,contains caseless,doesn''t contain,doesn''t
+    with caseless,email-header: decode,ends with,ends with caseless,doesn''t end with,doesn''t
+    end with caseless,includes,includes caseless,doesn''t include,doesn''t include
+    caseless,finds,finds caseless,doesn''t find,doesn''t find caseless,matches,matches
+    caseless,doesn''t match,doesn''t match caseless,matches wildcard,matches caseless
+    wildcard,doesn''t match wildcard,doesn''t match caseless wildcard,matches regex,matches
+    caseless regex,doesn''t match regex,doesn''t match caseless regex,in list,in caseless
+    list,not in list,not in caseless list,contains,contains caseless,doesn''t contain,doesn''t
     contain caseless,contains any match with wildcard,contains any match with caseless
     wildcard,doesn''t contain any match with wildcard,doesn''t contain any match with
     caseless wildcard,contains any match with regex,contains any match with caseless
@@ -181,7 +191,7 @@ args:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.8.6.13358
+dockerimage: demisto/python3:3.9.7.24076
 runas: DBotWeakRole
 fromversion: 5.0.0
 tests:

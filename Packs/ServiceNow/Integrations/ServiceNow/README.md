@@ -10,10 +10,10 @@
 <h2>Wrapper Scripts</h2>
 <p>There are 3 scripts that serve as examples for wrapping the following generic commands:<br><code>servicenow-query-table</code> - <code>ServiceNowQueryIncident</code><br><code>servicenow-create-record</code> - <code>ServiceNowCreateIncident</code><br><code>servicenow-update-record</code> - <code>ServiceNowUpdateIncident</code></p>
 <p>You can use these scripts if you want to wrap these commands around a ServiceNow table of your choice. These scripts are wrapped around the <code>incident</code> table, so to wrap them around another table simply copy the scripts and edit the code, arguments and outputs accordingly.</p>
-<h2>Configure ServiceNow on Demisto</h2>
-<p>To use ServiceNow on Demisto, ensure your user account has the rest_api_explorer and web_service_admin roles. These roles are required to make API calls. However, they may not suffice for viewing records in some tables. Please make sure you have the correct role so you have permissions to work with the relevant table.</p>
+<h2>Configure ServiceNow on Cortex XSOAR</h2>
+<p>To use ServiceNow on Cortex XSOAR, ensure your user account has the rest_api_explorer and web_service_admin roles. These roles are required to make API calls. However, they may not suffice for viewing records in some tables. Please make sure you have the correct role so you have permissions to work with the relevant table.</p>
 <ol>
-<li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
+<li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers `&` Services</strong>.</li>
 <li>Search for ServiceNow.</li>
 <li>Click <strong>Add instance</strong> to create and configure a new integration instance.<br>
 <ul>
@@ -35,7 +35,7 @@
 </li>
 <li>Click <strong>Test</strong> to validate the URLs, token, and connection.</li>
 </ol>
-<p><strong>Demisto engine</strong>: If relevant, select the engine that acts as a proxy to the IMAP server.<br>Engines are used when you need to access a remote network segments and there are network devices such as proxies, firewalls, etc. that prevent the Demisto server from accessing the remote networks. For more information, see <a href="https://support.demisto.com/hc/en-us/articles/360006524673-Understanding-Demisto-Engines">Understanding Demisto Engines</a>.</p>
+<p><strong>Cortex XSOAR engine</strong>: If relevant, select the engine that acts as a proxy to the IMAP server.<br>Engines are used when you need to access a remote network segments and there are network devices such as proxies, firewalls, etc. that prevent the Cortex XSOAR server from accessing the remote networks. For more information, see <a href="https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/engines"> Cortex XSOAR Engines</a>.</p>
 <h2>Fetched Incidents Data</h2>
 <p>The integration fetches newly created tickets according to the following parameters, which you define in the instance configuration: <em><strong>ticket_type</strong></em>, <em><strong>query</strong></em>, and <em><strong>limit</strong></em>. For the first fetch, the integration will fetch incidents that were created 10 minutes earlier. After that, it will fetch incidents that were created after the timestamp of the last fetch.</p>
 <p>Data:</p>
@@ -271,7 +271,7 @@
 }
 </pre>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.<br>After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.<br>After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_2106334508571543393959765">Get ticket information: servicenow-get-ticket</a></li>
 <li><a href="#h_2766128079841543393964767">Create a ticket: servicenow-create-ticket</a></li>
@@ -3210,4 +3210,3 @@
 <h2>Troubleshooting</h2>
 <p>If there is an error within ServiceNow, the message is usually indicative, e.g., <code>User Not Authenticated, details: Required to provide Auth information </code>, <code>Invalid table</code> or <code>No Record found, details: Record doesn't exist or ACL restricts the record retrieval</code>.</p>
 <p>However there may be connection issues, e.g., when the ServiceNow server URL is incorrect or is unreachable.</p>
-<p>If you experience any issues, contact <a href="mailto:support@demisto.com">Demisto Support</a>.</p>

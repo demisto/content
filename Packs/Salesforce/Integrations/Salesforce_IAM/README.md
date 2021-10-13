@@ -18,15 +18,16 @@ This configuration ensures that the user being created is created with the right
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | Salesforce url \(Eg: https://&amp;lt;domain&amp;gt;.salesforce.com/\) | True |
+| url | Salesforce url \(Eg: https://domain.salesforce.com/\) | True |
 | credentials | User name | True |
 | consumer_key | Consumer Key | True |
 | consumer_secret | Consumer Secret | True |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
-| create_user_enabled | Create User Command Enabled | False |
-| update_user_enabled | Update User Command Enabled | False |
-| disable_user_enabled | Disable User Commands Enabled | False |
+| create_user_enabled | Allow creating users | False |
+| update_user_enabled | Allow updating users | False |
+| enable_user_enabled | Allow enabling users | False |
+| disable_user_enabled | Allow disabling users | False |
 | create_if_not_exists | Automatically create user if not found in update and enable commands | False |
 | mapper_in | Incoming Mapper | True |
 | mapper_out | Outgoing Mapper | True |

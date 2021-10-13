@@ -52,6 +52,14 @@ configuration:
   defaultvalue: "25"
   type: 0
   required: false
+- display: Fetch Incident Cases
+  name: fetch_incident_cases
+  defaultvalue: Case Per Anomaly
+  type: 15
+  required: false
+  options:
+  - Case Per Anomaly
+  - Case For All Anomalies
 script:
   script: ''
   type: python
@@ -270,6 +278,9 @@ script:
     - contextPath: Gra.User.Accounts.risk_score
       description: Risk Score
       type: number
+    - contextPath: Gra.User.Accounts.updated_on
+      description: Updated On
+      type: date
     description: Retrieve List of All Active Accounts and Details for a Given User
       / Identity
   - name: gra-fetch-resource-highrisk-accounts
@@ -620,12 +631,15 @@ script:
     - contextPath: Gra.User.title
       description: Title
       type: string
-    - contextPath: Gra.User.joingDate
+    - contextPath: Gra.User.joiningDate
       description: Joining Date
       type: date
     - contextPath: Gra.User.exitDate
       description: Exit Date
       type: date
+    - contextPath: Gra.User.profilePicturePath
+      description: Profile Picture Path
+      type: string
     description: Get details of the user
   - name: gra-highRisk-users
     arguments:
@@ -653,7 +667,7 @@ script:
       type: string
     - contextPath: Gra.Highrisk.Users.riskScore
       description: Risk Score
-      type: string
+      type: number
     - contextPath: Gra.Highrisk.Users.userRisk
       description: User Risk
       type: string
@@ -681,6 +695,39 @@ script:
     - contextPath: Gra.Highrisk.Users.exitDate
       description: Exit Date
       type: date
+    - contextPath: Gra.Highrisk.Users.updated_on
+      description: Updated On
+      type: date
+    - contextPath: Gra.Highrisk.Users.created_on
+      description: Created On
+      type: date
+    - contextPath: Gra.Highrisk.Users.resource
+      description: Resource
+      type: string
+    - contextPath: Gra.Highrisk.Users.name
+      description: Name
+      type: string
+    - contextPath: Gra.Highrisk.Users.id
+      description: Id
+      type: string
+    - contextPath: Gra.Highrisk.Users.type
+      description: Type
+      type: string
+    - contextPath: Gra.Highrisk.Users.description
+      description: Description
+      type: string
+    - contextPath: Gra.Highrisk.Users.is_reassigned
+      description: Is Reassigned
+      type: string
+    - contextPath: Gra.Highrisk.Users.high_risk
+      description: High Risk
+      type: string
+    - contextPath: Gra.Highrisk.Users.is_orphan
+      description: Is Orphan
+      type: string
+    - contextPath: Gra.Highrisk.Users.domain
+      description: Domain
+      type: string
     description: Retrieve All High Risk User Information
   - name: gra-cases
     arguments:
@@ -734,6 +781,9 @@ script:
     - contextPath: Gra.Cases.status
       description: satus
       type: string
+    - contextPath: Gra.Cases.anomalies
+      description: Anomalies
+      type: string
     description: Retrieve List of All Cases for a Given Status
   - name: gra-user-anomalies
     arguments:
@@ -753,7 +803,152 @@ script:
       description: Anomaly Name
       type: string
     description: Retrieve Detailed Information for a Given User
-  dockerimage: demisto/python3:3.9.1.14969
+  - name: gra-case-action
+    arguments:
+    - name: action
+      required: true
+      default: true
+      auto: PREDEFINED
+      predefined:
+      - closeCase
+      - modelReviewCase
+      - riskManageCase
+      description: Action
+      defaultValue: closeCase
+    - name: caseId
+      required: true
+      description: Case Id
+    - name: subOption
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - True Incident
+      - Correct Detection
+      - Tuning Required
+      - Others
+      description: Sub Option
+      defaultValue: True Incident
+    - name: caseComment
+      required: true
+      description: Case Comment
+    - name: riskAcceptDate
+      description: Risk Accept Date in ‘yyyy-MM-dd’ format. (applicable only in case
+        of closing a case as Risk Managed)
+    outputs:
+    - contextPath: Gra.Case.Action.Message
+      description: Message
+      type: string
+    description: Closing a case and updating the anomaly status as Closed / Risk Managed
+      / Model Reviewed.
+  - name: gra-case-action-anomaly
+    arguments:
+    - name: action
+      required: true
+      default: true
+      auto: PREDEFINED
+      predefined:
+      - closeCaseAnomaly
+      - modelReviewCaseAnomaly
+      - riskAcceptCaseAnomaly
+      description: Action
+      defaultValue: closeCaseAnomaly
+    - name: caseId
+      required: true
+      description: Case ID
+    - name: anomalyNames
+      required: true
+      description: Anomaly Names
+    - name: subOption
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - True Incident
+      - Correct Detection
+      - Tuning Required
+      - Others
+      description: Sub Option
+      defaultValue: True Incident
+    - name: caseComment
+      required: true
+      description: Case Comment
+    - name: riskAcceptDate
+      description: Risk Accept Date in ‘yyyy-MM-dd’ format. (applicable only in case
+        of closing anomalies as Risk Accepted)
+    outputs:
+    - contextPath: Gra.Case.Action.Anomaly.Message
+      description: Message
+      type: string
+    - contextPath: Gra.Case.Action.Anomaly.anomalyName
+      description: Anomaly Name
+      type: string
+    description: Closing an anomaly or anomalies within a case and updating the anomaly
+      status as Closed / Risk Managed / Model Reviewed.
+  - name: gra-investigate-anomaly-summary
+    arguments:
+    - name: modelName
+      required: true
+      description: Model Name
+    - name: fromDate
+      description: From Date ( yyyy-MM-dd )
+    - name: toDate
+      description: To Date ( yyyy-MM-dd )
+    outputs:
+    - contextPath: Gra.Investigate.Anomaly.Summary.analyticalFeatures
+      description: Analytical Features
+      type: string
+    - contextPath: Gra.Investigate.Anomaly.Summary.entityCount
+      description: Entity Count
+      type: string
+    - contextPath: Gra.Investigate.Anomaly.Summary.resourceCount
+      description: Resource Count
+      type: string
+    - contextPath: Gra.Investigate.Anomaly.Summary.records
+      description: Records
+      type: string
+    - contextPath: Gra.Investigate.Anomaly.Summary.anomalyBaseline
+      description: Anomaly Baseline
+      type: string
+    - contextPath: Gra.Investigate.Anomaly.Summary.anomalyLastCatch
+      description: Anomaly Last Catch
+      type: string
+    - contextPath: Gra.Investigate.Anomaly.Summary.executionDays
+      description: Execution Days
+      type: string
+    - contextPath: Gra.Investigate.Anomaly.Summary.chainDetails
+      description: Chain Details
+      type: string
+    - contextPath: Gra.Investigate.Anomaly.Summary.resourceName
+      description: Resource Name
+      type: string
+    - contextPath: Gra.Investigate.Anomaly.Summary.type
+      description: Type
+      type: string
+    - contextPath: Gra.Investigate.Anomaly.Summary.value
+      description: Value
+      type: string
+    - contextPath: Gra.Investigate.Anomaly.Summary.anomalousActivity
+      description: Anomalous Activity
+      type: number
+    - contextPath: Gra.Investigate.Anomaly.Summary.anomalyName
+      description: Anomaly Name
+      type: string
+    - contextPath: Gra.Investigate.Anomaly.Summary.classifier
+      description: Classifier
+      type: string
+    - contextPath: Gra.Investigate.Anomaly.Summary.anomalyFirstCatch
+      description: Anomaly First Catch
+      type: string
+    - contextPath: Gra.Investigate.Anomaly.Summary.anomalyDescription
+      description: Anomaly Description
+      type: string
+    - contextPath: Gra.Investigate.Anomaly.Summary.similarTemplateAnomalies
+      description: Similar Template Anomalies
+      type: string
+    - contextPath: Gra.Investigate.Anomaly.Summary.entitiesFlagged
+      description: Entities Flagged
+      type: number
+    description: Retrieve detailed anomaly summary of specified anomaly name.
+  dockerimage: demisto/python3:3.9.7.24076
   isfetch: true
   runonce: false
   subtype: python3

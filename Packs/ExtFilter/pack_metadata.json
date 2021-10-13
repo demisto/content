@@ -1,8 +1,8 @@
 {
-    "name": "ExtFilter",
-    "description": "This transformer enables you to make advanced filters with comlex conditions.",
+    "name": "Advanced Filter",
+    "description": "This transformer enables you to make advanced filters with complex conditions.",
     "support": "community",
-    "currentVersion": "1.1.0",
+    "currentVersion": "1.1.6",
     "author": "Masahiko Inoue",
     "url": "",
     "email": "",
@@ -12,4 +12,3 @@
     "useCases": [],
     "keywords": []
 }
-

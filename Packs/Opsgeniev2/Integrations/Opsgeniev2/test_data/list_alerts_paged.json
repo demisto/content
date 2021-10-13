@@ -1,0 +1,1081 @@
+{
+  "data": [
+    {
+      "acknowledged": false,
+      "alias": "5a5b0723-c161-40d8-9880-cd675f2aa95e-1613031119834",
+      "count": 1,
+      "createdAt": "2021-02-11T08:11:59.834Z",
+      "id": "5a5b0723-c161-40d8-9880-cd675f2aa95e-1613031119834",
+      "integration": {
+        "id": "26aaa576-0434-4b17-bc39-602a02fe417c",
+        "name": "XSOAR_LAB_API",
+        "type": "API"
+      },
+      "isSeen": false,
+      "lastOccurredAt": "2021-02-11T08:11:59.834Z",
+      "message": "This is a test alert!",
+      "owner": "",
+      "ownerTeamId": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+      "priority": "P3",
+      "responders": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+          "type": "team"
+        }
+      ],
+      "seen": false,
+      "snoozed": false,
+      "source": "2.2.2.3",
+      "status": "open",
+      "tags": [],
+      "teams": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2"
+        }
+      ],
+      "tinyId": "49",
+      "updatedAt": "2021-02-11T08:22:00.082Z"
+    },
+    {
+      "acknowledged": false,
+      "alias": "d3ac6431-b476-4cc8-8aaa-e637e008da99-1613031053848",
+      "count": 1,
+      "createdAt": "2021-02-11T08:10:53.848Z",
+      "id": "d3ac6431-b476-4cc8-8aaa-e637e008da99-1613031053848",
+      "integration": {
+        "id": "26aaa576-0434-4b17-bc39-602a02fe417c",
+        "name": "XSOAR_LAB_API",
+        "type": "API"
+      },
+      "isSeen": false,
+      "lastOccurredAt": "2021-02-11T08:10:53.848Z",
+      "message": "This is a test alert!",
+      "owner": "",
+      "ownerTeamId": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+      "priority": "P3",
+      "responders": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+          "type": "team"
+        }
+      ],
+      "seen": false,
+      "snoozed": false,
+      "source": "2.2.2.3",
+      "status": "open",
+      "tags": [],
+      "teams": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2"
+        }
+      ],
+      "tinyId": "48",
+      "updatedAt": "2021-02-11T08:20:54.148Z"
+    },
+    {
+      "acknowledged": false,
+      "alias": "499eb37f-93b1-4c58-aa9f-fe5f28d91e56-1613002873528",
+      "count": 1,
+      "createdAt": "2021-02-11T00:21:13.528Z",
+      "id": "499eb37f-93b1-4c58-aa9f-fe5f28d91e56-1613002873528",
+      "integration": {
+        "id": "26aaa576-0434-4b17-bc39-602a02fe417c",
+        "name": "XSOAR_LAB_API",
+        "type": "API"
+      },
+      "isSeen": false,
+      "lastOccurredAt": "2021-02-11T00:21:13.528Z",
+      "message": "This is a test alert!",
+      "owner": "",
+      "ownerTeamId": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+      "priority": "P3",
+      "responders": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+          "type": "team"
+        }
+      ],
+      "seen": false,
+      "snoozed": false,
+      "source": "2.2.2.3",
+      "status": "open",
+      "tags": [],
+      "teams": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2"
+        }
+      ],
+      "tinyId": "47",
+      "updatedAt": "2021-02-11T00:31:13.746Z"
+    },
+    {
+      "acknowledged": true,
+      "alias": "f14b51c9-151b-48b2-afda-e2fcc182f230-1613001837514",
+      "count": 1,
+      "createdAt": "2021-02-11T00:03:57.514Z",
+      "id": "f14b51c9-151b-48b2-afda-e2fcc182f230-1613001837514",
+      "integration": {
+        "id": "26aaa576-0434-4b17-bc39-602a02fe417c",
+        "name": "XSOAR_LAB_API",
+        "type": "API"
+      },
+      "isSeen": true,
+      "lastOccurredAt": "2021-02-11T00:03:57.514Z",
+      "message": "This is a test alert!",
+      "owner": "Alert API",
+      "ownerTeamId": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+      "priority": "P3",
+      "report": {
+        "ackTime": 2149,
+        "acknowledgedBy": "Alert API",
+        "closeTime": 3678,
+        "closedBy": "Alert API"
+      },
+      "responders": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+          "type": "team"
+        }
+      ],
+      "seen": true,
+      "snoozed": false,
+      "source": "2.2.2.3",
+      "status": "closed",
+      "tags": [],
+      "teams": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2"
+        }
+      ],
+      "tinyId": "46",
+      "updatedAt": "2021-02-11T00:04:01.192Z"
+    },
+    {
+      "acknowledged": true,
+      "alias": "ed8efe6c-10e9-462e-802a-b94549566d0e-1613001485094",
+      "count": 1,
+      "createdAt": "2021-02-10T23:58:05.094Z",
+      "id": "ed8efe6c-10e9-462e-802a-b94549566d0e-1613001485094",
+      "integration": {
+        "id": "26aaa576-0434-4b17-bc39-602a02fe417c",
+        "name": "XSOAR_LAB_API",
+        "type": "API"
+      },
+      "isSeen": true,
+      "lastOccurredAt": "2021-02-10T23:58:05.094Z",
+      "message": "This is a test alert!",
+      "owner": "Alert API",
+      "ownerTeamId": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+      "priority": "P3",
+      "report": {
+        "ackTime": 1965,
+        "acknowledgedBy": "Alert API",
+        "closeTime": 3523,
+        "closedBy": "Alert API"
+      },
+      "responders": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+          "type": "team"
+        }
+      ],
+      "seen": true,
+      "snoozed": false,
+      "source": "2.2.2.3",
+      "status": "closed",
+      "tags": [],
+      "teams": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2"
+        }
+      ],
+      "tinyId": "45",
+      "updatedAt": "2021-02-10T23:58:08.617Z"
+    },
+    {
+      "acknowledged": true,
+      "alias": "f1aa113f-3409-4cc5-8e53-7b05d0d22f69-1613001417061",
+      "count": 1,
+      "createdAt": "2021-02-10T23:56:57.061Z",
+      "id": "f1aa113f-3409-4cc5-8e53-7b05d0d22f69-1613001417061",
+      "integration": {
+        "id": "26aaa576-0434-4b17-bc39-602a02fe417c",
+        "name": "XSOAR_LAB_API",
+        "type": "API"
+      },
+      "isSeen": true,
+      "lastOccurredAt": "2021-02-10T23:56:57.061Z",
+      "message": "This is a test alert!",
+      "owner": "Alert API",
+      "ownerTeamId": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+      "priority": "P3",
+      "report": {
+        "ackTime": 1971,
+        "acknowledgedBy": "Alert API",
+        "closeTime": 3495,
+        "closedBy": "Alert API"
+      },
+      "responders": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+          "type": "team"
+        }
+      ],
+      "seen": true,
+      "snoozed": false,
+      "source": "2.2.2.3",
+      "status": "closed",
+      "tags": [],
+      "teams": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2"
+        }
+      ],
+      "tinyId": "42",
+      "updatedAt": "2021-02-10T23:57:00.556Z"
+    },
+    {
+      "acknowledged": true,
+      "alias": "a8e1057e-82d0-42eb-bba3-547b44ee76b0-1612957151692",
+      "count": 1,
+      "createdAt": "2021-02-10T11:39:11.692Z",
+      "id": "a8e1057e-82d0-42eb-bba3-547b44ee76b0-1612957151692",
+      "integration": {
+        "id": "26aaa576-0434-4b17-bc39-602a02fe417c",
+        "name": "XSOAR_LAB_API",
+        "type": "API"
+      },
+      "isSeen": true,
+      "lastOccurredAt": "2021-02-10T11:39:11.692Z",
+      "message": "This is a test alert!",
+      "owner": "Alert API",
+      "ownerTeamId": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+      "priority": "P3",
+      "report": {
+        "ackTime": 2102,
+        "acknowledgedBy": "Alert API"
+      },
+      "responders": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+          "type": "team"
+        }
+      ],
+      "seen": true,
+      "snoozed": false,
+      "source": "2.2.2.3",
+      "status": "open",
+      "tags": [],
+      "teams": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2"
+        }
+      ],
+      "tinyId": "36",
+      "updatedAt": "2021-02-10T11:49:11.982Z"
+    },
+    {
+      "acknowledged": false,
+      "alias": "b9b29042-76dc-4ba7-8305-4a1956675c60-1612937883030",
+      "count": 1,
+      "createdAt": "2021-02-10T06:18:03.03Z",
+      "id": "b9b29042-76dc-4ba7-8305-4a1956675c60-1612937883030",
+      "integration": {
+        "id": "26aaa576-0434-4b17-bc39-602a02fe417c",
+        "name": "XSOAR_LAB_API",
+        "type": "API"
+      },
+      "isSeen": false,
+      "lastOccurredAt": "2021-02-10T06:18:03.03Z",
+      "message": "This is a test alert!",
+      "owner": "",
+      "ownerTeamId": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+      "priority": "P3",
+      "responders": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+          "type": "team"
+        }
+      ],
+      "seen": false,
+      "snoozed": false,
+      "source": "2.2.2.3",
+      "status": "open",
+      "tags": [],
+      "teams": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2"
+        }
+      ],
+      "tinyId": "31",
+      "updatedAt": "2021-02-10T06:28:03.322Z"
+    },
+    {
+      "acknowledged": false,
+      "alias": "fb1f7593-c233-400d-a8ec-c6cbba93b225-1612937821356",
+      "count": 1,
+      "createdAt": "2021-02-10T06:17:01.356Z",
+      "id": "fb1f7593-c233-400d-a8ec-c6cbba93b225-1612937821356",
+      "integration": {
+        "id": "26aaa576-0434-4b17-bc39-602a02fe417c",
+        "name": "XSOAR_LAB_API",
+        "type": "API"
+      },
+      "isSeen": false,
+      "lastOccurredAt": "2021-02-10T06:17:01.356Z",
+      "message": "This is a test alert!",
+      "owner": "",
+      "ownerTeamId": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+      "priority": "P3",
+      "responders": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+          "type": "team"
+        }
+      ],
+      "seen": false,
+      "snoozed": false,
+      "source": "2.2.2.3",
+      "status": "open",
+      "tags": [],
+      "teams": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2"
+        }
+      ],
+      "tinyId": "30",
+      "updatedAt": "2021-02-10T06:27:01.601Z"
+    },
+    {
+      "acknowledged": true,
+      "alias": "89fe0709-9f20-413d-8643-d346a77cb937-1612936164206",
+      "count": 1,
+      "createdAt": "2021-02-10T05:49:24.206Z",
+      "id": "89fe0709-9f20-413d-8643-d346a77cb937-1612936164206",
+      "integration": {
+        "id": "26aaa576-0434-4b17-bc39-602a02fe417c",
+        "name": "XSOAR_LAB_API",
+        "type": "API"
+      },
+      "isSeen": true,
+      "lastOccurredAt": "2021-02-10T05:49:24.206Z",
+      "message": "This is a test alert!",
+      "owner": "Alert API",
+      "ownerTeamId": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+      "priority": "P3",
+      "report": {
+        "ackTime": 2010,
+        "acknowledgedBy": "Alert API"
+      },
+      "responders": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+          "type": "team"
+        }
+      ],
+      "seen": true,
+      "snoozed": false,
+      "source": "2.2.2.3",
+      "status": "open",
+      "tags": [],
+      "teams": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2"
+        }
+      ],
+      "tinyId": "26",
+      "updatedAt": "2021-02-10T05:59:24.381Z"
+    },
+    {
+      "acknowledged": false,
+      "alias": "1e2d9bb1-49b7-4387-b733-753aed05588a-1612936107930",
+      "count": 1,
+      "createdAt": "2021-02-10T05:48:27.93Z",
+      "id": "1e2d9bb1-49b7-4387-b733-753aed05588a-1612936107930",
+      "integration": {
+        "id": "26aaa576-0434-4b17-bc39-602a02fe417c",
+        "name": "XSOAR_LAB_API",
+        "type": "API"
+      },
+      "isSeen": false,
+      "lastOccurredAt": "2021-02-10T05:48:27.93Z",
+      "message": "This is a test alert!",
+      "owner": "",
+      "ownerTeamId": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+      "priority": "P3",
+      "responders": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+          "type": "team"
+        }
+      ],
+      "seen": false,
+      "snoozed": false,
+      "source": "2.2.2.3",
+      "status": "open",
+      "tags": [],
+      "teams": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2"
+        }
+      ],
+      "tinyId": "25",
+      "updatedAt": "2021-02-10T05:58:28.24Z"
+    },
+    {
+      "acknowledged": false,
+      "alias": "2b5d0aac-e826-4d87-bece-7f557e400eb0-1612931810172",
+      "count": 1,
+      "createdAt": "2021-02-10T04:36:50.172Z",
+      "id": "2b5d0aac-e826-4d87-bece-7f557e400eb0-1612931810172",
+      "integration": {
+        "id": "26aaa576-0434-4b17-bc39-602a02fe417c",
+        "name": "XSOAR_LAB_API",
+        "type": "API"
+      },
+      "isSeen": false,
+      "lastOccurredAt": "2021-02-10T04:36:50.172Z",
+      "message": "XSOAR Created this one",
+      "owner": "",
+      "ownerTeamId": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+      "priority": "P3",
+      "responders": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+          "type": "team"
+        }
+      ],
+      "seen": false,
+      "snoozed": false,
+      "source": "2.2.2.3",
+      "status": "open",
+      "tags": [],
+      "teams": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2"
+        }
+      ],
+      "tinyId": "24",
+      "updatedAt": "2021-02-10T04:46:50.368Z"
+    },
+    {
+      "acknowledged": false,
+      "alias": "0b424484-42b2-40fa-b4f5-73ac6a995899-1612930684080",
+      "count": 1,
+      "createdAt": "2021-02-10T04:18:04.08Z",
+      "id": "0b424484-42b2-40fa-b4f5-73ac6a995899-1612930684080",
+      "integration": {
+        "id": "26aaa576-0434-4b17-bc39-602a02fe417c",
+        "name": "XSOAR_LAB_API",
+        "type": "API"
+      },
+      "isSeen": true,
+      "lastOccurredAt": "2021-02-10T04:18:04.08Z",
+      "message": "This is a test alert!",
+      "owner": "",
+      "ownerTeamId": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+      "priority": "P3",
+      "responders": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+          "type": "team"
+        }
+      ],
+      "seen": true,
+      "snoozed": false,
+      "source": "2.2.2.3",
+      "status": "open",
+      "tags": [],
+      "teams": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2"
+        }
+      ],
+      "tinyId": "17",
+      "updatedAt": "2021-02-10T04:28:04.382Z"
+    },
+    {
+      "acknowledged": false,
+      "alias": "38c333e9-2332-40c7-88f6-4cfd9a7fc8b8-1612923855427",
+      "count": 1,
+      "createdAt": "2021-02-10T02:24:15.427Z",
+      "id": "38c333e9-2332-40c7-88f6-4cfd9a7fc8b8-1612923855427",
+      "integration": {
+        "id": "26aaa576-0434-4b17-bc39-602a02fe417c",
+        "name": "XSOAR_LAB_API",
+        "type": "API"
+      },
+      "isSeen": false,
+      "lastOccurredAt": "2021-02-10T02:24:15.427Z",
+      "message": "This is a test alert!",
+      "owner": "",
+      "ownerTeamId": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+      "priority": "P3",
+      "responders": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+          "type": "team"
+        }
+      ],
+      "seen": false,
+      "snoozed": false,
+      "source": "2.2.2.3",
+      "status": "open",
+      "tags": [],
+      "teams": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2"
+        }
+      ],
+      "tinyId": "16",
+      "updatedAt": "2021-02-10T02:34:15.63Z"
+    },
+    {
+      "acknowledged": false,
+      "alias": "73b7e2c8-3753-42cf-b7f2-28dba6f8f5be-1612923472287",
+      "count": 1,
+      "createdAt": "2021-02-10T02:17:52.287Z",
+      "id": "73b7e2c8-3753-42cf-b7f2-28dba6f8f5be-1612923472287",
+      "integration": {
+        "id": "26aaa576-0434-4b17-bc39-602a02fe417c",
+        "name": "XSOAR_LAB_API",
+        "type": "API"
+      },
+      "isSeen": false,
+      "lastOccurredAt": "2021-02-10T02:17:52.287Z",
+      "message": "This is a test alert!",
+      "owner": "",
+      "ownerTeamId": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+      "priority": "P3",
+      "responders": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+          "type": "team"
+        }
+      ],
+      "seen": false,
+      "snoozed": false,
+      "source": "2.2.2.3",
+      "status": "open",
+      "tags": [],
+      "teams": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2"
+        }
+      ],
+      "tinyId": "15",
+      "updatedAt": "2021-02-10T02:27:52.501Z"
+    },
+    {
+      "acknowledged": false,
+      "alias": "71a62684-92f2-4e11-b886-beb5db364a05-1612923461328",
+      "count": 1,
+      "createdAt": "2021-02-10T02:17:41.328Z",
+      "id": "71a62684-92f2-4e11-b886-beb5db364a05-1612923461328",
+      "integration": {
+        "id": "26aaa576-0434-4b17-bc39-602a02fe417c",
+        "name": "XSOAR_LAB_API",
+        "type": "API"
+      },
+      "isSeen": false,
+      "lastOccurredAt": "2021-02-10T02:17:41.328Z",
+      "message": "This is a test alert!",
+      "owner": "",
+      "ownerTeamId": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+      "priority": "P3",
+      "responders": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+          "type": "team"
+        }
+      ],
+      "seen": false,
+      "snoozed": false,
+      "source": "2.2.2.3",
+      "status": "open",
+      "tags": [],
+      "teams": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2"
+        }
+      ],
+      "tinyId": "14",
+      "updatedAt": "2021-02-10T02:27:41.582Z"
+    },
+    {
+      "acknowledged": false,
+      "alias": "5ff0bf70-5cca-4eda-aa1a-a693602f583c-1612923406672",
+      "count": 1,
+      "createdAt": "2021-02-10T02:16:46.672Z",
+      "id": "5ff0bf70-5cca-4eda-aa1a-a693602f583c-1612923406672",
+      "integration": {
+        "id": "26aaa576-0434-4b17-bc39-602a02fe417c",
+        "name": "XSOAR_LAB_API",
+        "type": "API"
+      },
+      "isSeen": false,
+      "lastOccurredAt": "2021-02-10T02:16:46.672Z",
+      "message": "This is a test alert!",
+      "owner": "",
+      "ownerTeamId": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+      "priority": "P3",
+      "responders": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+          "type": "team"
+        }
+      ],
+      "seen": false,
+      "snoozed": false,
+      "source": "2.2.2.3",
+      "status": "open",
+      "tags": [],
+      "teams": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2"
+        }
+      ],
+      "tinyId": "13",
+      "updatedAt": "2021-02-10T02:26:46.884Z"
+    },
+    {
+      "acknowledged": false,
+      "alias": "98be6159-f194-490d-959d-0cc05cc3dec9-1612923385547",
+      "count": 1,
+      "createdAt": "2021-02-10T02:16:25.547Z",
+      "id": "98be6159-f194-490d-959d-0cc05cc3dec9-1612923385547",
+      "integration": {
+        "id": "26aaa576-0434-4b17-bc39-602a02fe417c",
+        "name": "XSOAR_LAB_API",
+        "type": "API"
+      },
+      "isSeen": false,
+      "lastOccurredAt": "2021-02-10T02:16:25.547Z",
+      "message": "This is a test alert!",
+      "owner": "",
+      "ownerTeamId": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+      "priority": "P3",
+      "responders": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+          "type": "team"
+        }
+      ],
+      "seen": false,
+      "snoozed": false,
+      "source": "2.2.2.3",
+      "status": "open",
+      "tags": [],
+      "teams": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2"
+        }
+      ],
+      "tinyId": "12",
+      "updatedAt": "2021-02-10T02:26:25.892Z"
+    },
+    {
+      "acknowledged": false,
+      "alias": "c406452b-719f-4591-bee0-7bcb7b4b2146-1612922727950",
+      "count": 1,
+      "createdAt": "2021-02-10T02:05:27.95Z",
+      "id": "c406452b-719f-4591-bee0-7bcb7b4b2146-1612922727950",
+      "integration": {
+        "id": "26aaa576-0434-4b17-bc39-602a02fe417c",
+        "name": "XSOAR_LAB_API",
+        "type": "API"
+      },
+      "isSeen": false,
+      "lastOccurredAt": "2021-02-10T02:05:27.95Z",
+      "message": "This is a test alert!",
+      "owner": "",
+      "ownerTeamId": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+      "priority": "P3",
+      "responders": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+          "type": "team"
+        }
+      ],
+      "seen": false,
+      "snoozed": false,
+      "source": "2.2.2.3",
+      "status": "open",
+      "tags": [],
+      "teams": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2"
+        }
+      ],
+      "tinyId": "11",
+      "updatedAt": "2021-02-10T02:15:28.156Z"
+    },
+    {
+      "acknowledged": false,
+      "alias": "9bd7c0fe-bc29-4577-bc6a-1baef9e154b8-1612922643361",
+      "count": 1,
+      "createdAt": "2021-02-10T02:04:03.361Z",
+      "id": "9bd7c0fe-bc29-4577-bc6a-1baef9e154b8-1612922643361",
+      "integration": {
+        "id": "26aaa576-0434-4b17-bc39-602a02fe417c",
+        "name": "XSOAR_LAB_API",
+        "type": "API"
+      },
+      "isSeen": false,
+      "lastOccurredAt": "2021-02-10T02:04:03.361Z",
+      "message": "This is a test alert!",
+      "owner": "",
+      "ownerTeamId": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+      "priority": "P3",
+      "responders": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+          "type": "team"
+        }
+      ],
+      "seen": false,
+      "snoozed": false,
+      "source": "2.2.2.3",
+      "status": "open",
+      "tags": [],
+      "teams": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2"
+        }
+      ],
+      "tinyId": "10",
+      "updatedAt": "2021-02-10T02:14:03.703Z"
+    },
+    {
+      "acknowledged": false,
+      "alias": "7311e999-5417-4320-9728-bd0b64a17d5b-1612922420784",
+      "count": 1,
+      "createdAt": "2021-02-10T02:00:20.784Z",
+      "id": "7311e999-5417-4320-9728-bd0b64a17d5b-1612922420784",
+      "integration": {
+        "id": "26aaa576-0434-4b17-bc39-602a02fe417c",
+        "name": "XSOAR_LAB_API",
+        "type": "API"
+      },
+      "isSeen": false,
+      "lastOccurredAt": "2021-02-10T02:00:20.784Z",
+      "message": "This is a test alert!",
+      "owner": "",
+      "ownerTeamId": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+      "priority": "P3",
+      "responders": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+          "type": "team"
+        }
+      ],
+      "seen": false,
+      "snoozed": false,
+      "source": "2.2.2.3",
+      "status": "open",
+      "tags": [],
+      "teams": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2"
+        }
+      ],
+      "tinyId": "9",
+      "updatedAt": "2021-02-10T02:10:21.1Z"
+    },
+    {
+      "acknowledged": false,
+      "alias": "f2e41095-b462-460d-a195-08a6e9be56f5-1612918233973",
+      "count": 1,
+      "createdAt": "2021-02-10T00:50:33.973Z",
+      "id": "f2e41095-b462-460d-a195-08a6e9be56f5-1612918233973",
+      "integration": {
+        "id": "26aaa576-0434-4b17-bc39-602a02fe417c",
+        "name": "XSOAR_LAB_API",
+        "type": "API"
+      },
+      "isSeen": false,
+      "lastOccurredAt": "2021-02-10T00:50:33.973Z",
+      "message": "This is a test alert!",
+      "owner": "",
+      "ownerTeamId": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+      "priority": "P3",
+      "responders": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+          "type": "team"
+        }
+      ],
+      "seen": false,
+      "snoozed": false,
+      "source": "2.2.2.3",
+      "status": "open",
+      "tags": [],
+      "teams": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2"
+        }
+      ],
+      "tinyId": "8",
+      "updatedAt": "2021-02-10T01:00:34.248Z"
+    },
+    {
+      "acknowledged": false,
+      "alias": "6c2066c7-7354-4176-8085-782371b836ce-1612823473697",
+      "count": 1,
+      "createdAt": "2021-02-08T22:31:13.697Z",
+      "id": "6c2066c7-7354-4176-8085-782371b836ce-1612823473697",
+      "integration": {
+        "id": "26aaa576-0434-4b17-bc39-602a02fe417c",
+        "name": "XSOAR_LAB_API",
+        "type": "API"
+      },
+      "isSeen": false,
+      "lastOccurredAt": "2021-02-08T22:31:13.697Z",
+      "message": "This is a test alert!",
+      "owner": "",
+      "ownerTeamId": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+      "priority": "P3",
+      "responders": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+          "type": "team"
+        }
+      ],
+      "seen": false,
+      "snoozed": false,
+      "source": "2.2.2.3",
+      "status": "open",
+      "tags": [],
+      "teams": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2"
+        }
+      ],
+      "tinyId": "7",
+      "updatedAt": "2021-02-08T22:41:13.908Z"
+    },
+    {
+      "acknowledged": false,
+      "alias": "90e5f7f6-43e3-47ef-82bb-10e0ec9e7d02-1612823382565",
+      "count": 1,
+      "createdAt": "2021-02-08T22:29:42.565Z",
+      "id": "90e5f7f6-43e3-47ef-82bb-10e0ec9e7d02-1612823382565",
+      "integration": {
+        "id": "26aaa576-0434-4b17-bc39-602a02fe417c",
+        "name": "XSOAR_LAB_API",
+        "type": "API"
+      },
+      "isSeen": false,
+      "lastOccurredAt": "2021-02-08T22:29:42.565Z",
+      "message": "This is a test alert!",
+      "owner": "",
+      "ownerTeamId": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+      "priority": "P3",
+      "responders": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+          "type": "team"
+        }
+      ],
+      "seen": false,
+      "snoozed": false,
+      "source": "2.2.2.3",
+      "status": "open",
+      "tags": [],
+      "teams": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2"
+        }
+      ],
+      "tinyId": "6",
+      "updatedAt": "2021-02-08T22:39:42.8Z"
+    },
+    {
+      "acknowledged": false,
+      "alias": "c1492e34-e0e0-495b-be2f-772b261b7e7c-1612822992692",
+      "count": 1,
+      "createdAt": "2021-02-08T22:23:12.692Z",
+      "id": "c1492e34-e0e0-495b-be2f-772b261b7e7c-1612822992692",
+      "integration": {
+        "id": "26aaa576-0434-4b17-bc39-602a02fe417c",
+        "name": "XSOAR_LAB_API",
+        "type": "API"
+      },
+      "isSeen": false,
+      "lastOccurredAt": "2021-02-08T22:23:12.692Z",
+      "message": "This is a test alert!",
+      "owner": "",
+      "ownerTeamId": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+      "priority": "P3",
+      "responders": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+          "type": "team"
+        }
+      ],
+      "seen": false,
+      "snoozed": false,
+      "source": "2.2.2.3",
+      "status": "open",
+      "tags": [],
+      "teams": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2"
+        }
+      ],
+      "tinyId": "5",
+      "updatedAt": "2021-02-08T22:33:12.982Z"
+    },
+    {
+      "acknowledged": false,
+      "alias": "e939e028-1296-4d5b-8738-90474888a917-1612822959951",
+      "count": 1,
+      "createdAt": "2021-02-08T22:22:39.951Z",
+      "id": "e939e028-1296-4d5b-8738-90474888a917-1612822959951",
+      "integration": {
+        "id": "26aaa576-0434-4b17-bc39-602a02fe417c",
+        "name": "XSOAR_LAB_API",
+        "type": "API"
+      },
+      "isSeen": false,
+      "lastOccurredAt": "2021-02-08T22:22:39.951Z",
+      "message": "This is a test alert!",
+      "owner": "",
+      "ownerTeamId": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+      "priority": "P3",
+      "responders": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+          "type": "team"
+        }
+      ],
+      "seen": false,
+      "snoozed": false,
+      "source": "2.2.2.3",
+      "status": "open",
+      "tags": [],
+      "teams": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2"
+        }
+      ],
+      "tinyId": "4",
+      "updatedAt": "2021-02-08T22:32:40.151Z"
+    },
+    {
+      "acknowledged": false,
+      "alias": "228f0165-088d-41c4-a37f-bbe3f119eff0-1612822905684",
+      "count": 1,
+      "createdAt": "2021-02-08T22:21:45.684Z",
+      "id": "228f0165-088d-41c4-a37f-bbe3f119eff0-1612822905684",
+      "integration": {
+        "id": "26aaa576-0434-4b17-bc39-602a02fe417c",
+        "name": "XSOAR_LAB_API",
+        "type": "API"
+      },
+      "isSeen": false,
+      "lastOccurredAt": "2021-02-08T22:21:45.684Z",
+      "message": "This is a test alert!",
+      "owner": "",
+      "ownerTeamId": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+      "priority": "P3",
+      "responders": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+          "type": "team"
+        }
+      ],
+      "seen": false,
+      "snoozed": false,
+      "source": "2.2.2.3",
+      "status": "open",
+      "tags": [],
+      "teams": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2"
+        }
+      ],
+      "tinyId": "3",
+      "updatedAt": "2021-02-08T22:31:46.006Z"
+    },
+    {
+      "acknowledged": false,
+      "alias": "a05b878e-faee-4aa5-ab30-8c2ede795f56-1612485216090",
+      "count": 1,
+      "createdAt": "2021-02-05T00:33:36.09Z",
+      "id": "a05b878e-faee-4aa5-ab30-8c2ede795f56-1612485216090",
+      "integration": {
+        "id": "26aaa576-0434-4b17-bc39-602a02fe417c",
+        "name": "XSOAR_LAB_API",
+        "type": "API"
+      },
+      "isSeen": false,
+      "lastOccurredAt": "2021-02-05T00:33:36.09Z",
+      "message": "This is an alert from XSOAR",
+      "owner": "",
+      "ownerTeamId": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+      "priority": "P3",
+      "responders": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+          "type": "team"
+        }
+      ],
+      "seen": false,
+      "snoozed": false,
+      "source": "2.2.2.3",
+      "status": "open",
+      "tags": [],
+      "teams": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2"
+        }
+      ],
+      "tinyId": "2",
+      "updatedAt": "2021-02-05T00:43:36.416Z"
+    },
+    {
+      "acknowledged": false,
+      "alias": "f8547004-ae71-40a7-af6a-5398cee39051-1612476095550",
+      "count": 1,
+      "createdAt": "2021-02-04T22:01:35.55Z",
+      "id": "f8547004-ae71-40a7-af6a-5398cee39051-1612476095550",
+      "integration": {
+        "id": "26aaa576-0434-4b17-bc39-602a02fe417c",
+        "name": "XSOAR_LAB_API",
+        "type": "API"
+      },
+      "isSeen": false,
+      "lastOccurredAt": "2021-02-04T22:01:35.55Z",
+      "message": "This is a test alert!",
+      "owner": "",
+      "ownerTeamId": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+      "priority": "P3",
+      "responders": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+          "type": "team"
+        }
+      ],
+      "seen": false,
+      "snoozed": false,
+      "source": "2.2.2.3",
+      "status": "open",
+      "tags": [],
+      "teams": [
+        {
+          "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2"
+        }
+      ],
+      "tinyId": "1",
+      "updatedAt": "2021-02-04T22:11:35.919Z"
+    }
+  ],
+  "paging": {
+    "first": "https://api.opsgenie.com/v2/alerts?limit=20&sort=createdAt&offset=0&order=desc",
+    "last": "https://api.opsgenie.com/v2/alerts?limit=20&sort=createdAt&offset=20&order=desc",
+    "next": "https://api.opsgenie.com/v2/alerts?limit=20&sort=createdAt&offset=20&order=desc"
+  },
+  "requestId": "77bf36dd-e11c-4bce-9fe3-c30d092d5dba",
+  "took": 0.012
+}

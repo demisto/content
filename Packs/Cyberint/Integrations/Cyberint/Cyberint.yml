@@ -1,5 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-fromversion: 5.0.0
 commonfields:
   id: cyberint
   version: -1
@@ -22,8 +21,8 @@ configuration:
   name: isFetch
   required: false
   type: 8
-- additionalinfo: Severities to fetch. If none is chosen,
-    all severity levels will be returned.
+- additionalinfo: Severities to fetch. If none is chosen, all severity levels will
+    be returned.
   display: Fetch Severity
   name: fetch_severity
   options:
@@ -33,8 +32,7 @@ configuration:
   - very_high
   required: false
   type: 16
-- additionalinfo: Statuses to fetch. If none is chosen,
-    all statuses will be returned.
+- additionalinfo: Statuses to fetch. If none is chosen, all statuses will be returned.
   display: Fetch Status
   name: fetch_status
   options:
@@ -43,14 +41,13 @@ configuration:
   - closed
   required: false
   type: 16
-- additionalinfo: Environments to fetch (comma separated).
-    If empty, all available environments will be returned.
+- additionalinfo: Environments to fetch (comma separated). If empty, all available
+    environments will be returned.
   display: Fetch Environment
   name: fetch_environment
   required: false
   type: 0
-- additionalinfo: Types to fetch. If none is chosen,
-    all types will be returned.
+- additionalinfo: Types to fetch. If none is chosen, all types will be returned.
   display: Fetch Types
   name: fetch_type
   options:
@@ -134,7 +131,8 @@ script:
       secret: false
     - default: false
       defaultValue: '10'
-      description: Number of results in a page. Default is 10. Must be between 10 and 100.
+      description: Number of results in a page. Default is 10. Must be between 10
+        and 100.
       isArray: false
       name: page_size
       required: false
@@ -384,6 +382,9 @@ script:
     - contextPath: Cyberint.Alert.alert_data.blacklist_repository
       description: Blacklist repository name related to an event.
       type: String
+    - contextPath: Cyberint.Alert.alert_data.screenshot
+      description: Screenshot related to an event.
+      type: String
     - contextPath: Cyberint.Alert.alert_data.spf_records
       description: SPF records if applicable to the event.
       type: String
@@ -432,6 +433,9 @@ script:
     - contextPath: Cyberint.Alert.tags
       description: Tags related to the alert
       type: String
+    - contextPath: Cyberint.Alert.attachments
+      description: Attachments related to the alert
+      type: String
   - arguments:
     - default: false
       description: Reference IDs for the alert(s)
@@ -476,7 +480,109 @@ script:
     - contextPath: Cyberint.Alert.closure_reason
       description: Reason for updating the alert to closed if closed.
       type: String
-  dockerimage: demisto/python3:3.9.1.15759
+  - arguments:
+    - default: false
+      description: Reference ID of the alert.
+      isArray: false
+      name: alert_ref_id
+      required: true
+      secret: false
+    - default: false
+      description: Attachment ID.
+      isArray: false
+      name: attachment_id
+      required: true
+      secret: false
+    - default: false
+      description: Attachment file name
+      isArray: false
+      name: attachment_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Get alert attachment.
+    execution: false
+    name: cyberint-alerts-get-attachment
+    outputs:
+    - contextPath: File.Size
+      description: The size of the file.
+      type: Number
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: File.SSDeep
+      description: The SSDeep hash of the file.
+      type: String
+    - contextPath: File.EntryID
+      description: The entry ID of the file.
+      type: String
+    - contextPath: File.Info
+      description: File information.
+      type: String
+    - contextPath: File.Type
+      description: The file type.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.Extension
+      description: The file extension.
+      type: String
+  - arguments:
+    - default: false
+      description: Reference ID of the alert.
+      isArray: false
+      name: alert_ref_id
+      required: true
+      secret: false
+    - default: false
+      description: Analysis report file name.
+      isArray: false
+      name: report_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Get alert analysis report.
+    execution: false
+    name: cyberint-alerts-analysis-report
+    outputs:
+    - contextPath: File.Size
+      description: The size of the file.
+      type: Number
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: File.SSDeep
+      description: The SSDeep hash of the file.
+      type: String
+    - contextPath: File.EntryID
+      description: The entry ID of the file.
+      type: String
+    - contextPath: File.Info
+      description: File information.
+      type: String
+    - contextPath: File.Type
+      description: The file type.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.Extension
+      description: The file extension.
+      type: String
+  dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: true
   longRunning: false
@@ -486,4 +592,5 @@ script:
   subtype: python3
   type: python
 tests:
-  - No tests - Deprecated
+- No tests - Deprecated
+fromversion: 5.0.0

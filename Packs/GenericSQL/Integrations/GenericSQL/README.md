@@ -45,7 +45,7 @@ There are two options to use to bind variables:
 4. Click __Test__ to validate the URLs, token, and connection.
 
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 The two commands are the same, they can get the same arguments and will provide the same outputs.
 1. query
@@ -244,7 +244,14 @@ In cases where you receive an error that is not clear when you **Test** the inte
   ```
 A log file will be generated in the Playground. Examine the log file for further details that explain why the integration is failing.
 
-### SQL Server
+### Microsoft SQL Server
+We provide two options for connecting to Microsoft SQL Server:
+* **Microsoft SQL Server**: Uses the open source FreeTDS driver to communicate with Microsoft SQL Server.
+* **Microsoft SQL Server - MS ODBC Driver**: Official driver from Microsoft for Linux.
+
+If you experience any issues communicating with your Microsoft SQL Sever, try using both options as we've seen cases where one option works while the other doesn't.
+
+
 When configuring *SQL Server*, if you receive an error of the form:
 ```
 ('08S01', '[08S01] [FreeTDS][SQL Server]Unable to connect: Adaptive Server is unavailable or does not exist (20009) (SQLDriverConnect)')
@@ -266,7 +273,6 @@ For example:
 ```
 service_name=XEXDB
 ```
-
 
 ## Possible Errors:
 * The bind variables lists are not is the same length

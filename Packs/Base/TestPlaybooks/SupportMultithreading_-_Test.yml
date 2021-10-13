@@ -1,0 +1,170 @@
+id: SupportMultithreading - Test
+version: -1
+name: SupportMultithreading - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3e809f43-55c8-4206-81d0-a4be8b5e2e72
+    type: start
+    task:
+      id: 3e809f43-55c8-4206-81d0-a4be8b5e2e72
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 88b20529-41ad-48d7-8cbe-cb18c63383c3
+    type: regular
+    task:
+      id: 88b20529-41ad-48d7-8cbe-cb18c63383c3
+      version: -1
+      name: Run without support_multithreading
+      scriptName: SupportMultithreadingTest
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      use_support_multithreading:
+        simple: "false"
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: f7b9a5a7-9ccb-4aa2-823d-47ed3680bf42
+    type: condition
+    task:
+      id: f7b9a5a7-9ccb-4aa2-823d-47ed3680bf42
+      version: -1
+      name: Verify error occurred
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 770fe57a-8948-4456-866f-51b785ecc4f9
+    type: regular
+    task:
+      id: 770fe57a-8948-4456-866f-51b785ecc4f9
+      version: -1
+      name: Run with support_multithreading
+      scriptName: SupportMultithreadingTest
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      use_support_multithreading:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 69f4e599-6830-4c35-804d-94435992ae0d
+    type: title
+    task:
+      id: 69f4e599-6830-4c35-804d-94435992ae0d
+      version: -1
+      name: success
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+description: ''

@@ -12,14 +12,12 @@ configuration:
   name: api-key
   required: true
   type: 4
-- defaultvalue: ''
-  display: Trust any certificate (not secure)
+- display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
   required: false
   type: 8
 - defaultvalue: '7'
@@ -39,6 +37,21 @@ configuration:
   name: incidentType
   required: false
   type: 13
+- additionalinfo: 'The statuses of the incidents that will be fetched. If no status
+      is provided then incidents of all the statuses will be fetched. Note: an incident
+      whose status was changed to a filtered status after its creation time will not
+      be fetched.'
+  display: Incident Soc Statuses to Fetch
+  hidden: false
+  name: soc_status
+  options:
+  - Not Reviewed
+  - Investigating
+  - On hold
+  - False Positive
+  - Escalated
+  required: false
+  type: 16
 description: Perch is a co-managed threat detection and response platform.
 display: Perch
 name: Perch
@@ -414,11 +427,14 @@ script:
     - contextPath: Perch.Indicator.CreatedBy
       description: ID of user that created the incident.
       type: Number
-  dockerimage: demisto/python3:3.7.2.214
-  subtype: python3
+  dockerimage: demisto/python3:3.9.7.24076
+  feed: false
   isfetch: true
+  longRunning: false
+  longRunningPort: false
   runonce: false
-  script: ''
+  script: '-'
+  subtype: python3
   type: python
 tests:
 - Perch-Test

@@ -9,7 +9,7 @@
 <ul>
     <li>Get security events from Akamai WAF.</li>
     <li>Analyze security events generated on the Akamai platform and correlate them with security events generated from
-        other sources in Demisto</li>
+        other sources in Cortex XSOAR</li>
 </ul>
 
 <h2>Detailed Description</h2>
@@ -33,10 +33,10 @@
     <li>Assign API key to the relevant users group, and assign on next page <code>Read/Write</code> access for <code>SIEM</code>.</li>
     <li>Save configuration and go to API detail you created.</li>
     <li>Press <code>new credentials</code> and download or copy it.</li>
-    <li>Now use the credentials for configure Akamai WAF in Demisto</li>
+    <li>Now use the credentials for configure Akamai WAF in Cortex XSOAR</li>
 </ol>
 
-<h2>Configure Akamai WAF SIEM on Demisto</h2>
+<h2>Configure Akamai WAF SIEM on Cortex XSOAR</h2>
 <ol>
     <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
         &nbsp;&gt;&nbsp;<strong>Servers &amp; Services</strong>.
@@ -153,7 +153,7 @@
 
 <h2>Commands</h2>
 <p>
-    You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+    You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
     After you successfully execute a command, a DBot message appears in the War Room with the command details.
 </p>
 <ol>
@@ -525,10 +525,3 @@
     </tr>
   </tbody>
 </table>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-

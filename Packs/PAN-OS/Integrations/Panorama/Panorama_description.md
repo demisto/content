@@ -15,3 +15,6 @@ You need to create a separate integration instance for Palo Alto Networks Firewa
 - Access the Panorama UI.
 - Go to Panorama --> Device Groups.
 - Choose a device group name.
+
+---
+[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/panorama)

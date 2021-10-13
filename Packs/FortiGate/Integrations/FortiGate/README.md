@@ -3,7 +3,7 @@
 <p>Use the Fortinet FortiGate integration to manage firewall settings and groups.</p>
 <p>We recommend that users have an API account that is set to root vdom in order to access all commands.</p>
 <p>This integration was integrated and tested with FortiOS 5.6.8</p>
-<h2>Configure FortiGate on Demisto</h2>
+<h2>Configure FortiGate on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for FortiGate.</li>
@@ -21,7 +21,7 @@
 <li>Click <strong>Test</strong> to validate the URLs, username + password, and connection.</li>
 </ol>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_90934042941543315010414">Get all address objects from the firewall: fortigate-get-addresses</a></li>
 <li><a href="#h_251291621171543315015519">Get information about service groups: fortigate-get-service-groups</a></li>

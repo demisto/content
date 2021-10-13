@@ -20,6 +20,7 @@ tasks:
       '#none#':
       - "4"
       - "5"
+      - "7"
     separatecontext: false
     view: |-
       {
@@ -58,8 +59,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 220,
-          "y": 380
+          "x": 0,
+          "y": 360
         }
       }
     note: false
@@ -87,8 +88,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 720,
-          "y": 380
+          "x": 860,
+          "y": 350
         }
       }
     note: false
@@ -116,8 +117,41 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 220,
-          "y": 560
+          "x": 0,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 44bd812f-143d-4ba5-83c1-571d3a80ad65
+    type: regular
+    task:
+      id: 44bd812f-143d-4ba5-83c1-571d3a80ad65
+      version: -1
+      name: generateSummaryReport
+      description: Generate incident summary report
+      script: Builtin|||generateSummaryReport
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      incidentId:
+        simple: ${incident.id}
+      name:
+        simple: Investigation Summary
+      type:
+        simple: pdf
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 495
         }
       }
     note: false
@@ -130,9 +164,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 485,
-        "width": 880,
-        "x": 220,
+        "height": 525,
+        "width": 1240,
+        "x": 0,
         "y": 170
       }
     }

@@ -1,0 +1,32 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Threat Actor",
+        "Campaign"
+    ],
+    "caseInsensitive": true,
+    "cliName": "sophistication",
+    "id": "generic_ThreatIntelReport_sophistication",
+    "name": "Sophistication",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 4,
+    "definitionId": "ThreatIntelReport",
+    "genericModuleId": "threatIntel",
+    "hidden": false,
+    "isReadOnly": false,
+    "locked": false,
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.5.0"
+}

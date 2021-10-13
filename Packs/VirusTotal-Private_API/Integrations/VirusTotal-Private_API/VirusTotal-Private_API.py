@@ -642,10 +642,8 @@ def get_url_reports_with_retries(urls, all_info, retries_left, scan_finish_time_
 
     for url in urls:
         response = get_url_report(url, all_info)
-        if response.get('response_code', None) == -1:
-            return_error("Invalid url provided: {}.".format(url))
 
-        if is_url_response_complete(response):
+        if is_url_response_complete(response) or response.get('response_code', None) == -1:
             requests_responses_dict[url] = response
 
     urls_scanned_count = len(requests_responses_dict)
@@ -690,6 +688,10 @@ def create_url_report_output(url, response, threshold, max_len, short_format):
     2. url entry context.
     3. dbot entry context.
     """
+    if demisto.get(response, 'response_code') == -1:
+        md = '### Invalid URL: the url {} is invalid.'.format(url)
+        return md, {}, {}
+
     positives = demisto.get(response, 'positives')
     md = ''
     md += '## VirusTotal URL report for: ' + url + '\n'
@@ -727,7 +729,7 @@ def create_url_report_output(url, response, threshold, max_len, short_format):
         resolution = additional_info.get('resolution', None)
         if resolution:
             md += 'IP address resolution for this domain is: ' + resolution + '\n'
-        update_entry_context_url(ec_url, url, field_name='Resolutions', field_value=resolution[:max_len])
+            update_entry_context_url(ec_url, url, field_name='Resolutions', field_value=resolution[:max_len])
 
         response_sha256 = additional_info.get('Response content SHA-256', None)
         if response_sha256:

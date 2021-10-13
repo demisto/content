@@ -1,0 +1,11 @@
+{
+    "detailCode": "400.1.3 Illegal value",
+    "trackingId": "b0845f9ee6524ed383496b7d62a176d7",
+    "messages": [
+        {
+            "locale": "en-US",
+            "localeOrigin": "DEFAULT",
+            "text": "Value of \"item.type\" is empty or contains invalid data."
+        }
+    ]
+}

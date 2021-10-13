@@ -1,0 +1,5 @@
+!fireeye-dod-submit-file entryID=37@760083ae-625e-4a6c-8e93-87ece7964dd0
+!fireeye-dod-get-reports report_ids=82e71bec-04c7-4f04-945b-4d344a758abe
+!fireeye-dod-get-hashes md5_hashes=47f9fdc617f8c98a6732be534d8dbe9c
+!fireeye-dod-get-report-url report_id=82e71bec-04c7-4f04-945b-4d344a758abe
+!fireeye-dod-submit-urls urls="https://www.google.com"

@@ -25,7 +25,7 @@ configuration:
   type: 8
   required: false
 script:
-  dockerimage: demisto/python3:3.8.5.11789
+  dockerimage: demisto/python3:3.9.7.24076
   type: python
   subtype: python3
   script: '-'

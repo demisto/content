@@ -4,15 +4,12 @@ import pytest
 import demistomock as demisto
 from netaddr import IPAddress
 
-
 IOC_RES_LEN = 38
 
 '''Tests'''
 
 
-@pytest.mark.helper_commands
 class TestHelperFunctions:
-    @pytest.mark.get_outbound_ioc_values
     def test_get_outbound_ioc_values_1(self, mocker):
         """Test on_demand"""
         from ExportIndicators import get_outbound_ioc_values, RequestArguments
@@ -27,7 +24,6 @@ class TestHelperFunctions:
             for ioc_row in ioc_list:
                 assert ioc_row in iocs_text_dict
 
-    @pytest.mark.get_outbound_ioc_values
     def test_get_outbound_ioc_values_2(self, mocker):
         """Test update by not on_demand with no refresh"""
         import CommonServerPython as CSP
@@ -47,7 +43,6 @@ class TestHelperFunctions:
             for ioc_row in ioc_list:
                 assert ioc_row in iocs_text_dict
 
-    @pytest.mark.get_outbound_ioc_values
     def test_get_outbound_ioc_values_3(self, mocker):
         """Test update by not on_demand with refresh"""
         import CommonServerPython as CSP
@@ -67,7 +62,6 @@ class TestHelperFunctions:
             for ioc_row in ioc_list:
                 assert ioc_row in iocs_text_dict
 
-    @pytest.mark.get_outbound_ioc_values
     def test_get_outbound_ioc_values_4(self, mocker):
         """Test update by request params change - limit"""
         import CommonServerPython as CSP
@@ -90,7 +84,6 @@ class TestHelperFunctions:
             for ioc_row in ioc_list:
                 assert ioc_row in iocs_text_dict
 
-    @pytest.mark.get_outbound_ioc_values
     def test_get_outbound_ioc_values_5(self, mocker):
         """Test update by request params change - offset"""
         import CommonServerPython as CSP
@@ -113,7 +106,6 @@ class TestHelperFunctions:
             for ioc_row in ioc_list:
                 assert ioc_row in iocs_text_dict
 
-    @pytest.mark.get_outbound_ioc_values
     def test_get_outbound_ioc_values_6(self, mocker):
         """Test update by request params change - query"""
         import CommonServerPython as CSP
@@ -136,7 +128,6 @@ class TestHelperFunctions:
             for ioc_row in ioc_list:
                 assert ioc_row in iocs_text_dict
 
-    @pytest.mark.list_to_str
     def test_list_to_str_1(self):
         """Test invalid"""
         from ExportIndicators import list_to_str
@@ -148,7 +139,6 @@ class TestHelperFunctions:
             invalid_list_value = {'invalid': 'invalid'}
             list_to_str(invalid_list_value)
 
-    @pytest.mark.list_to_str
     def test_list_to_str_2(self):
         """Test empty"""
         from ExportIndicators import list_to_str
@@ -156,7 +146,6 @@ class TestHelperFunctions:
         assert list_to_str([]) == ''
         assert list_to_str({}) == ''
 
-    @pytest.mark.list_to_str
     def test_list_to_str_3(self):
         """Test non empty fields"""
         from ExportIndicators import list_to_str
@@ -165,7 +154,6 @@ class TestHelperFunctions:
         assert list_to_str(valid_list_value, '.') == '1.2.3.4'
         assert list_to_str(valid_list_value, map_func=lambda x: f'{x}a') == '1a,2a,3a,4a'
 
-    @pytest.mark.get_params_port
     def test_get_params_port_1(self):
         """Test invalid"""
         from CommonServerPython import DemistoException
@@ -174,7 +162,6 @@ class TestHelperFunctions:
         with pytest.raises(DemistoException):
             get_params_port(params)
 
-    @pytest.mark.get_params_port
     def test_get_params_port_2(self):
         """Test empty"""
         from ExportIndicators import get_params_port
@@ -182,14 +169,12 @@ class TestHelperFunctions:
         with pytest.raises(ValueError):
             get_params_port(params)
 
-    @pytest.mark.get_params_port
     def test_get_params_port_3(self):
         """Test valid"""
         from ExportIndicators import get_params_port
         params = {'longRunningPort': '80'}
         assert get_params_port(params) == 80
 
-    @pytest.mark.refresh_outbound_context
     def test_refresh_outbound_context_1(self, mocker):
         """Test out_format=text"""
         import ExportIndicators as ei
@@ -200,22 +185,21 @@ class TestHelperFunctions:
             ei_vals = ei.refresh_outbound_context(request_args)
             for ioc in iocs_json:
                 ip = ioc.get('value')
-                assert ip in ei_vals
+                if ip:
+                    assert ip in ei_vals
 
-    @pytest.mark.refresh_outbound_context
     def test_refresh_outbound_context_2(self, mocker):
         """Test out_format= XSOAR json"""
         import ExportIndicators as ei
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
             mocker.patch.object(ei, 'find_indicators_with_limit', return_value=iocs_json)
-            request_args = ei.RequestArguments(query='', out_format='XSOAR json', limit=38)
+            request_args = ei.RequestArguments(query='', out_format='XSOAR json', limit=39)
             ei_vals = ei.refresh_outbound_context(request_args)
             assert isinstance(ei_vals, str)
             ei_vals = json.loads(ei_vals)
             assert iocs_json == ei_vals
 
-    @pytest.mark.refresh_outbound_context
     def test_refresh_outbound_context_3(self, mocker):
         """Test out_format=xsoar-csv"""
         import ExportIndicators as ei
@@ -229,7 +213,6 @@ class TestHelperFunctions:
                 for ioc in iocs_out.split('\n'):
                     assert ioc in ei_vals
 
-    @pytest.mark.refresh_outbound_context
     def test_refresh_outbound_context_4(self, mocker):
         """Test out_format=XSOAR json-seq"""
         import ExportIndicators as ei
@@ -242,7 +225,6 @@ class TestHelperFunctions:
                 iocs_out = iocs_out_f.read()
                 assert iocs_out == ei_vals
 
-    @pytest.mark.refresh_outbound_context
     def test_refresh_outbound_context_5(self, mocker):
         """Test out_format=json"""
         import ExportIndicators as ei
@@ -256,7 +238,6 @@ class TestHelperFunctions:
                 iocs_json_out = json.loads(iocs_json_out_f.read())
                 assert iocs_json_out == ei_vals
 
-    @pytest.mark.refresh_outbound_context
     def test_refresh_outbound_context_6(self, mocker):
         """Test out_format=json-seq"""
         import ExportIndicators as ei
@@ -270,7 +251,6 @@ class TestHelperFunctions:
                 for iocs_out_line in iocs_out.split('\n'):
                     assert iocs_out_line in ei_vals
 
-    @pytest.mark.refresh_outbound_context
     def test_refresh_outbound_context_7(self, mocker):
         """Test out_format=csv"""
         import ExportIndicators as ei
@@ -284,56 +264,20 @@ class TestHelperFunctions:
                 for ioc in iocs_out.split('\n'):
                     assert ioc in ei_vals
 
-    @pytest.mark.find_indicators_with_limit
     def test_find_indicators_with_limit_1(self, mocker):
         """Test find indicators limit"""
         import ExportIndicators as ei
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
             limit = 30
-            mocker.patch.object(ei, 'find_indicators_with_limit_loop', return_value=(iocs_json, 1))
-            ei_vals = ei.find_indicators_with_limit(indicator_query='', limit=limit, offset=0)
+            indicator_searcher_res = [{'iocs': iocs_json[:limit]}, {'iocs': []}]
+            indicator_searcher = ei.IndicatorsSearcher(
+                limit=limit
+            )
+            mocker.patch.object(indicator_searcher, 'search_indicators_by_version', side_effect=indicator_searcher_res)
+            ei_vals = ei.find_indicators_with_limit(indicator_searcher)
             assert len(ei_vals) == limit
 
-    @pytest.mark.find_indicators_with_limit
-    def test_find_indicators_with_limit_and_offset_1(self, mocker):
-        """Test find indicators limit and offset"""
-        import ExportIndicators as ei
-        with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
-            iocs_json = json.loads(iocs_json_f.read())
-            limit = 30
-            offset = 1
-            mocker.patch.object(ei, 'find_indicators_with_limit_loop', return_value=(iocs_json, 1))
-            ei_vals = ei.find_indicators_with_limit(indicator_query='', limit=limit, offset=offset)
-            assert len(ei_vals) == limit
-            # check that the first value is the second on the list
-            assert ei_vals[0].get('value') == '212.115.110.19'
-
-    @pytest.mark.find_indicators_with_limit_loop
-    def test_find_indicators_with_limit_loop_1(self, mocker):
-        """Test find indicators stops when reached last page"""
-        import ExportIndicators as ei
-        with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
-            iocs_dict = {'iocs': json.loads(iocs_json_f.read())}
-            limit = 50
-            mocker.patch.object(demisto, 'searchIndicators', return_value=iocs_dict)
-            ei_vals, nxt_pg = ei.find_indicators_with_limit_loop(indicator_query='', limit=limit)
-            assert nxt_pg == 1  # assert entered into loop
-
-    @pytest.mark.find_indicators_with_limit_loop
-    def test_find_indicators_with_limit_loop_2(self, mocker):
-        """Test find indicators stops when reached limit"""
-        import ExportIndicators as ei
-        with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
-            iocs_dict = {'iocs': json.loads(iocs_json_f.read())}
-            limit = 30
-            mocker.patch.object(demisto, 'searchIndicators', return_value=iocs_dict)
-            ei.PAGE_SIZE = IOC_RES_LEN
-            ei_vals, nxt_pg = ei.find_indicators_with_limit_loop(indicator_query='', limit=limit,
-                                                                 last_found_len=IOC_RES_LEN)
-            assert nxt_pg == 1  # assert entered into loop
-
-    @pytest.mark.create_values_for_returned_dict
     def test_create_values_for_returned_dict_1(self):
         """Test XSOAR CSV out"""
         from ExportIndicators import create_values_for_returned_dict, FORMAT_XSOAR_CSV, RequestArguments, CTX_VALUES_KEY
@@ -348,10 +292,10 @@ class TestHelperFunctions:
                 for csv_line in csv_out.split('\n'):
                     assert csv_line in expected_csv_out
 
-    @pytest.mark.create_values_for_returned_dict
     def test_create_values_for_returned_dict_2(self):
         """Test XSOAR JSON out"""
-        from ExportIndicators import create_values_for_returned_dict, FORMAT_XSOAR_JSON, CTX_VALUES_KEY, RequestArguments
+        from ExportIndicators import create_values_for_returned_dict, FORMAT_XSOAR_JSON, CTX_VALUES_KEY, \
+            RequestArguments
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.load(iocs_json_f)
             request_args = RequestArguments(query='', out_format=FORMAT_XSOAR_JSON)
@@ -359,10 +303,10 @@ class TestHelperFunctions:
             json_out = json.loads(returned_dict.get(CTX_VALUES_KEY))
             assert json_out == iocs_json
 
-    @pytest.mark.create_values_for_returned_dict
     def test_create_values_for_returned_dict_3(self):
         """Test XSOAR JSON_SEQ out"""
-        from ExportIndicators import create_values_for_returned_dict, FORMAT_XSOAR_JSON_SEQ, CTX_VALUES_KEY, RequestArguments
+        from ExportIndicators import create_values_for_returned_dict, FORMAT_XSOAR_JSON_SEQ, CTX_VALUES_KEY, \
+            RequestArguments
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
             request_args = RequestArguments(query='', out_format=FORMAT_XSOAR_JSON_SEQ)
@@ -371,7 +315,6 @@ class TestHelperFunctions:
             for seq_line in json_seq_out.split('\n'):
                 assert json.loads(seq_line) in iocs_json
 
-    @pytest.mark.create_values_for_returned_dict
     def test_create_values_for_returned_dict_4(self):
         """Test TEXT out"""
         from ExportIndicators import create_values_for_returned_dict, FORMAT_TEXT, CTX_VALUES_KEY, RequestArguments
@@ -385,7 +328,6 @@ class TestHelperFunctions:
                 for line in text_out.split('\n'):
                     assert line in iocs_txt_json
 
-    @pytest.mark.create_values_out_dict
     def test_create_values_for_returned_dict_5(self):
         """Test JSON out"""
         from ExportIndicators import create_values_for_returned_dict, FORMAT_JSON, CTX_VALUES_KEY, RequestArguments
@@ -398,7 +340,6 @@ class TestHelperFunctions:
                 iocs_json_out = json.loads(iocs_json_out_f.read())
                 assert iocs_json_out == json_out
 
-    @pytest.mark.create_values_out_dict
     def test_create_values_for_returned_dict_6(self):
         """Test JSON_SEQ out"""
         from ExportIndicators import create_values_for_returned_dict, FORMAT_JSON_SEQ, CTX_VALUES_KEY, RequestArguments
@@ -412,7 +353,6 @@ class TestHelperFunctions:
                 for seq_line in json_seq_out.split('\n'):
                     assert json.loads(seq_line) in iocs_json_out
 
-    @pytest.mark.create_values_out_dict
     def test_create_values_for_returned_dict_7(self):
         """Test CSV out"""
         from ExportIndicators import create_values_for_returned_dict, FORMAT_CSV, RequestArguments, CTX_VALUES_KEY
@@ -427,7 +367,6 @@ class TestHelperFunctions:
                 for csv_lint in csv_out.split('\n'):
                     assert csv_lint in expected_csv_out
 
-    @pytest.mark.validate_basic_authentication
     def test_validate_basic_authentication(self):
         """Test Authentication"""
         from ExportIndicators import validate_basic_authentication
@@ -457,7 +396,6 @@ class TestHelperFunctions:
         assert not validate_basic_authentication(data.get('wrong_credentials_auth'), username, password)
         assert validate_basic_authentication(data.get('right_credentials_auth'), username, password)
 
-    @pytest.mark.validate_basic_authentication
     def test_panos_url_formatting(self):
         from ExportIndicators import panos_url_formatting, CTX_VALUES_KEY
         with open('ExportIndicators_test/TestHelperFunctions/demisto_url_iocs.json', 'r') as iocs_json_f:
@@ -470,12 +408,12 @@ class TestHelperFunctions:
             assert num_of_indicators == 2
 
             # should ignore indicators with port numbers
-            returned_dict, num_of_indicators = panos_url_formatting(iocs=iocs_json, drop_invalids=True, strip_port=False)
+            returned_dict, num_of_indicators = panos_url_formatting(iocs=iocs_json, drop_invalids=True,
+                                                                    strip_port=False)
             returned_output = returned_dict.get(CTX_VALUES_KEY)
             assert returned_output == 'www.demisto.com/cool'
             assert num_of_indicators == 1
 
-    @pytest.mark.validate_basic_authentication
     def test_create_proxysg_out_format(self):
         from ExportIndicators import create_proxysg_out_format, CTX_VALUES_KEY
         with open('ExportIndicators_test/TestHelperFunctions/demisto_url_iocs.json', 'r') as iocs_json_f:
@@ -486,7 +424,7 @@ class TestHelperFunctions:
                                                                          category_attribute='')
             returned_output = returned_dict.get(CTX_VALUES_KEY)
             assert returned_output == "define category category2\n1.2.3.4:89/wget\nend\n" \
-                                      "define category category1\nhttps://www.demisto.com/cool\nend\n"
+                                      "define category category1\nwww.demisto.com/cool\nend\n"
 
             assert num_of_indicators == 2
 
@@ -495,7 +433,7 @@ class TestHelperFunctions:
                                                                          category_attribute="category3")
             returned_output = returned_dict.get(CTX_VALUES_KEY)
             assert returned_output == "define category default\n1.2.3.4:89/wget\n" \
-                                      "https://www.demisto.com/cool\nend\n"
+                                      "www.demisto.com/cool\nend\n"
             assert num_of_indicators == 2
 
             # list category2 only, the rest go to default
@@ -503,11 +441,10 @@ class TestHelperFunctions:
                                                                          category_attribute="category2")
             returned_output = returned_dict.get(CTX_VALUES_KEY)
             assert returned_output == "define category category2\n1.2.3.4:89/wget\nend\n" \
-                                      "define category default\nhttps://www.demisto.com/cool\nend\n"
+                                      "define category default\nwww.demisto.com/cool\nend\n"
 
             assert num_of_indicators == 2
 
-    @pytest.mark.validate_basic_authentication
     def test_create_mwg_out_format(self):
         from ExportIndicators import create_mwg_out_format, CTX_VALUES_KEY
         with open('ExportIndicators_test/TestHelperFunctions/demisto_url_iocs.json', 'r') as iocs_json_f:
@@ -521,7 +458,6 @@ class TestHelperFunctions:
                                       "https://www.demisto.com/cool\" \"AutoFocus V2,VirusTotal," \
                                       "Alien Vault OTX TAXII Feed\""
 
-    @pytest.mark.validate_basic_authentication
     def test_create_json_out_format(self):
         from ExportIndicators import create_json_out_format, CTX_VALUES_KEY
         with open('ExportIndicators_test/TestHelperFunctions/demisto_url_iocs.json', 'r') as iocs_json_f:
@@ -537,7 +473,6 @@ class TestHelperFunctions:
             assert returned_output[1].get('indicator') == 'https://www.demisto.com/cool'
             assert isinstance(returned_output[1].get('value'), dict)
 
-    @pytest.mark.ips_to_ranges
     def test_ips_to_ranges_range(self):
         from ExportIndicators import ips_to_ranges, COLLAPSE_TO_RANGES
         ip_list = [IPAddress("1.1.1.1"), IPAddress("25.24.23.22"), IPAddress("22.21.20.19"),
@@ -551,7 +486,6 @@ class TestHelperFunctions:
         assert "2.2.2.2" in ip_range_list
         assert "25.24.23.22" in ip_range_list
 
-    @pytest.mark.ips_to_cidrs
     def test_ips_to_ranges_cidr(self):
         from ExportIndicators import ips_to_ranges, COLLAPSE_TO_CIDR
         ip_list = [IPAddress("1.1.1.1"), IPAddress("25.24.23.22"), IPAddress("22.21.20.19"),
@@ -572,3 +506,48 @@ class TestHelperFunctions:
         mocker.patch.object(demisto, 'getIntegrationContext', return_value={})
         mimtype = get_outbound_mimetype()
         assert mimtype == 'text/plain'
+
+    @pytest.mark.parametrize('sort_field, sort_order, expected_first_result', [
+        ('lastSeen', 'asc', '200.77.186.170'),
+        ('lastSeen', 'desc', '188.166.23.215'),
+    ])
+    def test_sort_iocs(self, mocker, sort_field, sort_order, expected_first_result):
+        """Test IoCs sorting"""
+        import ExportIndicators as ei
+        from ExportIndicators import refresh_outbound_context, RequestArguments
+        with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
+            iocs_json = json.loads(iocs_json_f.read())
+            mocker.patch.object(ei, 'find_indicators_with_limit', side_effect=[iocs_json, []])
+            request_args = RequestArguments(query='', out_format='text', sort_field=sort_field, sort_order=sort_order)
+            ei_vals = refresh_outbound_context(request_args)
+
+            assert ei_vals.split('\n', 1)[0] == expected_first_result
+
+    def test_sort_iocs_with_invalid_order(self, mocker):
+        """Test IoCs sorting with invalid order"""
+        import ExportIndicators as ei
+        from ExportIndicators import refresh_outbound_context, RequestArguments
+        with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
+            iocs_json = json.loads(iocs_json_f.read())
+            mocker.patch.object(ei, 'find_indicators_with_limit', side_effect=[iocs_json, []])
+            request_args = RequestArguments(query='', out_format='text', sort_field='lastSeen',
+                                            sort_order='invalid_sort_order')
+            ei_vals = refresh_outbound_context(request_args)
+
+            assert ei_vals.split('\n', 1)[0] == '213.182.138.224'
+
+    def test_sort_iocs_invalid_field(self, mocker):
+        """Test IoCs sorting wit invalid field"""
+        import ExportIndicators as ei
+        from ExportIndicators import refresh_outbound_context, RequestArguments
+        with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
+            iocs_json = json.loads(iocs_json_f.read())
+            mocker.patch.object(ei, 'find_indicators_with_limit', side_effect=[iocs_json, []])
+            request_args = RequestArguments(query='', out_format='text', sort_field='invalid_field_name',
+                                            sort_order='asc')
+            mocker.patch.object(demisto, 'debug')
+            refresh_outbound_context(request_args)
+
+            debug_list = [call[0][0] for call in demisto.debug.call_args_list]
+            assert 'ExportIndicators - Could not sort IoCs, please verify that you entered the correct field name.\n' \
+                   'Field used: invalid_field_name' in debug_list

@@ -3,3 +3,6 @@ ignore=IN136
 
 [file:README.md]
 ignore=RM102
+
+[file:layoutscontainer-MITRE_ATT&CK.json]
+ignore=BA101

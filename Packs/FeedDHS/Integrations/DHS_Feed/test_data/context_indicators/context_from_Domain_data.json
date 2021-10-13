@@ -1,0 +1,338 @@
+[
+    {
+        "value": "test.com",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "example.com",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "something.com",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "nothing.com",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "everything.com",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "anything.com",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "test4.com",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "test5.com",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "z56test.net",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "z55test.net",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "x58test.net",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "x59test.net",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "x57test.net",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "onebulks.com",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "hotenlighten.com",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "ds46x1.com",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "ds47x1.com",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "qds45x1.com",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "lkmf.xyz",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "uiyplk.xyz",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "threav.xyz",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "oplkmf.xyz",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "lmnab.xyz",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "qvrw.xyz",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "hibuzes.xyz",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "zebao.xyz",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "watoror.xyz",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "ds45x1.com",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "refvs.xyz",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "hmiu.xyz",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "zaxswder.xyz",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "dasvdbfgne.xyz",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "dcv24te.xyz",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "mugtre.xyz",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "hunopk.xyz",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "dghns.xyz",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "numklo.xyz",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "sh78bug.xyz",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "gut45bg.xyz",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "vighik.xyz",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "doldig.xyz",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "bigjamg.xyz",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "cntrhum.xyz",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "test3.com",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "mixcinc.com",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "titlecs.com",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "labelcs.com",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "freedubcs.com",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "nicknamec.com",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "bubl6g.com",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "sulionuili1.in",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "dunujilis11r.net",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "oohdojssks9uf.net",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "nulikuliey.net",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "eseruuynli2.net",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    },
+    {
+        "value": "ghjk78kjhb.net",
+        "tlp": "color",
+        "type": "Domain",
+        "reportedby": "source"
+    }
+]

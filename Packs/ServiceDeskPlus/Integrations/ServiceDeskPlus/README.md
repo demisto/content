@@ -6,31 +6,41 @@ IT Service Management
 2. Search for ServiceDeskPlus.
 3. Click **Add instance** to create and configure a new integration instance.
 
-## Instance Creation Flow
+## Instance Creation Flow for Cloud
 
-To create an instance for Service Desk Plus, a Client Id, Client secret and Refresh Token are required.
+To create an instance of the Service Desk Plus integration, you need to get a Client ID, Client Secret, and Refresh Token.
+Follow the next steps to create an instance:
+
+1. Select the data center in which your data resides.
+2. Register your app using [ZOHO App Registration](https://api-console.zoho.com). Make sure you copy the Client ID and Client Secret of the app to the Cortex XSOAR instance and click the **Done** button.
+3. In the registered app, select the **Generate Code** tab and define the scopes for the app.
+4. From the Cortex XSOAR CLI run the command `!service-desk-plus-generate-refresh-token` and paste the generated code into the code parameter.
+5. Copy the generated refresh token to the Cortex XSOAR instance and click the **Test** button to validate the instance.
+
+## Instance Creation Flow for On-Premise
+To create an instance of the Service Desk Plus integration, you need to get a On-Premises Server URL and a Technician Key.
 
 Follow the next steps to create an instance:
 
-1. Choose the data center which your data resides in.
-2. Register your app using [ZOHO App Registration](https://api-console.zoho.com), copy the Client Id and Client Secret of the app to the Demisto instance and hit the **Done** button.
-3. In the registered app, select the Generate Code tab and define the desired scopes for the app (see screenshot below).
-4. In the Demisto CLI run the command !service-desk-plus-generate-refresh-token and paste the generated code into the code parameter.
-5. Copy the generated refresh token to the Demisto instance and hit the **Test** button to validate the instance.
+1. Enter the On-Premise Server URL info.
+2. Enter the Technician Key.
+3. Click the **Test** button to validate the instance.
 
 **NOTES**
-- For more details about scopes and app authorization process please refer to [App Authorization](https://www.manageengine.com/products/service-desk/sdpod-v3-api/SDPOD-V3-API.html#scopes)
-- The code generated in the app is valid for a limited time only.
+- For more details about the app authorization process refer to [App Authorization](https://www.manageengine.com/products/service-desk/sdpod-v3-api/SDPOD-V3-API.html)
+- The code generated in the app is only valid for a limited time.
 - In order to avoid repeating this process, the created Refresh Token should be saved for future use.
+- For more details about generating a technician key please refer to the [help documentation](https://help.servicedeskplus.com/api/rest-api.html$key)
 
 ![image](https://user-images.githubusercontent.com/61732335/86364400-cc70c600-bc80-11ea-9763-59acd31e08b7.png)
-
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | server_url | Data Center Location: Select the domain location that is applicable for you application | True |
-| client_id | Client ID | True |
-| client_secret | Client Secret | True |
+| technician_key | Technician Key | False |
+| server_url_on_premise | On-Premise Server URL | False |
+| client_id | Client ID | False |
+| client_secret | Client Secret | False |
 | refresh_token | Refresh Token | False |
 | isFetch | Fetch incidents | False |
 | incidentType | Incident type | False |
@@ -43,7 +53,7 @@ Follow the next steps to create an instance:
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### service-desk-plus-requests-list
 ***

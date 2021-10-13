@@ -13,8 +13,18 @@ Use the CrowdStrike Falcon X integration to submit files, file hashes, URLs, and
 | proxy | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+
+## Uploading a file to the sandbox
+There are 2 ways to upload a file to the sandbox.
+1. Using the ***cs-fx-upload-file*** command with **submit_file=yes**.
+2. Using the ***cs-fx-upload-file*** command and afterwards the ***cs-fx-submit-uploaded-file command***, 
+in this option the sha256 identifier from the ***cs-fx-upload-file*** command output is the input to the ***cs-fx-submit-uploaded-file command***.
+
+For more information review the documentation for the commands.
+
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### cs-fx-upload-file
 ***
@@ -94,7 +104,7 @@ Notice that the file identifiers, SHA and ID are not the same.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| csfalconx.resource.uploaded_id  | String | Analysis ID received after uploading the file. | 
+| csfalconx.resource.uploaded_id | String | Analysis ID received after uploading the file. | 
 | csfalconx.resource.state | String | Analysis state. | 
 | csfalconx.resource.created_timpestamp | String | Analysis start time. | 
 | csfalconx.resource.sha256 | Unknown | SHA256 hash of the scanned file. | 

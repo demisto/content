@@ -325,7 +325,7 @@ script:
       description: Return results starting at this offset. should be int - by default is 0
       defaultValue: "0"
     - name: timezone
-      description: The time zone if from/to is not in milliseconds. Default is UTC. See this (https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) article for a list of time zone codes.
+      description: The time zone if from/to is not in milliseconds. Default is UTC. Please refer to the article at https://en.wikipedia.org/wiki/List_of_tz_database_time_zones for a list of time zone codes.
       defaultValue: UTC
     - name: maxTimeToWaitForResults
       description: Maximum amount of time (in minutes) to wait for the search to complete. Default is 10 minutes.

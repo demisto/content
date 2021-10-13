@@ -1,5 +1,13 @@
 import pytest
 from Anomali_Enterprise import *
+import demistomock as demisto
+
+VENDOR_NAME = 'Anomali Enterprise'
+
+
+@pytest.fixture(autouse=True)
+def handle_calling_context(mocker):
+    mocker.patch.object(demisto, 'callingContext', {'context': {'IntegrationBrand': VENDOR_NAME}})
 
 
 def test_domain_command_benign(mocker):
@@ -142,7 +150,7 @@ def test_start_search_job_command(mocker):
         'job_id': '1234'
     }
 
-    assert output.get('AnomaliEnterprise.ForensicSearch(val.job_id == obj.job_id)', []) == expected_result
+    assert output['AnomaliEnterprise.ForensicSearch(val.job_id && val.job_id == obj.job_id)'] == expected_result
 
 
 def test_get_search_job_result_command_with_matches(mocker):
@@ -168,7 +176,7 @@ def test_get_search_job_result_command_with_matches(mocker):
         'complete': True, 'processedFiles': 1, 'totalMatches': 1
     }
     mocker.patch.object(client, 'get_search_job_result_request', return_value=return_data)
-    command_results = get_search_job_result(client, args={'job_id': '111'})
+    command_results = get_search_job_result(client, args={'job_id': '111'})[0]
     output = command_results.to_context().get('EntryContext', {})
     expected_result = {
         'status': 'completed', 'category': 'forensic_api_result', 'totalFiles': 1,
@@ -180,7 +188,7 @@ def test_get_search_job_result_command_with_matches(mocker):
         'processedFiles': 1, 'totalMatches': 1, 'job_id': '111'
     }
 
-    assert output.get('AnomaliEnterprise.ForensicSearch(val.job_id == obj.job_id)', []) == expected_result
+    assert output.get('AnomaliEnterprise.ForensicSearch(val.job_id && val.job_id == obj.job_id)', []) == expected_result
 
 
 def test_get_search_job_result_command_with_matches_and_limit(mocker):
@@ -220,10 +228,10 @@ def test_get_search_job_result_command_with_matches_and_limit(mocker):
         'complete': True, 'processedFiles': 1, 'totalMatches': 3
     }
     mocker.patch.object(client, 'get_search_job_result_request', return_value=return_data)
-    command_results = get_search_job_result(client, args={'job_id': '111', 'limit': '2'})
+    command_results = get_search_job_result(client, args={'job_id': '111', 'limit': '2'})[0]
     output = command_results.to_context().get('EntryContext', {})
 
-    assert len(output.get('AnomaliEnterprise.ForensicSearch(val.job_id == obj.job_id)', {}).get('streamResults')) == 2
+    assert len(output['AnomaliEnterprise.ForensicSearch(val.job_id && val.job_id == obj.job_id)']['streamResults']) == 2
 
 
 def test_get_search_job_result_command_without_matches(mocker):
@@ -245,14 +253,14 @@ def test_get_search_job_result_command_without_matches(mocker):
         'complete': True, 'processedFiles': 0, 'totalMatches': 0
     }
     mocker.patch.object(client, 'get_search_job_result_request', return_value=return_data)
-    command_results = get_search_job_result(client, args={'job_id': '222'})
+    command_results = get_search_job_result(client, args={'job_id': '222'})[0]
 
     output = command_results.to_context().get('EntryContext', {})
     expected_result = {
         'status': 'completed', 'totalFiles': 0, 'streamResults': [],
         'scannedEvents': 269918, 'complete': True, 'processedFiles': 0, 'totalMatches': 0, 'job_id': '222'
     }
-    assert output.get('AnomaliEnterprise.ForensicSearch(val.job_id == obj.job_id)', []) == expected_result
+    assert output.get('AnomaliEnterprise.ForensicSearch(val.job_id && val.job_id == obj.job_id)', []) == expected_result
 
     hr_ = command_results.to_context().get('HumanReadable', '')
     assert hr_ == 'No matches found for the given job ID: 222.'

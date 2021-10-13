@@ -1,0 +1,923 @@
+{
+    "detailsV2": {
+        "tabs": [
+            {
+                "id": "summary",
+                "name": "Legacy Summary",
+                "type": "summary"
+            },
+            {
+                "hidden": false,
+                "id": "fwrsfiljze",
+                "name": "System Overview",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "fwrsfiljze-2ec43d10-c210-11eb-9118-13a43afba38c",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "xsoarcustomername",
+                                "height": 22,
+                                "id": "351cb070-c210-11eb-9118-13a43afba38c",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "xsoarversion",
+                                "height": 22,
+                                "id": "3dc09a70-c210-11eb-9118-13a43afba38c",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "xsoarbuild",
+                                "height": 22,
+                                "id": "431b25d0-c210-11eb-9118-13a43afba38c",
+                                "index": 2,
+                                "listId": "fwrsfiljze-2ec43d10-c210-11eb-9118-13a43afba38c",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "xsoarcontentversion",
+                                "height": 22,
+                                "id": "4b301640-c210-11eb-9118-13a43afba38c",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "xsoarlicense",
+                                "height": 22,
+                                "id": "503862f0-c210-11eb-9118-13a43afba38c",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "xsoarlicensevalidtill",
+                                "height": 22,
+                                "id": "52976190-c210-11eb-9118-13a43afba38c",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "healthcheckusedusers",
+                                "height": 22,
+                                "id": "586966e0-c210-11eb-9118-13a43afba38c",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "xsoartelemetrystatus",
+                                "height": 22,
+                                "id": "86b2c460-c210-11eb-9118-13a43afba38c",
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "healthcheckpermittedusers",
+                                "height": 22,
+                                "id": "6400ee60-c210-11eb-9118-13a43afba38c",
+                                "index": 8,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "xsoarmultitenant",
+                                "height": 22,
+                                "id": "90c29a70-c210-11eb-9118-13a43afba38c",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "xsoarelasticsearch",
+                                "height": 22,
+                                "id": "a3cd2d10-c210-11eb-9118-13a43afba38c",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "xsoardr",
+                                "height": 22,
+                                "id": "ab99f0f0-c210-11eb-9118-13a43afba38c",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "xsoardevprod",
+                                "height": 22,
+                                "id": "1fa17680-c211-11eb-9118-13a43afba38c",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "xsoardevprodmode",
+                                "height": 22,
+                                "id": "26c52920-c211-11eb-9118-13a43afba38c",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "healthcheckrestartcount",
+                                "height": 22,
+                                "id": "441b6250-c211-11eb-9118-13a43afba38c",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "healthchecklogsince",
+                                "height": 22,
+                                "id": "547d1c10-c211-11eb-9118-13a43afba38c",
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "healthcheckloguntil",
+                                "height": 22,
+                                "id": "57abc6c0-c211-11eb-9118-13a43afba38c",
+                                "index": 8,
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 2,
+                        "moved": false,
+                        "name": "System Overview",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "fwrsfiljze-bb03e7c0-c211-11eb-9118-13a43afba38c",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "xsoaros",
+                                "height": 22,
+                                "id": "53802900-c212-11eb-9118-13a43afba38c",
+                                "index": 0,
+                                "listId": "fwrsfiljze-bb03e7c0-c211-11eb-9118-13a43afba38c",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "xsoarcpu",
+                                "height": 22,
+                                "id": "551484a0-c212-11eb-9118-13a43afba38c",
+                                "index": 1,
+                                "listId": "fwrsfiljze-bb03e7c0-c211-11eb-9118-13a43afba38c",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "xsoarmemory",
+                                "height": 22,
+                                "id": "56a277a0-c212-11eb-9118-13a43afba38c",
+                                "index": 2,
+                                "listId": "fwrsfiljze-bb03e7c0-c211-11eb-9118-13a43afba38c",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "healthcheckworkersbusy",
+                                "height": 22,
+                                "id": "cd61e6b0-c211-11eb-9118-13a43afba38c",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "healthcheckworkerstotal",
+                                "height": 22,
+                                "id": "cf7620b0-c211-11eb-9118-13a43afba38c",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "System Resources",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 3
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "fwrsfiljze-16af5000-c212-11eb-9118-13a43afba38c",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "healthcheckdockercontainers",
+                                "height": 22,
+                                "id": "25733840-c212-11eb-9118-13a43afba38c",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "healthcheckdockerrunning",
+                                "height": 22,
+                                "id": "28127430-c212-11eb-9118-13a43afba38c",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "healthcheckdockerstop",
+                                "height": 22,
+                                "id": "2a6d0600-c212-11eb-9118-13a43afba38c",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "healthcheckdockerpaused",
+                                "height": 22,
+                                "id": "2cbd3790-c212-11eb-9118-13a43afba38c",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "healthcheckdockerversion",
+                                "height": 22,
+                                "id": "3023bb20-c212-11eb-9118-13a43afba38c",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Docker Info",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "i": "fwrsfiljze-9391ae10-c212-11eb-9118-13a43afba38c",
+                        "items": [],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 3,
+                        "moved": false,
+                        "name": "Incidents Trend Daily",
+                        "query": "HealthCheckIncidentsCreatedDaily",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 3,
+                        "x": 0,
+                        "y": 5
+                    },
+                    {
+                        "h": 2,
+                        "i": "fwrsfiljze-b6f93f80-c212-11eb-9118-13a43afba38c",
+                        "items": [],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 3,
+                        "moved": false,
+                        "name": "Incidents Trend Monthly",
+                        "query": "HealthCheckIncidentsCreatedMonthly",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 3,
+                        "x": 0,
+                        "y": 9
+                    },
+                    {
+                        "h": 2,
+                        "i": "fwrsfiljze-e5261450-c212-11eb-9118-13a43afba38c",
+                        "items": [],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 3,
+                        "moved": false,
+                        "name": "Incidents Trend Weekly",
+                        "query": "HealthCheckIncidentsCreatedWeekly",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 3,
+                        "x": 0,
+                        "y": 7
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "fwrsfiljze-d4925fe0-c398-11eb-8a20-995c02e612f8",
+                        "items": [
+                            {
+                                "endCol": 4,
+                                "fieldId": "xsoarserverconfiguration",
+                                "height": 106,
+                                "id": "dea34760-c398-11eb-8a20-995c02e612f8",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 2,
+                        "moved": false,
+                        "name": "Server Configuration",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 3
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "nowlmpv4ir",
+                "name": "Packs & Integrations",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": true,
+                        "i": "fwrsfiljze-42d34000-c213-11eb-9118-13a43afba38c",
+                        "items": [
+                            {
+                                "endCol": 3,
+                                "fieldId": "healthcheckinstalledpacks",
+                                "height": 106,
+                                "id": "619712f0-c213-11eb-9118-13a43afba38c",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "healthcheckenabledinstances",
+                                "height": 106,
+                                "id": "18d3a7e0-c6fa-11eb-a8ef-5f644da8ef19",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 3
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 3,
+                        "moved": false,
+                        "name": "New Section",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "h": 2,
+                        "i": "fwrsfiljze-4ba2dc40-c6a5-11eb-876c-112c3198e0e9",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Number of packs installed",
+                        "query": "HealthCheckPacksInstalled",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "i": "fwrsfiljze-4ef69b20-c6a5-11eb-876c-112c3198e0e9",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Number of engines",
+                        "query": "HealthCheckNumberOfEngines",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "i": "fwrsfiljze-51635560-c6a5-11eb-876c-112c3198e0e9",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Number of outdated packs",
+                        "query": "HealthCheckOutdatedPacks",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "ygsio6etop",
+                "name": "Hardware Resources",
+                "sections": [
+                    {
+                        "h": 2,
+                        "i": "fwrsfiljze-9657dd80-c213-11eb-9118-13a43afba38c",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 3,
+                        "moved": false,
+                        "name": "CPU Usage Last 24 Hours",
+                        "query": "HealthCheckCPU",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 3,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "h": 2,
+                        "i": "fwrsfiljze-97be9970-c213-11eb-9118-13a43afba38c",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 3,
+                        "moved": false,
+                        "name": "Memory Usage Last 24 Hours",
+                        "query": "HealthCheckMemory",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 3,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "h": 2,
+                        "hideName": true,
+                        "i": "fwrsfiljze-ac0e2f30-c213-11eb-9118-13a43afba38c",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Containers Status",
+                        "query": "HealthCheckContainersStatus",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "hideName": true,
+                        "i": "fwrsfiljze-ec8728a0-c213-11eb-9118-13a43afba38c",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Workers Status",
+                        "query": "HealthCheckWorkers",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "description": "",
+                        "h": 2,
+                        "i": "fwrsfiljze-f0356390-c213-11eb-9118-13a43afba38c",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Disk Usage",
+                        "query": "HealthCheckDiskUsage",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "hideName": false,
+                        "i": "fwrsfiljze-538ca050-cc7f-11eb-a11f-ed12573d1791",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Disk Usage Last 24 Hours",
+                        "query": "HealthCheckDiskUsageLine",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 3,
+                        "x": 0,
+                        "y": 6
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "rkmpdfoedc",
+                "name": "DB Analysis",
+                "sections": [
+                    {
+                        "displayType": "CARD",
+                        "h": 5,
+                        "hideName": false,
+                        "i": "fwrsfiljze-rkmpdfoedc-cgf7qh0fsv-rkmpdfoedc-fwrsfiljze-rkmpdfoedc-fwrsfiljze-511c3670-c214-11eb-9118-13a43afba38c",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "xsoarnumberofdbpartitions",
+                                "height": 53,
+                                "id": "6e835f90-c214-11eb-9118-13a43afba38c",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "healthchecknumberofinvestigationswithmorethan500entries",
+                                "height": 53,
+                                "id": "07c6ed80-e348-11eb-987c-5f599e2ae049",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "healthchecknumberofinvestigationsinputoutputbiggerthan10mb",
+                                "height": 53,
+                                "id": "88474a40-c214-11eb-9118-13a43afba38c",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "healthchecknumberofinvestigationsinputoutputbiggerthan1mb",
+                                "height": 53,
+                                "id": "9f015050-c214-11eb-9118-13a43afba38c",
+                                "index": 3,
+                                "listId": "fwrsfiljze-511c3670-c214-11eb-9118-13a43afba38c",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "healthchecknumberofinvestigationsbiggerthan1mb",
+                                "height": 53,
+                                "id": "e2ed5070-c214-11eb-9118-13a43afba38c",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "healthchecknumberofinvestigationsbiggerthan10mb",
+                                "height": 53,
+                                "id": "37ce0610-c216-11eb-9118-13a43afba38c",
+                                "index": 5,
+                                "listId": "fwrsfiljze-511c3670-c214-11eb-9118-13a43afba38c",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "DB Analysis",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 5,
+                        "hideName": false,
+                        "i": "fwrsfiljze-rkmpdfoedc-cgf7qh0fsv-rkmpdfoedc-fwrsfiljze-rkmpdfoedc-fwrsfiljze-caec9d60-c6a5-11eb-876c-112c3198e0e9",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "healthchecklargefiles",
+                                "height": 106,
+                                "id": "8a665320-c6c9-11eb-aa83-714a14ec6c50",
+                                "index": 0,
+                                "listId": "fwrsfiljze-rkmpdfoedc-fwrsfiljze-caec9d60-c6a5-11eb-876c-112c3198e0e9",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Large Files",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 4,
+                        "hideName": false,
+                        "i": "fwrsfiljze-rkmpdfoedc-cgf7qh0fsv-rkmpdfoedc-fwrsfiljze-rkmpdfoedc-fwrsfiljze-cd7fcb60-c6a5-11eb-876c-112c3198e0e9",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "healthcheckinvestigationsinputoutputbiggerthan1mb",
+                                "height": 106,
+                                "id": "1a108ce0-e252-11eb-8ea7-39ca7eaabe63",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Large input/output bigger than 1 MB",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 5
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 5,
+                        "hideName": false,
+                        "i": "fwrsfiljze-rkmpdfoedc-cgf7qh0fsv-rkmpdfoedc-fwrsfiljze-rkmpdfoedc-fwrsfiljze-e3dd80a0-c6a5-11eb-876c-112c3198e0e9",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "healthcheckinvestigationsbiggerthan10mb",
+                                "height": 106,
+                                "id": "fafde9a0-c6a5-11eb-876c-112c3198e0e9",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Investigations bigger than 10 MB",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 4,
+                        "hideName": false,
+                        "i": "fwrsfiljze-rkmpdfoedc-cgf7qh0fsv-rkmpdfoedc-fwrsfiljze-cb9917f0-c6cf-11eb-a7b0-61f0f8972c08",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "healthcheckinvestigationsbiggerthan1mb",
+                                "height": 22,
+                                "id": "61a829c0-c6d0-11eb-a7b0-61f0f8972c08",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Investigations bigger than 1 MB",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 5
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 4,
+                        "hideName": false,
+                        "i": "fwrsfiljze-rkmpdfoedc-cgf7qh0fsv-rkmpdfoedc-fwrsfiljze-cca83e00-c6cf-11eb-a7b0-61f0f8972c08",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "healthcheckinvestigationsinputoutputbiggerthan10mb",
+                                "height": 22,
+                                "id": "f97338e0-c6cf-11eb-a7b0-61f0f8972c08",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Large input/output bigger than 10 MB",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 5
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "cgf7qh0fsv",
+                "name": "Actionable Items",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 11,
+                        "hideName": true,
+                        "i": "cgf7qh0fsv-rkmpdfoedc-fwrsfiljze-4f44c1e0-c215-11eb-9118-13a43afba38c",
+                        "items": [
+                            {
+                                "endCol": 6,
+                                "fieldId": "healthcheckactionableitems",
+                                "height": 106,
+                                "id": "54ff4790-c215-11eb-9118-13a43afba38c",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 3,
+                        "moved": false,
+                        "name": "New Section",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "warRoom",
+                "name": "War Room",
+                "type": "warRoom"
+            },
+            {
+                "id": "workPlan",
+                "name": "Work Plan",
+                "type": "workPlan"
+            },
+            {
+                "hidden": true,
+                "id": "evidenceBoard",
+                "name": "Evidence Board",
+                "type": "evidenceBoard"
+            },
+            {
+                "hidden": true,
+                "id": "relatedIncidents",
+                "name": "Related Incidents",
+                "type": "relatedIncidents"
+            },
+            {
+                "hidden": true,
+                "id": "canvas",
+                "name": "Canvas",
+                "type": "canvas"
+            }
+        ]
+    },
+    "edit": {
+        "sections": [
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_type",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Basic Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            }
+        ]
+    },
+    "group": "incident",
+    "id": "System Diagnostics and Health Check",
+    "name": "System Diagnostics and Health Check",
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "description": ""
+}

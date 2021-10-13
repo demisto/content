@@ -6,7 +6,7 @@ Data output script for populating the dashboard number graph widget with the num
 | --- | --- |
 | Script Type | python3 |
 | Tags | widget, failedInstances |
-| Demisto Version | 6.0.0 |
+| Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
 ---

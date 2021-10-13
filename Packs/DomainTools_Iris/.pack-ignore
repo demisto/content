@@ -1,0 +1,5 @@
+[file:README.md]
+ignore=RM104
+
+[file:DomainTools_Iris.yml]
+ignore=BA108,BA109,IN144

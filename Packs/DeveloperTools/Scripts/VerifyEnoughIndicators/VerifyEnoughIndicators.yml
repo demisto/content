@@ -1,0 +1,34 @@
+commonfields:
+  id: VerifyEnoughIndicators
+  version: -1
+name: VerifyEnoughIndicators
+fromversion: 6.0.0
+script: ''
+type: python
+tags: []
+comment: Returns, whether there're, are enough indicators in the system.
+enabled: true
+args:
+- name: query
+  required: true
+  description: Query used to check if there're are enough indicators in XSOAR.
+- name: size
+  required: true
+  description: Target amount of indicators to check for.
+outputs:
+- contextPath: IndicatorsCheck.Size
+  description: Number of indicators in XSOAR that're expected to match the query.
+  type: number
+- contextPath: IndicatorsCheck.ConditionMet
+  description: Are there enough indicators in XSOAR that match the query.
+  type: boolean
+- contextPath: IndicatorsCheck.Query
+  description: Indicators query used to check if the condition is met.
+  type: boolean
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.9.7.24076
+runas: DBotWeakRole
+tests:
+- No test

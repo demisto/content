@@ -1,0 +1,820 @@
+commonfields:
+  id: SumoLogicSEC
+  version: -1
+name: SumoLogicSEC
+display: Sumo Logic Cloud SIEM
+category: Analytics & SIEM
+description: Freeing the analyst with autonomous decisions
+configuration:
+- display: Sumo Logic API Endpoint
+  name: api_endpoint
+  type: 0
+  required: true
+  additionalinfo: https://api.<deployment>.sumologic.com/api/
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- display: Access ID
+  name: access_id
+  type: 0
+  required: true
+- display: Access Key
+  name: access_key
+  type: 4
+  required: true
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: "1"
+  type: 19
+  required: false
+- display: Fetch Limit
+  name: max_fetch
+  defaultvalue: "20"
+  type: 0
+  required: false
+  additionalinfo: Fetch limit must not be greater than 20
+- display: Override default fetch query
+  name: fetch_query
+  type: 0
+  required: false
+  additionalinfo: Default fetch query is status:in("new", "inprogress")
+- display: First fetch time
+  name: first_fetch
+  defaultvalue: 1 day
+  type: 0
+  required: false
+- display: Override Record Summary Fields
+  name: record_summary_fields
+  defaultvalue: "action,description,device_hostname,device_ip,dstDevice_hostname,dstDevice_ip,email_sender,file_basename,file_hash_md5,file_hash_sha1,file_hash_sha256,srcDevice_hostname,srcDevice_ip,threat_name,threat_category,threat_identifier,user_username,threat_url,listMatches"
+  type: 0
+  required: false
+  additionalinfo: Record Summary Fields included when fetching Insights
+script:
+  script: ''
+  type: python
+  commands:
+  - name: sumologic-sec-insight-get-details
+    arguments:
+    - name: insight_id
+      required: true
+      default: true
+      description: The insight to retrieve details for.
+    - name: record_summary_fields
+      description: Record Summary Fields included with the Insight.
+      defaultValue: "action,description,device_hostname,device_ip,dstDevice_hostname,dstDevice_ip,email_sender,file_basename,file_hash_md5,file_hash_sha1,file_hash_sha256,srcDevice_hostname,srcDevice_ip,threat_name,threat_category,threat_identifier,user_username,threat_url,listMatches"
+    outputs:
+    - contextPath: SumoLogicSec.Insight.Assignee
+      description: User or team assigned to the Insight.
+      type: string
+    - contextPath: SumoLogicSec.Insight.Closed
+      description: Closed date.
+      type: Date
+    - contextPath: SumoLogicSec.Insight.ClosedBy
+      description: Closed by user.
+      type: String
+    - contextPath: SumoLogicSec.Insight.Created
+      description: Created date.
+      type: Date
+    - contextPath: SumoLogicSec.Insight.Description
+      description: Description of the Insight.
+      type: String
+    - contextPath: SumoLogicSec.Insight.Entity
+      description: Entity name associated with the Insight.
+      type: String
+    - contextPath: SumoLogicSec.Insight.Id
+      description: The ID of the Insight.
+      type: String
+    - contextPath: SumoLogicSec.Insight.LastUpdated
+      description: The time the Insight was last updated.
+      type: Date
+    - contextPath: SumoLogicSec.Insight.LastUpdatedBy
+      description: The last user to update the Insight.
+      type: string
+    - contextPath: SumoLogicSec.Insight.Name
+      description: The name of the Insight.
+      type: String
+    - contextPath: SumoLogicSec.Insight.ReadableId
+      description: The ID of the Insight in readable form.
+      type: String
+    - contextPath: SumoLogicSec.InsightList.RecordSummaryFields
+      description: Record Summary Fields associated with the Insight.
+      type: Unknown
+    - contextPath: SumoLogicSec.Insight.Resolution
+      description: Resolution for closed Insight.
+      type: String
+    - contextPath: SumoLogicSec.Insight.Severity
+      description: The severity of the Insight.
+      type: String
+    - contextPath: SumoLogicSec.Insight.Signals.contentType
+      description: Type of content that triggered the Signal.
+      type: String
+    - contextPath: SumoLogicSec.Insight.Signals.description
+      description: Description of the Signal.
+      type: String
+    - contextPath: SumoLogicSec.Insight.Signals.id
+      description: The ID of the Signal.
+      type: String
+    - contextPath: SumoLogicSec.Insight.Signals.name
+      description: The name of the Signal.
+      type: String
+    - contextPath: SumoLogicSec.Insight.Signals.recordCount
+      description: Number of records associated with the Signal.
+      type: Number
+    - contextPath: SumoLogicSec.Insight.Signals.ruleId
+      description: Rule ID associated with the Signal.
+      type: String
+    - contextPath: SumoLogicSec.Insight.Signals.severity
+      description: The severity of the Signal.
+      type: Number
+    - contextPath: SumoLogicSec.Insight.Signals.stage
+      description: The stage of the Signal.
+      type: String
+    - contextPath: SumoLogicSec.Insight.Signals.timestamp
+      description: Signal timestamp.
+      type: Date
+    - contextPath: SumoLogicSec.Insight.Source
+      description: The source of the Insight.
+      type: String
+    - contextPath: SumoLogicSec.Insight.Status
+      description: The status of the Insight.
+      type: String
+    - contextPath: SumoLogicSec.Insight.TimeToDetection
+      description: Insight time to detection.
+      type: Number
+    - contextPath: SumoLogicSec.Insight.TimeToRemediation
+      description: Insight time to remediation.
+      type: Number
+    - contextPath: SumoLogicSec.Insight.TimeToResponse
+      description: Insight time to response.
+      type: Number
+    - contextPath: SumoLogicSec.Insight.Timestamp
+      description: Insight timestamp.
+      type: Date
+    description: Get Insight details for a specific Insight ID.
+  - name: sumologic-sec-insight-get-comments
+    arguments:
+    - name: insight_id
+      required: true
+      description: The insight ID for which to retrieve comments.
+    outputs:
+    - contextPath: SumoLogicSec.InsightComments.Id
+      description: ID of comment.
+      type: String
+    - contextPath: SumoLogicSec.InsightComments.Body
+      description: Comment contents.
+      type: String
+    - contextPath: SumoLogicSec.InsightComments.Author
+      description: User that created the comment.
+      type: String
+    - contextPath: SumoLogicSec.InsightComments.Timestamp
+      description: Comment created timestamp.
+      type: Date
+    - contextPath: SumoLogicSec.InsightComments.InsightId
+      description: The ID of the Insight.
+      type: String
+    description: Get comments for a specific Insight ID (Users can post and update
+      comments on the Sumo Logic Cloud SIEM portal for any Insight ID).
+  - name: sumologic-sec-signal-get-details
+    arguments:
+    - name: signal_id
+      required: true
+      default: true
+      description: The signal to retrieve details for.
+    outputs:
+    - contextPath: SumoLogicSec.Signal.ContentType
+      description: Type of content that triggered the Signal.
+      type: String
+    - contextPath: SumoLogicSec.Signal.Description
+      description: Description of the Signal.
+      type: String
+    - contextPath: SumoLogicSec.Signal.Entity
+      description: Entity name associated with the Signal.
+      type: String
+    - contextPath: SumoLogicSec.Signal.Id
+      description: The ID of the Signal.
+      type: String
+    - contextPath: SumoLogicSec.Signal.Name
+      description: The name of the Signal.
+      type: String
+    - contextPath: SumoLogicSec.Signal.RecordCount
+      description: Number of records associated with the Signal.
+      type: Number
+    - contextPath: SumoLogicSec.Signal.RuleId
+      description: Rule ID associated with the Signal.
+      type: String
+    - contextPath: SumoLogicSec.Signal.Severity
+      description: The severity of the Signal.
+      type: Number
+    - contextPath: SumoLogicSec.Signal.Stage
+      description: The stage of the Signal.
+      type: String
+    - contextPath: SumoLogicSec.Signal.Suppressed
+      description: Whether or not the Signal was suppressed.
+      type: Boolean
+    - contextPath: SumoLogicSec.Signal.Timestamp
+      description: Signal timestamp.
+      type: Date
+    description: Get Signal details for a specific Signal ID. Signal details command
+      references signals in Sumo Logic Cloud SIEM which are created when records exhibit
+      suspicious properties and mate with patterns or other detection logic.
+  - name: sumologic-sec-entity-get-details
+    arguments:
+    - name: entity-id
+      required: true
+      default: true
+      description: The entity to retrieve details for.
+    outputs:
+    - contextPath: SumoLogicSec.Entity.ActivityScore
+      description: Entity Activity Score.
+      type: Number
+    - contextPath: SumoLogicSec.Entity.FirstSeen
+      description: When the Entity was first seen.
+      type: Date
+    - contextPath: SumoLogicSec.Entity.Hostname
+      description: Entity hostname.
+      type: String
+    - contextPath: SumoLogicSec.Entity.Id
+      description: Entity ID.
+      type: String
+    - contextPath: SumoLogicSec.Entity.IsWhitelisted
+      description: Whether or not the Entity is whitelisted.
+      type: Boolean
+    - contextPath: SumoLogicSec.Entity.LastSeen
+      description: When the Entity was last seen.
+      type: Date
+    - contextPath: SumoLogicSec.Entity.Name
+      description: The Entity name.
+      type: String
+    - contextPath: SumoLogicSec.Entity.OperatingSystem
+      description: Entity Operating System (observed or from inventory).
+      type: String
+    - contextPath: SumoLogicSec.Entity.InventoryData
+      description: Whether or not this Entity was ingested from inventory e.g. Active
+        Directory.
+      type: Boolean
+    description: Get entity details for a specific entity ID.
+  - name: sumologic-sec-insight-search
+    arguments:
+    - name: query
+      description: Use a query string to search, see API documentation for more details.
+    - name: created
+      auto: PREDEFINED
+      predefined:
+      - All time
+      - Last week
+      - Last 48 hours
+      - Last 24 hours
+      description: When the insight was created. Defaults to 'All time' if no time
+        arguments are specified.
+    - name: status
+      description: 'Comma separated list of values from the options: new,inprogress,closed'
+    - name: asignee
+      description: User assigned to Insights
+    - name: offset
+      description: The number of items to skip before starting to collect the result
+        set.
+      defaultValue: "0"
+    - name: limit
+      description: The maximum number of items to return.
+      defaultValue: "10"
+    - name: record_summary_fields
+      description: Record Summary Fields included with the Insight.
+      defaultValue: "action,description,device_hostname,device_ip,dstDevice_hostname,dstDevice_ip,email_sender,file_basename,file_hash_md5,file_hash_sha1,file_hash_sha256,srcDevice_hostname,srcDevice_ip,threat_name,threat_category,threat_identifier,user_username,threat_url,listMatches"
+    outputs:
+    - contextPath: SumoLogicSec.InsightList.Assignee
+      description: User or team assigned to the Insight.
+      type: String
+    - contextPath: SumoLogicSec.InsightList.Closed
+      description: Closed date.
+      type: Date
+    - contextPath: SumoLogicSec.InsightList.ClosedBy
+      description: Closed by user.
+      type: String
+    - contextPath: SumoLogicSec.InsightList.Created
+      description: Created date.
+      type: Date
+    - contextPath: SumoLogicSec.InsightList.Description
+      description: Description of the Insight.
+      type: String
+    - contextPath: SumoLogicSec.InsightList.Entity
+      description: Entity name associated with the Insight.
+      type: String
+    - contextPath: SumoLogicSec.InsightList.Id
+      description: The ID of the Insight.
+      type: String
+    - contextPath: SumoLogicSec.InsightList.LastUpdated
+      description: The time the Insight was last updated.
+      type: Date
+    - contextPath: SumoLogicSec.InsightList.LastUpdatedBy
+      description: The last user to update the Insight.
+      type: String
+    - contextPath: SumoLogicSec.InsightList.Name
+      description: The name of the Insight.
+      type: String
+    - contextPath: SumoLogicSec.InsightList.ReadableId
+      description: The ID of the Insight in readable form.
+      type: String
+    - contextPath: SumoLogicSec.InsightList.RecordSummaryFields
+      description: Record Summary Fields associated with the Insight.
+      type: Unknown
+    - contextPath: SumoLogicSec.InsightList.Resolution
+      description: Resolution for closed Insight.
+      type: String
+    - contextPath: SumoLogicSec.InsightList.Severity
+      description: The severity of the Insight.
+      type: String
+    - contextPath: SumoLogicSec.InsightList.Signals.contentType
+      description: Type of content that triggered the Signal.
+      type: String
+    - contextPath: SumoLogicSec.InsightList.Signals.description
+      description: Description of the Signal.
+      type: String
+    - contextPath: SumoLogicSec.InsightList.Signals.id
+      description: The ID of the Signal.
+      type: String
+    - contextPath: SumoLogicSec.InsightList.Signals.name
+      description: The name of the Signal.
+      type: String
+    - contextPath: SumoLogicSec.InsightList.Signals.recordCount
+      description: Number of records associated with the Signal.
+      type: Number
+    - contextPath: SumoLogicSec.InsightList.Signals.ruleId
+      description: Rule ID associated with the Signal.
+      type: String
+    - contextPath: SumoLogicSec.InsightList.Signals.severity
+      description: The severity of the Signal.
+      type: Number
+    - contextPath: SumoLogicSec.InsightList.Signals.stage
+      description: The stage of the Signal.
+      type: String
+    - contextPath: SumoLogicSec.InsightList.Signals.timestamp
+      description: Signal timestamp.
+      type: Date
+    - contextPath: SumoLogicSec.InsightList.Source
+      description: The source of the Insight.
+      type: String
+    - contextPath: SumoLogicSec.InsightList.Status
+      description: The status of the Insight.
+      type: String
+    - contextPath: SumoLogicSec.InsightList.TimeToDetection
+      description: Insight time to detection.
+      type: Number
+    - contextPath: SumoLogicSec.InsightList.TimeToRemediation
+      description: Insight time to remediation.
+      type: Number
+    - contextPath: SumoLogicSec.InsightList.TimeToResponse
+      description: Insight time to response.
+      type: Number
+    - contextPath: SumoLogicSec.InsightList.Timestamp
+      description: Insight timestamp.
+      type: Date
+    description: Search insights using available filters.
+  - name: sumologic-sec-signal-search
+    arguments:
+    - name: query
+      description: Use a query string to search, see API documentation for more details.
+    - name: created
+      auto: PREDEFINED
+      predefined:
+      - All time
+      - Last week
+      - Last 48 hours
+      - Last 24 hours
+      description: When the Signal was created. Defaults to 'All time' if no time
+        arguments are specified.
+      defaultValue: All time
+    - name: contentType
+      auto: PREDEFINED
+      predefined:
+      - ANOMALY
+      - DEFAULT
+      - THREATINTEL
+      - RULE
+      description: 'Content type associated with the signals. Options: ANOMALY, DEFAULT,
+        THREATINTEL, RULE.'
+    - name: offset
+      description: The number of items to skip before starting to collect the result
+        set.
+      defaultValue: "0"
+    - name: limit
+      description: The maximum number of items to return.
+      defaultValue: "10"
+    outputs:
+    - contextPath: SumoLogicSec.SignalList.ContentType
+      description: Type of content that triggered the Signal.
+      type: String
+    - contextPath: SumoLogicSec.SignalList.Description
+      description: Description of the Signal.
+      type: String
+    - contextPath: SumoLogicSec.SignalList.Entity
+      description: Entity name associated with the Signal.
+      type: String
+    - contextPath: SumoLogicSec.SignalList.Id
+      description: The ID of the Signal.
+      type: String
+    - contextPath: SumoLogicSec.SignalList.Name
+      description: The name of the Signal.
+      type: String
+    - contextPath: SumoLogicSec.SignalList.RecordCount
+      description: Number of records associated with the Signal.
+      type: Number
+    - contextPath: SumoLogicSec.SignalList.RuleId
+      description: Rule ID associated with the Signal.
+      type: String
+    - contextPath: SumoLogicSec.SignalList.Severity
+      description: The severity of the Signal.
+      type: Number
+    - contextPath: SumoLogicSec.SignalList.Stage
+      description: The stage of the Signal.
+      type: String
+    - contextPath: SumoLogicSec.SignalList.Suppressed
+      description: Whether or not the Signal was suppressed.
+      type: Boolean
+    - contextPath: SumoLogicSec.SignalList.Timestamp
+      description: Signal timestamp.
+      type: Date
+    description: Search signals using available filters.
+  - name: sumologic-sec-entity-search
+    arguments:
+    - name: query
+      default: true
+      description: Use a query string to search, see API documentation for more details.
+    - name: ip
+      description: IP Address to search for, e.g. 1.2.3.4.
+    - name: hostname
+      description: Hostname to search for, e.g. host.example.com.
+    - name: username
+      description: Username to search for, e.g. admin.
+    - name: type
+      auto: PREDEFINED
+      predefined:
+      - username
+      - hostname
+      - ip
+      - mac
+      description: 'Entity type to search for. Options: username, hostname, ip, mac.'
+    - name: whitelisted
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Whether or not the Entity is whitelisted.
+    - name: tag
+      description: Tag contains value.
+    - name: offset
+      description: The number of items to skip before starting to collect the result.
+        set
+      defaultValue: "0"
+    - name: limit
+      description: The maximum number of items to return.
+      defaultValue: "10"
+    outputs:
+    - contextPath: SumoLogicSec.EntityList.ActivityScore
+      description: Entity Activity Score.
+      type: Number
+    - contextPath: SumoLogicSec.EntityList.FirstSeen
+      description: When the Entity was first seen.
+      type: Date
+    - contextPath: SumoLogicSec.EntityList.Id
+      description: Entity ID.
+      type: String
+    - contextPath: SumoLogicSec.EntityList.IpHostname
+      description: Hostname associated with IP Entity.
+      type: String
+    - contextPath: SumoLogicSec.EntityList.IsWhitelisted
+      description: Whether or not the Entity is whitelisted.
+      type: Boolean
+    - contextPath: SumoLogicSec.EntityList.LastSeen
+      description: When the Entity was last seen.
+      type: Date
+    - contextPath: SumoLogicSec.EntityList.Name
+      description: The Entity name.
+      type: String
+    - contextPath: SumoLogicSec.EntityList.OperatingSystem
+      description: Entity Operating System (observed or from inventory).
+      type: String
+    - contextPath: SumoLogicSec.EntityList.InventoryData
+      description: Whether or not this Entity was ingested from inventory e.g. Active
+        Directory.
+      type: Boolean
+    - contextPath: SumoLogicSec.EntityList.Hostname
+      description: Entity hostname.
+      type: String
+    - contextPath: SumoLogicSec.EntityList.Department
+      description: Username Entity department.
+      type: String
+    - contextPath: SumoLogicSec.EntityList.EmployeeId
+      description: Username Entity employee ID.
+      type: String
+    description: Search entities using the available filters.
+  - name: sumologic-sec-insight-set-status
+    arguments:
+    - name: insight_id
+      required: true
+      description: The insight to change status for.
+    - name: status
+      default: true
+      auto: PREDEFINED
+      predefined:
+      - new
+      - inprogress
+      - closed
+      description: The desired Insight status.
+      defaultValue: in-progress
+    - name: resolution
+      auto: PREDEFINED
+      predefined:
+      - Resolved
+      - False Positive
+      - No Action
+      - Duplicate
+      description: 'Resolution for closing Insight. Valid values are: "Resolved",
+        "False Positive", "No Action", "Duplicate".'
+      defaultValue: Resolved
+    outputs:
+    - contextPath: SumoLogicSec.Insight.Assignee
+      description: User or team assigned to the Insight.
+      type: String
+    - contextPath: SumoLogicSec.Insight.Closed
+      description: Closed date.
+      type: Date
+    - contextPath: SumoLogicSec.Insight.ClosedBy
+      description: Closed by user.
+      type: String
+    - contextPath: SumoLogicSec.Insight.Created
+      description: Created date.
+      type: Date
+    - contextPath: SumoLogicSec.Insight.Description
+      description: Description of the Insight.
+      type: String
+    - contextPath: SumoLogicSec.Insight.Entity
+      description: Entity name associated with the Insight.
+      type: String
+    - contextPath: SumoLogicSec.Insight.Id
+      description: The ID of the Insight.
+      type: String
+    - contextPath: SumoLogicSec.Insight.LastUpdated
+      description: The time the Insight was last updated.
+      type: Date
+    - contextPath: SumoLogicSec.Insight.LastUpdatedBy
+      description: The last user to update the Insight.
+      type: String
+    - contextPath: SumoLogicSec.Insight.Name
+      description: The name of the Insight.
+      type: String
+    - contextPath: SumoLogicSec.Insight.ReadableId
+      description: The ID of the Insight in readable form.
+      type: String
+    - contextPath: SumoLogicSec.Insight.Resolution
+      description: Resolution for closed Insight.
+      type: String
+    - contextPath: SumoLogicSec.Insight.Severity
+      description: The severity of the Insight.
+      type: String
+    - contextPath: SumoLogicSec.Insight.Signals.contentType
+      description: Type of content that triggered the Signal.
+      type: String
+    - contextPath: SumoLogicSec.Insight.Signals.description
+      description: Description of the Signal.
+      type: String
+    - contextPath: SumoLogicSec.Insight.Signals.id
+      description: The ID of the Signal.
+      type: String
+    - contextPath: SumoLogicSec.Insight.Signals.name
+      description: The name of the Signal.
+      type: String
+    - contextPath: SumoLogicSec.Insight.Signals.recordCount
+      description: Number of records associated with the Signal.
+      type: Number
+    - contextPath: SumoLogicSec.Insight.Signals.ruleId
+      description: Rule ID associated with the Signal.
+      type: String
+    - contextPath: SumoLogicSec.Insight.Signals.severity
+      description: The severity of the Signal.
+      type: Number
+    - contextPath: SumoLogicSec.Insight.Signals.stage
+      description: The stage of the Signal.
+      type: String
+    - contextPath: SumoLogicSec.Insight.Signals.timestamp
+      description: Signal timestamp.
+      type: Date
+    - contextPath: SumoLogicSec.Insight.Source
+      description: The source of the Insight.
+      type: String
+    - contextPath: SumoLogicSec.Insight.Status
+      description: The status of the Insight.
+      type: String
+    - contextPath: SumoLogicSec.Insight.TimeToDetection
+      description: Insight time to detection.
+      type: Number
+    - contextPath: SumoLogicSec.Insight.TimeToRemediation
+      description: Insight time to remediation.
+      type: Number
+    - contextPath: SumoLogicSec.Insight.TimeToResponse
+      description: Insight time to response.
+      type: Number
+    - contextPath: SumoLogicSec.Insight.Timestamp
+      description: Insight timestamp.
+      type: Date
+    description: Change the status of an Insight.
+  - name: sumologic-sec-match-list-get
+    arguments:
+    - name: offset
+      description: The number of items to skip before starting to collect the result.
+        set.
+      defaultValue: "0"
+    - name: limit
+      default: true
+      description: The number of match lists returned.
+      defaultValue: "10"
+    - name: sort
+      description: The sort expression.
+      defaultValue: name
+    - name: sortDir
+      auto: PREDEFINED
+      predefined:
+      - ASC
+      - DESC
+      description: The sort direction.
+      defaultValue: ASC
+    outputs:
+    - contextPath: SumoLogicSec.MatchLists.Created
+      description: When the Match List was created.
+      type: String
+    - contextPath: SumoLogicSec.MatchLists.CreatedBy
+      description: User that created the Match List.
+      type: String
+    - contextPath: SumoLogicSec.MatchLists.DefaultTtl
+      description: Default TTL for entries in the Match List.
+      type: Number
+    - contextPath: SumoLogicSec.MatchLists.Description
+      description: Description of the Match List.
+      type: String
+    - contextPath: SumoLogicSec.MatchLists.Id
+      description: ID of the Match List.
+      type: String
+    - contextPath: SumoLogicSec.MatchLists.LastUpdated
+      description: When the Match List was last updated.
+      type: String
+    - contextPath: SumoLogicSec.MatchLists.LastUpdatedBy
+      description: The last user to update the Match List.
+      type: String
+    - contextPath: SumoLogicSec.MatchLists.Name
+      description: Name of Match List.
+      type: String
+    - contextPath: SumoLogicSec.MatchLists.TargetColumn
+      description: Match List Target Column.
+      type: String
+    description: Get match lists.
+  - name: sumologic-sec-match-list-update
+    arguments:
+    - name: match_list_id
+      required: true
+      description: ID of match list.
+    - name: active
+      required: true
+      description: Item active or disabled.
+    - name: description
+      required: true
+      description: Description of match list item.
+    - name: expiration
+      required: true
+      description: Expiration of match list item, e.g. "2021-03-25T23:52:23.508Z"
+    - name: value
+      required: true
+      description: Value of match list item.
+    outputs:
+    - contextPath: SumoLogicSec.UpdateResult.Result
+      description: Result (Success or Failed).
+      type: String
+    - contextPath: SumoLogicSec.UpdateResult.Server response
+      description: Server response (True or False).
+      type: Boolean
+    description: Add an item to a match list.
+  - name: sumologic-sec-threat-intel-search-indicators
+    arguments:
+    - name: q
+      description: Use a query string to search, see API documentation for more details.
+    - name: value
+      required: true
+      description: The value to search for.
+    - name: offset
+      description: The number of items to skip before starting to collect the result
+        set.
+      defaultValue: "0"
+    - name: limit
+      description: The numbers of items to return.
+      defaultValue: "10"
+    - name: sourceIds
+      required: true
+      description: A comma-separated list of threat intelligence source IDs to search,
+        e.g. 1,2,3.
+    outputs:
+    - contextPath: SumoLogicSec.ThreatIntelIndicators.Active
+      description: Whether or not the Threat Intel Indicator is Active.
+      type: Boolean
+    - contextPath: SumoLogicSec.ThreatIntelIndicators.Expiration
+      description: Date and time the Threat Intel Indicator is set to expire.
+      type: Date
+    - contextPath: SumoLogicSec.ThreatIntelIndicators.Id
+      description: ID of Threat Intel Indicator.
+      type: String
+    - contextPath: SumoLogicSec.ThreatIntelIndicators.Meta.created.username
+      description: User that created the Threat Intel Indicator.
+      type: String
+    - contextPath: SumoLogicSec.ThreatIntelIndicators.Meta.created.when
+      description: When the Threat Intel Indicator was created.
+      type: Date
+    - contextPath: SumoLogicSec.ThreatIntelIndicators.Meta.description
+      description: Description of Threat Intel Indicator.
+      type: String
+    - contextPath: SumoLogicSec.ThreatIntelIndicators.Meta.updated
+      description: When the Threat Intel Indicator was last updated.
+      type: Date
+    - contextPath: SumoLogicSec.ThreatIntelIndicators.Value
+      description: Value of Threat Intel Indicator.
+      type: String
+    description: Search Threat Intel Indicators.
+  - name: sumologic-sec-threat-intel-get-sources
+    arguments:
+    - name: offset
+      description: The number of items to skip before starting to collect the result
+        set.
+      defaultValue: "0"
+    - name: limit
+      description: The numbers of items to return.
+      defaultValue: "10"
+    - name: sort
+      description: The sort expression.
+      defaultValue: name
+    - name: sortDir
+      auto: PREDEFINED
+      predefined:
+      - ASC
+      - DESC
+      description: The sort direction.
+      defaultValue: ASC
+    outputs:
+    - contextPath: SumoLogicSec.ThreatIntelSources.Created
+      description: When the Threat Intel Source was created.
+      type: String
+    - contextPath: SumoLogicSec.ThreatIntelSources.CreatedBy
+      description: User that created the Threat Intel Source.
+      type: String
+    - contextPath: SumoLogicSec.ThreatIntelSources.Description
+      description: Description of Threat Intel Source.
+      type: String
+    - contextPath: SumoLogicSec.ThreatIntelSources.Id
+      description: ID of Threat Intel Source.
+      type: String
+    - contextPath: SumoLogicSec.ThreatIntelSources.LastUpdated
+      description: When the Threat Intel Source was last updated.
+      type: String
+    - contextPath: SumoLogicSec.ThreatIntelSources.LastUpdatedBy
+      description: User that last updated the Threat Intel Source.
+      type: String
+    - contextPath: SumoLogicSec.ThreatIntelSources.Name
+      description: Name of Threat Intel Source.
+      type: String
+    - contextPath: SumoLogicSec.ThreatIntelSources.SourceType
+      description: Source type of Threat Intel Source.
+      type: String
+    description: Get Threat Intel Sources.
+  - name: sumologic-sec-threat-intel-update-source
+    arguments:
+    - name: threat-intel-source-id
+      required: true
+      description: ID of Threat Intel Source.
+    - name: active
+      required: true
+      description: Indicator active or disabled.
+      defaultValue: "true"
+    - name: description
+      required: true
+      description: The description of the indicator.
+    - name: expiration
+      required: true
+      description: Expiration of match list item, e.g. "2021-03-25T23:52:23.508Z".
+    - name: value
+      required: true
+      description: The indicator value.
+    outputs:
+    - contextPath: SumoLogicSec.UpdateResult.Result
+      description: Result (Success or Failed).
+      type: String
+    - contextPath: SumoLogicSec.UpdateResult.Server response
+      description: Server response (True or False).
+      type: Boolean
+    description: Add a Threat Intel Indicator to an Threat Intel Source.
+  dockerimage: demisto/python3:3.9.7.24076
+  isfetch: true
+  runonce: false
+  subtype: python3
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

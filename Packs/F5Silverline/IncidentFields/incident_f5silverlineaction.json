@@ -1,0 +1,31 @@
+{
+    "id": "incident_f5silverlineaction",
+    "version": -1,
+    "modified": "2021-05-13T15:34:01.103461704Z",
+    "name": "F5 Silverline Action",
+    "ownerOnly": false,
+    "cliName": "f5silverlineaction",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "F5 Silverline L7 DDoS Events",
+        "F5 Silverline Threat Intelligence Events"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

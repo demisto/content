@@ -14,4 +14,5 @@ dependson: {}
 timeout: 0s
 fromversion: 5.5.0
 tests:
-  - No test - No need
+- No test - No need
+dockerimage: demisto/python:2.7.18.20958

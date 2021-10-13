@@ -1,73 +1,85 @@
+category: Data Enrichment & Threat Intelligence
 commonfields:
   id: ThreatConnect v2
   version: -1
-name: ThreatConnect v2
-display: ThreatConnect v2
-category: Data Enrichment & Threat Intelligence
-description: ThreatConnect's intelligence-driven security operations solution with intelligence, automation, analytics, and workflows.
 configuration:
-- display: Base Url
+- defaultvalue: https://api.threatconnect.com
+  display: Base Url
   name: baseUrl
-  defaultvalue: https://api.threatconnect.com
-  type: 0
   required: true
+  type: 0
 - display: Access ID
   name: accessId
-  defaultvalue: ""
-  type: 0
   required: true
+  type: 0
 - display: Secret Key
   name: secretKey
-  defaultvalue: ""
-  type: 4
   required: true
+  type: 4
 - display: Default Organization
   name: defaultOrg
-  defaultvalue: ""
-  type: 0
   required: false
-- display: Rating threshold for Malicious Indicators
+  type: 0
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: B - Usually reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- defaultvalue: '3'
+  display: Rating threshold for Malicious Indicators
   name: rating
-  defaultvalue: "3"
-  type: 0
   required: false
-- display: Confidence threshold for Malicious Indicators
+  type: 0
+- defaultvalue: '50'
+  display: Confidence threshold for Malicious Indicators
   name: confidence
-  defaultvalue: "50"
-  type: 0
   required: false
-- display: Indicator Reputation Freshness (in days)
+  type: 0
+- defaultvalue: '7'
+  display: Indicator Reputation Freshness (in days)
   name: freshness
-  defaultvalue: "7"
-  type: 0
   required: false
+  type: 0
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+description: ThreatConnect's intelligence-driven security operations solution with
+  intelligence, automation, analytics, and workflows.
+display: ThreatConnect v2
+name: ThreatConnect v2
 script:
-  script: '-'
-  type: python
   commands:
-  - name: ip
-    arguments:
-    - name: ip
-      required: true
-      default: true
+  - arguments:
+    - default: true
       description: The IPv4 or IPv6 address.
-    - name: owners
-      description: A comma-separated list of a client's organizations, sources, or communities
-        to which a user has permissions. For example, users with admin permissions
-        can search for indicators belonging to all owners.
-    - name: ratingThreshold
-      description: A list of results filtered by indicators whose threat rating is
+      name: ip
+      required: true
+      isArray: false
+    - description: A comma-separated list of a client's organizations, sources, or
+        communities to which a user has permissions. For example, users with admin
+        permissions can search for indicators belonging to all owners.
+      name: owners
+    - description: A list of results filtered by indicators whose threat rating is
         greater than the specified value. Can be "0" - "Unknown", "1" - "Suspicious",
         "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical".
-    - name: confidenceThreshold
-      description: A list of results filtered by indicators whose confidence rating
+      name: ratingThreshold
+    - description: A list of results filtered by indicators whose confidence rating
         is greater than the specified value. Can be "0%" - "Unknown," "1% " - "Discredited",
         "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%" - "Possible", "70-89%"
         - "Probable," or "90-100%" - "Confirmed".
+      name: confidenceThreshold
+    description: Searches for an indicator of type IP address.
+    name: ip
     outputs:
     - contextPath: TC.Indicator.Name
       description: The name of the indicator.
@@ -117,26 +129,30 @@ script:
     - contextPath: IP.Malicious.Description
       description: For malicious IP addresses, the full description.
       type: string
-    description: Searches for an indicator of type IP address.
-  - name: url
-    arguments:
-    - name: url
-      required: true
-      default: true
+    - contextPath: TC.Indicator.WebLink
+      description: The web link of the indicator.
+      type: string
+  - arguments:
+    - default: true
       description: The URL for which to search. For example, "www.demisto.com".
-    - name: owners
-      description: A comma-separated list of a client's organizations, sources, or communities
-        to which a client’s API user has been granted permission. For example, "owner1",
-        "owner2", or "owner3".
-    - name: ratingThreshold
-      description: A list of results filtered by indicators whose threat rating is
+      name: url
+      required: true
+      isArray: false
+    - description: A comma-separated list of a client's organizations, sources, or
+        communities to which a client’s API user has been granted permission. For
+        example, "owner1", "owner2", or "owner3".
+      name: owners
+    - description: A list of results filtered by indicators whose threat rating is
         greater than the specified value. Can be "0" - "Unknown", "1" - "Suspicious",
         "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical".
-    - name: confidenceThreshold
-      description: A list of results filtered by indicators whose confidence rating
+      name: ratingThreshold
+    - description: A list of results filtered by indicators whose confidence rating
         is greater than the specified value. Can be "0%" - "Unknown," "1% " - "Discredited",
         "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%" - "Possible", "70-89%"
         - "Probable," or "90-100%" - "Confirmed".
+      name: confidenceThreshold
+    description: Searches for an indicator of type URL.
+    name: url
     outputs:
     - contextPath: TC.Indicator.Name
       description: The name of the indicator.
@@ -186,26 +202,30 @@ script:
     - contextPath: URL.Malicious.Description
       description: For malicious URLs, the full description.
       type: string
-    description: Searches for an indicator of type URL.
-  - name: file
-    arguments:
-    - name: file
-      required: true
-      default: true
+    - contextPath: TC.Indicator.WebLink
+      description: The web link of the indicator.
+      type: string
+  - arguments:
+    - default: true
       description: The hash of the file. Can be "MD5", "SHA-1", or "SHA-256".
-    - name: owners
-      description: A comma-separated list of a client's organizations, sources, or communities
-        to which a user has permissions. For example, users with admin permissions
-        can search for indicators belonging to all owners.
-    - name: ratingThreshold
-      description: A list of results filtered by indicators whose threat rating is
+      name: file
+      required: true
+      isArray: false
+    - description: A comma-separated list of a client's organizations, sources, or
+        communities to which a user has permissions. For example, users with admin
+        permissions can search for indicators belonging to all owners.
+      name: owners
+    - description: A list of results filtered by indicators whose threat rating is
         greater than the specified value. Can be "0" - "Unknown", "1" - "Suspicious",
         "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical".
-    - name: confidenceThreshold
-      description: A list of results filtered by indicators whose confidence rating
+      name: ratingThreshold
+    - description: A list of results filtered by indicators whose confidence rating
         is greater than the specified value. Can be "0%" - "Unknown," "1% " - "Discredited",
         "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%" - "Possible", "70-89%"
         - "Probable," or "90-100%" - "Confirmed".
+      name: confidenceThreshold
+    description: Searches for an indicator of type file.
+    name: file
     outputs:
     - contextPath: TC.Indicator.Name
       description: The name of the indicator.
@@ -270,9 +290,12 @@ script:
     - contextPath: File.Malicious.Description
       description: For malicious files, the full description.
       type: string
-    description: Searches for an indicator of type file.
-  - name: tc-owners
-    arguments: []
+    - contextPath: TC.Indicator.WebLink
+      description: The web link of the indicator.
+      type: string
+  - arguments: []
+    description: Retrieves all owners for the current account.
+    name: tc-owners
     outputs:
     - contextPath: TC.Owner.Name
       description: The name of the owner.
@@ -283,14 +306,14 @@ script:
     - contextPath: TC.Owner.Type
       description: The type of the owner.
       type: string
-    description: Retrieves all owners for the current account.
-  - name: tc-indicators
-    arguments:
-    - name: owner
-      description: A list of results filtered by the owner of the indicator.
-    - name: limit
-      description: The maximum number of results that can be returned. The default
+  - arguments:
+    - description: A list of results filtered by the owner of the indicator.
+      name: owner
+    - description: The maximum number of results that can be returned. The default
         is 500.
+      name: limit
+    description: Retrieves a list of all indicators.
+    name: tc-indicators
     outputs:
     - contextPath: TC.Indicator.Name
       description: The name of the indicator.
@@ -385,74 +408,84 @@ script:
     - contextPath: File.Malicious.Description
       description: For malicious files, the full description.
       type: string
-    description: Retrieves a list of all indicators.
-  - name: tc-get-tags
-    arguments: []
+    - contextPath: TC.Indicator.WebLink
+      description: The web link of the indicator.
+      type: string
+  - arguments: []
+    description: Returns a list of all ThreatConnect tags.
+    name: tc-get-tags
     outputs:
     - contextPath: TC.Tags
       description: A list of tags.
       type: Unknown
-    description: Returns a list of all ThreatConnect tags.
-  - name: tc-tag-indicator
-    arguments:
-    - name: tag
+  - arguments:
+    - description: The name of the tag.
+      name: tag
       required: true
-      description: The name of the tag.
-    - name: indicator
+    - description: The indicator to tag. For example, for an IP indicator, "8.8.8.8".
+      name: indicator
       required: true
-      description: The indicator to tag. For example, for an IP indicator, "8.8.8.8".
-    - name: owner
-      description: A list of indicators filtered by the owner.
+    - description: A list of indicators filtered by the owner.
+      name: owner
     description: Adds a tag to an existing indicator.
-  - name: tc-get-indicator
-    arguments:
-    - name: indicator
-      required: true
-      default: true
+    name: tc-tag-indicator
+  - arguments:
+    - default: true
       description: The name of the indicator by which to search. The command retrieves
         information from all owners. Can be an IP address, a URL, or a file hash.
-    - name: indicator_type
-      description: Only for custom. Leave empty for standard ones
-    - name: owners
-      description: Indicator Owner(s)
-    - name: ratingThreshold
-      description: A list of results filtered by indicators whose threat rating is
+      name: indicator
+      required: true
+    - description: Only for custom. Leave empty for standard ones
+      name: indicator_type
+    - description: Indicator Owner(s)
+      name: owners
+    - description: A list of results filtered by indicators whose threat rating is
         greater than the specified value. Can be "0" - "Unknown", "1" - "Suspicious",
         "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical".
-    - name: confidenceThreshold
-      description: A list of results filtered by indicators whose confidence rating
+      name: ratingThreshold
+    - description: A list of results filtered by indicators whose confidence rating
         is greater than the specified value. Can be "0%" - "Unknown," "1% " - "Discredited",
         "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%" - "Possible", "70-89%"
         - "Probable," or "90-100%" - "Confirmed".
-    - name: group_associations
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+      name: confidenceThreshold
+    - auto: PREDEFINED
+      defaultValue: 'false'
       description: Retrieve Indicator Group Associations
-      defaultValue: "false"
-    - name: indicator_associations
-      auto: PREDEFINED
+      name: group_associations
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
+      required: true
+    - auto: PREDEFINED
+      defaultValue: 'false'
       description: Retrieve Indicator Associations
-      defaultValue: "false"
-    - name: indicator_observations
-      auto: PREDEFINED
+      name: indicator_associations
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
       description: Retrieve Indicator Observations
-      defaultValue: "false"
-    - name: indicator_tags
-      auto: PREDEFINED
+      name: indicator_observations
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
       description: Retrieve Indicator Tags
-      defaultValue: "false"
+      name: indicator_tags
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Retrieve Indicator Attributes
+      name: indicator_attributes
+      predefined:
+      - 'true'
+      - 'false'
+    description: Retrieves information about an indicator.
+    name: tc-get-indicator
     outputs:
     - contextPath: TC.Indicator.Name
       description: The name of the indicator.
@@ -492,6 +525,24 @@ script:
       type: string
     - contextPath: TC.Indicator.File.SHA256
       description: The SHA256 hash of the indicator of the file.
+      type: string
+    - contextPath: TC.Indicator.IndicatorAttributes.dateAdded
+      description: The SHA256 hash of the indicator of the file.
+      type: date
+    - contextPath: TC.Indicator.IndicatorAttributes.displayed
+      description: A boolean flag to show on ThreatConnect.
+      type: boolean
+    - contextPath: TC.Indicator.IndicatorAttributes.id
+      description: The ID of the attribute.
+      type: number
+    - contextPath: TC.Indicator.IndicatorAttributes.lastModified
+      description: The date on which the indicator attribute was last modified.
+      type: date
+    - contextPath: TC.Indicator.IndicatorAttributes.type
+      description: The name of the attribute.
+      type: string
+    - contextPath: TC.Indicator.IndicatorAttributes.value
+      description: The contents of the attribute.
       type: string
     - contextPath: DBotScore.Indicator
       description: The value assigned by DBot for the indicator.
@@ -547,15 +598,18 @@ script:
     - contextPath: File.Malicious.Description
       description: For malicious files, the full description.
       type: string
-    description: Retrieves information about an indicator.
-  - name: tc-get-indicators-by-tag
-    arguments:
-    - name: tag
-      required: true
-      default: true
+    - contextPath: TC.Indicator.WebLink
+      description: The web link of the indicator.
+      type: string
+  - arguments:
+    - default: true
       description: The name of the tag by which to filter.
-    - name: owner
-      description: A list of indicators filtered by the owner.
+      name: tag
+      required: true
+    - description: A list of indicators filtered by the owner.
+      name: owner
+    description: Fetches all indicators that have a tag.
+    name: tc-get-indicators-by-tag
     outputs:
     - contextPath: TC.Indicator.Name
       description: The name of the tagged indicator.
@@ -650,22 +704,25 @@ script:
     - contextPath: File.Malicious.Description
       description: For malicious files, the full description.
       type: string
-    description: Fetches all indicators that have a tag.
-  - name: tc-add-indicator
-    arguments:
-    - name: indicator
+    - contextPath: TC.Indicator.WebLink
+      description: The web link of the indicator.
+      type: string
+  - arguments:
+    - description: The indicator to add.
+      name: indicator
       required: true
-      description: The indicator to add.
-    - name: rating
-      description: The threat rating of the indicator. Can be "0" - "Unknown", "1"
+    - description: The threat rating of the indicator. Can be "0" - "Unknown", "1"
         - "Suspicious", "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical".
-    - name: confidence
-      description: The confidence rating of the indicator. Can be "0%" - "Unknown,"
+      name: rating
+    - description: The confidence rating of the indicator. Can be "0%" - "Unknown,"
         "1% " - "Discredited", "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%"
         - "Possible", "70-89%" - "Probable," or "90-100%" - "Confirmed".
-    - name: owner
-      description: The owner of the new indicator. The default is the "defaultOrg"
+      name: confidence
+    - description: The owner of the new indicator. The default is the "defaultOrg"
         parameter.
+      name: owner
+    description: Adds a new indicator to ThreatConnect.
+    name: tc-add-indicator
     outputs:
     - contextPath: TC.Indicator.Name
       description: The name the indicator.
@@ -748,32 +805,35 @@ script:
     - contextPath: File.Malicious.Description
       description: For malicious files, the full description.
       type: string
-    description: Adds a new indicator to ThreatConnect.
-  - name: tc-create-incident
-    arguments:
-    - name: owner
-      description: The owner of the new incident. The default is the "defaultOrg"
+    - contextPath: TC.Indicator.WebLink
+      description: The web link of the indicator.
+      type: string
+  - arguments:
+    - description: The owner of the new incident. The default is the "defaultOrg"
         parameter.
-    - name: incidentName
-      required: true
-      default: true
+      name: owner
+    - default: true
       description: The name of the incident group.
-    - name: eventDate
-      description: The creation time of an incident in the "2017-03-21T00:00:00Z"
+      name: incidentName
+      required: true
+    - description: The creation time of an incident in the "2017-03-21T00:00:00Z"
         format.
-    - name: tag
-      description: The tag applied to the incident.
-    - name: securityLabel
-      auto: PREDEFINED
+      name: eventDate
+    - description: The tag applied to the incident.
+      name: tag
+    - auto: PREDEFINED
+      description: The security label applied to the incident. Can be "TLP:RED", "TLP:GREEN",
+        "TLP:AMBER", or "TLP:WHITE".
+      name: securityLabel
       predefined:
       - TLP:RED
       - TLP:GREEN
       - TLP:AMBER
       - TLP:WHITE
-      description: The security label applied to the incident. Can be "TLP:RED", "TLP:GREEN",
-        "TLP:AMBER", or "TLP:WHITE".
-    - name: description
-      description: The description of the incident.
+    - description: The description of the incident.
+      name: description
+    description: Creates a new incident group.
+    name: tc-create-incident
     outputs:
     - contextPath: TC.Incident.Name
       description: The name of the new incident group.
@@ -793,16 +853,16 @@ script:
     - contextPath: TC.Incident.ID
       description: The ID of the new incident.
       type: Unknown
-    description: Creates a new incident group.
-  - name: tc-fetch-incidents
-    arguments:
-    - name: incidentId
-      default: true
+  - arguments:
+    - default: true
       description: The fetched incidents filtered by ID.
-    - name: owner
-      description: The fetched incidents filtered by owner.
-    - name: incidentName
-      description: The fetched incidents filtered by incident name.
+      name: incidentId
+    - description: The fetched incidents filtered by owner.
+      name: owner
+    - description: The fetched incidents filtered by incident name.
+      name: incidentName
+    description: Fetches incidents from ThreatConnect.
+    name: tc-fetch-incidents
     outputs:
     - contextPath: TC.Incident
       description: The name of the group of fetched incidents.
@@ -813,12 +873,11 @@ script:
     - contextPath: TC.Incident.Owner
       description: The owner of the fetched incidents.
       type: string
-    description: Fetches incidents from ThreatConnect.
-  - name: tc-incident-associate-indicator
-    arguments:
-    - name: indicatorType
-      required: true
-      auto: PREDEFINED
+  - arguments:
+    - auto: PREDEFINED
+      description: The type of the indicator. Can be "ADDRESSES", "EMAIL_ADDRESSES",
+        "URLS", "HOSTS", "FILES", or "CUSTOM_INDICATORS".
+      name: indicatorType
       predefined:
       - ADDRESSES
       - EMAIL_ADDRESSES
@@ -826,17 +885,20 @@ script:
       - HOSTS
       - FILES
       - CUSTOM_INDICATORS
-      description: The type of the indicator. Can be "ADDRESSES", "EMAIL_ADDRESSES",
-        "URLS", "HOSTS", "FILES", or "CUSTOM_INDICATORS".
-    - name: incidentId
       required: true
-      description: The ID of the incident to which the indicator is associated.
-    - name: indicator
+    - description: The ID of the incident to which the indicator is associated.
+      name: incidentId
       required: true
-      default: true
+    - default: true
       description: The name of the indicator.
-    - name: owner
-      description: A list of indicators filtered by the owner.
+      name: indicator
+      required: true
+    - description: A list of indicators filtered by the owner.
+      name: owner
+    description: Associates an indicator with an existing incident. The indicator
+      must exist before running this command. To add an indicator, run the tc-add-indicator
+      command.
+    name: tc-incident-associate-indicator
     outputs:
     - contextPath: TC.Indicator.Name
       description: The name of the indicator.
@@ -919,28 +981,30 @@ script:
     - contextPath: File.Malicious.Description
       description: For malicious files, the full description.
       type: string
-    description: Associates an indicator with an existing incident. The indicator
-      must exist before running this command. To add an indicator, run the tc-add-indicator
-      command.
-  - name: domain
-    arguments:
-    - name: domain
-      required: true
-      default: true
+    - contextPath: TC.Indicator.WebLink
+      description: The web link of the indicator.
+      type: string
+  - arguments:
+    - default: true
       description: The name of the domain.
-    - name: owners
-      description: A comma-separated list of a client's organizations, sources, or communities
-        to which a user has permissions. For example, users with admin permissions
-        can search for indicators belonging to all owners.
-    - name: ratingThreshold
-      description: A list of results filtered by indicators whose threat rating is
+      name: domain
+      required: true
+      isArray: false
+    - description: A comma-separated list of a client's organizations, sources, or
+        communities to which a user has permissions. For example, users with admin
+        permissions can search for indicators belonging to all owners.
+      name: owners
+    - description: A list of results filtered by indicators whose threat rating is
         greater than the specified value. Can be "0" - "Unknown", "1" - "Suspicious",
         "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical".
-    - name: confidenceThreshold
-      description: A list of results filtered by indicators whose confidence rating
+      name: ratingThreshold
+    - description: A list of results filtered by indicators whose confidence rating
         is greater than the specified value. Can be "0%" - "Unknown," "1% " - "Discredited",
         "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%" - "Possible", "70-89%"
         - "Probable," or "90-100%" - "Confirmed".
+      name: confidenceThreshold
+    description: Searches for an indicator of type domain.
+    name: domain
     outputs:
     - contextPath: TC.Indicator.Name
       description: The name of the of the indicator.
@@ -993,15 +1057,18 @@ script:
     - contextPath: Domain.Malicious.Description
       description: For malicious domains, the full description.
       type: string
-    description: Searches for an indicator of type domain.
-  - name: tc-get-incident-associate-indicators
-    arguments:
-    - name: incidentId
-      required: true
-      default: true
+    - contextPath: TC.Indicator.WebLink
+      description: The web link of the indicator.
+      type: string
+  - arguments:
+    - default: true
       description: The ID of the incident.
-    - name: owner
-      description: A list of indicators filtered by the owner.
+      name: incidentId
+      required: true
+    - description: A list of indicators filtered by the owner.
+      name: owner
+    description: Returns indicators that are related to a specific incident.
+    name: tc-get-incident-associate-indicators
     outputs:
     - contextPath: TC.Indicator.Name
       description: The name of the returned indicator.
@@ -1096,135 +1163,44 @@ script:
     - contextPath: File.Malicious.Description
       description: For malicious files, the full description.
       type: string
-    description: Returns indicators that are related to a specific incident.
-  - name: tc-update-indicator
-    arguments:
-    - name: indicator
+  - arguments:
+    - description: The name of the updated indicator.
+      name: indicator
       required: true
-      description: The name of the updated indicator.
-    - name: rating
-      description: The threat rating of the updated indicator.
-    - name: confidence
-      description: The confidence rating of the updated indicator.
-    - name: size
-      description: The size of the file of the updated indicator.
-    - name: dnsActive
-      description: The active DNS indicator (only for hosts).
-    - name: whoisActive
-      description: The active indicator (only for hosts).
-    - name: falsePositive
-      auto: PREDEFINED
-      predefined:
-      - "True"
-      - "False"
+    - description: The threat rating of the updated indicator.
+      name: rating
+    - description: The confidence rating of the updated indicator.
+      name: confidence
+    - description: The size of the file of the updated indicator.
+      name: size
+    - description: The active DNS indicator (only for hosts).
+      name: dnsActive
+    - description: The active indicator (only for hosts).
+      name: whoisActive
+    - auto: PREDEFINED
       description: The updated indicator set as a false positive. Can be "True" or
         "False".
-    - name: observations
-      description: The number observations on the updated indicator.
-    - name: securityLabel
-      auto: PREDEFINED
+      name: falsePositive
+      predefined:
+      - 'True'
+      - 'False'
+    - description: The number observations on the updated indicator.
+      name: observations
+    - auto: PREDEFINED
+      description: The security label applied to the incident. Can be "TLP:RED", "TLP:GREEN",
+        "TLP:AMBER", or "TLP:WHITE".
+      name: securityLabel
       predefined:
       - TLP:RED
       - TLP:GREEN
       - TLP:AMBER
       - TLP:WHITE
-      description: The security label applied to the incident. Can be "TLP:RED", "TLP:GREEN",
-        "TLP:AMBER", or "TLP:WHITE".
-    - name: threatAssessConfidence
-      description: Assesses the confidence rating of the indicator.
-    - name: threatAssessRating
-      description: Assesses the threat rating of the indicator.
-    outputs:
-    - contextPath: TC.Indicator.Name
-      description: The name of the indicator.
-      type: string
-    - contextPath: TC.Indicator.Type
-      description: The type of the indicator.
-      type: string
-    - contextPath: TC.Indicator.ID
-      description: The ID of the indicator.
-      type: string
-    - contextPath: TC.Indicator.Description
-      description: The description of the indicator.
-      type: string
-    - contextPath: TC.Indicator.Owner
-      description: The owner of the indicator.
-      type: string
-    - contextPath: TC.Indicator.CreateDate
-      description: The date on which the indicator was created.
-      type: date
-    - contextPath: TC.Indicator.LastModified
-      description: The last date on which the indicator was modified.
-      type: date
-    - contextPath: TC.Indicator.Rating
-      description: The threat rating of the indicator.
-      type: number
-    - contextPath: TC.Indicator.Confidence
-      description: The confidence rating of the indicator.
-      type: number
-    - contextPath: TC.Indicator.WhoisActive
-      description: The active indicator (for domains only).
-      type: string
-    - contextPath: TC.Indicator.File.MD5
-      description: The MD5 hash of the indicator of the file.
-      type: string
-    - contextPath: TC.Indicator.File.SHA1
-      description: The SHA1 hash of the indicator of the file.
-      type: string
-    - contextPath: TC.Indicator.File.SHA256
-      description: The SHA256 hash of the indicator of the file.
-      type: string
-    - contextPath: IP.Address
-      description: The IP address of the indicator.
-      type: string
-    - contextPath: IP.Malicious.Vendor
-      description: For malicious IP addresses, the vendor that made the decision.
-      type: string
-    - contextPath: IP.Malicious.Description
-      description: For malicious IP addresses, the full description.
-      type: string
-    - contextPath: URL.Data
-      description: The data of the URL of the indicator.
-      type: string
-    - contextPath: URL.Malicious.Vendor
-      description: For malicious URLs, the vendor that made the decision.
-      type: string
-    - contextPath: URL.Malicious.Description
-      description: For malicious URLs, the full description.
-      type: string
-    - contextPath: Domain.Name
-      description: The domain name of the indicator.
-      type: string
-    - contextPath: Domain.Malicious.Vendor
-      description: For malicious domains, the vendor that made the decision.
-      type: string
-    - contextPath: Domain.Malicious.Description
-      description: For malicious domains, the full description.
-      type: string
-    - contextPath: File.MD5
-      description: The MD5 hash of the file.
-      type: string
-    - contextPath: File.SHA1
-      description: The SHA1 hash of the file.
-      type: string
-    - contextPath: File.SHA256
-      description: The SHA256 hash of the file.
-      type: string
-    - contextPath: File.Malicious.Vendor
-      description: For malicious files, the vendor that made the decision.
-      type: string
-    - contextPath: File.Malicious.Description
-      description: For malicious files, the full description.
-      type: string
+    - description: Assesses the confidence rating of the indicator.
+      name: threatAssessConfidence
+    - description: Assesses the threat rating of the indicator.
+      name: threatAssessRating
     description: Updates the indicator in ThreatConnect.
-  - name: tc-delete-indicator-tag
-    arguments:
-    - name: indicator
-      required: true
-      description: The name of the indicator from which to remove a tag.
-    - name: tag
-      required: true
-      description: The name of the tag to remove from the indicator.
+    name: tc-update-indicator
     outputs:
     - contextPath: TC.Indicator.Name
       description: The name of the indicator.
@@ -1307,29 +1283,126 @@ script:
     - contextPath: File.Malicious.Description
       description: For malicious files, the full description.
       type: string
+    - contextPath: TC.Indicator.WebLink
+      description: The web link of the indicator.
+      type: string
+  - arguments:
+    - description: The name of the indicator from which to remove a tag.
+      name: indicator
+      required: true
+    - description: The name of the tag to remove from the indicator.
+      name: tag
+      required: true
     description: Removes a tag from a specified indicator.
-  - name: tc-delete-indicator
-    arguments:
-    - name: indicator
+    name: tc-delete-indicator-tag
+    outputs:
+    - contextPath: TC.Indicator.Name
+      description: The name of the indicator.
+      type: string
+    - contextPath: TC.Indicator.Type
+      description: The type of the indicator.
+      type: string
+    - contextPath: TC.Indicator.ID
+      description: The ID of the indicator.
+      type: string
+    - contextPath: TC.Indicator.Description
+      description: The description of the indicator.
+      type: string
+    - contextPath: TC.Indicator.Owner
+      description: The owner of the indicator.
+      type: string
+    - contextPath: TC.Indicator.CreateDate
+      description: The date on which the indicator was created.
+      type: date
+    - contextPath: TC.Indicator.LastModified
+      description: The last date on which the indicator was modified.
+      type: date
+    - contextPath: TC.Indicator.Rating
+      description: The threat rating of the indicator.
+      type: number
+    - contextPath: TC.Indicator.Confidence
+      description: The confidence rating of the indicator.
+      type: number
+    - contextPath: TC.Indicator.WhoisActive
+      description: The active indicator (for domains only).
+      type: string
+    - contextPath: TC.Indicator.File.MD5
+      description: The MD5 hash of the indicator of the file.
+      type: string
+    - contextPath: TC.Indicator.File.SHA1
+      description: The SHA1 hash of the indicator of the file.
+      type: string
+    - contextPath: TC.Indicator.File.SHA256
+      description: The SHA256 hash of the indicator of the file.
+      type: string
+    - contextPath: IP.Address
+      description: The IP address of the indicator.
+      type: string
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IP addresses, the vendor that made the decision.
+      type: string
+    - contextPath: IP.Malicious.Description
+      description: For malicious IP addresses, the full description.
+      type: string
+    - contextPath: URL.Data
+      description: The data of the URL of the indicator.
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision.
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the full description.
+      type: string
+    - contextPath: Domain.Name
+      description: The domain name of the indicator.
+      type: string
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision.
+      type: string
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the full description.
+      type: string
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: string
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: string
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision.
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the full description.
+      type: string
+    - contextPath: TC.Indicator.WebLink
+      description: The web link of the indicator.
+      type: string
+  - arguments:
+    - description: The name of the indicator to delete.
+      name: indicator
       required: true
-      description: The name of the indicator to delete.
     description: Deletes an indicator from ThreatConnect.
-  - name: tc-create-campaign
-    arguments:
-    - name: name
+    name: tc-delete-indicator
+  - arguments:
+    - description: The name of the campaign group.
+      name: name
       required: true
-      description: The name of the campaign group.
-    - name: firstSeen
-      description: The earliest date on which the campaign was seen.
-    - name: owner
-      description: The owner of the new incident. The default is the "defaultOrg"
+    - description: The earliest date on which the campaign was seen.
+      name: firstSeen
+    - description: The owner of the new incident. The default is the "defaultOrg"
         parameter.
-    - name: description
-      description: The description of the campaign.
-    - name: tag
-      description: The name of the tag to apply to the campaign.
-    - name: securityLabel
-      description: The security label of the campaign. For example, "TLP:Green".
+      name: owner
+    - description: The description of the campaign.
+      name: description
+    - description: The name of the tag to apply to the campaign.
+      name: tag
+    - description: The security label of the campaign. For example, "TLP:Green".
+      name: securityLabel
+    description: Creates a group based on the "Campaign" type.
+    name: tc-create-campaign
     outputs:
     - contextPath: TC.Campaign.Name
       description: The name of the campaign.
@@ -1349,30 +1422,30 @@ script:
     - contextPath: TC.Campaign.ID
       description: The ID of the campaign.
       type: string
-    description: Creates a group based on the "Campaign" type.
-  - name: tc-create-event
-    arguments:
-    - name: name
+  - arguments:
+    - description: The name of the event group.
+      name: name
       required: true
-      description: The name of the event group.
-    - name: eventDate
-      description: The date on which the event occurred. If the date is not specified,
+    - description: The date on which the event occurred. If the date is not specified,
         the current date is used.
-    - name: status
-      auto: PREDEFINED
+      name: eventDate
+    - auto: PREDEFINED
+      description: The status of the event. Can be "Needs Review", "False Positive",
+        "No Further Action", or "Escalated".
+      name: status
       predefined:
       - Needs Review
       - False Positive
       - No Further Action
       - Escalated
-      description: The status of the event. Can be "Needs Review", "False Positive",
-        "No Further Action", or "Escalated".
-    - name: owner
-      description: The owner of the event.
-    - name: description
-      description: The description of the event.
-    - name: tag
-      description: The tag of the event.
+    - description: The owner of the event.
+      name: owner
+    - description: The description of the event.
+      name: description
+    - description: The tag of the event.
+      name: tag
+    description: Creates a group based on the "Event" type.
+    name: tc-create-event
     outputs:
     - contextPath: TC.Event.Name
       description: The name of the event.
@@ -1392,12 +1465,12 @@ script:
     - contextPath: TC.Event.ID
       description: The ID of the event.
       type: string
-    description: Creates a group based on the "Event" type.
-  - name: tc-create-threat
-    arguments:
-    - name: name
+  - arguments:
+    - description: The name of the threat group.
+      name: name
       required: true
-      description: The name of the threat group.
+    description: Creates a group based on the "Threats" type.
+    name: tc-create-threat
     outputs:
     - contextPath: TC.Threat.Name
       description: The name of the threat.
@@ -1405,39 +1478,39 @@ script:
     - contextPath: TC.Threat.ID
       description: The ID of the threat.
       type: string
-    description: Creates a group based on the "Threats" type.
-  - name: tc-delete-group
-    arguments:
-    - name: groupID
+  - arguments:
+    - description: The ID of the group to delete.
+      name: groupID
       required: true
-      description: The ID of the group to delete.
-    - name: type
-      required: true
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: The type of the group to delete. Can be "Incidents", "Events",
+        "Campaigns", or "Threats".
+      name: type
       predefined:
       - Incidents
       - Events
       - Campaigns
       - Threats
-      description: The type of the group to delete. Can be "Incidents", "Events",
-        "Campaigns", or "Threats".
+      required: true
     description: Deletes a group.
-  - name: tc-add-group-attribute
-    arguments:
-    - name: group_id
-      required: true
-      description: The ID of the group to which to add attributes. To get the ID of
+    name: tc-delete-group
+  - arguments:
+    - description: The ID of the group to which to add attributes. To get the ID of
         the group, run the tc-get-groups command.
-    - name: attribute_type
+      name: group_id
       required: true
-      description: The type of attribute to add to the group. The type is located
+    - description: The type of attribute to add to the group. The type is located
         in the UI in a specific group or under Org Config.
-    - name: attribute_value
+      name: attribute_type
       required: true
-      description: The value of the attribute.
-    - name: group_type
+    - description: The value of the attribute.
+      name: attribute_value
       required: true
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: The type of the group. Can be "adversaries", "campaigns", "documents",
+        "emails", "events", "incidents", "intrusionSets", "reports", "signatures",
+        or "threats".
+      name: group_type
       predefined:
       - adversaries
       - campaigns
@@ -1449,9 +1522,9 @@ script:
       - reports
       - signatures
       - threats
-      description: The type of the group. Can be "adversaries", "campaigns", "documents",
-        "emails", "events", "incidents", "intrusionSets", "reports", "signatures",
-        or "threats".
+      required: true
+    description: Adds an attribute to a specified group.
+    name: tc-add-group-attribute
     outputs:
     - contextPath: TC.Group.DateAdded
       description: The date on which the attribute was added.
@@ -1468,9 +1541,9 @@ script:
     - contextPath: TC.Group.ID
       description: The group ID to which the attribute was added.
       type: Number
-    description: Adds an attribute to a specified group.
-  - name: tc-get-events
-    arguments: []
+  - arguments: []
+    description: Returns a list of events.
+    name: tc-get-events
     outputs:
     - contextPath: TC.Event.DateAdded
       description: The date on which the event was added.
@@ -1487,12 +1560,12 @@ script:
     - contextPath: TC.Event.Status
       description: The status of the event.
       type: String
-    description: Returns a list of events.
-  - name: tc-get-groups
-    arguments:
-    - name: group_type
-      required: true
-      auto: PREDEFINED
+  - arguments:
+    - auto: PREDEFINED
+      description: The type of the group. Can be "adversaries", "campaigns", "documents",
+        "emails", "events", "incidents", "intrusionSets", "reports", "signatures",
+        or "threats".
+      name: group_type
       predefined:
       - adversaries
       - campaigns
@@ -1504,9 +1577,9 @@ script:
       - reports
       - signatures
       - threats
-      description: The type of the group. Can be "adversaries", "campaigns", "documents",
-        "emails", "events", "incidents", "intrusionSets", "reports", "signatures",
-        or "threats".
+      required: true
+    description: Returns all groups, filtered by the group type.
+    name: tc-get-groups
     outputs:
     - contextPath: TC.Group.DateAdded
       description: The date on which the group was added.
@@ -1526,44 +1599,16 @@ script:
     - contextPath: TC.Group.ID
       description: The ID of the group.
       type: Number
-    description: Returns all groups, filtered by the group type.
-  - name: tc-add-group-security-label
-    arguments:
-    - name: group_id
-      required: true
-      description: The ID of the group to which to add the security label. To get
+  - arguments:
+    - description: The ID of the group to which to add the security label. To get
         the ID, run the tc-get-groups command.
-    - name: group_type
+      name: group_id
       required: true
-      auto: PREDEFINED
-      predefined:
-      - adversaries
-      - campaigns
-      - documents
-      - emails
-      - events
-      - incidents
-      - intrusionSets
-      - reports
-      - signatures
-      - threats
+    - auto: PREDEFINED
       description: The type of the group to which to add the security label. Can be
         "adversaries", "campaigns", "documents", "emails", "events", "incidents",
         "intrusionSets", "reports", "signatures", or "threats".
-    - name: security_label_name
-      required: true
-      description: The name of the security label to add to the group. For example,
-        "TLP:GREEN".
-    description: Adds a security label to a group.
-  - name: tc-add-group-tag
-    arguments:
-    - name: group_id
-      required: true
-      description: The ID of the group to which to add the tag. To get the ID, run
-        the tc-get-groups command.
-    - name: group_type
-      required: true
-      auto: PREDEFINED
+      name: group_type
       predefined:
       - adversaries
       - campaigns
@@ -1575,15 +1620,43 @@ script:
       - reports
       - signatures
       - threats
+      required: true
+    - description: The name of the security label to add to the group. For example,
+        "TLP:GREEN".
+      name: security_label_name
+      required: true
+    description: Adds a security label to a group.
+    name: tc-add-group-security-label
+  - arguments:
+    - description: The ID of the group to which to add the tag. To get the ID, run
+        the tc-get-groups command.
+      name: group_id
+      required: true
+    - auto: PREDEFINED
       description: The type of the group to which to add the tag. Can be "adversaries",
         "campaigns", "documents", "emails", "events", "incidents", "intrusionSets",
         "reports", "signatures", or "threats".
-    - name: tag_name
+      name: group_type
+      predefined:
+      - adversaries
+      - campaigns
+      - documents
+      - emails
+      - events
+      - incidents
+      - intrusionSets
+      - reports
+      - signatures
+      - threats
       required: true
-      description: The name of the tag to add to the group.
+    - description: The name of the tag to add to the group.
+      name: tag_name
+      required: true
     description: Adds tags to a specified group.
-  - name: tc-get-indicator-types
-    arguments: []
+    name: tc-add-group-tag
+  - arguments: []
+    description: Returns all indicator types available.
+    name: tc-get-indicator-types
     outputs:
     - contextPath: TC.IndicatorType.ApiBranch
       description: The branch of the API.
@@ -1607,21 +1680,21 @@ script:
     - contextPath: TC.IndicatorType.Value1Label
       description: The value label of the indicator.
       type: String
-    description: Returns all indicator types available.
-  - name: tc-group-associate-indicator
-    arguments:
-    - name: indicator_type
-      required: true
-      description: The type of the indicator. To get the available types, run the
+  - arguments:
+    - description: The type of the indicator. To get the available types, run the
         tc-get-indicator-types command. The indicator must be spelled as displayed
         in the ApiBranch column of the UI.
-    - name: indicator
+      name: indicator_type
       required: true
-      description: The name of the indicator. For example, "indicator_type=emailAddresses"
+    - description: The name of the indicator. For example, "indicator_type=emailAddresses"
         where "indicator=a@a.co.il".
-    - name: group_type
+      name: indicator
       required: true
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: The type of the group. Can be "adversaries", "campaigns", "documents",
+        "emails", "events", "incidents", "intrusionSets", "reports", "signatures",
+        or "threats".
+      name: group_type
       predefined:
       - adversaries
       - campaigns
@@ -1633,13 +1706,13 @@ script:
       - reports
       - signatures
       - threats
-      description: The type of the group. Can be "adversaries", "campaigns", "documents",
-        "emails", "events", "incidents", "intrusionSets", "reports", "signatures",
-        or "threats".
-    - name: group_id
       required: true
-      description: The ID of the group. To get the ID of the group, run the tc-get-groups
+    - description: The ID of the group. To get the ID of the group, run the tc-get-groups
         command.
+      name: group_id
+      required: true
+    description: Associates an indicator with a group.
+    name: tc-group-associate-indicator
     outputs:
     - contextPath: TC.Group.GroupID
       description: The ID of the group.
@@ -1653,32 +1726,32 @@ script:
     - contextPath: TC.Group.IndicatorType
       description: The type of the indicator.
       type: String
-    description: Associates an indicator with a group.
-  - name: tc-create-document-group
-    arguments:
-    - name: file_name
+  - arguments:
+    - description: The name of the file to display in the UI.
+      name: file_name
       required: true
-      description: The name of the file to display in the UI.
-    - name: name
+    - description: The name of the file.
+      name: name
       required: true
-      description: The name of the file.
-    - name: malware
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+    - auto: PREDEFINED
       description: Whether the file is malware. If "true", ThreatConnect creates a
         password-protected ZIP file on your local machine that contains the sample
         and uploads the ZIP file.
-    - name: password
-      description: The password of the ZIP file.
-    - name: security_label
-      description: The security label of the group.
-    - name: description
-      description: A description of the group.
-    - name: entry_id
+      name: malware
+      predefined:
+      - 'true'
+      - 'false'
+    - description: The password of the ZIP file.
+      name: password
+    - description: The security label of the group.
+      name: security_label
+    - description: A description of the group.
+      name: description
+    - description: The file of the ID of the entry, as displayed in the War Room.
+      name: entry_id
       required: true
-      description: The file of the ID of the entry, as displayed in the War Room.
+    description: Creates a document group.
+    name: tc-create-document-group
     outputs:
     - contextPath: TC.Group.Name
       description: The name of the group.
@@ -1698,12 +1771,12 @@ script:
     - contextPath: TC.Group.ID
       description: The ID of the group to which the attribute was added.
       type: Number
-    description: Creates a document group.
-  - name: tc-get-group
-    arguments:
-    - name: group_type
-      required: true
-      auto: PREDEFINED
+  - arguments:
+    - auto: PREDEFINED
+      description: The type of group for which to return the ID. Can be "adversaries",
+        "campaigns", "documents", "emails", "events", "incidents", "intrusionSets",
+        "reports", "signatures", or "threats".
+      name: group_type
       predefined:
       - adversaries
       - campaigns
@@ -1715,13 +1788,13 @@ script:
       - reports
       - signatures
       - threats
-      description: The type of group for which to return the ID. Can be "adversaries",
-        "campaigns", "documents", "emails", "events", "incidents", "intrusionSets",
-        "reports", "signatures", or "threats".
-    - name: group_id
       required: true
-      description: The ID of the group to retrieve. To get the ID, run the tc-get-groups
+    - description: The ID of the group to retrieve. To get the ID, run the tc-get-groups
         command.
+      name: group_id
+      required: true
+    description: Retrieves a single group.
+    name: tc-get-group
     outputs:
     - contextPath: TC.Group.DateAdded
       description: The date on which the group was added.
@@ -1744,12 +1817,12 @@ script:
     - contextPath: TC.Group.Status
       description: The status of the group.
       type: String
-    description: Retrieves a single group.
-  - name: tc-get-group-attributes
-    arguments:
-    - name: group_type
-      required: true
-      auto: PREDEFINED
+  - arguments:
+    - auto: PREDEFINED
+      description: The type of group for which to return the attribute. Can be "adversaries",
+        "campaigns", "documents", "emails", "events", "incidents", "intrusionSets",
+        "reports", "signatures", or "threats".
+      name: group_type
       predefined:
       - adversaries
       - campaigns
@@ -1761,13 +1834,13 @@ script:
       - reports
       - signatures
       - threats
-      description: The type of group for which to return the attribute. Can be "adversaries",
-        "campaigns", "documents", "emails", "events", "incidents", "intrusionSets",
-        "reports", "signatures", or "threats".
-    - name: group_id
       required: true
-      description: The ID of the group for which to return the attribute. To get the
+    - description: The ID of the group for which to return the attribute. To get the
         ID, run the tc-get-groups command.
+      name: group_id
+      required: true
+    description: Retrieves the attribute of a group.
+    name: tc-get-group-attributes
     outputs:
     - contextPath: TC.Group.Attribute.DateAdded
       description: The date on which the group was added.
@@ -1787,12 +1860,12 @@ script:
     - contextPath: TC.Group.Attribute.Value
       description: The value of the attribute.
       type: String
-    description: Retrieves the attribute of a group.
-  - name: tc-get-group-security-labels
-    arguments:
-    - name: group_type
-      required: true
-      auto: PREDEFINED
+  - arguments:
+    - auto: PREDEFINED
+      description: The type of group for which to return the security labels. Can
+        be "adversaries", "campaigns", "documents", "emails", "events", "incidents",
+        "intrusionSets", "reports", "signatures", or "threats".
+      name: group_type
       predefined:
       - adversaries
       - campaigns
@@ -1804,13 +1877,13 @@ script:
       - reports
       - signatures
       - threats
-      description: The type of group for which to return the security labels. Can
-        be "adversaries", "campaigns", "documents", "emails", "events", "incidents",
-        "intrusionSets", "reports", "signatures", or "threats".
-    - name: group_id
       required: true
-      description: The ID of the group for which to return the security labels. To
+    - description: The ID of the group for which to return the security labels. To
         get the ID, run the tc-get-groups command.
+      name: group_id
+      required: true
+    description: Retrieves the security labels of a group.
+    name: tc-get-group-security-labels
     outputs:
     - contextPath: TC.Group.SecurityLabel.Name
       description: The name of the security label.
@@ -1821,12 +1894,12 @@ script:
     - contextPath: TC.Group.SecurityLabel.DateAdded
       description: The date on which the security label was added.
       type: Date
-    description: Retrieves the security labels of a group.
-  - name: tc-get-group-tags
-    arguments:
-    - name: group_type
-      required: true
-      auto: PREDEFINED
+  - arguments:
+    - auto: PREDEFINED
+      description: The type of group for which to return the tags. Can be "adversaries",
+        "campaigns", "documents", "emails", "events", "incidents", "intrusionSets",
+        "reports", "signatures", or "threats".
+      name: group_type
       predefined:
       - adversaries
       - campaigns
@@ -1838,23 +1911,23 @@ script:
       - reports
       - signatures
       - threats
-      description: The type of group for which to return the tags. Can be "adversaries",
-        "campaigns", "documents", "emails", "events", "incidents", "intrusionSets",
-        "reports", "signatures", or "threats".
-    - name: group_id
       required: true
-      description: The ID of the group for which to return the tags. To get the ID,
+    - description: The ID of the group for which to return the tags. To get the ID,
         run the tc-get-groups command.
+      name: group_id
+      required: true
+    description: Retrieves the tags of a group.
+    name: tc-get-group-tags
     outputs:
     - contextPath: TC.Group.Tag.Name
       description: The name of the tag.
       type: String
-    description: Retrieves the tags of a group.
-  - name: tc-download-document
-    arguments:
-    - name: document_id
+  - arguments:
+    - description: The ID of the document.
+      name: document_id
       required: true
-      description: The ID of the document.
+    description: Downloads the contents of a document.
+    name: tc-download-document
     outputs:
     - contextPath: File.Size
       description: The size of the file.
@@ -1886,12 +1959,12 @@ script:
     - contextPath: File.Extension
       description: The extension of the file.
       type: String
-    description: Downloads the contents of a document.
-  - name: tc-get-group-indicators
-    arguments:
-    - name: group_type
-      required: true
-      auto: PREDEFINED
+  - arguments:
+    - auto: PREDEFINED
+      description: The type of the group for which to return the indicators. Can be
+        "adversaries", "campaigns", "documents", "emails", "events", "incidents",
+        "intrusionSets", "reports", "signatures", or "threats".
+      name: group_type
       predefined:
       - adversaries
       - campaigns
@@ -1903,13 +1976,13 @@ script:
       - reports
       - signatures
       - threats
-      description: The type of the group for which to return the indicators. Can be
-        "adversaries", "campaigns", "documents", "emails", "events", "incidents",
-        "intrusionSets", "reports", "signatures", or "threats".
-    - name: group_id
       required: true
-      description: The ID of the group for which to return the indicators. To get
+    - description: The ID of the group for which to return the indicators. To get
         the ID, run the tc-get-groups command.
+      name: group_id
+      required: true
+    description: Returns indicators associated with a group.
+    name: tc-get-group-indicators
     outputs:
     - contextPath: TC.Group.Indicator.Summary
       description: The summary of the indicator.
@@ -1938,12 +2011,12 @@ script:
     - contextPath: TC.Group.Indicator.LastModified
       description: The date that the indicator was last modified.
       type: Date
-    description: Returns indicators associated with a group.
-  - name: tc-get-associated-groups
-    arguments:
-    - name: group_type
-      required: true
-      auto: PREDEFINED
+  - arguments:
+    - auto: PREDEFINED
+      description: The type of group. Can be "adversaries", "campaigns", "documents",
+        "emails", "events", "incidents", "intrusionSets", "reports", "signatures",
+        or "threats".
+      name: group_type
       predefined:
       - adversaries
       - campaigns
@@ -1955,12 +2028,12 @@ script:
       - reports
       - signatures
       - threats
-      description: The type of group. Can be "adversaries", "campaigns", "documents",
-        "emails", "events", "incidents", "intrusionSets", "reports", "signatures",
-        or "threats".
-    - name: group_id
       required: true
-      description: The ID of the group. To get the ID, run the tc-get-groups command.
+    - description: The ID of the group. To get the ID, run the tc-get-groups command.
+      name: group_id
+      required: true
+    description: Returns indicators associated with a specified group.
+    name: tc-get-associated-groups
     outputs:
     - contextPath: TC.Group.AssociatedGroup.DateAdded
       description: The date on which group was added.
@@ -1977,33 +2050,12 @@ script:
     - contextPath: TC.Group.AssociatedGroup.Type
       description: The type of the group.
       type: String
-    description: Returns indicators associated with a specified group.
-  - name: tc-associate-group-to-group
-    arguments:
-    - name: group_type
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - adversaries
-      - campaigns
-      - documents
-      - emails
-      - events
-      - incidents
-      - intrusionSets
-      - reports
-      - signatures
-      - threats
+  - arguments:
+    - auto: PREDEFINED
       description: The type of the group. Can be "adversaries", "campaigns", "documents",
         "emails", "events", "incidents", "intrusionSets", "reports", "signatures",
         or "threats".
-    - name: group_id
-      required: true
-      description: The ID of the group. To get the ID of the group, run the tc-get-groups
-        command.
-    - name: associated_group_type
-      required: true
-      auto: PREDEFINED
+      name: group_type
       predefined:
       - adversaries
       - campaigns
@@ -2015,12 +2067,33 @@ script:
       - reports
       - signatures
       - threats
+      required: true
+    - description: The ID of the group. To get the ID of the group, run the tc-get-groups
+        command.
+      name: group_id
+      required: true
+    - auto: PREDEFINED
       description: The type of group to associate. Can be "adversaries", "campaigns",
         "documents", "emails", "events", "incidents", "intrusionSets", "reports",
         "signatures", or "threats".
-    - name: associated_group_id
+      name: associated_group_type
+      predefined:
+      - adversaries
+      - campaigns
+      - documents
+      - emails
+      - events
+      - incidents
+      - intrusionSets
+      - reports
+      - signatures
+      - threats
       required: true
-      description: The ID of the group to associate.
+    - description: The ID of the group to associate.
+      name: associated_group_id
+      required: true
+    description: Associates one group with another group.
+    name: tc-associate-group-to-group
     outputs:
     - contextPath: TC.Group.AssociatedGroup.AssociatedGroupID
       description: The ID of the associated group.
@@ -2034,30 +2107,30 @@ script:
     - contextPath: TC.Group.AssociatedGroup.GroupType
       description: The type of the group to associate to.
       type: String
-    description: Associates one group with another group.
-  - name: tc-get-indicator-owners
-    arguments:
-    - name: indicator
+  - arguments:
+    - description: Indicator Value
+      name: indicator
       required: true
-      description: Indicator Value
     description: Get Owner for Indicator
-  - name: tc-download-report
+    name: tc-get-indicator-owners
+  - arguments:
+    - auto: PREDEFINED
+      description: 'The type of the group. Can be: "adversaries", "campaigns", "emails",
+        "incidents", "signatures", or "threats".'
+      name: group_type
+      predefined:
+      - adversaries
+      - campaigns
+      - emails
+      - incidents
+      - signatures
+      - threats
+      required: true
+    - description: The ID of the group.
+      name: group_id
+      required: true
     description: The group report to download in PDF format.
-    arguments:
-      - name: group_type
-        required: true
-        auto: PREDEFINED
-        predefined:
-        - adversaries
-        - campaigns
-        - emails
-        - incidents
-        - signatures
-        - threats
-        description: 'The type of the group. Can be: "adversaries", "campaigns", "emails", "incidents", "signatures", or "threats".'
-      - name: group_id
-        required: true
-        description: The ID of the group.
+    name: tc-download-report
     outputs:
     - contextPath: File.Size
       description: The size of the file.
@@ -2089,9 +2162,11 @@ script:
     - contextPath: File.Extension
       description: The extension of the file.
       type: String
-  dockerimage: demisto/threatconnect-py3-sdk:1.0.0.12410
+  dockerimage: demisto/threatconnect-py3-sdk:1.0.0.21898
   runonce: false
+  script: ''
   subtype: python3
-fromversion: '5.0.0'
+  type: python
+fromversion: 5.0.0
 tests:
 - ThreatConnect v2 - Test

@@ -15,7 +15,7 @@ In order to use this integration you need the following:
 <li><a href="https://cloud.google.com/billing/docs/how-to/modify-project#enable_billing_for_a_project">Enable billing for the project</a></li>
 <li><a href="https://cloud.google.com/translate">Enable the Google Cloud Translate API</a></li>
 <li><a href="#create-a-service-account">Create a Service Account</a> with access to Google Translate API</li>
-<li>Use the Service Account Private Key in JSON format and the GCP project ID to configure a new instance of Google Cloud Translate integration in Demisto</li>
+<li>Use the Service Account Private Key in JSON format and the GCP project ID to configure a new instance of Google Cloud Translate integration in Cortex XSOAR</li>
 </ol>
 
 <h3>Create a Service Account</h3>
@@ -29,7 +29,7 @@ In order to use this integration you need the following:
 <li>Select <b>JSON</b> and click <b>CREATE</b>. The .json file downloads.</li>
 </ol>
 
-<h2>Configure GoogleCloudTranslate on Demisto</h2>
+<h2>Configure GoogleCloudTranslate on Cortex XSOAR</h2>
 <ol>
   <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
   &nbsp;&gt;&nbsp;<strong>Servers &amp; Services</strong>.</li>
@@ -50,7 +50,7 @@ In order to use this integration you need the following:
 </ol>
 <h2>Commands</h2>
 <p>
-  You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+  You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
   After you successfully execute a command, a DBot message appears in the War Room with the command details.
 </p>
 <ol>
@@ -127,11 +127,6 @@ There are no input arguments for this command.
 <pre>
 Languages: af, am, ar, az, be, bg, bn, bs, ca, ceb, co, cs, cy, da, de, el, en, eo, es, et, eu, fa, fi, fr, fy, ga, gd, gl, gu, ha, haw, hi, hmn, hr, ht, hu, hy, id, ig, is, it, iw, ja, jw, ka, kk, km, kn, ko, ku, ky, la, lb, lo, lt, lv, mg, mi, mk, ml, mn, mr, ms, mt, my, ne, nl, no, ny, pa, pl, ps, pt, ro, ru, sd, si, sk, sl, sm, sn, so, sq, sr, st, su, sv, sw, ta, te, tg, th, tl, tr, uk, ur, uz, vi, xh, yi, yo, zh-CN, zh-TW, zu
 </pre>
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="gct-translate-text">2. gct-translate-text</h3>
@@ -251,11 +246,6 @@ Translation: שלום
 Source Language Detected: it
 </pre>
 </p>
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 <h2>Additional Information</h2>
 <h2>Known Limitations</h2>

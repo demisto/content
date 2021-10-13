@@ -1,18 +1,18 @@
 {
-  "DBotScore": {
+  "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [{
     "Indicator": "0.0.0.0",
     "Type": "ip",
     "Vendor": "Flashpoint",
     "Score": 3
-  },
-  "IP(val.Address && val.Address == obj.Address)": {
+  }],
+  "IP(val.Address && val.Address == obj.Address)": [{
     "Address": "0.0.0.0",
     "Malicious": {
       "Vendor": "Flashpoint",
       "Description": "Found in malicious indicators dataset"
     }
-  },
-  "Flashpoint.IP.Event(val.Fpid && val.Fpid == obj.Fpid)": [
+  }],
+  "Flashpoint.IP.Event(val.Fpid == obj.Fpid)": [
     {
       "Address": "0.0.0.0",
       "EventDetails": {

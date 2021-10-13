@@ -1,0 +1,271 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: USTA
+  version: -1
+configuration:
+- defaultvalue: https://usta.prodaft.com
+  display: Server URL (e.g. https://usta.prodaft.com)
+  name: url
+  required: true
+  type: 0
+- additionalinfo: 'You can reach out your access token : https://usta.prodaft.com/#/api-documents'
+  display: API Key
+  name: apikey
+  required: true
+  type: 4
+- defaultvalue: "false"
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: "false"
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: 'USTA is an Cyber Intelligence Platform that responds directly and effectively
+  to today''s complex cyber threats. '
+display: USTA
+name: USTA
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: json
+      description: Format type of the returned result
+      name: format
+      predefined:
+      - json
+      - stix
+      - stix2
+      - txt
+    - description: Filtering by URL Address
+      name: url
+    - auto: PREDEFINED
+      default: true
+      defaultValue: "true"
+      description: You can search only those with or without domain name registration
+      name: is_domain
+      predefined:
+      - "true"
+      - "false"
+    - description: Filtering by malicious type
+      name: url_type
+    - description: 'Filtering by tags. Example: tag=Keitaro'
+      name: tag
+    - description: 'Starting date(Example: 2021-03-18-13-59 / yy-mm-dd-hh-mm)'
+      name: start
+    - description: 'End Date(Example: 2021-03-18-13-59 / yy-mm-dd-hh-mm)'
+      name: end
+    description: You can get malicious URLs with this command
+    outputs:
+    - contextPath: Usta.MaliciousUrl.country
+      description: Country
+    - contextPath: Usta.MaliciousUrl.created
+      description: Created Date
+    - contextPath: Usta.MaliciousUrl.domain
+      description: Domain
+    - contextPath: Usta.MaliciousUrl.ip_addresses
+      description: IP Addresses
+    - contextPath: Usta.MaliciousUrl.is_domain
+      description: Is Domain
+    - contextPath: Usta.MaliciousUrl.modified
+      description: Modified Date
+    - contextPath: Usta.MaliciousUrl.tags
+      description: Tags
+    - contextPath: Usta.MaliciousUrl.threat_type
+      description: Threat Type
+    - contextPath: Usta.MaliciousUrl.url
+      description: URL
+    name: usta-get-malicious-urls
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: json
+      description: Format type of the returned result
+      name: format
+      predefined:
+      - json
+      - stix
+      - stix2
+    - description: Filtering by md5
+      name: md5
+    - description: Filtering by sha1
+      name: sha1
+    - description: 'Filtering by tags. Example: tag=Keitaro'
+      name: tag
+    - description: 'Starting Date(Example: 2021-03-18-13-59 / yy-mm-dd-hh-mm)'
+      name: start
+    - description: 'End Date(Example: 2021-03-18-13-59 / yy-mm-dd-hh-mm)'
+      name: end
+    description: You can get malware hashs with this command
+    outputs:
+    - contextPath: Usta.MalwareHash.created
+      description: Created Date
+    - contextPath: Usta.MalwareHash.md5
+      description: MD5
+    - contextPath: Usta.MalwareHash.sha1
+      description: SHA1
+    - contextPath: Usta.MalwareHash.tags
+      description: Tags
+    - contextPath: Usta.MalwareHash.yara_rule
+      description: Yara Rule
+    name: usta-get-malware-hashs
+  - arguments:
+    - auto: PREDEFINED
+      description: Filtering by status
+      name: status
+      predefined:
+      - open
+      - close
+      - in_progress
+      - out_of_scope
+      - passive
+    - description: Filtering by source(URL)
+      name: source
+    - description: Paginiation
+      name: page
+    description: You can get phishing sites with this command
+    outputs:
+    - contextPath: Usta.PhishingSites.current_page
+      description: Current page
+    - contextPath: Usta.PhishingSites.last_page
+      description: Last page
+    - contextPath: Usta.PhishingSites.next_page_url
+      description: Next page URL
+    - contextPath: Usta.PhishingSites.per_page
+      description: Content count per page
+    - contextPath: Usta.PhishingSites.prev_page_url
+      description: Prev page URL
+    - contextPath: Usta.PhishingSites.results
+      description: Results
+    - contextPath: Usta.PhishingSites.total
+      description: Content count
+    - contextPath: Usta.PhishingSites.total_pages
+      description: Total Page
+    name: usta-get-phishing-sites
+  - arguments:
+    - description: 'Staring Date(Example: 2021-03-18-13-59 / yy-mm-dd-hh-mm)'
+      name: start
+    - description: 'End Date(Example: 2021-03-18-13-59 / yy-mm-dd-hh-mm)'
+      name: end
+    description: With the Identity Leak API, you can access the hashed version of
+      the credentials added to the platform.SHA256(MD5(Identity_Number))
+    outputs:
+    - contextPath: Usta.IdentityLeaks.created
+      description: Created date
+    - contextPath: Usta.IdentityLeaks. signature
+      description: Signature  
+    name: usta-get-identity-leaks
+  - arguments:
+    - description: Filtering by username
+      name: username
+    - description: Filtering by password
+      name: password
+    - auto: PREDEFINED
+      description: 'It allows to filter the stolen customer accounts detected according
+        to the source.Available values : malware, phishing_site, data_leak, clients'
+      name: source
+      predefined:
+      - malware
+      - phishing_site
+      - data_leak
+      - clients
+    - description: 'Starting Date(Example: 2021-03-18-13-59 / yy-mm-dd-hh-mm)'
+      name: start
+    - description: 'End Date(Example: 2021-03-18-13-59 / yy-mm-dd-hh-mm)'
+      name: end
+    description: You can access stolen customer accounts via Stolen-Client-accounts
+      API.
+    outputs:
+    - contextPath: Usta.StolenClientAccounts.created
+      description: Created date
+    - contextPath: Usta.StolenClientAccounts.password
+      description: Password
+    - contextPath: Usta.StolenClientAccounts.source
+      description: Source
+    - contextPath: Usta.StolenClientAccounts.url
+      description: URL
+    - contextPath: Usta.StolenClientAccounts.username
+      description: Username  
+    name: usta-get-stolen-client-accounts
+  - arguments:
+    - description: Search with domain name
+      name: domain
+      required: true
+    description: If you want to get more detailed information about malicious domain
+      names, you can use this command.
+    outputs:
+    - contextPath: Usta.Domain.asn_records
+      description: ASN records
+    - contextPath: Usta.Domain.country
+      description: Country
+    - contextPath: Usta.Domain.dns_records
+      description: DNS records
+    - contextPath: Usta.Domain.domain
+      description: Domain
+    - contextPath: Usta.Domain.ip_addresses
+      description: IP addresses
+    - contextPath: Usta.Domain.ssl_records
+      description: SSL records
+    - contextPath: Usta.Domain.whois_records
+      description: Whois records  
+    name: usta-get-domain
+  - arguments:
+    - description: Search with IP Address
+      name: ip_address
+    description: If you want to get more detailed information about specific IP Address,
+      you can use this command.
+    outputs:
+    - contextPath: Usta.IPAddress.asn_records
+      description: ASN records
+    - contextPath: Usta.IPAddress.country
+      description: Country
+    - contextPath: Usta.IPAddress.ip_address
+      description: IP address
+    - contextPath: Usta.IPAddress.ssl_records
+      description: SSL records
+    - contextPath: Usta.IPAddress.whois_records
+      description: Whois records  
+    name: usta-get-ip-address
+  - arguments:
+    - description: 'URL Value. Example: http://www.google3.com'
+      name: address
+      required: true
+    description: You can search about the accuracy of the urls referring to your company's
+      websites.
+    outputs:
+    - contextPath: Usta.Referrer.error
+      description: If any errors are received, it gives the details of the error  
+    name: usta-send-referrer-url
+  - arguments:
+    - description: 'Search with this identity number. You can search all identity
+        number with "," '
+      name: identity_number
+      required: true
+      isArray: true
+    description: 'With this command, you can search specific identity number that
+      hashed in leaks '
+    outputs:
+    - contextPath: Usta.SpecificLeaks.existing
+      description: If the identity is leaked, you can see it in existing.
+    - contextPath: Usta.SpecificLeaks.not_existing
+      description: If the identity is not leaked, you can see it in not_existing  
+    name: usta-search-specific-identity-leaks
+  - arguments:
+    - description: Incident ID
+      name: id
+      required: true
+    description: You can close the notifications in the status of "In Progress" or
+      "Open", which are currently opened to your institution, via API.
+    outputs:
+    - contextPath: Usta.CloseIncident.id
+      description: If the incident is closed, returns the id value that was closed.  
+    name: usta-close-incident
+  dockerimage: demisto/python3:3.9.7.24076
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

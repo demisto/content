@@ -7,5 +7,5 @@ There are 2 application authentication methods available:
 
 Depending on the authentication method that you use, the integration parameters might change.
 
-To allow us access to Microsoft Graph Device Management, an admin has to approve our app using an admin consent flow, by clicking on the following [link](https://oproxy.demisto.ninja/ms-graph-device-management).
+To allow us access to Microsoft Endpoint Manager, an admin has to approve our app using an admin consent flow, by clicking on the following [link](https://oproxy.demisto.ninja/ms-graph-device-management).
 After authorizing the Demisto app, you will get an ID, Token, and Key, which should be inserted in the integration instance configuration's corresponding fields.

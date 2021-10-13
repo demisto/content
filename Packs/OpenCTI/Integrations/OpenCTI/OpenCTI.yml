@@ -1,0 +1,458 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: OpenCTI
+  version: -1
+configuration:
+- display: Base URL
+  hidden: false
+  name: base_url
+  required: true
+  type: 0
+- display: API Key (leave empty. Fill in the API key in the password field.)
+  displaypassword: API Key
+  name: credentials
+  type: 9
+  required: false
+  hiddenusername: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Manages indicators from OpenCTI. Compatible with OpenCTI 4.X API version.
+display: OpenCTI
+name: OpenCTI
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The maximum number of indicators to return. Default value is 50. Maximum value is 500.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: 'Score minimum value to filter by. Values range is 1-100. '
+      isArray: false
+      name: score_start
+      required: false
+      secret: false
+    - default: false
+      description: 'Score maximum value to filter by. Values range is 1-100. '
+      isArray: false
+      name: score_end
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: ALL
+      description: 'The indicator types to fetch. Out-of-the-box indicator types supported
+        in XSOAR are: Account, Domain, Email, File, Host, IP, IPv6, Registry Key,
+        and URL.'
+      isArray: true
+      name: indicator_types
+      predefined:
+      - ALL
+      - Account
+      - Domain
+      - Email
+      - File
+      - Host
+      - IP
+      - IPv6
+      - Registry Key
+      - URL
+      required: false
+      secret: false
+    - default: false
+      description: The last ID from the previous call, from which to begin pagination for this call. You can find this value at the OpenCTI.IndicatorsList.LastRunID context path.
+      isArray: false
+      name: last_run_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets indicators from OpenCTI.
+    execution: false
+    name: opencti-get-indicators
+    outputs:
+    - contextPath: OpenCTI.Indicators.IndicatorsList.type
+      description: Indicator type.
+      type: String
+    - contextPath: OpenCTI.Indicators.IndicatorsList.value
+      description: Indicator value.
+      type: String
+    - contextPath: OpenCTI.Indicators.IndicatorsList.id
+      description: Indicator ID.
+      type: String
+    - contextPath: OpenCTI.Indicators.IndicatorsList.createdBy
+      description: The creator of the indicator.
+      type: Unknown
+    - contextPath: OpenCTI.Indicators.IndicatorsList.score
+      description: Indicator score.
+      type: Number
+    - contextPath: OpenCTI.Indicators.IndicatorsList.description
+      description: Indicator description.
+      type: String
+    - contextPath: OpenCTI.Indicators.IndicatorsList.labels
+      description: Indicator labels.
+      type: Unknown
+    - contextPath: OpenCTI.Indicators.IndicatorsList.marking
+      description: Indicator marking definitions.
+      type: Unknown
+    - contextPath: OpenCTI.Indicators.IndicatorsList.externalReferences
+      description: Indicator external references.
+      type: Unknown
+    - contextPath: OpenCTI.Indicators.LastRunID
+      description: The last ID of the previous fetch to use for pagination.
+      type: String
+  - arguments:
+    - default: false
+      description: Indicator ID.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete indicator.
+    execution: false
+    name: opencti-indicator-delete
+  - arguments:
+    - default: false
+      description: Indicator ID.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Indicator field to update.
+      isArray: false
+      name: field
+      predefined:
+      - score
+      - description
+      required: true
+      secret: false
+    - default: false
+      description: Value of the field to update.
+      isArray: false
+      name: value
+      required: true
+      secret: false
+    deprecated: false
+    description: 'Update the indicator field. The fields that can be updated are: score, description.'
+    execution: false
+    name: opencti-indicator-field-update
+    outputs:
+    - contextPath: OpenCTI.Indicator.id
+      description: Updated indicator ID.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: 'The indicator type to create. Out-of-the-box indicator types supported
+        in XSOAR are: Account, Domain, Email, File-MD5, File-SHA1,
+        File-SHA256, Host, IP, IPV6, Registry Key,
+        and URL.'
+      isArray: false
+      name: type
+      predefined:
+      - Account
+      - Domain
+      - Email
+      - File-MD5
+      - File-SHA1
+      - File-SHA256
+      - Host
+      - IP
+      - IPv6
+      - Registry Key
+      - URL
+      required: true
+      secret: false
+    - default: false
+      description: Organization ID. Use opencti-organization-list to find all organization
+        IDs in OpenCTI, or use opencti-organization-create to create a new organization
+        ID.
+      isArray: false
+      name: created_by
+      required: false
+      secret: false
+    - default: false
+      description: Indicator marking definition ID. Use opencti-marking-definition-list to find all marking definition
+        IDs in OpenCTI.
+      isArray: false
+      name: marking_id
+      required: false
+      secret: false
+    - default: false
+      description: Indicator label ID. Use opencti-label-list to find all label
+        IDs in OpenCTI, or use opencti-label-create to create a new label.
+      isArray: false
+      name: label_id
+      required: false
+      secret: false
+    - default: false
+      description: External references URL. Use opencti-external-reference-create to create a new external reference.
+      isArray: false
+      name: external_references_id
+      required: false
+      secret: false
+    - default: false
+      description: Indicator description.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: Indicator score. Values range is 0 - 100. Default value is 50.
+      isArray: false
+      name: score
+      required: false
+      secret: false
+    - default: false
+      description: Indicator value.
+      isArray: false
+      name: value
+      required: false
+      secret: false
+    deprecated: false
+    description: Create new indicator.
+    execution: false
+    name: opencti-indicator-create
+    outputs:
+    - contextPath: OpenCTI.Indicator.id
+      description: New indicator ID.
+      type: String
+    - contextPath: OpenCTI.Indicator.value
+      description: New indicator value.
+      type: String
+    - contextPath: OpenCTI.Indicator.type
+      description: New indicator type.
+      type: String
+  - arguments:
+    - default: false
+      description: Indicator ID.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Indicator field to add.
+      isArray: false
+      name: field
+      predefined:
+      - marking
+      - label
+      required: true
+      secret: false
+    - default: false
+      description: "Value of the field to add. Enter label ID or marking definition ID. Use opencti-label-list to find all label IDs in OpenCTI, or use opencti-label-create to create a new label. Use opencti-marking-definition-list to find all marking definition IDs in OpenCTI."
+      isArray: false
+      name: value
+      required: true
+      secret: false
+    deprecated: false
+    description: Add a field to the indicator. Fields that can be added are marking definition and
+      label.
+    execution: false
+    name: opencti-indicator-field-add
+  - arguments:
+    - default: false
+      description: Indicator ID.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Indicator field to update.
+      isArray: false
+      name: field
+      predefined:
+      - marking
+      - label
+      required: true
+      secret: false
+    - default: false
+      description: "Value of the field to remove. Enter label ID or marking definition ID. Use opencti-label-list to find all label IDs in OpenCTI or opencti-marking-definition-list to find all marking definition IDs in OpenCTI."
+      isArray: false
+      name: value
+      required: true
+      secret: false
+    deprecated: false
+    description: Remove indicator field value. Fields which values can be removed are marking
+      definition and label.
+    execution: false
+    name: opencti-indicator-field-remove
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of organizations to return per fetch. Default
+        value is 50. Maximum value is 200.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: The last ID from the previous call, from which to begin pagination for this call. You can find this value at the OpenCTI.Organizations.organizationsLastRun context path.
+      isArray: false
+      name: last_run_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Get a list of all organizations in OpenCTI.
+    execution: false
+    name: opencti-organization-list
+    outputs:
+    - contextPath: OpenCTI.Organizations.OrganizationsList.id
+      description: Organization ID.
+      type: String
+    - contextPath: OpenCTI.Organizations.OrganizationsList.name
+      description: Organization name.
+      type: String
+    - contextPath: OpenCTI.Organizations.organizationsLastRun
+      description: The last ID of the previous fetch to use for pagination.
+      type: String
+  - arguments:
+    - default: false
+      description: Name of the organization to create.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: Description of the organization.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Reliability of the organization.
+      isArray: false
+      name: reliability
+      predefined:
+      - A
+      - B
+      - C
+      - D
+      - E
+      - F
+      required: false
+      secret: false
+    deprecated: false
+    description: Create a new organization.
+    execution: false
+    name: opencti-organization-create
+    outputs:
+    - contextPath: OpenCTI.Organization.id
+      description: New organization ID.
+      type: String
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of labels to return per fetch.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: The last ID from the previous call, from which to begin pagination for this call. You can find this value at the OpenCTI.Labels.labelsLastRun context path.
+      isArray: false
+      name: last_run_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Get list of all labels.
+    execution: false
+    name: opencti-label-list
+    outputs:
+    - contextPath: OpenCTI.Labels.LabelsList.id
+      description: Label ID.
+      type: String
+    - contextPath: OpenCTI.Labels.LabelsList.value
+      description: Label name.
+      type: String
+    - contextPath: OpenCTI.Labels.labelsLastRun
+      description: The last ID of the previous fetch to use for pagination.
+      type: String
+  - arguments:
+    - default: false
+      description: Name of the new label to create.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    description: Create a new label.
+    execution: false
+    name: opencti-label-create
+    outputs:
+    - contextPath: OpenCTI.Label.id
+      description: New label ID.
+      type: String
+  - arguments:
+    - default: false
+      description: External references URL.
+      isArray: false
+      name: url
+      required: true
+      secret: false
+    - default: false
+      description: External references source name.
+      isArray: false
+      name: source_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Create external reference.
+    execution: false
+    name: opencti-external-reference-create
+    outputs:
+    - contextPath: OpenCTI.externalReference.id
+      description: New external reference ID.
+      type: String
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of marking definitions to return per fetch.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: The last ID from the previous call, from which to begin pagination for this call. You can find this value at the OpenCTI.MarkingDefinitions.markingsLastRun context path.
+      isArray: false
+      name: last_run_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Get a list of all marking definitions.
+    execution: false
+    name: opencti-marking-definition-list
+    outputs:
+    - contextPath: OpenCTI.MarkingDefinitions.MarkingDefinitionsList.id
+      description: Marking definition ID.
+      type: String
+    - contextPath: OpenCTI.MarkingDefinitions.MarkingDefinitionsList.value
+      description: Marking definition name.
+      type: String
+    - contextPath: OpenCTI.MarkingDefinitions.markingsLastRun
+      description: The last ID of the previous fetch to use for pagination.
+      type: String
+  dockerimage: demisto/opencti-v4:1.0.0.23290
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- OpenCTI Test
+fromversion: 5.0.0

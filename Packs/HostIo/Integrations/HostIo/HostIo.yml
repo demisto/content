@@ -1,0 +1,120 @@
+commonfields:
+  id: HostIo
+  version: -1
+name: HostIo
+display: HostIo
+category: Data Enrichment & Threat Intelligence
+description: Use the HostIo integration to enrich domains using the Host.io API.
+configuration:
+- defaultvalue: https://host.io
+  display: Server URL (e.g. https://host.io)
+  name: url
+  required: true
+  type: 0
+- display: API Key
+  name: token
+  type: 4
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+  - name: hostio-domain-search
+    arguments:
+    - name: field
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "ip"
+      - "ns"
+      - "mx"
+      - "asn"
+      - "backlinks"
+      - "redirects"
+      - "adsense"
+      - "facebook"
+      - "twitter"
+      - "instagram"
+      - "gtm"
+      - "googleanalytics"
+      - "email"
+      description: Field name by which to search for a domain.
+    - name: value
+      required: true
+      description: The value of the given field.
+    - name: limit
+      required: false
+      description: 'The maximum number of domains to display. Possible values are:
+        "0", "1", "5", "10", "25", "100", "250", or 1"000. Default is "25".'
+    outputs:
+    - contextPath: HostIo.Search.Field
+      description: The field to look up.
+      type: String
+    - contextPath: HostIo.Search.Value
+      description: The value of the given field.
+      type: String
+    - contextPath: HostIo.Search.Domains
+      description: List of domains associated with the given field.
+      type: Unknown
+    - contextPath: HostIo.Search.Total
+      description: The total number of domains associated with the given field.
+      type: Number
+    description: Returns a list of domains associated with a specific field, and the
+      total number of these domains.
+  - name: domain
+    arguments:
+    - name: domain
+      required: true
+      description: List of domains.
+      default: true
+      isArray: true
+    outputs:
+    - contextPath: HostIo.Domain.web.rank
+      description: A rank that's based on popularity.
+      type: Number
+    - contextPath: HostIo.Domain.web.server
+      description: Name of the server where the domain exists.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: Domain.Name
+      description: The domain name.
+      type: String
+    - contextPath: Domain.Registrant.Name
+      description: The name of the registrant.
+      type: String
+    - contextPath: Domain.Registrant.Country
+      description: The country of the registrant.
+      type: String
+    - contextPath: Domain.UpdatedDate
+      description: The date when the domain was last updated in ISO8601 format (i.e.,
+        '2020-04-30T10:35:00.000Z').
+      type: Date
+    - contextPath: Domain.NameServers
+      description: Name of the server where the domain exists.
+      type: String
+    description: Returns domain information.
+  dockerimage: demisto/python3:3.9.7.24076
+  runonce: false
+  subtype: python3
+fromversion: 5.0.0
+tests:
+- HostIo_Test

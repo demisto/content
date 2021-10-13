@@ -6,7 +6,7 @@ Documentation for the integration was provided by Quin-C.
 
 For example, you can look at “Accessdata: Dump memory for malicious process” playbook to understand how to use this integration.
 
-## Configure AccessData on Demisto
+## Configure AccessData on Cortex XSOAR
 
 1.  Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2.  Search for Accessdata.
@@ -23,7 +23,7 @@ For example, you can look at “Accessdata: Dump memory for malicious process”
 4.  Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 
 ### Get a process list

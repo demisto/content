@@ -11,7 +11,7 @@
 </ul>
 <hr>
 <h2>Prerequisites</h2>
-<p>You need to retrieve your Anomali ThreatStream credentials, which you will enter in Demisto.</p>
+<p>You need to retrieve your Anomali ThreatStream credentials, which you will enter in Cortex XSOAR.</p>
 <ul>
 <li><code>user ID</code></li>
 <li>
@@ -19,7 +19,7 @@
 </ul>
 <p>If you do not have these credentials, register at <a href="http://ui.threatstream.com/" rel="nofollow">http://ui.threatstream.com</a>. </p>
 <hr>
-<h2>Configure Demisto to Integrate with Anamoli ThreatStream</h2>
+<h2>Configure Cortex XSOAR to Integrate with Anamoli ThreatStream</h2>
 <ol>
 <li>Navigate to to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services.</strong>
 </li>
@@ -36,14 +36,14 @@
 <strong>API Key |</strong> The API key you copied in the previous procedure. (Required)</li>
 </ul>
 </li>
-<li>Click the <strong>Test</strong> button to verify the the URL and token.<br>A green light means the test was successful. If you experience any issues, contact <a href="mailto:support@demisto.com">Demisto Support</a>.</li>
+<li>Click the <strong>Test</strong> button to verify the the URL and token.<br>A green light means the test was successful.</li>
 </ol>
 <hr>
 <h2>Use Cases</h2>
 <p>Use this integration to retrieve threat intelligence from the ThreatStream cloud. You can specify criteria by which the intelligence should be retrieved, as shown in the commands below. The integration supports getting reputation for IP, domain, file and email.</p>
 <hr>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ul>
 <li><a href="#h_956498138931525680640820">Receive threat intelligence: threatstream-intelligence</a></li>
 <li><a href="#h_5769900451251525680987811">Check IP/domain reputation: domain</a></li>
