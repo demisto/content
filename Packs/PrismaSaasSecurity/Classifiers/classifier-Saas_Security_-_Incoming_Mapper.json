@@ -54,9 +54,21 @@
           "complex": null,
           "simple": "tenant"
         },
-        "category": {
+        "Saas Security Category": {
           "complex": null,
           "simple": "category"
+        },
+        "Saas Security Assigned To": {
+          "complex": null,
+          "simple": "assigned_to"
+        },
+        "Saas Security Resolved By": {
+          "complex": null,
+          "simple": "resolved_by"
+        },
+        "Saas Security Status": {
+          "complex": null,
+          "simple": "status"
         },
         "name": {
           "complex": null,
@@ -99,6 +111,14 @@
                 ]
             },
             "simple": ""
+        },
+        "IncomingMirrorError": {
+            "complex": null,
+            "simple": "in_mirror_error"
+        },
+        "OutgoingMirrorError": {
+            "complex": null,
+            "simple": "out_mirror_error"
         }
       }
     }

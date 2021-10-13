@@ -50,9 +50,10 @@ MIRROR_DIRECTION = {
     'None': None,
     'Incoming': 'In',
     'Outgoing': 'Out',
-    'Incoming And Outgoing': 'In And Out'
+    'Incoming And Outgoing': 'Both'
 }
 
+POSSIBLE_CATEGORIES_TO_MIRROR_OUT = ['no_reason', 'business_justified', 'misidentified']
 
 OUTGOING_MIRRORED_FIELDS = ['state', 'category']
 INCOMING_MIRRORED_FIELDS = ['state', 'category', 'status', 'assigned_to', 'resolved_by', 'asset_sha256']
@@ -491,12 +492,24 @@ def fetch_incidents(client: Client, first_fetch_time, fetch_limit, fetch_state, 
 
 
 def get_remote_data_command(client, args):
+    """
+    get-remote-data command: Returns an updated remote incident.
+    Args:
+        client: The client object.
+        args:
+            id: incident id to retrieve.
+            lastUpdate: when was the last time we retrieved data.
+
+    Returns:
+        GetRemoteDataResponse object, which contain the incident data to update.
+    """
     remote_args = GetRemoteDataArgs(args)
     demisto.debug('Performing get-remote-data command with incident id: {} and last_update: {}'
                   .format(remote_args.remote_incident_id, remote_args.last_update))
 
+    incident_data = {}
     try:
-        incident_data: Dict = client.get_incident_by_id(remote_args.remote_incident_id)
+        incident_data = client.get_incident_by_id(remote_args.remote_incident_id)
         delta = {field: incident_data.get(field) for field in INCOMING_MIRRORED_FIELDS if incident_data.get(field)}
 
         if not delta or arg_to_timestamp(incident_data.get('updated_at'), 'updated_at') \
@@ -533,11 +546,35 @@ def get_remote_data_command(client, args):
         )
 
     except Exception as e:
-        if "Rate limit exceeded" in str(e):  # modify this according to the vendor's spesific message
-            return_error("API rate limit")
+        demisto.debug(f"Error in Saas Security incoming mirror for incident {remote_args.remote_incident_id} \n"
+                      f"Error message: {str(e)}")
+
+        if incident_data:
+            incident_data['in_mirror_error'] = str(e)
+
+        else:
+            incident_data = {
+                'id': remote_args.remote_incident_id,
+                'in_mirror_error': str(e)
+            }
+
+        return GetRemoteDataResponse(
+            mirrored_object=incident_data,
+            entries=[]
+        )
 
 
 def get_modified_remote_data_command(client, args):
+    """
+    Gets the modified remote incident IDs.
+    Args:
+        client: The client object.
+        args:
+            last_update: the last time we retrieved modified incidents.
+
+    Returns:
+        GetModifiedRemoteDataResponse object, which contains a list of the retrieved incident IDs.
+    """
     remote_args = GetModifiedRemoteDataArgs(args)
 
     last_update_utc = dateparser.parse(remote_args.last_update, settings={'TIMEZONE': 'UTC'})  # convert to utc format
@@ -555,6 +592,11 @@ def get_modified_remote_data_command(client, args):
 
 
 def get_mapping_fields_command():
+    """
+    Gets a list of fields for an incident type.
+
+    Returns: GetMappingFieldsResponse object which contain the field names.
+    """
     saas_security_incident_type_scheme = SchemeTypeMapping(type_name=SAAS_SECURITY_INCIDENT_TYPE_NAME)
 
     for field in OUTGOING_MIRRORED_FIELDS:
@@ -564,6 +606,67 @@ def get_mapping_fields_command():
     mapping_response.add_scheme_type(saas_security_incident_type_scheme)
 
     return mapping_response
+
+
+def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
+    """
+    update-remote-system command: pushes local changes to the remote system.
+    Since the API limitation doesn't allow to update the category when the incident state is open,
+    The only use cases the update-remote-system can update are:
+     1. When the incident were closed in XSOAR, so this command will close the mirror remote incident as well.
+     2. If the category of an incident which was already closed in the remote and fetched was changed.
+
+    :type client: ``Client``
+    :param client: XSOAR client to use
+
+    :type args: ``Dict[str, Any]``
+    :param args:
+        all command arguments, usually passed from ``demisto.args()``.
+        ``args['data']`` the data to send to the remote system
+        ``args['entries']`` the entries to send to the remote system
+        ``args['incidentChanged']`` boolean telling us if the local incident indeed changed or not
+        ``args['remoteId']`` the remote incident id
+
+    :return:
+        ``str`` containing the remote incident id - really important if the incident is newly created remotely
+    :rtype: ``str``
+    """
+    parsed_args = UpdateRemoteSystemArgs(args)
+    if parsed_args.delta:
+        demisto.debug(f'Got the following delta keys {str(list(parsed_args.delta.keys()))}')
+
+    if parsed_args.incident_changed:
+        # Check if the incident were closed in XSOAR,
+        # or the category of an incident which was already closed in the remote was changed,
+        # since these are the only use cases we wanna mirror out.
+        if parsed_args.inc_status == IncidentStatus.DONE or (parsed_args.data.get('state') == 'closed'
+                                                             and 'category' in parsed_args.data):
+
+            category = parsed_args.data.get('category').replace(' ', '_').lower() \
+                if 'category' in parsed_args.data else None
+            if category in POSSIBLE_CATEGORIES_TO_MIRROR_OUT:
+
+                try:
+                    demisto.debug(f'Sending incident with remote ID {parsed_args.remote_incident_id} to remote system.')
+                    result = client.update_incident_state(inc_id=parsed_args.remote_incident_id,
+                                                          category=category)
+                    demisto.debug(f'Incident updated successfully. Result: {result}')
+
+                except Exception as e:
+                    demisto.error(
+                        f"Error in Saas Security outgoing mirror for incident {parsed_args.remote_incident_id} \n"
+                        f"Error message: {str(e)}")
+            else:
+                demisto.debug(f'The value of category {parsed_args.data.get("category")} is invalid.'
+                              f' The category can be one of the following {POSSIBLE_CATEGORIES_TO_MIRROR_OUT}.')
+        else:
+            demisto.debug('Skipping updating the remote incident since the incident is not closed. '
+                          'Could not update the category for open incident due to an API limitation.')
+    else:
+        demisto.debug(f'Skipping updating remote incident fields [{parsed_args.remote_incident_id}] '
+                      f'as it is not new nor changed.')
+
+    return parsed_args.remote_incident_id
 
 
 ''' MAIN FUNCTION '''
@@ -594,7 +697,7 @@ def main() -> None:
         'saas-security-remediation-status-get': get_remediation_status_command,
         'get-remote-data': get_remote_data_command,
         'get-modified-remote-data': get_modified_remote_data_command,
-        'get-mapping-fields': get_mapping_fields_command(),
+        'update-remote-system': update_remote_system_command,
     }
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
@@ -614,6 +717,9 @@ def main() -> None:
         elif command == 'fetch-incidents':
             fetch_incidents(client, first_fetch_time, fetch_limit, fetch_state, fetch_severity, fetch_status,
                             fetch_app_ids)
+        elif command == 'get-mapping-fields':
+            return_results(get_mapping_fields_command())
+
         elif command in commands:
             return_results(commands[command](client, demisto.args()))
 
