@@ -22,7 +22,6 @@ def get_playbook_state(client: demisto_client, inv_id: str):
     try:
         investigation_playbook_raw = demisto_client.generic_request_func(self=client, method='GET',
                                                                          path='/inv-playbook/' + inv_id)
-        print(investigation_playbook_raw)
         investigation_playbook = ast.literal_eval(investigation_playbook_raw[0])
         print(investigation_playbook)
     except ApiException as e:
