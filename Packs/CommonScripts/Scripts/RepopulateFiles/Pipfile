@@ -16,7 +16,6 @@ pytest-json = "*"
 vcrpy = "*"
 pytest-cov = "*"
 hypothesis = "*"
-flake8 = "*"
 
 [packages]
 certifi = "==2019.3.9"
