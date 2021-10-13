@@ -30,10 +30,6 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-- defaultvalue: '50'
-  name: max_fetch
-  required: false
-  type: 0
 - display: Incident type
   name: incidentType
   required: false
