@@ -1,9 +1,7 @@
-import traceback
-from typing import Dict, Any
-
-import requests
-from paramiko import SSHClient, AutoAddPolicy
-from scp import SCPClient
+from paramiko import SSHClient, AutoAddPolicy, transport, Transport, SSHException
+from scp import SCPClient, SCPException
+import shutil
+import tempfile
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
@@ -11,6 +9,35 @@ from CommonServerUserPython import *  # noqa
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' HELPER FUNCTIONS '''
+
+
+def create_paramiko_ssh_client(host_name: str, user_name: str, password: str, ciphers: List[str],
+                               key_algorithms: List[str]) -> SSHClient:
+    available_ciphers, available_keys = 'Did not retrieve ciphers from server', 'Did not retrieve algorithm keys ' \
+                                                                                'from server '
+    try:
+        opts = transport.Transport(socket.socket()).get_security_options()
+        available_ciphers = opts.ciphers
+        available_keys = opts.kex
+        if ciphers:
+            Transport._preferred_ciphers = (*ciphers,)
+        # if key_algorithms:
+        #     Transport._preferred_keys = (*key_algorithms,)
+        client = SSHClient()
+        client.set_missing_host_key_policy(AutoAddPolicy())
+        client.connect(hostname=host_name, username=user_name, password=password, port=22)
+        return client
+    except SSHException as e:
+        err_message = str(e)
+        if 'Incompatible ssh server (no acceptable ciphers)' in err_message:
+            raise DemistoException(f'Given ciphers are not available in server.\nCiphers given are: {ciphers}\n'
+                                   f'Ciphers available in server are: {available_ciphers}') from e
+        if 'Incompatible ssh peer (no acceptable host key)':
+            raise DemistoException(f'Given algorithm key  are not available in server.\n'
+                                   f'Key algorithms given are: {key_algorithms}\n'
+                                   f'Key algorithms available in server are: {available_keys}') from e
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -45,16 +72,16 @@ def copy_to_command(ssh_client: SSHClient, args: Dict[str, Any]) -> CommandResul
 
 
 def copy_from_command(ssh_client: SSHClient, args: Dict[str, Any]) -> fileResult:
-    file_path = args.get('file_path', '')
-    file_name: str = args.get('file_name', '')
+    file_path = 'lol'# args.get('file_path', '')
+    file_name: str = args.get('file_name', os.path.basename(file_path))
+    try:
+        with SCPClient(ssh_client.get_transport()) as scp_client, tempfile.TemporaryDirectory() as temp_dir:
+            scp_client.get(file_path, f'{temp_dir}/{file_name}')
+            with open(f'{temp_dir}/{file_name}', 'r') as f:
+                remote_file_data = f.read()
+    except SCPException as e:
+        if 'No such file or directory' in str(e):
 
-    with SCPClient(ssh_client.get_transport()) as scp_client:
-        os.mkdir('tmp')
-        scp_client.get(file_path, f'tmp/{file_path}')
-        with open(f'tmp/{file_path}', 'r') as f:
-            remote_file_data = f.read()
-
-    file_name = file_name or os.path.basename(file_path)
     return fileResult(file_name, remote_file_data)
 
 
@@ -78,6 +105,7 @@ def main() -> None:
     host_name: str = params.get('hostname', '')
 
     ciphers: List[str] = argToList(params.get('ciphers'))
+    key_algorithms: List[str] = argToList(params.get('key_algorithms'))
 
     interactive_terminal_mode: bool = argToBoolean(params.get('interactive_terminal_mode', False))
     # verify_certificate = not demisto.params().get('insecure', False)
@@ -86,9 +114,7 @@ def main() -> None:
     demisto.debug(f'Command being called is {demisto.command()}')
     client = None
     try:
-        client = SSHClient()
-        client.set_missing_host_key_policy(AutoAddPolicy())
-        client.connect(hostname=host_name, username=user, password=password, port=22)
+        client = create_paramiko_ssh_client(host_name, user, password, ciphers, key_algorithms)
         if demisto.command() == 'test-module':
             return_results('ok')
         elif command == 'remote-access-ssh':
