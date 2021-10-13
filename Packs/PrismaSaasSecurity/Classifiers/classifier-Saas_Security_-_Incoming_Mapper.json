@@ -74,6 +74,10 @@
           "complex": null,
           "simple": "status"
         },
+        "Saas Security Asset ID": {
+          "complex": null,
+          "simple": "asset_id"
+        },
         "name": {
           "complex": null,
           "simple": "asset_name"

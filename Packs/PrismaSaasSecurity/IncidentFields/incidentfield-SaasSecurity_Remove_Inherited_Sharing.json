@@ -1,10 +1,10 @@
 {
-    "id": "incident_saassecuritystatus",
+    "id": "incident_saassecurityremoveinheritedsharing",
     "version": -1,
-    "modified": "2021-10-13T10:49:18.927919+03:00",
-    "name": "Saas Security Status",
+    "modified": "2021-10-13T18:23:53.515037+03:00",
+    "name": "Saas Security Remove Inherited Sharing",
     "ownerOnly": false,
-    "cliName": "saassecuritystatus",
+    "cliName": "saassecurityremoveinheritedsharing",
     "type": "singleSelect",
     "closeForm": false,
     "editForm": true,
@@ -12,14 +12,8 @@
     "neverSetAsRequired": false,
     "isReadOnly": false,
     "selectValues": [
-        "open-new",
-        "open-assigned",
-        "open-in progress",
-        "open-pending",
-        "closed-no reason",
-        "closed-business justified",
-        "closed-misidentified",
-        "closed-in the cloud"
+        "false",
+        "true"
     ],
     "useAsKpi": false,
     "locked": false,

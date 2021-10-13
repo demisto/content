@@ -349,7 +349,7 @@
                                 "fieldId": "policydetails",
                                 "height": 22,
                                 "id": "f04baf90-0a31-11ec-8bac-b9323cf50828",
-                                "index": 0,
+                                "index": 1,
                                 "listId": "caseinfoid-c5092970-0a31-11ec-8bac-b9323cf50828",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -360,7 +360,7 @@
                                 "fieldId": "policyid",
                                 "height": 22,
                                 "id": "e0dd5680-0a31-11ec-8bac-b9323cf50828",
-                                "index": 1,
+                                "index": 2,
                                 "listId": "caseinfoid-c5092970-0a31-11ec-8bac-b9323cf50828",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -370,7 +370,7 @@
                                 "fieldId": "policyuri",
                                 "height": 22,
                                 "id": "e348ff50-0a31-11ec-8bac-b9323cf50828",
-                                "index": 2,
+                                "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -382,7 +382,7 @@
                         "name": "Policy Information",
                         "static": false,
                         "w": 1,
-                        "x": 0,
+                        "x": 1,
                         "y": 5
                     },
                     {
@@ -517,6 +517,72 @@
                         "w": 1,
                         "x": 0,
                         "y": 3
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-56502550-2c33-11ec-890f-9fd8e3babc6e",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "saassecurityassetid",
+                                "height": 22,
+                                "id": "0dfd0fa0-2c35-11ec-890f-9fd8e3babc6e",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "saassecurityremediationtype",
+                                "height": 22,
+                                "id": "11929270-2c35-11ec-890f-9fd8e3babc6e",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "saassecurityremoveinheritedsharing",
+                                "height": 22,
+                                "id": "d057a460-2c3b-11ec-b316-4dcfe81cc5c2",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "asset_id": {
+                                        "simple": "${incident.saassecurityassetid}"
+                                    },
+                                    "remediation_type": {
+                                        "simple": "${incident.saassecurityremediationtype}"
+                                    },
+                                    "remove_inherited_sharing": {
+                                        "simple": "${incident.saassecurityremoveinheritedsharing}"
+                                    }
+                                },
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "07fd7c90-2c33-11ec-890f-9fd8e3babc6e",
+                                "index": 3,
+                                "name": "Run Remidiate Asset Command",
+                                "scriptId": "SaasSecurity|||saas-security-asset-remediate",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Remidiation Action",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 5
                     }
                 ],
                 "type": "custom"
@@ -548,10 +614,10 @@
             }
         ]
     },
-    "fromVersion": "6.0.0",
     "group": "incident",
     "id": "Saas Security Layout",
     "name": "Saas Security Layout",
     "system": false,
-    "version": -1
+    "version": -1,
+    "fromVersion": "6.0.0"
 }
