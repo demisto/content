@@ -1010,10 +1010,8 @@ class Client(BaseClient):
 
     def alarms_list_request(self, alarm_id=None, alarm_status=None, offset=None, count=None, alarm_rule_name=None,
                             entity_name=None, case_association=None, created_after=None):
-        headers = self._headers
-
         if alarm_id:
-            response = self._http_request('GET', f'lr-alarm-api/alarms/{alarm_id}', headers=headers)
+            response = self._http_request('GET', f'lr-alarm-api/alarms/{alarm_id}')
             alarms = [response.get('alarmDetails')]
         else:
             if alarm_status:
@@ -1023,7 +1021,7 @@ class Client(BaseClient):
                                    associatedCases=case_association,
                                    alarmRuleName=alarm_rule_name, entityName=entity_name, orderby='DateInserted')
 
-            response = self._http_request('GET', 'lr-alarm-api/alarms/', params=params, headers=headers)
+            response = self._http_request('GET', 'lr-alarm-api/alarms/', params=params)
             alarms = response.get('alarmsSearchDetails')
 
             if created_after:
@@ -1052,41 +1050,33 @@ class Client(BaseClient):
         # delete empty values
         data = {k: v for k, v in data.items() if v}
 
-        headers = self._headers
-
-        response = self._http_request('PATCH', f'lr-alarm-api/alarms/{alarm_id}', json_data=data, headers=headers)
+        response = self._http_request('PATCH', f'lr-alarm-api/alarms/{alarm_id}', json_data=data)
 
         return response
 
     def alarm_add_comment_request(self, alarm_id, alarm_comment):
         data = {"alarmComment": alarm_comment}
-        headers = self._headers
 
-        response = self._http_request('POST', f'lr-alarm-api/alarms/{alarm_id}/comment', json_data=data, headers=headers)
+        response = self._http_request('POST', f'lr-alarm-api/alarms/{alarm_id}/comment', json_data=data)
 
         return response
 
     def alarm_history_list_request(self, alarm_id, person_id, date_updated, type_, offset, count):
         params = assign_params(personId=person_id, dateUpdated=date_updated, type=type_, offset=offset, count=count)
-        headers = self._headers
 
-        response = self._http_request('GET', f'lr-alarm-api/alarms/{alarm_id}/history', params=params, headers=headers)
+        response = self._http_request('GET', f'lr-alarm-api/alarms/{alarm_id}/history', params=params)
 
         alarm_history = response.get('alarmHistoryDetails')
         return alarm_history, response
 
     def alarm_events_list_request(self, alarm_id):
-        headers = self._headers
-
-        response = self._http_request('GET', f'lr-alarm-api/alarms/{alarm_id}/events', headers=headers)
+        response = self._http_request('GET', f'lr-alarm-api/alarms/{alarm_id}/events')
 
         alarm_events = response.get('alarmEventsDetails')
         return alarm_events, response
 
     def alarm_summary_request(self, alarm_id):
-        headers = self._headers
-
-        response = self._http_request('GET', f'lr-alarm-api/alarms/{alarm_id}/summary', headers=headers)
+        response = self._http_request('GET', f'lr-alarm-api/alarms/{alarm_id}/summary')
 
         alarm_summary = response.get('alarmSummaryDetails')
         return alarm_summary, response
@@ -1121,9 +1111,7 @@ class Client(BaseClient):
         # delete empty values
         data = {k: v for k, v in data.items() if v}
 
-        headers = self._headers
-
-        response = self._http_request('POST', 'lr-case-api/cases', json_data=data, headers=headers)
+        response = self._http_request('POST', 'lr-case-api/cases', json_data=data)
 
         return response
 
@@ -1136,9 +1124,7 @@ class Client(BaseClient):
         # delete empty values
         data = {k: v for k, v in data.items() if v}
 
-        headers = self._headers
-
-        response = self._http_request('PUT', f'lr-case-api/cases/{case_id}', json_data=data, headers=headers)
+        response = self._http_request('PUT', f'lr-case-api/cases/{case_id}', json_data=data)
 
         return response
 
@@ -1146,40 +1132,34 @@ class Client(BaseClient):
         status_number = CASE_STATUS.get(status)
 
         data = {"statusNumber": status_number}
-        headers = self._headers
 
         response = self._http_request(
-            'PUT', f'lr-case-api/cases/{case_id}/actions/changeStatus/', json_data=data, headers=headers)
+            'PUT', f'lr-case-api/cases/{case_id}/actions/changeStatus/', json_data=data)
 
         return response
 
     def case_evidence_list_request(self, case_id, evidence_number, evidence_type, status):
         params = assign_params(type=evidence_type, status=status)
-        headers = self._headers
 
-        evidences = self._http_request('GET', f'lr-case-api/cases/{case_id}/evidence', params=params, headers=headers)
+        evidences = self._http_request('GET', f'lr-case-api/cases/{case_id}/evidence', params=params)
 
         if evidence_number:
             evidences = next((evidence for evidence in evidences if evidence.get('number') == int(evidence_number)), None)
         return evidences
 
     def case_alarm_evidence_add_request(self, case_id, alarm_numbers):
-        headers = self._headers
-
         alarms = [int(alarm) for alarm in alarm_numbers]
         data = {"alarmNumbers": alarms}
 
         response = self._http_request(
-            'POST', f'lr-case-api/cases/{case_id}/evidence/alarms', json_data=data, headers=headers)
+            'POST', f'lr-case-api/cases/{case_id}/evidence/alarms', json_data=data)
 
         return response
 
     def case_note_evidence_add_request(self, case_id, note):
         data = {"text": note}
-        headers = self._headers
-
         response = self._http_request(
-            'POST', f'lr-case-api/cases/{case_id}/evidence/note', json_data=data, headers=headers)
+            'POST', f'lr-case-api/cases/{case_id}/evidence/note', json_data=data)
 
         return response
 
@@ -1204,44 +1184,35 @@ class Client(BaseClient):
                'Content-Disposition: form-data; name="note"\n\n' \
                '-------------------------------'
 
-        response = self._http_request('POST', f'lr-case-api/cases/{case_id}/evidence/file', headers=headers, data=data)
+        response = self._http_request('POST', f'lr-case-api/cases/{case_id}/evidence/file', data=data)
 
         return response
 
     def case_evidence_delete_request(self, case_id, evidence_number):
-        headers = self._headers
-
-        self._http_request('DELETE', f'lr-case-api/cases/{case_id}/evidence/{evidence_number}', headers=headers, resp_type='text')
+        self._http_request('DELETE', f'lr-case-api/cases/{case_id}/evidence/{evidence_number}', resp_type='text')
 
     def case_file_evidence_download_request(self, case_id, evidence_number):
-        headers = self._headers
-
         response = self._http_request(
-            'GET', f'lr-case-api/cases/{case_id}/evidence/{evidence_number}/download/', headers=headers,
-            resp_type='other')
+            'GET', f'lr-case-api/cases/{case_id}/evidence/{evidence_number}/download/', resp_type='other')
 
         filename = re.findall("filename=\"(.+)\"", response.headers['Content-Disposition'])[0]
         return fileResult(filename, response.content)
 
     def case_tags_add_request(self, case_id, tag_numbers):
-        headers = self._headers
-
         tags = [int(tag) for tag in tag_numbers]
         data = {"numbers": tags}
 
         response = self._http_request(
-            'PUT', f'lr-case-api/cases/{case_id}/actions/addTags', json_data=data, headers=headers)
+            'PUT', f'lr-case-api/cases/{case_id}/actions/addTags', json_data=data)
 
         return response
 
     def case_tags_remove_request(self, case_id, tag_numbers):
-        headers = self._headers
-
         tags = [int(tag) for tag in tag_numbers]
         data = {"numbers": tags}
 
         response = self._http_request(
-            'PUT', f'lr-case-api/cases/{case_id}/actions/removeTags', json_data=data, headers=headers)
+            'PUT', f'lr-case-api/cases/{case_id}/actions/removeTags', json_data=data)
 
         return response
 
@@ -1259,11 +1230,7 @@ class Client(BaseClient):
         return response
 
     def case_collaborators_list_request(self, case_id):
-        headers = self._headers
-
-        response = self._http_request('GET', f'lr-case-api/cases/{case_id}/collaborators', headers=headers)
-
-        return response
+        return self._http_request('GET', f'lr-case-api/cases/{case_id}/collaborators')
 
     def case_collaborators_update_request(self, case_id, owner, collaborators):
         collaborators = [int(collaborator) for collaborator in collaborators]
@@ -1271,18 +1238,15 @@ class Client(BaseClient):
         data = {"owner": int(owner),
                 "collaborators": collaborators}
 
-        headers = self._headers
-
         response = self._http_request(
-            'PUT', f'lr-case-api/cases/{case_id}/collaborators', json_data=data, headers=headers)
+            'PUT', f'lr-case-api/cases/{case_id}/collaborators', json_data=data)
 
         return response
 
     def entities_list_request(self, entity_id, parent_entity_id, offset, count):
         params = assign_params(parentEntityId=parent_entity_id, offset=offset, count=count)
-        headers = self._headers
 
-        entities = self._http_request('GET', 'lr-admin-api/entities', params=params, headers=headers)
+        entities = self._http_request('GET', 'lr-admin-api/entities', params=params)
         if entity_id:
             entities = next((entity for entity in entities if entity.get('id') == int(entity_id)), None)
         return entities
@@ -1290,9 +1254,8 @@ class Client(BaseClient):
     def hosts_list_request(self, host_name=None, entity_name=None, record_status=None, offset=None,
                            count=None, endpoint_id_list=None, endpoint_hostname_list=None):
         params = assign_params(name=host_name, entity=entity_name, recordStatus=record_status, offset=offset, count=count)
-        headers = self._headers
 
-        hosts = self._http_request('GET', 'lr-admin-api/hosts', params=params, headers=headers)
+        hosts = self._http_request('GET', 'lr-admin-api/hosts', params=params)
 
         if endpoint_id_list:
             endpoint_id_list = [int(id_) for id_ in endpoint_id_list]
@@ -1305,9 +1268,8 @@ class Client(BaseClient):
 
     def users_list_request(self, user_ids, entity_ids, user_status, offset, count):
         params = assign_params(id=user_ids, entityIds=entity_ids, userStatus=user_status, offset=offset, count=count)
-        headers = self._headers
 
-        response = self._http_request('GET', 'lr-admin-api/users', params=params, headers=headers)
+        response = self._http_request('GET', 'lr-admin-api/users', params=params)
 
         return response
 
@@ -1333,16 +1295,13 @@ class Client(BaseClient):
                 "doesExpire": does_expire, "entityName": entity_name, "owner": int(owner),
                 "listType": list_type, "name": name, "needToNotify": need_to_notify, "readAccess": read_access,
                 "restrictedRead": restricted_read, "writeAccess": write_access}
-        headers = self._headers
 
-        response = self._http_request('POST', 'lr-admin-api/lists', json_data=data, headers=headers)
+        response = self._http_request('POST', 'lr-admin-api/lists', json_data=data)
 
         return response
 
     def list_details_and_items_get_request(self, list_id, max_items):
-        headers = self._headers
-
-        raw_response = self._http_request('GET', f'lr-admin-api/lists/{list_id}', headers=headers)
+        raw_response = self._http_request('GET', f'lr-admin-api/lists/{list_id}')
         response = raw_response.copy()
         if max_items:
             items = response.get('items')[:int(max_items)]
@@ -1353,8 +1312,7 @@ class Client(BaseClient):
         if type(items) is dict:
             items = [items]
         data = {"items": items}
-        headers = self._headers
-        response = self._http_request('POST', f'lr-admin-api/lists/{list_id}/items', json_data=data, headers=headers)
+        response = self._http_request('POST', f'lr-admin-api/lists/{list_id}/items', json_data=data)
 
         return response
 
@@ -1362,18 +1320,14 @@ class Client(BaseClient):
         if type(items) is dict:
             items = [items]
         data = {"items": items}
-        headers = self._headers
 
-        response = self._http_request('DELETE', f'lr-admin-api/lists/{list_id}/items', json_data=data, headers=headers)
+        response = self._http_request('DELETE', f'lr-admin-api/lists/{list_id}/items', json_data=data)
 
         return response
 
     def execute_search_query_request(self, number_of_days, source_type, host_name, username, subject, sender,
                                      recipient, hash_, url, process_name, object_, ipaddress, max_message,
                                      query_timeout, entity_id):
-
-        headers = self._headers
-
         # Create filter query
         query = []
 
@@ -1439,7 +1393,7 @@ class Client(BaseClient):
             }
         }
 
-        response = self._http_request('POST', 'lr-search-api/actions/search-task', json_data=data, headers=headers)
+        response = self._http_request('POST', 'lr-search-api/actions/search-task', json_data=data)
 
         return response
 
@@ -1470,7 +1424,6 @@ class Client(BaseClient):
         return query
 
     def get_query_result_request(self, task_id, page_size):
-        headers = self._headers
         data = {
             'data': {
                 'searchGuid': task_id,
@@ -1488,14 +1441,12 @@ class Client(BaseClient):
             }
         }
 
-        response = self._http_request('POST', 'lr-search-api/actions/search-result', json_data=data, headers=headers)
+        response = self._http_request('POST', 'lr-search-api/actions/search-result', json_data=data)
 
         return response
 
     def add_host_request(self, entity_id, entity_name, name, short_desc, long_desc, risk_level, threat_level,
                          threat_level_comments, status, host_zone, use_eventlog_credentials, os, os_type):
-        headers = self._headers
-
         data = {
             "id": -1,
             "entity": {
@@ -1518,26 +1469,23 @@ class Client(BaseClient):
             data['entity']['id'] = int(entity_id)
 
         # delete empty values
-        data = {k: v for k, v in data.items() if type(v) is bool or v}
+        data = {k: v for k, v in data.items() if isinstance(v, bool) or v}
 
-        response = self._http_request('POST', 'lr-admin-api/hosts', json_data=data, headers=headers)
+        response = self._http_request('POST', 'lr-admin-api/hosts', json_data=data)
 
         return response
 
     def hosts_status_update(self, host_id, status):
-        headers = self._headers
         data = [{'hostId': int(host_id), 'status': status}]
-        response = self._http_request('PUT', 'lr-admin-api/hosts/status', json_data=data, headers=headers)
+        response = self._http_request('PUT', 'lr-admin-api/hosts/status', json_data=data)
         return response
 
     def networks_list_request(self, network_id, name, record_status, bip, eip, offset, count):
-        headers = self._headers
-
         if network_id:
-            return self._http_request('GET', f'lr-admin-api/networks/{network_id}', headers=headers)
+            return self._http_request('GET', f'lr-admin-api/networks/{network_id}')
         else:
             params = assign_params(name=name, recordStatus=record_status, BIP=bip, EIP=eip, offset=offset, count=count)
-            return self._http_request('GET', 'lr-admin-api/networks/', params=params, headers=headers)
+            return self._http_request('GET', 'lr-admin-api/networks/', params=params)
 
 
 def alarms_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -2156,7 +2104,8 @@ def list_items_add_command(client: Client, args: Dict[str, Any]) -> CommandResul
 
     try:
         items = json.loads(items_json)
-    except ValueError:
+    except ValueError as e:
+        demisto.error(f'Unable to parse the items arg in lr-list-items-add command: {e}')
         raise DemistoException('Unable to parse JSON string. Please verify the items argument is valid.')
 
     response = client.list_items_add_request(list_guid, items)
@@ -2181,7 +2130,8 @@ def list_items_remove_command(client: Client, args: Dict[str, Any]) -> CommandRe
 
     try:
         items = json.loads(items_json)
-    except ValueError:
+    except ValueError as e:
+        demisto.error(f'Unable to parse the items arg in lr-list-items-remove command: {e}')
         raise DemistoException('Unable to parse JSON string. Please verify the items argument is valid.')
 
     response = client.list_items_remove_request(list_guid, items)
@@ -2367,9 +2317,11 @@ def endpoint_command(client: Client, args: Dict[str, Any]) -> List[CommandResult
     return command_results
 
 
-def test_module(client: Client, fetch_type: str, cases_max_fetch: int, alarms_max_fetch: int, fetch_time: str) -> None:
+def test_module(client: Client, is_fetch: bool, fetch_type: str, cases_max_fetch: int, alarms_max_fetch: int,
+                fetch_time: str) -> None:
     client.lists_get_request(None, None, None)
-    fetch_incidents_command(client, fetch_type, cases_max_fetch, alarms_max_fetch, fetch_time)
+    if is_fetch:
+        fetch_incidents_command(client, fetch_type, cases_max_fetch, alarms_max_fetch, fetch_time)
     return_results('ok')
 
 
@@ -2393,14 +2345,14 @@ def fetch_alarms(client: Client, limit: int, fetch_time: str, alarm_status_filte
     alarm_incidents = []
     last_run = demisto.getLastRun()
     alarm_last_run = last_run.get('AlarmLastRun')
-    next_run = dateparser.parse(fetch_time).strftime("%Y-%m-%dT%H:%M:%S")
+    first_run = dateparser.parse(fetch_time).strftime("%Y-%m-%dT%H:%M:%S")
 
     alarms_list_args = {'count': limit}
 
     if alarm_last_run:
         alarms_list_args['created_after'] = alarm_last_run
-    elif next_run:
-        alarms_list_args['created_after'] = next_run
+    elif first_run:
+        alarms_list_args['created_after'] = first_run
 
     # filter alerts
     if alarm_status_filter:
@@ -2413,7 +2365,7 @@ def fetch_alarms(client: Client, limit: int, fetch_time: str, alarm_status_filte
     for alarm in alarms:
         alarm['incidentType'] = 'Alarm'
         incident = {
-            'name': f'Alarm #{str(alarm.get("alarmId"))} {alarm.get("alarmRuleName")}',
+            'name': f'Alarm #{alarm.get("alarmId")} {alarm.get("alarmRuleName")}',
             'occurred': f'{alarm.get("dateInserted")}Z',
             'rawJSON': json.dumps(alarm)
         }
@@ -2430,16 +2382,16 @@ def fetch_cases(client: Client, limit: int, fetch_time: str,
     case_incidents = []
     last_run = demisto.getLastRun()
     case_last_run = last_run.get('CaseLastRun')
-    next_run = dateparser.parse(fetch_time).strftime("%Y-%m-%dT%H:%M:%SZ")
+    first_run = dateparser.parse(fetch_time).strftime("%Y-%m-%dT%H:%M:%SZ")
 
     cases_list_args = {'count': limit}
 
     if case_last_run:
         cases_list_args['timestamp_filter_type'] = 'createdAfter'  # type: ignore
         cases_list_args['timestamp'] = case_last_run
-    elif next_run:
+    elif first_run:
         cases_list_args['timestamp_filter_type'] = 'createdAfter'  # type: ignore
-        cases_list_args['timestamp'] = next_run
+        cases_list_args['timestamp'] = first_run
 
     # filter cases
     if case_tags_filter:
@@ -2454,7 +2406,7 @@ def fetch_cases(client: Client, limit: int, fetch_time: str,
     for case in cases:
         case['incidentType'] = 'Case'
         incident = {
-            'name': f'Case #{str(case.get("number"))} {case.get("name")}',
+            'name': f'Case #{case.get("number")} {case.get("name")}',
             'occurred': case.get('dateCreated'),
             'rawJSON': json.dumps(case)
         }
@@ -2474,6 +2426,7 @@ def main() -> None:
     proxy = params.get('proxy', False)
     incidents_type = params.get('fetchType', 'Both')
     fetch_time = params.get('first_fetch', '7 days')
+    is_fetch: bool = params.get('isFetch', False)
     alarms_max_fetch = params.get('alarmsMaxFetch', 100)
     cases_max_fetch = params.get('casesMaxFetch', 100)
     alarm_status_filter = params.get('alarm_status_filter', '')
@@ -2482,7 +2435,8 @@ def main() -> None:
     case_status_filter = params.get('case_status_filter', '')
     case_tags_filter = params.get('case_tags_filter', '')
 
-    headers = {'Authorization': f'Bearer {params["token"]}'}
+    api_key = params.get('credentials', {}).get('password')
+    headers = {'Authorization': f'Bearer {api_key}'}
 
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
@@ -2530,7 +2484,7 @@ def main() -> None:
         }
 
         if command == 'test-module':
-            test_module(client, incidents_type, cases_max_fetch, alarms_max_fetch, fetch_time)
+            test_module(client, is_fetch, incidents_type, cases_max_fetch, alarms_max_fetch, fetch_time)
         elif command == 'fetch-incidents':
             demisto.incidents(fetch_incidents_command(client, incidents_type, cases_max_fetch, alarms_max_fetch,
                                                       fetch_time, alarm_status_filter=alarm_status_filter,

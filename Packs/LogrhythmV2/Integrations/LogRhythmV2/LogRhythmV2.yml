@@ -9,24 +9,13 @@ description: LogRhythm security intelligence.
 configuration:
 - name: url
   display: Server URL
-  defaultvalue: https://www.example.com
   type: 0
   required: true
-- name: proxy
-  display: Use system proxy settings
-  defaultvalue: ''
-  type: 8
+- displaypassword: API Token
+  name: credentials
+  type: 9
   required: false
-- name: insecure
-  display: Trust any certificate (not secure)
-  defaultvalue: ''
-  type: 8
-  required: false
-- name: token
-  display: API Token
-  defaultvalue: ''
-  type: 4
-  required: true
+  hiddenusername: true
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -113,6 +102,16 @@ configuration:
   - '3'
   - '4'
   - '5'
+- name: proxy
+  display: Use system proxy settings
+  defaultvalue: ''
+  type: 8
+  required: false
+- name: insecure
+  display: Trust any certificate (not secure)
+  defaultvalue: ''
+  type: 8
+  required: false
 script:
   script: ''
   type: python
