@@ -80,7 +80,6 @@ class MicrosoftClient(BaseClient):
             self_deployed: Indicates whether the integration mode is self deployed or oproxy
         """
         super().__init__(verify=verify, *args, **kwargs)  # type: ignore[misc]
-        self.endpoint = endpoint
         if not self_deployed:
             auth_id_and_token_retrieval_url = auth_id.split('@')
             auth_id = auth_id_and_token_retrieval_url[0]
@@ -96,6 +95,7 @@ class MicrosoftClient(BaseClient):
             self.refresh_token = refresh_token
 
         else:
+            self.endpoint = endpoint
             self.token_retrieval_url = token_retrieval_url.format(tenant_id=tenant_id, endpoint=TOKEN_RETRIEVAL_ENDPOINTS[self.endpoint])
             self.client_id = auth_id
             self.client_secret = enc_key
@@ -264,8 +264,7 @@ class MicrosoftClient(BaseClient):
                 'registration_id': self.auth_id,
                 'encrypted_token': self.get_encrypted(content, self.enc_key),
                 'scope': scope,
-                'resource': resource,
-                'auth_endpoint': self.endpoint
+                'resource': resource
             },
             verify=self.verify
         )
