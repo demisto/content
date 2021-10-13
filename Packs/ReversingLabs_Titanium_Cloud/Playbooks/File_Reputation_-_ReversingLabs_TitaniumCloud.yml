@@ -207,7 +207,7 @@ inputs:
   value:
     simple: ${File.SHA1}
   required: false
-  description: File hash.
+  description: File hash (sha1, md5 or sha256).
   playbookInputQuery:
 outputs:
 - contextPath: File.MD5
