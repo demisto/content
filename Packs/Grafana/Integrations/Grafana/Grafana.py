@@ -699,7 +699,7 @@ def dashboards_search_command(client: Client, args: Dict[str, Any]) -> CommandRe
     page = args.get('page')
 
     response = client.dashboards_search_request(query, tag, type_, dashboard_ids, folder_ids, starred, limit, page)
-    headers = ['id', 'uid', 'title', 'isStarred', 'tags', 'uri', 'url', 'slug', 'type', 'sortMeta']
+    headers = ['id', 'uid', 'title', 'isStarred', 'tags', 'uri', 'url', 'slug', 'type']
     command_results = CommandResults(
         outputs_prefix='Grafana.Dashboard',
         outputs_key_field='id',

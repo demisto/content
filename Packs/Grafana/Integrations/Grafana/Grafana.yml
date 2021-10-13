@@ -37,8 +37,8 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-- additionalinfo: A comma-separated list of dashboard IDs. Can be found by running the "grafana-dashboards-search"
-    command.
+- additionalinfo: A comma-separated list of dashboard IDs. Can be found by running
+    the "grafana-dashboards-search" command.
   display: Dashboard IDs to fetch
   hidden: false
   name: dashboard_id
@@ -86,7 +86,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The ID of the panel by which to filter the results. 
+      description: The ID of the panel by which to filter the results.
       isArray: false
       name: panel_id
       required: false
@@ -164,7 +164,8 @@ script:
       description: The date the alert was evaluated.
       type: Date
     - contextPath: Grafana.Alert.evalData
-      description: The metric that triggered the alert and made it change to the alerting state.
+      description: The metric that triggered the alert and made it change to the alerting
+        state.
       type: Unknown
     - contextPath: Grafana.Alert.executionError
       description: Alert execution error.
@@ -222,7 +223,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The value contained in either the name, login, or email fields by which to filter the results.
+      description: The value contained in either the name, login, or email fields
+        by which to filter the results.
       isArray: false
       name: query
       required: false
@@ -254,10 +256,11 @@ script:
       description: Is user disabled?
       type: Boolean
     - contextPath: Grafana.User.lastSeenAt
-      description: The date the user was last seen. 
+      description: The date the user was last seen.
       type: Date
     - contextPath: Grafana.User.lastSeenAtAge
-      description: When the user was last seen in minutes (m), years (Y), month (M), days (d), etc.
+      description: When the user was last seen in minutes (m), years (Y), month (M),
+        days (d), etc.
       type: String
     - contextPath: Grafana.User.authLabels
       description: User authentication labels
@@ -344,7 +347,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'User theme when using Grafana''s interface. Possilble values: "light" or "dark".'
+      description: 'User theme when using Grafana''s interface. Possilble values:
+        "light" or "dark".'
       isArray: false
       name: theme
       predefined:
@@ -359,8 +363,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Gets updates on the user by user ID. Login or email is mandatory. 
-      If you change your own login information, you won't be able to continue querying as your username
+    description: Updates a user by user ID. Login or email is mandatory. If you change
+      your own login information, you won't be able to continue querying as your username
       (login) will change. Login and email should be unique.
     execution: true
     name: grafana-user-update
@@ -634,7 +638,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether to only return starred dashboards. Possible values: "true" and "false".'
+      description: 'Whether to only return starred dashboards. Possible values: "true"
+        and "false".'
       isArray: false
       name: starred
       predefined:
@@ -822,10 +827,13 @@ script:
       description: Alert frequency in seconds.
       type: Number
     - contextPath: Grafana.Alert.for
-      description: The number of nanoseconds the alert rule runs.
+      description: Once the alert rule has been firing for more than this duration
+        in nanoseconds, then the alert changes to "Alerting". Otherwise it goes from
+        "OK" to "Pending".
       type: Number
     - contextPath: Grafana.Alert.evalData
-      description: The metric that triggered the alert and made it change to the alerting state.
+      description: The metric that triggered the alert and made it change to the "Alerting"
+        state.
       type: Unknown
     - contextPath: Grafana.Alert.newStateDate
       description: The date of the alert's new state.
@@ -868,7 +876,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The exact name of the organization to fetch.
+      description: The exact name of the organization to get.
       isArray: false
       name: name
       required: true

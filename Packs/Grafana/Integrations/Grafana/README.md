@@ -1,4 +1,4 @@
-Grafana alerting service
+Grafana alerting service.
 This integration was integrated and tested with version 8.0.0 of Grafana
 
 ## Configure Grafana on Cortex XSOAR
@@ -14,10 +14,10 @@ This integration was integrated and tested with version 8.0.0 of Grafana
     | Password |  | True |
     | Use system proxy settings |  | False |
     | Trust any certificate (not secure) |  | False |
-    | Maximum number of incidents to fetch | maximum is limited to 200. | False |
+    | Maximum number of incidents to fetch | Maximum is limited to 200. | False |
     | Fetch incidents |  | False |
     | First fetch time interval |  | False |
-    | Dashboard IDs to fetch | A comma-separated list, can be found by running the "grafana-dashboards-search" command. | False |
+    | Dashboard IDs to fetch | A comma-separated list of dashboard IDs. Can be found by running the "grafana-dashboards-search" command. | False |
     | Panel ID to fetch | See "help". | False |
     | Alert name to fetch |  | False |
     | States to fetch |  | False |
@@ -39,13 +39,13 @@ Gets alerts.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| dashboard_id | A comma-separated list of dashboard ids by which to filter the results. | Optional | 
-| panel_id | Panel id by which to filter the results. | Optional | 
-| name | Limit response to alerts having a name that this value is contained in. | Optional | 
+| dashboard_id | A comma-separated list of dashboard IDs by which to filter the results. | Optional | 
+| panel_id | The ID of the panel by which to filter the results. | Optional | 
+| name | Value that is contained in the alert's name by which to filter the results. | Optional | 
 | state | A comma-separated list of states by which to filter the results. The options are: all, no_data, paused, alerting, ok, pending, unknown. | Optional | 
 | limit | The maximum number of alerts to return. | Optional | 
-| folder_id | A comma-separated list of folder ids by which to filter the results. | Optional | 
-| dashboard_name | Value that is contained in dashboard's name by which to filter the results. | Optional | 
+| folder_id | A comma-separated list of folder IDs by which to filter the results. | Optional | 
+| dashboard_name | Value that is contained in the dashboard's name by which to filter the results. | Optional | 
 | dashboard_tag | A comma-separated list of dashboard tags by which to filter the results. | Optional | 
 
 
@@ -53,18 +53,18 @@ Gets alerts.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Grafana.Alert.id | Number | Alert id | 
-| Grafana.Alert.dashboardId | Number | Alert dashboard id | 
-| Grafana.Alert.dashboardUid | String | Alert dashboard uid | 
-| Grafana.Alert.dashboardName | String | Alert dashboard name | 
-| Grafana.Alert.panelId | Number | Alert panel id | 
-| Grafana.Alert.name | String | Alert name | 
-| Grafana.Alert.state | String | Alert state | 
-| Grafana.Alert.newStateDate | Date | Alert new state date | 
-| Grafana.Alert.evalDate | Date | Alert eval date | 
-| Grafana.Alert.evalData | Unknown | Alert eval data | 
-| Grafana.Alert.executionError | String | Alert execution error | 
-| Grafana.Alert.url | String | Alert url | 
+| Grafana.Alert.id | Number | Alert ID. | 
+| Grafana.Alert.dashboardId | Number | Alert dashboard ID. | 
+| Grafana.Alert.dashboardUid | String | Alert dashboard UID. | 
+| Grafana.Alert.dashboardName | String | Alert dashboard name. | 
+| Grafana.Alert.panelId | Number | Alert panel ID. | 
+| Grafana.Alert.name | String | Alert name. | 
+| Grafana.Alert.state | String | Alert state. | 
+| Grafana.Alert.newStateDate | Date | The date on which the new alert state appeared. | 
+| Grafana.Alert.evalDate | Date | The date the alert was evaluated. | 
+| Grafana.Alert.evalData | Unknown | The metric that triggered the alert and made it change to the alerting state. | 
+| Grafana.Alert.executionError | String | Alert execution error. | 
+| Grafana.Alert.url | String | Alert URL. | 
 
 
 #### Command Example
@@ -140,7 +140,7 @@ Gets alerts.
 
 ### grafana-alert-pause
 ***
-Pauses an alert by id.
+Pauses an alert by ID.
 
 
 #### Base Command
@@ -150,15 +150,15 @@ Pauses an alert by id.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | Alert id to pause. | Required | 
+| alert_id | ID of the alert to pause. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Grafana.Alert.id | Number | Alert id paused. | 
-| Grafana.Alert.state | String | Alert's new state. | 
+| Grafana.Alert.id | Number | The ID of the alert that was paused. | 
+| Grafana.Alert.state | String | The new state of the alert. | 
 
 
 #### Command Example
@@ -187,7 +187,7 @@ Pauses an alert by id.
 
 ### grafana-alert-unpause
 ***
-Unpauses an alert by id.
+Unpauses an alert by ID.
 
 
 #### Base Command
@@ -197,15 +197,15 @@ Unpauses an alert by id.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | Alert id to unpause. | Required | 
+| alert_id | ID of the alert to unpause. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Grafana.Alert.id | Number | Alert id paused. | 
-| Grafana.Alert.state | String | Alert's new state. | 
+| Grafana.Alert.id | Number | The ID of the alert that was unpaused. | 
+| Grafana.Alert.state | String | The new state of the alert. | 
 
 
 #### Command Example
@@ -244,24 +244,24 @@ Gets users.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| perpage | Number of results wanted in one page. | Optional | 
-| page | Index of page of results wanted. | Optional | 
-| query | Value is contained in one of the name, login or email fields. | Optional | 
+| perpage | Number of results to return per page. | Optional | 
+| page | Index of the page of results to retrieve. | Optional | 
+| query | The value contained in either the name, login, or email fields by which to filter the results. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Grafana.User.id | Number | User id | 
-| Grafana.User.name | String | User name | 
-| Grafana.User.login | String | User login | 
-| Grafana.User.email | String | User email | 
-| Grafana.User.avatarUrl | String | User avatar url | 
-| Grafana.User.isAdmin | Boolean | Is user admin? | 
+| Grafana.User.id | Number | User ID. | 
+| Grafana.User.name | String | User name. | 
+| Grafana.User.login | String | User login. | 
+| Grafana.User.email | String | User email. | 
+| Grafana.User.avatarUrl | String | User avatar URL. | 
+| Grafana.User.isAdmin | Boolean | Is user an admin? | 
 | Grafana.User.isDisabled | Boolean | Is user disabled? | 
-| Grafana.User.lastSeenAt | Date | User last seen at | 
-| Grafana.User.lastSeenAtAge | String | User last seen at age | 
+| Grafana.User.lastSeenAt | Date | The date the user was last seen. | 
+| Grafana.User.lastSeenAtAge | String | When the user was last seen in minutes \(m\), years \(Y\), month \(M\), days \(d\), etc. | 
 | Grafana.User.authLabels | Unknown | User authentication labels | 
 
 
@@ -314,7 +314,7 @@ Gets users.
 
 ### grafana-user-teams-get
 ***
-Gets the user's teams by user id.
+Gets the user's teams by user ID.
 
 
 #### Base Command
@@ -324,20 +324,20 @@ Gets the user's teams by user id.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | User id to get teams for. | Required | 
+| user_id | ID of user for whom to get teams. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Grafana.User.id | Number | user id | 
-| Grafana.User.teams.id | Number | Team id | 
-| Grafana.User.teams.orgId | Number | Team organization id | 
-| Grafana.User.teams.name | String | Team name | 
-| Grafana.User.teams.email | String | Team email | 
-| Grafana.User.teams.avatarUrl | String | Team avatar url | 
-| Grafana.User.teams.memberCount | Number | Team member count | 
+| Grafana.User.id | Number | User ID. | 
+| Grafana.User.teams.id | Number | Team ID. | 
+| Grafana.User.teams.orgId | Number | Team organization ID. | 
+| Grafana.User.teams.name | String | Team name. | 
+| Grafana.User.teams.email | String | Team email. | 
+| Grafana.User.teams.avatarUrl | String | Team avatar URL. | 
+| Grafana.User.teams.memberCount | Number | Team member count. | 
 | Grafana.User.teams.permission | Number | Number of team permissions. | 
 
 
@@ -386,7 +386,7 @@ Gets the user's teams by user id.
 
 ### grafana-user-orgs-get
 ***
-Gets user's organizations by user id.
+Gets user's organizations by user ID.
 
 
 #### Base Command
@@ -396,17 +396,17 @@ Gets user's organizations by user id.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | User id. | Required | 
+| user_id | ID of user for whom to get the organizations. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Grafana.User.id | Number | User id | 
-| Grafana.User.orgs.orgId | Number | Organization id | 
-| Grafana.User.orgs.name | String | Organization name | 
-| Grafana.User.orgs.role | String | Organization role | 
+| Grafana.User.id | Number | User ID. | 
+| Grafana.User.orgs.orgId | Number | Organization ID. | 
+| Grafana.User.orgs.name | String | Organization name. | 
+| Grafana.User.orgs.role | String | Organization role. | 
 
 
 #### Command Example
@@ -446,7 +446,7 @@ Gets user's organizations by user id.
 
 ### grafana-user-update
 ***
-Login or email is mandatory. Pay attantion that if you change your own login information, you won't be able to continue quering as your username (login) will change. Login and email should be unique.
+Updates a user by user ID. Login or email is mandatory. If you change your own login information, you won't be able to continue querying as your username (login) will change. Login and email should be unique.
 
 
 #### Base Command
@@ -459,8 +459,8 @@ Login or email is mandatory. Pay attantion that if you change your own login inf
 | email | User email. If email is not specified, login must be specified. | Optional | 
 | name | User's name. | Optional | 
 | login | User login (username). If login is not specified, email must be specified. | Optional | 
-| theme | User theme when using Grafana's interface, either light or dark. Possible values are: light, dark. | Optional | 
-| user_id | User id. | Required | 
+| theme | User theme when using Grafana's interface. Possilble values: "light" or "dark". Possible values are: light, dark. | Optional | 
+| user_id | User ID. | Required | 
 
 
 #### Context Output
@@ -480,7 +480,7 @@ There is no context output for this command.
 
 ### grafana-annotation-create
 ***
-Creates an annotation in the Grafana database. The dashboard_id and panel_id fields are optional. If they are not specified then a global annotation is created and can be queried in any dashboard that adds the Grafana annotations data source. When creating a region annotation include the time_end property.
+Creates an annotation in the Grafana database. The dashboard_id and panel_id fields are optional. If they are not specified, a global annotation is created and can be queried in any dashboard that adds the Grafana annotations data source. When creating a region annotation include the time_end property.
 
 
 #### Base Command
@@ -490,19 +490,19 @@ Creates an annotation in the Grafana database. The dashboard_id and panel_id fie
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| dashboard_id | Dashboard id. | Optional | 
-| panel_id | Panel id. | Optional | 
+| dashboard_id | Dashboard ID. | Optional | 
+| panel_id | Panel ID. | Optional | 
 | time | Start time. | Optional | 
 | time_end | End time. | Optional | 
 | tags | A comma-separated list of tags by which to filter the dashboards to add the annotation to. | Optional | 
-| text | Text. | Required | 
+| text | Text of the annotation. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Grafana.Annotation.id | Number | Annotation id | 
+| Grafana.Annotation.id | Number | Annotation ID. | 
 
 
 #### Command Example
@@ -540,9 +540,9 @@ Gets teams.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| perpage | Number of results wanted in one page. | Optional | 
-| page | Index of page of results wanted. | Optional | 
-| query | Value is contained in the name of a team. | Optional | 
+| perpage | Number of results to return on a page. | Optional | 
+| page | Index of the page of results to retrieve. | Optional | 
+| query | The value contained in the name of a team. | Optional | 
 | name | The exact name of the team. | Optional | 
 
 
@@ -550,12 +550,12 @@ Gets teams.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Grafana.Team.id | Number | Team id | 
-| Grafana.Team.orgId | Number | Team organization id | 
-| Grafana.Team.name | String | Team name | 
-| Grafana.Team.email | String | Team email | 
-| Grafana.Team.avatarUrl | String | Team avatar url | 
-| Grafana.Team.memberCount | Number | Team member count | 
+| Grafana.Team.id | Number | Team ID. | 
+| Grafana.Team.orgId | Number | Team organization ID. | 
+| Grafana.Team.name | String | Team name. | 
+| Grafana.Team.email | String | Team email. | 
+| Grafana.Team.avatarUrl | String | Team avatar URL. | 
+| Grafana.Team.memberCount | Number | The number of team members. | 
 | Grafana.Team.permission | Number | Number of team permissions. | 
 
 
@@ -611,7 +611,7 @@ Gets teams.
 
 ### grafana-team-members-list
 ***
-Gets a list of all team members by team id.
+Gets a list of all team members by team ID.
 
 
 #### Base Command
@@ -621,24 +621,24 @@ Gets a list of all team members by team id.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| team_id | Team id. | Required | 
+| team_id | Team ID. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Grafana.Team.id | Number | Team id | 
-| Grafana.Team.members.orgId | Number | Member organization id | 
-| Grafana.Team.members.teamId | Number | Member team id | 
-| Grafana.Team.members.userId | Number | Member user id | 
-| Grafana.Team.members.auth_module | String | Member authentication module | 
-| Grafana.Team.members.email | String | Member email | 
-| Grafana.Team.members.name | String | Member name | 
-| Grafana.Team.members.login | String | Member login | 
-| Grafana.Team.members.avatarUrl | String | Member avatar url | 
-| Grafana.Team.members.labels | Unknown | Member labels | 
-| Grafana.Team.members.permission | Number | Member permission | 
+| Grafana.Team.id | Number | Team ID. | 
+| Grafana.Team.members.orgId | Number | Member organization ID. | 
+| Grafana.Team.members.teamId | Number | Member team ID. | 
+| Grafana.Team.members.userId | Number | Member user ID. | 
+| Grafana.Team.members.auth_module | String | Member authentication module. | 
+| Grafana.Team.members.email | String | Member email. | 
+| Grafana.Team.members.name | String | Member name. | 
+| Grafana.Team.members.login | String | Member login. | 
+| Grafana.Team.members.avatarUrl | String | Member avatar URL. | 
+| Grafana.Team.members.labels | Unknown | Member labels. | 
+| Grafana.Team.members.permission | Number | Member permission. | 
 
 
 #### Command Example
@@ -689,8 +689,8 @@ Adds a user to a team.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | User id. | Required | 
-| team_id | Team id. | Required | 
+| user_id | User ID. | Required | 
+| team_id | Team ID. | Required | 
 
 
 #### Context Output
@@ -720,8 +720,8 @@ Removes a user from a team.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| team_id | Team id. | Required | 
-| user_id | User id. | Required | 
+| team_id | Team ID. | Required | 
+| user_id | User ID. | Required | 
 
 
 #### Context Output
@@ -751,16 +751,16 @@ Creates a new team.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The team name, needs to be unique. | Required | 
-| email | Email. | Optional | 
-| org_id | Organization id. | Optional | 
+| name | The team name. Must be unique. | Required | 
+| email | Email address of the team. | Optional | 
+| org_id | Organization ID. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Grafana.Team.id | Number | Team id | 
+| Grafana.Team.id | Number | Team ID. | 
 
 
 #### Command Example
@@ -798,7 +798,7 @@ Deletes a team.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| team_id | Team id. | Required | 
+| team_id | Team ID. | Required | 
 
 
 #### Context Output
@@ -818,7 +818,7 @@ There is no context output for this command.
 
 ### grafana-org-create
 ***
-Creats an organization.
+Creates an organization.
 
 
 #### Base Command
@@ -828,14 +828,14 @@ Creats an organization.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Name. | Required | 
+| name | Name of the organization. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Grafana.Organization.id | Number | Organization id | 
+| Grafana.Organization.id | Number | Organization ID. | 
 
 
 #### Command Example
@@ -863,7 +863,7 @@ Creats an organization.
 
 ### grafana-dashboards-search
 ***
-Searchs dashboards.
+Searches dashboards.
 
 
 #### Base Command
@@ -875,10 +875,10 @@ Searchs dashboards.
 | --- | --- | --- |
 | query | Value is contained in the name of the dashboard. | Optional | 
 | tag | A comma-separated list of tags by which to filter the results. | Optional | 
-| type | Type. Possible values are: dash-folder, dash-db. | Optional | 
+| type | Type of the dashboard. Possible values: "dash-folder" and "dash-db". Possible values are: dash-folder, dash-db. | Optional | 
 | dashboard_ids | A comma-separated list of dashboard IDs by which to filter the results. | Optional | 
 | folder_ids | A comma-separated list of folder IDs by which to filter the results. | Optional | 
-| starred | Indices if only starred dashboards should be returned. Possible values are: true, false. | Optional | 
+| starred | Whether to only return starred dashboards. Possible values: "true" and "false". Possible values are: true, false. | Optional | 
 | limit | The maximum number of dashboards to return. | Optional | 
 | page | Page. | Optional | 
 
@@ -887,14 +887,14 @@ Searchs dashboards.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Grafana.Dashboard.id | Number | Dashboard id | 
-| Grafana.Dashboard.uid | String | Dashboard uid | 
-| Grafana.Dashboard.title | String | Dashboard title | 
-| Grafana.Dashboard.uri | String | Dashboard uri | 
-| Grafana.Dashboard.url | String | Dashboard url | 
-| Grafana.Dashboard.slug | String | Dashboard slug | 
-| Grafana.Dashboard.type | String | Dashboard type | 
-| Grafana.Dashboard.tags | Unknown | Dashboard tags | 
+| Grafana.Dashboard.id | Number | Dashboard ID. | 
+| Grafana.Dashboard.uid | String | Dashboard UID. | 
+| Grafana.Dashboard.title | String | Dashboard title. | 
+| Grafana.Dashboard.uri | String | Dashboard URI. | 
+| Grafana.Dashboard.url | String | Dashboard URL | 
+| Grafana.Dashboard.slug | String | Dashboard slug. | 
+| Grafana.Dashboard.type | String | Dashboard type. | 
+| Grafana.Dashboard.tags | Unknown | Dashboard tags. | 
 | Grafana.Dashboard.isStarred | Boolean | Is dashboard starred? | 
 
 
@@ -946,7 +946,7 @@ Searchs dashboards.
 
 ### grafana-user-get-by-id
 ***
-Gets a user by id.
+Gets a user by ID.
 
 
 #### Base Command
@@ -956,26 +956,26 @@ Gets a user by id.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | User id. | Required | 
+| user_id | User ID. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Grafana.User.id | Number | User id | 
-| Grafana.User.email | String | User email | 
-| Grafana.User.name | String | User name | 
-| Grafana.User.login | String | User login | 
-| Grafana.User.theme | String | User theme | 
-| Grafana.User.orgId | Number | Organization id | 
-| Grafana.User.isGrafanaAdmin | Boolean | Is user Grafana admin? | 
+| Grafana.User.id | Number | User ID. | 
+| Grafana.User.email | String | User email. | 
+| Grafana.User.name | String | User name. | 
+| Grafana.User.login | String | User login. | 
+| Grafana.User.theme | String | User theme. | 
+| Grafana.User.orgId | Number | Organization ID. | 
+| Grafana.User.isGrafanaAdmin | Boolean | Is user a Grafana admin? | 
 | Grafana.User.isDisabled | Boolean | Is user disabled? | 
 | Grafana.User.isExternal | Boolean | Is user external? | 
-| Grafana.User.updatedAt | Date | User updated at | 
-| Grafana.User.createdAt | Date | User created at | 
-| Grafana.User.avatarUrl | String | User avatar url | 
-| Grafana.User.authLabels | Unknown | User authentication labels | 
+| Grafana.User.updatedAt | Date | Date when user was updated. | 
+| Grafana.User.createdAt | Date | Date when user was created. | 
+| Grafana.User.avatarUrl | String | User avatar URL. | 
+| Grafana.User.authLabels | Unknown | User authentication labels. | 
 
 
 #### Command Example
@@ -1014,7 +1014,7 @@ Gets a user by id.
 
 ### grafana-team-get-by-id
 ***
-Gets a team by id.
+Gets a team by ID.
 
 
 #### Base Command
@@ -1024,19 +1024,19 @@ Gets a team by id.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| team_id | Team id. | Required | 
+| team_id | Team ID. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Grafana.Team.id | Number | Team id | 
-| Grafana.Team.orgId | Number | Team organization id | 
-| Grafana.Team.name | String | Team name | 
-| Grafana.Team.email | String | Team email | 
-| Grafana.Team.avatarUrl | String | Team avatar url | 
-| Grafana.Team.memberCount | Number | Team member count | 
+| Grafana.Team.id | Number | Team ID. | 
+| Grafana.Team.orgId | Number | Team organization ID. | 
+| Grafana.Team.name | String | Team name. | 
+| Grafana.Team.email | String | Team email. | 
+| Grafana.Team.avatarUrl | String | Team avatar URL. | 
+| Grafana.Team.memberCount | Number | The number of team members. | 
 | Grafana.Team.permission | Number | Number of team permissions. | 
 
 
@@ -1080,33 +1080,33 @@ Gets an alert by id.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | Alert id. | Required | 
+| alert_id | Alert ID. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Grafana.Alert.id | Number | Alert id | 
-| Grafana.Alert.version | Number | Alert version | 
-| Grafana.Alert.orgId | Number | Alert organization id | 
-| Grafana.Alert.dashboardId | Number | Alert dashboard id | 
-| Grafana.Alert.panelId | Number | Alert panel id | 
-| Grafana.Alert.name | String | Alert name | 
-| Grafana.Alert.message | String | Alert message | 
-| Grafana.Alert.severity | String | Alert severity | 
-| Grafana.Alert.state | String | Alert state | 
-| Grafana.Alert.handler | Number | Alert handler | 
-| Grafana.Alert.silenced | Boolean | Alert eval data - silenced | 
-| Grafana.Alert.executionError | String | Alert execution error | 
-| Grafana.Alert.frequency | Number | Alert frequency | 
-| Grafana.Alert.for | Number | Alert for | 
-| Grafana.Alert.evalData | Unknown | Alert eval data | 
-| Grafana.Alert.newStateDate | Date | Alert new state date | 
-| Grafana.Alert.stateChanges | Number | Alert state changes | 
-| Grafana.Alert.created | Date | Alert created | 
-| Grafana.Alert.updated | Date | Alert updated | 
-| Grafana.Alert.settings | Unknown | Alert settings | 
+| Grafana.Alert.id | Number | Alert ID. | 
+| Grafana.Alert.version | Number | Alert version. | 
+| Grafana.Alert.orgId | Number | Alert organization ID. | 
+| Grafana.Alert.dashboardId | Number | Alert dashboard ID. | 
+| Grafana.Alert.panelId | Number | Alert panel ID. | 
+| Grafana.Alert.name | String | Alert name. | 
+| Grafana.Alert.message | String | Alert message. | 
+| Grafana.Alert.severity | String | Alert severity. | 
+| Grafana.Alert.state | String | Alert state. | 
+| Grafana.Alert.handler | Number | Alert handler. | 
+| Grafana.Alert.silenced | Boolean | Whether the alert was silenced. | 
+| Grafana.Alert.executionError | String | Alert execution error. | 
+| Grafana.Alert.frequency | Number | Alert frequency in seconds. | 
+| Grafana.Alert.for | Number | Once the alert rule has been firing for more than this duration in nanoseconds, then the alert changes to "Alerting". Otherwise it goes from "OK" to "Pending". | 
+| Grafana.Alert.evalData | Unknown | The metric that triggered the alert and made it change to the "Alerting" state. | 
+| Grafana.Alert.newStateDate | Date | The date of the alert's new state. | 
+| Grafana.Alert.stateChanges | Number | The number of time the alert state changes. | 
+| Grafana.Alert.created | Date | Date the alert was created. | 
+| Grafana.Alert.updated | Date | Date the alert was updated. | 
+| Grafana.Alert.settings | Unknown | Alert settings. | 
 
 
 #### Command Example
@@ -1213,16 +1213,16 @@ Gets organizations.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| perpage | Number of results wanted in one page. | Optional | 
-| page | Index of page of results wanted. | Optional | 
+| perpage | Number of results to return on a page. | Optional | 
+| page | Index of the page of results to retrieve. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Grafana.Organization.id | Number | Organization id | 
-| Grafana.Organization.name | String | Organization name | 
+| Grafana.Organization.id | Number | Organization ID. | 
+| Grafana.Organization.name | String | Organization name. | 
 
 
 #### Command Example
@@ -1272,16 +1272,16 @@ Gets an organization by name.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The exact name of the organization wanted. | Required | 
+| name | The exact name of the organization to get. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Grafana.Organization.id | Number | Organization id | 
-| Grafana.Organization.name | String | Organization name | 
-| Grafana.Organization.address | Unknown | Organization address | 
+| Grafana.Organization.id | Number | Organization ID. | 
+| Grafana.Organization.name | String | Organization name. | 
+| Grafana.Organization.address | Unknown | Organization address. | 
 
 
 #### Command Example
@@ -1317,7 +1317,7 @@ Gets an organization by name.
 
 ### grafana-org-get-by-id
 ***
-Gets an organization by id.
+Gets an organization by ID.
 
 
 #### Base Command
@@ -1327,16 +1327,16 @@ Gets an organization by id.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| org_id | Organization id. | Required | 
+| org_id | Organization ID. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Grafana.Organization.id | Number | Organization id | 
-| Grafana.Organization.name | String | Organization name | 
-| Grafana.Organization.address | Unknown | Organization address | 
+| Grafana.Organization.id | Number | Organization ID. | 
+| Grafana.Organization.name | String | Organization name. | 
+| Grafana.Organization.address | Unknown | Organization address. | 
 
 
 #### Command Example
