@@ -90,7 +90,7 @@
   },
   {
    "id": "173ed090-1c89-11e8-a678-fdff55233dc8",
-   "forceRange": false,
+   "forceRange": true,
    "x": 4,
    "y": 0,
    "i": "173ed090-1c89-11e8-a678-fdff55233dc8",
@@ -141,7 +141,7 @@
   },
   {
    "id": "51fa5e20-1c89-11e8-a678-fdff55233dc8",
-   "forceRange": false,
+   "forceRange": true,
    "x": 6,
    "y": 0,
    "i": "51fa5e20-1c89-11e8-a678-fdff55233dc8",
@@ -192,7 +192,7 @@
   },
   {
    "id": "f12d1f00-1c8e-11e8-b5cb-47979f799c06",
-   "forceRange": false,
+   "forceRange": true,
    "x": 0,
    "y": 2,
    "i": "f12d1f00-1c8e-11e8-b5cb-47979f799c06",
