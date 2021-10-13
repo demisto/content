@@ -9,6 +9,8 @@ CLIENT = Client(BASE_URL, True, True, headers={}, auth=None)
 ALARMS_LIST = {'alarmsSearchDetails': [{'alarmId': 2, 'alarmStatus': 1, 'dateInserted': '2021-08-23T15:19:00'},
                {'alarmId': 1, 'alarmStatus': 1, 'dateInserted': '2021-03-23T15:19:00'}]}
 
+ALARMS_LIST_BY_ID = {'alarmDetails': {'alarmId': 1, 'alarmStatus': 1, 'dateInserted': '2021-08-23T15:19:00'}}
+
 CASES_LIST = [{'id': '525569EF-CA80-4901-BA8A-95D80851BACA'}, {'id': '75081347-EB56-4AEA-A6F9-A6EB6662F48E'}]
 
 HOSTS_LIST = [{'id': 1, 'name': 'host1'}, {'id': 2, 'name': 'host2'}, {'id': 3, 'name': 'host3'}]
@@ -66,7 +68,7 @@ def test_alarms_list_request_filter_by_alarm_id(requests_mock):
     Then:
     - Validate that result contains only one alarm with the correct ID.
     """
-    requests_mock.get(f'{BASE_URL}lr-alarm-api/alarms/', json=ALARMS_LIST)
+    requests_mock.get(f'{BASE_URL}lr-alarm-api/alarms/1', json=ALARMS_LIST_BY_ID)
     res, _ = CLIENT.alarms_list_request(alarm_id='1')
     assert len(res) == 1
     assert res[0]['alarmId'] == 1
