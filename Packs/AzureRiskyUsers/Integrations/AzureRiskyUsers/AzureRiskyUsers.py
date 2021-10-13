@@ -124,10 +124,10 @@ def get_skip_token(next_link: Optional[str], outputs_prefix: str, outputs_key_fi
                    readable_output: str) -> Union[CommandResults, str]:
     if not next_link:
         return CommandResults(outputs_prefix=outputs_prefix,
-                                outputs_key_field=outputs_key_field,
-                                outputs=[],
-                                readable_output=readable_output,
-                                raw_response=[])
+                              outputs_key_field=outputs_key_field,
+                              outputs=[],
+                              readable_output=readable_output,
+                              raw_response=[])
     else:
         parsed_url = urlparse(next_link)
         return parse_qs(parsed_url.query)['$skiptoken'][0]
