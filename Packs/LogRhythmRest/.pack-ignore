@@ -1,2 +1,5 @@
 [file:README.md]
 ignore=RM104
+
+[file:LogRhythmRestV2.yml]
+ignore=IN126
