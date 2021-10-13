@@ -109,7 +109,6 @@
     - *install_ssh_keys
     - section_start "Build Parameters"
     - set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD=|^STORAGE_BASE_PATH=|^GCS_MARKET_BUCKET=|^SLACK_CHANNEL=|^NVM_DIR=|^NODE_VERSION=|^PATH="
-    - $(echo $0) --version
     - python --version
     - python2 --version
     - python3 --version
@@ -136,6 +135,8 @@
 
 
 .run-unittests-and-lint:
+  tags:
+    - gce
   needs: []
   stage: unittests-and-validations
   artifacts:
