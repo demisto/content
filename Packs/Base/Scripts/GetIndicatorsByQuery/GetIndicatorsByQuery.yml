@@ -74,3 +74,5 @@ dockerimage: demisto/python3:3.9.7.24076
 runas: DBotWeakRole
 runonce: false
 fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
