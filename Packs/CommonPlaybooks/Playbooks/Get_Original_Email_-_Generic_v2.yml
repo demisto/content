@@ -10,6 +10,9 @@ description: |-
 
   - EWS: eDiscovery
   - Gmail: Google Apps Domain-Wide Delegation of Authority
+  - MSGraph: As described here:
+      * https://docs.microsoft.com/en-us/graph/api/message-get
+      * https://docs.microsoft.com/en-us/graph/api/user-list-messages
 starttaskid: "0"
 tasks:
   "0":
@@ -124,7 +127,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 250,
+          "x": 350,
           "y": 190
         }
       }
@@ -137,10 +140,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 76628e90-084a-4f3d-86f3-ed9c8c64699c
+    taskid: 420b6176-85a9-4ccd-88c0-848e7c8f7e8e
     type: playbook
     task:
-      id: 76628e90-084a-4f3d-86f3-ed9c8c64699c
+      id: 420b6176-85a9-4ccd-88c0-848e7c8f7e8e
       version: -1
       name: Get Original Email - EWS
       description: |-
@@ -173,7 +176,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -510,
+          "x": -130,
           "y": 190
         }
       }
@@ -200,6 +203,7 @@ tasks:
       '#none#':
       - "6"
       - "8"
+      - "10"
     separatecontext: false
     view: |-
       {
@@ -215,14 +219,46 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 83e1b707-8fc7-4763-89c0-d9835f284d8b
+    type: playbook
+    task:
+      id: 83e1b707-8fc7-4763-89c0-d9835f284d8b
+      version: -1
+      name: Get Original Email - Microsoft Graph Mail
+      playbookName: Get Original Email - Microsoft Graph Mail
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": -610,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 565,
-        "width": 1140,
-        "x": -510,
+        "width": 1340,
+        "x": -610,
         "y": -110
       }
     }
@@ -332,6 +368,10 @@ outputs:
   type: string
 - contextPath: Email.HeadersMap
   description: The headers of the email.
+- contextPath: reportedemailentryid
+  description: In case the original eml was retrieved, this field will hold the File's
+    Entry ID.
+  type: unknown
 fromversion: 6.0.0
 tests:
 - Phishing v2 - Test - Incident Starter
