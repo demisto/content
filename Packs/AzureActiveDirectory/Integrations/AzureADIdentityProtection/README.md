@@ -325,7 +325,7 @@ Permission required: `IdentityRiskEvent.Read.All`
 ***
 Gets the risk history of a riskyUser resource.
 
-Permission required: `IdentityRiskyUser.Read.All`, `IdentityRiskyUser.ReadWrite.All`
+Permissions required: `IdentityRiskyUser.Read.All`, `IdentityRiskyUser.ReadWrite.All`
 
 #### Base Command
 
