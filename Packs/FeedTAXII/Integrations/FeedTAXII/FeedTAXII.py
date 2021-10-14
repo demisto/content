@@ -861,8 +861,9 @@ class TAXIIClient(object):
                 if indicator_info:
                     observable.update(indicators.get(indicator_ref))
 
-            ttp_ref = observable.get('ttp_ref')
+            ttp_ref = observable.get('ttp_ref', [])
             relationships = []
+
             for reference in ttp_ref:
                 if relationship := self.ttps.get(reference):
                     relationships.append(relationship)
