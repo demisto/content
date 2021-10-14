@@ -29,8 +29,8 @@ def test_create_paramiko_ssh_client_valid(mocker, ciphers):
     create_paramiko_ssh_client('host', 'user', 'password', [])
 
 
-@pytest.mark.parametrize('ciphers', [(
-        {'diffie-hellman-group14-sha256'}), ({'diffie-hellman-group14-sha256', 'diffie-hellman-group14-sha128'})])
+@pytest.mark.parametrize('ciphers', [({'diffie-hellman-group14-sha256'}),
+                                     ({'diffie-hellman-group14-sha256', 'diffie-hellman-group14-sha128'})])
 def test_create_paramiko_ssh_client_invalid_ciphers(mocker, ciphers):
     """
     Given:
@@ -99,7 +99,7 @@ def test_copy_to_command_valid(mocker):
     mock_client: SSHClient = SSHClient()
     mocker.patch('RemoteAccessV2.perform_copy_command', return_value='')
     results: CommandResults = copy_to_command(mock_client, {'entry_id': 123})
-    assert results.readable_output == f'### The file corresponding to entry ID: 123 was copied to remote host.'
+    assert results.readable_output == '### The file corresponding to entry ID: 123 was copied to remote host.'
 
 
 def test_copy_to_command_invalid_entry_id(mocker):

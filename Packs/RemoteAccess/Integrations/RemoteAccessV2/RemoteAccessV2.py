@@ -131,7 +131,7 @@ def execute_shell_command(ssh_client: SSHClient, args: Dict[str, Any]) -> Comman
 
 def copy_to_command(ssh_client: SSHClient, args: Dict[str, Any]) -> CommandResults:
     """
-    Executes safe copy from remote machine to Cortex XSOAR machine.
+    Executes a safe copy from Cortex XSSOAR to remote machine.
     Args:
         ssh_client (SSHClient): SSH client to perform the command with.
         args (Dict[str, Any]): Cortex XSOAR arguments.
@@ -148,15 +148,15 @@ def copy_to_command(ssh_client: SSHClient, args: Dict[str, Any]) -> CommandResul
                                           ' host.')
 
 
-def copy_from_command(ssh_client: SSHClient, args: Dict[str, Any]) -> fileResult:
+def copy_from_command(ssh_client: SSHClient, args: Dict[str, Any]) -> Dict:
     """
-    Executes safe copy from Cortex XSSOAR to remote machine.
+    Executes a safe copy from remote machine to Cortex XSOAR machine.
     Args:
         ssh_client (SSHClient): SSH client to perform the command with.
         args (Dict[str, Any]): Cortex XSOAR arguments.
 
     Returns:
-        (CommandResults).
+        (Dict): FileResult data.
     """
     file_path: str = args.get('file_path', '')
     file_name: str = args.get('file_name', os.path.basename(file_path))
@@ -179,14 +179,14 @@ def main() -> None:
     command = demisto.command()
 
     credentials: Dict[str, Any] = params.get('credentials', {})
-    user: Optional[str] = credentials.get('identifier')
-    password: Optional[str] = credentials.get('password')
+    user: str = credentials.get('identifier', '')
+    password: str = credentials.get('password', '')
 
     host_name: str = params.get('hostname', '')
 
     ciphers: Set[str] = set(argToList(params.get('ciphers')))
 
-    interactive_terminal_mode: bool = argToBoolean(params.get('interactive_terminal_mode', False))
+    # interactive_terminal_mode: bool = argToBoolean(params.get('interactive_terminal_mode', False))
     demisto.debug(f'Command being called is {demisto.command()}')
     client = None
     try:

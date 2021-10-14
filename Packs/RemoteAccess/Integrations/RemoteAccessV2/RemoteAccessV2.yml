@@ -11,7 +11,6 @@ configuration:
   additionalinfo: Comma separated list of ciphers to be used. Will return error with the supported ciphers by server if none of given ciphers were agreed by server.
   name: ciphers
   required: false
-  isArray: true
   type: 0
 - display: User
   additionalinfo: For example, "root".

@@ -1,5 +1,5 @@
 [Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]
-This integration was integrated and tested with version xx of RemoteAccessV2
+This integration enables Cortex XSOAR to access and run commands on a terminal in a remote location (via SSH).
 
 Some changes have been made that might affect your existing content. 
 If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-remoteaccessv2).
