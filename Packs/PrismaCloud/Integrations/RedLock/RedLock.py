@@ -525,7 +525,11 @@ def redlock_search_config():
 
 def redlock_list_scans():
     """
-    Returns a list of IaC scans that meet the given conditions.
+     Returns a list of IaC scans that meet the given conditions.
+
+     See Also:
+         https://prisma.pan.dev/api/cloud/cspm/iac-scan/#operation/getScans
+
     """
     args = demisto.args()
     group_by = args.get('group_by', 'scanId')
@@ -563,7 +567,7 @@ def redlock_list_scans():
         if to_now_time_unit:
             list_filter['filter[timeUnit]'] = to_now_time_unit
         else:
-            return_error('You must specify filter_time_unit with to_now type filter')
+            return_error('You must specify to_now_time_unit with to_now type filter')
     elif filter_type == 'absolute':
         if filter_start_time and filter_end_time:
             list_filter['filter[startTime]'] = convert_date_to_unix(filter_start_time, date_format="%m/%d/%Y %H:%M:%S")
@@ -616,6 +620,10 @@ def redlock_list_scans():
 def redlock_get_scan_status():
     """
     Returns the status of the asynchronous IaC scan job that has the specified scan ID.
+
+    See Also:
+        https://prisma.pan.dev/api/cloud/cspm/iac-scan/#operation/getAsyncScanStatus
+
     """
     scan_id = demisto.args().get('scan_id', None)
 
@@ -651,6 +659,9 @@ def redlock_get_scan_status():
 def redlock_get_scan_results():
     """
     Returns scan result details for the completed scan that has the specified scan ID.
+
+    See Also:
+        https://prisma.pan.dev/api/cloud/cspm/iac-scan/#operation/getScanResult
     """
     scan_id = demisto.args().get('scan_id', None)
 

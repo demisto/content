@@ -927,6 +927,7 @@ script:
       description: Cloud Account Name
       type: String
     - contextPath: Redlock.Asset.allowDrillDown
+      description: Flag to allow drill down.
       type: Boolean
     - contextPath: Redlock.Asset.cloudType
       description: Cloud Type
