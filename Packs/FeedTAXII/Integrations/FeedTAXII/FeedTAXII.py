@@ -383,7 +383,7 @@ class StixDecode(object):
                     ttp_info.update(ttp_extract_properties(package.find_all('Malware_Instance')[0], 'Malware'))
 
                 elif behavior[0].find_all('Attack_Patterns'):
-                    ttp_info.update(ttp_extract_properties(package.find_all('Attack_Patterns')[0], 'Attack_Patterns'))
+                    ttp_info.update(ttp_extract_properties(package.find_all('Attack_Pattern')[0], 'Attack_Pattern'))
 
                 ttp_result[id_ref] = ttp_info
 
@@ -862,12 +862,12 @@ class TAXIIClient(object):
                     observable.update(indicators.get(indicator_ref))
 
             ttp_ref = observable.get('ttp_ref')
-            if ttp_ref:
-                relationship = {
-                    'name': self.ttps.get(ttp_ref, {}).get('indicator'),
-                    'type': self.ttps.get(ttp_ref, {}).get('type')
-                }
-                observable['relationship'] = relationship
+            relationships = []
+            for reference in ttp_ref:
+                if relationship := self.ttps.get(reference):
+                    relationships.append(relationship)
+            if relationships:
+                observable['relationships'] = relationships
 
             yield observable
 
@@ -1002,9 +1002,9 @@ def observable_extract_properties(observable):
     return result
 
 
-def indicator_extract_properties(indicator) -> Dict[str, str]:
+def indicator_extract_properties(indicator) -> Dict[str, Any]:
     """Extracts properties from indicator"""
-    result: Dict[str, str] = {}
+    result: Dict[str, Any] = {}
 
     title = next((c for c in indicator if c.name == 'Title'), None)
     if title is not None:
@@ -1023,12 +1023,14 @@ def indicator_extract_properties(indicator) -> Dict[str, str]:
             value = value.text
             result['confidence'] = value
 
-    indicated_ttp = next((c for c in indicator if c.name == 'Indicated_TTP'), None)
-    if indicated_ttp is not None:
-        ttp = next((c for c in indicated_ttp if c.name == 'TTP'), None)
-        if ttp is not None:
-            value = ttp.get('idref')
-            result['ttp_ref'] = value
+    indicated_ttp = indicator.find_all('Indicated_TTP')
+    if indicated_ttp:
+        result['ttp_ref'] = []
+        for ttp_value in indicated_ttp:
+            ttp = next((c for c in ttp_value if c.name == 'TTP'), None)
+            if ttp is not None:
+                value = ttp.get('idref')
+                result['ttp_ref'].append(value)
 
     return result
 
@@ -1105,17 +1107,24 @@ def interval_in_sec(val):
 
 
 def create_relationships(indicator):
-    if indicator.get('relationship', {}).get('type') == 'Malware':
-        name = 'indicator-of'
-        relationship_type = 'Malware'
-    else:
-        name = 'related-to'
-        relationship_type = 'Attack Pattern'
+    results = []
 
-    if name:
-        return [EntityRelationship(name=name, entity_a=indicator.get('value'), entity_a_type=indicator.get('type'),
-                                   entity_b=indicator.get('relationship', {}).get('name'),
-                                   entity_b_type=relationship_type).to_indicator()]
+    for relationship in indicator.get('relationships', {}):
+        if relationship.get('type') == 'Malware':
+            name = 'indicator-of'
+            relationship_type = 'Malware'
+        else:
+            name = 'related-to'
+            relationship_type = 'Attack Pattern'
+
+        entity_relationship = EntityRelationship(name=name,
+                                                 entity_a=indicator.get('value'),
+                                                 entity_a_type=indicator.get('type'),
+                                                 entity_b=relationship.get('indicator'),
+                                                 entity_b_type=relationship_type)
+        results.append(entity_relationship.to_indicator())
+
+    return results
 
 
 def test_module(client, *_):
@@ -1151,7 +1160,7 @@ def fetch_indicators_command(client):
                 },
                 'rawJSON': item,
             }
-            if item.get('relationship'):
+            if item.get('relationships'):
                 indicator_obj['relationships'] = create_relationships(item)
             if client.tlp_color:
                 indicator_obj['fields']['trafficlightprotocol'] = client.tlp_color
