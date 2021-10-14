@@ -1,3 +1,0 @@
-!remote-access-ssh command=`echo test`
-!remote-access-copy-to entry_id=104@49493d71-eef6-4bb4-8075-4be38d9bc340 destination_path="test/cortex_copied_file"
-!remote-access-copy-from file_path="test/remote_file.txt" file_name="CopiedRemoteFile"
