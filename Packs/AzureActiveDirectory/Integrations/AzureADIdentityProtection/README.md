@@ -3,7 +3,7 @@ This integration was integrated and tested with the beta version of Azure Active
 
 ## Set up an Azure Application
 Choose between the following options:
-1. Using your subscription ID with the **Cortex XSOAR Azure application**, by using application ID `4ffef4a4-601f-4393-a789-432f3f3b8470`. This choice requires no further settings. 
+1. Using your subscription ID with the pre-configured **Cortex XSOAR Azure application**, by using application ID `4ffef4a4-601f-4393-a789-432f3f3b8470`. 
 2. Using a self-hosted application, set up on the Azure portal:
     - Add a **new Azure App Registration**, with the following permissions:  `IdentityRiskEvent.Read.All`,`User.Read`, `IdentityRiskyUser.ReadWrite.All`. Permission requirements of the different commands are detailed below.
     - Under `Authentication` on the portal, on the Set the app to support multitenant accounts .
