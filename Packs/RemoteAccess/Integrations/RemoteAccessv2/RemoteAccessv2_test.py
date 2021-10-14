@@ -10,45 +10,69 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-@pytest.mark.parametrize('ciphers', [({'diffie-hellman-group14-sha256'}),
-                                     ({'diffie-hellman-group14-sha256', 'diffie-hellman-group14-sha128'})])
-def test_create_paramiko_ssh_client_valid(mocker, ciphers):
+@pytest.mark.parametrize('cipher_arg, key_arg, server_ciphers, server_key_algorithms',
+                         [(set(), set(), set(), set()), (set(), {'diffie-hellman-group14-sha256'}, set(),
+                                                         {'diffie-hellman-group14-sha256',
+                                                          'diffie-hellman-group14-sha128'}),
+                          ({'aes128-cbc'}, set(), {'aes128-cbc'}, set()),
+                          ({'aes128-cbc'}, {'diffie-hellman-group14-sha256'}, {'aes128-cbc'},
+                           {'diffie-hellman-group14-sha256', 'diffie-hellman-group14-sha128'})])
+def test_create_paramiko_ssh_client_valid(mocker, cipher_arg, key_arg, server_ciphers, server_key_algorithms):
     """
     Given:
     - Parameters to create SSH client.
 
     When:
     - Given parameters are valid.
+    Cases:
+    - Case a: No ciphers and no key algorithms to be used have been given by the user.
+    - Case b: No ciphers to be used, but key algorithm to be used which is supported by server where given by the user.
+    - Case c: Cipher to be used that is supported by server, but no key algorithm were given by the user.
+    - Case d: Both cipher and key algorithm have been requested by the user, both are supported by server.
+
 
     Then:
     - Ensure SSH client is created.
     """
     from RemoteAccessv2 import create_paramiko_ssh_client
     mocker.patch('paramiko.SSHClient.connect')
-    mocker.patch('RemoteAccessv2.get_available_ciphers', return_value=ciphers)
-    create_paramiko_ssh_client('host', 'user', 'password', [])
+    if server_ciphers:
+        mocker.patch('RemoteAccessv2.get_available_ciphers', return_value=server_ciphers)
+    if server_key_algorithms:
+        mocker.patch('RemoteAccessv2.get_available_key_algorithms', return_value=server_key_algorithms)
+    create_paramiko_ssh_client('host', 'user', 'password', cipher_arg, key_arg)
 
 
-@pytest.mark.parametrize('ciphers', [({'diffie-hellman-group14-sha256'}),
-                                     ({'diffie-hellman-group14-sha256', 'diffie-hellman-group14-sha128'})])
-def test_create_paramiko_ssh_client_invalid_ciphers(mocker, ciphers):
+@pytest.mark.parametrize('cipher_arg, key_arg, server_ciphers, server_key_algorithms',
+                         [({'unsupported cipher'}, set(), {'aes128-cbc'}, set()),
+                          (set(), {'unsupported key'}, set(), {'diffie-hellman-group14-sha256'})])
+def test_create_paramiko_ssh_client_invalid(mocker, cipher_arg, key_arg, server_ciphers, server_key_algorithms):
     """
     Given:
     - Parameters to create SSH client.
 
     When:
     - Given ciphers do not match the server ciphers.
+    Cases:
+    Case a: Cipher which is not supported by server was given by the user.
+    Case b: Key algorithm which is not supported by server was given by the user.
 
     Then:
     - Ensure DemistoException is thrown as expected.
     """
     from RemoteAccessv2 import create_paramiko_ssh_client
     server_ciphers = {'diffie-hellman-group14-sha512'}
-    mocker.patch('RemoteAccessv2.get_available_ciphers', return_value=server_ciphers)
-    expected_err_msg: str = f"Given ciphers are not available in server.\nCiphers given are: {ciphers}\n" \
-                            f"Ciphers available in server are: {server_ciphers}"
+    expected_err_msg: str = ''
+    if server_ciphers:
+        expected_err_msg = f'Given ciphers are not available in server.\n' \
+                           f'Ciphers available in server are: {server_ciphers}'
+        mocker.patch('RemoteAccessv2.get_available_ciphers', return_value=server_ciphers)
+    if server_key_algorithms:
+        expected_err_msg = f'Given key algorithms are not available in server.\n' \
+                           f'Key algorithms available in server are: {server_key_algorithms}'
+        mocker.patch('RemoteAccessv2.get_available_key_algorithms', return_value=server_key_algorithms)
     with pytest.raises(DemistoException, match=expected_err_msg):
-        create_paramiko_ssh_client('host', 'user', 'password', ciphers)
+        create_paramiko_ssh_client('host', 'user', 'password', cipher_arg, key_arg)
 
 
 @pytest.mark.parametrize('command, mock_std_output, mock_std_error',
