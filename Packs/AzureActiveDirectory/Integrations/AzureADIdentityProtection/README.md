@@ -13,7 +13,7 @@ This integration was integrated and tested with the beta version of Azure Active
     | Subscription ID | The Azure Active Directory subscription ID. | True |
     | Azure Active Directory endpoint | The Azure Active Directory endpoint associated with a national cloud. | True |
     | Trust any certificate (not secure) | When selected, certificates are not checked.  | False |
-    | Use system proxy settings | When selected, runs the integraion instance using a proxy server (https or http) that you defined in the server configuration.  | False |
+    | Use system proxy settings | When selected, runs the integration instance using a proxy server (https or http) that you defined in the server configuration.  | False |
 5. Run the **!azure-ad-auth-start** command to start the connection process.
 6. Follow the instruction shown, the last of them should be running the **!azure-ad-auth-complete** command.
 7. Run the **!azure-ad-auth-test** command to validate the URLs, token, and connection.
@@ -114,6 +114,7 @@ There is no context output for this command.
 ***
 Retrieve the properties of a collection of riskDetection objects.
 
+Permission required: `IdentityRiskEvent.Read.All`
 
 #### Base Command
 
@@ -254,6 +255,7 @@ Retrieve the properties of a collection of riskDetection objects.
 ***
 Retrieves the properties of a collection of riskDetection objects.
 
+Permission required: `IdentityRiskEvent.Read.All`
 
 #### Base Command
 
@@ -323,6 +325,7 @@ Retrieves the properties of a collection of riskDetection objects.
 ***
 Gets the risk history of a riskyUser resource.
 
+Permission required: `IdentityRiskyUser.Read.All`, `IdentityRiskyUser.ReadWrite.All`
 
 #### Base Command
 
@@ -410,6 +413,7 @@ Gets the risk history of a riskyUser resource.
 ***
 Confirms one or more riskyUser objects as compromised. This action sets the targeted user's risk level to high.
 
+Permission required: `IdentityRiskyUser.ReadWrite.All`
 
 #### Base Command
 
@@ -436,6 +440,7 @@ There is no context output for this command.
 ***
 Dismisses the risk of one or more riskyUser objects. This action sets the targeted user's risk level to none.
 
+Permission required: `IdentityRiskyUser.ReadWrite.All`
 
 #### Base Command
 
