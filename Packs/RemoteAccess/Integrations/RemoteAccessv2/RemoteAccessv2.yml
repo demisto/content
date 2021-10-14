@@ -7,17 +7,23 @@ configuration:
   name: hostname
   required: true
   type: 0
+- display: User
+  additionalinfo: For example, "root".
+  name: credentials
+  type: 9
+  required: false
 - display: Ciphers
   additionalinfo: Comma separated list of ciphers to be used. Will return error with
     the supported ciphers by server if none of given ciphers were agreed by server.
   name: ciphers
   required: false
   type: 0
-- display: User
-  additionalinfo: For example, "root".
-  name: credentials
-  type: 9
+- display: Key Algorithms
+  additionalinfo: Comma separated list of key algorithms to be used. Will return error with
+    the supported key algorithms by server if none of given key algorithms were agreed by server.
+  name: key_algorithms
   required: false
+  type: 0
 - additionalinfo: TODO
   defaultvalue: 'false'
   display: Interactive Terminal Mode

@@ -70,14 +70,28 @@ def get_available_ciphers() -> Set[str]:
     return set(opts.ciphers)
 
 
-def create_paramiko_ssh_client(host_name: str, user_name: str, password: str, ciphers: Set[str]) -> SSHClient:
+def get_available_key_algorithms() -> Set[str]:
+    """
+    Gets a set of the available ciphers supported by server.
+    Returns:
+        (Set[str]): Set of supported ciphers.
+    """
+    tmp_socket = socket.socket()
+    opts = transport.Transport(tmp_socket).get_security_options()
+    tmp_socket.close()
+    return set(opts.kex)
+
+
+def create_paramiko_ssh_client(host_name: str, user_name: str, password: str, ciphers: Set[str],
+                               key_algorithms: Set[str]) -> SSHClient:
     """
     Creates the Paramiko SSH client.
     Args:
         host_name (str): Hostname of the machine to create the SSH for.
         user_name (str): User to create the SSH session with the given host.
         password (str): Password of the given user.
-        ciphers (Set[str]): List of ciphers to be used, if given.
+        ciphers (Set[str]): Set of ciphers to be used, if given.
+        key_algorithms (Set[str]): Set of key algorithms to be used, if given.
 
     Returns:
         (SSHClient): Paramiko SSH client if connection was successful, exception otherwise.
@@ -86,9 +100,15 @@ def create_paramiko_ssh_client(host_name: str, user_name: str, password: str, ci
         # Getting available ciphers from server, in order to print an appropriate error message upon no cipher match.
         available_ciphers = get_available_ciphers()
         if not ciphers.intersection(available_ciphers):
-            raise DemistoException(f'Given ciphers are not available in server.\nCiphers given are: {ciphers}\n'
+            raise DemistoException(f'Given ciphers are not available in server.\n'
                                    f'Ciphers available in server are: {available_ciphers}')
         Transport._preferred_ciphers = (*ciphers,)
+    if key_algorithms:
+        available_key_args = get_available_key_algorithms()
+        if not key_algorithms.intersection(available_key_args):
+            raise DemistoException(f'Given key algorithms are not available in server.\n'
+                                   f'Key algorithms available in server are: {available_key_args}')
+        Transport._preferred_kex = (*key_algorithms,)
     client = SSHClient()
     client.set_missing_host_key_policy(AutoAddPolicy())
     client.connect(hostname=host_name, username=user_name, password=password, port=22)
@@ -180,12 +200,13 @@ def main() -> None:
     host_name: str = params.get('hostname', '')
 
     ciphers: Set[str] = set(argToList(params.get('ciphers')))
+    key_algorithms: Set[str] = set(argToList(params.get('key_algorithms')))
 
     # interactive_terminal_mode: bool = argToBoolean(params.get('interactive_terminal_mode', False))
     demisto.debug(f'Command being called is {demisto.command()}')
     client = None
     try:
-        client = create_paramiko_ssh_client(host_name, user, password, ciphers)
+        client = create_paramiko_ssh_client(host_name, user, password, ciphers, key_algorithms)
         if demisto.command() == 'test-module':
             return_results('ok')
         elif command == 'remote-access-ssh':
