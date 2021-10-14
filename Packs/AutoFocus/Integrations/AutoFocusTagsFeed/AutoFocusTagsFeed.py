@@ -56,8 +56,8 @@ SCORES_MAP = {
     ThreatIntel.ObjectsNames.ATTACK_PATTERN: ThreatIntel.ObjectsScore.ATTACK_PATTERN,
 }
 
+# The page size in the AutoFocus response (can be 1-200)
 PAGE_SIZE = 50
-
 
 ''' CLIENT CLASS '''
 
@@ -96,11 +96,12 @@ class Client(BaseClient):
                                  )
         return res
 
-    def build_iterator(self, is_get_command: bool) -> list:
+    def build_iterator(self, is_get_command: bool, limit: int = -1) -> list:
         """
         Retrieves all entries from the feed.
         This method implements all of the logic to get the tags from the feed.
         Args:
+            limit:
             is_get_command: is this method called from the get-indicators-command
         Returns:
             A list of objects, containing the indicators.
@@ -127,6 +128,9 @@ class Client(BaseClient):
             return incremental_level_fetch(self)
         # this is the "first level fetch" logic. Every fetch returns at most PAGE_SIZE indicators from the feed.
         for tag in tags:
+            if is_get_command and limit > 0:
+                if len(results) >= limit:
+                    return results
             public_tag_name = tag.get('public_tag_name', '')
             tag_details_response = self.get_tag_details(public_tag_name)
             results.append(tag_details_response)
@@ -295,6 +299,7 @@ def create_relationships_for_tag(client: Client, name: str, tag_type: str, relat
         try:
             related_tag_details = client.get_tag_details(related_tag)
         except DemistoException:
+            demisto.debug(f'AutoFocus Tags Feed: Could not create relationship for {name} with {related_tag}.')
             continue
         if related_tag_details:
             tag = related_tag_details.get('tag')
@@ -330,7 +335,11 @@ def test_module(client: Client) -> str:
         Outputs.
     """
     try:
-        client.build_iterator(True)
+        response = client.get_tags(data={'pageSize': 1})
+        tag_list = response.get('tags', [])
+        tag = tag_list[0] if len(tag_list) > 0 else {}
+        tag_name = tag.get('public_tag_name')
+        client.get_tag_details(tag_name)
     except Exception as e:
         raise DemistoException(str(e))
     return 'ok'
@@ -351,7 +360,7 @@ def fetch_indicators(client: Client,
     Returns:
         Indicators list.
     """
-    iterator = client.build_iterator(is_get_command)
+    iterator = client.build_iterator(is_get_command, limit)
     indicators = []
     for tag_details in iterator:
         tag = tag_details.get('tag')
@@ -389,8 +398,6 @@ def fetch_indicators(client: Client,
         if tlp_color:
             indicator_obj['fields']['trafficlightprotocol'] = tlp_color
         indicators.append(indicator_obj)
-    if limit > 0 and is_get_command:
-        indicators = indicators[:limit]
     return indicators
 
 
@@ -409,6 +416,9 @@ def get_indicators_command(client: Client,
     """
 
     limit = int(args.get('limit', '10'))
+    if limit > PAGE_SIZE:
+        demisto.debug(
+            f'AutoFocus Tags Feed: limit must be under  {PAGE_SIZE}. Setting limit to the default value of 10.')
     tlp_color = params.get('tlp_color')
     feed_tags = argToList(params.get('feedTags', ''))
     indicators = fetch_indicators(client, True, tlp_color, feed_tags, limit)
@@ -484,7 +494,6 @@ def main():
             # This is the command that initiates a request to the feed endpoint and create new indicators objects from
             # the data fetched. If the integration instance is configured to fetch indicators, then this is the command
             # that will be executed at the specified feed fetch interval.
-            demisto.debug("before fetch")
             indicators = fetch_indicators_command(client, params)
             for iter_ in batch(indicators, batch_size=2000):
                 demisto.createIndicators(iter_)

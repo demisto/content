@@ -44,7 +44,7 @@ configuration:
   - WHITE
   required: false
   type: 15
-- defaultvalue: '30'
+- defaultvalue: '10'
   display: Feed Fetch Interval
   name: feedFetchInterval
   required: false
@@ -92,14 +92,14 @@ configuration:
   type: 4
 description: Use the AutoFocus Tags Feeds integration to fetch indicators from AutoFocus
   Tags.
-display: AutoFocusTagsFeed
+display: AutoFocus Tags Feed
 name: AutoFocusTagsFeed
 script:
   commands:
   - arguments:
     - default: false
       defaultValue: '10'
-      description: The maximum number of results to return.
+      description: The maximum number of results to return. Should be 50 or less.
       isArray: false
       name: limit
       required: false
