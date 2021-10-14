@@ -1145,9 +1145,9 @@ script:
     description: Gather facts on processes listening on TCP and UDP ports.
     name: linux-listen-ports-facts
     outputs:
-    - contextPath: Linux.facts.tcp_listen
+    - contextPath: Linux.ansible_facts.tcp_listen
       description: A list of processes that are listening on a TCP port.
-    - contextPath: Linux.facts.udp_listen
+    - contextPath: Linux.ansible_facts.udp_listen
       description: A list of processes that are listening on a UDP port.
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
@@ -1920,7 +1920,7 @@ script:
       defaultValue: auto
       description: |-
         The service module actually uses system specific modules, normally through auto detection, this setting can force a specific module.
-        Normally it uses the value of the 'service_mgr' fact and falls back to the old 'service' module when none matching is found.
+        Normally it uses the value of the 'ansible_service_mgr' fact and falls back to the old 'service' module when none matching is found.
       name: use
     description: Manage services
     name: linux-service
@@ -1934,7 +1934,7 @@ script:
     description: Return service state information as fact data
     name: linux-service-facts
     outputs:
-    - contextPath: Linux.facts.services
+    - contextPath: Linux.ansible_facts.services
       description: States of the services with service name as key.
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
@@ -1967,7 +1967,7 @@ script:
     - default: false
       defaultValue: /etc/ansible/facts.d
       description: Path used for local ansible facts (`*.fact`) - files in this dir
-        will be run (if executable) and their results be added to `local`
+        will be run (if executable) and their results be added to `ansible_local`
         facts if a file is not executable it is read. Check notes for Windows options.
         (from 2.1 on) File/results format can be JSON or INI-format. The default `fact_path`
         can be specified in `ansible.cfg` for when setup is automatically called as
@@ -4060,8 +4060,8 @@ script:
       required: true
     - description: |-
         Port number for ssh on the destination host.
-        Prior to Ansible 2.0, the ssh_port inventory var took precedence over this value.
-        This parameter defaults to the value of `ssh_port` or `port`, the `remote_port` config setting or the value from ssh client configuration if none of the former have been set.
+        Prior to Ansible 2.0, the ansible_ssh_port inventory var took precedence over this value.
+        This parameter defaults to the value of `ansible_ssh_port` or `ansible_port`, the `remote_port` config setting or the value from ssh client configuration if none of the former have been set.
       name: dest_port
     - auto: PREDEFINED
       default: false
@@ -5712,7 +5712,7 @@ script:
     description: package information as facts
     name: linux-package-facts
     outputs:
-    - contextPath: Linux.facts.packages
+    - contextPath: Linux.ansible_facts.packages
       description: '[''Maps the package name to a non-empty list of dicts with package
         information.'', ''Every dict in the list corresponds to one installed version
         of the package.'', ''The fields described below are present for all package
@@ -5730,7 +5730,7 @@ script:
       defaultValue: auto
       description: |-
         This module supports `yum` (as it always has), this is known as `yum3`/`YUM3`/`yum-deprecated` by upstream yum developers. As of Ansible 2.7+, this module also supports `YUM4`, which is the "new yum" and it has an `dnf` backend.
-        By default, this module will select the backend based on the `pkg_mgr` fact.
+        By default, this module will select the backend based on the `ansible_pkg_mgr` fact.
       name: use_backend
       predefined:
       - auto
