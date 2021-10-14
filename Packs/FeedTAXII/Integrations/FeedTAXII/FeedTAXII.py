@@ -383,7 +383,7 @@ class StixDecode(object):
                     ttp_info.update(ttp_extract_properties(package.find_all('Malware_Instance')[0], 'Malware'))
 
                 elif behavior[0].find_all('Attack_Patterns'):
-                    ttp_info.update(ttp_extract_properties(package.find_all('Attack_Pattern')[0], 'Attack_Pattern'))
+                    ttp_info.update(ttp_extract_properties(package.find_all('Attack_Pattern')[0], 'Attack Pattern'))
 
                 ttp_result[id_ref] = ttp_info
 
@@ -1054,7 +1054,7 @@ def ttp_extract_properties(ttp, behavior):
             title = title.text
             result['stix_title'] = title
 
-    if behavior == 'Attack_Patterns':
+    if behavior == 'Attack Pattern':
         id_ref = next((c for c in ttp if c.name == 'idref'), None)
         if id_ref is not None:
             id_ref = id_ref.text
