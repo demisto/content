@@ -111,14 +111,21 @@ def execute_shell_command(ssh_client: SSHClient, args: Dict[str, Any]) -> Comman
     command: str = args.get('command', '')
     # exec_command returns a tuple of stdin, stdout, stderr. No need to parse stdin because it does not contain data.
     _, stdout, std_err = ssh_client.exec_command(command)
-    outputs: List[Dict] = [{
-        'stdout': stdout.read().decode(),
-        'std_error': std_err.read().decode()
-    }]
+    stdout_str: str = stdout.read().decode()
+    std_error_str: str = std_err.read().decode()
+    if stdout_str or std_error_str:
+        outputs: Optional[List[Dict]] = [{
+            'stdout': stdout_str,
+            'std_error': std_error_str
+        }]
+        readable_output = tableToMarkdown(f'Command {command} Outputs', outputs, removeNull=True)
+    else:
+        outputs = None
+        readable_output = f'### Command {command} Was Executed Successfully Without Any Outputs.'
     return CommandResults(
         outputs_prefix='RemoteAccess.Command',
         outputs=outputs,
-        readable_output=tableToMarkdown(f'Command {command} Outputs', outputs)
+        readable_output=readable_output
     )
 
 
