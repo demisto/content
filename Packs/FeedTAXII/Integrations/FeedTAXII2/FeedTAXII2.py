@@ -76,8 +76,6 @@ def fetch_indicators_command(
         else None
     )
 
-    filter_args = {}
-
     if client.collection_to_fetch is None:
         # fetch all collections
         if client.collections is None:
@@ -85,10 +83,10 @@ def fetch_indicators_command(
         indicators: list = []
         for collection in client.collections:
             client.collection_to_fetch = collection
-            filter_args["added_after"] = get_added_after(
+            added_after = get_added_after(
                 fetch_full_feed, initial_interval, last_run_ctx.get(collection.id)
             )
-            fetched_iocs = client.build_iterator(limit, **filter_args)
+            fetched_iocs = client.build_iterator(limit, **{"added_after": added_after})
             indicators.extend(fetched_iocs)
             if limit >= 0:
                 limit -= len(fetched_iocs)
@@ -97,12 +95,12 @@ def fetch_indicators_command(
             last_run_ctx[collection.id] = client.last_fetched_indicator__modified
     else:
         # fetch from a single collection
-        filter_args["added_after"] = get_added_after(fetch_full_feed, initial_interval, last_fetch_time)
-        indicators = client.build_iterator(limit, **filter_args)
+        added_after = get_added_after(fetch_full_feed, initial_interval, last_fetch_time)
+        indicators = client.build_iterator(limit, **{"added_after": added_after})
         last_run_ctx[client.collection_to_fetch.id] = (
             client.last_fetched_indicator__modified
             if client.last_fetched_indicator__modified
-            else filter_args.get("added_after")
+            else added_after
         )
     return indicators, last_run_ctx
 

@@ -25,6 +25,8 @@ HEADER_USERNAME = "_header:"
 
 ERR_NO_COLL = "No collection is available for this user, please make sure you entered the configuration correctly"
 
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
+
 # Pattern Regexes - used to extract indicator type and value
 INDICATOR_OPERATOR_VAL_FORMAT_PATTERN = r"(\w.*?{value}{operator})'(.*?)'"
 INDICATOR_EQUALS_VAL_PATTERN = INDICATOR_OPERATOR_VAL_FORMAT_PATTERN.format(
@@ -300,8 +302,6 @@ class Taxii2FeedClient:
         """
         publications = []
         for external_reference in indicator.get('external_references', []):
-            if external_reference.get('external_id'):
-                continue
             url = external_reference.get('url', '')
             description = external_reference.get('description', '')
             source_name = external_reference.get('source_name', '')
@@ -337,7 +337,12 @@ class Taxii2FeedClient:
             str. One datetime value (min/max) according to the field name.
         """
         dates_as_string = field_value.splitlines()
-        dates_as_datetime = [datetime.strptime(date, '%Y-%m-%dT%H:%M:%S.%fZ') for date in dates_as_string]
+        dates_as_datetime = []
+        for date in dates_as_string:
+            date_dt = dateparser.parse(date)
+            if date_dt:
+                dates_as_datetime.append(date_dt.strftime(DATE_FORMAT))
+        # dates_as_datetime = [datetime.strptime(date, '%Y-%m-%dT%H:%M:%S.%fZ') for date in dates_as_string]
 
         if field_name == 'created':
             return f"{min(dates_as_datetime).strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3]}Z"
@@ -387,7 +392,7 @@ class Taxii2FeedClient:
                 break
         return ioc_type
 
-    """ PARSING FUNVTIONS"""
+    """ PARSING FUNCTIONS"""
 
     def parse_indicator(self, indicator_obj: Dict[str, str]) -> List[Dict[str, str]]:
         """
@@ -457,7 +462,7 @@ class Taxii2FeedClient:
                 "publications": publications,
                 "mitreid": mitre_id,
                 "reportedby": 'Unit42',
-                "tags": [tag for tag in list(self.tags)],
+                "tags": list(self.tags),
             }
         }
         attack_pattern['fields']['tags'].extend([mitre_id])
@@ -718,7 +723,7 @@ class Taxii2FeedClient:
             "secondary_motivations": intrusion_set_obj.get('secondary_motivations', []),
             "publications": publications,
             "reportedby": 'Unit42',
-            "tags": [tag for tag in self.tags],
+            "tags": list(self.tags),
         }
         if self.tlp_color:
             fields['trafficlightprotocol'] = self.tlp_color
@@ -792,13 +797,13 @@ class Taxii2FeedClient:
         if page_size <= 0:
             return []
         envelope = self.poll_collection(page_size, **kwargs)  # got data from server for all objects
-        self.extract_stix_objects_from_envelope(envelope, limit)  # sorted objects in client class
+        self.load_stix_objects_from_envelope(envelope, limit)  # sorted objects in client class
         indicators = self.parse_stix_objects(limit)
 
         # indicators = self.extract_indicators_from_envelope_and_parse(envelope, limit)
         return indicators
 
-    def extract_stix_objects_from_envelope(self, envelope: Union[types.GeneratorType, Dict[str, str]], limit: int = -1):
+    def load_stix_objects_from_envelope(self, envelope: Union[types.GeneratorType, Dict[str, str]], limit: int = -1):
 
         objects_types = ['report', 'indicator', 'malware', 'campaign', 'attack-pattern',
                          'course-of-action', 'intrusion-set', 'tool', 'threat-actor', 'infrastructure', 'relationship']
@@ -1063,7 +1068,7 @@ class Taxii2FeedClient:
         ioc_obj = id_to_obj.get(ioc)
         if ioc_obj:
             if ioc_obj.get('type') == 'report':
-                return f"[Unit42 ATOM] {ioc_obj.get('name')}"
+                return ioc_obj.get('name')
             elif ioc_obj.get('type') == 'attack-pattern':
                 _, value = Taxii2FeedClient.get_attack_id_and_value_from_name(ioc_obj)
                 return value
