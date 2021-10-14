@@ -24,7 +24,7 @@ for index, tab in enumerate(soup.find_all('table')):
             # If there are 2 columns and no headers, treat as key-value (might override values if same key in first column)
             elif len(tds) == 2 and len(headers) == 0:
                 if type(table) == list:
-                    table = {}
+                    table = {}  # type: ignore
                 table[tds[0].text] = tds[1].text
             else:
                 row = {}

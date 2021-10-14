@@ -1,7 +1,4 @@
-import datetime
-import json
 import shutil
-from zipfile import ZipFile
 
 import demistomock as demisto  # noqa: F401
 import jwt
@@ -19,7 +16,7 @@ def get_jwt(apiKey, apiSecret):
     """
     Encode the JWT token given the api ket and secret
     """
-    tt = datetime.datetime.now()
+    tt = datetime.now()
     expire_time = int(tt.strftime('%s')) + 5000
     payload = {
         'iss': apiKey,
@@ -33,18 +30,6 @@ URL = 'https://api.zoom.us/v2/'
 ACCESS_TOKEN = get_jwt(demisto.getParam('apiKey'), demisto.getParam('apiSecret'))
 PARAMS = {'access_token': ACCESS_TOKEN}
 HEADERS = {'Content-Type': 'application/json', 'Accept': 'application/json'}
-
-
-def return_error(data):
-    """
-    Return error as result and exit
-    """
-    demisto.results({
-        'Type': entryTypes['error'],
-        'ContentsFormat': formats['text'],
-        'Contents': data
-    })
-    sys.exit(0)
 
 
 if demisto.command() == 'test-module':
@@ -70,7 +55,7 @@ elif demisto.command() == 'zoom-create-user':
             'last_name': demisto.getArg('last_name')
         }
     })
-    if res.status_code == requests.codes.created:
+    if res.status_code == 201:
         data = res.json()
         demisto.results({
             'Type': entryTypes['note'],
@@ -118,7 +103,7 @@ elif demisto.command() == 'zoom-delete-user':
         'action': demisto.getArg('action')
     }
     res = requests.delete(URL + 'users/' + demisto.getArg('user'), headers=HEADERS, params=params)
-    if res.status_code == requests.codes.no_content:
+    if res.status_code == 204:
         demisto.results('User %s deleted successfully' % demisto.getArg('user'))
     else:
         return_error('User creation failed: [%d] - %s' % (res.status_code, res.text))
@@ -142,7 +127,7 @@ elif demisto.command() == 'zoom-create-meeting':
             'timezone': demisto.getArg('timezone'),
         })
     res = requests.post(URL + "users/%s/meetings" % demisto.getArg('user'), headers=HEADERS, params=PARAMS, json=params)
-    if res.status_code == requests.codes.created:
+    if res.status_code == 201:
         data = res.json()
         md = 'Meeting created successfully.\nStart it [here](%s) and join [here](%s).' % (
             data.get('start_url'), data.get('join_url'))
@@ -175,7 +160,7 @@ elif demisto.command() == 'zoom-fetch-recording':
 
             demisto.results(file_result_existing_file(filename))
             rf = requests.delete(URL + 'meetings/%s/recordings/%s' % (meeting, file['id']), headers=HEADERS, params=PARAMS)
-            if rf.status_code == requests.codes.no_content:
+            if rf.status_code == 204:
                 demisto.results('File ' + filename + ' was moved to trash.')
             else:
                 demisto.results('Failed to delete file ' + filename + '.')
