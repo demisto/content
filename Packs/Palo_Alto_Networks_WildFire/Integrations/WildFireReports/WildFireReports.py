@@ -118,7 +118,8 @@ def main():
             'error': {
                 'title': "Couldn't fetch the Wildfire report.",
                 'description': f'Failed to download report.\nError:\n{str(e)}',
-                'techInfo': f'Failed to download report.\nError:\n{str(e)}\nTrace back:\n{traceback.format_exc()}'
+                'techInfo': f'Failed to execute command {demisto.command()}.\nError:\n{str(e)}\n'
+                            f'Trace back:\n{traceback.format_exc()}'
             }
         })
 
