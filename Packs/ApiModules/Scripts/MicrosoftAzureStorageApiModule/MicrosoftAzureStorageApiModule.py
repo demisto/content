@@ -34,10 +34,18 @@ class MicrosoftStorageClient(BaseClient):
             Response from API according to resp_type.
         """
 
-        if 'ok_codes' not in kwargs:
+        if 'ok_codes' not in kwargs and not self._ok_codes:
             kwargs['ok_codes'] = (200, 201, 202, 204, 206, 404)
 
         if not full_url:
+            # This logic will chain the SAS token along with the params
+            # in order to create a valid URL for requests in Microsoft Azure Storage.
+            # For example:
+            # SAS token = '?sv=2020-08-04&ss=bt&spr=https&sig=t8'
+            # params = '{'restype': 'directory', 'comp': 'list'}'
+            # url_suffix = 'container'
+            # The updated url_suffix after performing this logic will be:
+            # url_suffix = 'container?sv=2020-08-04&ss=ay&spr=https&sig=s5&restype=directory&comp=list'
             params_query = self.params_dict_to_query_string(params, prefix='')
             url_suffix = f'{url_suffix}{self._account_sas_token}{params_query}'
             params = None
@@ -81,7 +89,7 @@ class MicrosoftStorageClient(BaseClient):
         except ValueError as exception:
             raise DemistoException('Failed to parse json object from response: {}'.format(response.content), exception)
 
-    def params_dict_to_query_string(self, params: dict, prefix: str = "") -> str:
+    def params_dict_to_query_string(self, params: dict = None, prefix: str = "") -> str:
         """
         Convert request params to string query.
         Args:

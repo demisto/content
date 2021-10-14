@@ -203,6 +203,13 @@ class Client:
 def parse_xml_response(xml_string_response: str, tag_path: str = "", find_tag: bool = False) -> list:
     """
     Parse Azure XML response.
+    Convert XML schema string to iterable list.
+    For example:
+    xml_string_response = Integration log: <?xml version="1.0" encoding="utf-8"?><QueueMessagesList><QueueMessage><MessageId>e90f5f60-7a02-4b0b-a522-04ca8f3a00b9</MessageId><InsertionTime>Thu, 14 Oct 2021 08:17:14 GMT</InsertionTime>
+                                            <ExpirationTime>Thu, 21 Oct 2021 08:17:14 GMT</ExpirationTime><DequeueCount>0</DequeueCount><MessageText>demo content</MessageText></QueueMessage></QueueMessagesList>
+
+    The return value will be:
+    [{'MessageId': 'e90f5f60-7a02-4b0b-a522-04ca8f3a00b9', 'InsertionTime': 'Thu, 14 Oct 2021 08:17:14 GMT', 'ExpirationTime': 'Thu, 21 Oct 2021 08:17:14 GMT', 'DequeueCount': '0', 'MessageText': 'demo content'}]
     Args:
         xml_string_response (str): XML response.
         tag_path (str): XML target Tag.
@@ -501,7 +508,8 @@ def create_message_command(client: Client, args: Dict[str, Any]) -> CommandResul
 def get_messages_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Retrieves messages from the front of the queue.
-    Retrieved messages will move to the end of the queue, and will be visible after the amount of time specified in the 'TimeNextVisible' param.
+    Retrieved messages will move to the end of the queue,
+    and will be visible after the amount of time specified in the 'TimeNextVisible' param.
     Args:
         client (Client): Azure Queue Storage API client.
         args (dict): Command arguments from XSOAR.

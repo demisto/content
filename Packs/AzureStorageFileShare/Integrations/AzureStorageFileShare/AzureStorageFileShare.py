@@ -486,7 +486,7 @@ def create_directory_content_output(share_name: str, raw_response: dict, directo
 
             element['Property'] = element.pop('Properties')  # type: ignore
 
-    outputs["Content"].update(raw_response)
+    outputs["Content"].update(raw_response)  # type: ignore
 
     return outputs
 

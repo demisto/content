@@ -355,4 +355,4 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 6.0.1
+fromversion: 6.0.0

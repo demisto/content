@@ -19,5 +19,5 @@
     "disabled": false,
     "reputationCalc": 0,
     "layout": "Azure Storage Queue",
-    "fromVersion": "6.0.1"
+    "fromVersion": "6.0.0"
 }
