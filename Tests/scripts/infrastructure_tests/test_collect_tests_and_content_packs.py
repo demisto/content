@@ -1180,7 +1180,7 @@ def test_remove_ignored_tests(tests_to_filter, ignored_tests, expected_result, m
     assert res == expected_result
     if ignored_tests:
         logging.info.assert_called_once_with("Skipping tests that were ignored via .pack-ignore:\n{}".format(
-            '\n'.join(ignored_tests)))
+            '\n'.join(ignored_tests)))  # pylint: disable=no-member
 
 
 @pytest.mark.parametrize('tests_to_filter, should_test_content, expected_result', [
@@ -1207,7 +1207,7 @@ def test_remove_tests_for_non_supported_packs(tests_to_filter, should_test_conte
     if not should_test_content:
         logging.debug.assert_called_once_with(
             'The following test playbooks are not supported and will not be tested: \n{} '.format(
-                '\n'.join(filtered_tests)))
+                '\n'.join(filtered_tests)))  # pylint: disable=no-member
 
 
 @pytest.mark.parametrize('files_string, expected_result', [

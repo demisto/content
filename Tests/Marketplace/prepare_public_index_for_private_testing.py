@@ -115,7 +115,7 @@ def option_handler():
     parser.add_argument('-e', '--extract_public_index_path', help="Full path of folder to extract the public index",
                         required=True)
     parser.add_argument('-sb', '--storage_base_path', help="Storage base path of the directory to upload to.",
-                        required=False),
+                        required=False)
     parser.add_argument('-p', '--pack_name', help="Modified pack to upload to gcs.")
     parser.add_argument('-a', '--artifacts_path', help="The full path of packs artifacts", required=True)
     parser.add_argument('-ea', '--extract_artifacts_path', help="Full path of folder to extract wanted packs",

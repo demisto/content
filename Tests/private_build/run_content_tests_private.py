@@ -83,7 +83,7 @@ def run_test_logic(tests_settings: Any, c: Any, failed_playbooks: list,
     status, inc_id = check_integration(c, server_url, demisto_user, demisto_pass, integrations, playbook_id,
                                        options=test_options)
     if status == PB_Status.COMPLETED:
-        logging.success(f'PASS: {test_message} succeed')
+        logging.success(f'PASS: {test_message} succeed')  # pylint: disable=no-member
         succeed_playbooks.append(playbook_id)
 
     elif status == PB_Status.NOT_SUPPORTED_VERSION:

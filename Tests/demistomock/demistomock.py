@@ -600,7 +600,7 @@ def results(results):
       None: No data returned
 
     """
-    if type(results) is dict and results.get("contents"):
+    if isinstance(results, dict) and results.get("contents"):
         results = results.get("contents")
     log("demisto results: {}".format(json.dumps(results, indent=4, sort_keys=True)))
 

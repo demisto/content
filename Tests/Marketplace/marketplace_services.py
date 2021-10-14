@@ -1969,7 +1969,7 @@ class Pack(object):
         for pack_file in target_folder_files:
             if pack_file.startswith('.'):
                 continue
-            elif pack_file.endswith('_image.png'):
+            if pack_file.endswith('_image.png'):
                 image_data['repo_image_path'] = os.path.join(root, pack_file)
             elif pack_file.endswith('.yml'):
                 with open(os.path.join(root, pack_file), 'r') as integration_file:
@@ -2446,7 +2446,7 @@ class Pack(object):
         if not os.path.exists(release_notes_dir):
             return
         bc_version_to_text: Dict[str, Optional[str]] = self._breaking_changes_versions_to_text(release_notes_dir)
-        loose_versions: List[LooseVersion] = [LooseVersion(bc_ver) for bc_ver in bc_version_to_text.keys()]
+        loose_versions: List[LooseVersion] = [LooseVersion(bc_ver) for bc_ver in bc_version_to_text]
         predecessor_version: LooseVersion = LooseVersion('0.0.0')
         for changelog_entry in sorted(changelog.keys(), key=LooseVersion):
             rn_loose_version: LooseVersion = LooseVersion(changelog_entry)

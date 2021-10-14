@@ -746,7 +746,7 @@ def update_content_on_demisto_instance(client, server, ami_name):
             cd_release = cd_json.get('release')
             cd_asset_id = cd_json.get('assetId')
         if release == cd_release and asset_id == cd_asset_id:
-            logging.success(f'Content Update Successfully Installed on server {server}.')
+            logging.success(f'Content Update Successfully Installed on server {server}.')  # pylint: disable=no-member
         else:
             logging.error(
                 f'Content Update to version: {release} was Unsuccessful:\nAttempted to install content with release '
@@ -793,7 +793,7 @@ def report_tests_status(preupdate_fails, postupdate_fails, preupdate_success, po
              instance_name, integration_of_instance in succeeded_pre_and_post])
         logging.success(
             'Integration instances that had ("Test" Button) succeeded both before and after the content update:\n'
-            f'{succeeded_pre_and_post_string}')
+            f'{succeeded_pre_and_post_string}')  # pylint: disable=no-member
 
     failed_pre_and_post = preupdate_fails.intersection(postupdate_fails)
     mismatched_statuses = postupdate_fails - preupdate_fails

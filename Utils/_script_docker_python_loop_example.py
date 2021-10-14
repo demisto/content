@@ -442,13 +442,13 @@ def do_ping_pong():
 
 
 backup_env_vars = {}
-for key in os.environ.keys():
+for key in os.environ:
     backup_env_vars[key] = os.environ[key]
 
 
 def rollback_system():
     os.environ = {}
-    for key in backup_env_vars.keys():
+    for key in backup_env_vars:
         os.environ[key] = backup_env_vars[key]
 
 

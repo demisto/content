@@ -8,6 +8,7 @@ import requests
 import sendgrid
 import sys
 
+import urllib3
 from sendgrid.helpers.mail import *
 
 REPO_OWNER = "demisto"
@@ -106,7 +107,7 @@ def get_pr_tagged_reviewers(pr_number, github_token, verify_ssl, pack):
 
     response = requests.get(comments_endpoint, headers=headers, verify=verify_ssl)
 
-    if response.status_code != requests.codes.ok:
+    if response.status_code != 200:
         print(f"Failed requesting PR {pr_number} comments:\n{response.text}")
         sys.exit(1)
 

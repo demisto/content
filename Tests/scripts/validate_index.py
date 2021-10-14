@@ -46,7 +46,7 @@ def log_message_if_statement(statement: bool, error_message: str, success_messag
     if not statement:
         logging.error(error_message)
     elif success_message:
-        logging.success(success_message)  # type: ignore
+        logging.success(success_message)  # type: ignore  # pylint: disable=no-member
     return statement
 
 

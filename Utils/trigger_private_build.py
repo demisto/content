@@ -11,7 +11,7 @@ import demisto_sdk.commands.common.tools as tools
 from Tests.scripts.utils.log_util import install_logging
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 PRIVATE_BUILD_INFRA_SCRIPTS = ['Tests/scripts/validate_premium_packs.sh', 'Tests/scripts/validate_premium_packs.py',
                                'Tests/scripts/validate_index.py']
@@ -153,7 +153,7 @@ def main():
         if len(workflow_ids_diff) == 1:
             workflow_id = workflow_ids_diff[0]
             logging.success(f'Private repo build triggered successfully, workflow id: {workflow_id}\n URL:'
-                            f' {WORKFLOW_HTML_URL}/{workflow_id}')
+                            f' {WORKFLOW_HTML_URL}/{workflow_id}')  # pylint: disable=no-member
 
             # write the workflow id to text file to use it in get_private_build_status.py
             with open(PRIVATE_REPO_WORKFLOW_ID_FILE, "w") as f:

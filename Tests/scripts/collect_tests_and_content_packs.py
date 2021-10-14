@@ -1364,7 +1364,7 @@ def create_filter_envs_file(from_version: str, to_version: str, documentation_ch
     # Releases are only relevant for non marketplace server versions, therefore - there is no need to create marketplace
     # server in release branches.
     if is_release_branch():
-        marketplace_server_keys = {key for key in envs_to_test.keys() if key not in {'Server 5.5', 'Server 5.0'}}
+        marketplace_server_keys = {key for key in envs_to_test if key not in {'Server 5.5', 'Server 5.0'}}
         for key in marketplace_server_keys:
             envs_to_test[key] = False
 
@@ -1444,12 +1444,12 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
 
     else:
         if tests_string:
-            logging.success('Collected the following tests:\n{0}\n'.format(tests_string))
+            logging.success('Collected the following tests:\n{0}\n'.format(tests_string))  # pylint: disable=no-member
         else:
             logging.error('Did not find tests to run')
 
         if packs_to_install_string:
-            logging.success('Collected the following content packs to install:\n{0}\n'.format(packs_to_install_string))
+            logging.success('Collected the following content packs to install:\n{0}\n'.format(packs_to_install_string))  # pylint: disable=no-member
         else:
             logging.error('Did not find content packs to install')
 
