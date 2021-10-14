@@ -1,0 +1,130 @@
+category: Utilities
+commonfields:
+  id: RemoteAccess v2
+  version: -1
+configuration:
+- display: Default Hostname Or IP Address
+  name: hostname
+  required: true
+  type: 0
+- display: Ciphers
+  additionalinfo: Comma separated list of ciphers to be used. Will return error with
+    the supported ciphers by server if none of given ciphers were agreed by server.
+  name: ciphers
+  required: false
+  type: 0
+- display: User
+  additionalinfo: For example, "root".
+  name: credentials
+  type: 9
+  required: false
+- additionalinfo: TODO
+  defaultvalue: 'false'
+  display: Interactive Terminal Mode
+  hidden: false
+  name: interactive_terminal_mode
+  required: false
+  type: 8
+description: '[Enter a comprehensive, yet concise, description of what the integration
+  does, what use cases it is designed for, etc.]'
+display: RemoteAccess v2
+name: RemoteAccess v2
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Command to run on remote machine.
+      isArray: false
+      name: command
+      required: true
+      secret: false
+    deprecated: false
+    description: Run command on remote system with ssh
+    execution: false
+    name: remote-access-ssh
+    outputs:
+    - contextPath: RemoteAccess.Command.stdout
+      description: STD output of the given command.
+      type: String
+    - contextPath: RemoteAccess.Command.std_error
+      description: STD error output of the given command.
+      type: String
+  - arguments:
+    - default: false
+      description: Entry ID of the file to be copied from Cortex XSOAR to remote machine.
+      isArray: false
+      name: entry_id
+      required: true
+      secret: false
+    - default: false
+      description: Destination of the path of the copied file in the remote machine.
+        Defaults to the `entry_id` file path if not given
+      isArray: false
+      name: destination_path
+      required: false
+      secret: false
+    deprecated: false
+    description: Run command on remote system with ssh
+    execution: false
+    name: remote-access-copy-to
+    outputs: []
+  - arguments:
+    - default: false
+      description: Path of the file in remote machine to be copied to Cortex XSOAR.
+      isArray: false
+      name: file_path
+      required: true
+      secret: false
+    - default: false
+      description: Name of the file to be saved in Cortex XSOAR. Defaults to the file
+        name in `file_path` if not given. E.g, if `file_path` is "a/b/c.txt", the
+        file name will be c.txt.
+      isArray: false
+      name: file_name
+      required: false
+      secret: false
+    deprecated: false
+    description: Run command on remote system with ssh
+    execution: false
+    name: remote-access-copy-from
+    outputs:
+    - contextPath: File
+      description: The file details command results.
+      type: Unknown
+    - contextPath: File.Name
+      description: The full file name (including the file extension).
+      type: String
+    - contextPath: File.EntryID
+      description: The ID for locating the file in the War Room.
+      type: String
+    - contextPath: File.Size
+      description: The size of the file in bytes.
+      type: Number
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.SHA512
+      description: The SHA512 hash of the file.
+      type: String
+    - contextPath: File.Extension
+      description: 'The file extension. For example: "xls".'
+      type: String
+    - contextPath: File.Type
+      description: The file type, as determined by libmagic (same as displayed in
+        file entries).
+      type: String
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/netmiko:1.0.0.24037
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
