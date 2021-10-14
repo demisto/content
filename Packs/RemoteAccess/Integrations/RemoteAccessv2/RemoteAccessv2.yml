@@ -25,8 +25,7 @@ configuration:
   name: interactive_terminal_mode
   required: false
   type: 8
-description: '[Enter a comprehensive, yet concise, description of what the integration
-  does, what use cases it is designed for, etc.]'
+description: File transfer between Cortex XSOAR to remote machine, and execution of commands on remote machine
 display: RemoteAccess v2
 name: RemoteAccess v2
 script:

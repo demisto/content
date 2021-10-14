@@ -2,12 +2,12 @@
 This integration enables Cortex XSOAR to access and run commands on a terminal in a remote location (via SSH).
 
 Some changes have been made that might affect your existing content. 
-If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-remoteaccessv2).
+If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-RemoteAccessv2).
 
-## Configure RemoteAccessV2 on Cortex XSOAR
+## Configure RemoteAccess v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for RemoteAccessV2.
+2. Search for RemoteAccess v2.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
@@ -154,7 +154,7 @@ Run command on remote system with ssh
 
 
 
-## Breaking changes from the previous version of this integration - RemoteAccessV2
+## Breaking changes from the previous version of this integration - RemoteAccess v2
 %%FILL HERE%%
 The following sections list the changes in this version.
 

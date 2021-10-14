@@ -169,11 +169,6 @@ def copy_from_command(ssh_client: SSHClient, args: Dict[str, Any]) -> Dict:
 
 
 def main() -> None:
-    """main function, parses params and runs command functions
-
-    :return:
-    :rtype:
-    """
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()

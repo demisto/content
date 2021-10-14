@@ -2,7 +2,7 @@ import io
 import json
 
 import pytest
-from RemoteAccessV2 import CommandResults, DemistoException
+from RemoteAccessv2 import CommandResults, DemistoException
 
 
 def util_load_json(path):
@@ -23,9 +23,9 @@ def test_create_paramiko_ssh_client_valid(mocker, ciphers):
     Then:
     - Ensure SSH client is created.
     """
-    from RemoteAccessV2 import create_paramiko_ssh_client
+    from RemoteAccessv2 import create_paramiko_ssh_client
     mocker.patch('paramiko.SSHClient.connect')
-    mocker.patch('RemoteAccessV2.get_available_ciphers', return_value=ciphers)
+    mocker.patch('RemoteAccessv2.get_available_ciphers', return_value=ciphers)
     create_paramiko_ssh_client('host', 'user', 'password', [])
 
 
@@ -42,9 +42,9 @@ def test_create_paramiko_ssh_client_invalid_ciphers(mocker, ciphers):
     Then:
     - Ensure DemistoException is thrown as expected.
     """
-    from RemoteAccessV2 import create_paramiko_ssh_client
+    from RemoteAccessv2 import create_paramiko_ssh_client
     server_ciphers = {'diffie-hellman-group14-sha512'}
-    mocker.patch('RemoteAccessV2.get_available_ciphers', return_value=server_ciphers)
+    mocker.patch('RemoteAccessv2.get_available_ciphers', return_value=server_ciphers)
     expected_err_msg: str = f"Given ciphers are not available in server.\nCiphers given are: {ciphers}\n" \
                             f"Ciphers available in server are: {server_ciphers}"
     with pytest.raises(DemistoException, match=expected_err_msg):
@@ -65,7 +65,7 @@ def test_execute_shell_command(mocker, command, mock_std_output, mock_std_error)
     Then:
     - Ensure expected output and error are returned.
     """
-    from RemoteAccessV2 import execute_shell_command, CommandResults, tempfile
+    from RemoteAccessv2 import execute_shell_command, CommandResults, tempfile
     from paramiko import SSHClient
     mock_client: SSHClient = SSHClient()
     with tempfile.TemporaryDirectory() as temp_dir:
@@ -94,10 +94,10 @@ def test_copy_to_command_valid(mocker):
     Then:
     - Ensure expected readable output is returned upon successful copy.
     """
-    from RemoteAccessV2 import copy_to_command
+    from RemoteAccessv2 import copy_to_command
     from paramiko import SSHClient
     mock_client: SSHClient = SSHClient()
-    mocker.patch('RemoteAccessV2.perform_copy_command', return_value='')
+    mocker.patch('RemoteAccessv2.perform_copy_command', return_value='')
     results: CommandResults = copy_to_command(mock_client, {'entry_id': 123})
     assert results.readable_output == '### The file corresponding to entry ID: 123 was copied to remote host.'
 
@@ -113,7 +113,7 @@ def test_copy_to_command_invalid_entry_id(mocker):
     Then:
     - Ensure DemistoException is thrown with expected error message.
     """
-    from RemoteAccessV2 import copy_to_command
+    from RemoteAccessv2 import copy_to_command
     from paramiko import SSHClient
     import demistomock as demisto
     mock_client: SSHClient = SSHClient()
@@ -137,12 +137,12 @@ def test_copy_from_command_valid(mocker, file_name, expected_file_name):
     Then:
     - Ensure expected fileResult object is returned.
     """
-    from RemoteAccessV2 import copy_from_command
+    from RemoteAccessv2 import copy_from_command
     from paramiko import SSHClient
-    import RemoteAccessV2
+    import RemoteAccessv2
     mock_client: SSHClient = SSHClient()
-    mocker_results = mocker.patch.object(RemoteAccessV2, 'fileResult')
-    mocker.patch('RemoteAccessV2.perform_copy_command', return_value='RemoteFileData')
+    mocker_results = mocker.patch.object(RemoteAccessv2, 'fileResult')
+    mocker.patch('RemoteAccessv2.perform_copy_command', return_value='RemoteFileData')
     args = {'file_path': 'mock_path.txt'}
     if file_name:
         args['file_name'] = file_name

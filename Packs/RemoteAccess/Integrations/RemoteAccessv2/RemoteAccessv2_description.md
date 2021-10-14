@@ -1,4 +1,4 @@
-## RemoteAccessV2
+## RemoteAccess v2
 
 This integration enables Cortex XSOAR to access and run commands on a terminal in a remote location (via SSH).
 
