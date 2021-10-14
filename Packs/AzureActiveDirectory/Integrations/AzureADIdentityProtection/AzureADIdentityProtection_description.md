@@ -10,7 +10,8 @@ To connect to the Azure Active Directory Identity Protection using either the Co
    1. Add a new Azure App Registration in the Azure Portal, with the following permissions:
    - `IdentityRiskEvent.Read.All`
    - `User.Read`
-   - `IdentityRiskyUser.ReadWrite.All`, used to update user status, for example by calling the `!azure-ad-identity-protection-risky-user-confirm-compromised` command.
+   - `IdentityRiskyUser.ReadWrite.All`
+  Permission requirements of the different commands are detailed in the integration documentation.
    2. Copy the **Application (client) ID** and **Subscription ID** in the Azure Portal and add it to the instance settings in Cortex XSOAR. 
 
 Once the instance is set up, perform the following steps to log in: 

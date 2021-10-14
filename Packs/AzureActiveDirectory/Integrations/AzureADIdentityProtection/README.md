@@ -9,7 +9,7 @@ This integration was integrated and tested with the beta version of Azure Active
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Application ID | The ID of the managed application. Use one of the following: <ul><li>  **The Cortex XSOAR Azure application**. Use the application ID `4ffef4a4-601f-4393-a789-432f3f3b8470`, and fill in your subscription ID (from the Azure Portal). </li> <li> Add a **new Azure App Registration** in the Azure Portal, with the following permissions: <br>`IdentityRiskEvent.Read.All` <br> `User.Read` <br> `IdentityRiskyUser.ReadWrite.All` (used to update user status, for example by calling the `!azure-ad-identity-protection-risky-user-confirm-compromised` command). <br> Copy the **Application (client) ID** and **Subscription ID** in the Azure Portal and add it to the instance settings in Cortex XSOAR. </li></ul> | True |
+    | Application ID | The ID of the managed application. Use one of the following: <ul><li>  **The Cortex XSOAR Azure application**. Use the application ID `4ffef4a4-601f-4393-a789-432f3f3b8470`, and fill in your subscription ID (from the Azure Portal). </li> <li> Add a **new Azure App Registration** in the Azure Portal, with the following permissions: <br>`IdentityRiskEvent.Read.All` <br> `User.Read` <br> `IdentityRiskyUser.ReadWrite.All` <br>_Permission requirements of the different commands are detailed below._ </br></li></ul> | True |
     | Subscription ID | The Azure Active Directory subscription ID. | True |
     | Azure Active Directory endpoint | The Azure Active Directory endpoint associated with a national cloud. | True |
     | Trust any certificate (not secure) | When selected, certificates are not checked.  | False |
