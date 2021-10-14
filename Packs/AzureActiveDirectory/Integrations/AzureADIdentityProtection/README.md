@@ -1,6 +1,14 @@
 Gets information from the Azure Active Directory Identity Protection service.
 This integration was integrated and tested with the beta version of Azure Active Directory Identity Protection API.
 
+## Set up an Azure Application
+Choose between the following options:
+1. Using your subscription ID with the **Cortex XSOAR Azure application**, by using application ID `4ffef4a4-601f-4393-a789-432f3f3b8470`. This choice requires no further settings. 
+2. Using a self-hosted application, set up on the Azure portal:
+    - Add a **new Azure App Registration**, with the following permissions:  `IdentityRiskEvent.Read.All`,`User.Read`, `IdentityRiskyUser.ReadWrite.All`. Permission requirements of the different commands are detailed below.
+    - Under `Authentication` on the portal, on the Set the app to support multitenant accounts .
+    - `Allow public client flows` for your Azure Application, See detailed instructions [here.](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#device-code-flow). _This enables the Device-flow login mechanism, used by this integration to authenticate._ 
+
 ## Configure Azure Active Directory Identity Protection on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -9,8 +17,8 @@ This integration was integrated and tested with the beta version of Azure Active
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Application ID | The ID of the managed application. Use one of the following: <ul><li>  **The Cortex XSOAR Azure application**. Use the application ID `4ffef4a4-601f-4393-a789-432f3f3b8470`, and fill in your subscription ID (from the Azure Portal). </li> <li> Add a **new Azure App Registration** in the Azure Portal, with the following permissions: <br>`IdentityRiskEvent.Read.All` <br> `User.Read` <br> `IdentityRiskyUser.ReadWrite.All` <br>Permission requirements of the different commands are detailed below. <br> When using a self-hosted app, make sure to `Allow public client flows`. This enables the Device-flow login mechanism, which this integration uses to authenticate), see instructions [here.](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#device-code-flow)  <br> Set up the app to support multitenant accounts under `Authentication` on the Azure portal.  </li></ul> | True |
-    | Subscription ID | The Azure Active Directory subscription ID. | True |
+    | Application ID | The ID of the managed application. | True |
+    | Subscription ID | The Azure Active Directory subscription ID, found on the Azure Portal. | True |
     | Azure Active Directory endpoint | The Azure Active Directory endpoint associated with a national cloud. | True |
     | Trust any certificate (not secure) | When selected, certificates are not checked.  | False |
     | Use system proxy settings | When selected, runs the integration instance using a proxy server (https or http) that you defined in the server configuration.  | False |
@@ -114,7 +122,8 @@ There is no context output for this command.
 ***
 Retrieve the properties of a collection of riskDetection objects.
 
-Permission required: `IdentityRiskEvent.Read.All`
+#### Required Permissions
+`IdentityRiskEvent.Read.All`
 
 #### Base Command
 
@@ -255,7 +264,8 @@ Permission required: `IdentityRiskEvent.Read.All`
 ***
 Retrieves the properties of a collection of riskDetection objects.
 
-Permission required: `IdentityRiskEvent.Read.All`
+#### Required Permissions
+`IdentityRiskEvent.Read.All`
 
 #### Base Command
 
@@ -325,7 +335,9 @@ Permission required: `IdentityRiskEvent.Read.All`
 ***
 Gets the risk history of a riskyUser resource.
 
-Permissions required: `IdentityRiskyUser.Read.All`, `IdentityRiskyUser.ReadWrite.All`
+#### Required Permissions
+`IdentityRiskyUser.Read.All`
+`IdentityRiskyUser.ReadWrite.All`
 
 #### Base Command
 
@@ -413,7 +425,8 @@ Permissions required: `IdentityRiskyUser.Read.All`, `IdentityRiskyUser.ReadWrite
 ***
 Confirms one or more riskyUser objects as compromised. This action sets the targeted user's risk level to high.
 
-Permission required: `IdentityRiskyUser.ReadWrite.All`
+#### Required Permissions
+`IdentityRiskyUser.ReadWrite.All`
 
 #### Base Command
 
@@ -440,7 +453,8 @@ There is no context output for this command.
 ***
 Dismisses the risk of one or more riskyUser objects. This action sets the targeted user's risk level to none.
 
-Permission required: `IdentityRiskyUser.ReadWrite.All`
+#### Required Permissions
+`IdentityRiskyUser.ReadWrite.All`
 
 #### Base Command
 
