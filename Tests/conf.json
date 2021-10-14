@@ -1140,11 +1140,6 @@
             "nightly": true
         },
         {
-            "integrations": "Devo",
-            "playbookID": "Devo test",
-            "timeout": 500
-        },
-        {
             "playbookID": "URL Enrichment - Generic v2 - Test",
             "integrations": [
                 "Rasterize",
@@ -1156,6 +1151,9 @@
         },
         {
             "playbookID": "CutTransformerTest"
+        },
+        {
+            "playbookID": "TestEditServerConfig"
         },
         {
             "playbookID": "Default - Test",
@@ -2230,6 +2228,10 @@
         {
             "playbookID": "SLA Scripts - Test",
             "fromversion": "4.1.0"
+        },
+        {
+            "playbookID": "test_manageOOOUsers",
+            "fromversion": "5.5.0"
         },
         {
             "playbookID": "PcapHTTPExtractor-Test"
@@ -3557,6 +3559,11 @@
             "playbookID": "SOCRadarThreatFusion-Test"
         },
         {
+            "integrations": "TheHive Project",
+            "playbookID": "Playbook_TheHiveProject_Test",
+            "fromversion": "6.0.0"
+        },
+        {
             "integrations": [
                 "ServiceNow v2",
                 "Demisto REST API"
@@ -4785,7 +4792,6 @@
         "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
         "AttackIQFireDrill": "License issues #29774",
         "SentinelOne V2": "License expired issue #24933",
-        "G Suite Security Alert Center": "Developed by crest, need to add permissions to our instance issue #40988",
         "Azure Sentinel": "issue with the tenant_id parameter"
     },
     "nightly_integrations": [
@@ -4877,6 +4883,7 @@
         "Google Resource Manager": "googleclient sdk has time based challenge exchange",
         "Google Cloud Storage": "SDK",
         "GoogleCalendar": "googleclient sdk has time based challenge exchange",
+        "G Suite Security Alert Center": "googleclient sdk has time based challenge exchange",
         "GoogleDrive": "googleclient sdk has time based challenge exchange",
         "Syslog Sender": "syslog",
         "syslog": "syslog",
