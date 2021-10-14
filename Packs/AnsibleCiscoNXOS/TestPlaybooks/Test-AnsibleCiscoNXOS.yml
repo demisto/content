@@ -1,6 +1,6 @@
-id: Test-AnsibleCiscoIOS
+id: Test-AnsibleCiscoNXOS
 version: -1
-name: Test-AnsibleCiscoIOS
+name: Test-AnsibleCiscoNXOS
 starttaskid: "0"
 tasks:
   "0":
@@ -16,7 +16,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "38"
+      - "46"
     separatecontext: false
     view: |-
       {
@@ -97,16 +97,16 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: e58aab7f-301a-47d1-8a57-974bcaa8c0d7
+    taskid: d911811f-b1c7-463e-8efc-1384b706fccc
     type: regular
     task:
-      id: e58aab7f-301a-47d1-8a57-974bcaa8c0d7
+      id: d911811f-b1c7-463e-8efc-1384b706fccc
       version: -1
-      name: ios-facts
+      name: nxos-facts
       description: |-
-        Collect facts from remote devices running Cisco IOS
-         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_facts_module.html
-      script: '|||ios-facts'
+        Gets facts about NX-OS switches
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_facts_module.html
+      script: '|||nxos-facts'
       type: regular
       iscommand: true
       brand: ""
@@ -133,12 +133,12 @@ tasks:
     quietmode: 0
   "25":
     id: "25"
-    taskid: 48252377-1e14-4049-8c61-e5cb3cdfa9f2
+    taskid: ff1553b2-548c-49c3-88f4-04bce2e349c3
     type: condition
     task:
-      id: 48252377-1e14-4049-8c61-e5cb3cdfa9f2
+      id: ff1553b2-548c-49c3-88f4-04bce2e349c3
       version: -1
-      name: check ios-facts
+      name: check nxos-facts
       type: condition
       iscommand: false
       brand: ""
@@ -152,7 +152,7 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: CiscoIOS.IosFacts.net_serialnum
+              simple: CiscoNXOS.NxosFacts.net_serialnum
             iscontext: true
     view: |-
       {
@@ -166,57 +166,18 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "26":
-    id: "26"
-    taskid: 0d2d4c4b-cb59-4ece-8692-95b00cbe913d
-    type: regular
-    task:
-      id: 0d2d4c4b-cb59-4ece-8692-95b00cbe913d
-      version: -1
-      name: ios-banner (absent)
-      description: |-
-        Manage multiline banners on Cisco IOS devices
-         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_banner_module.html
-      script: '|||ios-banner'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      banner:
-        simple: login
-      host:
-        simple: ${inputs.host}
-      state:
-        simple: absent
-      text: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 5
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "27":
     id: "27"
-    taskid: 2339bd5b-3ebb-408a-8314-3ddeb132c1b3
+    taskid: d1f683de-a0a5-402b-8601-aa0c36e7e817
     type: regular
     task:
-      id: 2339bd5b-3ebb-408a-8314-3ddeb132c1b3
+      id: d1f683de-a0a5-402b-8601-aa0c36e7e817
       version: -1
-      name: ios-banner
+      name: nxos-banner
       description: |-
-        Manage multiline banners on Cisco IOS devices
-         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_banner_module.html
-      script: '|||ios-banner'
+        Manage multiline banners on Cisco NXOS devices
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_banner_module.html
+      script: '|||nxos-banner'
       type: regular
       iscommand: true
       brand: ""
@@ -225,7 +186,7 @@ tasks:
       - "39"
     scriptarguments:
       banner:
-        simple: login
+        simple: motd
       host:
         simple: ${inputs.host}
       state:
@@ -247,16 +208,16 @@ tasks:
     quietmode: 0
   "28":
     id: "28"
-    taskid: 7fc40d97-df5a-4ecb-894b-95bdf1087c6c
+    taskid: 089d1e0d-639e-4f78-8e71-cce67ae8bfab
     type: regular
     task:
-      id: 7fc40d97-df5a-4ecb-894b-95bdf1087c6c
+      id: 089d1e0d-639e-4f78-8e71-cce67ae8bfab
       version: -1
-      name: ios-command
+      name: nxos-command
       description: |-
-        Run commands on remote devices running Cisco IOS
-         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_command_module.html
-      script: '|||ios-command'
+        Run arbitrary command on Cisco NXOS devices
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_command_module.html
+      script: '|||nxos-command'
       type: regular
       iscommand: true
       brand: ""
@@ -287,10 +248,10 @@ tasks:
     quietmode: 0
   "29":
     id: "29"
-    taskid: 34714171-3ddc-4b8c-81e7-ce3d63e9e6e6
+    taskid: 071e092e-4270-49da-8a73-f6f8e71b86ae
     type: regular
     task:
-      id: 34714171-3ddc-4b8c-81e7-ce3d63e9e6e6
+      id: 071e092e-4270-49da-8a73-f6f8e71b86ae
       version: -1
       name: Generate random password
       description: Generates random string
@@ -325,66 +286,18 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "30":
-    id: "30"
-    taskid: badcae31-96e5-42ce-8526-994ccef08e06
-    type: regular
-    task:
-      id: badcae31-96e5-42ce-8526-994ccef08e06
-      version: -1
-      name: ios-user (absent)
-      description: |-
-        Manage the aggregate of local users on Cisco IOS device
-         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_user_module.html
-      script: '|||ios-user'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "26"
-    scriptarguments:
-      aggregate: {}
-      configured_password: {}
-      hashed_password: {}
-      host:
-        simple: ${inputs.host}
-      name:
-        simple: testplaybook
-      nopassword: {}
-      password_type: {}
-      privilege: {}
-      purge: {}
-      sshkey: {}
-      state:
-        simple: absent
-      update_password: {}
-      view: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": -190
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "31":
     id: "31"
-    taskid: 4a910815-ca61-48bc-8367-9a8b41fcfeab
+    taskid: c99aa6f3-d911-47ca-827c-36c7f618f738
     type: regular
     task:
-      id: 4a910815-ca61-48bc-8367-9a8b41fcfeab
+      id: c99aa6f3-d911-47ca-827c-36c7f618f738
       version: -1
-      name: ios-user
+      name: nxos-user
       description: |-
-        Manage the aggregate of local users on Cisco IOS device
-         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_user_module.html
-      script: '|||ios-user'
+        Manage the collection of local users on Nexus devices
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_user_module.html
+      script: '|||nxos-user'
       type: regular
       iscommand: true
       brand: ""
@@ -395,20 +308,16 @@ tasks:
       aggregate: {}
       configured_password:
         simple: ${RandomString}
-      hashed_password: {}
       host:
         simple: ${inputs.host}
       name:
         simple: testplaybook
-      nopassword: {}
-      password_type: {}
-      privilege: {}
       purge: {}
+      role: {}
       sshkey: {}
       state:
         simple: present
       update_password: {}
-      view: {}
     separatecontext: false
     view: |-
       {
@@ -564,16 +473,16 @@ tasks:
     quietmode: 0
   "37":
     id: "37"
-    taskid: 7903db20-fa62-44da-82cd-4cc9a8dd5238
+    taskid: 0103f46b-405f-4a41-8152-30a4cb6b4492
     type: regular
     task:
-      id: 7903db20-fa62-44da-82cd-4cc9a8dd5238
+      id: 0103f46b-405f-4a41-8152-30a4cb6b4492
       version: -1
-      name: ios-interfaces
+      name: nxos-interfaces
       description: |-
-        Manages interface attributes of Cisco IOS network devices
-         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_interfaces_module.html
-      script: '|||ios-interfaces'
+        Manages interface attributes of NX-OS Interfaces
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_interfaces_module.html
+      script: '|||nxos-interfaces'
       type: regular
       iscommand: true
       brand: ""
@@ -582,10 +491,9 @@ tasks:
       - "43"
     scriptarguments:
       config:
-        simple: '{{ [{''name'': ''GigabitEthernet0/2'', ''description'': ''Configured
-          and Merged by Ansible Network'', ''enabled'': True}, {''name'': ''GigabitEthernet0/3'',
-          ''description'': ''Configured and Merged by Ansible Network'', ''mtu'':
-          2800, ''enabled'': False, ''speed'': 100, ''duplex'': ''full''}] }}'
+        simple: '{{ [{''name'': ''Ethernet1/1'', ''description'': ''Configured by
+          Ansible'', ''enabled'': True}, {''name'': ''Ethernet1/2'', ''description'':
+          ''Configured by Ansible Network'', ''enabled'': False}] }}'
       host:
         simple: ${inputs.host}
       state: {}
@@ -602,55 +510,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "38":
-    id: "38"
-    taskid: 50c2913b-1158-4833-852c-8fae4420417c
-    type: regular
-    task:
-      id: 50c2913b-1158-4833-852c-8fae4420417c
-      version: -1
-      name: ios-interfaces (deleted)
-      description: |-
-        Manages interface attributes of Cisco IOS network devices
-         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_interfaces_module.html
-      script: '|||ios-interfaces'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "30"
-    scriptarguments:
-      config:
-        simple: '{{ [{''name'': ''GigabitEthernet0/2'', ''description'': ''Configured
-          and Merged by Ansible Network'', ''enabled'': True}, {''name'': ''GigabitEthernet0/3'',
-          ''description'': ''Configured and Merged by Ansible Network'', ''mtu'':
-          2800, ''enabled'': False, ''speed'': 100, ''duplex'': ''full''}] }}'
-      host:
-        simple: ${inputs.host}
-      state:
-        simple: deleted
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": -360
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "39":
     id: "39"
-    taskid: d331e28b-2961-4a18-8724-703f1cc33b6b
+    taskid: 82283776-ebf3-4b05-8e47-b95c93abfebd
     type: condition
     task:
-      id: d331e28b-2961-4a18-8724-703f1cc33b6b
+      id: 82283776-ebf3-4b05-8e47-b95c93abfebd
       version: -1
-      name: check ios-banner
+      name: check nxos-banner
       type: condition
       iscommand: false
       brand: ""
@@ -664,7 +531,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: CiscoIOS.IosBanner.status
+              simple: CiscoNXOS.NxosBanner.status
             iscontext: true
           right:
             value:
@@ -683,12 +550,12 @@ tasks:
     quietmode: 0
   "40":
     id: "40"
-    taskid: bb922b08-7189-4fd1-8cf0-ac062ffde15a
+    taskid: 13f69cec-5ec8-4f44-8d99-0fa33680e3f6
     type: condition
     task:
-      id: bb922b08-7189-4fd1-8cf0-ac062ffde15a
+      id: 13f69cec-5ec8-4f44-8d99-0fa33680e3f6
       version: -1
-      name: check ios-command
+      name: check nxos-command
       type: condition
       iscommand: false
       brand: ""
@@ -702,7 +569,7 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: CiscoIOS.IosCommand.stdout.[0]
+              simple: CiscoNXOS.NxosCommand.stdout
             iscontext: true
     view: |-
       {
@@ -718,12 +585,12 @@ tasks:
     quietmode: 0
   "41":
     id: "41"
-    taskid: 13fca7c4-24ce-46f2-8028-f718c7de6d41
+    taskid: 768c21a2-f999-4e67-8fb2-f20250788b7e
     type: condition
     task:
-      id: 13fca7c4-24ce-46f2-8028-f718c7de6d41
+      id: 768c21a2-f999-4e67-8fb2-f20250788b7e
       version: -1
-      name: check ios-user
+      name: check nxos-user
       type: condition
       iscommand: false
       brand: ""
@@ -737,11 +604,11 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: CiscoIOS.IosUser.commands.[0]
+              simple: CiscoNXOS.NxosUser.commands.[0]
             iscontext: true
           right:
             value:
-              simple: username testplaybook secret ********
+              simple: username testplaybook
     view: |-
       {
         "position": {
@@ -756,16 +623,16 @@ tasks:
     quietmode: 0
   "42":
     id: "42"
-    taskid: 46ac5ed6-5696-4dd9-8f73-5df276b6218d
+    taskid: 75226279-70ce-4119-86a5-4e8718c3b753
     type: regular
     task:
-      id: 46ac5ed6-5696-4dd9-8f73-5df276b6218d
+      id: 75226279-70ce-4119-86a5-4e8718c3b753
       version: -1
-      name: ios-user (absent)
+      name: nxos-user (absent)
       description: |-
-        Manage the aggregate of local users on Cisco IOS device
-         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_user_module.html
-      script: '|||ios-user'
+        Manage the collection of local users on Nexus devices
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_user_module.html
+      script: '|||nxos-user'
       type: regular
       iscommand: true
       brand: ""
@@ -775,20 +642,16 @@ tasks:
     scriptarguments:
       aggregate: {}
       configured_password: {}
-      hashed_password: {}
       host:
         simple: ${inputs.host}
       name:
         simple: testplaybook
-      nopassword: {}
-      password_type: {}
-      privilege: {}
       purge: {}
+      role: {}
       sshkey: {}
       state:
         simple: absent
       update_password: {}
-      view: {}
     separatecontext: false
     view: |-
       {
@@ -804,12 +667,12 @@ tasks:
     quietmode: 0
   "43":
     id: "43"
-    taskid: 3edd1b4b-f58f-40d5-8365-1a2e96cf2e17
+    taskid: f7e8b59b-c303-4122-8ddf-ee28aa099075
     type: condition
     task:
-      id: 3edd1b4b-f58f-40d5-8365-1a2e96cf2e17
+      id: f7e8b59b-c303-4122-8ddf-ee28aa099075
       version: -1
-      name: check ios-interfaces
+      name: check nxos-interfaces
       type: condition
       iscommand: false
       brand: ""
@@ -823,11 +686,11 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: CiscoIOS.IosInterfaces.after.[2].description
+              simple: CiscoNXOS.NxosInterfaces.after.[0].description
             iscontext: true
           right:
             value:
-              simple: Configured and Merged by Ansible Network
+              simple: Configured by Ansible
     view: |-
       {
         "position": {
@@ -842,16 +705,16 @@ tasks:
     quietmode: 0
   "44":
     id: "44"
-    taskid: f5980ca2-7103-45f1-8f0c-63e0081789b0
+    taskid: 91fdf88e-330e-4d9b-8cce-d0f994411eda
     type: regular
     task:
-      id: f5980ca2-7103-45f1-8f0c-63e0081789b0
+      id: 91fdf88e-330e-4d9b-8cce-d0f994411eda
       version: -1
-      name: ios-interfaces (deleted)
+      name: nxos-interfaces (deleted)
       description: |-
-        Manages interface attributes of Cisco IOS network devices
-         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_interfaces_module.html
-      script: '|||ios-interfaces'
+        Manages interface attributes of NX-OS Interfaces
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_interfaces_module.html
+      script: '|||nxos-interfaces'
       type: regular
       iscommand: true
       brand: ""
@@ -860,10 +723,9 @@ tasks:
       - "23"
     scriptarguments:
       config:
-        simple: '{{ [{''name'': ''GigabitEthernet0/2'', ''description'': ''Configured
-          and Merged by Ansible Network'', ''enabled'': True}, {''name'': ''GigabitEthernet0/3'',
-          ''description'': ''Configured and Merged by Ansible Network'', ''mtu'':
-          2800, ''enabled'': False, ''speed'': 100, ''duplex'': ''full''}] }}'
+        simple: '{{ [{''name'': ''Ethernet1/1'', ''description'': ''Configured by
+          Ansible'', ''enabled'': True}, {''name'': ''Ethernet1/2'', ''description'':
+          ''Configured by Ansible Network'', ''enabled'': False}] }}'
       host:
         simple: ${inputs.host}
       state:
@@ -883,16 +745,16 @@ tasks:
     quietmode: 0
   "45":
     id: "45"
-    taskid: 706d9437-a9bf-4df4-8c5f-3e89de94aaeb
+    taskid: bb5caac6-9da6-442e-86e7-3da49416121f
     type: regular
     task:
-      id: 706d9437-a9bf-4df4-8c5f-3e89de94aaeb
+      id: bb5caac6-9da6-442e-86e7-3da49416121f
       version: -1
-      name: ios-banner (absent)
+      name: nxos-banner (absent)
       description: |-
-        Manage multiline banners on Cisco IOS devices
-         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_banner_module.html
-      script: '|||ios-banner'
+        Manage multiline banners on Cisco NXOS devices
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_banner_module.html
+      script: '|||nxos-banner'
       type: regular
       iscommand: true
       brand: ""
@@ -901,7 +763,7 @@ tasks:
       - "23"
     scriptarguments:
       banner:
-        simple: login
+        simple: motd
       host:
         simple: ${inputs.host}
       state:
@@ -913,6 +775,129 @@ tasks:
         "position": {
           "x": 40,
           "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "46":
+    id: "46"
+    taskid: ebc5d286-a751-4205-8725-edf9b7fd9f24
+    type: regular
+    task:
+      id: ebc5d286-a751-4205-8725-edf9b7fd9f24
+      version: -1
+      name: nxos-banner (absent)
+      description: |-
+        Manage multiline banners on Cisco NXOS devices
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_banner_module.html
+      script: '|||nxos-banner'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      banner:
+        simple: motd
+      host:
+        simple: ${inputs.host}
+      state:
+        simple: absent
+      text: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "47":
+    id: "47"
+    taskid: db2ff8a2-9f89-4761-80b7-fa85b1ab64a3
+    type: regular
+    task:
+      id: db2ff8a2-9f89-4761-80b7-fa85b1ab64a3
+      version: -1
+      name: nxos-user (absent)
+      description: |-
+        Manage the collection of local users on Nexus devices
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_user_module.html
+      script: '|||nxos-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      aggregate: {}
+      configured_password: {}
+      host:
+        simple: ${inputs.host}
+      name:
+        simple: testplaybook
+      purge: {}
+      role: {}
+      sshkey: {}
+      state:
+        simple: absent
+      update_password: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "48":
+    id: "48"
+    taskid: 26817094-a908-44a3-8e0c-120376592e26
+    type: regular
+    task:
+      id: 26817094-a908-44a3-8e0c-120376592e26
+      version: -1
+      name: nxos-interfaces (deleted)
+      description: |-
+        Manages interface attributes of NX-OS Interfaces
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_interfaces_module.html
+      script: '|||nxos-interfaces'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      config:
+        simple: '{{ [{''name'': ''Ethernet1/1'', ''description'': ''Configured by
+          Ansible'', ''enabled'': True}, {''name'': ''Ethernet1/2'', ''description'':
+          ''Configured by Ansible Network'', ''enabled'': False}] }}'
+      host:
+        simple: ${inputs.host}
+      state:
+        simple: deleted
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5
         }
       }
     note: false
@@ -942,4 +927,4 @@ inputs:
 outputs: []
 sourceplaybookid: 3a6dd8ad-15e6-46c1-8110-8132245ac2eb
 fromversion: 6.0.0
-description: Test playbook for Ansible Cisco IOS
+description: Test playbook for Ansible Cisco NXOS

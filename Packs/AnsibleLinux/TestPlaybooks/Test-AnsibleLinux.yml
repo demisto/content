@@ -1,6 +1,5 @@
-id: 3a6dd8ad-15e6-46c1-8110-8132245ac2eb
-version: 10
-vcShouldKeepItemLegacyProdMachine: false
+id: Test-AnsibleLinux
+version: -1
 name: Test-AnsibleLinux
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "32"
@@ -154,6 +154,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -181,6 +182,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "40"
@@ -208,6 +210,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "38"
@@ -235,6 +238,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "36"
@@ -262,6 +266,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "34"
@@ -733,6 +738,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -1513,5 +1519,7 @@ inputs:
     simple: 192.168.1.18
   required: true
   description: Host to run tests against
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
+fromversion: 6.0.0
+description: Test playbook for Ansible Linux

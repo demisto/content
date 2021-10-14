@@ -1,6 +1,5 @@
-id: a4a4ae5d-0da2-4ea0-8d1e-c05c9916dbf6
-version: 15
-vcShouldKeepItemLegacyProdMachine: false
+id: Test-AnsibleKubernetes
+version: -1
 name: Test-AnsibleKubernetes
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -92,6 +92,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "16"
@@ -509,6 +510,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "18"
@@ -673,3 +675,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 6.0.0
+description: Test playbook for Ansible Kubernetes

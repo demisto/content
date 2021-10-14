@@ -1,6 +1,5 @@
-id: 4eec0a39-b61e-4fbc-8546-a16d4c6eef04
-version: 17
-vcShouldKeepItemLegacyProdMachine: false
+id: Test-AnsibleAzure
+version: -1
 name: Test-AnsibleAzure
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -115,6 +115,7 @@ tasks:
       id: 8f59a3da-206f-4cbb-8300-6fee355ae44c
       version: -1
       name: check azure-rm-resourcegroup
+      description: "check azure-rm-resourcegroup output"
       type: condition
       iscommand: false
       brand: ""
@@ -325,6 +326,7 @@ tasks:
       id: bbbe5368-cf52-47e5-8d74-43c9cbc1e87c
       version: -1
       name: check azure-rm-virtualnetwork
+      description: "check azure-rm-virtualnetwork output"
       type: condition
       iscommand: false
       brand: ""
@@ -408,6 +410,7 @@ tasks:
       id: 7540dba5-316c-48d4-8c2c-538ba08f2639
       version: -1
       name: check azure-rm-subnet
+      description: "check azure-rm-subnet output"
       type: condition
       iscommand: false
       brand: ""
@@ -526,6 +529,7 @@ tasks:
       id: dabc11c9-a850-4edb-8521-efd97c38515e
       version: -1
       name: check azure-rm-virtualmachine
+      description: "check azure-rm-virtualmachine output"
       type: condition
       iscommand: false
       brand: ""
@@ -567,6 +571,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "7"
@@ -594,6 +599,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "12"
@@ -628,5 +634,9 @@ inputs:
     simple: testplaybook
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
+fromversion: 6.0.0
+description: "Test playbook for Ansible Azure Integration"
+tests:
+- No tests (auto formatted)
