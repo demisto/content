@@ -19,6 +19,7 @@
 <li>
 <strong>apiSecret</strong>:<strong> </strong>Zoom API secret for a specific license</li>
 <li><strong>Use system proxy settings</strong></li>
+<li><strong>Trust any certificate</strong></li>
 </ul>
 </li>
 <li>Click <strong>Test</strong> to validate the URLs and connection.</li>

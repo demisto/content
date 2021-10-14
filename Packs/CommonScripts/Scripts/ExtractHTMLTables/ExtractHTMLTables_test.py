@@ -33,6 +33,3 @@ def test_extract_html_table():
         """
     res = extract_html_table(html_table, [])
     assert "Found 1 tables in HTML." in res['Contents']
-
-
-

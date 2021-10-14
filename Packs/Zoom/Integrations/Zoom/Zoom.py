@@ -29,10 +29,11 @@ URL = 'https://api.zoom.us/v2/'
 ACCESS_TOKEN = get_jwt(demisto.getParam('apiKey'), demisto.getParam('apiSecret'))
 PARAMS = {'access_token': ACCESS_TOKEN}
 HEADERS = {'Content-Type': 'application/json', 'Accept': 'application/json'}
+USE_SSL = not demisto.params().get('insecure', False)
 
 
 if demisto.command() == 'test-module':
-    res = requests.get(URL + 'users', headers=HEADERS, params=PARAMS)
+    res = requests.get(URL + 'users', headers=HEADERS, params=PARAMS, verify=USE_SSL)
     if res.status_code == requests.codes.ok:
         demisto.results('ok')
     else:
@@ -45,7 +46,7 @@ elif demisto.command() == 'zoom-create-user':
         user_type = 2
     elif ut == 'Corporate':
         user_type = 3
-    res = requests.post(URL + 'users', headers=HEADERS, params=PARAMS, json={
+    res = requests.post(URL + 'users', headers=HEADERS, params=PARAMS, verify=USE_SSL, json={
         'action': 'create',
         'user_info': {
             'email': demisto.getArg('email'),
@@ -73,7 +74,7 @@ elif demisto.command() == 'zoom-list-users':
         'page_size': demisto.getArg('page-size'),
         'page_number': demisto.getArg('page-number')
     }
-    res = requests.get(URL + 'users', headers=HEADERS, params=params)
+    res = requests.get(URL + 'users', headers=HEADERS, params=params, verify=USE_SSL)
     if res.status_code == requests.codes.ok:
         data = res.json()
         md = tableToMarkdown('Users', data.get('users'), ['id', 'first_name', 'last_name', 'email', 'type'])
@@ -101,7 +102,7 @@ elif demisto.command() == 'zoom-delete-user':
         'access_token': ACCESS_TOKEN,
         'action': demisto.getArg('action')
     }
-    res = requests.delete(URL + 'users/' + demisto.getArg('user'), headers=HEADERS, params=params)
+    res = requests.delete(URL + 'users/' + demisto.getArg('user'), headers=HEADERS, params=params, verify=USE_SSL)
     if res.status_code == 204:
         demisto.results('User %s deleted successfully' % demisto.getArg('user'))
     else:
@@ -125,7 +126,8 @@ elif demisto.command() == 'zoom-create-meeting':
             'start_time': demisto.getArg('start-time'),
             'timezone': demisto.getArg('timezone'),
         })
-    res = requests.post(URL + "users/%s/meetings" % demisto.getArg('user'), headers=HEADERS, params=PARAMS, json=params)
+    res = requests.post(URL + "users/%s/meetings" % demisto.getArg('user'), headers=HEADERS, params=PARAMS, json=params,
+                        verify=USE_SSL)
     if res.status_code == 201:
         data = res.json()
         md = 'Meeting created successfully.\nStart it [here](%s) and join [here](%s).' % (
@@ -142,7 +144,7 @@ elif demisto.command() == 'zoom-create-meeting':
 
 elif demisto.command() == 'zoom-fetch-recording':
     meeting = demisto.getArg('meeting_id')
-    res = requests.get(URL + 'meetings/%s/recordings' % meeting, headers=HEADERS, params=PARAMS)
+    res = requests.get(URL + 'meetings/%s/recordings' % meeting, headers=HEADERS, params=PARAMS, verify=USE_SSL)
     if res.status_code == requests.codes.ok:
         data = res.json()
         recording_files = data['recording_files']
@@ -158,7 +160,8 @@ elif demisto.command() == 'zoom-fetch-recording':
                 shutil.copyfileobj(r.raw, f)
 
             demisto.results(file_result_existing_file(filename))
-            rf = requests.delete(URL + 'meetings/%s/recordings/%s' % (meeting, file['id']), headers=HEADERS, params=PARAMS)
+            rf = requests.delete(URL + 'meetings/%s/recordings/%s' % (meeting, file['id']), headers=HEADERS,
+                                 params=PARAMS, verify=USE_SSL)
             if rf.status_code == 204:
                 demisto.results('File ' + filename + ' was moved to trash.')
             else:

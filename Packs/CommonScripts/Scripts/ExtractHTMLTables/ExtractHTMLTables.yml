@@ -1,7 +1,7 @@
 commonfields:
-  id: ExtractHTMLTables1
+  id: ExtractHTMLTables
   version: -1
-name: ExtractHTMLTables1
+name: ExtractHTMLTables
 script: ''
 type: python
 subtype: python2
