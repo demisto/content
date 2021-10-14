@@ -1270,7 +1270,7 @@ Get scan results
                             }
                         ],
                         "desc": "Ensure that all capabilities are dropped.",
-                        "docUrl": "https://prisma.fyi/p93",
+                        "docUrl": "https://some-url/",
                         "files": [
                             "./my-devsecops-moon-405fc6e/iac/vulnerable-iac.yaml:[2,18]"
                         ],
