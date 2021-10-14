@@ -1,4 +1,3 @@
-beta: false
 category: IT Services
 commonfields:
   id: AWS - IAM
@@ -1771,7 +1770,7 @@ script:
       description: The number of entities (users, groups, and roles) that the policy
         is attached to.
       type: number
-    - contextPath: 'AWS.IAM.Policies.PermissionsBoundaryUsageCount'
+    - contextPath: AWS.IAM.Policies.PermissionsBoundaryUsageCount
       description: The number of entities (users and roles) for which the policy is
         used to set the permissions boundary.
       type: number
@@ -2234,32 +2233,47 @@ script:
     description: Lists the names of the inline policies that are embedded in the specified
       IAM role.
     execution: false
-    hidden: false
     name: aws-iam-list-role-policies
     outputs:
     - contextPath: AWS.IAM.Roles.RoleName.Policies
       description: A list of policy names.
       type: Unknown
-  - name: aws-iam-get-role-policy
-    arguments:
-    - name: roleName
-      required: true
+  - arguments:
+    - default: false
       description: The name of the role associated with the policy.
-    - name: policyName
+      isArray: false
+      name: roleName
       required: true
+      secret: false
+    - default: false
       description: The name of the policy document to get.
+      isArray: false
+      name: policyName
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves the specified inline policy document that is embedded with
+      the specified IAM role.
+    execution: false
+    name: aws-iam-get-role-policy
     outputs:
     - contextPath: AWS.IAM.Roles.PolicyDocument
       description: The policy document.
       type: string
-    description: Retrieves the specified inline policy document that is embedded with
-      the specified IAM role.
-  - name: aws-iam-get-policy
-    arguments:
-    - name: policyArn
-      required: true
+  - arguments:
+    - default: false
       description: The Amazon Resource Name (ARN) of the managed policy that you want
         information about.
+      isArray: false
+      name: policyArn
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves information about the specified managed policy, including
+      the policy's default version and the total number of IAM users, groups, and
+      roles to which the policy is attached.
+    execution: false
+    name: aws-iam-get-policy
     outputs:
     - contextPath: AWS.IAM.Policy.PolicyName
       description: The friendly name (not ARN) identifying the policy.
@@ -2277,9 +2291,23 @@ script:
     - contextPath: AWS.IAM.Policy.Description
       description: A friendly description of the policy.
       type: string
-    description: Retrieves information about the specified managed policy, including
-      the policy's default version and the total number of IAM users, groups, and
-      roles to which the policy is attached.
+  - arguments:
+    - default: false
+      description: The name (friendly name, not ARN) of the user to list attached
+        policies for.
+      isArray: false
+      name: userName
+      required: true
+      secret: false
+    deprecated: false
+    description: Lists the names of the inline policies embedded in the specified
+      IAM user.
+    execution: false
+    name: aws-iam-list-user-policies
+    outputs:
+    - contextPath: AWS.IAM.Users.Policies
+      description: A list of policy names
+      type: Unknown
   dockerimage: demisto/boto3:2.0.0.24033
   feed: false
   isfetch: false
@@ -2292,3 +2320,4 @@ script:
 tests:
 - AWS - IAM Test Playbook
 fromversion: 5.0.0
+beta: false

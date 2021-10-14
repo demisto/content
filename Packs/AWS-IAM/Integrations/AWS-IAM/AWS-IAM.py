@@ -1003,6 +1003,29 @@ def get_policy(args, aws_client):
     return_outputs(human_readable, outputs, response)
 
 
+def list_user_policies(args, aws_client):
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
+    )
+    data = []
+    user_name = args.get('userName', "")
+    kwargs = {
+        'UserName': user_name
+    }
+    paginator = client.get_paginator('list_user_policies')
+    for response in paginator.paginate(**kwargs):
+        for policy in response['PolicyNames']:
+            data.append(policy)
+    data.append("test")
+    ec = {'AWS.IAM.Users(val.UserName && val.UserName === obj.UserName).Policies': data}
+    human_readable = tableToMarkdown('AWS IAM Policies for user', headers=["Policy Name"],
+                                     t=data)
+    return_outputs(human_readable, ec)
+
+
 def test_function(aws_client):
     client = aws_client.aws_session(service=SERVICE)
     response = client.list_users()
@@ -1011,7 +1034,6 @@ def test_function(aws_client):
 
 
 def main():
-
     params = demisto.params()
     aws_default_region = params.get('defaultRegion')
     aws_role_arn = params.get('roleArn')
@@ -1129,6 +1151,8 @@ def main():
             get_role_policy(args, aws_client)
         elif command == 'aws-iam-get-policy':
             get_policy(args, aws_client)
+        elif command == 'aws-iam-list-user-policies':
+            list_user_policies(args, aws_client)
 
     except Exception as e:
         LOG(str(e))
