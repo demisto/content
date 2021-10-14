@@ -2,7 +2,6 @@ import shutil
 
 import demistomock as demisto  # noqa: F401
 import jwt
-import requests
 from CommonServerPython import *  # noqa: F401
 
 if not demisto.getParam('proxy'):
