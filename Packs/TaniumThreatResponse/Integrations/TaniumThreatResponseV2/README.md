@@ -2869,3 +2869,305 @@ Get system status, to retrive all possible connection's client ids, hostnames, i
 >| taniumlinux | 11111 | 1.1.1.1 | 1.1.1.1 | 17472 |
 >| hostname1 | 222222 | 1.2.3.4 | 1.2.3.4 | 17472 |
 
+
+## Breaking changes from the previous version of this integration - Tanium Threat Response v2
+The following sections list the changes in this version.
+
+### Commands
+#### The following commands were removed in this version:
+* *tanium-tr-list-snapshots-by-connection*
+* *tanium-tr-list-local-snapshots-by-connection*
+* *tanium-tr-get-connection-by-name*
+* *tanium-tr-get-parent-process-tree*
+* *tanium-tr-list-evidence*
+* *tanium-tr-get-process-timeline*
+* *tanium-tr-get-download-file-request-status* - this command was replaced by *tanium-tr-get-task-by-id*.
+
+### Arguments
+#### The following arguments were removed in this version:
+
+In the *tanium-tr-get-intel-doc-by-id* command:
+* *intel-doc-id* - this argument was replaced by *intel_doc_id*.
+
+In the *tanium-tr-list-alerts* command:
+* *computer-ip-address* - this argument was replaced by *computer_ip_address*.
+* *computer-name* - this argument was replaced by *computer_name*.
+* *scan-config-id* - this argument was replaced by *scan_config_id*.
+* *intel-doc-id* - this argument was replaced by *intel_doc_id*.
+
+In the *tanium-tr-get-alert-by-id* command:
+* *alert-id* - this argument was replaced by *alert_id*.
+
+In the *tanium-tr-alert-update-state* command:
+* *alert-id* - this argument was replaced by *alert_id*.
+
+In the *tanium-tr-create-snapshot* command:
+* *connection-name* - this argument was replaced by *connection_id*.
+
+In the *tanium-tr-delete-snapshot* command:
+* *connection-name* - this argument was replaced by *connection_id*.
+* *snapshot-id* - this argument was replaced by *snapshot_ids*.
+
+In the *tanium-tr-delete-local-snapshot* command:
+* *connection-name* - this argument was replaced by *connection_id*.
+* *file-name* - this argument was removed.
+
+In the *tanium-tr-create-connection* command:
+* *remote* - this argument was removed.
+* *destination-type* - this argument was removed.
+* *destination* - this argument was removed.
+* *connection-timeout* - this argument was removed.
+* This command receiving new arguments: *client_id*, *ip*, *platform*, *hostname*.
+
+In the *tanium-tr-delete-connection* command:
+* *connection-name* - this argument was replaced by *connection_id*.
+
+In the *tanium-tr-get-label-by-id* command:
+* *label-id* - this argument was replaced by *label_id*.
+
+In the *tanium-tr-list-file-downloads* command:
+* *host* - this argument was removed.
+
+In the *tanium-tr-get-downloaded-file* command:
+* *file-id* - this argument was replaced by *file_id*.
+
+In the *tanium-tr-list-events-by-connection* command:
+* *connection-name* - this argument was replaced by *connection_id*.
+* *event-type* - this argument was replaced by *type*.
+
+In the *tanium-tr-get-file-download-info* command:
+* *host* - this argument was removed.
+* *path* - this argument was removed.
+* *id* - this argument was replaced by *file_id*.
+
+In the *tanium-tr-get-process-info* command:
+* *connection-name* - this argument was replaced by *connection_id*.
+
+In the *tanium-tr-get-events-by-process* command:
+* *connection-name* - this argument was replaced by *connection_id*.
+
+In the *tanium-tr-get-process-children* command:
+* *connection-name* - this argument was replaced by *connection_id*.
+
+In the *tanium-tr-get-parent-process* command:
+* *connection-name* - this argument was replaced by *connection_id*.
+
+In the *tanium-tr-get-process-tree* command:
+* *connection-name* - this argument was replaced by *connection_id*.
+
+In the *tanium-tr-get-evidence-by-id* command:
+* *evidence-id* - this argument was replaced by *evidence_id*.
+
+In the *tanium-tr-create-evidence* command:
+* *connection-name* - this argument was replaced by *connection_id*.
+
+In the *tanium-tr-delete-evidence* command:
+* *evidence-id* - this argument was replaced by *evidence_id*.
+
+In the *tanium-tr-request-file-download* command:
+* *connection-name* - this argument was replaced by *connection_id*.
+
+In the *tanium-tr-delete-file-download* command:
+* *file-id* - this argument was replaced by *file_id*.
+
+In the *tanium-tr-list-files-in-directory* command:
+* *connection-name* - this argument was replaced by *connection_id*.
+
+In the *tanium-tr-get-file-info* command:
+* *connection-name* - this argument was replaced by *connection_id*.
+
+In the *tanium-tr-delete-file-from-endpoint* command:
+* *connection-name* - this argument was replaced by *connection_id*.
+
+#### The behavior of the following arguments was changed:
+
+In the *tanium-tr-list-intel-docs* command:
+* *limit* - The default value changed to '50'.
+
+### Outputs
+#### The following outputs were removed in this version:
+
+In the *tanium-tr-list-connections* command:
+* *Tanium.Connection.CreateTime* - this output was removed.
+* *Tanium.Connection.Name* - this output was replaced by *Tanium.Connection.hostname*.
+* *Tanium.Connection.Remote* - this output was removed.
+* *Tanium.Connection.State* - this output was replaced by *Tanium.Connection.status*.
+* *Tanium.Connection.Deleted* - this output was removed.
+* *Tanium.Connection.DestionationType* - this output was removed.
+* *Tanium.Connection.DST* - this output was removed.
+* *Tanium.Connection.OSName* - this output was replaced by *Tanium.Connection.platform*.
+
+In the *tanium-tr-list-labels* command:
+* *Tanium.Label.CreatedAt* - this output was replaced by *Tanium.Label.createdAt*.
+* *Tanium.Label.Description* - this output was replaced by *Tanium.Label.description*.
+* *Tanium.Label.ID* - this output was replaced by *Tanium.Label.id*.
+* *Tanium.Label.IndicatorCount* - this output was replaced by *Tanium.Label.indicatorCount*.
+* *Tanium.Label.Name* - this output was replaced by *Tanium.Label.name*.
+* *Tanium.Label.SignalCount* - this output was replaced by *Tanium.Label.signalCount*.
+* *Tanium.Label.UpdatedAt* - this output was replaced by *Tanium.Label.updatedAt*.
+
+In the *tanium-tr-get-label-by-id* command:
+* *Tanium.Label.CreatedAt* - this output was replaced by *Tanium.Label.createdAt*.
+* *Tanium.Label.Description* - this output was replaced by *Tanium.Label.description*.
+* *Tanium.Label.ID* - this output was replaced by *Tanium.Label.id*.
+* *Tanium.Label.IndicatorCount* - this output was replaced by *Tanium.Label.indicatorCount*.
+* *Tanium.Label.Name* - this output was replaced by *Tanium.Label.name*.
+* *Tanium.Label.SignalCount* - this output was replaced by *Tanium.Label.signalCount*.
+* *Tanium.Label.UpdatedAt* - this output was replaced by *Tanium.Label.updatedAt*.
+
+In the *tanium-tr-list-file-downloads* command:
+* *Tanium.FileDownload.Size* - this output was replaced by *Tanium.FileDownload.size*.
+* *Tanium.FileDownload.Path* - this output was replaced by *Tanium.FileDownload.path*.
+* *Tanium.FileDownload.Downloaded* - this output was replaced by *Tanium.FileDownload.downloaded*.
+* *Tanium.FileDownload.Host* - this output was replaced by *Tanium.FileDownload.hostname*.
+* *Tanium.FileDownload.Created* - this output was replaced by *Tanium.FileDownload.processCreationTime*.
+* *Tanium.FileDownload.Hash* - this output was replaced by *Tanium.FileDownload.hash*.
+* *Tanium.FileDownload.SPath* - this output was removed.
+* *Tanium.FileDownload.ID* - this output was replaced by *Tanium.FileDownload.uuid*.
+* *Tanium.FileDownload.LastModified* - this output was replaced by *Tanium.FileDownload.lastModified*.
+* *Tanium.FileDownload.CreatedBy* - this output was replaced by *Tanium.FileDownload.createdBy*.
+* *Tanium.FileDownload.CreatedByProc* - this output was replaced by *Tanium.FileDownload.createdByProc*.
+* *Tanium.FileDownload.LastModifiedBy* - this output was replaced by *Tanium.FileDownload.lastModifiedBy*.
+* *Tanium.FileDownload.LastModifiedByProc* - this output was replaced by *Tanium.FileDownload.lastModifiedByProc*.
+* *Tanium.FileDownload.Comments* - this output was removed.
+* *Tanium.FileDownload.Tags* - this output was removed.
+* *Tanium.FileDownload.Deleted* - this output was removed.
+
+In the *tanium-tr-list-events-by-connection* command:
+* *TaniumEvent.Domain* - this output was removed.
+* *TaniumEvent.File* - this output was replaced by *TaniumEvent.file*.
+* *TaniumEvent.Operation* - this output was replaced by *TaniumEvent.operation*.
+* *TaniumEvent.ProcessID* - this output was replaced by *TaniumEvent.pid*.
+* *TaniumEvent.ProcessName* - this output was removed.
+* *TaniumEvent.ProcessTableID* - this output was replaced by *TaniumEvent.processTableId*.
+* *TaniumEvent.Timestamp* - this output was removed.
+* *TaniumEvent.Username* - this output was replaced by *TaniumEvent.userName*.
+* *TaniumEvent.DestinationAddress* - this output was replaced by *TaniumEvent.remoteAddress*.
+* *TaniumEvent.DestinationPort* - this output was replaced by *TaniumEvent.remoteAddressPort*.
+* *TaniumEvent.SourceAddress* - this output was replaced by *TaniumEvent.localAddress*.
+* *TaniumEvent.SourcePort* - this output was replaced by *TaniumEvent.localAddressPort*.
+* *TaniumEvent.KeyPath* - this output was replaced by *TaniumEvent.keyPath*.
+* *TaniumEvent.ValueName* - this output was replaced by *TaniumEvent.valueName*.
+* *TaniumEvent.ExitCode* - this output was replaced by *TaniumEvent.exitCode*.
+* *TaniumEvent.ProcessCommandLine* - this output was replaced by *TaniumEvent.processCommandLine*.
+* *TaniumEvent.ProcessHash* - this output was removed.
+* *TaniumEvent.SID* - this output was removed.
+* *TaniumEvent.Hashes* - this output was replaced by *TaniumEvent.hashes*.
+* *TaniumEvent.ImageLoaded* - this output was replaced by *TaniumEvent.imageLoaded*.
+* *TaniumEvent.Signature* - this output was replaced by *TaniumEvent.signature*.
+* *TaniumEvent.Signed* - this output was replaced by *TaniumEvent.signed*.
+* *TaniumEvent.EventID* - this output was replaced by *TaniumEvent.eventId*.
+* *TaniumEvent.EventOpcode* - this output was replaced by *TaniumEvent.eventOpcode*.
+* *TaniumEvent.EventRecordID* - this output was replaced by *TaniumEvent.eventRecordID*.
+* *TaniumEvent.EventTaskID* - this output was replaced by *TaniumEvent.eventTaskID*.
+* *TaniumEvent.Query* - this output was replaced by *TaniumEvent.query*.
+* *TaniumEvent.Response* - this output was replaced by *TaniumEvent.response*.
+* *TaniumEvent.ImagePath* - this output was replaced by *TaniumEvent.imagePath*.
+* *TaniumEvent.CreationTime* - this output was replaced by *TaniumEvent.creationTime*.
+* *TaniumEvent.EndTime* - this output was replaced by *TaniumEvent.endTime*.
+* *TaniumEvent.EventTaskName* - this output was replaced by *TaniumEvent.eventTaskName*.
+* *TaniumEvent.Property.Name* - this output was removed.
+* *TaniumEvent.Property.Value* - this output was removed.
+
+In the *tanium-tr-get-file-download-info* command:
+* *Tanium.FileDownload.Size* - this output was replaced by *Tanium.FileDownload.size*.
+* *Tanium.FileDownload.Path* - this output was replaced by *Tanium.FileDownload.path*.
+* *Tanium.FileDownload.Downloaded* - this output was replaced by *Tanium.FileDownload.downloaded*.
+* *Tanium.FileDownload.Host* - this output was replaced by *Tanium.FileDownload.hostname*.
+* *Tanium.FileDownload.Created* - this output was replaced by *Tanium.FileDownload.processCreationTime*.
+* *Tanium.FileDownload.Hash* - this output was replaced by *Tanium.FileDownload.hash*.
+* *Tanium.FileDownload.SPath* - this output was removed.
+* *Tanium.FileDownload.ID* - this output was replaced by *Tanium.FileDownload.uuid*.
+* *Tanium.FileDownload.LastModified* - this output was replaced by *Tanium.FileDownload.lastModified*.
+* *Tanium.FileDownload.CreatedBy* - this output was replaced by *Tanium.FileDownload.createdBy*.
+* *Tanium.FileDownload.CreatedByProc* - this output was replaced by *Tanium.FileDownload.createdByProc*.
+* *Tanium.FileDownload.LastModifiedBy* - this output was replaced by *Tanium.FileDownload.lastModifiedBy*.
+* *Tanium.FileDownload.LastModifiedByProc* - this output was replaced by *Tanium.FileDownload.lastModifiedByProc*.
+* *Tanium.FileDownload.Comments* - this output was removed.
+* *Tanium.FileDownload.Tags* - this output was removed.
+* *Tanium.FileDownload.Deleted* - this output was removed.
+
+In the *tanium-tr-get-process-info* command:
+* *Tanium.Process.CreateTime* - this output was replaced by *Tanium.ProcessInfo.createTime*.
+* *Tanium.Process.Domain* - this output was removed.
+* *Tanium.Process.ExitCode* - this output was replaced by *Tanium.ProcessInfo.exitCode*.
+* *Tanium.Process.ProcessCommandLine* - this output was removed.
+* *Tanium.Process.ProcessID* - this output was replaced by *Tanium.ProcessInfo.pid*.
+* *Tanium.Process.ProcessName* - this output was removed.
+* *Tanium.Process.ProcessTableId* - this output was replaced by *Tanium.ProcessInfo.processTableId*.
+* *Tanium.Process.SID* - this output was removed
+* *Tanium.Process.Username* - this output was replaced by *Tanium.ProcessInfo.userName*.
+
+In the *tanium-tr-get-events-by-process* command:
+* *Tanium.ProcessEvent.ID* - this output was replaced by *Tanium.ProcessEvent.id*.
+* *Tanium.ProcessEvent.Detail* - this output was replaced by *Tanium.ProcessEvent.detail*.
+* *Tanium.ProcessEvent.Operation* - this output was replaced by *Tanium.ProcessEvent.operation*.
+* *Tanium.ProcessEvent.Timestamp* - this output was replaced by *Tanium.ProcessEvent.timestamp*.
+* *Tanium.ProcessEvent.Type* - this output was replaced by *Tanium.ProcessEvent.type*.
+
+In the *tanium-tr-get-process-children* command:
+* *Tanium.ProcessChildren.ID* - this output was replaced by *Tanium.ProcessChildren.id*.
+* *Tanium.ProcessChildren.Name* - this output was removed.
+* *Tanium.ProcessChildren.PID* - this output was replaced by *Tanium.ProcessChildren.pid*.
+* *Tanium.ProcessChildren.PTID* - this output was replaced by *Tanium.ProcessChildren.parentProcessTableId*.
+* *Tanium.ProcessChildren.Parent* - this output was removed.
+
+In the *tanium-tr-get-parent-process* command:
+* *Tanium.Process.CreateTime* - this output was replaced by *Tanium.ProcessParent.createTime*.
+* *Tanium.Process.Domain* - this output was removed.
+* *Tanium.Process.ExitCode* - this output was replaced by *Tanium.ProcessParent.exitCode*.
+* *Tanium.Process.ProcessCommandLine* - this output was removed.
+* *Tanium.Process.ProcessID* - this output was replaced by *Tanium.ProcessParent.pid*.
+* *Tanium.Process.ProcessName* - this output was removed.
+* *Tanium.Process.ProcessTableId* - this output was replaced by *Tanium.ProcessParent.processTableId*.
+* *Tanium.Process.SID* - this output was removed.
+* *Tanium.Process.Username* - this output was replaced by *Tanium.ProcessParent.userName*.
+
+In the *tanium-tr-get-process-tree* command:
+* *Tanium.ProcessTree.ID* - this output was replaced by *Tanium.ProcessTree.id*.
+* *Tanium.ProcessTree.Name* - this output was removed.
+* *Tanium.ProcessTree.PID* - this output was replaced by *Tanium.ProcessTree.pid*.
+* *Tanium.ProcessTree.PTID* - this output was replaced by *Tanium.ProcessTree.parentProcessTableId*.
+* *Tanium.ProcessTree.Parent* - this output was removed.
+* *Tanium.ProcessTree.Children* - this output was replaced by *Tanium.ProcessTree.childrenCount*.
+
+In the *tanium-tr-get-evidence-by-id* command:
+* *Tanium.Evidence.ID* - this output was replaced by *Tanium.Evidence.uuid*.
+* *Tanium.Evidence.CreatedAt* - this output was replaced by *Tanium.Evidence.createTime*.
+* *Tanium.Evidence.LastModified* - this output was removed.
+* *Tanium.Evidence.User* - this output was replaced by *Tanium.Evidence.username*.
+* *Tanium.Evidence.ConnectionName* - this output was replaced by *Tanium.Evidence.hostname*.
+* *Tanium.Evidence.Type* - this output was replaced by *Tanium.Evidence.type*.
+* *Tanium.Evidence.ProcessTableId* - this output was removed.
+* *Tanium.Evidence.Timestamp* - this output was replaced by *Tanium.Evidence.timestamp*.
+* *Tanium.Evidence.Summary* - this output was replaced by *Tanium.Evidence.summary*.
+* *Tanium.Evidence.Comments* - this output was removed.
+* *Tanium.Evidence.Tags* - this output was removed.
+* *Tanium.Evidence.Deleted* - this output was removed.
+
+In the *tanium-tr-request-file-download* command:
+* *Tanium.FileDownload.Path* - this output was replaced by *Tanium.FileDownloadTask.paths*.
+* *Tanium.FileDownload.ConnectionName* - this output was replaced by *Tanium.FileDownloadTask.connection*.
+* *Tanium.FileDownload.Downloaded* - this output was removed.
+* *Tanium.FileDownload.Status* - this output was replaced by *Tanium.FileDownloadTask.status*.
+* *Tanium.FileDownload.ID* - this output was replaced by *Tanium.FileDownloadTask.taskId*.
+
+In the *tanium-tr-list-files-in-directory* command:
+* *Tanium.File.Created* - this output was replaced by *Tanium.File.createdDate*.
+* *Tanium.File.Size* - this output was replaced by *Tanium.File.size*.
+* *Tanium.File.IsDirectory* - this output was replaced by *Tanium.File.type*.
+* *Tanium.File.LastModified* - this output was replaced by *Tanium.File.modifiedDate*.
+* *Tanium.File.Path* - this output was replaced by *Tanium.File.path*.
+* *Tanium.File.Permissions* - this output was replaced by *Tanium.File.permissions*.
+* *Tanium.File.ConnectionName* - this output was replaced by *Tanium.File.connectionId*.
+* *Tanium.File.Deleted* - this output was removed.
+
+In the *tanium-tr-get-file-info* command:
+* *Tanium.File.Created* - this output was replaced by *Tanium.File.createdDate*.
+* *Tanium.File.Size* - this output was replaced by *Tanium.File.size*.
+* *Tanium.File.IsDirectory* - this output was replaced by *Tanium.File.type*.
+* *Tanium.File.LastModified* - this output was replaced by *Tanium.File.modifiedDate*.
+* *Tanium.File.Path* - this output was replaced by *Tanium.File.path*.
+* *Tanium.File.ConnectionName* - this output was replaced by *Tanium.File.connectionId*.
+* *Tanium.File.Deleted* - this output was removed.
+
