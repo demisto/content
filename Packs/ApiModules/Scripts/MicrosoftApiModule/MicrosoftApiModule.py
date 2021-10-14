@@ -96,7 +96,8 @@ class MicrosoftClient(BaseClient):
 
         else:
             self.endpoint = endpoint
-            self.token_retrieval_url = token_retrieval_url.format(tenant_id=tenant_id, endpoint=TOKEN_RETRIEVAL_ENDPOINTS[self.endpoint])
+            self.token_retrieval_url = token_retrieval_url.format(tenant_id=tenant_id,
+                                                                  endpoint=TOKEN_RETRIEVAL_ENDPOINTS[self.endpoint])
             self.client_id = auth_id
             self.client_secret = enc_key
             self.tenant_id = tenant_id
