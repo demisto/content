@@ -7,29 +7,22 @@ configuration:
   name: hostname
   required: true
   type: 0
+- display: Ciphers
+  additionalinfo: Comma separated list of ciphers to be used. Will return error with the supported ciphers by server if none of given ciphers were agreed by server.
+  name: ciphers
+  required: false
+  isArray: true
+  type: 0
 - display: User
   additionalinfo: For example, "root".
   name: credentials
   type: 9
   required: false
-- display: Terminal Type
-  defaultvalue: xterm
-  name: terminal_type
-  required: true
-  type: 0
 - additionalinfo: TODO
   defaultvalue: 'false'
   display: Interactive Terminal Mode
   hidden: false
   name: interactive_terminal_mode
-  required: false
-  type: 8
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
   required: false
   type: 8
 description: '[Enter a comprehensive, yet concise, description of what the integration

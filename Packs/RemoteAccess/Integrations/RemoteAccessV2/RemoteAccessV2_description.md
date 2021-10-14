@@ -1,8 +1,6 @@
-## BaseIntegration Help
+## RemoteAccessV2
 
-Markdown file for integration configuration  help snippet. In this file add:
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
+This integration enables Cortex XSOAR to access and run commands on a terminal in a remote location (via SSH).
 
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
-
+### Ciphers
+- When ciphers are given, the SSH connection will be established with the first cipher of the given ciphers that given host supports.
