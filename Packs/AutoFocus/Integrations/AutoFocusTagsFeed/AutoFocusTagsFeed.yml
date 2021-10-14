@@ -74,7 +74,6 @@ configuration:
   - suddenDeath
   required: false
   type: 17
-
 - name: feedExpirationInterval
   display: ''
   required: false

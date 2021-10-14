@@ -1,8 +1,7 @@
-
-## Configure AutoFocusTagsFeed on Cortex XSOAR
+## Configure AutoFocus Tags Feed on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for AutoFocusTagsFeed.
+2. Search for AutoFocus Tags Feed.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
@@ -13,12 +12,12 @@
     | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed | False |
     | Feed Fetch Interval |  | False |
     | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
-    | Trust any certificate (not secure) | Trust any certificate \(not secure\). | False |
-    | Use system proxy settings | Use system proxy settings. | False |
-    | None |  | False |
-    | None |  | False |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
+    |  |  | False |
+    |  |  | False |
     | Tags | Supports CSV values. | False |
-    | API Key |  | True |
+    | API Key |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -36,7 +35,7 @@ Gets indicators from the feed.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of results to return. Default is 10. | Optional | 
+| limit | The maximum number of results to return. Should be 50 or less. Default is 10. | Optional | 
 
 
 #### Context Output
@@ -44,8 +43,13 @@ Gets indicators from the feed.
 There is no context output for this command.
 
 #### Command Example
-``` ```
+```!autofocus-tags-feed-get-indicators limit=10```
 
 #### Human Readable Output
+Value |	Type	| Fields
+|---|---|---|
+DarkHotel|	Threat Actor|	publications: {'link': 'https://securelist.com/the-darkhotel-apt/66779/', 'title': 'The DarkHotel APT', 'source': 'Kaspersky', 'timestamp': '2018-08-20T15:25:31'},aliases: ParasiticBeast, description: The DarkHotel attackers were most infamously behind a series of attacks between 2008 and 2014 against organizations located primarily in  Japan, Taiwan, China, Russia and South Korea. This campaign infiltrated multiple hotel networks and used them as a jumping-off point to infect hotel guests., lastseenbysource: 2021-05-03T01:55:18Z, updateddate: 2019-08-28T08:56:30Z ,reportedby: Unit 42
 
-
+#### Notes
+- Be aware, due to API limitations, `fetch-indicators` fetches only limited number of indicators each interval.
+Fetching all the indicators may take longer than expected. 
