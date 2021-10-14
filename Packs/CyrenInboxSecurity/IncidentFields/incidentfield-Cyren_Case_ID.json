@@ -1,0 +1,30 @@
+{
+	"associatedTypes": [
+		"Cyren Inbox Security"
+	],
+	"systemAssociatedTypes": null,
+	"associatedToAll": false,
+    "caseInsensitive": true,
+    "cliName": "cyrencaseid",
+    "closeForm": true,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_cyrencaseid",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Cyren Case ID",
+    "neverSetAsRequired": false,
+    "ownerOnly": true,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
