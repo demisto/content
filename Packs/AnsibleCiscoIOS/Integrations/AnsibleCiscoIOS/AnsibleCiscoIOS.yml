@@ -1167,7 +1167,7 @@ script:
     - contextPath: CiscoIOS.IosVrf.delta
       description: The time elapsed to perform all operations
       type: string
-  dockerimage: demisto/ansible-runner:1.0.0.23806
+  dockerimage: demisto/ansible-runner:1.0.0.24037
   runonce: false
   script: ''
   subtype: python3
