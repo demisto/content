@@ -78,7 +78,14 @@ def main():
     if not token:
         token = demisto.getLicenseCustomField("WildFire-Reports.token")
     if not token:
-        return_error("The Token can't be empty")
+        return_results({
+            'status': 'error',
+            'error': {
+                'title': "Couldn't fetch the Wildfire report.",
+                'description': "The token can't be empty.",
+                'techInfo': "The token can't be empty, Please fill the token in the instance configuration or in the license."
+            }
+        })
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
 
@@ -109,7 +116,7 @@ def main():
         return_results({
             'status': 'error',
             'error': {
-                'title': 'Failed to download report.',
+                'title': "Couldn't fetch the Wildfire report.",
                 'description': f'Failed to download report.\nError:\n{str(e)}',
                 'techInfo': f'Failed to download report.\nError:\n{str(e)}\nTrace back:\n{traceback.format_exc()}'
             }
