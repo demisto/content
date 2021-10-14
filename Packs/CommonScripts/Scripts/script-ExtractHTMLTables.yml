@@ -76,5 +76,5 @@ outputs:
   description: The extracted HTML tables
 scripttarget: 0
 runonce: false
-dockerimage: demisto/bs4
+dockerimage: demisto/bs4:1.0.0.24033
 fromversion: 5.0.0
