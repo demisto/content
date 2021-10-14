@@ -83,7 +83,7 @@ def create_paramiko_ssh_client(host_name: str, user_name: str, password: str, ci
         (SSHClient): Paramiko SSH client if connection was successful, exception otherwise.
     """
     if ciphers:
-        # Getting available ciphers from server, in order to print an appropiate error message upon no cipher match.
+        # Getting available ciphers from server, in order to print an appropriate error message upon no cipher match.
         available_ciphers = get_available_ciphers()
         if not ciphers.intersection(available_ciphers):
             raise DemistoException(f'Given ciphers are not available in server.\nCiphers given are: {ciphers}\n'
