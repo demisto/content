@@ -88,7 +88,7 @@ script:
       isArray: false
       name: status
       predefined:
-      - Normal
+      - normal
       - containment_pending
       - contained
       - lift_containment_pending

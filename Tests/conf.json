@@ -110,14 +110,14 @@
             "playbookID": "O365-SecurityAndCompliance-Test",
             "fromversion": "5.5.0",
             "memory_threshold": 300,
-            "timeout": 1000
+            "timeout": 1500
         },
         {
             "integrations": "SecurityAndCompliance",
             "playbookID": "O365-SecurityAndCompliance-ContextResults-Test",
             "fromversion": "5.5.0",
-            "memory_threshold": 250,
-            "timeout": 1000
+            "memory_threshold": 300,
+            "timeout": 1500
         },
         {
             "integrations": "EwsExtension",
@@ -1140,11 +1140,6 @@
             "nightly": true
         },
         {
-            "integrations": "Devo",
-            "playbookID": "Devo test",
-            "timeout": 500
-        },
-        {
             "playbookID": "URL Enrichment - Generic v2 - Test",
             "integrations": [
                 "Rasterize",
@@ -1156,6 +1151,9 @@
         },
         {
             "playbookID": "CutTransformerTest"
+        },
+        {
+            "playbookID": "TestEditServerConfig"
         },
         {
             "playbookID": "Default - Test",
@@ -2226,6 +2224,10 @@
         {
             "playbookID": "SLA Scripts - Test",
             "fromversion": "4.1.0"
+        },
+        {
+            "playbookID": "test_manageOOOUsers",
+            "fromversion": "5.5.0"
         },
         {
             "playbookID": "PcapHTTPExtractor-Test"
@@ -3549,6 +3551,11 @@
             "playbookID": "SOCRadarThreatFusion-Test"
         },
         {
+            "integrations": "TheHive Project",
+            "playbookID": "Playbook_TheHiveProject_Test",
+            "fromversion": "6.0.0"
+        },
+        {
             "integrations": [
                 "ServiceNow v2",
                 "Demisto REST API"
@@ -4561,6 +4568,7 @@
         "MISP V2 Test": "The integration is deprecated as we released MISP V3",
         "Zscaler Test": "We won't get license (Issues 40157,17784)",
         "Github IAM - Test Playbook": "Issue 32383",
+        "O365-SecurityAndCompliance-ContextResults-Test":  "Issue 38900",
         "Calculate Severity - Standard - Test": "Issue 32715",
         "Calculate Severity - Generic v2 - Test": "Issue 32716",
         "Workday - Test": "No credentials Issue 29595",
@@ -4589,8 +4597,6 @@
         "Tanium v2 - Test": "Issue 26822",
         "Fidelis Elevate Network": "Issue 26453",
         "Cortex XDR - IOC - Test": "Issue 37957",
-        "Cherwell Example Scripts - test": "Issue 26780",
-        "Cherwell - test": "Issue 26780",
         "PAN-OS Query Logs For Indicators Test": "Issue 28753",
         "TCPUtils-Test": "Issue 29677",
         "Polygon-Test": "Issue 29060",
@@ -4774,7 +4780,6 @@
         "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
         "AttackIQFireDrill": "License issues #29774",
         "SentinelOne V2": "License expired issue #24933",
-        "G Suite Security Alert Center": "Developed by crest, need to add permissions to our instance issue #40988",
         "Azure Sentinel": "issue with the tenant_id parameter"
     },
     "nightly_integrations": [
@@ -4866,6 +4871,7 @@
         "Google Resource Manager": "googleclient sdk has time based challenge exchange",
         "Google Cloud Storage": "SDK",
         "GoogleCalendar": "googleclient sdk has time based challenge exchange",
+        "G Suite Security Alert Center": "googleclient sdk has time based challenge exchange",
         "GoogleDrive": "googleclient sdk has time based challenge exchange",
         "Syslog Sender": "syslog",
         "syslog": "syslog",
@@ -4945,6 +4951,9 @@
         "images": {
             "demisto/chromium": {
                 "pid_threshold": 11
+            },
+            "demisto/powershell-ubuntu": {
+                "memory_threshold": 250
             },
             "demisto/py-ews:2.0": {
                 "memory_threshold": 150
