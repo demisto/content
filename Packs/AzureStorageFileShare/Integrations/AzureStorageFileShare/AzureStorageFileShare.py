@@ -149,6 +149,7 @@ class Client:
                             directory_path: str = None) -> Response:
         """
         Create a New empty file in Share from War room file Entry ID.
+        Note that this operation only initializes the file. To add content to a file, we have to call the Put Range operation.
         Args:
             share_name (str): Share name.
             file_entry_id (str): File War room Entry ID.
@@ -194,10 +195,11 @@ class Client:
 
         return create_file_response
 
-    def put_file_range_request(self, share_name: str, file_entry_id: str, file_name: str,
-                               directory_path: str = None) -> Response:
+    def add_file_content_request(self, share_name: str, file_entry_id: str, file_name: str,
+                                 directory_path: str = None) -> Response:
         """
         Write a range of bytes to a file.
+        Note that this operation not initializes the file, but add content to a file.
         Args:
             share_name (str): Share name.
             file_entry_id (str): File War room Entry ID.
@@ -420,6 +422,103 @@ def list_shares_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     return command_results
 
 
+def handle_directory_content_response(response: str) -> dict:
+    """
+    Convert XML schema directory content to dictionary data structure.
+    Args:
+        response (str): XML schema string response.
+
+    Returns:
+        dict: Raw response.
+
+    """
+    tree = ET.ElementTree(ET.fromstring(response))
+    root = tree.getroot()
+
+    xml_path = ['Directory', 'File']
+    raw_response = {'Directory': [], 'File': [], 'DirectoryId': root.findtext('DirectoryId')}  # type: ignore
+
+    for path in xml_path:
+        for element in root.iter(path):
+            data = {}
+            data['Name'] = element.findtext('Name')
+            data['FileId'] = element.findtext('FileId')
+            properties = {}
+            for share_property in element.findall('Properties'):
+                for attribute in share_property:
+                    properties[attribute.tag] = attribute.text
+            data['Properties'] = properties  # type: ignore
+
+            raw_response[path].append(data)  # type: ignore
+
+    return raw_response
+
+
+def create_directory_content_output(share_name: str, raw_response: dict, directory_path: str = "") -> dict:
+    """
+    Create XSOAR context output for list directory command.
+    Args:
+        share_name (str): Share name.
+        raw_response (dict): Request raw response.
+        directory_path (str): Source directory path.
+
+    Returns:
+        dict: XSOAR command context output.
+
+    """
+
+    xml_path = ['Directory', 'File']
+
+    outputs = {"Name": share_name, "Content": {"Path": directory_path, "DirectoryId": raw_response['DirectoryId']}}
+
+    time_headers = ['CreationTime', 'LastAccessTime', 'LastWriteTime', 'ChangeTime']
+
+    for path in xml_path:
+        for element in raw_response.get(path):  # type: ignore
+            for header in time_headers:
+                str_time = element['Properties'].get(header)  # type: ignore
+                str_time = str_time[:-2] + 'Z'
+                element['Properties'][header] = FormatIso8601(  # type: ignore
+                    datetime.strptime(str_time, GENERAL_DATE_FORMAT))  # type: ignore
+
+            element['Properties']['Last-Modified'] = FormatIso8601(  # type: ignore
+                datetime.strptime(element['Properties']['Last-Modified'], DATE_FORMAT))  # type: ignore
+
+            element['Property'] = element.pop('Properties')  # type: ignore
+
+    outputs["Content"].update(raw_response)
+
+    return outputs
+
+
+def create_content_readable_output(outputs: dict, prefix: str = '') -> str:
+    """
+    Create readable output for list directory content command.
+    Args:
+        outputs (dict): Command outputs.
+        prefix (str): Readable output prefix.
+
+    Returns:
+        str: Command readable output.
+
+    """
+    directories_outputs = tableToMarkdown(
+        'Directories:',
+        outputs["Content"]["Directory"],
+        headers=['Name', 'FileId'],
+        headerTransform=pascalToSpace
+    )
+
+    files_outputs = tableToMarkdown(
+        'Files:',
+        outputs["Content"]["File"],
+        headers=['Name', 'FileId'],
+        headerTransform=pascalToSpace
+    )
+
+    return prefix + "\n" + directories_outputs + "\n" + files_outputs
+
+
 def list_directories_and_files_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     List files and directories under the specified share or directory.
@@ -455,60 +554,12 @@ def list_directories_and_files_command(client: Client, args: Dict[str, Any]) -> 
 
     response = client.list_directories_and_files_request(share_name, directory_path, prefix, limit, marker)
 
-    tree = ET.ElementTree(ET.fromstring(response))
-    root = tree.getroot()
-
-    xml_path = ['Directory', 'File']
-    raw_response = {'Directory': [], 'File': [], 'DirectoryId': root.findtext('DirectoryId')}  # type: ignore
-
-    for path in xml_path:
-        for element in root.iter(path):
-            data = {}
-            data['Name'] = element.findtext('Name')
-            data['FileId'] = element.findtext('FileId')
-            properties = {}
-            for share_property in element.findall('Properties'):
-                for attribute in share_property:
-                    properties[attribute.tag] = attribute.text
-            data['Properties'] = properties  # type: ignore
-
-            raw_response[path].append(data)  # type: ignore
+    raw_response = handle_directory_content_response(response)
 
     response_copy = copy.deepcopy(raw_response)
-    outputs = {"Name": share_name, "Content": {"Path": directory_path, "DirectoryId": raw_response['DirectoryId']}}
+    outputs = create_directory_content_output(share_name, response_copy, directory_path)
 
-    time_headers = ['CreationTime', 'LastAccessTime', 'LastWriteTime', 'ChangeTime']
-
-    for path in xml_path:
-        for element in response_copy.get(path):  # type: ignore
-            for header in time_headers:
-                str_time = element['Properties'].get(header)  # type: ignore
-                str_time = str_time[:-2] + 'Z'
-                element['Properties'][header] = FormatIso8601(  # type: ignore
-                    datetime.strptime(str_time, GENERAL_DATE_FORMAT))  # type: ignore
-
-            element['Properties']['Last-Modified'] = FormatIso8601(  # type: ignore
-                datetime.strptime(element['Properties']['Last-Modified'], DATE_FORMAT))  # type: ignore
-
-            element['Property'] = element.pop('Properties')  # type: ignore
-
-    outputs["Content"].update(response_copy)
-
-    directories_outputs = tableToMarkdown(
-        'Directories:',
-        outputs["Content"]["Directory"],
-        headers=['Name', 'FileId'],
-        headerTransform=pascalToSpace
-    )
-
-    files_outputs = tableToMarkdown(
-        'Files:',
-        outputs["Content"]["File"],
-        headers=['Name', 'FileId'],
-        headerTransform=pascalToSpace
-    )
-
-    readable_output = readable_message + "\n" + directories_outputs + "\n" + files_outputs
+    readable_output = create_content_readable_output(outputs, readable_message)
 
     command_results = CommandResults(
         readable_output=readable_output,
@@ -519,6 +570,24 @@ def list_directories_and_files_command(client: Client, args: Dict[str, Any]) -> 
     )
 
     return command_results
+
+
+def validate_characters(string: str, invalid_characters: str) -> bool:
+    """
+    Validate that string does not contain invalid characters.
+    Args:
+        string (str): String validate.
+        invalid_characters (str): Characters to validate.
+
+    Returns:
+        bool: True if the string is valid , otherwise False.
+
+    """
+    for character in invalid_characters:
+        if character in string:
+            return False
+
+    return True
 
 
 def create_directory_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -535,10 +604,8 @@ def create_directory_command(client: Client, args: Dict[str, Any]) -> CommandRes
     directory_name = args['directory_name']
     directory_path = args.get('directory_path')
 
-    invalid_characters = "\"\/:|<>*?"
-    for character in invalid_characters:
-        if character in directory_name:
-            raise Exception('The specified directory name is invalid.')
+    if not validate_characters(directory_name, "\"\/:|<>*?"):
+        raise Exception('The specified directory name is invalid.')
 
     client.create_directory_request(share_name, directory_name, directory_path)
 
@@ -587,7 +654,7 @@ def create_file_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     file_name = args.get('file_name')
 
     client.create_file_request(share_name, file_entry_id, file_name, directory_path)  # type: ignore
-    client.put_file_range_request(share_name, file_entry_id, file_name, directory_path)  # type: ignore
+    client.add_file_content_request(share_name, file_entry_id, file_name, directory_path)  # type: ignore
 
     command_results = CommandResults(
         readable_output=f'File successfully created in {share_name}.'

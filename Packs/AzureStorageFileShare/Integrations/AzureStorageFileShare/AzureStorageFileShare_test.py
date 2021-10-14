@@ -262,3 +262,21 @@ def test_azure_storage_delete_file_command(requests_mock):
     assert result.outputs is None
     assert result.outputs_prefix is None
     assert result.readable_output == f'File {file_name} successfully deleted from {share_name}.'
+
+
+def test_validate_characters():
+    """
+    Test validate_characters function.
+    Scenarios:
+        - Send valid string to function.
+        - Send invalid string to function.
+    Then:
+     - Ensure that the output is correct (True / False).
+
+    """
+    from AzureStorageFileShare import validate_characters
+    valida_string = "my-valid-test"
+    invalid_string = "my-invalid|test"
+
+    assert validate_characters(valida_string, "\"\/:|<>*?")
+    assert not validate_characters(invalid_string, "\"\/:|<>*?")
