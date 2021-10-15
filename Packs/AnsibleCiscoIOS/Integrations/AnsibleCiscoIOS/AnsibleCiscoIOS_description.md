@@ -18,4 +18,4 @@ The user account used for initial SSH login access can be level 1, however the e
 
 ## Testing
 
-This integration does not support testing from the integration management screen. Instead it is recommended to use the `!IOS-facts`command providing an example `host` as the command argument. This command will connect to the specified network device with the configured credentials in the integration, and if successful output general information about the device.
+This integration does not support testing from the integration management screen. Instead it is recommended to use the `!IOS-facts` command providing an example `host` as the command argument. This command will connect to the specified network device with the configured credentials in the integration, and if successful output general information about the device.
