@@ -1845,7 +1845,7 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: One of the following- user email address, alias email address, or the unique user ID.
+      description: One of the following: user email address, alias email address, or the unique user ID.
       isArray: false
       name: user
       required: true
