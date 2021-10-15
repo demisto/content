@@ -2229,7 +2229,7 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: One of the following- group email address, group alias, or the unique group ID.
+      description: One of the following: group email address, group alias, or the unique group ID.
       isArray: false
       name: group
       required: true
