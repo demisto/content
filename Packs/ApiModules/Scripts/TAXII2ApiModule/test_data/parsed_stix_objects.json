@@ -63,7 +63,18 @@
       "firstseen": "2017-10-25T14:48:11.535Z",
       "modified": "2018-10-17T00:14:20.652Z",
       "operatingsystemrefs": ["Android", "iOS"],
-      "publications": [],
+      "publications": [
+        {
+          "link": "https://attack.mitre.org/techniques/T1432",
+          "source": "mitre-mobile-attack",
+          "title": ""
+        },
+        {
+          "link": "https://pages.nist.gov/mobile-threat-catalogue/application-threats/APP-13.html",
+          "source": "NIST Mobile Threat Catalogue",
+          "title": ""
+        }
+      ],
       "mitreid": "T1432",
       "reportedby": "Unit42",
       "tags": ["T1432"],
@@ -132,6 +143,16 @@
       "modified": "2020-02-05T20:05:41.548Z",
       "operatingsystemrefs": ["macOS", "Windows"],
       "publications": [
+        {
+          "link": "https://attack.mitre.org/techniques/T1027/002",
+          "source": "mitre-attack",
+          "title": ""
+        },
+        {
+          "link": "https://example.example.com/data/definitions/570.html",
+          "source": "capec",
+          "title": ""
+        },
         {
           "link": "https://www.welivesecurity.com/wp-content/uploads/2018/01/WP-FinFisher.pdf",
           "title": "Kafka, F. (2018, January). ESET's Guide to Deobfuscating and Devirtualizing FinFisher. Retrieved August 12, 2019.",

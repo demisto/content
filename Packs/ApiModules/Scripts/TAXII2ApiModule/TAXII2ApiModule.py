@@ -326,30 +326,6 @@ class Taxii2FeedClient:
         return ind_id, value
 
     @staticmethod
-    def handle_multiple_dates_in_one_field(field_name: str, field_value: Any):
-        """Parses datetime fields to handle one value or more
-
-        Args:
-            field_name (str): The field name that holds the data (created/modified).
-            field_value (str): Raw value returned from feed.
-
-        Returns:
-            str. One datetime value (min/max) according to the field name.
-        """
-        dates_as_string = field_value.splitlines()
-        dates_as_datetime = []
-        for date in dates_as_string:
-            date_dt = dateparser.parse(date)
-            if date_dt:
-                dates_as_datetime.append(date_dt.strftime(DATE_FORMAT))
-        # dates_as_datetime = [datetime.strptime(date, '%Y-%m-%dT%H:%M:%S.%fZ') for date in dates_as_string]
-
-        if field_name == 'created':
-            return f"{min(dates_as_datetime).strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3]}Z"
-        else:
-            return f"{max(dates_as_datetime).strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3]}Z"
-
-    @staticmethod
     def change_attack_pattern_to_stix_attack_pattern(indicator: dict):
         kill_chain_phases = indicator['fields']['killchainphases']
         del indicator['fields']['killchainphases']
@@ -455,8 +431,8 @@ class Taxii2FeedClient:
             "fields": {
                 'stixid': attack_pattern_obj.get('id'),
                 "killchainphases": kill_chain_phases,
-                "firstseen": self.handle_multiple_dates_in_one_field('created', attack_pattern_obj.get('created')),
-                "modified": self.handle_multiple_dates_in_one_field('modified', attack_pattern_obj.get('modified')),
+                "firstseen": attack_pattern_obj.get('created'),
+                "modified": attack_pattern_obj.get('modified'),
                 'description': attack_pattern_obj.get('description', ''),
                 'operatingsystemrefs': attack_pattern_obj.get('x_mitre_platforms'),
                 "publications": publications,
@@ -520,8 +496,8 @@ class Taxii2FeedClient:
         }
         fields = {
             'stixid': threat_actor_obj.get('id'),
-            "firstseen": self.handle_multiple_dates_in_one_field('created', threat_actor_obj.get('created')),
-            "modified": self.handle_multiple_dates_in_one_field('modified', threat_actor_obj.get('modified')),
+            "firstseen": threat_actor_obj.get('created'),
+            "modified": threat_actor_obj.get('modified'),
             'description': threat_actor_obj.get('description', ''),
             'aliases': threat_actor_obj.get("aliases", []),
             "threat_actor_types": threat_actor_obj.get('threat_actor_types', []),
@@ -562,8 +538,8 @@ class Taxii2FeedClient:
             "infrastructure_types": infrastructure_obj.get("infrastructure_types", []),
             "aliases": infrastructure_obj.get('aliases', []),
             "kill_chain_phases": kill_chain_phases,
-            "firstseen": self.handle_multiple_dates_in_one_field('created', infrastructure_obj.get('created')),
-            "modified": self.handle_multiple_dates_in_one_field('modified', infrastructure_obj.get('modified')),
+            "firstseen": infrastructure_obj.get('created'),
+            "modified": infrastructure_obj.get('modified'),
             "reportedby": 'Unit42',
             "tags": list(set(self.tags))
         }
@@ -627,8 +603,8 @@ class Taxii2FeedClient:
         fields = {
             'stixid': tool_obj.get('id'),
             "killchainphases": kill_chain_phases,
-            "firstseen": self.handle_multiple_dates_in_one_field('created', tool_obj.get('created')),
-            "modified": self.handle_multiple_dates_in_one_field('modified', tool_obj.get('modified')),
+            "firstseen": tool_obj.get('created'),
+            "modified": tool_obj.get('modified'),
             "tool_types": tool_obj.get("tool_types", []),
             "description": tool_obj.get('description', ''),
             "aliases": tool_obj.get('aliases', []),
@@ -657,8 +633,8 @@ class Taxii2FeedClient:
         }
         fields = {
             'stixid': coa_obj.get('id'),
-            "firstseen": self.handle_multiple_dates_in_one_field('created', coa_obj.get('created')),
-            "modified": self.handle_multiple_dates_in_one_field('modified', coa_obj.get('modified')),
+            "firstseen": coa_obj.get('created'),
+            "modified": coa_obj.get('modified'),
             'description': coa_obj.get('description', ''),
             "action_type": coa_obj.get('action_type', ''),
             "publications": publications,
@@ -713,8 +689,8 @@ class Taxii2FeedClient:
         }
         fields = {
             'stixid': intrusion_set_obj.get('id'),
-            "firstseen": self.handle_multiple_dates_in_one_field('created', intrusion_set_obj.get('created')),
-            "modified": self.handle_multiple_dates_in_one_field('modified', intrusion_set_obj.get('modified')),
+            "firstseen": intrusion_set_obj.get('created'),
+            "modified": intrusion_set_obj.get('modified'),
             'description': intrusion_set_obj.get('description', ''),
             "aliases": intrusion_set_obj.get('aliases', []),
             "goals": intrusion_set_obj.get('goals', []),

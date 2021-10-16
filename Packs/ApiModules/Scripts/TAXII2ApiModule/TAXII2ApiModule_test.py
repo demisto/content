@@ -241,7 +241,7 @@ class TestInitServer:
 
 class TestFetchingStixObjects:
     """
-    Scenario: Test extract_stix_objects_from_envelope and parse_stix_objects
+    Scenario: Test load_stix_objects_from_envelope and parse_stix_objects
     """
     def test_21_empty(self):
         """
@@ -259,7 +259,7 @@ class TestFetchingStixObjects:
         """
         expected = []
         mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False)
-        mock_client.extract_stix_objects_from_envelope(STIX_ENVELOPE_NO_IOCS)
+        mock_client.load_stix_objects_from_envelope(STIX_ENVELOPE_NO_IOCS)
         actual = mock_client.parse_stix_objects()
 
         assert len(actual) == 0
@@ -281,7 +281,7 @@ class TestFetchingStixObjects:
         """
         expected = CORTEX_17_IOCS_19_OBJS
         mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False, tlp_color='GREEN')
-        mock_client.extract_stix_objects_from_envelope(STIX_ENVELOPE_17_IOCS_19_OBJS)
+        mock_client.load_stix_objects_from_envelope(STIX_ENVELOPE_17_IOCS_19_OBJS)
         actual = mock_client.parse_stix_objects()
 
         assert len(actual) == 17
@@ -305,7 +305,7 @@ class TestFetchingStixObjects:
         expected = CORTEX_COMPLEX_20_IOCS_19_OBJS
         mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False, tlp_color='GREEN')
 
-        mock_client.extract_stix_objects_from_envelope(STIX_ENVELOPE_20_IOCS_19_OBJS)
+        mock_client.load_stix_objects_from_envelope(STIX_ENVELOPE_20_IOCS_19_OBJS)
         actual = mock_client.parse_stix_objects()
 
         assert len(actual) == 20
@@ -329,17 +329,17 @@ class TestFetchingStixObjects:
         expected = CORTEX_COMPLEX_14_IOCS_19_OBJS
         mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False, skip_complex_mode=True)
 
-        mock_client.extract_stix_objects_from_envelope(STIX_ENVELOPE_20_IOCS_19_OBJS)
+        mock_client.load_stix_objects_from_envelope(STIX_ENVELOPE_20_IOCS_19_OBJS)
         actual = mock_client.parse_stix_objects()
 
         assert len(actual) == 14
         assert actual == expected
 
-    def test_extract_stix_objects_from_envelope(self):
+    def test_load_stix_objects_from_envelope(self):
         mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False)
         envelope = objects_envelope
 
-        mock_client.extract_stix_objects_from_envelope(envelope, -1)
+        mock_client.load_stix_objects_from_envelope(envelope, -1)
 
         assert mock_client.objects_data == objects_data
         assert mock_client.id_to_object == id_to_object
