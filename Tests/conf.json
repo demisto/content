@@ -1156,7 +1156,7 @@
             "playbookID": "TestEditServerConfig"
         },
         {
-            "playbookID": "MarketplacePackInstaller",
+            "playbookID": "MarketplacePackInstaller_Test",
             "fromversion": "6.0.0"
         },
         {
