@@ -1156,6 +1156,10 @@
             "playbookID": "TestEditServerConfig"
         },
         {
+            "playbookID": "MarketplacePackInstaller",
+            "fromversion": "6.0.0"
+        },
+        {
             "playbookID": "Default - Test",
             "integrations": [
                 "ThreatQ v2",
