@@ -4,6 +4,12 @@ commonfields:
   version: -1
 defaultEnabled: true
 configuration:
+- display: API Key
+  hidden: false
+  name: api_key
+  required: false
+  fromlicense: encrypted
+  type: 4
 - defaultvalue: 'true'
   display: Fetch indicators
   name: feed
@@ -57,14 +63,6 @@ configuration:
   name: feedBypassExclusionList
   required: false
   type: 8
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
 - name: feedExpirationPolicy
   display: ''
   options:
@@ -83,12 +81,14 @@ configuration:
   name: feedTags
   required: false
   type: 0
-- display: API Key
-  hidden: false
-  name: api_key
+- display: Trust any certificate (not secure)
+  name: insecure
   required: false
-  fromlicense: encrypted
-  type: 4
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 description: Use the AutoFocus Tags Feeds integration to fetch indicators from AutoFocus
   Tags.
 display: AutoFocus Tags Feed
@@ -117,5 +117,5 @@ script:
   subtype: python3
   type: python
 tests:
-- No tests (auto formatted)
+- AutoFocusTagsFeed-test
 fromversion: 5.5.0

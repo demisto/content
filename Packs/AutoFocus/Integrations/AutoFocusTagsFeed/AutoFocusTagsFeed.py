@@ -107,8 +107,8 @@ class Client(BaseClient):
         Retrieves all entries from the feed.
         This method implements the logic to get tags from the feed.
         Args:
-            limit:
-            is_get_command: wether this method is called from the get-indicators-command
+            limit: max amount of results to return
+            is_get_command: whether this method is called from the get-indicators-command
         Returns:
             A list of objects, containing the indicators.
         """
@@ -169,12 +169,12 @@ def incremental_level_fetch(client: Client) -> list:
 
     results: list = []
     integration_context = get_integration_context()
-    # This field saves tags that have been updated since the last time of fetch and need to be updated in demisto
+    # This field saves tags that have been updated since the last fetch time and need to be updated in demisto
     list_of_all_updated_tags = argToList(integration_context.get('tags_need_to_be_fetched', ''))
     time_from_last_update = integration_context.get('time_of_first_fetch')
-    # if there are such tags, we first get all of them and upload to demisto
     index_to_delete = 0
     for tag in list_of_all_updated_tags:
+        # if there are such tags, we first get all of them, so we wont miss any tags
         if len(results) < PAGE_SIZE:
             results.append(client.get_tag_details(tag.get('public_tag_name', '')))
             index_to_delete += 1
@@ -184,6 +184,47 @@ def incremental_level_fetch(client: Client) -> list:
             context['tags_need_to_be_fetched'] = list_of_all_updated_tags[index_to_delete:]
             set_integration_context(context)
             return results
+
+    #
+    list_of_all_updated_tags = get_all_updated_tags_since_last_fetch(client,
+                                                                     list_of_all_updated_tags,
+                                                                     time_from_last_update)
+
+    # add only PAGE_SIZE tag_details to results, so we wont make too many calls to the API
+    index_to_delete = 0
+    for tag in list_of_all_updated_tags:
+        if len(results) < PAGE_SIZE:
+            public_tag_name = tag.get('public_tag_name')
+            response = client.get_tag_details(public_tag_name)
+            results.append(response)
+            index_to_delete += 1
+        else:
+            break
+    # delete from the list all tags that will be returned this fetch
+    list_of_all_updated_tags = list_of_all_updated_tags[index_to_delete:]
+    # update integration context
+    context = get_integration_context()
+    context['tags_need_to_be_fetched'] = list_of_all_updated_tags
+    context['time_of_first_fetch'] = date_to_timestamp(datetime.now(), DATE_FORMAT)
+    set_integration_context(context)
+    return results
+
+
+def get_all_updated_tags_since_last_fetch(client: Client,
+                                          list_of_all_updated_tags: list,
+                                          time_from_last_update: int) -> list:
+    """
+    This method makes API calls to gat all the tags that has been updated since the last fetch time
+    It filters the tags according to the update time (and gets another pages if needed),
+    adds them to list_of_all_updated_tags and returns it.
+    Args:
+        client: Client object
+        list_of_all_updated_tags:
+        time_from_last_update:
+
+    Returns:
+        List of all tags that has been updated and need to be fetched.
+    """
 
     page_num = 0
     has_updates = True
@@ -201,31 +242,15 @@ def incremental_level_fetch(client: Client) -> list:
                 DATE_FORMAT) if update_time else None
             update_time = date_to_timestamp(update_time, DATE_FORMAT)
             if update_time >= time_from_last_update:
+                # this means that the tag hase been updated, so it needs to be added to the list of updated tags
                 list_of_all_updated_tags.append(
                     {'public_tag_name': tag.get('public_tag_name')})
             else:
                 has_updates = False
                 break
         page_num += 1
-
-    # add only PAGE_SIZE tag_details to results, so we wont make to many calls to the api
-    list_index = 0
-    for tag in list_of_all_updated_tags:
-        if len(results) < PAGE_SIZE:
-            public_tag_name = tag.get('public_tag_name')
-            response = client.get_tag_details(public_tag_name)
-            results.append(response)
-            list_index += 1
-        else:
-            break
-    # delete from the list all tags that will be returned this fetch
-    list_of_all_updated_tags = list_of_all_updated_tags[list_index:]
-    # update integration context
-    context = get_integration_context()
-    context['tags_need_to_be_fetched'] = list_of_all_updated_tags
-    context['time_of_first_fetch'] = date_to_timestamp(datetime.now(), DATE_FORMAT)
-    set_integration_context(context)
-    return results
+    # the list contained all tags that has been updated since the last fetch time
+    return list_of_all_updated_tags
 
 
 def get_tag_class(tag_class: Optional[str], source: Optional[str]) -> Optional[str]:
@@ -377,10 +402,7 @@ def test_module(client: Client) -> str:
         Raises exceptions if something goes wrong.
     """
 
-    try:
-        client.get_tags(data={'pageSize': 1})
-    except Exception as e:
-        raise DemistoException(str(e))
+    client.get_tags(data={'pageSize': 1})
     return 'ok'
 
 
@@ -396,7 +418,7 @@ def fetch_indicators(client: Client,
         client (Client): Client object
         tlp_color (str): Traffic Light Protocol color
         feed_tags (list): tags to assign fetched indicators
-        limit (int): limit the results
+        limit (int): max amount of results to return
     Returns:
         Indicators list.
     """
@@ -415,8 +437,7 @@ def fetch_indicators(client: Client,
             'value': tag_name,
             'type': tag_type,
         }
-        for key, value in tag_details.items():
-            raw_data.update({key: value})
+        raw_data.update(tag_details)
         indicator_obj = {
             'value': tag_name,
             'type': tag_type,
@@ -456,10 +477,11 @@ def get_indicators_command(client: Client,
         CommandResults object containing a human readable output for war-room representation.
     """
 
-    limit = int(args.get('limit', '10'))
+    limit = arg_to_number(args.get('limit', '10'))
     if limit > PAGE_SIZE:
         demisto.debug(
-            f'AutoFocus Tags Feed: limit must be under {PAGE_SIZE}. Setting limit to the default value of 10.')
+            f'AutoFocus Tags Feed: limit must be under {PAGE_SIZE}. Setting limit to the max.')
+        limit = PAGE_SIZE
     tlp_color = params.get('tlp_color')
     feed_tags = argToList(params.get('feedTags', ''))
     indicators = fetch_indicators(client, True, tlp_color, feed_tags, limit)
@@ -506,10 +528,9 @@ def main():
     api_key = params.get('api_key', '')
     if not api_key:
         if is_demisto_version_ge('6.5.0'):
-            # if it is none, what should i do
             api_key = demisto.getLicenseCustomField('AutoFocusTagsFeed.api_key')
             if not api_key:
-                raise DemistoException('get license returned None')
+                raise DemistoException('Could not resolve the API key from the license nor the instance configuration.')
         else:
             raise DemistoException('An API key must be specified in order to use this integration')
 
