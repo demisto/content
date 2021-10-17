@@ -1427,7 +1427,7 @@ tasks:
               args:
                 item:
                   value:
-                    simple: ExtractedIndicators.Email
+                    simple: ExtractedIndicators.File
                   iscontext: true
             - operator: uniq
         fieldassociated: ""
