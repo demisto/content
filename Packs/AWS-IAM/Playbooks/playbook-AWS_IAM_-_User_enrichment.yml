@@ -1,6 +1,5 @@
 id: AWS IAM - User enrichment
-version: 24
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: AWS IAM - User enrichment
 description: |
   Enrich AWS IAM user information from AWS Identity and Access Management.
@@ -18,6 +17,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -120,6 +120,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -152,5 +153,8 @@ inputs:
   value: {}
   required: false
   description: Name of the AWS IAM user to enrich.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
+tests:
+- No tests
+fromversion: 5.5.0
