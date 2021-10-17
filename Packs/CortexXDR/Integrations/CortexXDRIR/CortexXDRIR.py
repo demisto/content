@@ -2665,7 +2665,7 @@ def get_remote_data_command(client, args):
 
     incident_data = {}
     try:
-        # when Demisto version is 6.1.0 and above, this command will only be automatically performed on incidents
+        # when Demisto version is 6.1.0 and above, this command will only be automatically executed on incidents
         # returned from get_modified_remote_data_command so we want to perform extra-data request on those incidents.
         return_only_updated_incident = not is_demisto_version_ge('6.1.0')  # True if version is below 6.1 else False
 
