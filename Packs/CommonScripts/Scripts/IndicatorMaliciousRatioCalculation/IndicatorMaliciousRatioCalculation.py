@@ -24,11 +24,11 @@ def hash_object(str_list_dict):
     if str_list_dict == "" or str_list_dict is None:
         return str_list_dict
     if (type(str_list_dict)) == dict:
-        return dict(map(lambda (k, v): (k, hash_object(v)), str_list_dict.iteritems()))
+        return dict(map(lambda k, v: (k, hash_object(v)), str_list_dict.iteritems()))
     if (type(str_list_dict) == list):
         return map(lambda x: hash_object(x), str_list_dict)
 
-    if (type(str_list_dict) in [str, unicode]):
+    if (type(str_list_dict) == str):
         str_value = str_list_dict.encode('utf-8')
     else:
         str_value = str(str_list_dict)
@@ -61,14 +61,14 @@ def build_query(base_query, from_date):
         return base_query
 
 
-def indicator_malicious_ratio_calculation(args):
-    appears_in_min_num_of_incidents = int(args['appearsInMinNumberOfIncidents'])
-    max_incidents = int(args['maxIncidents'])
-    max_indicators = int(args['maxIndicators'])
-    base_query = args['query']
+def indicator_malicious_ratio_calculation(args: Dict[str,str]):
+    appears_in_min_num_of_incidents = int(args.get('appearsInMinNumberOfIncidents'))
+    max_incidents = int(args.get('maxIncidents'))
+    max_indicators = int(args.get('maxIndicators'))
+    base_query = args.get('query')
     max_results = int(args['maxDisplayResults'])
     generate_file_result = (args['fileResult'] == 'yes')
-    from_date = demisto.args().get('fromDate', '')
+    from_date = args.get('fromDate', '')
 
     query = build_query(base_query, from_date)
     res = demisto.executeCommand("findIndicators", {'query': query, 'size': max_indicators})
