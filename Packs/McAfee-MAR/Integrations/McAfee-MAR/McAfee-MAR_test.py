@@ -24,13 +24,13 @@ This is a valid Certificate
 def test_get_client_config(mocker):
     mcafee_mar = importlib.import_module("McAfee-MAR")
 
-    # Invalid private Key
+    # # Invalid private Key
     valid_params = {'private_key': invalid_private_key,
                     'cert_file': valid_certificate,
                     'broker_ca_bundle': valid_certificate}
     mocker.patch.object(demisto, "params", return_value=valid_params)
     with pytest.raises(SystemExit):
-        mcafee_mar.get_client_config()
+        mcafee_mar.validate_certificates_format()
 
     # Invalid cert file
     valid_params = {'private_key': valid_private_key,
@@ -38,7 +38,7 @@ def test_get_client_config(mocker):
                     'broker_ca_bundle': valid_certificate}
     mocker.patch.object(demisto, "params", return_value=valid_params)
     with pytest.raises(SystemExit):
-        mcafee_mar.get_client_config()
+        mcafee_mar.validate_certificates_format()
 
     # Invalid broker_ca_bundle
     valid_params = {'private_key': valid_private_key,
@@ -46,11 +46,11 @@ def test_get_client_config(mocker):
                     'broker_ca_bundle': invalid_certificate}
     mocker.patch.object(demisto, "params", return_value=valid_params)
     with pytest.raises(SystemExit):
-        mcafee_mar.get_client_config()
+        mcafee_mar.validate_certificates_format()
 
     # Everything is valid + spaces
     valid_params = {'private_key': valid_private_key,
                     'cert_file': valid_certificate,
                     'broker_ca_bundle': spaces_in_certificate}
     mocker.patch.object(demisto, "params", return_value=valid_params)
-    mcafee_mar.get_client_config()
+    mcafee_mar.validate_certificates_format()
