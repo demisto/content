@@ -10,13 +10,13 @@ configuration:
     type: 0
     additionalinfo: null
   - name: certificate
-    display: Certificate
+    display: ""
     required: true
     defaultvalue: null
     type: 9
     additionalinfo: A pfx certificate encoded in Base64.
-    displaypassword: ""
-    hiddenusername: false
+    displaypassword: "Certificate"
+    hiddenusername: true
   - name: organization
     display: The organization used in app-only authentication.
     required: true

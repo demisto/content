@@ -495,7 +495,6 @@ function TestModuleCommand($client) {
 
 function Main {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingConvertToSecureStringWithPlainText", "")]
-    param()
     $command = $demisto.GetCommand()
     $command_arguments = $demisto.Args()
     $integration_params = [Hashtable] $demisto.Params()
@@ -516,7 +515,7 @@ function Main {
     )
     try {
         # Executing command
-        $Demisto.Debug("Command being called is $Command")
+        $Demisto.Debug("Command being called is $command")
         switch ($command) {
             "test-module" {
                 ($human_readable, $entry_context, $raw_response) = TestModuleCommand $exo_client
@@ -575,6 +574,6 @@ function Main {
 }
 
 # Execute Main when not in Tests
-if ($MyInvocation.ScriptName -notlike "*.tests.ps1" -AND -NOT$Test) {
+if ($MyInvocation.ScriptName -notlike "*.tests.ps1" -AND -NOT $Test) {
     Main
 }
