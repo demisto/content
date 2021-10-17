@@ -3,16 +3,17 @@ commonfields:
   id: RSA Archer v2
   version: -1
 configuration:
-- display: Server URL (e.g., https://192.168.0.1/)
+- display: Server URL (e.g., https://192.168.0.1/rsaarcher or https://192.168.0.1/)
   name: url
   required: true
+  additionalinfo: Change only if you have other API Endpoint.
   type: 0
 - display: "Advanced: API Endpoint"
   hidden: false
   name: api_endpoint
   required: false
   additionalinfo: Change only if you have other API Endpoint.
-  defaultvalue: "rsaarcher/api"
+  defaultvalue: "api" #change from rsaarcher/api to api
   type: 0
 - display: Instance name
   hidden: false

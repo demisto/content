@@ -32,7 +32,8 @@ FIELD_TYPE_DICT = {
 
 ACCOUNT_STATUS_DICT = {1: 'Active', 2: 'Inactive', 3: 'Locked'}
 
-API_ENDPOINT = demisto.params().get('api_endpoint', 'rsaarcher/api').lower().replace('rsaarcher', '')
+# API_ENDPOINT = demisto.params().get('api_endpoint', 'rsaarcher/api').lower().replace('rsaarcher', '')
+API_ENDPOINT = demisto.params().get('api_endpoint', 'api')
 
 
 def parser(date_str, date_formats=None, languages=None, locales=None, region=None, settings=None) -> datetime:
@@ -1260,11 +1261,11 @@ def main():
     credentials = params.get('credentials')
     base_url = params.get('url').strip('/')
 
-    compiled = re.compile(re.escape('rsaarcher'), re.IGNORECASE)
-    base_url = compiled.sub("", base_url)
-    api_endpoint = params.get('api_endpoint', 'rsaarcher/api').lower()
-    if 'rsaarcher' in api_endpoint:
-        base_url = urljoin(base_url, 'rsaarcher')
+    # compiled = re.compile(re.escape('rsaarcher'), re.IGNORECASE)
+    # base_url = compiled.sub("", base_url)
+    # api_endpoint = params.get('api_endpoint', 'rsaarcher/api').lower()
+    # if 'rsaarcher' in api_endpoint:
+    #     base_url = urljoin(base_url, 'rsaarcher')
 
     cache = get_integration_context()
     if not cache.get('fieldValueList'):
