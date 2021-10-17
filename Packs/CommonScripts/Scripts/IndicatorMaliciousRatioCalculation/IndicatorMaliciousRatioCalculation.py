@@ -1,18 +1,17 @@
+
+import demistomock as demisto
+from CommonServerPython import *
+from CommonServerUserPython import *
+
+from typing import Dict, Any
+import traceback
 import hashlib
 import json
 
 from dateutil import parser
 
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 
-APPEARS_IN_MIN_NUMBER_OF_INCIDENTS = int(demisto.args()['appearsInMinNumberOfIncidents'])
-MAX_INCIDENTS = int(demisto.args()['maxIncidents'])
-MAX_INDICATORS = int(demisto.args()['maxIndicators'])
-QUERY = demisto.args()['query']
-MAX_RESULTS = int(demisto.args()['maxDisplayResults'])
-GENERATE_FILE_RESULT = (demisto.args()['fileResult'] == 'yes')
-FROM_DATE = demisto.args().get('fromDate', '')
+''' STANDALONE FUNCTION '''
 
 
 def get_incident_labels_map(labels):
@@ -60,67 +59,97 @@ def parse_datetime(datetime_str):
         return datetime_str
 
 
-def build_query():
-    if FROM_DATE:
-        return '%s created:>="%s"' % (QUERY, parse_datetime(FROM_DATE))
+def build_query(base_query, from_date):
+    if from_date:
+        return '%s created:>="%s"' % (base_query, parse_datetime(from_date))
     else:
-        return QUERY
+        return base_query
+
+''' COMMAND FUNCTION '''
 
 
-query = build_query()
-res = demisto.executeCommand("findIndicators", {'query': query, 'size': MAX_INDICATORS})
-indicators = res[0]['Contents']
-indicators_result = map(get_indicator_data, indicators)
-res = demisto.executeCommand("SearchIncidentsV2", {'query': query.replace('incident.', ''), 'size': MAX_INCIDENTS})
-incidents = []
-if res[0].get("Contents") and res[0].get("Contents", [{}])[0].get("Contents"):
-    incidents = res[0].get("Contents", [{}])[0].get("Contents", {}).get("data")
+def indicator_malicious_ratio_calculation(args: Dict[str, Any]) -> Dict:
+    appears_in_min_num_of_incidents = int(demisto.args()['appearsInMinNumberOfIncidents'])
+    max_incidents = int(demisto.args()['maxIncidents'])
+    max_indicators = int(demisto.args()['maxIndicators'])
+    base_query = demisto.args()['query']
+    max_results = int(demisto.args()['maxDisplayResults'])
+    generate_file_result = (demisto.args()['fileResult'] == 'yes')
+    from_date = demisto.args().get('fromDate', '')
+    
+    query = build_query(base_query, from_date)
+    res = demisto.executeCommand("findIndicators", {'query': query, 'size': max_indicators})
+    indicators = res[0]['Contents']
+    indicators_result = map(get_indicator_data, indicators)
+    res = demisto.executeCommand("SearchIncidentsV2", {'query': query.replace('incident.', ''), 'size': max_incidents})
+    incidents = []
+    if res[0].get("Contents") and res[0].get("Contents", [{}])[0].get("Contents"):
+        incidents = res[0].get("Contents", [{}])[0].get("Contents", {}).get("data")
 
-if incidents:
-    incidents_result = map(get_incident_data, incidents)
-    resolved_incident_ids = set(map(lambda x: x['id'], incidents_result))
-    non_resolved_id = set()
-    for i in indicators_result:
-        resolved = [x for x in i['investigationIDs'] if x in resolved_incident_ids]
-        non_resolved_id = non_resolved_id.union(set(i['investigationIDs']).difference(set(resolved)))
-        resolved_count = len(resolved)
-        total_count = len(i['investigationIDs'])
-        i['resolved_incidents_count'] = resolved_count
-        i['total_incidents_count'] = total_count
-        i['malicious_ratio'] = float(resolved_count) / total_count
-
-    non_resolved_incidents = []
-    if non_resolved_id:
-        res = demisto.executeCommand("SearchIncidentsV2", {'query': " or ".join(
-            map(lambda x: "id:%s" % x, non_resolved_id)), 'size': MAX_INCIDENTS})
-        if res[0].get("Contents") and res[0].get("Contents", [{}])[0].get("Contents"):
-            non_resolved_incidents = res[0].get("Contents", [{}])[0].get("Contents", {}).get("data")
-        if non_resolved_incidents:
-            non_resolved_incidents = map(get_incident_data, non_resolved_incidents)
-    else:
-        non_resolved_incidents = []
-
-    indicators_result = [x for x in indicators_result if
-                         x['total_incidents_count'] >= APPEARS_IN_MIN_NUMBER_OF_INCIDENTS]
-    indicators_result.sort(key=lambda x: x['malicious_ratio'], reverse=True)
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': indicators_result,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Indicators Malicious Ratio', indicators_result[:MAX_RESULTS],
-                                         headers=['value', 'indicator_type', 'malicious_ratio', 'total_incidents_count',
-                                                  'score', 'lastSeen'])
-    })
-
-    if GENERATE_FILE_RESULT:
+    if incidents:
+        incidents_result = map(get_incident_data, incidents)
+        resolved_incident_ids = set(map(lambda x: x['id'], incidents_result))
+        non_resolved_id = set()
         for i in indicators_result:
-            i['value'] = hash_object(i['value'])
+            resolved = [x for x in i['investigationIDs'] if x in resolved_incident_ids]
+            non_resolved_id = non_resolved_id.union(set(i['investigationIDs']).difference(set(resolved)))
+            resolved_count = len(resolved)
+            total_count = len(i['investigationIDs'])
+            i['resolved_incidents_count'] = resolved_count
+            i['total_incidents_count'] = total_count
+            i['malicious_ratio'] = float(resolved_count) / total_count
 
-        demisto.results(fileResult('MaliciousRatio.json', json.dumps({
-            'resolved_incidents': incidents_result,
-            'non_resolved_incidents': non_resolved_incidents,
-            'indicators': indicators_result
-        })))
-else:
-    demisto.results("No resolved incidents found")
+        non_resolved_incidents = []
+        if non_resolved_id:
+            res = demisto.executeCommand("SearchIncidentsV2", {'query': " or ".join(
+                map(lambda x: "id:%s" % x, non_resolved_id)), 'size': max_incidents})
+            if res[0].get("Contents") and res[0].get("Contents", [{}])[0].get("Contents"):
+                non_resolved_incidents = res[0].get("Contents", [{}])[0].get("Contents", {}).get("data")
+            if non_resolved_incidents:
+                non_resolved_incidents = map(get_incident_data, non_resolved_incidents)
+        else:
+            non_resolved_incidents = []
+
+        indicators_result = [x for x in indicators_result if
+                             x['total_incidents_count'] >= appears_in_min_num_of_incidents]
+        indicators_result.sort(key=lambda x: x['malicious_ratio'], reverse=True)
+
+        results = CommandResults(
+            outputs_prefix='IndicatorMaliciousRatioCalculation',
+            outputs= indicators_result,
+            readable_output=tableToMarkdown('Indicators Malicious Ratio', indicators_result[:max_results],
+                                             headers=['value', 'indicator_type', 'malicious_ratio',
+                                                      'total_incidents_count',
+                                                      'score', 'lastSeen']))
+
+        if generate_file_result:
+            for i in indicators_result:
+                i['value'] = hash_object(i['value'])
+
+            results = fileResult('MaliciousRatio.json', json.dumps({
+                'resolved_incidents': incidents_result,
+                'non_resolved_incidents': non_resolved_incidents,
+                'indicators': indicators_result
+            }))
+        return results
+    else:
+        return_error("No resolved incidents found")
+
+
+
+''' MAIN FUNCTION '''
+
+
+def main():
+    try:
+        return_results(indicator_malicious_ratio_calculation(demisto.args()))
+    except Exception as ex:
+        demisto.error(traceback.format_exc())  # print the traceback
+        return_error(f'Failed to execute IndicatorMaliciousRatioCalculation. Error: {str(ex)}')
+
+
+''' ENTRY POINT '''
+
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()
