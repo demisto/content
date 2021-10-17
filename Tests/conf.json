@@ -1157,6 +1157,7 @@
         },
         {
             "playbookID": "MarketplacePackInstaller_Test",
+            "integrations": "Demisto REST API",
             "fromversion": "6.0.0"
         },
         {
