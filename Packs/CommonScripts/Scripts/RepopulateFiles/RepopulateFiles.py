@@ -97,14 +97,20 @@ def iterate_entries(incident_id: Optional[str], query_filter: Dict[str, Any]) ->
         first_id = next_id
 
 
-def main():
-    args = demisto.args()
-    file_fields = argToList(args.get('fields', 'attachment'))
+def collect_file_infos(incident_id: Optional[str], file_fields: List[str]) -> List[Dict[str, Any]]:
+    """
+    Get list of file information
+
+    :param incident_id: The incident ID to search entries from.
+    :param file_fields: List of field name which to extract attachment files from.
+    :return: Get list of file information.
+    """
+    incident = demisto.incident()
     file_infos = []
     for file_field in file_fields:
-        files = demisto.incident().get(file_field)
+        files = incident.get(file_field)
         if files is None:
-            files = demisto.get(demisto.incident(), f'CustomFields.{file_field}') or []
+            files = demisto.get(incident, f'CustomFields.{file_field}') or []
         if files:
             attachment_ents = [ent for ent in iterate_entries(None, {'categories': ['attachments']})]
             for file in files:
@@ -112,7 +118,7 @@ def main():
                 apath = file['path']
                 m = re.search(r'[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', apath)
                 if not m:
-                    return_error(f'Failed to get file ID for {apath}')
+                    raise ValueError(f'Failed to get file ID for {apath}')
                 else:
                     # Read the file contents
                     fpath = demisto.getFilePath(m.group())
@@ -122,13 +128,23 @@ def main():
                     # Find the attachment entry
                     attachment_ent = find_attachment_entry(attachment_ents, data, file.get('name'))
                     if not attachment_ent:
-                        return_error('No attachment entry found in the war room')
+                        raise RuntimeError('No attachment entry found in the war room')
                     else:
                         file_infos.append({
                             'Attachment': file,
                             'AttachmentEntry': attachment_ent,
                             'File': make_file_entry_context(attachment_ent, data)
                         })
+    return file_infos
+
+
+def main():
+    args = demisto.args()
+    file_fields = argToList(args.get('fields', 'attachment'))
+    try:
+        file_infos = collect_file_infos(None, file_fields)
+    except Exception as e:
+        return_error(str(e))
 
     if not file_infos:
         return_outputs('No files were found.')
