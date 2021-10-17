@@ -668,6 +668,38 @@ class TestTableToMarkdown:
         assert 'header_2' not in table
         assert headers == ['header_1', 'header_2']
 
+    @staticmethod
+    def test_date_fields_param():
+        """
+        Given:
+          - List of objects with date fields in epoch format.
+        When:
+          - Calling tableToMarkdown with the given date fields.
+        Then:
+          - Return the date data in the markdown table in human-readable format.
+        """
+        data = [
+            {
+                "docker_image": "demisto/python3",
+                "create_time": '1631521313466'
+            },
+            {
+                "docker_image": "demisto/python2",
+                "create_time": 1631521521466
+            }
+        ]
+
+        table = tableToMarkdown('tableToMarkdown test', data, headers=["docker_image", "create_time"],
+                                date_fields=['create_time'])
+
+        expected_md_table = '''### tableToMarkdown test
+|docker_image|create_time|
+|---|---|
+| demisto/python3 | 2021-09-13 08:21:53 |
+| demisto/python2 | 2021-09-13 08:25:21 |
+'''
+        assert table == expected_md_table
+
 
 @pytest.mark.parametrize('data, expected_data', COMPLEX_DATA_WITH_URLS)
 def test_url_to_clickable_markdown(data, expected_data):
@@ -753,18 +785,22 @@ def test_date_to_timestamp():
     assert date_to_timestamp(datetime.strptime('2018-11-06T08:56:41', "%Y-%m-%dT%H:%M:%S")) == 1541494601000
 
 
-def test_pascalToSpace():
-    use_cases = [
-        ('Validate', 'Validate'),
-        ('validate', 'Validate'),
-        ('TCP', 'TCP'),
-        ('eventType', 'Event Type'),
-        ('eventID', 'Event ID'),
-        ('eventId', 'Event Id'),
-        ('IPAddress', 'IP Address'),
-    ]
-    for s, expected in use_cases:
-        assert pascalToSpace(s) == expected, 'Error on {} != {}'.format(pascalToSpace(s), expected)
+PASCAL_TO_SPACE_USE_CASES = [
+    ('Validate', 'Validate'),
+    ('validate', 'Validate'),
+    ('TCP', 'TCP'),
+    ('eventType', 'Event Type'),
+    ('eventID', 'Event ID'),
+    ('eventId', 'Event Id'),
+    ('IPAddress', 'IP Address'),
+    ('isDisabled', 'Is Disabled'),
+    ('device-group', 'Device - Group'),
+]
+
+
+@pytest.mark.parametrize('s, expected', PASCAL_TO_SPACE_USE_CASES)
+def test_pascalToSpace(s, expected):
+    assert pascalToSpace(s) == expected, 'Error on {} != {}'.format(pascalToSpace(s), expected)
 
 
 def test_safe_load_json():

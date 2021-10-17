@@ -3738,3 +3738,55 @@ When configuring an instance, you should set:
 - Malicious tag IDs with tag IDs that would be calculated as malicious.
 - Suspicious tag IDs with tag IDs that would be calculated as suspicious.
 
+### misp-update-attribute
+***
+Update an attribute of an existing MISP event.
+
+
+#### Base Command
+
+`misp-update-attribute`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| attribute_uuid | UUID of the attribute to be updated. | Required | 
+| type | Attribute type. For example: "md5", "sha1", "email", "url". | Optional | 
+| category | Attribute category. For example: "Other", "Person", "Attribution", "Payload type". | Optional | 
+| distribution | Where to distribute the event. Possible values: "Your_organization_only", "This_community_only", "Connected_communities", "All_communities", and "Inherit_event". Possible values are: Your_organization_only, This_community_only, Connected_communities, All_communities, Inherit_event. | Optional | 
+| comment | Comment for the attribute. | Optional | 
+| value | Attribute value. For example: "1.2.3.4" (and other IP addresses), "google.com" (and other domains), "www.example.com" (and other URLs). | Optional | 
+| first_seen | Updated date when the attribute was first seen. For example, `2019-02-03`. | Optional | 
+| last_seen | Updated date when the attribute was last seen. For example, `2019-02-03`. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MISP.Attribute.Distribution | string | Attribute distribution. | 
+| MISP.Attribute.Value | string | Attribute value. | 
+| MISP.Attribute.EventID | string | Attribute event ID. | 
+| MISP.Attribute.last_seen | string | Attribute last_seen timestamp. | 
+| MISP.Attribute.first_seen | string | Attribute first_seen timestamp. | 
+| MISP.Attribute.LastChanged | date | Attribute last changed timestamp. | 
+| MISP.Attribute.Deleted | boolean | Is the attribute deleted. | 
+| MISP.Attribute.DisableCorrelation | boolean | Is attribute correlation disabled. | 
+| MISP.Attribute.Type | string | Attribute type. | 
+| MISP.Attribute.ID | string | Attribute ID. | 
+| MISP.Attribute.UUID | string | Attribute UUID. | 
+| MISP.Attribute.ToIDs | boolean | Is the Intrusion Detection System flag set. | 
+| MISP.Attribute.Category | string | Attribute category. | 
+| MISP.Attribute.SharingGroupID | string | Attribute sharing group ID. | 
+| MISP.Attribute.Comment | string | Attribute comment. |
+
+
+#### Command Example
+``` !misp-update-attribute attribute_uuid=c0ba7147-d99a-418a-a23a-d9be62590c33 category=Other ```
+
+#### Human Readable Output
+
+>## MISP update attribute
+>Attribute: c0ba7147-d99a-418a-a23a-d9be62590c33 was updated.
+
+
