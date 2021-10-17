@@ -4,7 +4,7 @@
 	"fromVersion": "5.0.0",
 	"defaultIncidentType": "",
 	"id": "prismaCloud_app",
-	"description": "This classifier classifies incoming Prisma Cloud events, that are being pushed into XSOAR through the Prisma Cloud App add-on.",
+	"description": "Classifies incoming Prisma Cloud events, that are being pushed into XSOAR through the Prisma Cloud App add-on.",
 	"keyTypeMap": {
 		"05befc8b-c78a-45e9-98dc-c7fbaef580e7": "AWS CloudTrail Misconfiguration",
 		"0d07ac51-fbfe-44fe-8edb-3314c9995ee0": "AWS CloudTrail Misconfiguration",
