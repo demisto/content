@@ -244,17 +244,17 @@ script:
       description: Source of alert- indicator of compromise
       name: IOCsource
       predefined:
-      - yes
+      - "yes"
     - auto: PREDEFINED
       description: Source of alert - exploit detection
       name: EXDsource
       predefined:
-      - yes
+      - "yes"
     - auto: PREDEFINED
       description: Source of alert - malware alert
       name: MALsource
       predefined:
-      - yes
+      - "yes"
     - description: Limit the results returned
       name: limit
     - auto: PREDEFINED
@@ -355,8 +355,8 @@ script:
       description: Whether the indicator resulted in alerts
       name: alerted
       predefined:
-      - yes
-      - no
+      - "yes"
+      - "no"
     - description: Limit the number of results
       name: limit
     description: Get a list of indicators
@@ -672,8 +672,8 @@ script:
       description: Should search be exhaustive or quick
       name: exhaustive
       predefined:
-      - yes
-      - no
+      - "yes"
+      - "no"
     - description: A valid IPv4 address to search for
       name: ipAddress
     - auto: PREDEFINED

@@ -1,80 +1,217 @@
-FireEye Endpoint Security is an integrated solution that detects what others miss and protects endpoint against known and unknown threats. The HX Demisto integration provides access to information about endpoints, acquisitions, alerts, indicators, and containment. Customers can extract critical data and effectively operate security operations automated playbook
-This integration was integrated and tested with version xx of FireEye HX
-
-## Configure FireEye HX on Cortex XSOAR
-
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for FireEye HX.
-3. Click **Add instance** to create and configure a new integration instance.
-
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL (e.g. https://192.168.0.1:3000) | True |
-    | Credentials | True |
-    | Password | True |
-    | Version | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-    | Fetch incidents | False |
-    | Incident type | False |
-    | Fetch limit | False |
-    | Incidents Fetch Interval | False |
-
-4. Click **Test** to validate the URLs, token, and connection.
-## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
-After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### fireeye-hx-host-containment
-***
-Apply containment for a specific host, so that it no longer has access to other systems.
-
-
-#### Base Command
-
-`fireeye-hx-host-containment`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| hostName | The host name to be contained. If the hostName is not specified, the agentId must be specified. | Optional | 
-| agentId | The agent id running on the host to be contained. If the agentId is not specified, the hostName must be specified. | Optional | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| FireEyeHX.Hosts._id | Unknown | FireEye HX Agent ID. | 
-| FireEyeHX.Hosts.agent_version | Unknown | The agent version. | 
-| FireEyeHX.Hosts.excluded_from_containment | Unknown | Determines whether the host is excluded from containment. | 
-| FireEyeHX.Hosts.containment_missing_software | Unknown | Boolean value to indicate for containment missing software. | 
-| FireEyeHX.Hosts.containment_queued | Unknown | Determines whether the host is queued for containment. | 
-| FireEyeHX.Hosts.containment_state | Unknown | The containment state of the host. Possible values normal|contain|contain_fail|containing|contained|uncontain|uncontaining|wtfc|wtfu | 
-| FireEyeHX.Hosts.stats.alerting_conditions | Unknown | The number of conditions that have alerted for the host. | 
-| FireEyeHX.Hosts.stats.alerts | Unknown | Total number of alerts, including exploit-detection alerts. | 
-| FireEyeHX.Hosts.stats.exploit_blocks | Unknown | The number of blocked exploits on the host. | 
-| FireEyeHX.Hosts.stats.malware_alerts | Unknown | The number of malware alerts associated with the host. | 
-| FireEyeHX.Hosts.hostname | Unknown | The host name. | 
-| FireEyeHX.Hosts.domain | Unknown | Domain name. | 
-| FireEyeHX.Hosts.timezone | Unknown | Host time zone. | 
-| FireEyeHX.Hosts.primary_ip_address | Unknown | The host IP address. | 
-| FireEyeHX.Hosts.last_poll_timestamp | Unknown | The timestamp of the last system poll preformed on the host. | 
-| FireEyeHX.Hosts.initial_agent_checkin | Unknown | Timestamp of the initial agent check-in. | 
-| FireEyeHX.Hosts.last_alert_timestamp | Unknown | The time stamp of the last alert for the host. | 
-| FireEyeHX.Hosts.last_exploit_block_timestamp | Unknown | Time when the last exploit was blocked on the host. The value is null if no exploits have been blocked. | 
-| FireEyeHX.Hosts.os.product_name | Unknown | Specific operating system | 
-| FireEyeHX.Hosts.os.bitness | Unknown | OS Bitness. | 
-| FireEyeHX.Hosts.os.platform | Unknown | Family of operating systems. Valid values are win, osx, and linux. | 
-| FireEyeHX.Hosts.primary_mac | Unknown | The host MAC address. | 
-
-
-#### Command Example
-``` !fireeye-hx-host-containment agentId=”uGvn34ZkM3bfSf1nOT” ```
-```!fireeye-hx-host-containment hostname=“DESKTOP-HK8OI62”```
-
-#### Context Output
-```json
- {  
+<!-- HTML_DOC -->
+<p>Use the FireEye HX integration to access information about endpoints, acquisitions, alerts, indicators, and containment.</p>
+<p> </p>
+<h2>Use Cases</h2>
+<p>FireEye HX integration can be used for the following use cases:</p>
+<h3>Monitor FireEye HX alerts</h3>
+<p>Simply use the ‘fetch-incidents’ option in the integration settings (as explained in ‘Fetched incidents data’ section above) for a continues pull of alerts to the Cortex XSOAR platform.</p>
+<h3>Search Hosts</h3>
+<p>Search all hosts or a subset of hosts for a specific file or indicator.<br>The produces a list of hosts with a list of results for each host.</p>
+<p>Find more information on ‘Additional Information’ section below.</p>
+<h3>Apply or remove containment from hosts</h3>
+<p>Containment prevents further compromise of a host system and its components by restricting the hostʼs ability to communicate.</p>
+<h3>Host containment</h3>
+<p>To request that a specific host be contained so that it no longer has access to other systems, run the <code>fireeye-host-containment</code> command and pass either the host name or its agent ID, for example, <code>fireeye-host-containment hostname=“DESKTOP-HK8OI62”</code></p>
+<p>Notes:</p>
+<ul>
+<li>Some hosts are ineligible for containment.</li>
+<li>The time it takes to contain a host varies, based on factors such as agent connectivity, network traffic, and other jobs running in your environment .</li>
+<li>You cannot contain a host if the agent package for that host is not available on the FireEye HX Series appliance.</li>
+</ul>
+<h3>Host containment removal</h3>
+<p>To release a specific host from containment, run the <code>fireeye-cancel-containment</code> command and pass either the host name or its agent ID, for example <code>fireeye-cancel-containment agentId=”uGvn34ZkM3bfSf1nOT”</code></p>
+<p> </p>
+<h2>Prerequisites</h2>
+<p>Make sure you have a valid <strong>user account</strong> on the FireEye HX Series appliance associated with the <em>api_admin</em> or <em>api_analyst</em> role.</p>
+<p>For more information about setting up user accounts on the FireEye HX Series appliance, see the FireEye HX Series System Administration Guide.</p>
+<p> </p>
+<h2>Configure FireEye HX on Cortex XSOAR</h2>
+<ol>
+<li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
+<li>Search for FireEye HX.</li>
+<li>Click <strong>Add instance</strong> to create and configure a new integration instance.<br>
+<ul>
+<li>
+<strong>Name</strong>: A textual name for the integration instance.</li>
+<li>
+<strong>Server URL</strong>: Exchange server URL.</li>
+<li>
+<strong>Credentials: </strong>Your personal account username.</li>
+<li>
+<strong>Password</strong>: Your personal account password.</li>
+<li>
+<strong>Version</strong>: The API version. Default is 3.</li>
+<li>
+<strong>Fetched incidents data</strong>: The integration imports FireEye HX alerts as Cortex XSOAR incidents<strong>. </strong>The first pull of incidents will fetch the last 100 alerts on FireEye HX.</li>
+</ul>
+</li>
+<li>Click <strong>Test</strong> to validate the URLs and token.</li>
+</ol>
+<p> </p>
+<h2>Commands</h2>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<ol>
+<li><a href="#h_4940381161531225583805">Contain a host: fireeye-hx-host-containment</a></li>
+<li><a href="#h_753562077941531225590399">Release host from containment: fireeye-hx-cancel-containment</a></li>
+<li><a href="#h_3659112741821531225598795">Get alert list: fireeye-hx-get-alerts</a></li>
+<li><a href="#h_4996266442681531225609912">Get alert details: fireeye-hx-get-alert</a></li>
+<li><a href="#h_2089802313531531225618306">Suppress an alert: fireeye-hx-suppress-alert</a></li>
+<li><a href="#h_6259227744371531225635704">Get indicator list: fireeye-get-indicators</a></li>
+<li><a href="#h_3177394125201531225647008">Get indicator information: fireeye-get-indicator</a></li>
+<li><a href="#h_1285237886021531225659162">Find hostname correlated with agent-ID or agent-ID correlated with hostname: fireeye-get-host-information</a></li>
+<li><a href="#h_9238521966831531225671914">Acquire a file: fireeye-file-acquisition</a></li>
+<li><a href="#h_8039477917631531225683376">Delete a file acquisition: fireeye-delete-file-acquisition</a></li>
+<li><a href="#h_284510558421531225696011">Acquire data: fireeye-data-acquisition</a></li>
+<li><a href="#h_7751566479201531225716697">Delete data acquisition: fireeye-delete-data-acquisition</a></li>
+</ol>
+<p> </p>
+<h3 id="h_4940381161531225583805">1. Contain a host</h3>
+<hr>
+<p>Contains a specific host, so it cannot access to other systems.</p>
+<h5>Command Limitations</h5>
+<ul>
+<li>Some hosts cannot be contained.</li>
+<li>The time it takes to contain a host varies, based on factors such as agent connectivity, network traffic, and other jobs running in your environment.</li>
+<li>You can only contain a host if the agent package for that host is available on the FireEye HX Series appliance.</li>
+</ul>
+<h5>Base Command</h5>
+<p><code>fireeye-hx-host-containment</code></p>
+<h5>Input</h5>
+<p>All arguments are optional, but you need to specify at least one to run this command.</p>
+<table style="width: 748px;" border="2" cellpadding="6">
+<thead>
+<tr>
+<th style="width: 138px;"><strong>Argument Name</strong></th>
+<th style="width: 499px;"><strong>Description</strong></th>
+<th style="width: 71px;"><strong>Required</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 138px;">hostName</td>
+<td style="width: 499px;">The host name to be contained. If the <em>hostName</em> is not specified, the <em>agentId</em> is required.</td>
+<td style="width: 71px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 138px;">agentId</td>
+<td style="width: 499px;">The agent ID running on the host to be contained. If the <em>agentId</em> is not specified, the <em>hostName</em> is required.</td>
+<td style="width: 71px;">Optional</td>
+</tr>
+</tbody>
+</table>
+<h5> </h5>
+<h5>Context Output</h5>
+<table style="width: 750px;" border="2" cellpadding="6">
+<thead>
+<tr>
+<th><strong>Path</strong></th>
+<th><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FireEyeHX.Hosts._id</td>
+<td>FireEye HX Agent ID</td>
+</tr>
+<tr>
+<td>FireEyeHX.Hosts.agent_version</td>
+<td>The agent version</td>
+</tr>
+<tr>
+<td>FireEyeHX.Hosts.excluded_from_containment</td>
+<td>Determines whether the host is excluded from containment</td>
+</tr>
+<tr>
+<td>FireEyeHX.Hosts.containment_missing_software</td>
+<td>Boolean value to indicate for containment missing software</td>
+</tr>
+<tr>
+<td>FireEyeHX.Hosts.containment_queued</td>
+<td>Determines whether the host is queued for containment</td>
+</tr>
+<tr>
+<td>FireEyeHX.Hosts.containment_state</td>
+<td>The containment state of the host. Possible values normal</td>
+</tr>
+<tr>
+<td>FireEyeHX.Hosts.stats.alerting_conditions</td>
+<td>The number of conditions that have alerted the host</td>
+</tr>
+<tr>
+<td>FireEyeHX.Hosts.stats.alerts</td>
+<td>Total number of alerts, including exploit-detection alerts</td>
+</tr>
+<tr>
+<td>FireEyeHX.Hosts.stats.exploit_blocks</td>
+<td>The number of blocked exploits on the host</td>
+</tr>
+<tr>
+<td>FireEyeHX.Hosts.stats.malware_alerts</td>
+<td>The number of malware alerts associated with the host</td>
+</tr>
+<tr>
+<td>FireEyeHX.Hosts.hostname</td>
+<td>Host name</td>
+</tr>
+<tr>
+<td>FireEyeHX.Hosts.domain</td>
+<td>Domain name</td>
+</tr>
+<tr>
+<td>FireEyeHX.Hosts.timezone</td>
+<td>Host time zone</td>
+</tr>
+<tr>
+<td>FireEyeHX.Hosts.primary_ip_address</td>
+<td>Host IP address</td>
+</tr>
+<tr>
+<td>FireEyeHX.Hosts.last_poll_timestamp</td>
+<td>The timestamp of the last system poll performed on the host</td>
+</tr>
+<tr>
+<td>FireEyeHX.Hosts.initial_agent_checkin</td>
+<td>Timestamp of the initial agent check-in</td>
+</tr>
+<tr>
+<td>FireEyeHX.Hosts.last_alert_timestamp</td>
+<td>The time stamp of the last alert for the host</td>
+</tr>
+<tr>
+<td>FireEyeHX.Hosts.last_exploit_block_timestamp</td>
+<td>Time when the last exploit was blocked on the host. The value is null if no exploits were blocked</td>
+</tr>
+<tr>
+<td>FireEyeHX.Hosts.os.product_name</td>
+<td>Operating system</td>
+</tr>
+<tr>
+<td>FireEyeHX.Hosts.os.bitness</td>
+<td>OS bitness (32 or 64)</td>
+</tr>
+<tr>
+<td>FireEyeHX.Hosts.os.platform</td>
+<td>
+<p>Family of operating systems</p>
+<ul>
+<li>win</li>
+<li>osx</li>
+<li>linux</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td>FireEyeHX.Hosts.primary_mac</td>
+<td>The host MAC address</td>
+</tr>
+</tbody>
+</table>
+<h5> </h5>
+<h5>Command Examples</h5>
+<p><code>!fireeye-hx-host-containment agentId=”uGvn34ZkM3bfSf1nOT”</code></p>
+<p><code>!fireeye-hx-host-containment hostname=“DESKTOP-HK8OI62”</code></p>
+<h5>Context Example</h5>
+<pre> {  
    "FireEyeHX":{  
       "Hosts":{  
          "last_alert":{  
@@ -125,61 +262,149 @@ Apply containment for a specific host, so that it no longer has access to other 
          "agent_version":"26.21.10"
       }
    }
-}
-```
-
-
-### fireeye-hx-cancel-containment
-***
-Release a specific host from containment.
-
-
-#### Base Command
-
-`fireeye-hx-cancel-containment`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| hostName | The host name to be contained. If the hostName is not specified, the agentId must be specified. | Optional | 
-| agentId | The agent id running on the host to be contained. If the agentId is not specified, the hostName must be specified. | Optional | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| FireEyeHX.Hosts._id | Unknown | FireEye HX Agent ID. | 
-| FireEyeHX.Hosts.agent_version | Unknown | The agent version. | 
-| FireEyeHX.Hosts.excluded_from_containment | Unknown | Determines whether the host is excluded from containment. | 
-| FireEyeHX.Hosts.containment_missing_software | Unknown | Boolean value to indicate for containment missing software. | 
-| FireEyeHX.Hosts.containment_queued | Unknown | Determines whether the host is queued for containment. | 
-| FireEyeHX.Hosts.containment_state | Unknown | The containment state of the host. Possible values normal|contain|contain_fail|containing|contained|uncontain|uncontaining|wtfc|wtfu | 
-| FireEyeHX.Hosts.stats.alerting_conditions | Unknown | The number of conditions that have alerted for the host. | 
-| FireEyeHX.Hosts.stats.alerts | Unknown | Total number of alerts, including exploit-detection alerts. | 
-| FireEyeHX.Hosts.stats.exploit_blocks | Unknown | The number of blocked exploits on the host. | 
-| FireEyeHX.Hosts.stats.malware_alerts | Unknown | The number of malware alerts associated with the host. | 
-| FireEyeHX.Hosts.hostname | Unknown | The host name. | 
-| FireEyeHX.Hosts.domain | Unknown | Domain name. | 
-| FireEyeHX.Hosts.timezone | Unknown | Host time zone. | 
-| FireEyeHX.Hosts.primary_ip_address | Unknown | The host IP address. | 
-| FireEyeHX.Hosts.last_poll_timestamp | Unknown | The timestamp of the last system poll preformed on the host. | 
-| FireEyeHX.Hosts.initial_agent_checkin | Unknown | Timestamp of the initial agent check-in. | 
-| FireEyeHX.Hosts.last_alert_timestamp | Unknown | The time stamp of the last alert for the host. | 
-| FireEyeHX.Hosts.last_exploit_block_timestamp | Unknown | Time when the last exploit was blocked on the host. The value is null if no exploits have been blocked. | 
-| FireEyeHX.Hosts.os.product_name | Unknown | Specific operating system | 
-| FireEyeHX.Hosts.os.bitness | Unknown | OS Bitness. | 
-| FireEyeHX.Hosts.os.platform | Unknown | Family of operating systems. Valid values are win, osx, and linux. | 
-| FireEyeHX.Hosts.primary_mac | Unknown | The host MAC address. | 
-
-
-#### Command Examples
-```!fireeye-hx-cancel-containment hostname=“DESKTOP-HK8OI62”```
-```!fireeye-hx-cancel-containment agentId=”uGvn34ZkM3bfSf1nOT”```
-
-#### Context Output
-```json
-{
+}</pre>
+<p> </p>
+<h3 id="h_753562077941531225590399">2. Release host from containment</h3>
+<hr>
+<p>Releases a specific host from containment.</p>
+<h5>Base Command</h5>
+<p><code>fireeye-hx-cancel-containment</code></p>
+<h5>Input</h5>
+<p>All arguments are optional, but you need to specify at least one to run this command.</p>
+<table style="width: 750px;" border="2" cellpadding="6">
+<thead>
+<tr>
+<th><strong>Argument Name</strong></th>
+<th><strong>Description</strong></th>
+<th><strong>Required</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>hostName</td>
+<td>The host name to be contained. If the <em>hostName</em> is not specified, the <em>agentId</em> is required.</td>
+<td>Optional</td>
+</tr>
+<tr>
+<td>agentId</td>
+<td>The agent ID running on the host to be contained. If the <em>agentId</em> is not specified, the <em>hostName</em> is required.</td>
+<td>Optional</td>
+</tr>
+</tbody>
+</table>
+<h5> </h5>
+<h5>Context Output</h5>
+<table style="width: 750px;" border="2" cellpadding="6">
+<thead>
+<tr>
+<th><strong>Path</strong></th>
+<th><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FireEyeHX.Hosts._id</td>
+<td>FireEye HX Agent ID</td>
+</tr>
+<tr>
+<td>FireEyeHX.Hosts.agent_version</td>
+<td>The agent version</td>
+</tr>
+<tr>
+<td>FireEyeHX.Hosts.excluded_from_containment</td>
+<td>Determines whether the host is excluded from containment</td>
+</tr>
+<tr>
+<td>FireEyeHX.Hosts.containment_missing_software</td>
+<td>Boolean value to indicate for containment missing software</td>
+</tr>
+<tr>
+<td>FireEyeHX.Hosts.containment_queued</td>
+<td>Determines whether the host is queued for containment</td>
+</tr>
+<tr>
+<td>FireEyeHX.Hosts.containment_state</td>
+<td>The containment state of the host. Possible values normal</td>
+</tr>
+<tr>
+<td>FireEyeHX.Hosts.stats.alerting_conditions</td>
+<td>The number of conditions that have alerted the host</td>
+</tr>
+<tr>
+<td>FireEyeHX.Hosts.stats.alerts</td>
+<td>Total number of alerts, including exploit-detection alerts</td>
+</tr>
+<tr>
+<td>FireEyeHX.Hosts.stats.exploit_blocks</td>
+<td>The number of blocked exploits on the host</td>
+</tr>
+<tr>
+<td>FireEyeHX.Hosts.stats.malware_alerts</td>
+<td>The number of malware alerts associated with the host</td>
+</tr>
+<tr>
+<td>FireEyeHX.Hosts.hostname</td>
+<td>Host name</td>
+</tr>
+<tr>
+<td>FireEyeHX.Hosts.domain</td>
+<td>Domain name</td>
+</tr>
+<tr>
+<td>FireEyeHX.Hosts.timezone</td>
+<td>Host time zone</td>
+</tr>
+<tr>
+<td>FireEyeHX.Hosts.primary_ip_address</td>
+<td>Host IP address</td>
+</tr>
+<tr>
+<td>FireEyeHX.Hosts.last_poll_timestamp</td>
+<td>The timestamp of the last system poll performed on the host</td>
+</tr>
+<tr>
+<td>FireEyeHX.Hosts.initial_agent_checkin</td>
+<td>Timestamp of the initial agent check-in</td>
+</tr>
+<tr>
+<td>FireEyeHX.Hosts.last_alert_timestamp</td>
+<td>The time stamp of the last alert for the host</td>
+</tr>
+<tr>
+<td>FireEyeHX.Hosts.last_exploit_block_timestamp</td>
+<td>Time when the last exploit was blocked on the host. The value is null if no exploits were blocked</td>
+</tr>
+<tr>
+<td>FireEyeHX.Hosts.os.product_name</td>
+<td>Operating system</td>
+</tr>
+<tr>
+<td>FireEyeHX.Hosts.os.bitness</td>
+<td>OS bitness (32 or 64)</td>
+</tr>
+<tr>
+<td>FireEyeHX.Hosts.os.platform</td>
+<td>
+<p>Family of operating systems</p>
+<ul>
+<li>win</li>
+<li>osx</li>
+<li>linux</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td>FireEyeHX.Hosts.primary_mac</td>
+<td>The host MAC address</td>
+</tr>
+</tbody>
+</table>
+<h5> </h5>
+<h5>Command Examples</h5>
+<p><code>!fireeye-hx-cancel-containment agentId=”uGvn34ZkM3bfSf1nOT”</code></p>
+<p><code>!fireeye-hx-cancel-containment hostname=“DESKTOP-HK8OI62”</code></p>
+<h5>Context Example</h5>
+<pre>{
     "FireEyeHX": {
         "Hosts": {
             "last_alert": {
@@ -231,64 +456,179 @@ Release a specific host from containment.
         }
     }
  }
-```
-
-
-### fireeye-hx-get-alerts
-***
-Get a list of alerts, use the different arguments to filter the results returned.
-
-
-#### Base Command
-
-`fireeye-hx-get-alerts`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| hasShareMode | Identifies which alerts result from indicators with the specified share mode. Possible values are: any, restricted, unrestricted. | Optional | 
-| resolution | Sorts the results by the specified field. Possible values are: active_threat, alert, block, partial_block. | Optional | 
-| agentId | Filter by the agent ID. | Optional | 
-| conditionId | Filter by condition ID. | Optional | 
-| eventAt | Filter event occurred time. ISO-8601 timestamp.. | Optional | 
-| alertId | Filter by alert ID. | Optional | 
-| matchedAt | Filter by match detection time. ISO-8601 timestamp. | Optional | 
-| minId | Filter that returns only records with an AlertId field value great than the minId value. | Optional | 
-| reportedAt | Filter by reported time. ISO-8601 timestamp. | Optional | 
-| IOCsource | Source of alert- indicator of compromise. Possible values are: yes. | Optional | 
-| EXDsource | Source of alert - exploit detection. Possible values are: yes. | Optional | 
-| MALsource | Source of alert - malware alert. Possible values are: yes. | Optional | 
-| limit | Limit the results returned. | Optional | 
-| sort | Sorts the results by the specified field in ascending order. Possible values are: agentId, conditionId, eventAt, alertId, matchedAt, id, reportedAt. | Optional | 
-| sortOrder | The sort order for the results. Possible values are: ascending, descending. | Optional | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| FireEyeHX.Alerts._id | Unknown | FireEye alert ID. | 
-| FireEyeHX.Alerts.agent._id | Unknown | FireEye agent ID. | 
-| FireEyeHX.Alerts.agent.containment_state | Unknown | Host containment state. | 
-| FireEyeHX.Alerts.condition._id | Unknown | The condition unique ID. | 
-| FireEyeHX.Alerts.event_at | Unknown | Time when the event occoured. | 
-| FireEyeHX.Alerts.matched_at | Unknown | Time when the event was matched. | 
-| FireEyeHX.Alerts.reported_at | Unknown | Time when the event was reported. | 
-| FireEyeHX.Alerts.source | Unknown | Source of alert. | 
-| FireEyeHX.Alerts.matched_source_alerts._id | Unknown | Source alert ID. | 
-| FireEyeHX.Alerts.matched_source_alerts.appliance_id | Unknown | Appliance ID | 
-| FireEyeHX.Alerts.matched_source_alerts.meta | Unknown | Source alert meta. | 
-| FireEyeHX.Alerts.matched_source_alerts.indicator_id | Unknown | Indicator ID. | 
-| FireEyeHX.Alerts.resolution | Unknown | Alert resulotion. | 
-| FireEyeHX.Alerts.event_type | Unknown | Event type. | 
-
-
-#### Command Example
-```!fireeye-hx-get-alerts limit="10" sort="id" sortOrder="descending" ```
-
-#### Context Output
-```json
-{
+ </pre>
+<p> </p>
+<h3 id="h_3659112741821531225598795">3. Get alert list</h3>
+<hr>
+<p>Gets a list of alerts according to specified filters.</p>
+<h5>Base Command</h5>
+<p><code>fireeye-hx-get-alerts</code></p>
+<h5>Input</h5>
+<table style="width: 746px;" border="2" cellpadding="6">
+<thead>
+<tr>
+<th style="width: 144px;"><strong>Argument Name</strong></th>
+<th style="width: 493px;"><strong>Description</strong></th>
+<th style="width: 71px;"><strong>Required</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 144px;">hasShareMode</td>
+<td style="width: 493px;">Identifies which alerts result from indicators with the specified share mode</td>
+<td style="width: 71px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 144px;">resolution</td>
+<td style="width: 493px;">Sorts the results by the specified field</td>
+<td style="width: 71px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 144px;">agentId</td>
+<td style="width: 493px;">Filter by the agent ID</td>
+<td style="width: 71px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 144px;">conditionId</td>
+<td style="width: 493px;">Filter by condition ID</td>
+<td style="width: 71px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 144px;">eventAt</td>
+<td style="width: 493px;">Filter event occurred time (ISO-8601 timestamp)</td>
+<td style="width: 71px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 144px;">alertId</td>
+<td style="width: 493px;">Filter by alert ID</td>
+<td style="width: 71px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 144px;">matchedAt</td>
+<td style="width: 493px;">Filter by match detection time (ISO-8601 timestamp)</td>
+<td style="width: 71px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 144px;">minId</td>
+<td style="width: 493px;">Filter that returns only records with an <em>AlertId</em> field value great than the <em>minId</em> value</td>
+<td style="width: 71px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 144px;">reportedAt</td>
+<td style="width: 493px;">Filter by reported time (ISO-8601 timestamp)</td>
+<td style="width: 71px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 144px;">IOCsource</td>
+<td style="width: 493px;">Source of alert (indicator of compromise)</td>
+<td style="width: 71px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 144px;">EXDsource</td>
+<td style="width: 493px;">Source of alert (exploit detection)</td>
+<td style="width: 71px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 144px;">MALsource</td>
+<td style="width: 493px;">Source of alert (malware alert)</td>
+<td style="width: 71px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 144px;">minId</td>
+<td style="width: 493px;">Return only records with an ID greater than <em>minId</em>
+</td>
+<td style="width: 71px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 144px;">limit</td>
+<td style="width: 493px;">Specifies the number of results to return</td>
+<td style="width: 71px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 144px;">sort</td>
+<td style="width: 493px;">Sorts the results by the specified field in ascending order</td>
+<td style="width: 71px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 144px;">sortOrder</td>
+<td style="width: 493px;">The sort order for the results</td>
+<td style="width: 71px;">Optional</td>
+</tr>
+</tbody>
+</table>
+<h5> </h5>
+<h5>Context Output</h5>
+<table style="width: 750px;" border="2" cellpadding="6">
+<thead>
+<tr>
+<th><strong>Path</strong></th>
+<th><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FireEyeHX.Alerts._id</td>
+<td>FireEye alert ID</td>
+</tr>
+<tr>
+<td>FireEyeHX.Alerts.agent._id</td>
+<td>FireEye agent ID</td>
+</tr>
+<tr>
+<td>FireEyeHX.Alerts.agent.containment_state</td>
+<td>Host containment state</td>
+</tr>
+<tr>
+<td>FireEyeHX.Alerts.condition._id</td>
+<td>The condition unique ID</td>
+</tr>
+<tr>
+<td>FireEyeHX.Alerts.event_at</td>
+<td>Time when the event occured</td>
+</tr>
+<tr>
+<td>FireEyeHX.Alerts.matched_at</td>
+<td>Time when the event was matched</td>
+</tr>
+<tr>
+<td>FireEyeHX.Alerts.reported_at</td>
+<td>Time when the event was reported</td>
+</tr>
+<tr>
+<td>FireEyeHX.Alerts.source</td>
+<td>Source of alert</td>
+</tr>
+<tr>
+<td>FireEyeHX.Alerts.matched_source_alerts._id</td>
+<td>Source alert ID</td>
+</tr>
+<tr>
+<td>FireEyeHX.Alerts.matched_source_alerts.appliance_id</td>
+<td>Appliance ID</td>
+</tr>
+<tr>
+<td>FireEyeHX.Alerts.matched_source_alerts.meta</td>
+<td>Source alert meta</td>
+</tr>
+<tr>
+<td>FireEyeHX.Alerts.matched_source_alerts.indicator_id</td>
+<td>Indicator ID</td>
+</tr>
+<tr>
+<td>FireEyeHX.Alerts.resolution</td>
+<td>Alert resolution</td>
+</tr>
+<tr>
+<td>FireEyeHX.Alerts.event_type</td>
+<td>Event type</td>
+</tr>
+</tbody>
+</table>
+<h5> </h5>
+<h5>Command Example</h5>
+<p><code>!fireeye-hx-get-alerts limit="10" sort="id" sortOrder="descending"</code></p>
+<h5>Raw Output</h5>
+<pre> {
     "FireEyeHX": {
         "Alerts": {
             "_id": 5,
@@ -345,80 +685,101 @@ Get a list of alerts, use the different arguments to filter the results returned
     "IP": [],	
     "RrgistryKey": []
 }
-
-```
-
-
-### fireeye-hx-suppress-alert
-***
-Suppress alert by ID
-
-
-#### Base Command
-
-`fireeye-hx-suppress-alert`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| alertId | The alert id. The alert id is listed in the output of 'get-alerts' command. | Optional | 
-
-
-#### Context Output
-
-There is no context output for this command.
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
-### fireeye-hx-get-indicators
-***
-Get a list of indicators
-
-
-#### Base Command
-
-`fireeye-hx-get-indicators`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| category | The indicator category. | Optional | 
-| searchTerm | The searchTerm can be any name, category, signature, source, or condition value. | Optional | 
-| shareMode | Determines who can see the indicator. You must belong to the correct authorization group . Possible values are: any, restricted, unrestricted, visible. | Optional | 
-| sort | Sorts the results by the specified field in ascending  order. Possible values are: category, activeSince, createdBy, alerted. | Optional | 
-| createdBy | Person who created the indicator. | Optional | 
-| alerted | Whether the indicator resulted in alerts. Possible values are: yes, no. | Optional | 
-| limit | Limit the number of results. | Optional | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| FireEyeHX.Indicators._id | Unknown | FireEye unique indicator ID. | 
-| FireEyeHX.Indicators.name | Unknown | The indicator name as displayed in the UI. | 
-| FireEyeHX.Indicators.description | Unknown | Indicator description. | 
-| FireEyeHX.Indicators.category.name | Unknown | Catagory name. | 
-| FireEyeHX.Indicators.created_by | Unknown | The "Created By" field as displayed in UI | 
-| FireEyeHX.Indicators.active_since | Unknown | Date indicator became active. | 
-| FireEyeHX.Indicators.stats.source_alerts | Unknown | Total number of source alerts associated with this indicator. | 
-| FireEyeHX.Indicators.stats.alerted_agents | Unknown | Total number of agents with HX alerts associated with this indicator. | 
-| FireEyeHX.Indicators.platforms | Unknown | List of families of operating systems. | 
-| FireEyeHX.Indicators.uri_name | String | URI formatted name of the indicator. | 
-| FireEyeHX.Indicators.category.uri_name | String | URI name of the category. | 
-
-
-#### Command Example
-```!fireeye-hx-get-indicators limit=2```
-
-#### Context Example
-```json
-{
+</pre>
+<p> </p>
+<h3 id="h_4996266442681531225609912">4. Get alert details</h3>
+<hr>
+<p>Retrieves the details of a specific alert.</p>
+<h5>Base Command</h5>
+<p><code>fireeye-hx-get-alert</code></p>
+<h5>Input</h5>
+<table style="width: 750px;" border="2" cellpadding="6">
+<tbody>
+<tr>
+<td><strong>Argument Name</strong></td>
+<td><strong>Description</strong></td>
+<td><strong>Required</strong></td>
+</tr>
+<tr>
+<td>alertId</td>
+<td>ID of alert to get details of</td>
+<td>Required</td>
+</tr>
+</tbody>
+</table>
+<p> </p>
+<h5>Context Output</h5>
+<table style="width: 750px;" border="2" cellpadding="6">
+<thead>
+<tr>
+<th><strong>Path</strong></th>
+<th><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FireEyeHX.Alerts._id</td>
+<td>FireEye alert ID</td>
+</tr>
+<tr>
+<td>FireEyeHX.Alerts.agent._id</td>
+<td>FireEye agent ID</td>
+</tr>
+<tr>
+<td>FireEyeHX.Alerts.agent.containment_state</td>
+<td>Host containment state</td>
+</tr>
+<tr>
+<td>FireEyeHX.Alerts.condition._id</td>
+<td>The condition unique ID</td>
+</tr>
+<tr>
+<td>FireEyeHX.Alerts.event_at</td>
+<td>Time when the event occurred</td>
+</tr>
+<tr>
+<td>FireEyeHX.Alerts.matched_at</td>
+<td>Time when the event was matched</td>
+</tr>
+<tr>
+<td>FireEyeHX.Alerts.reported_at</td>
+<td>Time when the event was reported</td>
+</tr>
+<tr>
+<td>FireEyeHX.Alerts.source</td>
+<td>Source of alert</td>
+</tr>
+<tr>
+<td>FireEyeHX.Alerts.matched_source_alerts._id</td>
+<td>Source alert ID</td>
+</tr>
+<tr>
+<td>FireEyeHX.Alerts.matched_source_alerts.appliance_id</td>
+<td>Appliance ID</td>
+</tr>
+<tr>
+<td>FireEyeHX.Alerts.matched_source_alerts.meta</td>
+<td>Source alert meta</td>
+</tr>
+<tr>
+<td>FireEyeHX.Alerts.matched_source_alerts.indicator_id</td>
+<td>Indicator ID</td>
+</tr>
+<tr>
+<td>FireEyeHX.Alerts.resolution</td>
+<td>Alert resolution</td>
+</tr>
+<tr>
+<td>FireEyeHX.Alerts.event_type</td>
+<td>Event type</td>
+</tr>
+</tbody>
+</table>
+<h5> </h5>
+<h5>Command Example</h5>
+<p><code>!fireeye-hx-get-alert alertId=5</code></p>
+<h5>Context Example</h5>
+<pre> {
     "FireEyeHX": {
         "Indicators": [
             {
