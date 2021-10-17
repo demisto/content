@@ -1,0 +1,44 @@
+[
+  {
+    "_id": "1",
+    "id": "example@example.com",
+    "createdBy": "example@example.com",
+    "createdAt": "2021-04-21T11:27:32Z",
+    "updatedAt": "2021-04-21T11:27:32Z",
+    "_type": "user",
+    "login": "example@example.com",
+    "name": "First User",
+    "roles": ["admin", "write", "read", "alert"],
+    "organisation": "organisation one",
+    "hasKey": true,
+    "status": "Ok"
+  },
+  {
+    "_id": "2",
+    "id": "example@example.com",
+    "createdBy": "example@example.com",
+    "createdAt": "2021-04-21T11:13:40Z",
+    "updatedAt": "2021-04-21T11:13:40Z",
+    "_type": "user",
+    "login": "example@example.com",
+    "name": "Second User",
+    "roles": ["read"],
+    "organisation": "organisation three",
+    "hasKey": true,
+    "status": "Ok"
+  },
+  {
+    "_id": "3",
+    "id": "example@example.com",
+    "createdBy": "example@example.com",
+    "createdAt": "2021-07-15T14:40:29Z",
+    "updatedAt": "2021-07-15T14:40:29Z",
+    "_type": "user",
+    "login": "example@example.com",
+    "name": "Third User",
+    "roles": ["write", "read"],
+    "organisation": "organisation two",
+    "hasKey": true,
+    "status": "Ok"
+    }
+  ]

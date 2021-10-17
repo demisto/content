@@ -14,7 +14,7 @@
             "title": "Threat Intel View",
             "tabs": [
                 {
-                    "name": "Threat Intel Report",
+                    "name": "Threat Intel Reports",
                     "newButtonDefinitionId": "ThreatIntelReport",
                     "dashboard": {
                         "id": "Threat Intel Dashboard",
