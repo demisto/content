@@ -209,11 +209,10 @@ def base_dn_verified(base_dn):
 
 
 def generate_unique_cn(default_base_dn, cn):
-
-    changing_cn = cn
+    changing_cn = escape_filter_chars(cn)
     i = 1
     while check_if_user_exists_by_attribute(default_base_dn, "cn", changing_cn):
-        changing_cn = cn + str(i)
+        changing_cn = escape_filter_chars(cn) + str(i)
         i += 1
         if i == 30:
             raise Exception("User CN couldn't be generated")
@@ -900,6 +899,7 @@ def create_user_iam(default_base_dn, args, mapper_out, disabled_users_group_cn):
             if manager_email := ad_user.get('manageremail'):
                 manager_dn = get_user_dn_by_email(default_base_dn, manager_email)
                 ad_user['manager'] = manager_dn
+
             success = conn.add(user_dn, object_classes, ad_user)
             if success:
                 iam_user_profile.set_result(success=True,
@@ -907,20 +907,21 @@ def create_user_iam(default_base_dn, args, mapper_out, disabled_users_group_cn):
                                             username=ad_user.get('sAMAccountName'),
                                             details=ad_user,
                                             action=IAMActions.CREATE_USER,
-                                            active=False)  # the user should be activated with the IAMInitADUser script
+                                            active=False)
 
             else:
-                error_msg = 'Please validate your instance configuration and make sure all of the ' \
-                            'required attributes are mapped correctly in "' + mapper_out + '" outgoing mapper.'
+                error_msg = f'Please validate your instance configuration and make sure all of the ' \
+                    f'required attributes are mapped correctly in "{mapper_out}" outgoing mapper.'
                 raise DemistoException(error_msg)
 
         return iam_user_profile
 
     except Exception as e:
         error_code, _ = IAMErrors.BAD_REQUEST
+        error_message = f'{e}\nConnection result: {conn.result}\nError from LDAP server: {conn.last_error}'
         iam_user_profile.set_result(success=False,
                                     error_code=error_code,
-                                    error_message=str(e),
+                                    error_message=error_message,
                                     action=IAMActions.CREATE_USER,
                                     )
         return iam_user_profile
@@ -989,7 +990,6 @@ def update_user_iam(default_base_dn, args, create_if_not_exists, mapper_out, dis
                 if ad_user.get(field):
                     ad_user.pop(field)
 
-            fail_to_modify = []
             if manager_email := ad_user.get('manageremail'):
                 manager_dn = get_user_dn_by_email(default_base_dn, manager_email)
                 ad_user['manager'] = manager_dn
@@ -999,16 +999,11 @@ def update_user_iam(default_base_dn, args, create_if_not_exists, mapper_out, dis
                 modification = {key: [('MODIFY_REPLACE', ad_user.get(key))]}
                 success = conn.modify(dn, modification)
                 if not success:
-                    fail_to_modify.append(key)
+                    raise DemistoException(f'Could not modify the user\'s {key} field.')
 
             ou_modified_succeed = modify_user_ou(dn, new_ou)
             if not ou_modified_succeed:
-                fail_to_modify.append("ou")
-
-            if fail_to_modify:
-                error_list = '\n'.join(fail_to_modify)
-                error_message = f"Failed to modify the following attributes: {error_list}"
-                raise DemistoException(error_message)
+                raise DemistoException('Could not modify the user\'s OU field.')
 
             else:
                 active = get_user_activity_by_samaccountname(default_base_dn, sam_account_name)
@@ -1022,9 +1017,10 @@ def update_user_iam(default_base_dn, args, create_if_not_exists, mapper_out, dis
 
     except Exception as e:
         error_code, _ = IAMErrors.BAD_REQUEST
+        error_message = f'{e}\nConnection result: {conn.result}\nError from LDAP server: {conn.last_error}'
         iam_user_profile.set_result(success=False,
                                     error_code=error_code,
-                                    error_message=str(e),
+                                    error_message=error_message,
                                     action=IAMActions.UPDATE_USER
                                     )
         return iam_user_profile
@@ -1303,6 +1299,7 @@ def disable_user_iam(default_base_dn, disabled_users_group_cn, args, mapper_out)
     :param mapper_out: Mapping User Profiles to AD users.
     :return: The disabled user
     """
+    assert conn is not None
     try:
         user_profile = args.get("user-profile")
         user_profile_delta = args.get('user-profile-delta')
@@ -1327,16 +1324,9 @@ def disable_user_iam(default_base_dn, disabled_users_group_cn, args, mapper_out)
             'userAccountControl': [('MODIFY_REPLACE', DISABLED_ACCOUNT)]
         }
 
-        try:
-            modify_object(dn, modification)
-        except Exception as e:
-            error_msg = 'Please validate your instance configuration and make sure all of the ' \
-                        'required attributes are mapped correctly in "' + mapper_out + '" outgoing mapper.\n' \
-                        'Error is: ' + str(e)
-            raise DemistoException(error_msg)
+        modify_object(dn, modification)
 
         if disabled_users_group_cn:
-
             grp_dn = group_dn(disabled_users_group_cn, default_base_dn)
             success = microsoft.addMembersToGroups.ad_add_members_to_groups(conn, [dn], [grp_dn])
             if not success:
@@ -1353,9 +1343,10 @@ def disable_user_iam(default_base_dn, disabled_users_group_cn, args, mapper_out)
 
     except Exception as e:
         error_code, _ = IAMErrors.BAD_REQUEST
+        error_message = f'{e}\nConnection result: {conn.result}\nError from LDAP server: {conn.last_error}'
         iam_user_profile.set_result(success=False,
                                     error_code=error_code,
-                                    error_message=str(e),
+                                    error_message=error_message,
                                     action=IAMActions.DISABLE_USER
                                     )
         return iam_user_profile

@@ -13,60 +13,67 @@ args:
   required: true
   secret: false
 - default: false
-  description: The email of the employee.
+  description: The user profile data.
   isArray: false
-  name: email
+  name: user_profile
   required: true
   secret: false
 - default: false
-  description: The display name of the employee.
+  description: Whether or not to enable the user.
   isArray: false
-  name: displayname
+  name: enable_user
+  required: false
+  secret: false
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  defaultValue: "true"
+- default: false
+  description: An HTML template of the manager email body to be sent. Placeholders should be of the form ${USER_FIELD},
+    where USER_FIELD is either "sAMAccountName", "password" or any existing User Profile incident field in CLI form, e.g. "displayname".
+  isArray: false
+  name: manager_email_template_list_name
   required: false
   secret: false
 - default: false
-  description: The email address that the password will send to.
+  description: A comma-separated list of email addresses that should recieve the notification email.
   isArray: false
-  name: to_email
+  name: notification_email_addresses
   required: true
   secret: false
 - default: false
-  description: The incident ID.
+  description: An HTML template of the notification email body to be sent. Placeholders should be of the form ${USER_FIELD},
+    where USER_FIELD is either "sAMAccountName", "password" or any existing User Profile incident field in CLI form, e.g. "displayname".
   isArray: false
-  name: inc_id
-  required: false
-  secret: false
-- default: false
-  description: The subject of the email sent to IT.
-  isArray: false
-  name: email_subject
+  name: notification_email_template_list_name
   required: false
   secret: false
 comment: |-
-  Generates password,
-  Set an AD user account with this password.
-  Enable the account.
-  Send mail to the user with tha account information.
-  This script is running `send-mail` command, make sure there is a matching Integration configurated.
+  - Generates a password.
+  - Sets an Active Directory user account with this password.
+  - Enables the account if enable_user argument is set to "true".
+  - Sends a notification email to the emails specified in the notification_emails_list.
+  - Sends an email to the manager (unless the user is an acquisition hire).
+  This script is running `send-mail` command, please make sure there is a matching Integration configurated.
 commonfields:
   id: IAMInitADUser
   version: -1
 enabled: true
 name: IAMInitADUser
 outputs:
-- contextPath: IAM.InitADUser.success
+- contextPath: IAM.Vendor.success
   description: True if the Active Directory user was successfully activated, false
     otherwise.
   type: Boolean
-- contextPath: IAM.InitADUser.sentMail
-  description: True if the mail containing the information about the user activation
-    and its auto-generated password was successfully sent to IT, false otherwise.
-  type: Boolean
-- contextPath: IAM.InitADUser.errorDetails
+- contextPath: IAM.Vendor.errorMessage
   description: The error details, if exists.
   type: String
-- contextPath: IAM.InitADUser.sendMailError
-  description: The error received from send-mail command, if exists.
+- contextPath: IAM.Vendor.brand
+  description: Name of the integration used in this script.
+  type: String
+- contextPath: IAM.Vendor.action
+  description: The script name.
   type: String
 script: '-'
 subtype: python3
