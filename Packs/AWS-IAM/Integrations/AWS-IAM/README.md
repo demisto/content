@@ -1575,3 +1575,99 @@ Retrieves information about the specified managed policy, including the policy's
 
 #### Command Example
 ``` !aws-iam-get-policy policyName=testPolicy```
+
+### aws-iam-list-user-policies
+***
+Lists the names of the inline policies embedded in the specified IAM user.
+
+#### Base Command
+
+`aws-iam-list-user-policies`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| userName | The name (friendly name, not ARN) of the user to list inline policies for. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.IAM.Policy.User.Policies | string | A list of the user's inline policy names. | 
+
+#### Command Example
+``` !aws-iam-list-user-policies userName=testUser```
+
+### aws-iam-list-attached-user-polices
+***
+Lists all managed policies that are attached to the specified IAM user.
+
+#### Base Command
+
+`aws-iam-list-attached-user-polices`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| userName | The name (friendly name, not ARN) of the user to list attached policies for. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.IAM.Users.AttachedPolicies.PolicyName | string | Policy Name | 
+| WS.IAM.Users.AttachedPolicies.PolicyArn | string | The Amazon Resource Name (ARN) of the attached policy. | 
+
+#### Command Example
+``` !aws-iam-list-attached-user-polices userName=testUser```
+
+### aws-iam-list-attached-group-policies
+***
+Lists all managed policies that are attached to the specified IAM group.
+
+#### Base Command
+
+`aws-iam-list-attached-group-policies`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| groupName | The name (friendly name, not ARN) of the group to list attached policies for. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.IAM.Groups.AttachedPolicies.PolicyName | string | Policy Name | 
+| WS.IAM.Groups.AttachedPolicies.PolicyArn | string | The Amazon Resource Name (ARN) of the attached policy. | 
+
+#### Command Example
+``` !aws-iam-list-attached-group-policies groupName=testGroup```
+
+### aws-iam-get-user-login-profile
+***
+Lists all managed policies that are attached to the specified IAM user.
+
+#### Base Command
+
+`aws-iam-get-user-login-profile`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| userName | The name (friendly name, not ARN) of the user to retrieve login profile for. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.IAM.Users.LoginProfile.CreateDate | date | The date when the password for the user was created. | 
+| WS.IAM.Groups.LoginProfile.PasswordResetRequired | boolean | Specifies whether the user is required to set a new password on next sign-in. | 
+
+#### Command Example
+``` !aws-iam-get-user-login-profile userName=testUser```
+

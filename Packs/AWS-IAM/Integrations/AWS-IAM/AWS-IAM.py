@@ -1021,14 +1021,14 @@ def list_user_policies(args, aws_client):
             data.append(policy)
     data.append("test")
 
-    ec = {
+    red = {
         'UserName': args.get('userName'),
         'Policies': data
     }
 
-    outputs = {'AWS.IAM.Users(val.UserName && val.UserName === obj.UserName)': ec}
+    ec = {'AWS.IAM.Users(val.UserName && val.UserName === obj.UserName)': red}
     human_readable = tableToMarkdown('AWS IAM Policies for user'.format(user_name), headers=["Policy Name"], t=data)
-    return_outputs(human_readable, outputs)
+    return_outputs(human_readable, ec)
 
 
 def list_attached_user_polices(args, aws_client):
@@ -1048,18 +1048,17 @@ def list_attached_user_polices(args, aws_client):
         for member in response['AttachedPolicies']:
             data.append(member)
 
-    ec = {
+    res = {
         'UserName': args.get('userName'),
         'AttachedPolicies': data
     }
-    outputs = {'AWS.IAM.Users(val.UserName && val.UserName === obj.UserName)': ec}
+    ec = {'AWS.IAM.Users(val.UserName && val.UserName === obj.UserName)': res}
     human_readable = tableToMarkdown('AWS IAM Attached Policies for user'.format(user_name),
                                      t=data,
                                      headers=['PolicyName', 'PolicyArn'],
-                                     headerTransform=lambda header: string_to_table_header(
-                                         camel_case_to_underscore(header)))
+                                     headerTransform=pascalToSpace)
 
-    return_outputs(human_readable, outputs)
+    return_outputs(human_readable, ce)
 
 
 def list_attached_group_polices(args, aws_client):
@@ -1079,17 +1078,16 @@ def list_attached_group_polices(args, aws_client):
         for member in response['AttachedPolicies']:
             data.append(member)
 
-    ec = {
+    res = {
         'GroupName': group_name,
         'AttachedPolicies': data
     }
-    outputs = {'AWS.IAM.Users(val.GroupName && val.GroupName === obj.GroupName)': ec}
+    ec = {'AWS.IAM.Users(val.GroupName && val.GroupName === obj.GroupName)': res}
     human_readable = tableToMarkdown('AWS IAM Attached Policies for group'.format(group_name),
                                      t=data,
                                      headers=['PolicyName', 'PolicyArn'],
-                                     headerTransform=lambda header: string_to_table_header(
-                                         camel_case_to_underscore(header)))
-    return_outputs(human_readable, outputs)
+                                     headerTransform=pascalToSpace)
+    return_outputs(human_readable, ec)
 
 
 def get_user_login_profile(args, aws_client):
@@ -1110,12 +1108,11 @@ def get_user_login_profile(args, aws_client):
         'CreateDate': user_profile['CreateDate'],
         'PasswordResetRequired': user_profile['PasswordResetRequired']
     })
-    ec = {'AWS.IAM.Users(val.UserName && val.UserName === obj.UserName': data}
+    ec = {'AWS.IAM.Users(val.UserName && val.UserName === obj.UserName).LoginProfile': data}
     human_readable = tableToMarkdown('AWS IAM Users',
                                      t=data,
                                      headers=['CreateDate', 'PasswordResetRequired'],
-                                     headerTransform=lambda header: string_to_table_header(
-                                         camel_case_to_underscore(header)))
+                                     headerTransform=pascalToSpace)
     return_outputs(human_readable, ec)
 
 
@@ -1247,7 +1244,7 @@ def main():
             get_policy(args, aws_client)
         elif command == 'aws-iam-list-user-policies':
             list_user_policies(args, aws_client)
-        elif command == 'aws-iam-list-attached user-polices':
+        elif command == 'aws-iam-list-attached-user-polices':
             list_attached_user_polices(args, aws_client)
         elif command == 'aws-iam-list-attached-group-policies':
             list_attached_group_polices(args, aws_client)
