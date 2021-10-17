@@ -1,5 +1,8 @@
 {
-    "associatedToAll": true,
+    "associatedToAll": false,
+	"associatedTypes": [
+		"IAM - AD User Activation"
+	   ],
     "caseInsensitive": true,
     "cliName": "acquisitionhire",
     "closeForm": false,
