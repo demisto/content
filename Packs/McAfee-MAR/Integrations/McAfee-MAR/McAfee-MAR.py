@@ -274,7 +274,7 @@ def mar_collectors_list():
 
 
 def validate_certificates_format():
-    if '-----BEGIN PRIVATE KEY-----' not in demisto.params()['private_key']:
+    if '-----BEGIN PRIVATE KEY-----' not in demisto.params()['private_key']:  # guardrails-disable-line
         return_error(
             "The private key content seems to be incorrect as it doesn't start with -----BEGIN PRIVATE KEY-----")
     if '-----END PRIVATE KEY-----' not in demisto.params()['private_key']:
