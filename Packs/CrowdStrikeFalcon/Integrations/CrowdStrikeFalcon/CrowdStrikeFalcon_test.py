@@ -2240,8 +2240,9 @@ class TestFetch:
         Then:
             The `first_behavior_time` changes and no `offset` is added.
         """
-        mocker.patch.object(demisto, 'getLastRun', return_value={'first_behavior_detection_time':
-                                                                 '2020-09-04T09:16:10Z', 'detection_offset': 2})
+        mocker.patch.object(demisto, 'getLastRun',
+                            return_value={'first_behavior_detection_time': '2020-09-04T09:16:10Z',
+                                          'detection_offset': 2})
         # Override post to have 1 results so FETCH_LIMIT won't be reached
         requests_mock.post(f'{SERVER_URL}/detects/entities/summaries/GET/v1',
                            json={'resources': [{'detection_id': 'ldt:1',
@@ -2945,3 +2946,39 @@ def test_list_host_group_members(requests_mock):
     expected_results = load_json('test_data/expected_list_hostgroup_members_results.json')
     for expected_results, ectual_results in zip(expected_results, command_results.outputs):
         assert expected_results == ectual_results
+
+
+@pytest.mark.parametrize('endpoint_status, status, is_isolated',
+                         [('Normal', 'Online', ''),
+                          ('normal', 'Online', ''),
+                          ('containment_pending', '', 'Pending isolation'),
+                          ('contained', '', 'Yes'),
+                          ('lift_containment_pending', '', 'Pending unisolation'),
+                          ])
+def test_generate_status_field(endpoint_status, status, is_isolated):
+    """
+    Test valid call for generate status field
+    Given
+     - valid status
+    When
+     - Calling generate_status_field function
+    Then
+     - Return status and is_isolated
+     """
+    from CrowdStrikeFalcon import generate_status_fields
+    assert (status, is_isolated) == generate_status_fields(endpoint_status)
+
+
+def test_generate_status_field_invalid():
+    """
+    Test invalid call for generate status field
+    Given
+     - invalid status
+    When
+     - Calling generate_status_field function
+    Then
+     - Raise an exception
+     """
+    from CrowdStrikeFalcon import generate_status_fields
+    with pytest.raises(DemistoException):
+        generate_status_fields('unknown status')

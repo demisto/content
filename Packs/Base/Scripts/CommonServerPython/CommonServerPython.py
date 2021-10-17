@@ -1774,7 +1774,8 @@ def create_clickable_url(url):
     return '[{}]({})'.format(url, url)
 
 
-def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False, metadata=None, url_keys=None):
+def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False, metadata=None, url_keys=None,
+                    date_fields=None):
     """
        Converts a demisto table in JSON form to a Markdown table
 
@@ -1799,6 +1800,9 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
 
        :type url_keys: ``list``
        :param url_keys: a list of keys in the given JSON table that should be turned in to clickable
+
+       :type date_fields: ``list``
+       :param date_fields: A list of date fields to format the value to human-readable output.
 
        :return: A string representation of the markdown table
        :rtype: ``str``
@@ -1865,8 +1869,17 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
         sep = '---'
         mdResult += '|' + '|'.join([sep] * len(headers)) + '|\n'
         for entry in t:
-            vals = [stringEscapeMD((formatCell(entry.get(h, ''), False) if entry.get(h) is not None else ''),
+            entry_copy = entry.copy()
+            if date_fields:
+                for field in date_fields:
+                    try:
+                        entry_copy[field] = datetime.fromtimestamp(int(entry_copy[field]) / 1000).strftime('%Y-%m-%d %H:%M:%S')
+                    except Exception:
+                        pass
+
+            vals = [stringEscapeMD((formatCell(entry_copy.get(h, ''), False) if entry_copy.get(h) is not None else ''),
                                    True, True) for h in headers]
+
             # this pipe is optional
             mdResult += '| '
             try:
@@ -6311,10 +6324,8 @@ def pascalToSpace(s):
     if not isinstance(s, STRING_OBJ_TYPES):
         return s
 
-    tokens = pascalRegex.findall(s)
-    for t in tokens:
-        # double space to handle capital words like IP/URL/DNS that not included in the regex
-        s = s.replace(t, ' {} '.format(t.title()))
+    # double space to handle capital words like IP/URL/DNS that not included in the regex
+    s = re.sub(pascalRegex, lambda match: r' {} '.format(match.group(1).title()), s)
 
     # split and join: to remove double spacing caused by previous workaround
     s = ' '.join(s.split())
