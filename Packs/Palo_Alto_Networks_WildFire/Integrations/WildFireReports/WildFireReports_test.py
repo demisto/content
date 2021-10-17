@@ -1,3 +1,5 @@
+import base64
+
 import demistomock as demisto
 from WildFireReports import main
 import requests_mock
@@ -30,7 +32,7 @@ def test_wildfire_report(mocker):
 
         main()
 
-    assert demisto_mock.call_args_list[0][0][0] == file_content
+    assert demisto_mock.call_args_list[0][0][0]['data'] == base64.b64encode(file_content).decode()
 
 
 def test_report_not_found(mocker):
@@ -53,7 +55,7 @@ def test_report_not_found(mocker):
 
         main()
 
-    assert demisto_mock.call_args[0][0] == 'Report not found.'
+    assert demisto_mock.call_args[0][0] == {'status': 'not found'}
 
 
 def test_incorrect_sha256(mocker):
@@ -69,9 +71,7 @@ def test_incorrect_sha256(mocker):
     mocker.patch.object(demisto, 'command', return_value='wildfire-get-report')
     mocker.patch.object(demisto, 'params', return_value={'server': 'https://test.com/', 'token': '123456'})
     mocker.patch.object(demisto, 'args', return_value={'sha256': mock_sha256})
-    mocker.patch.object(demisto, 'error')
-    mock_error = mocker.patch('WildFireReports.return_error')
+    demisto_mock = mocker.patch.object(demisto, 'results')
 
     main()
-
-    assert 'Invalid hash. Only SHA256 are supported.' in str(mock_error.call_args.args)
+    assert demisto_mock.call_args_list[0].args[0] == {'status': 'error', 'error': {'title': "Couldn't fetch the Wildfire report.", 'description': 'Failed to download report.\nError:\nInvalid hash. Only SHA256 are supported.', 'techInfo': 'Failed to execute command wildfire-get-report.\nError:\nInvalid hash. Only SHA256 are supported.\nTrace back:\nTraceback (most recent call last):\n  File "/Users/meichler/dev/demisto/content/Packs/Palo_Alto_Networks_WildFire/Integrations/WildFireReports/WildFireReports.py", line 110, in main\n    wildfire_get_report_command(client, args)\n  File "/Users/meichler/dev/demisto/content/Packs/Palo_Alto_Networks_WildFire/Integrations/WildFireReports/WildFireReports.py", line 48, in wildfire_get_report_command\n    raise Exception(\'Invalid hash. Only SHA256 are supported.\')\nException: Invalid hash. Only SHA256 are supported.\n'}}
