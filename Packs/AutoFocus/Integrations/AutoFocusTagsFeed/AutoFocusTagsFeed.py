@@ -17,8 +17,6 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 AF_TAGS_DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 
-BASE_URL = 'https://autofocus.paloaltonetworks.com/api/v1.0/'
-
 TAG_CLASS_TO_DEMISTO_TYPE = {
     'malware_family': ThreatIntel.ObjectsNames.MALWARE,
     'actor': ThreatIntel.ObjectsNames.THREAT_ACTOR,
@@ -78,8 +76,8 @@ class Client(BaseClient):
         api_key: AutoFocus API Key.
     """
 
-    def __init__(self, api_key, verify, proxy):
-        super().__init__(BASE_URL, verify, proxy)
+    def __init__(self, api_key, base_url, verify, proxy):
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.headers = {
             'apiKey': api_key,
             'Content-Type': 'application/json'
@@ -90,7 +88,7 @@ class Client(BaseClient):
                                  url_suffix='tags',
                                  headers=self.headers,
                                  json_data=data,
-                                 timeout=60,
+                                 timeout=80,
                                  )
         return res
 
@@ -98,7 +96,7 @@ class Client(BaseClient):
         res = self._http_request('POST',
                                  url_suffix=f'tag/{public_tag_name}',
                                  headers=self.headers,
-                                 timeout=60,
+                                 timeout=80,
                                  )
         return res
 
@@ -126,7 +124,7 @@ class Client(BaseClient):
                 time_of_first_fetch = date_to_timestamp(datetime.now(), DATE_FORMAT)
                 set_integration_context({'time_of_first_fetch': time_of_first_fetch})
             else:
-                page_num = arg_to_number(integration_context.get('page_num', 0)) or 0
+                page_num = integration_context.get('page_num', 0)
         get_tags_response = self.get_tags({
             'pageNum': page_num,
             'pageSize': PAGE_SIZE,
@@ -263,6 +261,7 @@ def get_tag_class(tag_class: Optional[str], source: Optional[str]) -> Optional[s
         The tag class as demisto indicator type, None if class is not specified.
     """
 
+    # indicators from type Attack Pattern are only created if its source is unit42
     if not tag_class:
         return None
     if (tag_class != 'malicious_behavior') or (tag_class == 'malicious_behavior' and source == 'Unit 42'):
@@ -377,7 +376,7 @@ def create_relationship(tag_name: str, tag_class: str, related_tag_name: str, re
     Returns:
         EntityRelationship object
     """
-    
+
     return EntityRelationship(
         name=MAP_RELATIONSHIPS.get(tag_class, {}).get(related_tag_class),
         entity_a=tag_name,
@@ -479,8 +478,7 @@ def get_indicators_command(client: Client,
 
     limit = arg_to_number(args.get('limit', '10'))
     if limit > PAGE_SIZE:
-        demisto.debug(
-            f'AutoFocus Tags Feed: limit must be under {PAGE_SIZE}. Setting limit to the max.')
+        demisto.debug(f'AutoFocus Tags Feed: limit must be under {PAGE_SIZE}. Setting limit to the max.')
         limit = PAGE_SIZE
     tlp_color = params.get('tlp_color')
     feed_tags = argToList(params.get('feedTags', ''))
@@ -526,6 +524,7 @@ def main():
     insecure = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     api_key = params.get('api_key', '')
+    base_url = params.get('url')
     if not api_key:
         if is_demisto_version_ge('6.5.0'):
             api_key = demisto.getLicenseCustomField('AutoFocusTagsFeed.api_key')
@@ -542,6 +541,7 @@ def main():
     try:
         client = Client(
             api_key=api_key,
+            base_url=base_url,
             verify=insecure,
             proxy=proxy,
         )
