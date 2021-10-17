@@ -1,4 +1,3 @@
-
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -8,9 +7,6 @@ import hashlib
 import json
 
 from dateutil import parser
-
-
-''' STANDALONE FUNCTION '''
 
 
 def get_incident_labels_map(labels):
@@ -64,8 +60,6 @@ def build_query(base_query, from_date):
     else:
         return base_query
 
-''' COMMAND FUNCTION '''
-
 
 def indicator_malicious_ratio_calculation(args):
     appears_in_min_num_of_incidents = int(args['appearsInMinNumberOfIncidents'])
@@ -75,7 +69,7 @@ def indicator_malicious_ratio_calculation(args):
     max_results = int(args['maxDisplayResults'])
     generate_file_result = (args['fileResult'] == 'yes')
     from_date = demisto.args().get('fromDate', '')
-    
+
     query = build_query(base_query, from_date)
     res = demisto.executeCommand("findIndicators", {'query': query, 'size': max_indicators})
     indicators = res[0]['Contents']
@@ -115,11 +109,11 @@ def indicator_malicious_ratio_calculation(args):
 
         results = CommandResults(
             outputs_prefix='IndicatorMaliciousRatioCalculation',
-            outputs= indicators_result,
+            outputs=indicators_result,
             readable_output=tableToMarkdown('Indicators Malicious Ratio', indicators_result[:max_results],
-                                             headers=['value', 'indicator_type', 'malicious_ratio',
-                                                      'total_incidents_count',
-                                                      'score', 'lastSeen']))
+                                            headers=['value', 'indicator_type', 'malicious_ratio',
+                                                     'total_incidents_count',
+                                                     'score', 'lastSeen']))
 
         if generate_file_result:
             for i in indicators_result:
@@ -135,7 +129,6 @@ def indicator_malicious_ratio_calculation(args):
         return_error("No resolved incidents found")
 
 
-
 ''' MAIN FUNCTION '''
 
 
@@ -148,7 +141,6 @@ def main():
 
 
 ''' ENTRY POINT '''
-
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
