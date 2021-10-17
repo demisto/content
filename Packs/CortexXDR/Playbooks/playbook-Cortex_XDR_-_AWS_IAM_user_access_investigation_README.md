@@ -45,4 +45,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Cortex XDR - AWS IAM user access investigation](Insert the link to your image here)
+![Cortex XDR - AWS IAM user access investigation](https://raw.githubusercontent.com/demisto/content/e77df420e17966a544c5659eafe975edfa84b2bf/Packs/CortexXDR/doc_files/Cortex_XDR_-_AWS_IAM_user_access_investigation.png)
