@@ -139,12 +139,10 @@ def get_user_command(client, args, mapper_in):
 
         else:
             github_user = res.get('Resources')[0]
-            email_str: Optional[str] = iam_attr_value if iam_attr == IAMAttribute.EMAIL else next(
-                (email.get('value') for email in github_user.get('emails', []) if 'value' in email), None)
             iam_user_profile.update_with_app_data(github_user, mapper_in)
             iam_user_profile.set_result(success=True,
                                         iden=github_user.get('id', None),
-                                        email=email_str,
+                                        email=iam_user_profile.get_attribute('email'),
                                         username=github_user.get('userName', None),
                                         action=IAMActions.GET_USER,
                                         details=res,
