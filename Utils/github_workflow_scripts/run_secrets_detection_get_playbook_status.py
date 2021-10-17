@@ -13,7 +13,7 @@ from demisto_sdk.commands.common.constants import PB_Status
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 # ----- Constants ----- #
-DEFAULT_TIMEOUT = 60 * 4
+DEFAULT_TIMEOUT = 60 * 5
 SLEEP_WAIT_SECONDS = 10
 GOLD_SERVER_URL = "https://content-gold.paloaltonetworks.com"
 
