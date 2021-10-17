@@ -24,11 +24,11 @@ def hash_object(str_list_dict):
     if str_list_dict == "" or str_list_dict is None:
         return str_list_dict
     if (type(str_list_dict)) == dict:
-        return dict(map(lambda k, v: (k, hash_object(v)), str_list_dict.iteritems()))
+        return dict(map(lambda (k, v): (k, hash_object(v)), str_list_dict.iteritems()))
     if (type(str_list_dict) == list):
         return map(lambda x: hash_object(x), str_list_dict)
 
-    if (type(str_list_dict) == str):
+    if (type(str_list_dict) in [str, unicode]):
         str_value = str_list_dict.encode('utf-8')
     else:
         str_value = str(str_list_dict)
@@ -61,7 +61,7 @@ def build_query(base_query, from_date):
         return base_query
 
 
-def indicator_malicious_ratio_calculation(args: Dict[str,str]):
+def indicator_malicious_ratio_calculation(args):
     appears_in_min_num_of_incidents = int(args.get('appearsInMinNumberOfIncidents'))
     max_incidents = int(args.get('maxIncidents'))
     max_indicators = int(args.get('maxIndicators'))
