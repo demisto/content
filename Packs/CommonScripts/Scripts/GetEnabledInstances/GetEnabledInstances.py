@@ -4,17 +4,15 @@ from CommonServerPython import *  # noqa: F401
 
 def get_enabled_instances():
     enabled_instances = []
+    readable_output = []
     instances = demisto.getModules()
     for instance_name, data in instances.items():
         if data.get('state') == 'active':
             enabled_instances.append(instance_name)
-
-    readable_output = [
-        {
-            'Instance Name': instance,
-            'Brand': instances[instance].get('brand')
-        } for instance in enabled_instances
-    ]
+            readable_output.append({
+                'Instance Name': instance_name,
+                'Brand': data.get('brand')
+            })
 
     return CommandResults(
         outputs_prefix='EnabledInstances',

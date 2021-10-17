@@ -3,6 +3,16 @@ from GetEnabledInstances import main
 
 
 def test_get_enabled_instances(mocker):
+    """
+    Given:
+        - An enabled instance named instanceName1
+        - A disabled instance named instanceName2
+    When:
+        - Calling GetEnabledInstances script
+    Then:
+        - Ensure only the enabled instances is returned to the context.
+    """
+
     mock_modules = {
         'instanceName1': {'state': 'active', 'brand': 'brandName'},
         'instanceName2': {'state': 'disabled', 'brand': 'brandName'}

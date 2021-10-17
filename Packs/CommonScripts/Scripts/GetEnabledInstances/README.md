@@ -7,7 +7,7 @@ Gets all currently enabled integration instances.
 | --- | --- |
 | Script Type | python3 |
 | Tags |  |
-| Cortex XSOAR Version | 5.5.0 |
+| Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
 ---
@@ -18,4 +18,4 @@ There are no inputs for this script.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| EnabledInstances | A list of integration instance names that are currently enabled. | Unknown |
+| EnabledInstances | A list of integration instance names that are currently enabled. | List |
