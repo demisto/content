@@ -155,38 +155,39 @@ Run command on remote system with ssh
 
 
 ## Breaking changes from the previous version of this integration - RemoteAccess v2
-%%FILL HERE%%
-The following sections list the changes in this version.
+- Stopped support of `Interactive terminal mode` instance parameter.
+- Stopped support of `Require users to enter additional password`  instance parameter.
+- Stopped support of `Terminal Type` instance parameter.
 
 ### Commands
-#### The following commands were removed in this version:
-* *commandName* - this command was replaced by XXX.
-* *commandName* - this command was replaced by XXX.
+#### #### The following command names were changed in this version
+| Remote Access Command Name | Remote Access v2 Command Name |
+| --- | --- |
+| ssh | remote-access-ssh |
+| copy-to | remote-access-copy-to |
+| copy-from | remote-access-copy-from |
 
 ### Arguments
-#### The following arguments were removed in this version:
-
-In the *commandName* command:
-* *argumentName* - this argument was replaced by XXX.
-* *argumentName* - this argument was replaced by XXX.
-
-#### The behavior of the following arguments was changed:
-
-In the *commandName* command:
-* *argumentName* - is now required.
-* *argumentName* - supports now comma separated values.
+#### #### The following argument names were changed, added or removed in this version
+| Remote Access Command Name | Old Command Argument Name | Remote Access v2 Command Argument Name | New Command Name |
+| --- | --- | --- | --- |
+| ssh | cmd | remote-access-ssh | command |
+| ssh | timeout | remote-access-ssh | **Argument have been removed** |
+| ssh | system | remote-access-ssh | **Argument have been removed** |
+| copy-to | dest-dir | remote-access-copy-to | destination_path |
+| copy-to | entry | remote-access-copy-to | entry_id |
+| copy-to | timeout | remote-access-copy-to | **Argument have been removed** |
+| copy-to | system | remote-access-copy-to | **Argument have been removed** |
+| copy-to | fileID | remote-access-copy-to | **Argument have been removed** |
+| copy-to | system | remote-access-copy-to | **Argument have been removed** |
+| copy-from | file | remote-access-copy-from | file_path |
+| copy-from | **Argument did not exist** | remote-access-copy-from | file_name |
+| copy-from | timeout | remote-access-copy-from | **Argument have been removed** |
+| copy-from | system | remote-access-copy-from | **Argument have been removed** |
 
 ### Outputs
 #### The following outputs were removed in this version:
+| Remote Access Command Name | Old Command Outputs | Remote Access v2 Command Name | New Command Outputs |
+| --- | --- | --- | --- |
+| ssh | Command outputs outputted the command, stdout, stderr, the remote machine IP, and success status. | remote-access-ssh | Outputs the stdout and stderr only. |
 
-In the *commandName* command:
-* *outputPath* - this output was replaced by XXX.
-* *outputPath* - this output was replaced by XXX.
-
-In the *commandName* command:
-* *outputPath* - this output was replaced by XXX.
-* *outputPath* - this output was replaced by XXX.
-
-## Additional Considerations for this version
-%%FILL HERE%%
-* Insert any API changes, any behavioral changes, limitations, or restrictions that would be new to this version.

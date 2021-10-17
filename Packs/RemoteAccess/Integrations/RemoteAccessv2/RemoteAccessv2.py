@@ -1,6 +1,7 @@
 import tempfile
 
 from paramiko import SSHClient, AutoAddPolicy, transport, Transport
+from paramiko.ssh_exception import NoValidConnectionsError
 from scp import SCPClient, SCPException
 
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
@@ -111,7 +112,10 @@ def create_paramiko_ssh_client(host_name: str, user_name: str, password: str, ci
         Transport._preferred_kex = (*key_algorithms,)
     client = SSHClient()
     client.set_missing_host_key_policy(AutoAddPolicy())
-    client.connect(hostname=host_name, username=user_name, password=password, port=22)
+    try:
+        client.connect(hostname=host_name, username=user_name, password=password, port=22)
+    except NoValidConnectionsError as e:
+        raise DemistoException(f'Unable to connect to port 22 on {host_name}') from e
     return client
 
 
