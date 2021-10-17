@@ -394,7 +394,7 @@ from IAMApiModule import *  # noqa: E402
 IAM_ATTRIBUTE_TO_GITHUB_FILTER = {
     IAMAttribute.EMAIL: 'emails',
     IAMAttribute.ID: 'id',
-    IAMAttribute.USERNAME: 'username'
+    IAMAttribute.USERNAME: 'userName'
 }
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

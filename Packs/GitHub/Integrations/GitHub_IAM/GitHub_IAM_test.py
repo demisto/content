@@ -3,11 +3,15 @@ from requests.models import Response
 import demistomock as demisto
 from GitHub_IAM import Client, IAMUserProfile, get_user_command, create_user_command, update_user_command
 from IAMApiModule import *
+import pytest
+
+BASE_MOCK_URL = 'https://test.com'
+MOCK_ORG = 'test123'
 
 
 def mock_client():
-    client = Client(base_url='https://test.com',
-                    org='test123',
+    client = Client(base_url=BASE_MOCK_URL,
+                    org=MOCK_ORG,
                     verify=False,
                     headers={})
     return client
@@ -15,7 +19,6 @@ def mock_client():
 
 create_inp_schme = {'familyName': 'J13', 'givenName': 'MJ', 'userName': 'TestID@networks.com',
                     'emails': 'TestID@networks.com'}
-
 
 demisto.callingContext = {'context': {'IntegrationInstance': 'Test', 'IntegrationBrand': 'Test'}}
 
@@ -83,8 +86,51 @@ def test_get_user_command__existing_user(mocker):
     assert outputs.get('username') == 'TestID@networks.com'
 
 
-def test_get_user_command__non_existing_user(mocker):
+@pytest.mark.parametrize('args, mock_url', [({'user-profile': {'email': 'mock@mock.com'}},
+                                             f'{BASE_MOCK_URL}/scim/v2/organizations/{MOCK_ORG}/Users?filter='
+                                             'emails eq \"mock@mock.com\"'),
+                                            ({'user-profile': {'username': 'TestID@networks.com',
+                                                               'email': 'mock@mock.com'}},
+                                             f'{BASE_MOCK_URL}/scim/v2/organizations/{MOCK_ORG}/Users?filter='
+                                             'userName eq \"TestID@networks.com\"'),
+                                            ({'user-profile': {'id': 12345, 'username': 'TestID@networks.com',
+                                                               'email': 'mock@mock.com'}},
+                                             f'{BASE_MOCK_URL}/scim/v2/organizations/{MOCK_ORG}/Users?filter='
+                                             'id eq \"12345\"'),
+                                            ])
+def test_get_user_command_by_order(mocker, args, mock_url, requests_mock):
+    """
+    Given:
+    - Cortex XSOAR arguments.
 
+    When:
+    - Executing get-user command.
+    Cases:
+    case a: User profile has email data.
+    case b: User profile has email and username data.
+    case c: User profile has email, username and id data.
+
+    Then:
+    - Ensure expected data is returned, and expected mocked URL is called.
+    """
+    client = mock_client()
+    requests_mock.get(
+        mock_url,
+        json=GITHUB_UPDATE_USER_OUTPUT
+    )
+    mocker.patch.object(IAMUserProfile, 'update_with_app_data', return_value={})
+
+    iam_user_profile = get_user_command(client, args, 'mapper_in')
+    outputs = get_outputs_from_user_profile(iam_user_profile)
+
+    assert outputs.get('action') == IAMActions.GET_USER
+    assert outputs.get('success') is True
+    assert outputs.get('active') is True
+    assert outputs.get('id') == '12345'
+    assert outputs.get('username') == 'TestID@networks.com'
+
+
+def test_get_user_command__non_existing_user(mocker):
     client = mock_client()
     args = {"user-profile": {"email": "mock@mock.com"}}
 
@@ -100,7 +146,6 @@ def test_get_user_command__non_existing_user(mocker):
 
 
 def test_get_user_command__bad_response(mocker):
-
     client = mock_client()
     args = {"user-profile": {"email": "mock@mock.com"}}
 
@@ -122,7 +167,6 @@ def test_get_user_command__bad_response(mocker):
 
 
 def test_create_user_command__user_already_exists(mocker):
-
     client = mock_client()
     args = {"user-profile": {"email": "mock@mock.com"}}
 
@@ -156,7 +200,6 @@ def test_update_user_command__non_existing_user(mocker):
 
 
 def test_update_user_command__command_is_disabled(mocker):
-
     client = mock_client()
     args = {"user-profile": {"email": "mock@mock.com"}}
 
