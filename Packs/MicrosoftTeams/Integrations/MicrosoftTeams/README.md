@@ -163,7 +163,7 @@ Before you can create an instance of the Microsoft Teams integration in Cortex X
 | certificate | Certificate (Required for HTTPS) | False |
 | key | Private Key (Required for HTTPS) | False |
 | min_incident_severity | Minimum incident severity to send notifications to Teams by | False |
-| auto_notifications | Whether to send or not automatic notifications to the configured notifications channel. Default is true | False |
+| auto_notifications | Disable Automatic Notifications | False |
 | allow_external_incidents_creation | Allow external users to create incidents via direct message | False |
 | insecure | Trust any certificate (not secure) | False |
 | proxy | Use system proxy settings | False |

@@ -26,18 +26,9 @@ def approximate_compare(time1, time2):
     return timedelta(seconds=-30) <= time1 - time2 <= timedelta(seconds=3)
 
 
-def test_fetch_incidents(mocker, requests_mock):
-    mocker.patch.object(demisto, 'params', return_value={
-        'fetch_limit': '1',
-        'url': 'https://vigilant.alienvault.cloud/'
-    })
-    mocker.patch.object(demisto, 'getLastRun', return_value={'timestamp': '1547567249000'})
-    mocker.patch.object(demisto, 'setLastRun')
-    mocker.patch.object(demisto, 'incidents')
-    from AlienVault_USM_Anywhere import fetch_incidents
-    requests_mock.get(
-        server_url,
-        json={
+@pytest.mark.parametrize('alarm, expected_incident', [
+    (
+        {
             '_embedded': {
                 'alarms': [
                     {
@@ -49,9 +40,49 @@ def test_fetch_incidents(mocker, requests_mock):
             'page': {
                 'totalElements': 1861
             }
+        },
+        {
+            'name': 'Alarm: 4444444444',
+            'occurred': '2019-07-12T06:00:38.000Z',
+        }
+    ),
+    (
+        {
+            '_embedded': {
+                'alarms': [
+                    {
+                        'uuid': '75d464ef-2834-k73a-5af0-7967369de3a1',
+                        'timestamp_occured': '1629187949000',
+                    }
+                ]
+            },
+            'page': {
+                'totalElements': 1861
+            }
+        },
+        {
+            'name': 'Alarm: 75d464ef-2834-k73a-5af0-7967369de3a1',
+            'occurred': '2021-08-17T08:12:29.000Z',
         }
     )
+])
+def test_fetch_incidents(mocker, requests_mock, alarm, expected_incident):
+    mocker.patch.object(demisto, 'params', return_value={
+        'fetch_limit': '1',
+        'url': 'https://vigilant.alienvault.cloud/'
+    })
+    mocker.patch.object(demisto, 'getLastRun', return_value={'timestamp': '1547567249000'})
+    mocker.patch.object(demisto, 'setLastRun')
+    mocker.patch.object(demisto, 'incidents')
+    from AlienVault_USM_Anywhere import fetch_incidents
+    requests_mock.get(
+        server_url,
+        json=alarm,
+    )
     fetch_incidents()
+    incident = demisto.incidents.call_args[0][0][0]
+    assert incident['name'] == expected_incident['name']
+    assert incident['occurred'] == expected_incident['occurred']
 
 
 def test_get_time_range():

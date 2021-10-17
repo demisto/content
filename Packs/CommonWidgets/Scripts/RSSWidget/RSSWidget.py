@@ -1,10 +1,9 @@
 import email.utils
-from datetime import datetime
 from time import mktime
 
 import feedparser
 from feedparser.util import FeedParserDict
-
+from markdownify import markdownify
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -41,11 +40,12 @@ def parse_feed_data(feed_response: str) -> FeedParserDict:
         raise DemistoException(f"Failed to parse feed.\nError:\n{str(err)}", exception=err)
 
 
-def collect_entries_data_from_response(parsed_feed_data: FeedParserDict) -> List[Dict[str, Any]]:
+def collect_entries_data_from_response(parsed_feed_data: FeedParserDict, limit: Union[int, None]) -> List[Dict[str, Any]]:
     """Collects relevant data from the parsed RSS feed entries.
 
     Args:
         parsed_feed_data (FeedParserDict): Parsed RSS feed data.
+        limit (Union[int, None]): Maximum number of results to return.
 
     Returns:
         List[Dict[str, Any]]: The data from the RSS feed relevant for the widget.
@@ -53,6 +53,9 @@ def collect_entries_data_from_response(parsed_feed_data: FeedParserDict) -> List
     entries_data: List[Dict[str, Any]] = []
     if not parsed_feed_data:
         raise DemistoException("Could not parse feed data.")
+
+    if not limit:
+        return entries_data
 
     for entry in reversed(parsed_feed_data.entries):
         if entry:
@@ -68,9 +71,16 @@ def collect_entries_data_from_response(parsed_feed_data: FeedParserDict) -> List
                     'timestamp': published_formatted,
                     'link': entry.get('link'),
                     'title': entry.get('title'),
-                    'summary': entry.get('summary'),
+                    'summary': markdownify(entry.get('summary')),
+                    'author': entry.get('author'),
                 }
             )
+
+            if limit != 'all':
+                limit -= 1
+
+                if limit == 0:
+                    break
 
     return entries_data
 
@@ -87,10 +97,16 @@ def create_widget_content(entries_data: List[Dict[str, Any]]) -> str:
     content: str = ''
 
     for entry_data in entries_data:
-        content += f'## [{entry_data["title"]}]({entry_data["link"]})\n'
-        content += f'_{entry_data["timestamp"]}_\n'
-        content += f'#### {entry_data["summary"]}\n'
-        content += '---\n'
+        content += f'**[{entry_data["title"]}]({entry_data["link"]})**\n'
+
+        # Markdown formatting is supported from 6.5
+        if is_demisto_version_ge('6.5'):
+            content += '{{color:#89A5C1}}' + f'(*Posted {entry_data["timestamp"]} by {entry_data["author"]}*)\n'
+        else:
+            content += f'*Posted {entry_data["timestamp"]} by {entry_data["author"]}*\n'
+
+        content += f'{entry_data["summary"]}\n'
+        content += '\n\n'
 
     if not content:
         content = '## No entries were found.'
@@ -107,10 +123,12 @@ def main():
         proxy=args.get('proxy', False),
     )
 
+    limit = sys.maxsize if not args.get('limit') else arg_to_number(args.get('limit'))
+
     try:
         rss_raw_data = client.get_feed_data()
         parsed_feed_data = parse_feed_data(rss_raw_data)
-        entries_data = collect_entries_data_from_response(parsed_feed_data)
+        entries_data = collect_entries_data_from_response(parsed_feed_data, limit)
         content = create_widget_content(entries_data)
     except Exception as e:
         demisto.error(traceback.format_exc())

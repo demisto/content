@@ -1,0 +1,14 @@
+delete-mismatched-branches:
+  tags:
+    - gke
+  stage: fan-in
+  extends:
+    - .default-job-settings
+  rules:
+    - if: '$DELETE_MISMATCHED_BRANCHES == "true"'
+      when: always
+  script:
+    - cd Utils
+    - python3 delete_mismatched_branches.py
+  retry:
+    max: 2

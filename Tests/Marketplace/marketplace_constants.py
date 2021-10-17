@@ -39,7 +39,8 @@ class GCPConfig(object):
     """ Google cloud storage basic configurations
 
     """
-    STORAGE_BASE_PATH = "content/packs"  # configurable base path for packs in gcs, can be modified
+    CONTENT_PACKS_PATH = "content/packs"
+    PRODUCTION_STORAGE_BASE_PATH = "content/packs"
     IMAGES_BASE_PATH = "content/packs"  # images packs prefix stored in metadata
     BUILD_PATH_PREFIX = "content/builds"
     BUILD_BASE_PATH = ""
@@ -58,6 +59,9 @@ class GCPConfig(object):
 
     with open(os.path.join(os.path.dirname(__file__), 'core_packs_list.json'), 'r') as core_packs_list_file:
         CORE_PACKS_LIST = json.load(core_packs_list_file)
+    with open(os.path.join(os.path.dirname(__file__), 'upgrade_core_packs_list.json'), 'r') as upgrade_core_packs_list:
+        packs_list = json.load(upgrade_core_packs_list)
+        CORE_PACKS_LIST_TO_UPDATE = packs_list.get("update_core_packs_list")
 
 
 class PackTags(object):
@@ -109,7 +113,7 @@ class Metadata(object):
     KEY_WORDS = 'keywords'
     DEPENDENCIES = 'dependencies'
     PREMIUM = 'premium'
-    VERNDOR_ID = 'vendorId'
+    VENDOR_ID = 'vendorId'
     PARTNER_ID = 'partnerId'
     PARTNER_NAME = 'partnerName'
     CONTENT_COMMIT_HASH = 'contentCommitHash'
@@ -143,6 +147,8 @@ class PackFolders(enum.Enum):
     GENERIC_FIELDS = "GenericFields"
     GENERIC_MODULES = "GenericModules"
     GENERIC_TYPES = "GenericTypes"
+    LISTS = 'Lists'
+    PREPROCESS_RULES = "PreProcessRules"
 
     @classmethod
     def pack_displayed_items(cls):
@@ -152,7 +158,7 @@ class PackFolders(enum.Enum):
             PackFolders.INDICATOR_FIELDS.value, PackFolders.REPORTS.value, PackFolders.INDICATOR_TYPES.value,
             PackFolders.LAYOUTS.value, PackFolders.CLASSIFIERS.value, PackFolders.WIDGETS.value,
             PackFolders.GENERIC_DEFINITIONS.value, PackFolders.GENERIC_FIELDS.value, PackFolders.GENERIC_MODULES.value,
-            PackFolders.GENERIC_TYPES.value
+            PackFolders.GENERIC_TYPES.value, PackFolders.LISTS.value
         }
 
     @classmethod
@@ -167,7 +173,8 @@ class PackFolders(enum.Enum):
             PackFolders.INCIDENT_FIELDS.value, PackFolders.INCIDENT_TYPES.value, PackFolders.INDICATOR_FIELDS.value,
             PackFolders.LAYOUTS.value, PackFolders.INDICATOR_TYPES.value, PackFolders.REPORTS.value,
             PackFolders.WIDGETS.value, PackFolders.GENERIC_DEFINITIONS.value, PackFolders.GENERIC_FIELDS.value,
-            PackFolders.GENERIC_MODULES.value, PackFolders.GENERIC_TYPES.value
+            PackFolders.GENERIC_MODULES.value, PackFolders.GENERIC_TYPES.value, PackFolders.LISTS.value,
+            PackFolders.PREPROCESS_RULES.value
         }
 
 

@@ -99,6 +99,9 @@ parameters:
   gcs_market_bucket:
     type: string
     default: "marketplace-dist"
+  storage_base_path:
+    type: string
+    default: ""
   slack_channel:
     type: string
     default: "dmst-content-team"
@@ -122,6 +125,7 @@ references:
       SDK_REF: << pipeline.parameters.sdk_ref >>
       # Giving different names to the following pipeline parameters to avoid collision, handling such collision case
       # is done in 'Setup Environment' step.
+      STORAGE_BASE_PATH_PAREMETER: << pipeline.parameters.storage_base_path >>
       TIME_TO_LIVE_PARAMETER: << pipeline.parameters.time_to_live >>
       PULL_REQUEST_NUMBER: << pipeline.parameters.pr_number >>
       NIGHTLY_PARAMETER: << pipeline.parameters.nightly >>
@@ -200,6 +204,10 @@ references:
         then
             echo "export BUCKET_UPLOAD=$BUCKET_UPLOAD_PARAMETER" >> $BASH_ENV
         fi
+        if [ -n "${STORAGE_BASE_PATH_PAREMETER}" ];
+        then
+            echo "export STORAGE_BASE_PATH=$STORAGE_BASE_PATH_PAREMETER" >> $BASH_ENV
+        fi
 
         echo "=== sourcing $BASH_ENV ==="
         source $BASH_ENV
@@ -229,7 +237,7 @@ references:
         fi
 
         echo "========== Build Parameters =========="
-        set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^NON_AMI_RUN=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD=|^GCS_MARKET_BUCKET=|^SLACK_CHANNEL=|^SDK_REF"
+        set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^NON_AMI_RUN=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD=|^STORAGE_BASE_PATH=|^GCS_MARKET_BUCKET=|^SLACK_CHANNEL=|^SDK_REF"
         python --version
         python3 --version
         node --version
@@ -499,12 +507,11 @@ references:
       command: |
         python3 ./Tests/Marketplace/packs_dependencies.py -i ./Tests/id_set.json -o $CIRCLE_ARTIFACTS/packs_dependencies.json
 
-  update_tests_step: &update_tests_step
+  copy_tests_to_circle_artifact: &copy_tests_to_circle_artifact
     run:
-      name: Update Tests step
+      name: Copy Tests To Artifact Folder
       when: always
       command: |
-        python3 ./Tests/scripts/update_conf_json.py
         cp "./Tests/conf.json" "$CIRCLE_ARTIFACTS/conf.json"
 
   get_contribution_pack: &get_contribution_pack
@@ -529,30 +536,6 @@ references:
             command: |
               SERVER_URL=$(jq -r 'select(.[].Role == "Server Master") | .[].InstanceDNS' $ENV_RESULTS_PATH)
               python3 ./Utils/comment_on_pr.py -p $PULL_REQUEST_NUMBER -c "Instance is ready. Server link: https://$SERVER_URL, Build link: $CIRCLE_BUILD_URL"
-
-  change_file_ids: &change_file_ids
-    run:
-      name: Change File IDs to prevent conflicts in XSOAR
-      command:
-        python3 ./Tests/scripts/sdk_nightly_change_json_file_fields.py Packs/HelloWorld/Classifiers/classifier-mapper-incoming-HelloWorldTest.json name
-
-  upload_entities_to_cortex_xsoar: &upload_entities_to_cortex_xsoar
-    run:
-        name: Upload entities to Cortex XSOAR
-        command: |
-          demisto-sdk upload -i Packs/HelloWorld/Integrations/ --insecure
-          demisto-sdk upload -i Packs/HelloWorld/TestPlaybooks/playbook-HelloWorld-Test.yml --insecure
-          demisto-sdk upload -i Packs/HelloWorld/Layouts/layoutscontainer-Hello_World_Test_Layout.json --insecure
-          demisto-sdk upload -i Packs/HelloWorld/IncidentFields/incidentfield-Hello_World_IncidentField_Test.json --insecure
-          demisto-sdk upload -i Packs/HelloWorld/IncidentTypes/incidenttype-Hello_World_Alert_Test.json --insecure
-          demisto-sdk upload -i Packs/HelloWorld/Classifiers/classifier-mapper-incoming-HelloWorldTest.json --insecure
-
-
-  sdk_nightly_jobs: &sdk_nightly_jobs
-    - Demisto SDK Nightly:
-        context: sdk_nightly_env
-    - Demisto SDK Nightly - Run against Cortex XSOAR:
-        context: sdk_nightly_env
 
   instance_tests_jobs: &instance_tests_jobs
     - Create Instances:
@@ -593,19 +576,10 @@ references:
   bucket_upload_jobs: &bucket_upload_jobs
     - Setup Environment:
         context: bucket_upload_env
-    - Run Unit Testing And Lint:
-        context: bucket_upload_env
-        requires:
-          - Setup Environment
-    - Run Validations:
-        context: bucket_upload_env
-        requires:
-          - Setup Environment
     - Create Instances:
         context: bucket_upload_env
         requires:
-          - Run Unit Testing And Lint
-          - Run Validations
+          - Setup Environment
     - Install Packs in Server 6_2:
         context: bucket_upload_env
         requires:
@@ -745,7 +719,7 @@ jobs:
       - *secrets
       - *create_id_set
       - *merge_public_and_private_id_sets
-      - *update_tests_step
+      - *copy_tests_to_circle_artifact
       - *validate_files_and_yaml
       - run:
           name: Spell Checks
@@ -827,7 +801,7 @@ jobs:
       - *build_content_descriptor
       - *common_server_documentation
       - *create_artifact
-      - *update_tests_step
+      - *copy_tests_to_circle_artifact
       - *download_configuration
       - when:
           # If this is an ami run - No need to download server artifacts
@@ -852,7 +826,7 @@ jobs:
                     echo "Skipping Preparing Content Packs For Testing since nightly instances uses production bucket"
                     exit 0
                   fi
-                  ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_BUCKET"
+                  ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_BUCKET" "$STORAGE_BASE_PATH"
             - run:
                 name: Store Artifacts to GCS
                 command: ./Tests/scripts/upload_artifacts.sh
@@ -1204,10 +1178,15 @@ jobs:
             CIRCLE_BRANCH=${CIRCLE_BRANCH:-unknown}
 
             GCS_BUILD_BUCKET="marketplace-ci-build"
-            if [[ $GCS_MARKET_BUCKET != "marketplace-dist" ]]; then
-              STORAGE_BASE_PATH="upload-flow/builds/$CIRCLE_BRANCH/$CI_PIPELINE_ID/content/packs"
+            if [[ $GCS_MARKET_BUCKET == $GCS_PRODUCTION_BUCKET ]] && [[ -z $STORAGE_BASE_PATH ]]; then
+              STORAGE_BASE_PATH="content"
             fi
-            python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CIRCLE_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "${STORAGE_BASE_PATH}"
+
+            if [[ $GCS_MARKET_BUCKET != $GCS_PRODUCTION_BUCKET ]] && [[ -z $STORAGE_BASE_PATH ]]; then
+             STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/content"
+            fi
+
+            python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CIRCLE_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "$STORAGE_BASE_PATH/packs"
           when: on_success
       - *store_artifacts
 
@@ -1240,19 +1219,26 @@ jobs:
                   CIRCLE_BRANCH=${CIRCLE_BRANCH:-unknown}
 
                   GCS_BUILD_BUCKET="marketplace-ci-build"
-                  if [[ $GCS_MARKET_BUCKET != "marketplace-dist" ]]; then
-                    STORAGE_BASE_PATH="upload-flow/builds/$CIRCLE_BRANCH/$CI_PIPELINE_ID/content/packs"
+                  if [[ $GCS_MARKET_BUCKET == $GCS_PRODUCTION_BUCKET ]] && [[ -z $STORAGE_BASE_PATH ]]; then
+                     STORAGE_BASE_PATH="content"
                   fi
 
-                  python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CIRCLE_BRANCH -pbp "$STORAGE_BASE_PATH"
+                  if [[ $GCS_MARKET_BUCKET != $GCS_PRODUCTION_BUCKET ]] && [[ -z $STORAGE_BASE_PATH ]]; then
+                    STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/content"
+                  fi
+                  python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CIRCLE_BRANCH -pbp "$STORAGE_BASE_PATH/packs"
             - run:
                 name: Download packs from GCP
                 command: |
-                  if [[ $GCS_MARKET_BUCKET != "marketplace-dist" ]]; then
-                    STORAGE_BASE_PATH="upload-flow/builds/$CIRCLE_BRANCH/$CI_PIPELINE_ID/content/packs"
+                  if [[ -z $STORAGE_BASE_PATH ]]; then
+                    if [[ $GCS_MARKET_BUCKET == $GCS_PRODUCTION_BUCKET ]]; then
+                      STORAGE_BASE_PATH="content"
+                    else
+                      STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/content"
+                    fi
                   fi
 
-                  PACKS_SRC="gs://$GCS_MARKET_BUCKET/$STORAGE_BASE_PATH"
+                  PACKS_SRC="gs://$GCS_MARKET_BUCKET/$STORAGE_BASE_PATH/packs"
                   ZIP_FOLDER=$(mktemp -d)
                   echo "export ZIP_FOLDER=$ZIP_FOLDER" >> $BASH_ENV
                   gsutil -m cp -r $PACKS_SRC $ZIP_FOLDER
@@ -1298,97 +1284,6 @@ jobs:
           when: always
       - *destroy_instances
       - *store_artifacts
-
-  Demisto SDK Nightly:
-    <<: *container_config
-    resource_class: medium
-    <<: *environment
-    steps:
-      - checkout
-      - *remote_docker
-      - *restore_cache
-      - *prepare_environment
-      - *secrets
-      - *update_tests_step
-      - *create_id_set
-      - *merge_public_and_private_id_sets
-      - *validate_files_and_yaml
-      - *run_unit_testing_and_lint
-      - *infrastructure_testing
-      - *build_content_descriptor
-      - *common_server_documentation
-      - *collect_test_list_and_content_packs
-      - *calculate_packs_dependencies
-      - *store_artifacts
-      - run:
-          name: Slack Notifier
-          shell: /bin/bash
-          command: |
-            ./Tests/scripts/slack_notifier.sh 'sdk_unittests' $ENV_RESULTS_PATH
-            ./Tests/scripts/slack_notifier.sh 'sdk_faild_steps' $ENV_RESULTS_PATH
-          when: always
-
-  Demisto SDK Nightly - Run against Cortex XSOAR:
-    <<: *container_config
-    resource_class: medium
-    <<: *environment
-    steps:
-      - checkout
-      - *remote_docker
-      - *restore_cache
-      - *prepare_environment
-      - *download_configuration
-      - *create_instance
-      - set-instance-role-env-variable:
-          instance_role: Server Master
-          instance_created: "true"
-      - start-tunnel
-      - run:
-          name: Set Environment Variables
-          command: |
-            echo "export DEMISTO_API_KEY=$(cat $SECRET_CONF_PATH | jq -r '.temp_apikey')" >> $BASH_ENV
-            echo "export DEMISTO_BASE_URL=\"https://localhost:$(cat $ENV_RESULTS_PATH | jq -r '.[0].TunnelPort')\"" >> $BASH_ENV
-            echo "Server URL: $DEMISTO_BASE_URL"
-      - *wait_until_server_ready
-      - run:
-          name: Unlock HelloWorld integration and playbook
-          command: python3 Tests/sdknightly/unlock_entity.py integration "HelloWorld,HelloWorld Feed"
-      - run:
-          name: Create and upload incident type, incident field, mapper and a layout to Cortex XSOAR
-          command: python3 Tests/sdknightly/create_entities_for_nightly_sdk.py HelloWorld --artifacts-folder $CIRCLE_ARTIFACTS
-      - *upload_entities_to_cortex_xsoar
-      - run:
-          name: Zip and upload a pack to the Cortex XSOAR's marketpalce
-          command: |
-            printf "y\nZipPackTest\nZipPackTest\n1\n1\ny\ny\nZipPackTest\ny\n6.0.0" | demisto-sdk init -n ZipPackTest
-            demisto-sdk upload -i Packs/ZipPackTest -z --insecure
-      - run:
-          name: Download entities from Cortex XSOAR
-          command: |
-            demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld --insecure -f
-            demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld-Test --insecure -f
-            demisto-sdk download -o Packs/HelloWorld/ -i "Hello World IncidentField Test" --insecure -f
-            demisto-sdk download -o Packs/HelloWorld/ -i "Hello World Alert Test" --insecure -f
-            demisto-sdk download -o Packs/HelloWorld/ -i "Hello World Test - Incoming Mapper" --insecure -f
-      - run:
-          name: Format the entities
-          command: demisto-sdk format -i Packs/HelloWorld/ -nv -ud -y
-      - run:
-          name: Run validate
-          command: demisto-sdk validate -i Packs/HelloWorld/
-      - run:
-          name: Run lint
-          command: demisto-sdk lint -i Packs/HelloWorld/
-      - *change_file_ids
-      - *upload_entities_to_cortex_xsoar
-      - *destroy_instances
-      - *store_artifacts
-      - run:
-          name: Slack Notifier
-          shell: /bin/bash
-          command: |
-            ./Tests/scripts/slack_notifier.sh 'sdk_run_against_failed_steps' $ENV_RESULTS_PATH
-          when: always
 
   Install Packs in Server 6_2:
     <<: *container_config
@@ -1597,24 +1492,6 @@ workflows:
     when: << pipeline.parameters.legacy_nightly >>
     jobs:
       *legacy_nightly_jobs
-
-  sdk_nightly:
-    triggers:
-      - schedule:
-          # should trigger every day at 12 AM UTC (3 AM Israel Time)
-          cron: "0 0 * * *"
-          filters:
-            branches:
-              only:
-                - master
-    jobs:
-      *sdk_nightly_jobs
-
-  sdk_nightly_trigger:
-    # will initiate when using the trigger script.
-    when: << pipeline.parameters.demisto_sdk_nightly>>
-    jobs:
-      *sdk_nightly_jobs
 
   bucket_upload_trigger:
     # will initiate when using the trigger script.

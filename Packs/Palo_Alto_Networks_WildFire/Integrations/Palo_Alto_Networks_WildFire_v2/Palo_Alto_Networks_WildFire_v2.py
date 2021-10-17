@@ -1,6 +1,8 @@
 import shutil
+from typing import Callable, Tuple
 
-from CommonServerPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -14,6 +16,8 @@ FILE_TYPE_SUPPRESS_ERROR = PARAMS.get('suppress_file_type_error')
 RELIABILITY = PARAMS.get('integrationReliability', DBotScoreReliability.B) or DBotScoreReliability.B
 DEFAULT_HEADERS = {'Content-Type': 'application/x-www-form-urlencoded'}
 MULTIPART_HEADERS = {'Content-Type': "multipart/form-data; boundary=upload_boundry"}
+WILDFIRE_REPORT_DT_FILE = "WildFire.Report(val.SHA256 && val.SHA256 == obj.SHA256 || val.MD5 && val.MD5 == obj.MD5 ||" \
+                          " val.URL && val.URL == obj.URL)"
 
 if URL and not URL.endswith('/publicapi'):
     if URL[-1] != '/':
@@ -122,7 +126,8 @@ def http_request(url: str, method: str, headers: dict = None, body=None, params=
     try:
         json_res = json.loads(xml2json(result.text))
         return json_res
-    except Exception:
+    except Exception as exc:
+        demisto.error(f'Failed to parse response to json. Error: {exc}')
         raise Exception(f'Failed to parse response to json. response: {result.text}')
 
 
@@ -245,24 +250,6 @@ def create_dbot_score_from_verdicts(pretty_verdicts):
     return dbot_score_arr
 
 
-def create_upload_entry(upload_body, title, result):
-    pretty_upload_body = prettify_upload(upload_body)
-    human_readable = tableToMarkdown(title, pretty_upload_body, removeNull=True)
-    entry_context = {
-        "WildFire.Report"
-        "(val.SHA256 && val.SHA256 == obj.SHA256 || val.MD5 && val.MD5 == obj.MD5 || val.URL && val.URL == obj.URL)":
-            pretty_upload_body
-    }
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': result,
-        'ContentsFormat': formats['json'],
-        'HumanReadable': human_readable,
-        'ReadableContentsFormat': formats['markdown'],
-        'EntryContext': entry_context
-    })
-
-
 def hash_args_handler(sha256=None, md5=None):
     # hash argument used in wildfire-report, wildfire-verdict commands
     inputs = argToList(sha256) if sha256 else argToList(md5)
@@ -319,7 +306,8 @@ def wildfire_upload_file(upload):
 
     try:
         shutil.copy(file_path, file_name)
-    except Exception:
+    except Exception as exc:
+        demisto.error(f'Failed to prepare file for upload. Error: {exc}')
         raise Exception('Failed to prepare file for upload.')
 
     try:
@@ -338,11 +326,24 @@ def wildfire_upload_file(upload):
     return result, upload_file_data
 
 
-def wildfire_upload_file_command():
-    uploads = argToList(demisto.args().get('upload'))
+def wildfire_upload_file_with_polling_command(args):
+    return run_polling_command(args, 'wildfire-upload', wildfire_upload_file_command,
+                               wildfire_get_report_command, 'FILE')
+
+
+def wildfire_upload_file_command(args) -> list:
+    assert_upload_argument(args)
+    uploads = argToList(args.get('upload'))
+    command_results_list = []
     for upload in uploads:
-        result, upload_file_data = wildfire_upload_file(upload)
-        create_upload_entry(upload_file_data, 'WildFire Upload File', result)
+        result, upload_body = wildfire_upload_file(upload)
+        pretty_upload_body = prettify_upload(upload_body)
+        human_readable = tableToMarkdown('WildFire Upload File', pretty_upload_body, removeNull=True)
+        command_results = (CommandResults(outputs_prefix=WILDFIRE_REPORT_DT_FILE,
+                                          outputs=pretty_upload_body, readable_output=human_readable,
+                                          raw_response=result))
+        command_results_list.append(command_results)
+    return command_results_list
 
 
 @logger
@@ -370,11 +371,23 @@ Content-Disposition: form-data; name="url"
     return result, upload_file_url_data
 
 
-def wildfire_upload_file_url_command():
-    uploads = argToList(demisto.args().get('upload'))
+def wildfire_upload_file_url_with_polling_command(args) -> list:
+    return run_polling_command(args, 'wildfire-upload-file-url', wildfire_upload_file_url_command,
+                               wildfire_get_report_command, 'URL')
+
+
+def wildfire_upload_file_url_command(args) -> list:
+    assert_upload_argument(args)
+    command_results_list = []
+    uploads = argToList(args.get('upload'))
     for upload in uploads:
-        result, upload_file_url_data = wildfire_upload_file_url(upload)
-        create_upload_entry(upload_file_url_data, 'WildFire Upload File URL', result)
+        result, upload_body = wildfire_upload_file_url(upload)
+        pretty_upload_body = prettify_upload(upload_body)
+        human_readable = tableToMarkdown('WildFire Upload File URL', pretty_upload_body, removeNull=True)
+        command_results = CommandResults(outputs_prefix=WILDFIRE_REPORT_DT_FILE, outputs=pretty_upload_body,
+                                         readable_output=human_readable, raw_response=result)
+        command_results_list.append(command_results)
+    return command_results_list
 
 
 @logger
@@ -402,11 +415,115 @@ Content-Disposition: form-data; name="link"
     return result, upload_url_data
 
 
-def wildfire_upload_url_command():
-    uploads = argToList(demisto.args().get('upload'))
+def wildfire_upload_url_command(args) -> list:
+    assert_upload_argument(args)
+    command_results_list = []
+    uploads = argToList(args.get('upload'))
     for upload in uploads:
         result, upload_url_data = wildfire_upload_url(upload)
-        create_upload_entry(upload_url_data, 'WildFire Upload URL', result)
+        pretty_upload_body = prettify_upload(upload_url_data)
+        human_readable = tableToMarkdown('WildFire Upload URL', pretty_upload_body, removeNull=True)
+        command_results = CommandResults(outputs_prefix=WILDFIRE_REPORT_DT_FILE,
+                                         outputs=pretty_upload_body, readable_output=human_readable,
+                                         raw_response=result)
+        command_results_list.append(command_results)
+    return command_results_list
+
+
+def wildfire_upload_url_with_polling_command(args):
+    return run_polling_command(args, 'wildfire-upload-url', wildfire_upload_url_command,
+                               wildfire_get_report_command, 'URL')
+
+
+def get_results_function_args(outputs, uploaded_item, args):
+    """
+    This function is used for the polling flow. After calling a upload command on a url\file, in order to check the
+    status of the call, we need to retrieve the suitable identifier to call the results command on. for uploading a url,
+     the identifier is the url itself, but for a file we need to extract the file hash from the results of the initial
+     upload call. Therefore, this function extract that identifier from the data inserted to the context data by the
+      upload command. The function also adds the 'verbose' and 'format' arguments that were given priorly to the upload
+      command.
+    Args:
+        outputs: the context data from the search command
+        uploaded_item: 'FILE' or 'URL'
+        args: the args initially inserted to the upload function that initiated the polling sequence
+
+    Returns:
+
+    """
+    results_function_args = {}
+    if uploaded_item == 'FILE':
+        identifier = {'md5': outputs.get('MD5')}
+    else:
+        identifier = {'url': outputs.get('URL')}
+    results_function_args.update(identifier)
+
+    results_function_args.update({key: value for key, value in args.items() if key in ['verbose', 'format']})
+    return results_function_args
+
+
+def run_polling_command(args: dict, cmd: str, upload_function: Callable, results_function: Callable, uploaded_item):
+    """
+    This function is generically handling the polling flow. In the polling flow, there is always an initial call that
+    starts the uploading to the API (referred here as the 'upload' function) and another call that retrieves the status
+    of that upload (referred here as the 'results' function).
+    The run_polling_command function runs the 'upload' function and returns a ScheduledCommand object that schedules
+    the next 'results' function, until the polling is complete.
+    Args:
+        args: the arguments required to the command being called, under cmd
+        cmd: the command to schedule by after the current command
+        upload_function: the function that initiates the uploading to the API
+        results_function: the function that retrieves the status of the previously initiated upload process
+        uploaded_item: the type of item being uploaded
+
+    Returns:
+
+    """
+    ScheduledCommand.raise_error_if_not_supported()
+    command_results_list = []
+    interval_in_secs = int(args.get('interval_in_seconds', 60))
+    # distinguish between the initial run, which is the upload run, and the results run
+    is_new_search = 'url' not in args and 'md5' not in args and 'sha256' not in args and 'hash' not in args
+    if is_new_search:
+        assert_upload_argument(args)
+        for upload in argToList(args['upload']):
+            # narrow the args to the current single url or file
+            args['upload'] = upload
+            # create new search
+            command_results = upload_function(args)[0]
+            outputs = command_results.outputs
+            results_function_args = get_results_function_args(outputs, uploaded_item, args)
+            # schedule next poll
+            polling_args = {
+                'interval_in_seconds': interval_in_secs,
+                'polling': True,
+                **results_function_args,
+            }
+            scheduled_command = ScheduledCommand(
+                command=cmd,
+                next_run_in_seconds=interval_in_secs,
+                args=polling_args,
+                timeout_in_seconds=600)
+            command_results.scheduled_command = scheduled_command
+            command_results_list.append(command_results)
+        return command_results_list
+    # not a new search, get search status
+    command_results_list, status = results_function(args)
+    if status != 'Success':
+        # schedule next poll
+        polling_args = {
+            'interval_in_seconds': interval_in_secs,
+            'polling': True,
+            **args
+        }
+        scheduled_command = ScheduledCommand(
+            command=cmd,
+            next_run_in_seconds=interval_in_secs,
+            args=polling_args,
+            timeout_in_seconds=600)
+
+        command_results_list = [CommandResults(scheduled_command=scheduled_command)]
+    return command_results_list
 
 
 @logger
@@ -532,11 +649,12 @@ def wildfire_get_url_webartifacts_command():
             result = wildfire_get_webartifacts(url, types)
             file_entry = fileResult(f'{url}_webartifacts.tgz', result.content, entryTypes['entryInfoFile'])
             demisto.results(file_entry)
-        except NotFoundError:
+        except NotFoundError as exc:
+            demisto.error(f'Webartifacts were not found. Error: {exc}')
             return_results('Webartifacts were not found. For more info contact your WildFire representative.')
 
 
-def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml', verbose: bool = False):
+def parse_file_report(reports, file_info):
     udp_ip = []
     udp_port = []
     tcp_ip = []
@@ -597,7 +715,8 @@ def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml',
                     for domain in report["elf_info"]["Domains"]["entry"]:
                         feed_related_indicators.append({'value': domain, 'type': 'Domain'})
             if 'IP_Addresses' in report["elf_info"]:
-                if isinstance(report["elf_info"]["IP_Addresses"], dict) and 'entry' in report["elf_info"]["IP_Addresses"]:
+                if isinstance(report["elf_info"]["IP_Addresses"], dict) and 'entry' in\
+                        report["elf_info"]["IP_Addresses"]:
                     for ip in report["elf_info"]["IP_Addresses"]["entry"]:
                         feed_related_indicators.append({'value': ip, 'type': 'IP'})
             if 'suspicious' in report["elf_info"]:
@@ -647,33 +766,46 @@ def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml',
         if len(evidence_text) > 0:
             outputs["Evidence"]["Text"] = evidence_text
 
-    entry_context = {}  # type: Dict[str, Any]
-    dbot_score_file = 0
+    feed_related_indicators = create_feed_related_indicators_object(feed_related_indicators)
+    behavior = create_behaviors_object(behavior)
+    return outputs, feed_related_indicators, behavior
 
-    entry_context["WildFire.Report(val.SHA256 === obj.SHA256)"] = outputs
 
-    if file_info:
-        if file_info["malware"] == 'yes':
-            dbot_score_file = 3
-            entry_context[outputPaths['file']] = {
-                'Type': file_info["filetype"],
-                'MD5': file_info["md5"],
-                'SHA1': file_info["sha1"],
-                'SHA256': file_info["sha256"],
-                'Size': file_info["size"],
-                'Name': file_info["filename"] if 'filename' in file_info else None,
-                'Malicious': {'Vendor': 'WildFire'},
-                'FeedRelatedIndicators': feed_related_indicators,
-                'Tags': ['malware'],
-                'Behavior': behavior
-            }
-        else:
-            dbot_score_file = 1
-    dbot = [{'Indicator': file_hash, 'Type': 'hash', 'Vendor': 'WildFire', 'Score': dbot_score_file,
-             'Reliability': RELIABILITY},
-            {'Indicator': file_hash, 'Type': 'file', 'Vendor': 'WildFire', 'Score': dbot_score_file,
-             'Reliability': RELIABILITY}]
-    entry_context["DBotScore"] = dbot
+def create_feed_related_indicators_object(feed_related_indicators):
+    """
+    This function is used while enhancing the integration, enabling the use of Common.FeedRelatedIndicators object
+
+    """
+    feed_related_indicators_objects_list = []
+    for item in feed_related_indicators:
+        feed_related_indicators_objects_list.append(Common.FeedRelatedIndicators(value=item['value'],
+                                                                                 indicator_type=item['type']))
+    return feed_related_indicators_objects_list
+
+
+def create_behaviors_object(behaviors):
+    """
+    This function is used while enhancing the integration, enabling the use of Common.Behaviors object
+
+    """
+    behaviors_objects_list = []
+    for item in behaviors:
+        behaviors_objects_list.append(Common.Behaviors(details=item['details'], action=item['action']))
+    return behaviors_objects_list
+
+
+def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml', verbose: bool = False):
+
+    outputs, feed_related_indicators, behavior = parse_file_report(reports, file_info)
+
+    dbot_score = 3 if file_info["malware"] == 'yes' else 1
+
+    dbot_score_object = Common.DBotScore(indicator=file_hash, indicator_type=DBotScoreType.FILE,
+                                         integration_name='WildFire', score=dbot_score, reliability=RELIABILITY)
+    file = Common.File(dbot_score=dbot_score_object, name=file_info.get('filename'),
+                       file_type=file_info.get('filetype'), md5=file_info.get('md5'), sha1=file_info.get('sha1'),
+                       sha256=file_info.get('sha256'), size=file_info.get('size'),
+                       feed_related_indicators=feed_related_indicators, tags=['malware'], behaviors=behavior)
 
     if format_ == 'pdf':
         get_report_uri = URL + URL_DICT["report"]
@@ -687,11 +819,9 @@ def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml',
 
         file_name = 'wildfire_report_' + file_hash + '.pdf'
         file_type = entryTypes['entryInfoFile']
-        result = fileResult(file_name, res_pdf.content,
-                            file_type)  # will be saved under 'InfoFile' in the context.
-        result['EntryContext'] = entry_context
-
+        result = fileResult(file_name, res_pdf.content, file_type)  # will be saved under 'InfoFile' in the context.
         demisto.results(result)
+        human_readable = tableToMarkdown('WildFire File Report - PDF format', prettify_report_entry(file_info))
 
     else:
         human_readable = tableToMarkdown('WildFire File Report', prettify_report_entry(file_info))
@@ -700,152 +830,149 @@ def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml',
                 if isinstance(report, dict):
                     human_readable += tableToMarkdown('Report ', report, list(report), removeNull=True)
 
-        demisto.results({
-            'Type': entryTypes['note'],
-            'Contents': reports,
-            'ContentsFormat': formats['json'],
-            'HumanReadable': human_readable,
-            'ReadableContentsFormat': formats['markdown'],
-            'EntryContext': entry_context
-        })
+    return human_readable, outputs, file
+
+
+def get_sha256_of_file_from_report(report):
+    if maec_packages := report.get('maec_packages'):
+        for item in maec_packages:
+            if hashes := item.get('hashes'):
+                return hashes.get('SHA256')
+    return None
 
 
 @logger
-def wildfire_get_url_report(url: str):
+def wildfire_get_url_report(url: str) -> Tuple:
+    """
+    This functions is used for retrieving the results of a previously uploaded url.
+    Args:
+        url: The url of interest.
+
+    Returns:
+        A CommandResults object with the results of the request and the status of that upload (Pending/Success/NotFound).
+
+    """
+
     get_report_uri = f"{URL}{URL_DICT['report']}"
-    params = {
-        'apikey': TOKEN,
-        'url': url
-    }
+    params = {'apikey': TOKEN, 'url': url}
     entry_context = {'URL': url}
+
     try:
-        result = http_request(get_report_uri, 'POST', headers=DEFAULT_HEADERS, params=params, resp_type='json').get(
-            'result')
+        response = http_request(get_report_uri, 'POST', headers=DEFAULT_HEADERS, params=params, resp_type='json')
+        report = response.get('result').get('report')
+
+        if not report:
+            entry_context['Status'] = 'Pending'
+            human_readable = 'The sample is still being analyzed. Please wait to download the report.'
+
+        else:
+            entry_context['Status'] = 'Success'
+            report = json.loads(report) if type(report) is not dict else report
+            report.update(entry_context)
+            sha256_of_file_in_url = get_sha256_of_file_from_report(report)
+            human_readable_dict = {'SHA256': sha256_of_file_in_url, 'URL': url, 'Status': 'Success'}
+            human_readable = tableToMarkdown(f'Wildfire URL report for {url}', t=human_readable_dict, removeNull=True)
+
     except NotFoundError:
         entry_context['Status'] = 'NotFound'
-        demisto.results({
-            'Type': entryTypes['note'],
-            'HumanReadable': 'Report not found.',
-            'Contents': None,
-            'ContentsFormat': formats['json'],
-            'ReadableContentsFormat': formats['text'],
-            'EntryContext': {
-                "WildFire.Report(val.URL == obj.URL)": entry_context
-            }
-        })
-        return None, None
+        human_readable = 'Report not found.'
+        report = ''
+    except Exception as e:
+        entry_context['Status'] = ''
+        human_readable = f'Error while requesting the report: {e}.'
+        report = ''
+        demisto.error(f'Error while requesting the given report. Error: {e}')
 
-    report = result.get('report', None)
-    if not report:
-        entry_context['Status'] = 'Pending'
-        demisto.results({
-            'Type': entryTypes['note'],
-            'Contents': result,
-            'ContentsFormat': formats['json'],
-            'HumanReadable': 'The sample is still being analyzed. Please wait to download the report.',
-            'ReadableContentsFormat': formats['text'],
-            'EntryContext': {
-                "WildFire.Report(val.URL == obj.URL)": entry_context
-            }
-        })
-        return None, None
-
-    j_report = json.loads(report)
-    entry_context['Status'] = 'Success'
-    j_report.update(entry_context)
-
-    return url, j_report
+    finally:
+        command_results = CommandResults(outputs_prefix='WildFire.Report', outputs_key_field='url',
+                                         outputs=report, readable_output=human_readable, raw_response=report)
+        return command_results, entry_context['Status']
 
 
 @logger
-def wildfire_get_file_report(file_hash: str):
+def wildfire_get_file_report(file_hash: str, args: dict):
     get_report_uri = URL + URL_DICT["report"]
-    params = {
-        'apikey': TOKEN,
-        'format': 'xml',
-        'hash': file_hash
-    }
+    params = {'apikey': TOKEN, 'format': 'xml', 'hash': file_hash}
+
     # necessarily one of them as passed the hash_args_handler
-    hash_type = 'SHA256' if sha256Regex.match(file_hash) else 'MD5'
-    entry_context = {hash_type: file_hash}
+    sha256 = file_hash if sha256Regex.match(file_hash) else None
+    md5 = file_hash if md5Regex.match(file_hash) else None
+    entry_context = {key: value for key, value in (['MD5', md5], ['SHA256', sha256]) if value}
 
     try:
         json_res = http_request(get_report_uri, 'POST', headers=DEFAULT_HEADERS, params=params)
-    except NotFoundError:
+        reports = json_res.get('wildfire', {}).get('task_info', {}).get('report')
+        file_info = json_res.get('wildfire').get('file_info')
+
+        verbose = args.get('verbose', 'false').lower() == 'true'
+        format_ = args.get('format', 'xml')
+
+        if reports and file_info:
+            human_readable, entry_context, indicator = create_file_report(file_hash,
+                                                                          reports, file_info, format_, verbose)
+
+        else:
+            entry_context['Status'] = 'Pending'
+            human_readable = 'The sample is still being analyzed. Please wait to download the report.'
+            indicator = None
+
+    except NotFoundError as exc:
         entry_context['Status'] = 'NotFound'
+        human_readable = 'Report not found.'
         dbot_score_file = 0
-        dbot = [{'Indicator': file_hash, 'Type': 'hash', 'Vendor': 'WildFire', 'Score': dbot_score_file},
-                {'Indicator': file_hash, 'Type': 'file', 'Vendor': 'WildFire', 'Score': dbot_score_file}]
-        demisto.results({
-            'Type': entryTypes['note'],
-            'HumanReadable': 'Report not found.',
-            'Contents': None,
-            'ContentsFormat': formats['json'],
-            'ReadableContentsFormat': formats['text'],
-            'EntryContext': {
-                "WildFire.Report(val.SHA256 && val.SHA256 == obj.SHA256 || val.MD5 && val.MD5 == obj.MD5)":
-                    entry_context,
-                'DBotScore': dbot
-            }
-        })
-        return None, None, None
+        json_res = ''
+        dbot_score_object = Common.DBotScore(
+            indicator=file_hash,
+            indicator_type=DBotScoreType.FILE,
+            integration_name='WildFire',
+            score=dbot_score_file,
+            reliability=RELIABILITY)
+        indicator = Common.File(dbot_score=dbot_score_object, md5=md5, sha256=sha256)
+        demisto.error(f'Report not found. Error: {exc}')
 
-    task_info = json_res["wildfire"].get('task_info', None)
-    reports = task_info.get('report', None) if task_info else None
-    file_info = json_res["wildfire"].get('file_info', None)
-
-    if not reports or not file_info:
-        entry_context['Status'] = 'Pending'
-        demisto.results({
-            'Type': entryTypes['note'],
-            'Contents': json_res,
-            'ContentsFormat': formats['json'],
-            'HumanReadable': 'The sample is still being analyzed. Please wait to download the report.',
-            'ReadableContentsFormat': formats['text'],
-            'EntryContext': {
-                "WildFire.Report(val.SHA256 && val.SHA256 == obj.SHA256 || val.MD5 && val.MD5 == obj.MD5)":
-                    entry_context
-            }
-        })
-        return None, None, None
-    return file_hash, reports, file_info
+    finally:
+        try:
+            command_results = CommandResults(outputs_prefix=WILDFIRE_REPORT_DT_FILE,
+                                             outputs=remove_empty_elements(entry_context),
+                                             readable_output=human_readable, indicator=indicator, raw_response=json_res)
+            return command_results, entry_context['Status']
+        except Exception:
+            raise DemistoException('Error while trying to get the report from the API.')
 
 
-def wildfire_get_report_command():
-    urls = argToList(demisto.args().get('url', ''))
-    if 'sha256' in demisto.args():
-        sha256 = demisto.args().get('sha256', None)
-    elif 'hash' in demisto.args():
-        sha256 = demisto.args().get('hash', None)
+def wildfire_get_report_command(args):
+    """
+    Args:
+        args: the command arguments from demisto.args(), including url or file hash (sha256 or md5) to query on
+
+    Returns:
+        A single or list of CommandResults, and the status of the reports of the url or file of interest.
+        Note that the status is only used for the polling sequence, where the command will always receive a single
+        file or url. Hence, when running this command via the polling sequence, the CommandResults list will contain a
+        single item, and the status will represent that result's status.
+
+    """
+    command_results_list = []
+    urls = argToList(args.get('url', ''))
+    if 'sha256' in args:
+        sha256 = args.get('sha256')
+    elif 'hash' in args:
+        sha256 = args.get('hash')
     else:
         sha256 = None
-    md5 = demisto.args().get('md5', None)
-    if urls:
-        inputs = urls
-        url_report = True
-    else:
-        inputs = hash_args_handler(sha256, md5)
-        url_report = False
+    md5 = args.get('md5')
+    inputs = urls if urls else hash_args_handler(sha256, md5)
 
-    verbose = demisto.args().get('verbose', 'false').lower() == 'true'
-    format_ = demisto.args().get('format', 'xml')
     for element in inputs:
-        if url_report:
-            url, report = wildfire_get_url_report(element)
-            if url is not None:
-                headers = ['sha256', 'type', 'verdict', 'iocs']
-                human_readable = tableToMarkdown(f'Wildfire URL report for {url}', t=report, headers=headers,
-                                                 removeNull=True)
-                entry_context = {"WildFire.Report(val.URL == obj.URL)": report}
-                return_outputs(human_readable, entry_context, report)
-        else:
-            ioc, report, file_info = wildfire_get_file_report(element)
-            if ioc is not None:
-                create_file_report(ioc, report, file_info, format_, verbose)
+        command_results, status = wildfire_get_url_report(element) if urls else wildfire_get_file_report(element, args)
+        command_results_list.append(command_results)
+
+    return command_results_list, status
 
 
-def wildfire_file_command():
-    inputs = file_args_handler(demisto.args().get('file'), demisto.args().get('md5'), demisto.args().get('sha256'))
+def wildfire_file_command(args):
+    inputs = file_args_handler(args.get('file'), args.get('md5'), args.get('sha256'))
+    command_results_list = []
     for element in inputs:
         if sha1Regex.match(element):
             demisto.results({
@@ -854,9 +981,9 @@ def wildfire_file_command():
                 'ContentsFormat': formats['text']
             })
         else:
-            file_hash, report, file_info = wildfire_get_file_report(element)
-            if file_hash is not None:
-                create_file_report(file_hash, report, file_info, 'xml', False)
+            command_results = wildfire_get_file_report(element, args)[0]
+            command_results_list.append(command_results)
+            return command_results
 
 
 def wildfire_get_sample(file_hash):
@@ -890,15 +1017,26 @@ def wildfire_get_sample_command():
             # will be saved under 'File' in the context, can be further investigated.
             file_entry = fileResult(file_name, result.content)
             demisto.results(file_entry)
-        except NotFoundError:
+        except NotFoundError as exc:
+            demisto.error(f'Sample was not found. Error: {exc}')
             demisto.results(
                 'Sample was not found. '
                 'Please note that grayware and benign samples are available for 14 days only. '
                 'For more info contact your WildFire representative.')
 
 
+def assert_upload_argument(args):
+    """
+    Assert the upload argument is inserted when running the command without the builtin polling flow.
+    The upload argument is only required when polling is false.
+    """
+    if not args.get('upload'):
+        raise ValueError('Please specify the item you wish to upload using the \'upload\' argument.')
+
+
 def main():
     command = demisto.command()
+    args = demisto.args()
     LOG(f'command is {command}')
 
     try:
@@ -909,19 +1047,28 @@ def main():
             test_module()
 
         elif command == 'wildfire-upload':
-            wildfire_upload_file_command()
+            if args.get('polling') == 'true':
+                return_results(wildfire_upload_file_with_polling_command(args))
+            else:
+                return_results(wildfire_upload_file_command(args))
 
         elif command in ['wildfire-upload-file-remote', 'wildfire-upload-file-url']:
-            wildfire_upload_file_url_command()
+            if args.get('polling') == 'true':
+                return_results(wildfire_upload_file_url_with_polling_command(args))
+            else:
+                return_results(wildfire_upload_file_url_command(args))
 
         elif command == 'wildfire-upload-url':
-            wildfire_upload_url_command()
+            if args.get('polling') == 'true':
+                return_results(wildfire_upload_url_with_polling_command(args))
+            else:
+                return_results(wildfire_upload_url_command(args))
 
         elif command == 'wildfire-report':
-            wildfire_get_report_command()
+            return_results(wildfire_get_report_command(args)[0])
 
         elif command == 'file':
-            wildfire_file_command()
+            return_results(wildfire_file_command(args))
 
         elif command == 'wildfire-get-sample':
             wildfire_get_sample_command()

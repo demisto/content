@@ -1,0 +1,18 @@
+{
+    "name": "Twitter",
+    "description": "A simple integration that uses Twitter's API to perform searches on twitter for tweets, users, and user information.",
+    "support": "community",
+    "certification": "verified",
+    "currentVersion": "1.0.0",
+    "author": "Christian Brake",
+    "url": "",
+    "email": "brakechr000@gmail.com",
+    "created": "2021-08-03T18:14:27Z",
+    "categories": [],
+    "tags": [],
+    "githubUser": [
+        "cbrake1"
+    ],
+    "useCases": [],
+    "keywords": []
+}

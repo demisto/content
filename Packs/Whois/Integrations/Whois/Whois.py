@@ -2913,7 +2913,7 @@ tlds = {
         "host": "whois.nic.immobilien"
     },
     "in": {
-        "host": "whois.inregistry.net"
+        "host": "in.whois-servers.net"
     },
     "inc": {
         "_group": "uniregistry",

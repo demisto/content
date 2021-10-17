@@ -39,6 +39,7 @@ Packs/**/__init__.py
 
 # Environment and reports
 .demisto-sdk-conf
+.hypothesis
 .demisto-sdk-report
 .env
 .envrc
