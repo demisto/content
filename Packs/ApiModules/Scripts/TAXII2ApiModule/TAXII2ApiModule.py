@@ -806,7 +806,6 @@ class Taxii2FeedClient:
                     self.objects_data[obj.get('type', 'other')].append(obj)
                 self.id_to_object[obj.get('id')] = obj
 
-            # indicators = self.parse_indicators_list(stix_objects)
             while envelope.get("more", False):
                 page_size = self.get_page_size(limit, cur_limit)
                 envelope = self.collection_to_fetch.get_objects(
