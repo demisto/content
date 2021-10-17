@@ -7,10 +7,12 @@ from CommonServerPython import *  # noqa: F401
 def create_email_html(email_html='', entry_id_list=None):
     if not entry_id_list:
         return email_html
+    tenant_name = demisto.incident().get('account')
+    account_name = f"acc_{tenant_name}/" if tenant_name != "" else ""
 
     for entry_id in entry_id_list:
         email_html = re.sub(f'src="[^>]+"(?=[^>]+alt="{entry_id[0]}")',
-                            f'src=entry/download/{entry_id[1]} ',
+                            f'src={account_name}entry/download/{entry_id[1]} ',
                             email_html
                             )
     return email_html
