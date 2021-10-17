@@ -1,0 +1,16 @@
+{
+    "name": "MicroFocus SMAX",
+    "description": "You can use this pack to fetch SMAX cases and automate  different sort of actions",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Ayman Mahmoud",
+    "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
+    "email": "",
+    "categories": [
+        "Case Management"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": []
+}

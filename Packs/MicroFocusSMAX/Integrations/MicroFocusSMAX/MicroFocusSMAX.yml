@@ -1,0 +1,64 @@
+category: Case Management
+commonfields:
+  id: MicroFocusSMAX
+  version: -1
+configuration:
+- defaultvalue: https://us1-smax.saas.microfocus.com
+  display: Your SMAX Management URL
+  name: url
+  required: true
+  type: 0
+- additionalinfo: The tenant ID is the number following TENANTID= in your management
+    URL
+  display: Tenant ID
+  hidden: false
+  name: tenant_id
+  required: false
+  type: 0
+- additionalinfo: The admin credentials used to integration with SMAX
+  display: Username
+  name: username
+  required: true
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Fetch SMAX cases and automate  differen SMAX case management actions
+display: MicroFocusSMAX
+name: MicroFocusSMAX
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: '[Enter a description of the argument, including any important
+        information users need to know, for example, default values.]'
+      isArray: false
+      name: dummy
+      required: true
+      secret: false
+    deprecated: false
+    description: '[Enter a description of the command, including any important information
+      users need to know, for example required permissions.]'
+    execution: false
+    name: baseintegration-dummy
+    outputs:
+    - contextPath: BaseIntegration.Output
+      description: '[Enter a description of the data returned in this output.]'
+      type: String
+  dockerimage: demisto/python3:3.9.7.24076
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
