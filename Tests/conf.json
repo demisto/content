@@ -4570,6 +4570,12 @@
         {
             "integrations": "AutoFocusTagsFeed",
             "playbookID": "AutoFocusTagsFeed-test"
+        },
+        {
+            "playbookID": "Tanium Threat Response V2 Test",
+            "integrations": ["Tanium Threat Response v2", "Demisto REST API"],
+            "fromversion": "6.0.0",
+            "timeout": 3000
         }
     ],
     "skipped_tests": {
@@ -4962,9 +4968,6 @@
             "demisto/chromium": {
                 "pid_threshold": 11
             },
-            "demisto/powershell-ubuntu": {
-                "memory_threshold": 250
-            },
             "demisto/py-ews:2.0": {
                 "memory_threshold": 150
             },
@@ -4997,7 +5000,7 @@
             },
             "demisto/powershell-ubuntu": {
                 "pid_threshold": 45,
-                "memory_threshold": 200
+                "memory_threshold": 250
             },
             "demisto/boto3": {
                 "memory_threshold": 90
