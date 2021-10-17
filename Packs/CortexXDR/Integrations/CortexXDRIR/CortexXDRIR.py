@@ -1546,8 +1546,8 @@ def check_if_incident_was_modified_in_xdr(incident_id, last_mirrored_in_time_tim
         if incident_modification_time_in_xdr > last_mirrored_in_time_timestamp:  # need to update this incident
             demisto.info(f"Incident '{incident_id}' was modified. performing extra-data request.")
             return True
-    else:  # the incident was not modified
-        return False
+    # the incident was not modified
+    return False
 
 
 def get_last_mirrored_in_time(args):
@@ -2665,9 +2665,13 @@ def get_remote_data_command(client, args):
 
     incident_data = {}
     try:
+        # when Demisto version is 6.1.0 and above, this command will only be automatically performed on incidents
+        # returned from get_modified_remote_data_command so we want to perform extra-data request on those incidents.
+        return_only_updated_incident = not is_demisto_version_ge('6.1.0')  # True if version is below 6.1 else False
+
         incident_data = get_incident_extra_data_command(client, {"incident_id": remote_args.remote_incident_id,
                                                                  "alerts_limit": 1000,
-                                                                 "return_only_updated_incident": True,
+                                                                 "return_only_updated_incident": return_only_updated_incident,
                                                                  "last_update": remote_args.last_update})
         if 'The incident was not modified' not in incident_data[0]:
             demisto.debug(f"Updating XDR incident {remote_args.remote_incident_id}")
