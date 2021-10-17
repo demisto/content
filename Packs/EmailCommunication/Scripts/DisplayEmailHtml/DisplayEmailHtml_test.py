@@ -1,17 +1,5 @@
-import json
 import demistomock as demisto
 import pytest
-
-
-def util_open_file(path):
-    with open(path, mode='r') as f:
-        return f.read()
-
-
-def util_load_json(path):
-    with open(path, mode='r') as f:
-        return json.loads(f.read())
-
 
 
 EMAIL_HTML = """
@@ -50,11 +38,11 @@ EXPECTED_RESULT_2 = """
 def test_create_email_html(email_html, entry_id_list, expected):
     """
         Given
-        - The email's Html representation.
+        - The email's Html representation
         When
-        3. All images were uploaded to the server.
+        3. All images were uploaded to the server
         Then
-        - The images' src attribute would be replaced as expected.
+        - The images' src attribute would be replaced as expected
     """
     from DisplayEmailHtml import create_email_html
     result = create_email_html(email_html, entry_id_list)
@@ -68,9 +56,9 @@ def test_create_email_html(email_html, entry_id_list, expected):
 def test_create_email_html_mt(mocker, email_html, entry_id_list, expected):
     """
         Given
-        - The email's Html representation.
+        - The email's Html representation with multi tenant environment
         When
-        - All images were uploaded to the server.
+        - All images were uploaded to the server
         Then
         - The images' src attribute would be replaced as expected with account tenant name
     """
