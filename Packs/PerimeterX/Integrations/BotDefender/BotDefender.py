@@ -238,7 +238,7 @@ def perimeterx_get_investigate_details(client: Client, args: Dict[str, Any], thr
 
         pXScore = pXScoring()
         
-        pXScore.add_score_to_ip_list(ip_address=search_term, 0, thresholds=thresholds)
+        pXScore.add_score_to_ip_list(ip_address=search_term, risk_score=result['maxRiskScore'], thresholds=thresholds)
 
         return CommandResults(
             outputs_prefix='PerimeterX',
