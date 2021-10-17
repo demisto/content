@@ -11,7 +11,8 @@ def get_tenant_account_name():
         Returns:
         The account name.
     """
-    server_url = demisto.executeCommand("GetServerURL", {})[0].get('Contents')
+    urls = demisto.demistoUrls()
+    server_url = urls.get('server', '')
     account_name = ''
     if '/acc_' in server_url:
         tenant_name = server_url.split('acc_')[-1]
