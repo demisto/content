@@ -3,7 +3,6 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-from typing import Dict, Any
 import traceback
 import hashlib
 import json
@@ -68,13 +67,13 @@ def build_query(base_query, from_date):
 ''' COMMAND FUNCTION '''
 
 
-def indicator_malicious_ratio_calculation(args: Dict[str, Any]) -> Dict:
-    appears_in_min_num_of_incidents = int(demisto.args()['appearsInMinNumberOfIncidents'])
-    max_incidents = int(demisto.args()['maxIncidents'])
-    max_indicators = int(demisto.args()['maxIndicators'])
-    base_query = demisto.args()['query']
-    max_results = int(demisto.args()['maxDisplayResults'])
-    generate_file_result = (demisto.args()['fileResult'] == 'yes')
+def indicator_malicious_ratio_calculation(args):
+    appears_in_min_num_of_incidents = int(args['appearsInMinNumberOfIncidents'])
+    max_incidents = int(args['maxIncidents'])
+    max_indicators = int(args['maxIndicators'])
+    base_query = args['query']
+    max_results = int(args['maxDisplayResults'])
+    generate_file_result = (args['fileResult'] == 'yes')
     from_date = demisto.args().get('fromDate', '')
     
     query = build_query(base_query, from_date)
@@ -145,7 +144,7 @@ def main():
         return_results(indicator_malicious_ratio_calculation(demisto.args()))
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute IndicatorMaliciousRatioCalculation. Error: {str(ex)}')
+        return_error('Failed to execute IndicatorMaliciousRatioCalculation. Error:' + str(ex))
 
 
 ''' ENTRY POINT '''
