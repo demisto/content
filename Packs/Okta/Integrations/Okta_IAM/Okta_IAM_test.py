@@ -5,7 +5,6 @@ from Okta_IAM import Client, get_user_command, create_user_command, update_user_
 from IAMApiModule import *
 from CommonServerPython import EntryType
 
-
 OKTA_USER_OUTPUT = {
     "id": "mock_id",
     "status": "PROVISIONED",
@@ -16,7 +15,6 @@ OKTA_USER_OUTPUT = {
         "email": "testdemisto2@paloaltonetworks.com"
     }
 }
-
 
 OKTA_DISABLED_USER_OUTPUT = {
     "id": "mock_id",
@@ -29,9 +27,11 @@ OKTA_DISABLED_USER_OUTPUT = {
     }
 }
 
+BASE_URL = 'https://test.com'
+
 
 def mock_client():
-    client = Client(base_url='https://test.com')
+    client = Client(base_url=BASE_URL)
     return client
 
 
@@ -41,7 +41,18 @@ def get_outputs_from_user_profile(user_profile):
     return outputs
 
 
-def test_get_user_command__existing_user(mocker):
+@pytest.mark.parametrize('args, mock_url', [({'user-profile': {'email': 'testdemisto2@paloaltonetworks.com'}},
+                                             f'{BASE_URL}/users?filter='
+                                             'profile.email eq "testdemisto2@paloaltonetworks.com"'),
+                                            ({'user-profile': {'email': 'testdemisto2@paloaltonetworks.com',
+                                                               'username': 'testdemisto2@paloaltonetworks.com'}},
+                                             f'{BASE_URL}/users?filter='
+                                             'profile.login eq "testdemisto2@paloaltonetworks.com"'),
+                                            ({'user-profile': {'email': 'testdemisto2@paloaltonetworks.com',
+                                                               'username': 'testdemisto2@paloaltonetworks.com',
+                                                               'id': 'mock_id'}},
+                                             f'{BASE_URL}/users?filter=id eq "mock_id"')])
+def test_get_user_command__existing_user(mocker, requests_mock, args, mock_url):
     """
     Given:
         - An Okta IAM client object
@@ -53,9 +64,8 @@ def test_get_user_command__existing_user(mocker):
         - Ensure the resulted User Profile object holds the correct user details
     """
     client = mock_client()
-    args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com'}}
 
-    mocker.patch.object(client, 'get_user', return_value=OKTA_USER_OUTPUT)
+    requests_mock.get(mock_url, json=[OKTA_USER_OUTPUT])
     mocker.patch.object(IAMUserProfile, 'update_with_app_data', return_value={})
 
     user_profile = get_user_command(client, args, 'mapper_in')
@@ -494,7 +504,8 @@ SHOULD_DROP_EVENT_ARGS = [
     ({'target': [{'type': 'Group', 'alternateId': 'testGroupId'}]}, {'test@example.com': {'username': 'test'}}, False),
 
     # user email in both log entry and in xsoar - do not drop event
-    ({'target': [{'type': 'User', 'alternateId': 'test@example.com'}]}, {'test@example.com': {'username': 'test'}}, False),
+    ({'target': [{'type': 'User', 'alternateId': 'test@example.com'}]}, {'test@example.com': {'username': 'test'}},
+     False),
 
     # user email in log entry but not in xsoar - drop event
     ({'target': [{'type': 'User', 'alternateId': 'test@example.com'}]}, {}, True)

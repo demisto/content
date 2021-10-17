@@ -45,10 +45,10 @@ class Client(BaseClient):
         uri = 'users/me'
         self._http_request(method='GET', url_suffix=uri)
 
-    def get_user(self, username):
+    def get_user(self, filter_value, filter_name: str = 'profile.login'):
         uri = 'users'
         query_params = {
-            'filter': f'profile.login eq "{username}"'
+            'filter': f'{filter_name} eq "{filter_value}"'
         }
 
         res = self._http_request(
@@ -459,7 +459,11 @@ def get_mapping_fields_command(client):
 def get_user_command(client, args, mapper_in):
     user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
     try:
-        okta_user = client.get_user(user_profile.get_attribute('username'))
+        iam_attr, iam_attr_value = get_first_available_iam_user_attr(user_profile,
+                                                                     [IAMAttribute.ID, IAMAttribute.USERNAME,
+                                                                      IAMAttribute.EMAIL])
+        okta_filter_name: str = IAM_ATTRIBUTE_TO_OKTA_FILTER.get(iam_attr, '')
+        okta_user = client.get_user(iam_attr_value, okta_filter_name)
         if not okta_user:
             error_code, error_message = IAMErrors.USER_DOES_NOT_EXIST
             user_profile.set_result(action=IAMActions.GET_USER,
@@ -999,6 +1003,12 @@ def main():
 
 
 from IAMApiModule import *  # noqa: E402
+
+IAM_ATTRIBUTE_TO_OKTA_FILTER = {
+    IAMAttribute.EMAIL: 'profile.email',
+    IAMAttribute.ID: 'id',
+    IAMAttribute.USERNAME: 'profile.login'
+}
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
