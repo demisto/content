@@ -116,13 +116,13 @@ script:
       either queue-name or topic-name. You can't provide both.
     execution: false
     name: activemq-subscribe
-  dockerimage: devdemisto/stomp:1.0.0.24213
+  dockerimage: devdemisto/stomp:1.0.0.24223
   feed: false
   isfetch: true
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
-  subtype: python2
+  subtype: python3
   type: python
 fromversion: 5.0.0
