@@ -1020,10 +1020,104 @@ def list_user_policies(args, aws_client):
         for policy in response['PolicyNames']:
             data.append(policy)
     data.append("test")
-    ec = {'AWS.IAM.Users(val.UserName && val.UserName === obj.UserName).Policies': data}
-    human_readable = tableToMarkdown('AWS IAM Policies for user', headers=["Policy Name"],
-                                     t=data)
+
+    ec = {
+        'UserName': args.get('userName'),
+        'Policies': data
+    }
+
+    outputs = {'AWS.IAM.Users(val.UserName && val.UserName === obj.UserName)': ec}
+    human_readable = tableToMarkdown('AWS IAM Policies for user'.format(user_name), headers=["Policy Name"], t=data)
+    return_outputs(human_readable, outputs)
+
+
+def list_attached_user_polices(args, aws_client):
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
+    )
+    data = []
+    user_name = args.get('userName', "")
+    kwargs = {
+        'UserName': user_name
+    }
+    paginator = client.get_paginator('list_attached_user_policies')
+    for response in paginator.paginate(**kwargs):
+        for member in response['AttachedPolicies']:
+            data.append(member)
+
+    ec = {
+        'UserName': args.get('userName'),
+        'AttachedPolicies': data
+    }
+    outputs = {'AWS.IAM.Users(val.UserName && val.UserName === obj.UserName)': ec}
+    human_readable = tableToMarkdown('AWS IAM Attached Policies for user'.format(user_name),
+                                     t=data,
+                                     headers=['PolicyName', 'PolicyArn'],
+                                     headerTransform=lambda header: string_to_table_header(
+                                         camel_case_to_underscore(header)))
+
+    return_outputs(human_readable, outputs)
+
+
+def list_attached_group_polices(args, aws_client):
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
+    )
+    data = []
+    group_name = args.get('groupName', "")
+    kwargs = {
+        'GroupName': group_name
+    }
+    paginator = client.get_paginator('list_attached_group_policies')
+    for response in paginator.paginate(**kwargs):
+        for member in response['AttachedPolicies']:
+            data.append(member)
+
+    ec = {
+        'GroupName': group_name,
+        'AttachedPolicies': data
+    }
+    outputs = {'AWS.IAM.Users(val.GroupName && val.GroupName === obj.GroupName)': ec}
+    human_readable = tableToMarkdown('AWS IAM Attached Policies for group'.format(group_name),
+                                     t=data,
+                                     headers=['PolicyName', 'PolicyArn'],
+                                     headerTransform=lambda header: string_to_table_header(
+                                         camel_case_to_underscore(header)))
+    return_outputs(human_readable, outputs)
+
+
+def get_user_login_profile(args, aws_client):
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
+    )
+    user_name = args.get('userName')
+    kwargs = {
+        'UserName': user_name
+    }
+    response = client.get_login_profile(**kwargs)
+    user_profile = response['LoginProfile']
+    data = ({
+        'UserName': user_profile['UserName'],
+        'CreateDate': user_profile['CreateDate'],
+        'PasswordResetRequired': user_profile['PasswordResetRequired']
+    })
+    ec = {'AWS.IAM.Users(val.UserName && val.UserName === obj.UserName': data}
+    human_readable = tableToMarkdown('AWS IAM Users',
+                                     t=data,
+                                     headers=['CreateDate', 'PasswordResetRequired'],
+                                     headerTransform=lambda header: string_to_table_header(
+                                         camel_case_to_underscore(header)))
     return_outputs(human_readable, ec)
+
 
 
 def test_function(aws_client):
@@ -1153,6 +1247,12 @@ def main():
             get_policy(args, aws_client)
         elif command == 'aws-iam-list-user-policies':
             list_user_policies(args, aws_client)
+        elif command == 'aws-iam-list-attached user-polices':
+            list_attached_user_polices(args, aws_client)
+        elif command == 'aws-iam-list-attached-group-policies':
+            list_attached_group_polices(args, aws_client)
+        elif command == 'aws-iam-get-user-login-profile':
+            get_user_login_profile(args, aws_client)
 
     except Exception as e:
         LOG(str(e))

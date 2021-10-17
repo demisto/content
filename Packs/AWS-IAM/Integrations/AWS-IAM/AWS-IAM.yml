@@ -2308,6 +2308,66 @@ script:
     - contextPath: AWS.IAM.Users.Policies
       description: A list of policy names
       type: Unknown
+  - arguments:
+    - default: false
+      description: The name (friendly name, not ARN) of the user to list attached
+        policies for.
+      isArray: false
+      name: userName
+      required: true
+      secret: false
+    deprecated: false
+    description: Lists all managed policies that are attached to the specified IAM
+      user.
+    execution: false
+    name: aws-iam-list-attached user-polices
+    outputs:
+    - contextPath: AWS.IAM.Users.AttachedPolicies.PolicyName
+      description: Policy Name.
+      type: String
+    - contextPath: WS.IAM.Users.AttachedPolicies.PolicyArn
+      description: Policy Arn.
+      type: String
+  - arguments:
+    - default: false
+      description: The name (friendly name, not ARN) of the group to list attached
+        policies for.
+      isArray: false
+      name: groupName
+      required: true
+      secret: false
+    deprecated: false
+    description: Lists all managed policies that are attached to the specified IAM
+      group.
+    execution: false
+    name: aws-iam-list-attached-group-policies
+    outputs:
+    - contextPath: AWS.IAM.Users.AttachedPolicies.PolicyName
+      description: Policy Name.
+      type: String
+    - contextPath: WS.IAM.Users.AttachedPolicies.PolicyArn
+      description: Policy Arn
+      type: String
+  - arguments:
+    - default: false
+      description: The name (friendly name, not ARN) of the user to list attached
+        policies for.
+      isArray: false
+      name: userName
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves the user login profile information for AWS management consle
+    execution: false
+    name: aws-iam-get-user-login-profile
+    outputs:
+    - contextPath: AWS.IAM.Users.CreateDate
+      description: The date when the password for the user was created.
+      type: Date
+    - contextPath: AWS.IAM.Users.PasswordResetRequired
+      description: Specifies whether the user is required to set a new password on
+        next sign-in.
+      type: Boolean
   dockerimage: demisto/boto3:2.0.0.24033
   feed: false
   isfetch: false
