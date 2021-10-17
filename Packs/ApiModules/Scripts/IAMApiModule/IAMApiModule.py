@@ -1,6 +1,8 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+from enum import Enum
+from typing import Tuple
 
 
 class IAMErrors(object):
@@ -25,6 +27,12 @@ class IAMActions(object):
     CREATE_USER = 'create'
     DISABLE_USER = 'disable'
     ENABLE_USER = 'enable'
+
+
+class IAMAttribute(Enum):
+    EMAIL = 'email'
+    ID = 'id'
+    USERNAME = 'username'
 
 
 class IAMVendorActionResult:
@@ -268,6 +276,7 @@ class IAMUserAppData:
     :return: None
     :rtype: ``None``
     """
+
     def __init__(self, user_id, username, is_active, app_data):
         self.id = user_id
         self.username = username
@@ -293,8 +302,9 @@ class IAMCommand:
     :return: None
     :rtype: ``None``
     """
+
     def __init__(self, is_create_enabled=True, is_enable_enabled=True, is_disable_enabled=True, is_update_enabled=True,
-                 create_if_not_exists=True, mapper_in=None, mapper_out=None, attr='email'):
+                 create_if_not_exists=True, mapper_in=None, mapper_out=None, attr='email', get_user_iam_attrs=None):
         """ The IAMCommand c'tor
 
         :param is_create_enabled: (bool) Whether or not to allow creating users in the application.
@@ -304,7 +314,11 @@ class IAMCommand:
         :param create_if_not_exists: (bool) Whether or not to create a user if does not exist in the application.
         :param mapper_in: (str) Incoming mapper from the application to Cortex XSOAR
         :param mapper_out: (str) Outgoing mapper from the Cortex XSOAR to the application
+        :param get_user_iam_attrs (List[IAMAttribute]): List of IAM attributes supported by integration by precedence
+                                                        order to get user details.
         """
+        if get_user_iam_attrs is None:
+            get_user_iam_attrs = [IAMAttribute.EMAIL]
         self.is_create_enabled = is_create_enabled
         self.is_enable_enabled = is_enable_enabled
         self.is_disable_enabled = is_disable_enabled
@@ -313,6 +327,7 @@ class IAMCommand:
         self.mapper_in = mapper_in
         self.mapper_out = mapper_out
         self.attr = attr
+        self.get_user_iam_attrs = get_user_iam_attrs
 
     def get_user(self, client, args):
         """ Searches a user in the application and updates the user profile object with the data.
@@ -323,7 +338,7 @@ class IAMCommand:
         """
         user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
         try:
-            identifier = user_profile.get_attribute(self.attr)
+            _, identifier = get_first_available_iam_user_attr(user_profile, self.get_user_iam_attrs)
             user_app_data = client.get_user(identifier)
             if not user_app_data:
                 error_code, error_message = IAMErrors.USER_DOES_NOT_EXIST
@@ -476,3 +491,22 @@ class IAMCommand:
                 client.handle_exception(user_profile, e, IAMActions.UPDATE_USER)
 
         return user_profile
+
+
+def get_first_available_iam_user_attr(user_profile: IAMUserProfile,
+                                      iam_attrs: List[IAMAttribute]) -> Optional[Tuple[IAMAttribute, str]]:
+    """
+    Receives list if IAMAttribute. Extracts the first value that exists for the matching attribute in the user profile.
+    Returns None if no such exists.
+    Args:
+        user_profile (IAMUserProfile): IAM user profile.
+        iam_attrs (List[IAMAttribute]): List of IAM attributes to retrieve their value.
+
+    Returns:
+        (Optional[Tuple[IAMAttribute, str]]): First value of given attribute if exists with the given attribute.
+                                              None if no attribute data exists in user profile.
+    """
+    for iam_attr in iam_attrs:
+        if attr_value := user_profile.get_attribute(iam_attr.value):
+            return iam_attr, attr_value
+    return None

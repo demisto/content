@@ -119,27 +119,32 @@ def test_module(client):
 
 
 def get_user_command(client, args, mapper_in):
+    user_profile = args.get("user-profile")
+    iam_user_profile = IAMUserProfile(user_profile=user_profile)
     try:
-        user_profile = args.get("user-profile")
-        iam_user_profile = IAMUserProfile(user_profile=user_profile)
-
-        email = iam_user_profile.get_attribute('email')
-        res = client.get_user('emails', email)
+        iam_attr, iam_attr_value = get_first_available_iam_user_attr(iam_user_profile,
+                                                                     [IAMAttribute.ID, IAMAttribute.USERNAME,
+                                                                      IAMAttribute.EMAIL])
+        github_filter_name: str = IAM_ATTRIBUTE_TO_GITHUB_FILTER.get(iam_attr, '')
+        res = client.get_user(github_filter_name, iam_attr_value)
 
         if res.get('totalResults', 0) == 0:
             error_code, error_message = IAMErrors.USER_DOES_NOT_EXIST
             iam_user_profile.set_result(success=False,
-                                        email=email,
+                                        email=iam_attr_value if iam_attr == IAMAttribute.EMAIL else None,
+                                        username=iam_attr_value if iam_attr == IAMAttribute.USERNAME else None,
                                         error_message=error_message,
                                         error_code=error_code,
                                         action=IAMActions.GET_USER)
 
         else:
             github_user = res.get('Resources')[0]
+            email_str: Optional[str] = iam_attr_value if iam_attr == IAMAttribute.EMAIL else next(
+                (email.get('value') for email in github_user.get('emails', []) if 'value' in email), None)
             iam_user_profile.update_with_app_data(github_user, mapper_in)
             iam_user_profile.set_result(success=True,
                                         iden=github_user.get('id', None),
-                                        email=email,
+                                        email=email_str,
                                         username=github_user.get('userName', None),
                                         action=IAMActions.GET_USER,
                                         details=res,
@@ -319,7 +324,6 @@ def get_mapping_fields_command():
 
 
 def main():
-
     params = demisto.params()
     args = demisto.args()
 
@@ -389,5 +393,10 @@ def main():
 
 from IAMApiModule import *  # noqa: E402
 
+IAM_ATTRIBUTE_TO_GITHUB_FILTER = {
+    IAMAttribute.EMAIL: 'emails',
+    IAMAttribute.ID: 'id',
+    IAMAttribute.USERNAME: 'username'
+}
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
