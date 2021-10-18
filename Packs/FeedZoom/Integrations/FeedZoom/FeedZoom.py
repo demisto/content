@@ -33,9 +33,7 @@ class Client(BaseClient):
         """
         result = []
         try:
-            r = subprocess.check_output(['wget', "-O-",
-                                         'https://support.zoom.us/hc/en-us/articles/201362683-Network-Firewall-or-Proxy-Server-Settings-for-Zoom'],
-                                        stderr=subprocess.STDOUT)
+            r = subprocess.check_output(['wget', "-O-", self._base_url], stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
             raise DemistoException(f"Unable to get the url content. Error: {e}.")
         soup = BeautifulSoup(r, "html.parser")
