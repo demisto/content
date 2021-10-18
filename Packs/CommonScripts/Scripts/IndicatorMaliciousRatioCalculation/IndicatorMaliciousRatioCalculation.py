@@ -82,7 +82,7 @@ def indicator_malicious_ratio_calculation(args):
     if incidents:
         incidents_result = map(get_incident_data, incidents)
         resolved_incident_ids = set(map(lambda x: x['id'], incidents_result))
-        non_resolved_id = set()
+        non_resolved_id = set()  # type: Any
         for i in indicators_result:
             resolved = [x for x in i['investigationIDs'] if x in resolved_incident_ids]
             non_resolved_id = non_resolved_id.union(set(i['investigationIDs']).difference(set(resolved)))
