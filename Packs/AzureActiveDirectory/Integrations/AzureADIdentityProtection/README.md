@@ -1,6 +1,12 @@
 Gets information from the Azure Active Directory Identity Protection service.
 This integration was integrated and tested with the beta version of Azure Active Directory Identity Protection API.
 
+## Required Permissions
+To use this integration, the following permissions are required on the Azure application.  
+- `IdentityRiskEvent.Read.All` 
+- `IdentityRiskyUser.ReadWrite.All`
+- `User.Read`
+
 ## Set up an Azure Application
 Choose between the following options. Both of them use the [device authorization grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code).
 
@@ -8,8 +14,10 @@ Choose between the following options. Both of them use the [device authorization
 In order to use the Cortex XSOAR Azure application, use the default application ID `4ffef4a4-601f-4393-a789-432f3f3b8470` and fill in your subscription ID.
 
 #### Self Deployed Azure app
-To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal.
-The application must allow public client flows (which can be found under the **Authentication** section of the app), as well as be a multitenant app.
+To use a self-configured Azure application, add a new Azure App Registration in the Azure Portal
+1. The application must allow public client flows (which can be found under the **Authentication** section of the app).
+2. The application must be a multi-tenant app.
+3. The application should be provided with the permissions listed in the [required permissions](#required-permissions) section above. 
 
 ## Configure Azure Active Directory Identity Protection on Cortex XSOAR
 
