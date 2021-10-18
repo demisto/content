@@ -1,5 +1,5 @@
 Integrate with Envoy Identity Access Management services to execute CRUD operations to employee lifecycle processes.
-This integration was integrated and tested with version xx of Envoy IAM
+This integration was integrated and tested with version v2 of Envoy SCIM API.
 
 ## Configure Envoy IAM on Cortex XSOAR
 
