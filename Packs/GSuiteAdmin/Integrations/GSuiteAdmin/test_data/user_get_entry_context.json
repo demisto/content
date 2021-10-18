@@ -43,7 +43,7 @@
     "orgUnitPath": "/",
     "isMailboxSetup": false
   },
-  "HumanReadable": "### User Details\n|Id|Customer Id|Primary Email|First Name|Last Name|Gender|Suspended|Notes Value|Is Admin|Creation Time|Phone Details|Address Details|Ip Whitelisted|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| testuser | customer id | newuser@domain.io | new | user | male | false | hello word | false | creation time | Value: phone number<br>Primary: True<br>Type: mobile | Country: india<br>Type: home<br>Postal Code: 361001<br>Primary: false<br>Extended Address: near india<br>Street Address: near india | false |\n",
+  "HumanReadable": "### Retrieved details for user testuser\n|Id|Customer Id|Primary Email|First Name|Last Name|Gender|Suspended|Org Unit Path|Notes Value|Is Admin|Creation Time|Phone Details|Address Details|Ip Whitelisted|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| testuser | customer id | newuser@domain.io | new | user | male | false | / | hello word | false | creation time | Value: phone number<br>Primary: True<br>Type: mobile | Country: india<br>Type: home<br>Postal Code: 361001<br>Primary: false<br>Extended Address: near india<br>Street Address: near india | false |\n",
   "EntryContext": {
     "GSuite.User(val.id == obj.id)": {
       "firstName": "new",
