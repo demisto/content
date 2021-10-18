@@ -1,8 +1,5 @@
 {
-    "associatedToAll": false,
-    "associatedTypes": [
-        "Threat Actor"
-    ],
+    "associatedToAll": true,
     "caseInsensitive": true,
     "cliName": "firstseen",
     "id": "generic_ThreatIntelReport_firstseen",
@@ -22,7 +19,7 @@
     "sla": 0,
     "system": false,
     "threshold": 72,
-    "type": "shortText",
+    "type": "date",
     "unmapped": false,
     "unsearchable": false,
     "useAsKpi": false,

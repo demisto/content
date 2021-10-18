@@ -789,7 +789,7 @@ script:
       isArray: true
     name: domain
     description: Provides data enrichment for domains.
-  dockerimage: demisto/python3:3.9.6.22912
+  dockerimage: demisto/python3:3.9.7.24076
   runonce: false
   script: ''
   subtype: python3
