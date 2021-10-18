@@ -1229,7 +1229,8 @@ def test_mirroring_offenses_with_events(mocker, offenses, context_data):
                                                        fetch_mode=FetchMode.correlations_events_only.value,
                                                        events_columns='',
                                                        events_limit=5,
-                                                       context_data=context_data.get('with_offenses_ids'))
+                                                       context_data=context_data.get('with_offenses_ids'),
+                                                       offenses_per_fetch=15)
     # Make sure all the mirrored offenses were updated.
     assert updated_mirrored_offenses == offenses.get('with_events')
 

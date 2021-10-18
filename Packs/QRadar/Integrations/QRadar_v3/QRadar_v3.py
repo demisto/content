@@ -1557,7 +1557,8 @@ def update_mirrored_events(client: Client,
                            fetch_mode: str,
                            events_columns: str,
                            events_limit: int,
-                           context_data: dict) -> list:
+                           context_data: dict,
+                           offenses_per_fetch: int) -> list:
     """Update mirrored offenses' events assuming a long running container.
 
     Args:
@@ -1566,10 +1567,13 @@ def update_mirrored_events(client: Client,
         events_columns: Events columns to extract by search query for each offense.
         events_limit: Number of events to be fetched for each offense.
         context_data: The integration's current context data. Extract the relevant offenses to update from it.
+        offenses_per_fetch: The number of offenses to fetch.
 
     Returns: (A list of updated offenses with their events)
     """
-    offenses = context_data.get(MIRRORED_OFFENSES_CTX_KEY, [])[:2]
+    offenses = context_data.get(MIRRORED_OFFENSES_CTX_KEY, [])
+    if len(offenses) > offenses_per_fetch:
+        offenses = offenses[:offenses_per_fetch]
     updated_offenses = []
     try:
         if len(offenses) > 0:
@@ -1733,7 +1737,8 @@ def long_running_execution_command(client: Client, params: Dict):
                                                                    fetch_mode=fetch_mode,
                                                                    events_columns=events_columns,
                                                                    events_limit=events_limit,
-                                                                   context_data=ctx)
+                                                                   context_data=ctx,
+                                                                   offenses_per_fetch=offenses_per_fetch)
 
             if incidents and new_highest_id:
                 incident_batch_for_sample = incidents[:SAMPLE_SIZE] if incidents else ctx.get('samples', [])

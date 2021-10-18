@@ -46,6 +46,7 @@ configuration:
 - defaultvalue: '20'
   display: Number of offenses to pull per API call (max 50)
   name: offenses_per_fetch
+  additionalinfo: In case of mirroring with events, this value will be used for mirroring API calls as well, and it is advised to have a small value.
   required: false
   type: 0
 - display: Query to fetch offenses
