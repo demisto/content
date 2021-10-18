@@ -1,28 +1,7 @@
-import demistomock as demisto
-
 from McAfee_DXL import *
 import pytest
 
 data_test_push_ip = ['-.-.-.-', '1.1.1']
-
-
-valid_private_key = """-----BEGIN PRIVATE KEY-----
-This is a vaild Private Key
------END PRIVATE KEY-----"""
-
-valid_certificate = """-----BEGIN CERTIFICATE-----
-This is a valid Certificate
------END CERTIFICATE-----"""
-
-invalid_private_key = r"\private\key\path.key"
-
-invalid_certificate = """""-----BEGIN CERTIFICATE REQUEST-----
-This is a valid Certificate
------END CERTIFICATE REQUEST-----"""
-
-spaces_in_certificate = """    -----BEGIN CERTIFICATE-----
-This is a valid Certificate
------END CERTIFICATE-----   """
 
 
 @pytest.mark.parametrize(argnames='input_ip', argvalues=data_test_push_ip)

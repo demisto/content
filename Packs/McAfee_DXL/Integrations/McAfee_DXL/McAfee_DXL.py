@@ -12,7 +12,7 @@ from CommonServerUserPython import *
 INTEGRATION_NAME = "McAfee DXL"
 CONNECT_RETRIES = 1
 RECONNECT_DELAY = 1
-RECONNECT_DELAY_MAX = 10
+RECONNECT_DELAY_MAX = 9
 
 
 class EventSender:
