@@ -8,7 +8,7 @@ Loads a JSON from a string input, and returns a JSON object result.
 
 | **Name** | **Description** |
 | --- | --- |
-| Script Type | python |
+| Script Type | python3 |
 | Tags | Utility |
 
 
