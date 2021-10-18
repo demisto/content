@@ -62,7 +62,6 @@ def create_connection(client_cert, client_key, root_ca):
 
 
 def connect(conn, client_id=None):
-    conn.start()
     if USERNAME or PASSWORD:
         if client_id and len(client_id) > 0:
             conn.connect(USERNAME, PASSWORD, wait=True, headers={'client-id': client_id})
