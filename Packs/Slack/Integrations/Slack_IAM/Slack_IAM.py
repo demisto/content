@@ -109,12 +109,12 @@ class Client(BaseClient):
             error_code = e.res.status_code
             try:
                 resp = e.res.json()
-                error_message = resp.get('Errors', {}).get('description')
+                error_message = resp.get('Errors', {}).get('description') + '\n' + traceback.format_exc()
             except ValueError:
-                error_message = str(e)
+                error_message = str(e) + '\n' + traceback.format_exc()
         else:
             error_code = ''
-            error_message = str(e)
+            error_message = str(e) + '\n' + traceback.format_exc()
 
         user_profile.set_result(action=action,
                                 success=False,
