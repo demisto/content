@@ -1,4 +1,4 @@
-{
+[{
   "id": "Saas Security Incident",
   "version": -1,
   "vcShouldIgnore": false,
@@ -22,4 +22,4 @@
   "detached": false,
   "fromVersion": "6.0.0",
   "layout": "Saas Security Layout"
-}
+}]
