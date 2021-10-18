@@ -80,6 +80,19 @@ def test_module(client: Client, username) -> str:
     return 'ok'
 
 
+def fetch_incidents_command(client: Client, username) -> str:
+    try:
+        client.query_entities(entity_type="Person", query_filter=f"Name startswith ('{username}')", order_by=None,
+                              entity_fields="Id", size=None, skip=None)
+    except DemistoException as exception:
+        if 'Authorization Required' in str(exception) or 'Authentication failed' in str(exception):
+            return_error(f'Authorization Error: please check your credentials.\n\nError:\n{exception}')
+
+        if 'HTTPSConnectionPool' in str(exception):
+            return_error(f'Connection Error: please check your server ip address.\n\nError: {exception}')
+        raise
+    return 'ok'
+
 def get_entity_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     entity_type = args.get('entity_type', None)
@@ -95,7 +108,6 @@ def get_entity_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         entity_fields = 'Name,Id,' + entity_fields
     else:
         entity_fields = 'Name,Id'
-
 
     result = client.get_entity(entity_type=entity_type, entity_id=entity_id, entity_fields=entity_fields)
 
@@ -195,6 +207,9 @@ def main() -> None:
         if demisto.command() == 'test-module':
             result = test_module(client, username)
             return_results(result)
+
+        if demisto.command() == 'fetch-incidents':
+            fetch_incidents_command(client, args)
 
         elif demisto.command() == 'microfocus-smax-get-entity':
             return_results(get_entity_command(client, args))
