@@ -13,7 +13,7 @@ configuration:
   name: api_endpoint
   required: false
   additionalinfo: Change only if you have other API Endpoint.
-  defaultvalue: "api" #change from rsaarcher/api to api
+  defaultvalue: "api"
   type: 0
 - display: Instance name
   hidden: false
