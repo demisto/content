@@ -17,7 +17,7 @@ configuration:
   type: 0
 - additionalinfo: The admin credentials used to integration with SMAX
   display: Username
-  name: username
+  name: credentials
   required: true
   type: 9
 - display: Trust any certificate (not secure)
@@ -29,26 +29,104 @@ configuration:
   required: false
   type: 8
 description: Fetch SMAX cases and automate  differen SMAX case management actions
-display: MicroFocusSMAX
+display: MicroFocus SMAX
 name: MicroFocusSMAX
 script:
   commands:
   - arguments:
     - default: false
-      description: '[Enter a description of the argument, including any important
-        information users need to know, for example, default values.]'
+      description: 'Entity type, for example: "Incident", the type is case-sensitive'
       isArray: false
-      name: dummy
+      name: entity_type
+      predefined:
+      - ''
       required: true
       secret: false
+    - default: false
+      description: 'Entity Id '
+      isArray: false
+      name: entity_id
+      required: true
+      secret: false
+    - default: false
+      description: 'Fields to return, for example: "Priority,Category" for an entity
+        of type "Incident"'
+      isArray: false
+      name: entity_fields
+      required: false
+      secret: false
     deprecated: false
-    description: '[Enter a description of the command, including any important information
-      users need to know, for example required permissions.]'
+    description: Get any entity details
     execution: false
-    name: baseintegration-dummy
+    name: microfocus-smax-get-entity
     outputs:
-    - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
+    - contextPath: MicroFocus.SMAX.Entities.properties.Id
+      description: Entity Id
+      type: String
+    - contextPath: MicroFocus.SMAX.Entities.properties.Name
+      description: Entity name
+      type: String
+  - arguments:
+    - default: false
+      description: 'Entity type, for example: "Incident", the type is case-sensitive'
+      isArray: false
+      name: entity_type
+      required: true
+      secret: false
+    - default: false
+      description: 'Query filter , example:  Status = ''Ready''" for Incident queries,
+        see "REST API collection query protocol" in SMAX documentation to know how
+        to use the filter'
+      isArray: false
+      name: query_filter
+      required: false
+      secret: false
+    - default: false
+      description: 'Fields to return, for example: "Priority,Category" for an entity
+        of type "Incident"'
+      isArray: false
+      name: entity_fields
+      required: false
+      secret: false
+    - default: false
+      description: 'The order query parameter specifies the order in which the returned
+        resources are placed, example: "Id desc"'
+      isArray: false
+      name: order_by
+      required: false
+      secret: false
+    - default: false
+      description: Specify the maximum number of resources requested to be returned.
+      isArray: false
+      name: size
+      required: false
+      secret: false
+    - default: false
+      description: Specify how many resources should be skipped by specifying the
+        starting index of the returned result.
+      isArray: false
+      name: skip
+      required: false
+      secret: false
+    deprecated: false
+    description: Query entities' details using a collection query filter
+    execution: false
+    name: microfocus-smax-query-entities
+    outputs:
+    - contextPath: MicroFocus.SMAX.Entities.properties.Id
+      description: Entity Id
+      type: String
+    - contextPath: MicroFocus.SMAX.Entities.properties.Name
+      description: Entity name
+      type: String
+    - contextPath: MicroFocus.SMAX.Query.query_time
+      description: Query time
+      type: String
+    - contextPath: MicroFocus.SMAX.Query.total_count
+      description: Query results total count
+      type: String
+    - contextPath: MicroFocus.SMAX.Query.completion_status
+      description: Query result status
       type: String
   dockerimage: demisto/python3:3.9.7.24076
   feed: false
