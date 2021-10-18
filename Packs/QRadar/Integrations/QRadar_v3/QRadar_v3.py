@@ -1170,7 +1170,7 @@ def is_reset_triggered(handle_reset: bool = False):
         if ctx and RESET_KEY in ctx:
             if handle_reset:
                 print_debug_msg('Reset fetch-incidents.')
-                set_integration_context({'samples': ctx.get('samples', [])})
+                set_integration_context({'retry_compatible': True, 'samples': ctx.get('samples', '[]')})
             lock.release()
             return True
         lock.release()
@@ -1224,7 +1224,7 @@ def test_module_command(client: Client, params: Dict) -> str:
                 events_limit=1,
                 ip_enrich=ip_enrich,
                 asset_enrich=asset_enrich,
-                last_highest_id=get_integration_context().get(LAST_FETCH_KEY, 0),
+                last_highest_id=int(json.loads(get_integration_context().get(LAST_FETCH_KEY, '0'))),
                 incident_type=params.get('incident_type'),
                 mirror_direction=MIRROR_DIRECTION.get(params.get('mirror_options', DEFAULT_MIRRORING_DIRECTION))
             )
@@ -1248,7 +1248,7 @@ def fetch_incidents_command() -> List[Dict]:
     Returns:
         (List[Dict]): List of incidents samples.
     """
-    return get_integration_context().get('samples', [])
+    return json.loads(get_integration_context().get('samples', '[]'))
 
 
 def create_search_with_retry(client: Client, fetch_mode: str, offense: Dict, event_columns: str, events_limit: int,
@@ -1510,21 +1510,19 @@ def long_running_execution_command(client: Client, params: Dict):
                 events_limit=events_limit,
                 ip_enrich=ip_enrich,
                 asset_enrich=asset_enrich,
-                last_highest_id=ctx.get(LAST_FETCH_KEY, 0),
+                last_highest_id=int(json.loads(ctx.get(LAST_FETCH_KEY, '0'))),
                 incident_type=incident_type,
                 mirror_direction=mirror_direction
             )
-            # Reset was called during execution, skip creating incidents.
-            if not incidents and not new_highest_id:
-                continue
+            if incidents and new_highest_id:
+                incident_batch_for_sample = incidents[:SAMPLE_SIZE] if incidents else json.loads(
+                    ctx.get('samples', '[]'))
+                if incident_batch_for_sample:
+                    print_debug_msg(f'Saving New Highest ID: {new_highest_id}')
+                    set_to_integration_context_with_retries({'samples': incident_batch_for_sample,
+                                                             LAST_FETCH_KEY: new_highest_id})
 
-            incident_batch_for_sample = incidents[:SAMPLE_SIZE] if incidents else ctx.get('samples', [])
-            if incident_batch_for_sample:
-                print_debug_msg(f'Saving New Highest ID: {new_highest_id}')
-                set_integration_context({LAST_FETCH_KEY: new_highest_id, 'samples': incident_batch_for_sample,
-                                         'last_mirror_update': ctx.get('last_mirror_update')})
-
-            demisto.createIncidents(incidents)
+                demisto.createIncidents(incidents)
 
         except Exception:
             demisto.error('Error occurred during long running loop')
@@ -2598,6 +2596,7 @@ def qradar_reset_last_run_command() -> str:
     """
     ctx = get_integration_context()
     ctx[RESET_KEY] = True
+    ctx['retry_compatible'] = True
     set_integration_context(ctx)
     return 'fetch-incidents was reset successfully.'
 
@@ -2814,10 +2813,10 @@ def get_modified_remote_data_command(client: Client, params: Dict[str, str],
     """
     ctx = get_integration_context()
     remote_args = GetModifiedRemoteDataArgs(args)
-    highest_fetched_id = ctx.get(LAST_FETCH_KEY, 0)
+    highest_fetched_id = json.loads(ctx.get(LAST_FETCH_KEY, '0'))
     limit: int = int(params.get('mirror_limit', MAXIMUM_MIRROR_LIMIT))
     range_ = f'items=0-{limit - 1}'
-    last_update_time = ctx.get('last_mirror_update')
+    last_update_time = json.loads(ctx.get('last_mirror_update', '""'))
     if not last_update_time:
         last_update_time = remote_args.last_update
     last_update = get_time_parameter(last_update_time, epoch_format=True)
@@ -2828,18 +2827,37 @@ def get_modified_remote_data_command(client: Client, params: Dict[str, str],
                                     fields='id,last_persisted_time')
     new_modified_records_ids = [str(offense.get('id')) for offense in offenses if 'id' in offense]
 
-    current_last_update = ctx.get('last_mirror_update') if not offenses else offenses[-1].get('last_persisted_time')
-    print_debug_msg(f'Saving New Highest ID: {ctx.get(LAST_FETCH_KEY, 0)}')
-    set_integration_context({'samples': ctx.get('samples', []), 'last_mirror_update': current_last_update,
-                             LAST_FETCH_KEY: ctx.get(LAST_FETCH_KEY, 0)})
+    current_last_update = last_update if not offenses else offenses[-1].get('last_persisted_time')
+    set_to_integration_context_with_retries({'last_mirror_update': json.dumps(current_last_update)})
 
     return GetModifiedRemoteDataResponse(new_modified_records_ids)
+
+
+def change_ctx_to_be_compatible_with_retry() -> None:
+    """
+    In order to move QRadar from using set_integration_context to set_to_integration_context_with_retries, the fields
+    need to change to JSON strings.
+    Change is required due to race condition occurring between get-modified-remote-data to long-running-execution.
+
+    Because some customers already have instances running where fields are not JSON fields, this function is needed
+    to make them be compatible with new changes.
+    Returns:
+        (None): Modifies context to be compatible.
+    """
+    ctx = get_integration_context()
+    if not ctx.get('retry_compatible'):
+        ctx[LAST_FETCH_KEY] = json.dumps(ctx.get(LAST_FETCH_KEY, 0))
+        ctx['samples'] = json.dumps(ctx.get('samples', []))
+        ctx['last_mirror_update'] = json.dumps(ctx.get('last_mirror_update', ''))
+        ctx['retry_compatible'] = True
+        set_integration_context(ctx)
 
 
 ''' MAIN FUNCTION '''
 
 
 def main() -> None:
+    change_ctx_to_be_compatible_with_retry()
     params = demisto.params()
     command = demisto.command()
     args = demisto.args()
