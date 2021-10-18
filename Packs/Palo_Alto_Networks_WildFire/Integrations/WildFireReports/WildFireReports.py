@@ -111,7 +111,7 @@ def main():
 
     # Log exceptions and return errors
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
+        # demisto.error(traceback.format_exc())  # print the traceback
         # Its not an error because it's not return to the warroom
         return_results({
             'status': 'error',

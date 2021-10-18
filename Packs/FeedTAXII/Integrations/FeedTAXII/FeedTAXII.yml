@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: TAXIIFeed -dev
+  id: TAXIIFeed
   version: -1
 configuration:
 - defaultvalue: 'true'
@@ -128,8 +128,8 @@ configuration:
   required: false
   type: 8
 description: Ingests indicator feeds from TAXII 1.x servers.
-display: TAXII Feed -dev
-name: TAXIIFeed -dev
+display: TAXII Feed
+name: TAXIIFeed
 script:
   commands:
   - arguments:
