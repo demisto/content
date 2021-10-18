@@ -369,10 +369,7 @@ Suppress alert by ID
 There is no context output for this command.
 
 #### Command Example
-``` ```
-
-#### Human Readable Output
-
+``` !fireeye-hx-suppress-alert alertId=2 ```
 
 
 ### fireeye-hx-get-indicators
@@ -685,10 +682,73 @@ Get information on a host associated with an agent.
 
 
 #### Command Example
-``` ```
+```!fireeye-hx-get-host-information hostName=”DESKTOP-XXX”```
 
-#### Human Readable Output
+#### Context Output
+```json
+{
+    "FireEyeHX": {
+        "Hosts": {
+            "last_alert": {
+                "url": "/hx/api/v3/alerts/5", 
+                "_id": 5
+            }, 
+            "domain": "DEMISTO", 
+            "last_exploit_block_timestamp": null, 
+            "containment_state": "normal", 
+            "timezone": "Eastern Daylight Time", 
+            "gmt_offset_seconds": -14400, 
+            "initial_agent_checkin": "2018-03-26T14:21:31.273Z", 
+            "stats": {
+                "alerting_conditions": 1, 
+                "exploit_alerts": 0, 
+                "acqs": 11, 
+                "malware_false_positive_alerts": 0, 
+                "alerts": 1, 
+                "exploit_blocks": 0, 
+                "malware_cleaned_count": 0, 
+                "malware_alerts": 0, 
+                "malware_quarantined_count": 0
+            }, 
+            "primary_mac": "XX-XX-XX-XX-XX-XX", 
+            "hostname": "DESKTOP-XXX", 
+            "primary_ip_address": "^^^XX.XX.XX.XX^^^", 
+            "last_audit_timestamp": "2018-05-03T13:59:23.000Z", 
+            "last_alert_timestamp": "2018-04-16T08:59:51.693+00:00", 
+            "containment_queued": false, 
+            "sysinfo": {
+                "url": "/hx/api/v3/hosts/uGvnGVpZkDSFySf2ZOiT/sysinfo"
+            }, 
+            "last_exploit_block": null, 
+            "reported_clone": false, 
+            "url": "/hx/api/v3/hosts/uGvnGVpZkeySf2ZOiT", 
+            "excluded_from_containment": false, 
+            "last_poll_timestamp": "2018-05-03T14:01:22.000Z", 
+            "last_poll_ip": "^^^XX.XX.XX.XX^^^", 
+            "containment_missing_software": false, 
+            "_id": " uGvnGVpZkDSFySf2ZOiT ", 
+            "os": {
+                "kernel_version": null, 
+                "platform": "win", 
+                "patch_level": null, 
+                "bitness": "64-bit", 
+                "product_name": "Windows 10 Enterprise Evaluation"
+            }, 
+            "agent_version": "26.21.10"
+        }
+    },
+    "Endpoint": {
+        "MACAddress": "XX-XX-XX-XX-XX-XX", 
+        "Domain": "DEMISTO", 
+        "IPAddress": "^^^XX.XX.XX.XX^^^", 
+        "Hostname": "DESKTOP-XXX", 
+        "OSVersion": "Windows 10 Enterprise Evaluation", 
+        "OS": "win", 
+        "ID": " uGvnGVpZkDSFySf2ZOiT "
+    }, 
+}
 
+```
 
 
 ### fireeye-hx-get-alert
@@ -765,10 +825,42 @@ Aquire a specific file as a password protected zip file. The password for unlock
 
 
 #### Command Example
-``` ```
+```!fireeye-hx-file-acquisition fileName="test.txt"filePath="C:\\Users\\user\\Documents" hostName="DESKTOP-DES01"```
 
-#### Human Readable Output
-
+#### Context Output
+```json
+"FireEyeHX": {
+        "Acquisitions": {
+            "Files": {
+                "_id": 13,
+                "_revision": "206073441021688",
+                "alert": null,
+                "comment": null,
+                "condition": null,
+                "error_message": "The acquisition completed with issues.",
+                "external_id": null,
+                "finish_time": "2018-04-26T07:34:14.100Z",
+                "host": {
+                    "_id": "uGvnGVpZkKeySf2ZT",
+                    "url": "/hx/api/v3/hosts/ uGvnGVpZkKeySf2ZT "
+                },
+                "indicator": null,
+                "md5": "ee26908bf9…64b37da4754a",
+                "req_filename": "ex.txt",
+                "req_path": "C:\\Users\\user\\Documents",
+                "req_use_api": null,
+                "request_actor": {
+                    "_id": 1001,
+                    "username": "api"
+                },
+                "request_time": "2018-04-26T07:33:03.000Z",
+                "state": "COMPLETE",
+                "url": "/hx/api/v3/acqs/files/13",
+                "zip_passphrase": "unzip-me"
+            }
+        }
+    }
+```
 
 
 ### fireeye-hx-delete-file-acquisition
@@ -791,9 +883,7 @@ Delete the file acquisition, by ID.
 There is no context output for this command.
 
 #### Command Example
-``` ```
-
-#### Human Readable Output
+```!fireeye-hx-delete-file-acquisition acquisitionId=10```
 
 
 
@@ -828,10 +918,55 @@ Start a data acquisition process to gather artifacts from the system disk and me
 
 
 #### Command Example
-``` ```
+```! fireeye-hx-data-acquisition hostName="DESKTOP-DES01" defaultSystemScript=win```
 
 #### Human Readable Output
-
+{
+    "FireEyeHX": {
+        "Acquisitions": {
+            "Data": {
+                "comment": null, 
+                "zip_passphrase": null, 
+                "request_actor": {
+                    "username": "api", 
+                    "_id": 1001
+                }, 
+                "name": "test", 
+                "script": {
+                    "download": "/hx/api/v3/scripts/131ab1da5086fe09f5a210437de366007867fa26.json", 
+                    "url": "/hx/api/v3/scripts/^^^131ab1da5086fe09f5a210437de366007867fa26^^^", 
+                    "_id": "^^^131ab1da5086fe09f5a210437de366007867fa26^^^"
+                }, 
+                "finish_time": "2018-05-15T11:58:18.541Z", 
+                "_revision": "20180515115818542250101787", 
+                "error_message": "The triage completed with issues.", 
+                "state": "COMPLETE", 
+                "request_time": "2018-05-15T11:57:22.000Z", 
+                "url": "/hx/api/v3/acqs/live/28", 
+                "host": {
+                    "url": "/hx/api/v3/hosts/uGvnGVpZkM4bKeySf2ZOiT", 
+                    "_id": "uGvnGVpZkXXXX2ZOiT"
+                }, 
+                "download": "/hx/api/v3/acqs/live/28.mans", 
+                "_id": 28, 
+                "external_id": null, 
+                "md5": null
+            }
+        }
+    }, 
+    "File": {
+        "Info": "mans", 
+        "SHA1": "^^^4374d09a27ef85XXXXX66785c040d7febff7d8^^^", 
+        "Name": "agent_uGvnGVpZkMXXXX2ZOiT_data.mans", 
+        "Extension": "mans", 
+        "Size": 5154, 
+        "EntryID": "383@1", 
+        "SSDeep": "96:JraN9hyFIVls4Dst99i462teLuf0XXXXyU2y46Gd/pV:xapyFIVibPi462teLuf0TXdLNJLU23dt", 
+        "SHA256": "7944d5e86ce2bXXXXe154d4c2923ddf47016a07b84b460f08b0f2f", 
+        "Type": "Zip archive data, at least v2.0 to extract\n", 
+        "MD5": "^^^c24a2c4aeXXXXf89e1e012dae^^^"
+    }
+}
 
 
 ### fireeye-hx-delete-data-acquisition
@@ -854,9 +989,7 @@ Delete data acquisition.
 There is no context output for this command.
 
 #### Command Example
-``` ```
-
-#### Human Readable Output
+```!fireeye-hx-delete-data-acquisition acquisitionId=10```
 
 
 
@@ -1173,3 +1306,49 @@ Gather artifacts from the system disk and memory for the given acquisition id. T
 #### Human Readable Output
 
 
+ Error Responses - Timeout Error
+-------------------------------
+
+ **Timeout error** indicates that time limitation for the command has exceeded before results are returned.
+
+ To resolve this issue, configure new time limitation for the command.
+
+  
+
+  2. Navigate to **Settings** > **About** > **Troubleshooting** > **Server Configuration**.
+ 4. click **Add Server Configuration**.
+ 6. Set the **key** field using this format: FireEye HX.<*command-name*>.timeout.
+ 8. Set the **value** field to the desired time limit for the command to run (in minutes).
+  ![](https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/FireEyeHX_mceclip0.png)
+
+  
+
+ Known Limitations
+-----------------
+
+ ### Acquisitions limitations
+
+  * Acquisitions are stored for 14 days or until the aggregate size of all acquisitions exceeds the acquisition space limit, which is from 30 GB to 9 TB, depending on the HX Series appliance**.** 
+ * When the acquisition space is completely full and automatic triages fill 10 percent of the acquisition space, the HX Series appliance reclaims disk space by removing automatic triage collections.
+ * When the acquisition space is 90 percent full, no new acquisitions can be created, and bulk acquisitions that are running might be canceled**.** 
+  ### Containment Limitations
+
+  * Some hosts cannot be contained.
+ * The time it takes to contain a host varies, based on factors such as agent connectivity, network traffic, and other jobs running in your environment.
+ * You can only contain a host if the agent package for that host is available on the HX Series appliance.
+   
+
+ Command Timeout
+---------------
+
+ The following commands have high potential to exceed the default time limit for a running command. To avoid command timeout, change the command timeout settings.
+
+  * fireeye-hx-search
+ * fireeye-hx-data-acquisition
+ * fireeye-hx-file-acquisition
+  ### Configure Command Timeout
+
+1. Navigate to **Settings** > **About** > **Troubleshooting**. 
+2. In the **Server Configuration** section, click **Add Server Configuration**.
+3. Set the ***Key*** field using this format: FireEye HX.timeout
+4. Set the ***Value*** field to the timeout you need (in minutes).
