@@ -126,7 +126,7 @@ def indicator_malicious_ratio_calculation(args):
             }))
         return results
     else:
-        return_error("No resolved incidents found")
+        return "No resolved incidents found"
 
 
 ''' MAIN FUNCTION '''
