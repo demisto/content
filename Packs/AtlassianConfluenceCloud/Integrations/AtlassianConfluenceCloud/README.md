@@ -23,13 +23,13 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### confluence-cloud-space-create
 ***
 Creates a new space.<br/>
-Note: If no permissions are provided, Confluence default space permissions will be applied.
+Note: If no permissions are specified, the default space permissions defined by the confluence cloud account admin will be used.
 
 ### Create Space with permissions
-- The command arguments 'permission_account_id', 'permission_group_name', and 'permission_operation' can be used to limit access of the space to one individual or one group.<br/>
-For Example: !confluence-cloud-space-create unique_key=”Demo” name=”DemoSpace”  permission_account_id=”123af245667” permission_group_name=”administrators” permission_operation=”read:space,write:page”
+- The command arguments 'permission_account_id', 'permission_group_name', and 'permission_operations' can be used to limit access of the space to one individual or one group.<br/>
+For Example: !confluence-cloud-space-create unique_key=”Demo” name=”DemoSpace”  permission_account_id=”123af245667” permission_group_name=”administrators” permission_operations=”read:space,write:page”
   
-- To limit access of the space to specific number of people or groups, 'advance_permission' should contain a valid JSON.<br/>
+- To limit access of the space to specific number of people or groups, 'advanced_permissions' should contain a valid JSON.<br/>
 Valid JSON schema can be found [here](https://developer.atlassian.com/cloud/confluence/rest/api-group-space/#api-wiki-rest-api-space-post)
   
 #### Base Command
@@ -45,8 +45,8 @@ Valid JSON schema can be found [here](https://developer.atlassian.com/cloud/conf
 | is_private_space | Whether the user wants to create private space.<br/><br/>Note: If this option is set to true, permission can not be applied. <br/><br/>Default is false. | Optional | 
 | permission_account_id | Specify the account ID of the user to whom permission should be granted. <br/><br/>Note: To retrieve the account ID, execute the confluence-cloud-user-list command. | Optional | 
 | permission_group_name | Specify the group name to whom permission should be granted. <br/><br/>Note: To retrieve the group name, execute the confluence-cloud-group-list command. | Optional | 
-| permission_operation | Specify the permissions that should be applied. Supports multiple comma separated values.<br/><br/>Note: Requires either permission_account_id or permission_group_name.<br/><br/>Format accepted: operation1:targetType1, operation2:targetType2<br/><br/>For example: read:space, create:page<br/><br/>Possible values for operations: create, read, delete, export, administer.<br/>Possible values for targetType: space, page, blogpost, comment, attachment. | Optional | 
-| advance_permission | Specify 'advance_permission' if you want to grant access to a multiple number of users or groups. 'advance_permission' would be prioritized over 'permission_operation'. <br/><br/>Note: Add backslash(\\) before quotes.<br/><br/>For example: [ { \"subjects\": { \"user\": { \"results\": [ { \"accountId\": \"5ff2e30b4d2179006ea18449\" } ] }, \"group\": { \"results\": [ { \"name\": \"administrators\" } ] } }, \"operation\": { \"operation\": \"read\", \"targetType\": \"space\" }, \"anonymousAccess\": false, \"unlicensedAccess\": false } ]<br/><br/>To prepare a valid json for advance_permission navigate to https://developer.atlassian.com/cloud/confluence/rest/api-group-space/#api-wiki-rest-api-space-post and see the permission parameter in it. | Optional | 
+| permission_operations | Specify the permissions that should be applied. Supports multiple comma separated values.<br/><br/>Note: Requires either permission_account_id or permission_group_name.<br/><br/>Format accepted: operation1:targetType1, operation2:targetType2<br/><br/>For example: read:space, create:page<br/><br/>Possible values for operations: create, read, delete, export, administer.<br/>Possible values for targetType: space, page, blogpost, comment, attachment. | Optional | 
+| advanced_permissions | Specify 'advanced_permissions' if you want to grant access to multiple users or groups. 'advanced_permissions' would have higher preference over 'permission_operations'. <br/><br/>Note: Add backslash(\\) before quotes.<br/><br/>For example: [ { \"subjects\": { \"user\": { \"results\": [ { \"accountId\": \"5ff2e30b4d2179006ea18449\" } ] }, \"group\": { \"results\": [ { \"name\": \"administrators\" } ] } }, \"operation\": { \"operation\": \"read\", \"targetType\": \"space\" }, \"anonymousAccess\": false, \"unlicensedAccess\": false } ]<br/><br/>To prepare a valid json for advanced_permissions navigate to https://developer.atlassian.com/cloud/confluence/rest/api-group-space/#api-wiki-rest-api-space-post and see the permission parameter in it. | Optional | 
 
 
 #### Context Output
@@ -2787,7 +2787,7 @@ Returns a list of all confluence spaces.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of spaces to return per page.<br/><br/>Note: The minimum value supported is 0 and maximum value supported is int32. <br/><br/>Default is 50. | Optional | 
+| limit | Number of records to retrieve in the response.<br/><br/>Note: The minimum value supported is 0 and maximum value supported is int32. <br/><br/>Default is 50. | Optional | 
 | offset | The starting index of the returned spaces.<br/><br/>Note: The minimum value supported is 0 and maximum value supported is int32. <br/><br/>Default is 0. | Optional | 
 | space_key | Specify the space key to retrieve the specific space.<br/><br/>Note: Supports multiple comma separated values. | Optional | 
 | space_id | Specify the space ID to retrieve the specific space.<br/><br/>Note: Supports multiple comma separated values. | Optional | 
@@ -2959,11 +2959,11 @@ Returns the list of contents of confluence.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of content to return per page.<br/><br/>Note: The minimum value supported is 0 and maximum value supported is int32. <br/><br/>Default is 50. | Optional | 
+| limit | Number of records to retrieve in the response.<br/><br/>Note: The minimum value supported is 0 and maximum value supported is int32. <br/><br/>Default is 50. | Optional | 
 | offset | The starting index of the returned content.<br/><br/>Note: The minimum value supported is 0 and maximum value supported is int32. <br/><br/>Default is 0. | Optional | 
 | space_key | Specify the space key to retrieve the contents of a specific space. | Optional | 
 | type | Specify the type to retrieve the contents. <br/>Possible values: page, blogpost. <br/><br/>Default is page. | Optional | 
-| sort_order | Order in which the response will be sorted. <br/>Possible values: asc, desc. | Optional | 
+| sort_order | Order in which the response will be sorted. <br/>Possible values: asc, desc.<br/><br/>Note: If ‘sort_key’ is specified, default value for ‘sort_order’ is ascending. | Optional | 
 | sort_key | Key based on which the response will be sorted.<br/><br/>Note: If 'sort_order' is specified, 'sort_key' is required. | Optional | 
 | date | Specify the date to return the content created on that specific date. <br/>Formats accepted: 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd. | Optional | 
 | status | Filter the results to a set of content based on their status. If set to any, content with any status is returned. <br/>Possible values: any, current, trashed, draft, archived.<br/><br/>Note: The term 'current' refers to content that is currently active. | Optional | 
@@ -3663,7 +3663,7 @@ Retrieves a list of content using the Confluence Query Language (CQL).<br/><br/>
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | The CQL (Confluence Query Language) string that is used to find the requested content. | Required | 
-| limit | The maximum number of content objects to return per page. <br/><br/>Note: The minimum value supported is 0 and maximum value supported is int32. <br/><br/>Default is 50. | Optional | 
+| limit | Number of records to retrieve in the response. <br/><br/>Note: The minimum value supported is 0 and maximum value supported is int32. <br/><br/>Default is 50. | Optional | 
 | content_status | Filter the result based on the content status.<br/>Possible values: current, draft, archived.<br/><br/>Note: Supports multiple comma separated values. | Optional | 
 | next_page_token | Retrieves the next page records for the given query (next_page_token retrieved in previous content response). | Optional | 
 | expand | Indicates which properties to expand. <br/>For reference visit https://developer.atlassian.com/cloud/confluence/rest/api-group-content/#api-wiki-rest-api-content-search-get.<br/><br/>Note: To separate multiple values, use commas. Expanded properties will be populated in context data only. | Optional | 
@@ -4099,8 +4099,8 @@ Returns a list of users.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of spaces to return per page. <br/><br/>Note: The minimum value supported is 0 and maximum value supported is int32. <br/><br/>Default is 50. | Optional | 
-| offset | The starting index of the returned spaces. <br/><br/>Note: The minimum value supported is 0 and maximum value supported is int32. <br/><br/>Default is 0. | Optional | 
+| limit | Number of records to retrieve in the response. <br/><br/>Note: The minimum value supported is 0 and maximum value supported is int32. <br/><br/>Default is 50. | Optional | 
+| offset | The starting index of the returned users. <br/><br/>Note: The minimum value supported is 0 and maximum value supported is int32. <br/><br/>Default is 0. | Optional | 
 
 
 #### Context Output
@@ -4186,7 +4186,7 @@ Returns all user groups.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of groups to return per page.<br/><br/>Note: The minimum value supported is 0 and maximum value supported is int32. <br/><br/>Default is 50. | Optional | 
+| limit | Number of records to retrieve in the response.<br/><br/>Note: The minimum value supported is 0 and maximum value supported is int32. <br/><br/>Default is 50. | Optional | 
 | offset | The starting index of the returned groups.<br/><br/>Note: The minimum value supported is 0 and maximum value supported is int32. <br/><br/>Default is 0. | Optional | 
 | access_type | The group permission level for which to filter results. <br/>Possible values: user, admin, site-admin. | Optional | 
 

@@ -46,19 +46,24 @@ MESSAGES = {
     "INVALID_STATUS_SEARCH": "Invalid value for status. Status must be one of 'current', 'any', 'archived', 'draft' "
                              "or 'trashed'.",
     "INVALID_PERMISSION": "If the 'permission_account_id' or 'permission_group_name' arguments are given, "
-                          "the 'permission_operation' argument must also be given.",
-    "INVALID_PERMISSIONS_OPERATION": "If the 'permission_operation' argument is given, "
+                          "the 'permission_operations' argument must also be given.",
+    "INVALID_PERMISSIONS_OPERATION": "If the 'permission_operations' argument is given, "
                                      "'permission_account_id' or 'permission_group_name' argument must also be given.",
     "PERMISSION_FORMAT": "Please provide the permission in the valid JSON format. "
                          "Format accepted - 'operation1:targetType1,operation2:targetType2'",
-    "ADVANCE_PERMISSION_FORMAT": "Please provide the 'advance_permission' in the valid JSON format. ",
+    "ADVANCE_PERMISSION_FORMAT": "Please provide the 'advanced_permissions' in the valid JSON format. ",
     "INVALID_SPACE_STATUS": "Invalid value for status. Status must be one of 'current' or 'archived'.",
     "INVALID_CONTENT_TYPE_UPDATE_CONTENT": "Invalid value for content type. Content type parameter can be 'page', "
                                            "'blogpost', 'comment' or 'attachment'.",
     "INVALID_BODY_REPRESENTATION": "Invalid value for body_representation. Body representation must be one of "
                                    "'editor', 'editor2' or 'storage'.",
     "INVALID_DELETION_TYPE": "Invalid value for deletion_type. Deletion type must be one of 'move to trash', "
-                             "'permanent delete' or 'permanent delete draft'."
+                             "'permanent delete' or 'permanent delete draft'.",
+    "INVALID_TITLE_LENGTH": "Title cannot be longer than 255 characters.",
+    "INVALID_SPACE_NAME_LENGTH": "Space name cannot be longer than 200 characters.",
+    "INVALID_SPACE_KEY": "Space Key cannot be longer than 255 characters and should contain alphanumeric characters "
+                         "only.",
+    "PRIVATE_SPACE_PERMISSION": "Permission can not be granted for a private space."
 }
 OUTPUT_PREFIX = {
     "GROUP": "ConfluenceCloud.Group",
@@ -70,15 +75,15 @@ OUTPUT_PREFIX = {
 }
 DEFAULT_LIMIT = "50"
 DEFAULT_START = "0"
-ACCESS_TYPE = ["user", "site-admin", "admin"]
-CONTENT_STATUS = ['current', 'trashed', 'draft']
-CONTENT_TYPE = ["page", "blogpost"]
-CONTENT_TYPE_UPDATE_COMMAND = ["page", "blogpost", "comment", "attachment"]
-EXPANDED_FIELD_CONTENT = "childTypes.all,space,version,history,ancestors,container,body"
-EXPANDED_FIELD_SPACE = "history"
-SPACE_STATUS = ['current', 'archived']
-BODY_REPRESENTATION = ['editor', 'editor2', 'storage']
-DELETION_TYPE = {
+LEGAL_ACCESS_TYPES = ["user", "site-admin", "admin"]
+LEGAL_CONTENT_STATUS = ['current', 'trashed', 'draft', 'archived', 'any']
+LEGAL_CONTENT_TYPES = ["page", "blogpost"]
+LEGAL_CONTENT_TYPE_UPDATE_COMMAND = ["page", "blogpost", "comment", "attachment"]
+DEFAULT_EXPANDED_FIELD_CONTENT = "childTypes.all,space,version,history,ancestors,container,body"
+DEFAULT_EXPANDED_FIELD_SPACE = "history"
+LEGAL_SPACE_STATUS = ['current', 'archived']
+LEGAL_BODY_REPRESENTATION = ['editor', 'editor2', 'storage']
+LEGAL_DELETION_TYPES = {
     "move to trash": "current",
     "permanent delete": "trashed",
     "permanent delete draft": "draft"
@@ -198,7 +203,7 @@ def remove_empty_elements_for_context(src):
                                   for k, v in src.items()) if not empty(v)}
 
 
-def validated_required_args_for_permission(permission_account_id, permission_group_name, permission_operation):
+def validated_required_args_for_permission(permission_account_id, permission_group_name, permission_operations):
     """
     Raise value-error when null-values or whitespaces are provided for permission arguments.
 
@@ -208,21 +213,64 @@ def validated_required_args_for_permission(permission_account_id, permission_gro
     :type permission_group_name: ``str``
     :param permission_group_name: Name of the group
 
-    :type permission_operation: ``str``
-    :param permission_operation: Permissions to be granted
+    :type permission_operations: ``str``
+    :param permission_operations: Permissions to be granted
 
     :return: None
     """
-    if (permission_account_id or permission_group_name) and not permission_operation:
+    if (permission_account_id or permission_group_name) and not permission_operations:
         raise ValueError(MESSAGES["INVALID_PERMISSION"])
 
-    if permission_operation and (not permission_group_name and not permission_account_id):
+    if permission_operations and (not permission_group_name and not permission_account_id):
         raise ValueError(MESSAGES["INVALID_PERMISSIONS_OPERATION"])
+
+
+def prepare_permission_object(permission_account_id: str, permission_group_name: str, attr: List) -> Dict:
+    """
+    Prepare permission object from the user provided values
+
+    :type permission_account_id: ``str``
+    :param permission_account_id: Account ID of the user to whom permission should be granted.
+
+    :type permission_group_name: ``str``
+    :param permission_group_name: Group name to whom permission should be granted.
+
+    :type attr: ``List``
+    :param attr: Operation and Target Type specified by user
+
+    :rtype: ``Dict``
+    :return: Returns permission object
+    """
+    permission_object = {
+        "subjects": {
+            "user": {
+                "results": [
+                    {
+                        "accountId": permission_account_id
+                    }
+                ]
+            },
+            "group": {
+                "results": [
+                    {
+                        "name": permission_group_name
+                    }
+                ]
+            }
+        },
+        "operation": {
+            "operation": attr[0],
+            "targetType": attr[1]
+        },
+        "anonymousAccess": False,
+        "unlicensedAccess": False
+    }
+    return permission_object
 
 
 def validate_permissions(args: Dict[str, Any]) -> List:
     """
-         Validates the permission argument provided by user
+         Validates the permission argument provided by user and prepare permission object accordingly
 
         :type args: ``dict``
         :param args: Input dictionary.
@@ -233,42 +281,23 @@ def validate_permissions(args: Dict[str, Any]) -> List:
     space_permission = []
     permission_account_id = args.get('permission_account_id', '')
     permission_group_name = args.get('permission_group_name', '')
-    permission_operation = args.get('permission_operation', '')
+    permission_operations = args.get('permission_operations', '')
 
-    validated_required_args_for_permission(permission_account_id, permission_group_name, permission_operation)
+    validated_required_args_for_permission(permission_account_id, permission_group_name, permission_operations)
 
-    if permission_operation:
-        permissions = [x.strip() for x in permission_operation.split(",") if x.strip()]
+    if permission_operations:
+        # create a list of all the permission provided by user
+        permissions = [permission.strip() for permission in permission_operations.split(",") if permission.strip()]
+        # separate target_type and operation for the single permission
         for permission in permissions:
             if permission:
-                attr = [f.strip() for f in permission.split(":") if f.strip()]
+                attr = [operation.strip() for operation in permission.split(":") if operation.strip()]
+                # if target_type or operation is missing then raise ValueError
                 if len(attr) != 2:
                     raise ValueError(MESSAGES["PERMISSION_FORMAT"])
-                permission_object = {
-                    "subjects": {
-                        "user": {
-                            "results": [
-                                {
-                                    "accountId": permission_account_id
-                                }
-                            ]
-                        },
-                        "group": {
-                            "results": [
-                                {
-                                    "name": permission_group_name
-                                }
-                            ]
-                        }
-                    },
-                    "operation": {
-                        "operation": attr[0],
-                        "targetType": attr[1]
-                    },
-                    "anonymousAccess": False,
-                    "unlicensedAccess": False
-                }
+                permission_object = prepare_permission_object(permission_account_id, permission_group_name, attr)
                 space_permission.append(permission_object)
+
     return space_permission
 
 
@@ -316,12 +345,12 @@ def validate_list_group_args(args: Dict[str, str]) -> Dict[str, Any]:
     """
     params = validate_list_command_args(args)
     access_type = args.get("access_type", "").lower()
-    if access_type:
-        if access_type not in ACCESS_TYPE:
-            raise ValueError(MESSAGES["INVALID_ACCESS_TYPE"])
-        params['accessType'] = access_type
+    if access_type and access_type not in LEGAL_ACCESS_TYPES:
+        raise ValueError(MESSAGES["INVALID_ACCESS_TYPE"])
 
-    return params
+    params['accessType'] = access_type
+
+    return assign_params(**params)
 
 
 def prepare_hr_for_groups(groups: List[Dict[str, Any]]) -> str:
@@ -361,14 +390,16 @@ def validate_create_content_args(args: Dict[str, str], is_update: bool = False) 
     :rtype: ``Dict[str, Any]``
     """
 
-    title = args.get('title', '')
+    title = args['title']
     if not title:
         raise ValueError(MESSAGES['REQUIRED_ARGUMENT'].format("title"))
+    if len(title) > 255:
+        raise ValueError(MESSAGES["INVALID_TITLE_LENGTH"])
 
-    content_type = args.get('type', '').lower()
+    content_type = args['type'].lower()
     if not content_type:
         raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("type"))
-    if not is_update and content_type not in CONTENT_TYPE:
+    if not is_update and content_type not in LEGAL_CONTENT_TYPES:
         raise ValueError(MESSAGES["INVALID_CONTENT_TYPE"])
 
     space_key = args.get('space_key', '')
@@ -380,7 +411,7 @@ def validate_create_content_args(args: Dict[str, str], is_update: bool = False) 
     body_representation = args.get('body_representation', '')
     if content_type == "comment":
         if body_value and body_representation:
-            if body_representation not in BODY_REPRESENTATION:
+            if body_representation not in LEGAL_BODY_REPRESENTATION:
                 raise ValueError(MESSAGES["INVALID_BODY_REPRESENTATION"])
         else:
             raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("'body_value' and 'body_representation'"))
@@ -485,51 +516,21 @@ def validate_delete_content_args(args: Dict[str, str]) -> Tuple[Union[str, Any],
     :return: Parameters to send in request
     :rtype: ``Dict[str, Any]``
     """
-    content_id = args.get("content_id", "")
+    content_id = args["content_id"]
     if not args.get("content_id"):
         raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("content_id"))
 
     params: Dict[str, Any] = {}
     status = args.get("deletion_type", "").lower()
     if status:
-        if status not in DELETION_TYPE.keys():
+        if status not in LEGAL_DELETION_TYPES.keys():
             raise ValueError(MESSAGES["INVALID_DELETION_TYPE"])
-        params["status"] = DELETION_TYPE[status]
+        params["status"] = LEGAL_DELETION_TYPES[status]
 
     return content_id, params
 
 
-def validate_create_comment_args(args: Dict[str, str]) -> Dict[str, Any]:
-    """
-    Validate arguments for confluence-cloud-comment-create command, raise ValueError on invalid arguments.
-
-    :type args: ``Dict[str, str]``
-    :param args: The command arguments provided by the user.
-
-    :return: Parameters to send in request
-    :rtype: ``Dict[str, Any]``
-    """
-
-    status = args.get('status', 'current')
-
-    body_value = args.get('body_value')
-    if not body_value:
-        raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("Comment body_value"))
-
-    body_representation = args.get('body_representation')
-    if not body_representation:
-        raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("body_representation"))
-    if body_representation not in BODY_REPRESENTATION:
-        raise ValueError(MESSAGES["INVALID_BODY_REPRESENTATION"])
-
-    ancestor_id = args.get('ancestor_id', '')
-
-    container_id = args.get('container_id')
-    if not container_id:
-        raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("container_id"))
-
-    container_type = args.get('container_type', '')
-
+def prepare_comment_create_params(status, container_id, container_type, body_representation, body_value, ancestor_id):
     json_data = {
         "type": "comment",
         "status": status,
@@ -551,6 +552,41 @@ def validate_create_comment_args(args: Dict[str, str]) -> Dict[str, Any]:
     }
     params = remove_empty_elements_for_context(json_data)
     params["container"]["type"] = container_type
+    return params
+
+
+def validate_and_prepare_comment_args(args: Dict[str, str]) -> Dict[str, Any]:
+    """
+    Validate arguments for confluence-cloud-comment-create command, raise ValueError on invalid arguments.
+
+    :type args: ``Dict[str, str]``
+    :param args: The command arguments provided by the user.
+
+    :return: Parameters to send in request
+    :rtype: ``Dict[str, Any]``
+    """
+
+    status = args.get('status', 'current')
+
+    body_value = args.get('body_value')
+    if not body_value:
+        raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("Comment body_value"))
+
+    body_representation = args.get('body_representation')
+    if not body_representation:
+        raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("body_representation"))
+    if body_representation not in LEGAL_BODY_REPRESENTATION:
+        raise ValueError(MESSAGES["INVALID_BODY_REPRESENTATION"])
+
+    ancestor_id = args.get('ancestor_id', '')
+
+    container_id = args.get('container_id')
+    if not container_id:
+        raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("container_id"))
+
+    container_type = args.get('container_type', '')
+    params = prepare_comment_create_params(status, container_id, container_type, body_representation, body_value,
+                                           ancestor_id)
     return params
 
 
@@ -579,7 +615,11 @@ def prepare_hr_for_users(users: List[Dict[str, Any]]) -> str:
 
 def prepare_expand_argument(expand: str, default_fields: str) -> str:
     """
-    Combines the default expand fields and the user provided expand fields
+    The 'expand' command argument specifies which properties should be expanded.
+    In this integration, several of the most significant characteristics are extended by default.
+    Other attributes that users want to expand can still be provided.
+
+    This method combines the default expand fields with the expand fields specified by the user.
 
     :type expand: ``str``
     :param expand: The expand argument passed by the user.
@@ -613,34 +653,32 @@ def validate_search_content_argument(args: Dict[str, str]) -> Dict[str, Any]:
     """
     params = validate_list_command_args(args)
 
-    query = args.get('query', '')
+    query = args['query']
     if not query:
         raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("query"))
     params['cql'] = query
 
-    cursor = args.get('next_page_token')
-    if cursor:
-        params['cursor'] = cursor
+    params['cursor'] = args.get('next_page_token')
 
-    params['expand'] = EXPANDED_FIELD_CONTENT
+    params['expand'] = DEFAULT_EXPANDED_FIELD_CONTENT
     expand = args.get('expand', '')
     if expand:
-        params['expand'] = prepare_expand_argument(expand, EXPANDED_FIELD_CONTENT)
+        params['expand'] = prepare_expand_argument(expand, DEFAULT_EXPANDED_FIELD_CONTENT)
 
     content_status = argToList(args.get('content_status', ''))
     params["cqlcontext"] = json.dumps({"contentStatuses": content_status})
 
-    return params
+    return assign_params(**params)
 
 
 def prepare_cursor_for_content(response_json: Dict[str, str]) -> str:
     """
-    Prepare cursor to support pagination for contents.
+    Split query string parameters from a link and extract value of parameter 'cursor'.
 
     :type response_json: ``Dict[str, str]``
     :param response_json: API response.
 
-    :return: Next token.
+    :return: Next Page Token(Cursor).
     :rtype: ``str``
     """
     next_cursor = ""
@@ -651,6 +689,27 @@ def prepare_cursor_for_content(response_json: Dict[str, str]) -> str:
         next_cursor = parsed_next_cursor.get('cursor', [])[0]
 
     return next_cursor
+
+
+def validate_sort_key_and_order(sort_order: str, sort_key: str) -> Any:
+    """
+    Validates sort_order and sort_key arguments
+
+    :type sort_order: ``str``
+    :param sort_order: sort order provided by user
+
+    :type sort_key: ``str``
+    :param sort_key: sort key provided by user
+
+    :rtype: ``str``
+    :return: Returns string or raises ValueError
+    """
+    if sort_order and sort_key:
+        return f'{sort_key} {sort_order}'
+    elif sort_key:
+        return f'{sort_key}'
+    elif sort_order and not sort_key:
+        raise ValueError(MESSAGES['REQUIRED_SORT_KEY'])
 
 
 def validate_list_content_argument(args: Dict[str, str]) -> Dict[str, Any]:
@@ -665,46 +724,33 @@ def validate_list_content_argument(args: Dict[str, str]) -> Dict[str, Any]:
     """
     params = validate_list_command_args(args)
 
-    space_key = args.get('space_key', '')
-    if space_key:
-        params['spaceKey'] = space_key
+    params['spaceKey'] = args.get('space_key', '')
 
     content_type = args.get('type', 'page').lower()
-    if content_type in CONTENT_TYPE:
-        params['type'] = content_type
-    else:
+    if content_type not in LEGAL_CONTENT_TYPES:
         raise ValueError(MESSAGES['INVALID_CONTENT_TYPE'])
+    params['type'] = content_type
 
     sort_order = args.get('sort_order', '').lower()
     sort_key = args.get('sort_key', '')
-    if sort_key:
-        params['orderby'] = f'{sort_key}'
-    if sort_order:
-        if sort_key:
-            params['orderby'] = f'{sort_key} {sort_order}'
-        else:
-            raise ValueError(MESSAGES['REQUIRED_SORT_KEY'])
 
-    date = args.get('date', '')
-    if date:
-        posting_date = arg_to_datetime(date)
-        params['postingDay'] = posting_date.date()  # type: ignore
+    params['orderby'] = validate_sort_key_and_order(sort_order, sort_key)
+
+    content_creation_date = arg_to_datetime(args.get('date'))
+    if content_creation_date:
+        params['postingDay'] = content_creation_date.date()  # type: ignore
 
     status = args.get('status', '').lower()
-    CONTENT_STATUS.append('archived')
-    CONTENT_STATUS.append('any')
-    if status:
-        if status in CONTENT_STATUS:
-            params['status'] = status
-        else:
-            raise ValueError(MESSAGES['INVALID_STATUS_SEARCH'])
+    if status and status not in LEGAL_CONTENT_STATUS:
+        raise ValueError(MESSAGES['INVALID_STATUS_SEARCH'])
+    params['status'] = status
 
-    params['expand'] = EXPANDED_FIELD_CONTENT
+    params['expand'] = DEFAULT_EXPANDED_FIELD_CONTENT
     expand = args.get('expand', '')
     if expand:
-        params['expand'] = prepare_expand_argument(expand, EXPANDED_FIELD_CONTENT)
+        params['expand'] = prepare_expand_argument(expand, DEFAULT_EXPANDED_FIELD_CONTENT)
 
-    return params
+    return assign_params(**params)
 
 
 def validate_create_space_args(args: Dict[str, str]) -> Tuple[dict, Union[bool, str]]:
@@ -717,32 +763,36 @@ def validate_create_space_args(args: Dict[str, str]) -> Tuple[dict, Union[bool, 
     :return: Parameters to send in request
     :rtype: ``Dict[str, Any]``
     """
-    permissions = []
+
     unique_key = args.get('unique_key')
     if not unique_key:
         raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("unique_key"))
+    if len(unique_key) > 255 or not unique_key.isalnum():
+        raise ValueError(MESSAGES["INVALID_SPACE_KEY"])
 
     name = args.get('name')
     if not name:
         raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("name"))
+    if len(name) > 200:
+        raise ValueError(MESSAGES["INVALID_SPACE_NAME_LENGTH"])
 
     description = args.get('description', '')
 
-    is_private_space = args.get('is_private_space', False)
+    is_private_space = argToBoolean(args.get('is_private_space', False))
+
     if is_private_space:
-        is_private_space = True if argToBoolean(is_private_space) else False
+        if args.get('advanced_permissions') or args.get('permission_operations'):
+            raise ValueError(MESSAGES["PRIVATE_SPACE_PERMISSION"])
 
-    if not is_private_space:
-        if args.get('advance_permission'):
-            try:
-                advance_permission = json.loads(args['advance_permission'])
-                permissions = advance_permission
-            except (json.JSONDecodeError, json.decoder.JSONDecodeError, AttributeError):
-                raise ValueError(MESSAGES["ADVANCE_PERMISSION_FORMAT"])
-        else:
-            permissions = validate_permissions(args)
+    if args.get('advanced_permissions'):
+        try:
+            permissions = json.loads(args['advanced_permissions'])
+        except (json.JSONDecodeError, json.decoder.JSONDecodeError, AttributeError):
+            raise ValueError(MESSAGES["ADVANCE_PERMISSION_FORMAT"])
+    else:
+        permissions = validate_permissions(args)
 
-    json_object = {
+    params = {
         "key": unique_key,
         "name": name,
         "description": {
@@ -753,7 +803,7 @@ def validate_create_space_args(args: Dict[str, str]) -> Tuple[dict, Union[bool, 
         },
         "permissions": permissions
     }
-    params = remove_empty_elements_for_context(json_object)
+    params = remove_empty_elements_for_context(params)
 
     return params, is_private_space
 
@@ -792,33 +842,27 @@ def validate_list_space_args(args: Dict[str, str]) -> Dict[str, Any]:
     :rtype: ``Dict[str, Any]``
     """
     params = validate_list_command_args(args)
-    space_key = argToList(args.get('space_key'))
-    params['spaceKey'] = space_key
 
-    space_id = argToList(args.get('space_id'))
-    params['spaceId'] = space_id
-
-    space_type = args.get('type')
-    if space_type:
-        params['type'] = space_type
+    params['spaceKey'] = argToList(args.get('space_key'))
+    params['spaceId'] = argToList(args.get('space_id'))
+    params['type'] = args.get('type')
 
     status = args.get('status')
-    if status:
-        if status.lower() not in SPACE_STATUS:
-            raise ValueError(MESSAGES["INVALID_SPACE_STATUS"])
-        params['status'] = status
+    if status and status.lower() not in LEGAL_SPACE_STATUS:
+        raise ValueError(MESSAGES["INVALID_SPACE_STATUS"])
+    params['status'] = status
 
     favourite = args.get('favourite', '')
     if favourite:
         favourite = "true" if argToBoolean(favourite) else "false"
         params['favourite'] = favourite
 
-    params['expand'] = EXPANDED_FIELD_SPACE
+    params['expand'] = DEFAULT_EXPANDED_FIELD_SPACE
     expand = args.get('expand', '')
     if expand:
-        params['expand'] = prepare_expand_argument(expand, EXPANDED_FIELD_SPACE)
+        params['expand'] = prepare_expand_argument(expand, DEFAULT_EXPANDED_FIELD_SPACE)
 
-    return params
+    return assign_params(**params)
 
 
 def prepare_hr_for_space_list(spaces: List[Dict[str, Any]], url_prefix: str) -> str:
@@ -864,11 +908,11 @@ def validate_update_content_args(args: Dict[str, str]) -> Tuple[str, Dict[str, A
     """
     params = validate_create_content_args(args, is_update=True)
 
-    content_id = args.get("content_id", "")
+    content_id = args["content_id"]
     if not content_id:
         raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("content_id"))
 
-    version = args.get("version", "")
+    version = args["version"]
     if not version:
         raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("version"))
     params["version"] = {
@@ -876,7 +920,7 @@ def validate_update_content_args(args: Dict[str, str]) -> Tuple[str, Dict[str, A
     }
 
     content_type = params['type']
-    if content_type not in CONTENT_TYPE_UPDATE_COMMAND:
+    if content_type not in LEGAL_CONTENT_TYPE_UPDATE_COMMAND:
         raise ValueError(MESSAGES["INVALID_CONTENT_TYPE_UPDATE_CONTENT"])
 
     return content_id, params
@@ -1130,7 +1174,7 @@ def confluence_cloud_comment_create_command(client: Client, args: Dict[str, str]
            :return: Standard command result or no records found message.
            :rtype: ``CommandResults``
         """
-    params = validate_create_comment_args(args)
+    params = validate_and_prepare_comment_args(args)
     response = client.http_request(method="POST", url_suffix=URL_SUFFIX["CONTENT"], json_data=params)
     response_json = response.json()
     context = remove_empty_elements_for_context(response_json)
@@ -1296,6 +1340,7 @@ def main() -> None:
         command = demisto.command()
         args = demisto.args()
         strip_args(args)
+        remove_nulls_from_dictionary(args)
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.

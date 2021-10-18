@@ -18,6 +18,12 @@ def util_load_json(path):
 def test_test_module_when_valid_response_is_returned(requests_mock):
     """
     To test test_module command when success response come.
+    Given
+        - A valid response
+    When
+        - The status code returned is 200
+    Then
+        - Ensure test module should return success
     """
     from AtlassianConfluenceCloud import test_module
 
@@ -29,6 +35,12 @@ def test_test_module_when_valid_response_is_returned(requests_mock):
 def test_exception_handler(status_code, error_msg, requests_mock):
     """
     To test exception handler in various http error code.
+    Given
+        - a dictionary containing http code
+    When
+        - they are the error codes
+    Then
+        - raise DemistoException
     """
     requests_mock.get(BASE_URL, status_code=status_code)
 
@@ -42,6 +54,10 @@ def test_exception_handler(status_code, error_msg, requests_mock):
 def test_exception_handler_when_403_error_occurred(status_code, error_msg, requests_mock, capfd):
     """
     To test exception handler when 403 error code occurred.
+    Given
+        - a dictionary containing http error code 403
+    Then
+        - raise DemistoException
     """
     api_error_msg = util_load_json("test_data/error_msg_for_403_error_code.json")
     requests_mock.get(BASE_URL, json=api_error_msg, status_code=status_code)
@@ -55,6 +71,10 @@ def test_exception_handler_when_403_error_occurred(status_code, error_msg, reque
 def test_validate_url():
     """
     To test validate_url helper function when empty url is given.
+    Given
+        - whitespaces provided in Site Name
+    Then
+        - Returns the response message of invalid input
     """
     from AtlassianConfluenceCloud import validate_url
 
@@ -66,8 +86,14 @@ def test_validate_url():
 
 def test_confluence_cloud_group_list_command_when_valid_response_is_returned(requests_mock):
     """
-        To test confluence_cloud_group_list command when valid response return.
-        """
+    To test confluence_cloud_group_list command when valid response return.
+    Given:
+        - command arguments for list group command
+    When:
+        - Calling `confluence-cloud-group-list` command
+    Then:
+        -  Returns the response data
+    """
     from AtlassianConfluenceCloud import confluence_cloud_group_list_command
 
     expected_response = util_load_json(os.path.join("test_data", "group/group_list_command_response.json"))
@@ -93,6 +119,12 @@ def test_confluence_cloud_group_list_command_when_valid_response_is_returned(req
 def test_confluence_cloud_group_list_command_when_invalid_args_are_provided(args, err_msg):
     """
     To test confluence_cloud_group_list command when invalid arguments are provided.
+    Given:
+        - invalid command arguments for list group command
+    When
+        - Calling `confluence-cloud-group-list`
+    Then:
+        - Returns the response message of invalid input arguments
     """
     from AtlassianConfluenceCloud import validate_list_group_args
     with pytest.raises(ValueError) as de:
@@ -101,7 +133,15 @@ def test_confluence_cloud_group_list_command_when_invalid_args_are_provided(args
 
 
 def test_confluence_cloud_group_list_command_when_empty_response_is_returned(requests_mock):
-    """Test case scenario for successful execution of confluence_cloud_group_list command with an empty response."""
+    """
+    Test case scenario for successful execution of confluence_cloud_group_list command with an empty response.
+    Given:
+        - command arguments for list group command
+    When:
+        - Calling `confluence-cloud-group-list` command
+    Then:
+        - Returns no records for the given input arguments
+    """
     from AtlassianConfluenceCloud import confluence_cloud_group_list_command
     requests_mock.get(BASE_URL + URL_SUFFIX["GROUP"], json={"results": []}, status_code=200)
     command_results = confluence_cloud_group_list_command(client, {"limit": "0"})
@@ -111,6 +151,12 @@ def test_confluence_cloud_group_list_command_when_empty_response_is_returned(req
 def test_confluence_cloud_content_delete_command_when_valid_response_is_returned(requests_mock):
     """
     To test confluence_cloud_content_delete command when valid response return.
+    Given:
+        - command arguments for delete content command
+    When:
+        - Calling `confluence-cloud-content-delete` command
+    Then:
+        - Returns the response data
     """
     from AtlassianConfluenceCloud import confluence_cloud_content_delete_command
 
@@ -128,6 +174,12 @@ def test_confluence_cloud_content_delete_command_when_valid_response_is_returned
 def test_confluence_cloud_content_delete_command_when_invalid_argument_given(args, error_msg):
     """
     To test confluence_cloud_content_delete command when invalid argument is provided.
+    Given:
+        - invalid command arguments for delete content command
+    When
+        - Calling `confluence-cloud-content-delete`
+    Then:
+        - Returns the response message of invalid input arguments
     """
     from AtlassianConfluenceCloud import confluence_cloud_content_delete_command
 
@@ -139,6 +191,12 @@ def test_confluence_cloud_content_delete_command_when_invalid_argument_given(arg
 def test_confluence_cloud_content_delete_command_when_api_returns_error(requests_mock, capfd):
     """
     To test confluence_cloud_content_delete_command when 400 error code occurred.
+    Given:
+        - invalid command arguments for delete content command
+    When:
+        - Calling `confluence-cloud-content-delete` command
+    Then:
+        - Raise DemistoException
     """
     from AtlassianConfluenceCloud import confluence_cloud_content_delete_command
 
@@ -158,8 +216,14 @@ def test_confluence_cloud_content_delete_command_when_api_returns_error(requests
 
 def test_confluence_cloud_content_create_command_when_valid_response_is_returned(requests_mock):
     """
-        To test confluence_cloud_content_create command when valid response return.
-        """
+    To test confluence_cloud_content_create command when valid response return.
+    Given:
+        - command arguments for create content command
+    When:
+        - Calling `confluence-cloud-content-create` command
+    Then:
+        - Returns the response data
+    """
     from AtlassianConfluenceCloud import confluence_cloud_content_create_command
 
     expected_response = util_load_json(os.path.join("test_data", "content_create/content_create_command_response.json"))
@@ -187,6 +251,12 @@ def test_confluence_cloud_content_create_command_when_valid_response_is_returned
 def test_confluence_cloud_content_create_command_when_invalid_args_are_provided(args, err_msg):
     """
     To test confluence_cloud_content_create command when invalid arguments are provided.
+    Given:
+        - invalid command arguments for create content command
+    When
+        - Calling `confluence-cloud-content-create` command
+    Then:
+        - Returns the response message of invalid input arguments
     """
     from AtlassianConfluenceCloud import validate_create_content_args
     with pytest.raises(ValueError) as de:
@@ -194,25 +264,16 @@ def test_confluence_cloud_content_create_command_when_invalid_args_are_provided(
     assert str(de.value) == err_msg
 
 
-@pytest.mark.parametrize("args, error_msg", input_data.content_create_required_args)
-def test_confluence_cloud_content_create_command_when_whitespace_provided(args, error_msg, requests_mock, capfd):
-    """
-    To test confluence_cloud_content_create command when whitespace provided.
-    """
-    from AtlassianConfluenceCloud import confluence_cloud_content_create_command
-    expected_response = util_load_json(os.path.join("test_data", "content_create"
-                                                                 "/content_create_required_argument_error.json"))
-    requests_mock.post(BASE_URL + URL_SUFFIX["CONTENT"], status_code=400, json=expected_response)
-    with capfd.disabled():
-        with pytest.raises(DemistoException) as ve:
-            confluence_cloud_content_create_command(client, args)
-        assert str(ve.value) == error_msg
-
-
 def test_confluence_cloud_content_create_command_when_object_not_present(requests_mock):
     """
-        To test confluence_cloud_content_create command when valid response return.
-        """
+    To test confluence_cloud_content_create command when valid response return.
+    Given:
+        - command arguments for list group command
+    When:
+        - Calling `confluence-cloud-group-list` command
+    Then:
+        -  Returns the response with some missing values
+    """
     from AtlassianConfluenceCloud import confluence_cloud_content_create_command
 
     expected_response = util_load_json(
@@ -239,8 +300,14 @@ def test_confluence_cloud_content_create_command_when_object_not_present(request
 
 def test_confluence_cloud_comment_create_command_when_valid_response_is_returned(requests_mock):
     """
-        To test confluence_cloud_comment_create command when valid response return.
-        """
+    To test confluence_cloud_comment_create command when valid response return.
+    Given:
+        - command arguments for create comment command
+    When:
+        - Calling `confluence-cloud-comment-create` command
+    Then:
+        - Returns the response data
+    """
     from AtlassianConfluenceCloud import confluence_cloud_comment_create_command
 
     expected_response = util_load_json(os.path.join("test_data", "comment_create/comment_create_command_response.json"))
@@ -265,9 +332,15 @@ def test_confluence_cloud_comment_create_command_when_valid_response_is_returned
 
 
 @pytest.mark.parametrize("args, err_msg", input_data.comment_create_invalid_args)
-def test_confluence_cloud_comment_create_command_when_whitespace_provided(args, err_msg):
+def test_confluence_cloud_comment_create_command_when_invalid_args_provided(args, err_msg):
     """
-    To test confluence_cloud_comment_create command when whitespaces are provided for required fields.
+    To test confluence_cloud_comment_create command when invalid args are provided.
+    Given:
+        - invalid command arguments for create comment command
+    When:
+        - Calling `confluence-cloud-comment-create` command
+    Then:
+        - Returns the response message of invalid input arguments
     """
     from AtlassianConfluenceCloud import confluence_cloud_comment_create_command
     with pytest.raises(ValueError) as de:
@@ -278,6 +351,12 @@ def test_confluence_cloud_comment_create_command_when_whitespace_provided(args, 
 def test_confluence_cloud_user_list_command_when_valid_response_is_returned(requests_mock):
     """
     To test confluence_cloud_user_list command when valid response return.
+    Given:
+        - command arguments for list user command
+    When:
+        - Calling `confluence-cloud-user-list` command
+    Then:
+        - Returns the response data
     """
     from AtlassianConfluenceCloud import confluence_cloud_user_list_command
 
@@ -304,6 +383,12 @@ def test_confluence_cloud_user_list_command_when_valid_response_is_returned(requ
 def test_confluence_cloud_user_list_command_when_invalid_args_are_provided(args, err_msg):
     """
     To test confluence_cloud_user_list command when invalid arguments are provided.
+    Given:
+        - invalid command arguments for list user command
+    When:
+        - Calling `confluence-cloud-user-list` command
+    Then:
+        - Returns the response message of invalid input arguments
     """
     from AtlassianConfluenceCloud import confluence_cloud_user_list_command
 
@@ -315,6 +400,12 @@ def test_confluence_cloud_user_list_command_when_invalid_args_are_provided(args,
 def test_confluence_cloud_user_list_command_when_empty_response_is_returned(requests_mock):
     """
     Test case scenario for successful execution of confluence_cloud_user_list command with an empty response.
+    Given:
+        - command arguments for list user command
+    When:
+        - Calling `confluence-cloud-user-list` command
+    Then:
+        - Returns no records for the given input arguments
     """
     from AtlassianConfluenceCloud import confluence_cloud_user_list_command
 
@@ -328,8 +419,14 @@ def test_confluence_cloud_user_list_command_when_empty_response_is_returned(requ
 def test_confluence_cloud_content_search_command_when_valid_response_is_returned(requests_mock):
     """
     To test confluence_cloud_content_search command when valid response return.
+    Given:
+        - command arguments for search content command
+    When:
+        - Calling `confluence-cloud-content-search` command
+    Then:
+        - Returns the response data
     """
-    from AtlassianConfluenceCloud import confluence_cloud_content_search_command, EXPANDED_FIELD_CONTENT
+    from AtlassianConfluenceCloud import confluence_cloud_content_search_command, DEFAULT_EXPANDED_FIELD_CONTENT
 
     expected_response = util_load_json(os.path.join("test_data", "content_search/content_search_command_response.json"))
     requests_mock.get(BASE_URL + URL_SUFFIX["CONTENT_SEARCH"], json=expected_response)
@@ -341,7 +438,7 @@ def test_confluence_cloud_content_search_command_when_valid_response_is_returned
 
     args = {
         "query": "type=page",
-        "expand": EXPANDED_FIELD_CONTENT,
+        "expand": DEFAULT_EXPANDED_FIELD_CONTENT,
         "next_token": "1223344resfdczcxdvcdsv"
     }
     response = confluence_cloud_content_search_command(client, args)
@@ -354,6 +451,12 @@ def test_confluence_cloud_content_search_command_when_valid_response_is_returned
 def test_confluence_cloud_content_search_command_when_invalid_arguments_are_provided(args, err_msg):
     """
     To test confluence_cloud_content_search command when invalid arguments are provided.
+    Given:
+        - invalid command arguments for search content command
+    When:
+        - Calling `confluence-cloud-content-search` command
+    Then:
+        - Returns the response message of invalid input arguments
     """
     from AtlassianConfluenceCloud import confluence_cloud_content_search_command
 
@@ -367,6 +470,12 @@ def test_confluence_cloud_content_search_command_when_invalid_argument_value_are
                                                                                           requests_mock, capfd):
     """
     To test confluence_cloud_content_search command when invalid argument value are provided.
+    Given:
+        - invalid command arguments for search content command
+    When:
+        - Calling `confluence-cloud-content-search` command
+    Then:
+        - Raise DemistoException
     """
     from AtlassianConfluenceCloud import confluence_cloud_content_search_command
 
@@ -383,6 +492,12 @@ def test_confluence_cloud_content_search_command_when_invalid_argument_value_are
 def test_confluence_cloud_content_search_command_when_empty_response_is_returned(requests_mock):
     """
     To test confluence_cloud_content_search command when empty response returned.
+    Given:
+        - command arguments for search content command
+    When:
+        - Calling `confluence-cloud-content-search` command
+    Then:
+        - Returns no records for the given input arguments
     """
     from AtlassianConfluenceCloud import confluence_cloud_content_search_command
 
@@ -400,8 +515,14 @@ def test_confluence_cloud_content_search_command_when_empty_response_is_returned
 def test_confluence_cloud_content_list_command_when_valid_response_is_returned(requests_mock):
     """
     To test confluence_cloud_content_list command when valid response return.
+    Given:
+        - command arguments for list content command
+    When:
+        - Calling `confluence-cloud-content-list` command
+    Then:
+        - Returns the response data
     """
-    from AtlassianConfluenceCloud import confluence_cloud_content_list_command, EXPANDED_FIELD_CONTENT
+    from AtlassianConfluenceCloud import confluence_cloud_content_list_command, DEFAULT_EXPANDED_FIELD_CONTENT
 
     expected_response = util_load_json(os.path.join("test_data", "content_list/content_list_command_response.json"))
     requests_mock.get(BASE_URL + URL_SUFFIX["CONTENT"], json=expected_response)
@@ -413,7 +534,7 @@ def test_confluence_cloud_content_list_command_when_valid_response_is_returned(r
 
     args = {
         "limit": 2,
-        "expand": EXPANDED_FIELD_CONTENT,
+        "expand": DEFAULT_EXPANDED_FIELD_CONTENT,
         "space_key": "~680738455",
         "sort_order": "asc",
         "sort_key": "id",
@@ -431,6 +552,12 @@ def test_confluence_cloud_content_list_command_when_valid_response_is_returned(r
 def test_confluence_cloud_content_list_command_when_empty_response_is_returned(requests_mock):
     """
     To test confluence_cloud_content_list command when empty response returned.
+    Given:
+        - command arguments for list content command
+    When:
+        - Calling `confluence-cloud-content-list` command
+    Then:
+        - Returns no records for the given input arguments
     """
     from AtlassianConfluenceCloud import confluence_cloud_content_list_command
 
@@ -448,6 +575,12 @@ def test_confluence_cloud_content_list_command_when_empty_response_is_returned(r
 def test_confluence_cloud_content_list_command_when_invalid_arguments_are_provided(args, err_msg):
     """
     To test confluence_cloud_content_list command when invalid arguments are provided.
+    Given:
+        - invalid command arguments for list content command
+    When:
+        - Calling `confluence-cloud-content-list` command
+    Then:
+        - Returns the response message of invalid input arguments
     """
     from AtlassianConfluenceCloud import confluence_cloud_content_list_command
 
@@ -459,6 +592,12 @@ def test_confluence_cloud_content_list_command_when_invalid_arguments_are_provid
 def test_confluence_cloud_space_create_command_when_valid_response_is_returned(requests_mock):
     """
     To test confluence_cloud_space_create command when valid response return.
+    Given:
+        - command arguments for create space command
+    When:
+        - Calling `confluence-cloud-space-create` command
+    Then:
+        - Returns the response data
     """
     from AtlassianConfluenceCloud import confluence_cloud_space_create_command
 
@@ -486,6 +625,12 @@ def test_confluence_cloud_space_create_command_when_valid_response_is_returned(r
 def test_confluence_cloud_space_create_command_when_invalid_args_are_provided(args, err_msg):
     """
     To test confluence_cloud_space_create command when invalid arguments are provided.
+    Given:
+        - invalid command arguments for create space command
+    When:
+        - Calling `confluence-cloud-space-create` command
+    Then:
+        - Returns the response message of invalid input arguments
     """
     from AtlassianConfluenceCloud import validate_create_space_args
 
@@ -498,6 +643,12 @@ def test_confluence_cloud_space_create_command_when_invalid_args_are_provided(ar
 def test_confluence_cloud_space_create_command_when_invalid_permission_are_provided(args, err_msg):
     """
     To test confluence_cloud_space_create command when invalid permissions are provided.
+    Given:
+        - invalid permission arguments for create space command
+    When:
+        - Calling `confluence-cloud-space-create` command
+    Then:
+        - Returns the response message of invalid input arguments
     """
     from AtlassianConfluenceCloud import validate_permissions
 
@@ -509,11 +660,17 @@ def test_confluence_cloud_space_create_command_when_invalid_permission_are_provi
 def test_confluence_cloud_space_create_command_when_valid_permission_are_provided():
     """
     To test confluence_cloud_space_create command when valid permissions are provided.
+    Given:
+        - valid permission arguments for create space command
+    When:
+        - Calling `confluence-cloud-space-create` command
+    Then:
+        - Returns the response
     """
     from AtlassianConfluenceCloud import validate_permissions
     args = {"permission_account_id": "123",
             "permission_group_name": "abc",
-            "permission_operation": "read:space"}
+            "permission_operations": "read:space"}
     expected_result = util_load_json(os.path.join("test_data", "space_create/space_create_valid_permission.json"))
 
     actual_result = validate_permissions(args)
@@ -522,8 +679,14 @@ def test_confluence_cloud_space_create_command_when_valid_permission_are_provide
 
 def test_confluence_cloud_space_list_command_when_valid_response_is_returned(requests_mock):
     """
-        To test confluence_cloud_space_list command when valid response return.
-        """
+    To test confluence_cloud_space_list command when valid response return.
+    Given:
+        - command arguments for list space command
+    When:
+        - Calling `confluence-cloud-space-list` command
+    Then:
+        - Returns the response data
+     """
     from AtlassianConfluenceCloud import confluence_cloud_space_list_command
 
     expected_response = util_load_json(os.path.join("test_data", "space_list/space_list_command_response.json"))
@@ -550,6 +713,12 @@ def test_confluence_cloud_space_list_command_when_valid_response_is_returned(req
 def test_confluence_cloud_space_list_command_when_empty_response_is_returned(requests_mock):
     """
     To test confluence_cloud_space_list command when empty response returned.
+    Given:
+        - command arguments for list space command
+    When:
+        - Calling `confluence-cloud-space-list` command
+    Then:
+        - Returns no records for the given input arguments
     """
     from AtlassianConfluenceCloud import confluence_cloud_space_list_command
 
@@ -567,6 +736,12 @@ def test_confluence_cloud_space_list_command_when_empty_response_is_returned(req
 def test_confluence_cloud_space_list_command_when_invalid_args_are_provided(args, err_msg):
     """
     To test confluence_cloud_space_list command when invalid arguments are provided.
+    Given:
+        - invalid command arguments for list space command
+    When:
+        - Calling `confluence-cloud-space-list` command
+    Then:
+        - Returns the response message of invalid input arguments
     """
     from AtlassianConfluenceCloud import confluence_cloud_space_list_command
 
@@ -578,6 +753,12 @@ def test_confluence_cloud_space_list_command_when_invalid_args_are_provided(args
 def test_confluence_cloud_content_update_command_when_valid_response_is_returned(requests_mock):
     """
     To test confluence_cloud_content_update command when valid response return.
+    Given:
+        - command arguments for update content command
+    When:
+        - Calling `confluence-cloud-content-update` command
+    Then:
+        - Returns the response data
     """
     from AtlassianConfluenceCloud import confluence_cloud_content_update_command
 
@@ -607,6 +788,12 @@ def test_confluence_cloud_content_update_command_when_valid_response_is_returned
 def test_confluence_cloud_content_update_command_when_invalid_args_are_provided(args, err_msg):
     """
     To test confluence_cloud_content_update command when invalid arguments are provided.
+    Given:
+        - invalid command arguments for update content command
+    When:
+        - Calling `confluence-cloud-content-update` command
+    Then:
+        - Returns the response message of invalid input arguments
     """
     from AtlassianConfluenceCloud import confluence_cloud_content_update_command
 
@@ -618,6 +805,12 @@ def test_confluence_cloud_content_update_command_when_invalid_args_are_provided(
 def test_confluence_cloud_content_update_command_when_object_not_present(requests_mock):
     """
     To test confluence_cloud_content_update command when object is not present in response.
+    Given:
+        - command arguments for update content command
+    When:
+        - Calling `confluence-cloud-content-update` command
+    Then:
+        - Returns the response data with some missing values
     """
     from AtlassianConfluenceCloud import confluence_cloud_content_update_command
 
@@ -646,7 +839,13 @@ def test_confluence_cloud_content_update_command_when_object_not_present(request
 
 def test_confluence_cloud_comment_create_command_when_object_not_present(requests_mock):
     """
-        To test confluence_cloud_comment_create command when object not present.
+    To test confluence_cloud_comment_create command when object not present.
+    Given:
+        - command arguments for create comment command
+    When:
+        - Calling `confluence-cloud-comment-create` command
+    Then:
+        - Returns the response data with some missing values
     """
     from AtlassianConfluenceCloud import confluence_cloud_comment_create_command
 
@@ -674,8 +873,14 @@ def test_confluence_cloud_comment_create_command_when_object_not_present(request
 
 def test_confluence_cloud_space_list_command_when_key_not_present(requests_mock):
     """
-        To test confluence_cloud_space_list command when key not present.
-        """
+    To test confluence_cloud_space_list command when key not present.
+    Given:
+        - command arguments for list space command
+    When:
+        - Calling `confluence-cloud-space-list` command
+    Then:
+        - Returns the response data with some missing values
+    """
     from AtlassianConfluenceCloud import confluence_cloud_space_list_command
 
     expected_response = util_load_json(
@@ -705,8 +910,14 @@ def test_confluence_cloud_space_list_command_when_key_not_present(requests_mock)
 def test_confluence_cloud_content_search_command_when_object_not_present(requests_mock):
     """
     To test confluence_cloud_content_search command when object is not present in response.
+    Given:
+        - command arguments for search content command
+    When:
+        - Calling `confluence-cloud-content-search` command
+    Then:
+        - Returns the response data with some missing values
     """
-    from AtlassianConfluenceCloud import confluence_cloud_content_search_command, EXPANDED_FIELD_CONTENT
+    from AtlassianConfluenceCloud import confluence_cloud_content_search_command, DEFAULT_EXPANDED_FIELD_CONTENT
 
     expected_response = util_load_json(
         os.path.join("test_data", "content_search/content_search_object_not_present_response.json"))
@@ -719,7 +930,7 @@ def test_confluence_cloud_content_search_command_when_object_not_present(request
 
     args = {
         "query": "type=page",
-        "expand": EXPANDED_FIELD_CONTENT,
+        "expand": DEFAULT_EXPANDED_FIELD_CONTENT,
         "next_token": "1223344resfdczcxdvcdsv"
     }
     response = confluence_cloud_content_search_command(client, args)
@@ -731,10 +942,17 @@ def test_confluence_cloud_content_search_command_when_object_not_present(request
 def test_confluence_cloud_content_list_command_when_when_object_not_present(requests_mock):
     """
     To test confluence_cloud_content_list command when object is not present in response.
+    Given:
+        - command arguments for list content command
+    When:
+        - Calling `confluence-cloud-content-list` command
+    Then:
+        - Returns the response data with some missing values
     """
-    from AtlassianConfluenceCloud import confluence_cloud_content_list_command, EXPANDED_FIELD_CONTENT
+    from AtlassianConfluenceCloud import confluence_cloud_content_list_command, DEFAULT_EXPANDED_FIELD_CONTENT
 
-    expected_response = util_load_json(os.path.join("test_data", "content_list/content_list_object_not_present_response.json"))
+    expected_response = util_load_json(os.path.join("test_data", "content_list"
+                                                                 "/content_list_object_not_present_response.json"))
     requests_mock.get(BASE_URL + URL_SUFFIX["CONTENT"], json=expected_response)
     expected_context_output = util_load_json(os.path.join("test_data", "content_list/"
                                                                        "content_list_object_not_present_context.json"))
@@ -744,7 +962,7 @@ def test_confluence_cloud_content_list_command_when_when_object_not_present(requ
 
     args = {
         "limit": 2,
-        "expand": EXPANDED_FIELD_CONTENT,
+        "expand": DEFAULT_EXPANDED_FIELD_CONTENT,
         "space_key": "~680738455",
         "sort_order": "asc",
         "sort_key": "id",

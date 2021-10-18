@@ -65,49 +65,57 @@ script:
       required: false
       secret: false
     - default: false
-      description: "Specify the account ID of the user to whom permission should be\
-        \ granted. \n\nNote: To retrieve the account ID, execute the confluence-cloud-user-list\
-        \ command."
+      description: |-
+        Specify the account ID of the user to whom permission should be granted.
+
+        Note: To retrieve the account ID, execute the confluence-cloud-user-list command.
       isArray: false
       name: permission_account_id
       required: false
       secret: false
     - default: false
-      description: "Specify the group name to whom permission should be granted. \n\
-        \nNote: To retrieve the group name, execute the confluence-cloud-group-list\
-        \ command. "
+      description: |-
+        Specify the group name to whom permission should be granted.
+
+        Note: To retrieve the group name, execute the confluence-cloud-group-list command.
       isArray: false
       name: permission_group_name
       required: false
       secret: false
     - default: false
-      description: "Specify the permissions that should be applied. Supports multiple\
-        \ comma separated values.\n\nNote: Requires either permission_account_id or\
-        \ permission_group_name \n\nFormat accepted: operation1:targetType1, operation2:targetType2\n\
-        \nFor example: read:space, create:page\n\nPossible values for operations:\
-        \ create, read, delete, export, administer.\nPossible values for targetType:\
-        \ space, page, blogpost, comment, attachment."
+      description: |-
+        Specify the permissions that should be applied. Supports multiple comma separated values.
+
+        Note: Requires either permission_account_id or permission_group_name.
+
+        Format accepted: operation1:targetType1,
+        operation2:targetType2
+
+        For example: read:space, create:page
+
+        Possible values for operations: create, read, delete, export, administer.
+        Possible values for targetType: space, page, blogpost, comment, attachment.
       isArray: true
-      name: permission_operation
+      name: permission_operations
       required: false
       secret: false
     - default: false
       description: |-
-        Specify 'advance_permission' if you want to grant access to multiple users or groups. 'advance_permission' would have higher preference over 'permission_operation'.
+        Specify 'advanced_permissions' if you want to grant access to multiple users or groups. 'advanced_permissions' would have higher preference over 'permission_operations'.
 
         Note: Add backslash(\) before quotes.
 
         For example: [ { \"subjects\": { \"user\": { \"results\": [ { \"accountId\": \"5ff2e30b4d2179006ea18449\" } ] }, \"group\": { \"results\": [ { \"name\": \"administrators\" } ] } }, \"operation\": { \"operation\": \"read\", \"targetType\": \"space\" }, \"anonymousAccess\": false, \"unlicensedAccess\": false } ]
 
-        To prepare a valid json for advance_permission navigate to https://developer.atlassian.com/cloud/confluence/rest/api-group-space/#api-wiki-rest-api-space-post and see the permission parameter in it.
+        To prepare a valid json for advanced_permissions navigate to https://developer.atlassian.com/cloud/confluence/rest/api-group-space/#api-wiki-rest-api-space-post and see the permission parameter in it.
       isArray: false
-      name: advance_permission
+      name: advanced_permissions
       required: false
       secret: false
     deprecated: false
     description: |-
       Creates a new space.
-      Note: If no permissions are provided, Confluence default space permissions will be applied.
+      Note: If no permissions are specified, the default space permissions defined by the confluence cloud account admin will be used.
     execution: false
     name: confluence-cloud-space-create
     outputs:
@@ -280,8 +288,11 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: current
-      description: "The status of the new content. \nPossible values: current, trashed,\
-        \ draft.\n\nNote: The term 'current' refers to content that is currently active."
+      description: |-
+        The status of the new content.
+        Possible values: current, trashed, draft.
+
+        Note: The term 'current' refers to content that is currently active.
       isArray: false
       name: status
       predefined:
@@ -301,8 +312,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: "The content format type. \nPossible values: view, export_view,\
-        \ styled_view, storage, editor2, anonymous_export_view."
+      description: |-
+        The content format type.
+        Possible values: view, export_view, styled_view, storage, editor2, anonymous_export_view.
       isArray: false
       name: body_representation
       predefined:
@@ -572,8 +584,11 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: current
-      description: "The status of the new content. \nPossible values: current, trashed,\
-        \ draft.\n\nNote: The term 'current' refers to comment that is currently active."
+      description: |-
+        The status of the new content.
+        Possible values: current, trashed, draft.
+
+        Note: The term 'current' refers to comment that is currently active.
       isArray: false
       name: status
       predefined:
@@ -593,8 +608,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: "The content format type. \nPossible values: storage, editor2,\
-        \ editor."
+      description: |-
+        The content format type.
+        Possible values: storage, editor2, editor.
       isArray: false
       name: body_representation
       predefined:
@@ -604,24 +620,28 @@ script:
       required: true
       secret: false
     - default: false
-      description: "Specify the ID of the parent comment to create the child comment.\
-        \ \n\nNote: To retrieve the ancestor_id, execute confluence-cloud-content-search\
-        \ command using argument query=\"type=comment\"."
+      description: |-
+        Specify the ID of the parent comment to create the child comment.
+
+        Note: To retrieve the ancestor_id, execute confluence-cloud-content-search command using argument query="type=comment".
       isArray: false
       name: ancestor_id
       required: false
       secret: false
     - default: false
-      description: "Specify the ID of the container to create a comment.\n \nNote:\
-        \ To retrieve the container_id, execute the confluence-cloud-content-list\
-        \ command."
+      description: |-
+        Specify the ID of the container to create a comment.
+
+        Note: To retrieve the container_id, execute the confluence-cloud-content-list command.
       isArray: false
       name: container_id
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: "Specify the type of the container. \nPossible values: page, blogpost."
+      description: |-
+        Specify the type of the container.
+        Possible values: page, blogpost.
       isArray: false
       name: container_type
       predefined:
@@ -878,7 +898,7 @@ script:
     - default: false
       defaultValue: '50'
       description: |-
-        The maximum number of spaces to return per page.
+        Number of records to retrieve in the response.
 
         Note: The minimum value supported is 0 and maximum value supported is int32.
       isArray: false
@@ -938,8 +958,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: "Filter the results to the favourite spaces of the current user.\
-        \ \nPossible values: true, false."
+      description: |-
+        Filter the results to the favourite spaces of the current user.
+        Possible values: true, false.
       isArray: false
       name: favourite
       predefined:
@@ -1104,7 +1125,7 @@ script:
     - default: false
       defaultValue: '50'
       description: |-
-        The maximum number of content to return per page.
+        Number of records to retrieve in the response.
 
         Note: The minimum value supported is 0 and maximum value supported is int32.
       isArray: false
@@ -1141,8 +1162,11 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: "Order in which the response will be sorted. \nPossible values:\
-        \ asc, desc."
+      description: |-
+        Order in which the response will be sorted.
+        Possible values: asc, desc.
+
+        Note: If 'sort_key' is specified, default value for 'sort_order' is ascending.
       isArray: false
       name: sort_order
       predefined:
@@ -1169,10 +1193,11 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: "Filter the results to a set of content based on their status.\
-        \ If set to any, content with any status is returned. \nPossible values: any,\
-        \ current, trashed, draft, archived.\n\nNote: The term 'current' refers to\
-        \ content that is currently active."
+      description: |-
+        Filter the results to a set of content based on their status. If set to any, content with any status is returned.
+        Possible values: any, current, trashed, draft, archived.
+
+        Note: The term 'current' refers to content that is currently active.
       isArray: true
       name: status
       predefined:
@@ -1184,9 +1209,11 @@ script:
       required: false
       secret: false
     - default: false
-      description: "Indicates which properties to expand. \nFor reference visit https://developer.atlassian.com/cloud/confluence/rest/api-group-content/#api-wiki-rest-api-content-get.\n\
-        \nNote: To separate multiple values, use commas. Expanded properties will\
-        \ be populated in context data only."
+      description: |-
+        Indicates which properties to expand.
+        For reference visit https://developer.atlassian.com/cloud/confluence/rest/api-group-content/#api-wiki-rest-api-content-get.
+
+        Note: To separate multiple values, use commas. Expanded properties will be populated in context data only.
       isArray: true
       name: expand
       required: false
@@ -1432,7 +1459,7 @@ script:
       Delete the content depending on the content's type and status.
 
       Note: If the content's type is page or blogpost, it should be moved to trash before deleting permanently.
-    execution: false
+    execution: true
     name: confluence-cloud-content-delete
   - arguments:
     - default: false
@@ -1477,9 +1504,11 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: "The type of content. Set the type to the current type of the content.\
-        \ \nPossible values: page, blogpost, comment, attachment.\n\nNote: If type\
-        \ is comment, 'body_value' and 'body_representation' is required."
+      description: |-
+        The type of content. Set the type to the current type of the content.
+        Possible values: page, blogpost, comment, attachment.
+
+        Note: If type is comment, 'body_value' and 'body_representation' is required.
       isArray: false
       name: type
       predefined:
@@ -1772,8 +1801,10 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: "The maximum number of content objects to return per page. \n\n\
-        Note: The minimum value supported is 0 and maximum value supported is int32."
+      description: |-
+        Number of records to retrieve in the response.
+
+        Note: The minimum value supported is 0 and maximum value supported is int32.
       isArray: false
       name: limit
       required: false
@@ -2035,16 +2066,20 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: "The maximum number of spaces to return per page. \n\nNote: The\
-        \ minimum value supported is 0 and maximum value supported is int32."
+      description: |-
+        Number of records to retrieve in the response.
+
+        Note: The minimum value supported is 0 and maximum value supported is int32.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
       defaultValue: '0'
-      description: "The starting index of the returned spaces. \n\nNote: The minimum\
-        \ value supported is 0 and maximum value supported is int32."
+      description: |-
+        The starting index of the returned users.
+
+        Note: The minimum value supported is 0 and maximum value supported is int32.
       isArray: false
       name: offset
       required: false
@@ -2091,7 +2126,7 @@ script:
     - default: false
       defaultValue: '50'
       description: |-
-        The maximum number of groups to return per page.
+        Number of records to retrieve in the response.
 
         Note: The minimum value supported is 0 and maximum value supported is int32.
       isArray: false
@@ -2110,8 +2145,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: "The group permission level for which to filter results. \nPossible\
-        \ values: user, admin, site-admin."
+      description: |-
+        The group permission level for which to filter results.
+        Possible values: user, admin, site-admin.
       isArray: false
       name: access_type
       predefined:

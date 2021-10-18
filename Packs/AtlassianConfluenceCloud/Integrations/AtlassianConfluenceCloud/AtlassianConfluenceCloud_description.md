@@ -5,4 +5,4 @@ Register for an account on [Confluence Cloud](https://www.atlassian.com/software
 #### Create an API token
 - Log in to the [Confluence Cloud](https://id.atlassian.com/manage/api-tokens) account.
 - Click the "Create API Token" button.
-- Enter a label for the token and click "Create" button.
+- Enter a label for the token and click the "Create" button.

@@ -15,17 +15,22 @@ MESSAGES = {
     "INVALID_STATUS_SEARCH": "Invalid value for status. Status must be one of 'current', 'any', 'archived', 'draft' "
                              "or 'trashed'.",
     "INVALID_PERMISSION": "If the 'permission_account_id' or 'permission_group_name' arguments are given, "
-                          "the 'permission_operation' argument must also be given.",
+                          "the 'permission_operations' argument must also be given.",
     "PERMISSION_FORMAT": "Please provide the permission in the valid JSON format. "
                          "Format accepted - 'operation1:targetType1,operation2:targetType2'",
-    "ADVANCE_PERMISSION_FORMAT": "Please provide the 'advance_permission' in the valid JSON format. ",
+    "ADVANCE_PERMISSION_FORMAT": "Please provide the 'advanced_permissions' in the valid JSON format. ",
     "INVALID_SPACE_STATUS": "Invalid value for status. Status must be one of 'current' or 'archived'.",
     "INVALID_CONTENT_TYPE_UPDATE_CONTENT": "Invalid value for content type. Content type parameter can be 'page', "
                                            "'blogpost', 'comment' or 'attachment'.",
     "INVALID_BODY_REPRESENTATION": "Invalid value for body_representation. Body representation must be one of "
                                    "'editor', 'editor2' or 'storage'.",
     "INVALID_DELETION_TYPE": "Invalid value for deletion_type. Deletion type must be one of 'move to trash', "
-                             "'permanent delete' or 'permanent delete draft'."
+                             "'permanent delete' or 'permanent delete draft'.",
+    "INVALID_TITLE_LENGTH": "Title cannot be longer than 255 characters.",
+    "INVALID_SPACE_NAME_LENGTH": "Space name cannot be longer than 200 characters.",
+    "INVALID_SPACE_KEY": "Space Key cannot be longer than 255 characters and should contain alphanumeric characters "
+                         "only.",
+    "PRIVATE_SPACE_PERMISSION": "Permission can not be granted for a private space."
 }
 
 exception_handler_params = [
@@ -53,19 +58,14 @@ content_create_invalid_args = [
     ({"title": "abc", "space_key": "demo", "type": ""}, MESSAGES["REQUIRED_ARGUMENT"].format("type")),
     ({"title": "abc", "space_key": "demo", "type": "abc"}, MESSAGES["INVALID_CONTENT_TYPE"]),
     ({"title": "", "space_key": "demo", "type": "abc"}, MESSAGES['REQUIRED_ARGUMENT'].format("title")),
-    ({"title": "abc", "space_key": "", "type": "page"}, MESSAGES['REQUIRED_ARGUMENT'].format("space_key"))
-]
-
-content_create_required_args = [
-    ({
-         "title": "pnifgQopYghcLjxjpEUXKexOtu6x74FI9u2tKD5vkt8qDEd1YcgS1YVgTIo6iT9j4K38hdxO5lQFJHezqiJ3"
-                  "pozCuVBeEXQofIgGzwGE2mrew7yVLU5B1mlazmTkt1sxjF75iPUOtpIVI8fOaNm6LDmxrQ2Y1V8m9kITohRxt"
-                  "BdhUHGeciHBvIvG6XOl0GSID5yUE0Lc1EkDxNW778jLO62ngtuWhDR2E5jernuPeCqYbvr8JEEjoOGKWKdflRwk",
-         "space_key": "demo", "type": "page"}, "Title cannot be longer than 255 characters. \n")
+    ({"title": "abc", "space_key": "", "type": "page"}, MESSAGES['REQUIRED_ARGUMENT'].format("space_key")),
+    ({"title": "pnifgQopYghcLjxjpEUXKexOtu6x74FI9u2tKD5vkt8qDEd1YcgS1YVgTIo6iT9j4K38hdxO5lQFJHezqiJ3"
+               "pozCuVBeEXQofIgGzwGE2mrew7yVLU5B1mlazmTkt1sxjF75iPUOtpIVI8fOaNm6LDmxrQ2Y1V8m9kITohRxt"
+               "BdhUHGeciHBvIvG6XOl0GSID5yUE0Lc1EkDxNW778jLO62ngtuWhDR2E5jernuPeCqYbvr8JEEjoOGKWKdflRwk",
+      "space_key": "demo", "type": "page"}, MESSAGES["INVALID_TITLE_LENGTH"])
 ]
 
 delete_content_invalid_args = [
-    ({}, MESSAGES["REQUIRED_ARGUMENT"].format("content_id")),
     ({"content_id": ""}, MESSAGES["REQUIRED_ARGUMENT"].format("content_id")),
     ({"content_id": "123", "deletion_type": "dummy"}, MESSAGES["INVALID_DELETION_TYPE"])
 ]
@@ -89,7 +89,6 @@ list_user_invalid_args = [
 ]
 
 content_search_invalid_args = [
-    ({}, MESSAGES["REQUIRED_ARGUMENT"].format("query")),
     ({"query": ""}, MESSAGES["REQUIRED_ARGUMENT"].format("query")),
     ({"query": "type=page", "limit": -1}, MESSAGES['LIMIT'].format(-1)),
     ({"query": "type=page", "limit": 2147483648}, MESSAGES['LIMIT'].format(2147483648))
@@ -105,15 +104,32 @@ create_space_invalid_args = [
     ({"unique_key": "unique", "name": ""}, MESSAGES["REQUIRED_ARGUMENT"].format("name")),
     ({"unique_key": "unique", "name": "space_name", "is_private_space": "abc"},
      "Argument does not contain a valid boolean-like value"),
-    ({"unique_key": "unique", "name": "space_name", "advance_permission": "{\"subjects\"=\"user\"}"},
-     MESSAGES["ADVANCE_PERMISSION_FORMAT"])
+    ({"unique_key": "unique", "name": "space_name", "advanced_permissions": "{\"subjects\"=\"user\"}"},
+     MESSAGES["ADVANCE_PERMISSION_FORMAT"]),
+    ({"unique_key": "!@#$", "name": "space_name", "advanced_permissions": "{\"subjects\":\"user\"}"},
+     MESSAGES["INVALID_SPACE_KEY"]),
+    ({"unique_key": "Acxeqrs5j038A3Yb0TSZ0NRnoYd4DfxxzEfFZPvtyJnmEEgzVYlxq1fFYVkxvvwaUXmE8De4zLbkSZkv8"
+                    "7CmGTzaFRaTvf5EFlrgb4FRNGzBZ2K3wL0ZPAHeNadopRAonCcEV516DmE5ZeUdkONG1EFWFIDBfmshb1Z2"
+                    "sjBVLggTnSVmZRVHl7me9jThnv3PGmbynozhL9bUnGh1UxD4nzEiv13dO55YtbYYXhHw7Kuw8eJ3s2xjj"
+                    "102mq3RpE0w",
+      "name": "space_name", "advanced_permissions": "{\"subjects\":\"user\"}"},
+     MESSAGES["INVALID_SPACE_KEY"]),
+    ({"unique_key": "unique", "name": "gKcpqsOfX80ySDWwDXwU1WtcxPurxpvo2IQGXoJFpYsaoreivzjKRqOQ"
+                                      "JjPnesXmGyF9WdMCPjEOEJokgOaGh2wSd5MRv0i3YPe3ZLMGqM8lmX8KeuTs"
+                                      "ghnr8AvzANcqWC4tettmyPmQBrAm8zADfZ9kkQrpQQUO0Sd4xQ8ycfYQW2Xf77AO"
+                                      "2nOB5UBeHHACSXEJiv0H1"},
+     MESSAGES["INVALID_SPACE_NAME_LENGTH"]),
+    ({"unique_key": "unique", "name": "space_name", "is_private_space": True,
+      "advanced_permissions": "{\"subjects\":\"user\"}"},
+     MESSAGES["PRIVATE_SPACE_PERMISSION"]),
+
 ]
 
 create_space_invalid_permission = [
-    ({"permission_account_id": "123", "permission_group_name": "abc", "permission_operation": ""},
+    ({"permission_account_id": "123", "permission_group_name": "abc", "permission_operations": ""},
      MESSAGES["INVALID_PERMISSION"]),
     ({"permission_account_id": "123", "permission_group_name": "abc",
-      "permission_operation": "create:page, :space, read:,   ,"},
+      "permission_operations": "create:page, :space, read:,   ,"},
      MESSAGES["PERMISSION_FORMAT"]),
 
 ]
@@ -150,5 +166,6 @@ content_update_invalid_arg_value = [
      MESSAGES['REQUIRED_ARGUMENT'].format("'body_value' and 'body_representation'")),
     ({"content_id": "", "title": "dummy", "type": "page", "version": 2},
      MESSAGES['REQUIRED_ARGUMENT'].format("content_id")),
-    ({"content_id": "2097159", "title": "dummy", "type": "page"}, MESSAGES['REQUIRED_ARGUMENT'].format("version"))
+    ({"content_id": "2097159", "title": "dummy", "type": "page", "version": ""},
+     MESSAGES['REQUIRED_ARGUMENT'].format("version"))
 ]
