@@ -4,5 +4,6 @@
     "id": "ThreatIntelReport",
     "name": "Threat Intel Report",
     "pluralName": "Threat Intel Reports",
-    "auditable": false
+    "auditable": false,
+    "rbacSupport": true
 }
