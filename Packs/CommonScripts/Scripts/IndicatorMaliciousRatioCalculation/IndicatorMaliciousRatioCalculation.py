@@ -71,7 +71,7 @@ def indicator_malicious_ratio_calculation(args):
     from_date = args.get('fromDate', '')
 
     query = build_query(base_query, from_date)
-    res = demisto.executeCommand("findIndicators", {'query': query, 'size': max_indicators})
+    res = demisto.executeCommand("findIndicators", {'query': base_query, 'size': max_indicators})
     indicators = res[0]['Contents']
     indicators_result = map(get_indicator_data, indicators)
     res = demisto.executeCommand("SearchIncidentsV2", {'query': query.replace('incident.', ''), 'size': max_incidents})
