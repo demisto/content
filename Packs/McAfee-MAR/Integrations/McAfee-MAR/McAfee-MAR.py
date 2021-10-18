@@ -298,7 +298,7 @@ def main():
     with open(broker_ca_bundle, "w") as text_file:
         text_file.write(demisto.params()['broker_ca_bundle'])
 
-    with open(cert_file, "w") as text_file:
+    with open(cert_file, "w") as text_file:  # lgtm [py/clear-text-storage-sensitive-data]
         text_file.write(demisto.params()['cert_file'])
 
     with open(private_key, "w") as text_file:
