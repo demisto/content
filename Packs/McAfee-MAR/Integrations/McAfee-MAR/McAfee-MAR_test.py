@@ -22,9 +22,17 @@ This is a valid Certificate
 
 
 def test_get_client_config(mocker):
+    """
+    Given
+    - Configuration params - certificate, private_key, invalid_private_key
+    When
+    - Run validate_certificates_format
+    Then
+    - Validate the command and validation works as expected.
+    """
     mcafee_mar = importlib.import_module("McAfee-MAR")
 
-    # # Invalid private Key
+    # Invalid private Key
     valid_params = {'private_key': invalid_private_key,
                     'cert_file': valid_certificate,
                     'broker_ca_bundle': valid_certificate}
