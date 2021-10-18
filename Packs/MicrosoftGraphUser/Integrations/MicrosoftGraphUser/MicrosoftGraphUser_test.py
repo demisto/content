@@ -1,3 +1,4 @@
+import pytest
 
 users_list_mock = [
     {
@@ -73,3 +74,21 @@ def test_get_user_command_404_response(mocker):
     mocker.patch.object(MicrosoftClient, 'get_access_token')
     hr, _, _ = get_user_command(client, {'user': 'NotExistingUser'})  # client.get_user('user', 'properties')
     assert 'User NotExistingUser was not found' in hr
+
+
+@pytest.mark.parametrize('host_url, expected_endpoint', [('https://graph.microsoft.us', 'gcc-high'),
+                                                         ('https://dod-graph.microsoft.us', 'dod'),
+                                                         ('https://graph.microsoft.de', 'de'),
+                                                         ('https://microsoftgraph.chinacloudapi.cn', 'cn')])
+def test_host_to_endpoint(host_url, expected_endpoint):
+    """
+    Given:
+        - Host address for national endpoints
+    When:
+        - Creating a new MsGraphClient
+    Then:
+        - Verify that the host address is translated to the correct endpoint code, i.e. com/gcc-high/dod/de/cn
+    """
+    from MicrosoftGraphUser import GRAPH_BASE_ENDPOINTS
+
+    assert GRAPH_BASE_ENDPOINTS[host_url] == expected_endpoint
