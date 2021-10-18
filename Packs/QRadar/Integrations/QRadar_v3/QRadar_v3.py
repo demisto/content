@@ -3,7 +3,7 @@ import secrets
 from enum import Enum
 from ipaddress import ip_address
 from threading import Lock
-from typing import Tuple, Set, Dict
+from typing import Tuple, Set, Dict, Callable
 
 import pytz
 import urllib3
@@ -658,9 +658,12 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def safely_update_context_data(func):
+def safely_update_context_data(func: Callable):
     """Decorator for updating context data using versions.
     In case of a race condition, preform func with the new context_data and try updating again.
+
+    Args:
+        func: The function to preform with the new context data before updating.
 
     raise ValueError if context_data or version are not in the kwargs for the function.
     raise DemistoException if reached maximum of retries.
@@ -1583,11 +1586,11 @@ def update_mirrored_events(client: Client,
                 ))
 
             updated_offenses += [future.result() for future in futures]
-        return updated_offenses  #, exclude_lists(original=offenses, exclude=updated_offenses, key="id")
+        return updated_offenses
 
     except Exception as e:
         print_debug_msg(f"Error while enriching mirrored offenses with events: {str(e)} \n {traceback.format_exc()}")
-        return updated_offenses  #, exclude_lists(original=offenses, exclude=updated_offenses, key="id")
+        return updated_offenses
 
 
 def create_incidents_from_offenses(offenses: List[Dict], incident_type: Optional[str]) -> List[Dict]:
@@ -1643,7 +1646,18 @@ def print_mirror_events_stats(context_data: dict, stage: str) -> Set[str]:
 
 
 @safely_update_context_data
-def move_updated_offenses(context_data, version, include_context_data, updated_list):
+def move_updated_offenses(context_data: dict, version: Any, include_context_data: dict,
+                          updated_list: list) -> Tuple[dict, Any, Any]:
+    """Move updated offenses from MIRRORED_OFFENSES_CTX_KEY to UPDATED_MIRRORED_OFFENSES_CTX_KEY.
+
+    Args:
+        context_data: The context data to update
+        version: The version of the context data
+        include_context_data: The context data changes to include
+        updated_list: The list of updated offenses
+
+    Returns: (The new context data, the context data version the changes were based on, None)
+    """
     new_context_data = include_context_data.copy()
     if updated_list:
         all_updated_mirrored_offenses = merge_lists(original_list=context_data.get(UPDATED_MIRRORED_OFFENSES_CTX_KEY, []),
@@ -3005,7 +3019,7 @@ def json_dumps_inner(listed_objects: list) -> List[str]:
     return listed_json_dumps
 
 
-def extract_context_data(context_data: dict, include_id: bool=False) -> dict:
+def extract_context_data(context_data: dict, include_id: bool = False) -> dict:
     """Transform the context data from partially json encoded to fully decoded.
 
     Args:
@@ -3028,12 +3042,12 @@ def extract_context_data(context_data: dict, include_id: bool=False) -> dict:
         'last_mirror_update': json.loads(context_data.get('last_mirror_update', '0'))
     })
     if include_id and LAST_FETCH_KEY in context_data:
-        new_context_data.update({LAST_FETCH_KEY: int(json.loads(context_data.get(LAST_FETCH_KEY)))})
+        new_context_data.update({LAST_FETCH_KEY: int(json.loads(context_data.get(LAST_FETCH_KEY, '0')))})
 
     return new_context_data
 
 
-def encode_context_data(context_data: dict, include_id: bool=False) -> dict:
+def encode_context_data(context_data: dict, include_id: bool = False) -> dict:
     """Transform the context data from a decoded python object form to a partially json encoded form.
     This is done in order to maintain compatibility with the set_to_integration_context_with_retries command.
 
@@ -3061,7 +3075,18 @@ def encode_context_data(context_data: dict, include_id: bool=False) -> dict:
 
 
 @safely_update_context_data
-def remove_offense_from_context_data(context_data, version, offense_id, offense_to_remove):
+def remove_offense_from_context_data(context_data: dict, version: Any, offense_id: str,
+                                     offense_to_remove: str) -> Tuple[dict, Any, Any]:
+    """Remove an offense from context data UPDATED_MIRRORED_OFFENSES_CTX_KEY and RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY.
+
+    Args:
+        context_data: The context data to update.
+        version: The version of the context data to update.
+        offense_id: The offense id to remove from RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY.
+        offense_to_remove: The offense to remove from UPDATED_MIRRORED_OFFENSES_CTX_KEY.
+
+    Returns: (The new context_data, The context_data version the change was based on, None)
+    """
     updated = context_data.get(UPDATED_MIRRORED_OFFENSES_CTX_KEY, [])
     resubmitted = context_data.get(RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY, [])
 
@@ -3197,8 +3222,20 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
 
 
 @safely_update_context_data
-def add_modified_remote_offenses(context_data, version, mirror_options, new_modified_records_ids, current_last_update,
-                                 offenses):
+def add_modified_remote_offenses(context_data: dict, version: str, mirror_options: str, new_modified_records_ids: list,
+                                 current_last_update: str, offenses: list) -> Tuple[dict, str, list]:
+    """Add modified remote offenses to context_data and handle exhausted offenses.
+
+    Args:
+        context_data: The context data to update.
+        version: The version of the context data to update.
+        mirror_options: The mirror options for the integration.
+        new_modified_records_ids: The new modified offenses ids.
+        current_last_update: The current last mirror update.
+        offenses: The offenses to update.
+
+    Returns: (The new context data, The context_data version the changes were based on, The new modified records ids)
+    """
     new_context_data = context_data.copy()
     print_debug_msg(f'Saving New Highest ID: {context_data.get(LAST_FETCH_KEY, 0)}')
     new_context_data.update({'last_mirror_update': current_last_update})
