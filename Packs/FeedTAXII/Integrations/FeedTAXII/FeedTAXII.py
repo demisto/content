@@ -376,6 +376,11 @@ class StixDecode(object):
                 title = title.text
                 ttp_info['stix_ttp_title'] = title
 
+            description = next((c for c in ttp[0] if c.name == 'Description'), None)
+            if description is not None:
+                description = description.text
+                ttp_info['ttp_description'] = description
+
             behavior = package.find_all('Behavior')
 
             if behavior:
@@ -1043,7 +1048,7 @@ def ttp_extract_properties(ttp, behavior):
         type_ = next((c for c in ttp if c.name == 'Type'), None)
         if type_ is not None:
             type_ = type_.text
-            result['stix_type'] = type_
+            result['malware_type'] = type_
 
         name = next((c for c in ttp if c.name == 'Name'), None)
         if name is not None:
@@ -1159,21 +1164,21 @@ def fetch_indicators_command(client):
                 'stixindicatorname': item.get('stix_indicator_name'),
                 'stixindicatordescription': item.get('stix_indicator_description'),
                 'confidence': item.get('confidence'),
-                'fields': {
-                    'value': indicator,
-                    'type': item.get('type'),
-                    'title': item.get('stix_title'),
-                    'description': item.get('stix_description'),
-                    'stixindicatorname': item.get('stix_indicator_name'),
-                    'stixindicatordescription': item.get('stix_indicator_description'),
-                    'confidence': item.get('confidence'),
-                },
-                'rawJSON': item,
             }
+
+            fields: Dict[str, str] = {}
+            for key, value in indicator_obj.items():
+                if key in client.tags:
+                    fields[key] = value
+            indicator_obj['fields'] = fields
+
             if item.get('relationships'):
                 indicator_obj['relationships'] = create_relationships(item)
+
             if client.tlp_color:
                 indicator_obj['fields']['trafficlightprotocol'] = client.tlp_color
+
+            indicator_obj['rawJSON'] = item
 
             indicators.append(indicator_obj)
 
@@ -1186,12 +1191,10 @@ def fetch_indicators_command(client):
             indicator_obj = {
                 'value': indicator,
                 'type': item.get('type'),
-                'stixttptitle': item.get('stix_ttp_title'),
-                'stixtype': item.get('stix_type'),
                 'title': item.get('title'),
-                'idref': item.get('stix_id_ref'),
                 'description': item.get('description'),
                 'shortdescription': item.get('short_description'),
+
                 'fields': {
                     'tags': client.tags,
                 },
