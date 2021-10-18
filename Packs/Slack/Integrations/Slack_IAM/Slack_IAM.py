@@ -47,7 +47,7 @@ class Client(BaseClient):
         user_data["schemas"] = ["urn:scim:schemas:core:1.0"]  # Mandatory user profile field.
         if not isinstance(user_data["emails"], list):
             user_data["emails"] = [user_data["emails"]]
-        if not isinstance(user_data["phoneNumbers"], list):
+        if user_data.get("phoneNumbers") and not isinstance(user_data["phoneNumbers"], list):
             user_data["phoneNumbers"] = [user_data["phoneNumbers"]]
         res = self._http_request(
             method='POST',
@@ -109,12 +109,12 @@ class Client(BaseClient):
             error_code = e.res.status_code
             try:
                 resp = e.res.json()
-                error_message = resp.get('Errors', {}).get('description')
+                error_message = resp.get('Errors', {}).get('description') + '\n' + traceback.format_exc()
             except ValueError:
-                error_message = str(e)
+                error_message = str(e) + '\n' + traceback.format_exc()
         else:
             error_code = ''
-            error_message = str(e)
+            error_message = str(e) + '\n' + traceback.format_exc()
 
         user_profile.set_result(action=action,
                                 success=False,
@@ -483,7 +483,7 @@ def main():
     create_if_not_exists = demisto.params().get("create_if_not_exists")
 
     iam_command = IAMCommand(is_create_enabled, is_enable_enabled, is_disable_enabled, is_update_enabled,
-                             create_if_not_exists, mapper_in, mapper_out)
+                             create_if_not_exists, mapper_in, mapper_out, attr='username')
 
     base_url = 'https://api.slack.com/scim/v1/'
     headers = {
