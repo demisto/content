@@ -532,7 +532,7 @@ def main():
 
     insecure = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    api_key = params.get('api_key', '')
+    api_key = params.get('api_key', {}).get('password', '')
     base_url = params.get('url')
     if not api_key:
         if is_demisto_version_ge('6.5.0'):
