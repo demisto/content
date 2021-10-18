@@ -1,7 +1,7 @@
 Gets information from the Azure Active Directory Identity Protection service.
 This integration was integrated and tested with the beta version of Azure Active Directory Identity Protection API.
 
-## Set up an Azure Application
+## Authorization
 Choose between the following options. Both of them use the [device authorization grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code).
 
 #### Cortex XSOAR Azure app
