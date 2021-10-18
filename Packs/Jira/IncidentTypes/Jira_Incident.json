@@ -6,6 +6,7 @@
  "name": "Jira Incident",
  "prevName": "Jira Incident",
  "color": "#A3C9FF",
+ "playbookId": "Create Jira Issue",
  "hours": 0,
  "days": 0,
  "weeks": 0,
