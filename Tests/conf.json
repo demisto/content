@@ -45,6 +45,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "GSuiteAuditor",
+            "playbookID": "GSuiteAuditor-Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "AzureWAF",
             "instance_names": "azure_waf_prod",
             "playbookID": "Azure WAF - Test",
@@ -4566,6 +4571,12 @@
         {
             "integrations": "Azure Sentinel",
             "playbookID": "TestAzureSentinelPlaybookV2"
+        },
+        {
+            "playbookID": "Tanium Threat Response V2 Test",
+            "integrations": ["Tanium Threat Response v2", "Demisto REST API"],
+            "fromversion": "6.0.0",
+            "timeout": 3000
         }
     ],
     "skipped_tests": {
@@ -4867,6 +4878,7 @@
         "Gmail Single User": "googleclient sdk has time based challenge exchange",
         "Gmail": "googleclient sdk has time based challenge exchange",
         "GSuiteAdmin": "googleclient sdk has time based challenge exchange",
+        "GSuiteAuditor": "googleclient sdk has time based challenge exchange",
         "GoogleCloudTranslate": "google translate sdk does not support proxy",
         "Google Chronicle Backstory": "SDK",
         "Google Vision AI": "SDK",
@@ -4958,9 +4970,6 @@
             "demisto/chromium": {
                 "pid_threshold": 11
             },
-            "demisto/powershell-ubuntu": {
-                "memory_threshold": 250
-            },
             "demisto/py-ews:2.0": {
                 "memory_threshold": 150
             },
@@ -4993,7 +5002,7 @@
             },
             "demisto/powershell-ubuntu": {
                 "pid_threshold": 45,
-                "memory_threshold": 200
+                "memory_threshold": 250
             },
             "demisto/boto3": {
                 "memory_threshold": 90
