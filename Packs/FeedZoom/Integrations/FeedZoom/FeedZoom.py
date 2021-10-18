@@ -3,6 +3,7 @@ from CommonServerPython import *
 from typing import Dict, List, Tuple, Any, Callable, Optional
 
 import urllib3
+import subprocess
 from bs4 import BeautifulSoup
 
 # disable insecure warnings
@@ -31,14 +32,12 @@ class Client(BaseClient):
             A list of objects, containing the indicators.
         """
         result = []
-        headers = {
-            'User-Agent': 'PostmanRuntime/7.28.2',
-            'accept': '*/*'}
-        session = requests.Session()
-        r = session.request("GET", self._base_url, headers=headers, verify=self._verify)
-        print(r.request.headers)
-        r = r.text
-
+        try:
+            r = subprocess.check_output(['wget', "-O-",
+                                         'https://support.zoom.us/hc/en-us/articles/201362683-Network-Firewall-or-Proxy-Server-Settings-for-Zoom'],
+                                        stderr=subprocess.STDOUT)
+        except subprocess.CalledProcessError as e:
+            raise DemistoException(f"Unable to get the url content. Error: {e}.")
         soup = BeautifulSoup(r, "html.parser")
 
         try:
