@@ -565,9 +565,7 @@ def run_polling_command(args: dict=None, cmd: str=None, search_function: Callabl
                 for k, v in additional_paths.items():
                     status_output[k] = v
 
-            status = result
-            for key in success_path[0]:
-                status = status.get(key, {})
+            status = dict_safe_get(result, success_path[0], default_return_value={})
 
             # If the job is successful
             if status == success_path[1]:
@@ -577,9 +575,7 @@ def run_polling_command(args: dict=None, cmd: str=None, search_function: Callabl
             # Otherwise return an error in the results
             else:
                 if error_path:
-                    details = result
-                    for key in error_path:
-                        details = details.get(key, {})
+                    details = dict_safe_get(result, error_path, default_return_value={})
                 else:
                     details = None
                 status_output['Status'] = 'Failed'
