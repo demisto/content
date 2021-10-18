@@ -24,12 +24,12 @@ class MsgListener(stomp.ConnectionListener):
         self.result_arr = []
         self.msg_ids = []
 
-    def on_error(self, headers, message):
-        demisto.results('received an error "%s"' % message)
+    def on_error(self, frame):
+        demisto.results('received an error "%s"' % frame)
 
-    def on_message(self, headers, message):
-        self.result_arr.append(message)
-        self.msg_ids.append(headers['message-id'])
+    def on_message(self, frame):
+        self.result_arr.append(frame.body)
+        self.msg_ids.append(frame.headers['message-id'])
 
 
 ''' HELPER FUNCTIONS '''
