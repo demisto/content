@@ -1594,6 +1594,7 @@ def alarm_summary_command(client: Client, args: Dict[str, Any]) -> CommandResult
         raise DemistoException('Invalid alarm_id')
 
     alarm_summary, raw_response = client.alarm_summary_request(alarm_id)
+    alarm_summary['alarmId'] = int(alarm_id)
     ec = alarm_summary.copy()
 
     alarm_event_summary = alarm_summary.get('alarmEventSummary')

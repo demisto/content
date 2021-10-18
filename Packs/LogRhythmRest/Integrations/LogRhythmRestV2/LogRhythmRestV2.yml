@@ -748,6 +748,9 @@ script:
       contextPath: LogRhythm.AlarmSummary.additionalDetails
       description: 'The alarm additional details.'
     - type: Number
+      contextPath: LogRhythm.AlarmSummary.alarmId
+      description: 'The alarm ID.'
+    - type: Number
       contextPath: LogRhythm.AlarmSummary.alarmEventSummary.msgClassId
       description: 'The alarm summary mesasge class ID.'
     - type: String
