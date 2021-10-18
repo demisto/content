@@ -22,7 +22,7 @@ configuration:
   required: false
   type: 8
 description: Generates a Palo Alto Networks WildFire PDF report.
-display: Palo Alto Networks WildFire Reports.
+display: Palo Alto Networks WildFire Reports
 name: WildFire-Reports
 defaultEnabled: true
 script:
