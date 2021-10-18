@@ -45,6 +45,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "GSuiteAuditor",
+            "playbookID": "GSuiteAuditor-Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "AzureWAF",
             "instance_names": "azure_waf_prod",
             "playbookID": "Azure WAF - Test",
@@ -4784,7 +4789,6 @@
         "_comment4": "~~~ OTHER ~~~",
         "AlienVault OTX TAXII Feed": "Issue 29197",
         "EclecticIQ Platform": "Issue 8821",
-        "Zoom": "Issue 19832",
         "Forescout": "Can only be run from within PANW network. Look in keeper for - Demisto in the LAB",
         "FortiManager": "Can only be run within PANW network",
         "HelloWorldSimple": "This is just an example integration - no need for test",
@@ -4873,6 +4877,7 @@
         "Gmail Single User": "googleclient sdk has time based challenge exchange",
         "Gmail": "googleclient sdk has time based challenge exchange",
         "GSuiteAdmin": "googleclient sdk has time based challenge exchange",
+        "GSuiteAuditor": "googleclient sdk has time based challenge exchange",
         "GoogleCloudTranslate": "google translate sdk does not support proxy",
         "Google Chronicle Backstory": "SDK",
         "Google Vision AI": "SDK",
@@ -4889,6 +4894,7 @@
         "syslog": "syslog",
         "MongoDB Log": "Our instance not using SSL",
         "MongoDB Key Value Store": "Our instance not using SSL",
+        "Zoom": "Uses dynamic token",
         "GoogleKubernetesEngine": "SDK",
         "TAXIIFeed": "Cannot use proxy",
         "EWSO365": "oproxy dependent",

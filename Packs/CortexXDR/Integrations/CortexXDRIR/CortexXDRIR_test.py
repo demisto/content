@@ -2406,6 +2406,166 @@ def test_get_script_execution_files_command(requests_mock, mocker, request):
     assert zipfile.ZipFile(file_name).namelist() == ['your_file.txt']
 
 
+def test_decode_dict_values():
+    """
+    Given:
+        - a dict to decode
+    When
+        - Running decode_dict_values command
+    Then
+        - Verify expected output
+    """
+    from CortexXDRIR import decode_dict_values
+
+    test_dict: dict = {
+        'x': 1,
+        'y': 'test',
+        'z': '{\"a\": \"test1\", \"b\": \"test2\"}',
+        'w': {
+            't': '{\"a\": \"test1\", \"b\": \"test2\"}',
+            'm': 'test3'
+        }
+    }
+    decode_dict_values(test_dict)
+    assert test_dict == {
+        'x': 1,
+        'y': 'test',
+        'z': {"a": "test1", "b": "test2"},
+        'w': {
+            't': {"a": "test1", "b": "test2"},
+            'm': 'test3'
+        }
+    }
+
+
+def test_filter_general_fields():
+    """
+    Given:
+        - An alert dict
+    When
+        - Running filter_general_fields command
+    Then
+        - Verify expected output
+    """
+    from CortexXDRIR import filter_general_fields
+    alert = {
+        'detection_modules': 'test1',
+        "content_version": "version1",
+        "detector_id": 'ID',
+        'should_be_filtered1': 'N',
+        'should_be_filtered2': 'N',
+        'should_be_filtered3': 'N',
+        'raw_abioc': {
+            'event': {
+                'event_type': 'type',
+                'event_id': 'id',
+                'identity_sub_type': 'subtype',
+                'should_be_filtered1': 'N',
+                'should_be_filtered2': 'N',
+                'should_be_filtered3': 'N',
+            }
+        }
+    }
+    assert filter_general_fields(alert) == {
+        'detection_modules': 'test1',
+        "content_version": "version1",
+        "detector_id": 'ID',
+        'event': {
+            'event_type': 'type',
+            'event_id': 'id',
+            'identity_sub_type': 'subtype',
+        }
+    }
+
+
+def test_filter_general_fields_no_event(mocker):
+    """
+    Given:
+        - An alert dict with no event
+    When
+        - Running filter_general_fields command
+    Then
+        - Verify a warning is printed and the program exits
+    """
+    from CortexXDRIR import filter_general_fields
+    alert = {
+        'detection_modules': 'test1',
+        "content_version": "version1",
+        "detector_id": 'ID',
+        'should_be_filtered1': 'N',
+        'should_be_filtered2': 'N',
+        'should_be_filtered3': 'N',
+        'raw_abioc': {
+        }
+    }
+    err = mocker.patch('CortexXDRIR.return_warning')
+    filter_general_fields(alert)
+    assert err.call_args[0][0] == "No XDR cloud analytics event."
+
+
+def test_filter_vendor_fields():
+    """
+    Given:
+        - An alert dict to filter
+    When
+        - Running test_filter_vendor_fields command
+    Then
+        - Verify that the vendor fields were filtered properly
+    """
+    from CortexXDRIR import filter_vendor_fields
+
+    alert = {
+        'x': 1,
+        'event': {
+            'vendor': 'Amazon',
+            'raw_log': {
+                'eventSource': 'test1',
+                'requestID': 'test2',
+                'should_be_filter': 'N',
+            }
+        }
+    }
+    filter_vendor_fields(alert)
+    assert alert == {
+        'x': 1,
+        'event': {
+            'vendor': 'Amazon',
+            'raw_log': {
+                'eventSource': 'test1',
+                'requestID': 'test2',
+            }
+        }
+    }
+
+
+def test_get_original_alerts_command(requests_mock):
+    """
+    Given:
+        - XDR client
+        - Alert IDs
+    When
+        - Running get_original_alerts_command command
+    Then
+        - Verify expected output
+        - Ensure request body sent as expected
+    """
+    from CortexXDRIR import get_original_alerts_command, Client
+    api_response = load_test_data('./test_data/get_original_alerts_results.json')
+    requests_mock.post(f'{XDR_URL}/public_api/v1/alerts/get_original_alerts/', json=api_response)
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    args = {
+        'alert_ids': '2',
+    }
+
+    response = get_original_alerts_command(client, args)
+    event = response.outputs[0].get('event', {})
+    assert event.get('_time') == 'DATE'  # assert general filter is correct
+    assert event.get('cloud_provider') == 'AWS'  # assert general filter is correct
+    assert event.get('raw_log', {}).get('userIdentity', {}).get('accountId') == 'ID'  # assert vendor filter is correct
+
+
 def test_run_script_execute_commands_command(requests_mock):
     """
     Given:
