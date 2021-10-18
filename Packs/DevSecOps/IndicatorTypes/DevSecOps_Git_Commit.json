@@ -1,0 +1,12 @@
+{
+	"regex": "",
+	"details": "DevSecOps Git Commit",
+	"disabled": false,
+    "shouldPublish": true,
+    "shouldCommit": true,
+    "expiration": 0,
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "system": false,
+	"id": "DevSecOps Git Commit"
+}
