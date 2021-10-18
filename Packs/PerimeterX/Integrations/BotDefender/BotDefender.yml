@@ -63,7 +63,7 @@ name: BotDefender
 script:
   commands:
   - arguments:
-      description: The custom parameter value or IP address for which the report is requested
+    - description: The custom parameter value or IP address for which the report is requested
       isArray: false
       name: ip
       required: false
