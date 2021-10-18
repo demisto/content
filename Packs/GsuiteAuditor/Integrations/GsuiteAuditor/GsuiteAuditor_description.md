@@ -18,3 +18,4 @@ In order to get the sufficient permissions for the integration to run properly, 
     or pass it as the value of the *admin_email* argument in the command.
       
     Precedence of this will be admin_email in command argument > Admin Email in integration configuration
+

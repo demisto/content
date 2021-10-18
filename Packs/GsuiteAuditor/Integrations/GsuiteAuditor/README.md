@@ -211,3 +211,4 @@ Retrieves a list of activities for a specific customer's account and application
 >| 2021-07-27T02:47:20.894Z | admin |  |  |  | {'type': 'LICENSES_SETTINGS', 'name': 'USER_LICENSE_REVOKE', 'parameters': [{'name': 'USER_EMAIL', 'value': 'user@email.com'}, {'name': 'PRODUCT_NAME', 'value': 'Google Workspace'}, {'name': 'OLD_VALUE', 'value': 'G Suite Business'}]} |
 >| 2021-07-27T01:47:40.585Z | admin | admin@email.com | 103020731686044834269 | - | {'type': 'USER_SETTINGS', 'name': 'DELETE_USER', 'parameters': [{'name': 'USER_EMAIL', 'value': 'user@email.com'}]} |
 
+
