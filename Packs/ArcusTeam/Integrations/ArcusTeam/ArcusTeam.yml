@@ -86,7 +86,7 @@ script:
       description: 'ArcusTeam Firmware ID (as returned by the arcusteam-get-devices command)'
     - name: device_id
       required: true
-      description: ' ArcusTeam Device ID (as returned by the arcusteam-get-devices command)'
+      description: 'ArcusTeam Device ID (as returned by the arcusteam-get-devices command)'
     - name: page_size
       description: Page size. Minimum page size is 1, maximum is 100.
       defaultValue: "10"
