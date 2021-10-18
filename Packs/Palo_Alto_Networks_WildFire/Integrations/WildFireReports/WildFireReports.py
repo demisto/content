@@ -18,7 +18,7 @@ class Client(BaseClient):
             url_suffix='/get/report',
             params={'apikey': self.token, 'format': 'pdf', 'hash': file_hash},
             resp_type='response',
-            ok_codes=(200, 404),
+            ok_codes=(200, 401, 404),
         )
 
 
@@ -55,6 +55,16 @@ def wildfire_get_report_command(client: Client, args: Dict[str, str]):
             'data': base64.b64encode(res.content).decode()
         })
 
+    elif res.status_code == 401:
+        return_results({
+            'status': 'error',
+            'error': {
+                'title': "Couldn't fetch the Wildfire report.",
+                'description': "Invalid apikey or expired apikey",
+                'techInfo': str(res.content)
+            }
+        })
+
     elif res.status_code == 404:
         return_results({
             'status': 'not found'
@@ -86,6 +96,7 @@ def main():
                 'techInfo': "The token can't be empty, Please fill the token in the instance configuration or in the license."
             }
         })
+        sys.exit()
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
 
