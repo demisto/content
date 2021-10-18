@@ -53,7 +53,10 @@ def get_outputs_from_user_profile(user_profile):
 
 
 class TestGetUserCommand:
-    def test_existing_user(self):
+
+    @pytest.mark.parametrize('args, mock_url', [({'user-profile': {'username': 'mock_user_name'}}, userUri), (
+            {'user-profile': {'username': 'mock_user_name', 'id': 'mock_id'}}, f'{userUri}mock_id')])
+    def test_existing_user(self, args, mock_url):
         """
         Given:
             - An app client object
@@ -61,16 +64,22 @@ class TestGetUserCommand:
         When:
             - The user exists in the application
             - Calling function get_user_command
+        Cases:
+        Case a: Calling user command with valid username in user profile.
+        Case b: Calling user command with valid username and valid id in user profile.
+
         Then:
             - Ensure the resulted User Profile object holds the correct user details
+        Case a: Ensure the URL corresponding to username is called.
+        Case b: Ensure the URL corresponding to ID is called.
         """
+        from AWSILM import SUPPORTED_GET_USER_IAM_ATTRIBUTES
         client = mock_client()
-        args = {'user-profile': {'username': 'mock_user_name'}}
 
         with requests_mock.Mocker() as m:
-            m.get(userUri, json={"totalResults": 1, "Resources": [APP_USER_OUTPUT]})
+            m.get(mock_url, json={"totalResults": 1, "Resources": [APP_USER_OUTPUT]})
 
-            user_profile = IAMCommand(attr='username').get_user(client, args)
+            user_profile = IAMCommand(get_user_iam_attrs=SUPPORTED_GET_USER_IAM_ATTRIBUTES).get_user(client, args)
 
         outputs = get_outputs_from_user_profile(user_profile)
 

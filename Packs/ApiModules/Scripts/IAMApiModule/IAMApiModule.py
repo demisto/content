@@ -338,8 +338,8 @@ class IAMCommand:
         """
         user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
         try:
-            _, identifier = get_first_available_iam_user_attr(user_profile, self.get_user_iam_attrs)
-            user_app_data = client.get_user(identifier)
+            iam_attribute, iam_attribute_val = get_first_available_iam_user_attr(user_profile, self.get_user_iam_attrs)
+            user_app_data = client.get_user(iam_attribute, iam_attribute_val)
             if not user_app_data:
                 error_code, error_message = IAMErrors.USER_DOES_NOT_EXIST
                 user_profile.set_result(action=IAMActions.GET_USER,

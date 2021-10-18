@@ -2,6 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 import traceback
 import urllib3
+
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -12,7 +13,6 @@ patchSchema = 'urn:ietf:params:scim:api:messages:2.0:PatchOp'
 ERROR_CODES_TO_SKIP = [
     404
 ]
-
 
 def build_body_request_for_update_user(old_user_data, new_user_data):
     operations = []
@@ -43,28 +43,34 @@ class Client(BaseClient):
 
         self._http_request(method='GET', url_suffix=userUri)
 
-    def get_user(self, user_name: str) -> Optional['IAMUserAppData']:
+    def get_user(self, iam_attribute, iam_attribute_val: str) -> Optional['IAMUserAppData']:
         """ Queries the user in the application using REST API by its email, and returns an IAMUserAppData object
         that holds the user_id, username, is_active and app_data attributes given in the query response.
 
-        :type user_name: ``str``
-        :param user_name: User name of the user
+        :type iam_attribute: ``IAMAttribute``
+        :param iam_attribute: The IAM attribute.
+
+        :type iam_attribute_val: ``str``
+        :param iam_attribute_val: Value of the given IAM attribute.
 
         :return: An IAMUserAppData object if user exists, None otherwise.
         :rtype: ``Optional[IAMUserAppData]``
         """
-        params = {
-            'filter': f'userName eq "{user_name}"'
-        }
+        params = {'filter': f'userName eq "{iam_attribute_val}"'} if iam_attribute == IAMAttribute.USERNAME else None
+        url_suffix: str = f'{userUri}{iam_attribute_val}' if iam_attribute == IAMAttribute.ID else userUri
 
         res = self._http_request(
             method='GET',
-            url_suffix=userUri,
-            params=params,
+            url_suffix=url_suffix,
+            params=params
         )
-
-        if res.get('totalResults') > 0:
+        user_app_data = None
+        if res.get('totalResults', 0) > 0:
             user_app_data = res.get('Resources')[0]
+        elif iam_attribute == iam_attribute.ID:
+            user_app_data = res
+
+        if user_app_data:
             user_id = user_app_data.get('id')
             username = user_app_data.get('userName')
             is_active = user_app_data.get('active')
@@ -609,7 +615,8 @@ def main():
     create_if_not_exists = params.get('create_if_not_exists')
 
     iam_command = IAMCommand(is_create_enabled, is_enable_enabled, is_disable_enabled, is_update_enabled,
-                             create_if_not_exists, mapper_in, mapper_out, 'username')
+                             create_if_not_exists, mapper_in, mapper_out,
+                             get_user_iam_attrs=SUPPORTED_GET_USER_IAM_ATTRIBUTES)
 
     headers = {
         'Content-Type': 'application/json',
@@ -671,7 +678,8 @@ def main():
         return_error(f'Failed to execute {command} command. Error:\n{exc}', error=exc)
 
 
-from IAMApiModule import * # noqa E402
+from IAMApiModule import *  # noqa E402
+SUPPORTED_GET_USER_IAM_ATTRIBUTES = [IAMAttribute.ID, IAMAttribute.USERNAME]
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
     main()
