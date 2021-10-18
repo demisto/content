@@ -25,14 +25,14 @@ This integration was integrated and tested with version >10.0.0 of FileOrbis (Yo
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### change-user-status
+### fileorbis-change-user-status
 ***
 Changes user status
 
 
 #### Base Command
 
-`change-user-status`
+`fileorbis-change-user-status`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -52,7 +52,7 @@ Changes user status
 
 
 #### Command Example
-``` !change-user-status user_id="69a0e65c-54d7-4210-9cc4-08c40d1a0b9d" status="1" ```
+``` !fileorbis-change-user-status user_id="69a0e65c-54d7-4210-9cc4-08c40d1a0b9d" status="1" ```
 
 #### Context Example
 ```json
