@@ -1,6 +1,7 @@
 Gets information from the Azure Active Directory Identity Protection service.
 This integration was integrated and tested with the beta version of Azure Active Directory Identity Protection API.
 
+## Authorization
 ## Required Permissions
 To use this integration, the following permissions are required on the Azure application.  
 - `IdentityRiskEvent.Read.All` 
