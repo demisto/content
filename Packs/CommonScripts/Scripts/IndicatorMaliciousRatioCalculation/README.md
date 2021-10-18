@@ -19,7 +19,7 @@ Returns indicators that appear under resolved incidents, and resolved incident I
 | query | The query to fetch the indicators from. The incident which are "bad". |
 | maxDisplayResults | The maximum number of results (indicators) to display as output. |
 | fileResult | The generate file result. |
-| fromDate | 'The start date by which to filter incidents. |
+| fromDate | The start date by which to filter incidents. |
 
 ## Outputs
 ---
