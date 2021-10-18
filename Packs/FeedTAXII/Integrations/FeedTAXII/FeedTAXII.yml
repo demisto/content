@@ -159,6 +159,21 @@ script:
     - contextPath: TAXII.Indicator.Type
       description: The indicator type.
       type: String
+    - contextPath: TAXII.Indicator.title
+      description: The indicator title.
+      type: String
+    - contextPath: TAXII.Indicator.stixindicatorname
+      description: The indicator title.
+      type: String
+    - contextPath: TAXII.Indicator.stixindicatordescription
+      description: The indicator description.
+      type: String
+    - contextPath: TAXII.Indicator.confidence
+      description: The indicator confidence.
+      type: String
+    - contextPath: TAXII.Indicator.fields
+      description: The indicator value.
+      type: Unknown
     - contextPath: TAXII.Indicator.Rawjson
       description: The indicator rawJSON value.
       type: Unknown

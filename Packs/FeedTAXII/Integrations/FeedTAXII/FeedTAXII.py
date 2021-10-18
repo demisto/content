@@ -374,7 +374,7 @@ class StixDecode(object):
             title = next((c for c in ttp[0] if c.name == 'Title'), None)
             if title is not None:
                 title = title.text
-                ttp_info['stix_ttp_type'] = title
+                ttp_info['stix_ttp_title'] = title
 
             behavior = package.find_all('Behavior')
 
@@ -1053,7 +1053,7 @@ def ttp_extract_properties(ttp, behavior):
         title = next((c for c in ttp if c.name == 'Title'), None)
         if title is not None:
             title = title.text
-            result['stix_title'] = title
+            result['title'] = title
 
     if behavior == 'Attack Pattern':
         id_ref = next((c for c in ttp if c.name == 'idref'), None)
@@ -1069,12 +1069,12 @@ def ttp_extract_properties(ttp, behavior):
     description = next((c for c in ttp if c.name == 'Description'), None)
     if description is not None:
         description = description.text
-        result['stix_description'] = description
+        result['description'] = description
 
     short_description = next((c for c in ttp if c.name == 'Short_Description'), None)
     if short_description is not None:
         short_description = short_description.text
-        result['stix_short_description'] = short_description
+        result['short_description'] = short_description
 
     return result
 
@@ -1156,15 +1156,11 @@ def fetch_indicators_command(client):
                 'type': item.get('type'),
                 'title': item.get('stix_title'),
                 'description': item.get('stix_description'),
-                'stix-indicator-name': item.get('stix_indicator_name'),
-                'stix-indicator-description': item.get('stix_indicator_description'),
+                'stixindicatorname': item.get('stix_indicator_name'),
+                'stixindicatordescription': item.get('stix_indicator_description'),
                 'confidence': item.get('confidence'),
                 'fields': {
-                    'title': item.get('stix_title'),
-                    'description': item.get('stix_description'),
-                    'stix-indicator-name': item.get('stix_indicator_name'),
-                    'stix-indicator-description': item.get('stix_indicator_description'),
-                    'confidence': item.get('confidence'),
+                    'tags': client.tags,
                 },
                 'rawJSON': item,
             }
@@ -1184,8 +1180,12 @@ def fetch_indicators_command(client):
             indicator_obj = {
                 'value': indicator,
                 'type': item.get('type'),
-                'title': item.get('stix_title'),
-                'description': item.get('stix_description'),
+                'stixttptitle': item.get('stix_ttp_title'),
+                'stixtype': item.get('stix_type'),
+                'title': item.get('title'),
+                'idref': item.get('stix_id_ref'),
+                'description': item.get('description'),
+                'shortdescription': item.get('short_description'),
                 'fields': {
                     'tags': client.tags,
                 },
