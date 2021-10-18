@@ -8,8 +8,9 @@ def test_get_feed_integration_errors(mocker):
     '''
     Given:
         - Integration search result which contains the following:
-            - Feed integration with error
+            - Enabled feed integration instance with error
             - Feed integration without error
+            - Not enabled feed integration with error
             - Non-feed integration without error
     When:
         - Running the FeedIntegrationErrorWidget script
@@ -35,13 +36,31 @@ def test_get_feed_integration_errors(mocker):
                 'lastError': '',
                 'modified': '2021-10-14T10:42:29.341218+03:00',
             },
+            'Test Feed_instance_3': {
+                'brand': feed_brand,
+                'instance': 'Test Feed_instance_3',
+                'lastError': error,
+                'modified': '2021-10-14T10:42:29.341218+03:00',
+            },
             'Test Integration_instance_1': {
                 'brand': 'Test Integration',
                 'instance': 'Test Integration_instance_1',
                 'lastError': '',
                 'modified': '2021-10-14T10:42:29.341218+03:00',
             },
-        }
+        },
+        'instances': [
+            {
+                'name': feed_brand_instance_1,
+                'brand': feed_brand,
+                'enabled': 'true',
+            },
+            {
+                'name': 'Test Feed_instance_3',
+                'brand': feed_brand,
+                'enabled': 'false',
+            },
+        ],
     }
     mocker.patch.object(
         demisto,

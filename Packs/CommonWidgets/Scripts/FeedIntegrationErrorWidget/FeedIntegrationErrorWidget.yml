@@ -1,4 +1,4 @@
-comment: Returns a table widget of feed integrations that errors out on indicators fetch.
+comment: Returns a table widget of enabled feed integration instances that errors out on indicators fetch.
 commonfields:
   id: FeedIntegrationErrorWidget
   version: -1

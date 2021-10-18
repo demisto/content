@@ -13,12 +13,16 @@ def get_feed_integration_errors() -> TableOrListWidget:
 
     if integration_search_res.get('statusCode') == 200:
         integrations = json.loads(integration_search_res.get('body', '{}'))
+        instances = integrations.get('instances', [])
+        enabled_instances = {instance.get('name') for instance in instances if instance.get('enabled') == 'true'}
         instances_health = integrations.get('health', {})
         for instance in instances_health.values():
-            if 'feed' in (brand := instance.get('brand', '')).lower() and (error := instance.get('lastError', '')):
+            if 'feed' in (brand := instance.get('brand', '')).lower() and \
+                (error := instance.get('lastError', '')) and \
+                    (instance_name := instance.get('instance')) in enabled_instances:
                 table.add_row({
                     'Brand': brand,
-                    'Instance': instance.get('instance'),
+                    'Instance': instance_name,
                     'Instance Last Modified Time': instance.get('modified'),
                     'Error Information': error,
                 })
