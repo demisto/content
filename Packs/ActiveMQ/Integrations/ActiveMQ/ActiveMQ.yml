@@ -116,7 +116,7 @@ script:
       either queue-name or topic-name. You can't provide both.
     execution: false
     name: activemq-subscribe
-  dockerimage: devdemisto/stomp:1.0.0.24233
+  dockerimage: demisto/stomp:1.0.0.24234
   feed: false
   isfetch: true
   longRunning: false
