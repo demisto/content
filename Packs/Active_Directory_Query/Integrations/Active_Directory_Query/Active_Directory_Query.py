@@ -867,6 +867,8 @@ def create_user_iam(default_base_dn, args, mapper_out, disabled_users_group_cn):
     :return: The user that was created
     """
     assert conn is not None
+    ad_user = None
+    user_dn = None
     try:
 
         user_profile = args.get("user-profile")
@@ -879,7 +881,7 @@ def create_user_iam(default_base_dn, args, mapper_out, disabled_users_group_cn):
         if not sam_account_name:
             raise DemistoException("User must have a sAMAccountName, please make sure a mapping "
                                    "exists in \"" + mapper_out + "\" outgoing mapper.")
-        if not ad_user.get('ou'):
+        if not ad_user.get('ou') or ad_user['ou'] == 'None':
             raise DemistoException("User must have an Organizational Unit (OU). Please make sure you've added a "
                                    "transformer script which determines the OU of the user "
                                    "in \"" + mapper_out + "\" outgoing mapper, in the User Profile incident type "
@@ -919,10 +921,13 @@ def create_user_iam(default_base_dn, args, mapper_out, disabled_users_group_cn):
     except Exception as e:
         error_code, _ = IAMErrors.BAD_REQUEST
         error_message = f'{e}\nConnection result: {conn.result}\nError from LDAP server: {conn.last_error}'
+        if ad_user and user_dn:
+            ad_user['dn'] = user_dn
         iam_user_profile.set_result(success=False,
                                     error_code=error_code,
                                     error_message=error_message,
                                     action=IAMActions.CREATE_USER,
+                                    details=ad_user,
                                     )
         return iam_user_profile
 
@@ -952,6 +957,8 @@ def update_user_iam(default_base_dn, args, create_if_not_exists, mapper_out, dis
     :return: Updated User
     """
     assert conn is not None
+    ad_user = None
+    dn = None
     try:
         user_profile = args.get("user-profile")
         allow_enable = args.get('allow-enable') == 'true'
@@ -961,7 +968,7 @@ def update_user_iam(default_base_dn, args, create_if_not_exists, mapper_out, dis
         if not sam_account_name:
             raise DemistoException("User must have a sAMAccountName, please make sure a mapping "
                                    "exists in \"" + mapper_out + "\" outgoing mapper.")
-        if not ad_user.get('ou'):
+        if not ad_user.get('ou') or ad_user['ou'] == 'None':
             raise DemistoException("User must have an Organizational Unit (OU). Please make sure you've added a "
                                    "transformer script which determines the OU of the user "
                                    "in \"" + mapper_out + "\" outgoing mapper, in the User Profile incident type "
@@ -1018,10 +1025,13 @@ def update_user_iam(default_base_dn, args, create_if_not_exists, mapper_out, dis
     except Exception as e:
         error_code, _ = IAMErrors.BAD_REQUEST
         error_message = f'{e}\nConnection result: {conn.result}\nError from LDAP server: {conn.last_error}'
+        if ad_user and dn:
+            ad_user['dn'] = dn
         iam_user_profile.set_result(success=False,
                                     error_code=error_code,
                                     error_message=error_message,
-                                    action=IAMActions.UPDATE_USER
+                                    action=IAMActions.UPDATE_USER,
+                                    details=ad_user,
                                     )
         return iam_user_profile
 
@@ -1300,6 +1310,8 @@ def disable_user_iam(default_base_dn, disabled_users_group_cn, args, mapper_out)
     :return: The disabled user
     """
     assert conn is not None
+    ad_user = None
+    dn = None
     try:
         user_profile = args.get("user-profile")
         user_profile_delta = args.get('user-profile-delta')
@@ -1344,10 +1356,13 @@ def disable_user_iam(default_base_dn, disabled_users_group_cn, args, mapper_out)
     except Exception as e:
         error_code, _ = IAMErrors.BAD_REQUEST
         error_message = f'{e}\nConnection result: {conn.result}\nError from LDAP server: {conn.last_error}'
+        if ad_user and dn:
+            ad_user['dn'] = dn
         iam_user_profile.set_result(success=False,
                                     error_code=error_code,
                                     error_message=error_message,
-                                    action=IAMActions.DISABLE_USER
+                                    action=IAMActions.DISABLE_USER,
+                                    details=ad_user,
                                     )
         return iam_user_profile
 
