@@ -1160,7 +1160,13 @@ def fetch_indicators_command(client):
                 'stixindicatordescription': item.get('stix_indicator_description'),
                 'confidence': item.get('confidence'),
                 'fields': {
-                    'tags': client.tags,
+                    'value': indicator,
+                    'type': item.get('type'),
+                    'title': item.get('stix_title'),
+                    'description': item.get('stix_description'),
+                    'stixindicatorname': item.get('stix_indicator_name'),
+                    'stixindicatordescription': item.get('stix_indicator_description'),
+                    'confidence': item.get('confidence'),
                 },
                 'rawJSON': item,
             }
