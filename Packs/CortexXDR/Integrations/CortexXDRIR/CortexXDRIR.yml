@@ -2887,19 +2887,19 @@ script:
   - arguments:
     - default: false
       description: The endpoint ID.
-      isArray: false
+      isArray: true
       name: id
       required: false
       secret: false
     - default: true
       description: The endpoint IP address.
-      isArray: false
+      isArray: true
       name: ip
       required: false
       secret: false
     - default: false
       description: The endpoint hostname.
-      isArray: false
+      isArray: true
       name: hostname
       required: false
       secret: false
