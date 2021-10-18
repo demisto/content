@@ -2,7 +2,7 @@ from requests import Response, Session
 from ServiceNow_IAM import Client, get_user_command, create_user_command, update_user_command, \
     disable_user_command, get_mapping_fields_command
 from IAMApiModule import *
-
+import pytest
 
 SERVICENOW_USER_OUTPUT = {
     "sys_id": "mock_id",
@@ -22,9 +22,11 @@ SERVICENOW_DISABLED_USER_OUTPUT = {
     "email": "testdemisto2@paloaltonetworks.com"
 }
 
+BASE_URL = 'https://test.com'
+
 
 def mock_client():
-    client = Client(base_url='https://test.com')
+    client = Client(base_url=BASE_URL)
     return client
 
 
@@ -34,7 +36,15 @@ def get_outputs_from_user_profile(user_profile):
     return outputs
 
 
-def test_get_user_command__existing_user(mocker):
+@pytest.mark.parametrize('args, mock_url', [({'user-profile': {'username': 'mock_user_name'}},
+                                             f'{BASE_URL}/table/sys_user?user_name=mock_user_name'),
+                                            ({'user-profile': {'email': 'testdemisto2@paloaltonetworks.com',
+                                                               'username': 'mock_user_name'}},
+                                             f'{BASE_URL}/table/sys_user?email=testdemisto2@paloaltonetworks.com'),
+                                            ({'user-profile': {'email': 'testdemisto2@paloaltonetworks.com',
+                                                               'id': 'mock_id', 'username': 'mock_user_name'}},
+                                             f'{BASE_URL}/table/sys_user?sys_id=mock_id')])
+def test_get_user_command__existing_user(mocker, args, mock_url, requests_mock):
     """
     Given:
         - A ServiceNow IAM client object
@@ -42,13 +52,22 @@ def test_get_user_command__existing_user(mocker):
     When:
         - The user exists in ServiceNow
         - Calling function get_user_command
+        Cases:
+        Case a: User profile contains username data.
+        Case b: User profile contains username and email data.
+        Case c: User profile contains username, email and ID data.
     Then:
         - Ensure the resulted User Profile object holds the correct user details
+        Cases:
+        Case a: Mocked URL querying by username is called.
+        Case b: Mocked URL querying by email is called.
+        Case c: Mocked URL querying by ID is called.
     """
     client = mock_client()
-    args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com'}}
-
-    mocker.patch.object(client, 'get_user', return_value=SERVICENOW_USER_OUTPUT)
+    requests_mock.get(
+        mock_url,
+        json={'result': [SERVICENOW_USER_OUTPUT]}
+    )
     mocker.patch.object(IAMUserProfile, 'update_with_app_data', return_value={})
 
     user_profile = get_user_command(client, args, 'mapper_in')

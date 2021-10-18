@@ -23,10 +23,10 @@ class Client(BaseClient):
         uri = '/table/sys_user?sysparm_limit=1'
         self._http_request(method='GET', url_suffix=uri)
 
-    def get_user(self, email):
+    def get_user(self, filter_value: str, filter_name: str = 'email'):
         uri = 'table/sys_user'
         query_params = {
-            'email': email
+            filter_name: filter_value
         }
 
         res = self._http_request(
@@ -140,7 +140,10 @@ def get_mapping_fields_command(client):
 def get_user_command(client, args, mapper_in):
     user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
     try:
-        service_now_user = client.get_user(user_profile.get_attribute('email'))
+        iam_attr, iam_attr_value = get_first_available_iam_user_attr(user_profile, [IAMAttribute.ID, IAMAttribute.EMAIL,
+                                                                                    IAMAttribute.USERNAME])
+        service_now_filter_name: str = IAM_GET_USER_ATTRIBUTE_TO_SERVICE_NOW_FILTER_PARAM.get(iam_attr, '')
+        service_now_user = client.get_user(iam_attr_value, service_now_filter_name)
         if not service_now_user:
             error_code, error_message = IAMErrors.USER_DOES_NOT_EXIST
             user_profile.set_result(action=IAMActions.GET_USER,
@@ -348,6 +351,10 @@ def main():
 
 
 from IAMApiModule import *  # noqa: E402
-
+IAM_GET_USER_ATTRIBUTE_TO_SERVICE_NOW_FILTER_PARAM = {
+    IAMAttribute.EMAIL: 'email',
+    IAMAttribute.ID: 'sys_id',
+    IAMAttribute.USERNAME: 'user_name'
+}
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
