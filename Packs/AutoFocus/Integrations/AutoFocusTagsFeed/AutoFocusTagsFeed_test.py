@@ -1,7 +1,7 @@
 """
 """
 
-from AutoFocusTagsFeed import Client, fetch_indicators_command
+from AutoFocusTagsFeed import Client, fetch_indicators_command, incremental_level_fetch
 import json
 import io
 
@@ -45,3 +45,13 @@ def test_fetch_indicators(mocker):
     assert actual_results["type"] == expected_results["type"]
     assert actual_results["value"] == expected_results["value"]
     assert actual_results["fields"] == expected_results["fields"]
+
+
+def test_incremental_level_fetch(mocker):
+    context = {'tags_need_to_be_fetched': [], 'time_of_first_fetch': 133033333}
+    client = Client(api_key='1234', base_url='url', verify=False, proxy=False)
+    mocker.patch('AutoFocusTagsFeed.get_integration_context', return_value=context)
+    mocker.patch('AutoFocusTagsFeed.get_all_updated_tags_since_last_fetch', return_value=[{'publictag_name': 'Mock.mocktag1'}])
+    mocker.patch.object(client, 'get_tag_details', return_value=util_load_json('test_data/tag_details_result.json'))
+    actual_result = incremental_level_fetch(client)
+    assert actual_result == [util_load_json('test_data/tag_details_result.json')]

@@ -409,7 +409,9 @@ def fetch_indicators(client: Client,
                      is_get_command: bool,
                      tlp_color: Optional[str] = None,
                      feed_tags: List = None,
-                     limit: int = -1) -> List[Dict]:
+                     limit: int = -1,
+                     create_relationships = True,
+                     ) -> List[Dict]:
     """
     Retrieves indicators from the feed
     Args:
@@ -446,7 +448,7 @@ def fetch_indicators(client: Client,
             'score': SCORES_MAP.get(tag_type)
         }
         related_tags = tag_details.get('related_tags', [])
-        if related_tags:
+        if related_tags and create_relationships:
             relationships = (create_relationships_for_tag(client, tag_name, tag_type, related_tags))
             if relationships:
                 indicator_obj['relationships'] = relationships
@@ -507,7 +509,8 @@ def fetch_indicators_command(client: Client, params: Dict[str, str]) -> List[Dic
 
     feed_tags = argToList(params.get('feedTags', ''))
     tlp_color = params.get('tlp_color')
-    indicators = fetch_indicators(client, False, tlp_color, feed_tags)
+    create_relationships = params.get('create_relationships')
+    indicators = fetch_indicators(client, False, tlp_color, feed_tags, create_relationships)
     return indicators
 
 
