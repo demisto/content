@@ -16,14 +16,10 @@ class Client(BaseClient):
 
         result = []
 
-        res = self._http_request('GET',
-                                 url_suffix='intelligence/hunting_notifications',
-                                 full_url=self._base_url,
-                                 resp_type='json',
-                                 )
+        response = self.list_notifications()
 
         try:
-            for indicator in res.get('data'):
+            for indicator in response.get('data'):
                 result.append({
                     'value': indicator.get('attributes'),
                     'type': 'file',
@@ -34,9 +30,39 @@ class Client(BaseClient):
             raise ValueError(f'Could not parse returned data as indicator. \n\nError message: {err}')
         return result
 
+    def list_notifications(
+            self,
+            from_time: Optional[datetime] = None,
+            to_time: Optional[datetime] = None,
+            tag: Optional[str] = None,
+            cursor: Optional[str] = None,
+            limit: Optional[int] = None
+    ) -> dict:
+        """Retrieve VT Hunting Livehunt notifications.
+
+        See Also:
+            https://developers.virustotal.com/v3.0/reference#list-hunting-notifications
+        """
+        time_format = "%Y-%m-%dT%H:%M:%S"
+        filter_ = ''
+        if tag:
+            filter_ += f'{tag} '
+        if from_time:
+            filter_ += f'date:{from_time.strftime(time_format)}+ '
+        if to_time:
+            filter_ += f'date:{to_time.strftime(time_format)}- '
+        return self._http_request(
+            'GET',
+            'intelligence/hunting_notifications',
+            params=assign_params(
+                filter=filter_,
+                limit=limit,
+                cursor=cursor
+            )
+        )
 
 def test_module(client: Client, args: dict) -> str:
-    client.build_iterator()
+    client.list_notifications()
     return 'ok'
 
 def fetch_indicators(client: Client,
