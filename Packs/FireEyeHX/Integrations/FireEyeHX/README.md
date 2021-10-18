@@ -72,7 +72,7 @@ Apply containment for a specific host, so that it no longer has access to other 
 ``` !fireeye-hx-host-containment agentId=”uGvn34ZkM3bfSf1nOT” ```
 ```!fireeye-hx-host-containment hostname=“DESKTOP-HK8OI62”```
 
-#### Context Output
+#### Context Example
 ```json
  {  
    "FireEyeHX":{  
@@ -177,7 +177,7 @@ Release a specific host from containment.
 ```!fireeye-hx-cancel-containment hostname=“DESKTOP-HK8OI62”```
 ```!fireeye-hx-cancel-containment agentId=”uGvn34ZkM3bfSf1nOT”```
 
-#### Context Output
+#### Context Example
 ```json
 {
     "FireEyeHX": {
@@ -286,7 +286,7 @@ Get a list of alerts, use the different arguments to filter the results returned
 #### Command Example
 ```!fireeye-hx-get-alerts limit="10" sort="id" sortOrder="descending" ```
 
-#### Context Output
+#### Context Example
 ```json
 {
     "FireEyeHX": {
@@ -786,12 +786,6 @@ Get details of a specific alert
 | FireEyeHX.Alerts.event_type | Unknown | Event type. | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### fireeye-hx-file-acquisition
 ***
@@ -920,7 +914,8 @@ Start a data acquisition process to gather artifacts from the system disk and me
 #### Command Example
 ```! fireeye-hx-data-acquisition hostName="DESKTOP-DES01" defaultSystemScript=win```
 
-#### Human Readable Output
+#### Contex Example
+```json
 {
     "FireEyeHX": {
         "Acquisitions": {
@@ -967,6 +962,7 @@ Start a data acquisition process to gather artifacts from the system disk and me
         "MD5": "^^^c24a2c4aeXXXXf89e1e012dae^^^"
     }
 }
+```
 
 
 ### fireeye-hx-delete-data-acquisition
@@ -1057,12 +1053,6 @@ Search endpoints to check all hosts or a subset of hosts for a specific file or 
 | FireEyeHX.Search.Results.id | string | ID of the result | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### fireeye-hx-get-host-set-information
 ***
@@ -1097,10 +1087,29 @@ Get a list of all host sets known to your HX Series appliance
 
 
 #### Command Example
-``` ```
+```!fireeye-hx-get-host-set-information```
+
+#### Context Example
+```json
+{
+    "FireEyeHX": {
+        "HostSets": {
+            "_id": 1001,
+            "_revision": "20210308150955358783164361",
+            "name": "Demisto",
+            "type": "venn",
+            "url": "/hx/api/v3/host_sets/1001"
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### FireEye HX Get Host Sets Information
+>|Name|ID|Type|
+>|---|---|---|
+>| Demisto | 1001 | venn |
 
 
 ### fireeye-hx-create-indicator
@@ -1149,13 +1158,6 @@ Create new indicator
 | FireEyeHX.Indicators.update_actor.username | string | Update actor name | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### fireeye-hx-append-conditions
 ***
 Add conditions to an indicator. Conditions can be MD5, hash values, domain names and IP addresses.
@@ -1176,11 +1178,6 @@ Add conditions to an indicator. Conditions can be MD5, hash values, domain names
 #### Context Output
 
 There is no context output for this command.
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
 
 
 
@@ -1227,10 +1224,54 @@ Get information on all hosts
 
 
 #### Command Example
-``` ```
+```!fireeye-hx-get-all-hosts-information```
+
+#### Context Example
+```json
+{
+    "Endpoint": [
+        {
+            "Domain": "WORKGROUP",
+            "Hostname": "WIN10X64",
+            "ID": "Hqb2ns3oui1fpzg0BxI1Ch",
+            "IPAddress": "192.168.1.163",
+            "MACAddress": "00-50-56-89-1c-5b",
+            "OS": "win",
+            "OSVersion": "Windows 10 Pro"
+        },
+        {
+            "Domain": "localdomain",
+            "Hostname": "localhost",
+            "ID": "GfLI00Q4zpidezw9I11rV6",
+            "IPAddress": "192.168.1.54",
+            "MACAddress": "00-50-56-89-e7-22",
+            "OS": "linux",
+            "OSVersion": "CentOS Linux 7 (Core)"
+        }
+    ],
+    "FireEyeHX": {
+        "Hosts": {
+            "Agent ID": "GfLI00Q4zpidezw9I11rV6",
+            "Agent Version": "31.28.17",
+            "Containment State": "normal",
+            "Domain": "localdomain",
+            "Host IP": "192.168.1.54",
+            "Host Name": "localhost",
+            "Last Alert": null,
+            "Last Poll": "2021-10-18T14:02:32.000Z",
+            "OS": "linux"
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### FireEye HX Get Hosts Information
+>|Host Name|Host IP|Agent ID|Agent Version|OS|Last Poll|Containment State|Domain|Last Alert|
+>|---|---|---|---|---|---|---|---|---|
+>| WIN10X64 | 192.168.1.163 | Hqb2ns3oui1fpzg0BxI1Ch | 31.28.17 | win | 2021-10-18T13:59:44.000Z | normal | WORKGROUP | _id: 2<br/>url: /hx/api/v3/alerts/2 |
+>| localhost | 192.168.1.54 | GfLI00Q4zpidezw9I11rV6 | 31.28.17 | linux | 2021-10-18T14:02:32.000Z | normal | localdomain |  |
 
 
 ### fireeye-hx-initiate-data-acquisition
