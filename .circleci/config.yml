@@ -417,6 +417,9 @@ references:
         else
           demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report
         fi
+        if [[ -f $ARTIFACTS_FOLDER/coverage_report/.coverage ]]; then
+          demisto-sdk coverage-analyze -i $ARTIFACTS_FOLDER/coverage_report/.coverage --report-dir $ARTIFACTS_FOLDER/coverage_report --report-type all
+        fi
 
   infrastructure_testing: &infrastructure_testing
     run:
