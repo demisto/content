@@ -410,11 +410,12 @@ def fetch_indicators(client: Client,
                      tlp_color: Optional[str] = None,
                      feed_tags: List = None,
                      limit: int = -1,
-                     create_relationships = True,
+                     create_relationships: bool = True,
                      ) -> List[Dict]:
     """
     Retrieves indicators from the feed
     Args:
+        create_relationships:whether to create indicators relationships
         is_get_command: whether this method is called from the get-indicators-command
         client (Client): Client object
         tlp_color (str): Traffic Light Protocol color
@@ -484,7 +485,12 @@ def get_indicators_command(client: Client,
         limit = PAGE_SIZE
     tlp_color = params.get('tlp_color')
     feed_tags = argToList(params.get('feedTags', ''))
-    indicators = fetch_indicators(client, True, tlp_color, feed_tags, limit)
+    indicators = fetch_indicators(client=client,
+                                  is_get_command=True,
+                                  tlp_color=tlp_color,
+                                  feed_tags=feed_tags,
+                                  limit=limit,
+                                  create_relationships=False)
     human_readable = tableToMarkdown('Indicators from AutoFocus Tags Feed:', indicators,
                                      headers=['value', 'type', 'fields'], headerTransform=string_to_table_header,
                                      removeNull=True)
@@ -509,7 +515,7 @@ def fetch_indicators_command(client: Client, params: Dict[str, str]) -> List[Dic
 
     feed_tags = argToList(params.get('feedTags', ''))
     tlp_color = params.get('tlp_color')
-    create_relationships = params.get('create_relationships')
+    create_relationships = params.get('create_relationships', True)
     indicators = fetch_indicators(client, False, tlp_color, feed_tags, create_relationships)
     return indicators
 

@@ -4,12 +4,13 @@ commonfields:
   version: -1
 defaultEnabled: true
 configuration:
-- display: API Key
+- displaypassword: API key
   hidden: false
+  hiddenusername: true
   name: api_key
   required: false
+  type: 9
   fromlicense: encrypted
-  type: 4
 - display: AutoFocus Endpoint URL
   name: url
   defaultvalue: https://autofocus.paloaltonetworks.com/api/v1.0/
