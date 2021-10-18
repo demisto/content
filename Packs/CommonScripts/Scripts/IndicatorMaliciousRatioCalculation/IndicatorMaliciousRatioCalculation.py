@@ -54,7 +54,7 @@ def parse_datetime(datetime_str):
         return datetime_str
 
 
-def build_query(base_query, from_date):
+def build_query_for_incidents_search(base_query, from_date):
     if from_date:
         return '%s created:>="%s"' % (base_query, parse_datetime(from_date))
     else:
@@ -70,7 +70,7 @@ def indicator_malicious_ratio_calculation(args):
     generate_file_result = (args['fileResult'] == 'yes')
     from_date = args.get('fromDate', '')
 
-    query = build_query(base_query, from_date)
+    query = build_query_for_incidents_search(base_query, from_date)
     res = demisto.executeCommand("findIndicators", {'query': base_query, 'size': max_indicators})
     indicators = res[0]['Contents']
     indicators_result = map(get_indicator_data, indicators)
