@@ -38,6 +38,10 @@ if [[ -n "$CONTENT_PRECOMMIT_RUN_DEV_TASKS" ]]; then
         echo -e  "----------\nNote: on circleci build, linting will be run on all files. This is because:\n$SHOULD_LINT_ALL\n----------"
     fi
     demisto-sdk lint -g
+    if [[ -f "coverage_report/.coverage" ]]; then
+        demisto-sdk coverage-analyze
+    fi
+    
     RES=$(($RES + $?))
 else  
     echo "Skipping running lint tasks (flake8, mypy, pylint, pytest). If you want to run this as part of the precommit hook"

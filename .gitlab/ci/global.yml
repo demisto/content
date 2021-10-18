@@ -191,6 +191,9 @@
         else
           demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report
         fi
+        if [[ -f $ARTIFACTS_FOLDER/coverage_report/.covergae ]]; then
+          demisto-sdk coverage-analyze -i $ARTIFACTS_FOLDER/coverage_report/.covergae --report-dir $ARTIFACTS_FOLDER/coverage_report --report-type all
+        fi
       fi
     - section_end "Run Unit Testing and Lint"
 
