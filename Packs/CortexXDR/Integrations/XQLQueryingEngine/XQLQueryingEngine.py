@@ -655,6 +655,7 @@ def get_xql_query_results_polling_command(client: Client, args: dict) -> Union[C
         scheduled_command = ScheduledCommand(command='xdr-xql-get-query-results', next_run_in_seconds=interval_in_secs,
                                              args=args, timeout_in_seconds=600)
         command_results.scheduled_command = scheduled_command
+        command_results.readable_output = 'Query is still running, it may take a little while...'
         return command_results
 
     results_to_format = outputs.pop('results')
