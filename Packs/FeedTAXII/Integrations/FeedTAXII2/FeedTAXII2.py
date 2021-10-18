@@ -204,6 +204,8 @@ def reset_fetch_command(client):
 
 
 def main():
+    objects_types = ['report', 'indicator', 'malware', 'campaign', 'attack-pattern',
+                     'course-of-action', 'intrusion-set', 'tool', 'threat-actor', 'infrastructure', 'relationship']
     params = demisto.params()
     args = demisto.args()
     url = params.get("url")
@@ -226,6 +228,7 @@ def main():
     limit_per_request = try_parse_integer(params.get("limit_per_request"))
     cert_text = params.get('cert_text', None)
     key_text = params.get('key_text', None)
+    objects_to_fetch = argToList(params.get('objectsToFetch') or objects_types)
 
     command = demisto.command()
     demisto.info(f"Command being called in {CONTEXT_PREFIX} is {command}")
@@ -236,6 +239,7 @@ def main():
             collection_to_fetch=collection_to_fetch,
             proxies=proxies,
             verify=verify_certificate,
+            objects_to_fetch=objects_to_fetch,
             skip_complex_mode=skip_complex_mode,
             username=username,
             password=password,

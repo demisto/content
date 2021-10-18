@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: TAXII 2 Feed
+  id: TAXII 2 Feed test
   version: -1
 configuration:
 - defaultvalue: 'true'
@@ -116,6 +116,23 @@ configuration:
   name: initial_interval
   required: false
   type: 0
+- display: STIX Objects To Fetch
+  name: objectsToFetch
+  defaultvalue: indicator,report,malware,campaign,attack-pattern,course-of-action,intrusion-set,tool,threat-actor,infrastructure,relationship
+  type: 16
+  required: false
+  options:
+  - indicator
+  - report
+  - malware
+  - campaign
+  - attack-pattern
+  - course-of-action
+  - intrusion-set
+  - tool
+  - threat-actor
+  - infrastructure
+  - relationship
 - additionalinfo: Add a certificate file as text to connect to the TAXII server
   display: Certificate File as Text
   name: cert_text
@@ -162,8 +179,8 @@ configuration:
   required: false
   type: 0
 description: Ingests indicator feeds from TAXII 2.0 and 2.1 servers.
-display: TAXII 2 Feed
-name: TAXII 2 Feed
+display: TAXII 2 Feed test
+name: TAXII 2 Feed test
 script:
   commands:
   - arguments:

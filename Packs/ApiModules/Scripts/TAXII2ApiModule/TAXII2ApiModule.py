@@ -114,6 +114,7 @@ class Taxii2FeedClient:
             collection_to_fetch,
             proxies,
             verify: bool,
+            objects_to_fetch: List[str],
             skip_complex_mode: bool = False,
             username: Optional[str] = None,
             password: Optional[str] = None,
@@ -205,6 +206,7 @@ class Taxii2FeedClient:
         ]
         self.id_to_object: Dict[str, Any] = {}
         self.objects_data: Dict[str, Any] = {}
+        self.objects_to_fetch = objects_to_fetch
 
     def init_server(self, version=TAXII_VER_2_0):
         """
@@ -437,7 +439,6 @@ class Taxii2FeedClient:
                 'operatingsystemrefs': attack_pattern_obj.get('x_mitre_platforms'),
                 "publications": publications,
                 "mitreid": mitre_id,
-                "reportedby": 'Unit42',
                 "tags": list(self.tags),
             }
         }
@@ -472,7 +473,6 @@ class Taxii2FeedClient:
             'published': report_obj.get('published'),
             'description': report_obj.get('description', ''),
             "report_types": report_obj.get('report_types', []),
-            "reportedby": 'Unit42',
             "tags": list((set(report_obj.get('labels'))).union(set(self.tags))),
         }
         if self.tlp_color:
@@ -507,7 +507,6 @@ class Taxii2FeedClient:
             "resource_level": threat_actor_obj.get('resource_level', ''),
             "primary_motivation": threat_actor_obj.get('primary_motivation', ''),
             "secondary_motivations": threat_actor_obj.get('secondary_motivations', []),
-            "reportedby": 'Unit42',
             "tags": list((set(threat_actor_obj.get('labels', []))).union(set(self.tags))),
         }
         if self.tlp_color:
@@ -540,7 +539,6 @@ class Taxii2FeedClient:
             "kill_chain_phases": kill_chain_phases,
             "firstseen": infrastructure_obj.get('created'),
             "modified": infrastructure_obj.get('modified'),
-            "reportedby": 'Unit42',
             "tags": list(set(self.tags))
         }
         if self.tlp_color:
@@ -577,7 +575,6 @@ class Taxii2FeedClient:
             "architecture_execution_envs": malware_obj.get('architecture_execution_envs', []),
             "capabilities": malware_obj.get('capabilities', []),
             "sample_refs": malware_obj.get('sample_refs', []),
-            "reportedby": 'Unit42',
             "tags": list((set(malware_obj.get('labels', []))).union(set(self.tags)))
         }
         if self.tlp_color:
@@ -609,7 +606,6 @@ class Taxii2FeedClient:
             "description": tool_obj.get('description', ''),
             "aliases": tool_obj.get('aliases', []),
             "tool_version": tool_obj.get('tool_version', ''),
-            "reportedby": 'Unit42',
             "tags": list(set(self.tags))
         }
         if self.tlp_color:
@@ -638,7 +634,6 @@ class Taxii2FeedClient:
             'description': coa_obj.get('description', ''),
             "action_type": coa_obj.get('action_type', ''),
             "publications": publications,
-            "reportedby": 'Unit42',
             "tags": [tag for tag in self.tags]
         }
         if self.tlp_color:
@@ -665,7 +660,6 @@ class Taxii2FeedClient:
             'description': campaign_obj.get('description', ''),
             "aliases": campaign_obj.get('aliases', []),
             "objective": campaign_obj.get('objective', ''),
-            "reportedby": 'Unit42',
             "tags": [tag for tag in self.tags],
         }
         if self.tlp_color:
@@ -698,7 +692,6 @@ class Taxii2FeedClient:
             "primary_motivation": intrusion_set_obj.get('primary_motivation', ''),
             "secondary_motivations": intrusion_set_obj.get('secondary_motivations', []),
             "publications": publications,
-            "reportedby": 'Unit42',
             "tags": list(self.tags),
         }
         if self.tlp_color:
@@ -776,24 +769,24 @@ class Taxii2FeedClient:
         self.load_stix_objects_from_envelope(envelope, limit)  # sorted objects in client class
         indicators = self.parse_stix_objects(limit)
 
-        # indicators = self.extract_indicators_from_envelope_and_parse(envelope, limit)
         return indicators
 
     def load_stix_objects_from_envelope(self, envelope: Union[types.GeneratorType, Dict[str, str]], limit: int = -1):
-
-        objects_types = ['report', 'indicator', 'malware', 'campaign', 'attack-pattern',
-                         'course-of-action', 'intrusion-set', 'tool', 'threat-actor', 'infrastructure', 'relationship']
-        self.objects_data = {obj_type: [] for obj_type in objects_types}
+        #
+        # objects_types = ['report', 'indicator', 'malware', 'campaign', 'attack-pattern',
+        #                  'course-of-action', 'intrusion-set', 'tool', 'threat-actor', 'infrastructure', 'relationship']
+        self.objects_data = {obj_type: [] for obj_type in self.objects_to_fetch}
 
         # TAXII 2.0
         if isinstance(envelope, types.GeneratorType):
             for sub_envelope in envelope:
                 stix_objects = sub_envelope.get("objects")
+                stix_objects = self.extract_indicators_from_stix_objects(stix_objects, self.objects_to_fetch) # filter  required objects
                 if not stix_objects:
                     # no fetched objects
                     break
                 for obj in stix_objects:
-                    if obj.get('type') in objects_types:
+                    if obj.get('type') in self.objects_to_fetch:
                         self.objects_data[obj.get('type', 'other')].append(obj)
                     self.id_to_object[obj.get('id')] = obj
 
@@ -802,7 +795,7 @@ class Taxii2FeedClient:
             cur_limit = limit
             stix_objects = envelope.get("objects")
             for obj in stix_objects:
-                if obj.get('type') in objects_types:
+                if obj.get('type') in self.objects_to_fetch:
                     self.objects_data[obj.get('type', 'other')].append(obj)
                 self.id_to_object[obj.get('id')] = obj
 
@@ -814,7 +807,7 @@ class Taxii2FeedClient:
                 if isinstance(envelope, Dict):
                     stix_objects = envelope.get("objects")
                     for obj in stix_objects:
-                        if obj.get('type') in objects_types:
+                        if obj.get('type') in self.objects_to_fetch:
                             self.objects_data[obj.get('type', 'other')].append(obj)
                         self.id_to_object[obj.get('id')] = obj
                 else:
@@ -837,26 +830,26 @@ class Taxii2FeedClient:
             "infrastructure": self.parse_infrastructure
         }
         indicators = []
-        for obj_type in parse_stix_2_objects.keys():
-            stix_object_list = self.objects_data.get(obj_type, [])
-            if stix_object_list:
-                for obj in stix_object_list:
-                    result = parse_stix_2_objects[obj_type](obj)
-                    if not result:
-                        continue
-                    indicators.extend(result)
-                    indicator_modified_str = obj.get("modified")
-                    if self.last_fetched_indicator__modified is None:
-                        self.last_fetched_indicator__modified = indicator_modified_str  # type: ignore[assignment]
-                    else:
-                        last_datetime = self.stix_time_to_datetime(
-                            self.last_fetched_indicator__modified
-                        )
-                        indicator_created_datetime = self.stix_time_to_datetime(
-                            indicator_modified_str
-                        )
-                        if indicator_created_datetime > last_datetime:
-                            self.last_fetched_indicator__modified = indicator_modified_str
+        # for obj_type in parse_stix_2_objects.keys():
+        #     stix_object_list = self.objects_data.get(obj_type, [])
+        #     if stix_object_list:
+        #         for obj in stix_object_list:
+        #             result = parse_stix_2_objects[obj_type](obj)
+        #             if not result:
+        #                 continue
+        #             indicators.extend(result)
+        #             indicator_modified_str = obj.get("modified")
+        #             if self.last_fetched_indicator__modified is None:
+        #                 self.last_fetched_indicator__modified = indicator_modified_str  # type: ignore[assignment]
+        #             else:
+        #                 last_datetime = self.stix_time_to_datetime(
+        #                     self.last_fetched_indicator__modified
+        #                 )
+        #                 indicator_created_datetime = self.stix_time_to_datetime(
+        #                     indicator_modified_str
+        #                 )
+        #                 if indicator_created_datetime > last_datetime:
+        #                     self.last_fetched_indicator__modified = indicator_modified_str
 
         if self.objects_data.get('relationship'):
             relationship_lst = self.parse_relationships()
@@ -904,18 +897,18 @@ class Taxii2FeedClient:
 
     @staticmethod
     def extract_indicators_from_stix_objects(
-            stix_objs: List[Dict[str, str]]
+            stix_objs: List[Dict[str, str]], required_objects: List[str]
     ) -> List[Dict[str, str]]:
         """
         Extracts indicators from taxii objects
         :param stix_objs: taxii objects
         :return: indicators in json format
         """
-        indicators_objs = [
-            item for item in stix_objs if item.get("type") == "malware"
+        extracted_objs = [
+            item for item in stix_objs if item.get("type") in required_objects
         ]  # retrieve only required type
 
-        return indicators_objs
+        return extracted_objs
 
     def get_indicators_from_indicator_groups(
             self,
