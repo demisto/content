@@ -278,6 +278,7 @@ def parse_incident_data(incidents):
             context['assignment'] = {
                 "time": assignment[0].get('at', ''),
                 "assignee": assignment[0].get('assignee', {}).get('summary', ''),
+                "assigneeId": assignment[0].get('assignee', {}).get('id', ''),
             }
         else:
             context['assignment'] = {}
@@ -287,6 +288,7 @@ def parse_incident_data(incidents):
             context['acknowledgement'] = {
                 "time": assignment[0].get('at', ''),
                 "acknowledger": assignment[0].get('acknowledger', {}).get('summary', ''),
+                "acknowledgerId": assignment[0].get('acknowledger', {}).get('id', ''),
             }
         else:
             context['acknowledgement'] = {}
