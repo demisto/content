@@ -542,6 +542,7 @@ def get_intel_doc(client, data_args):
     context = createContext(intel_doc, removeNull=True)
     outputs = {'Tanium.IntelDoc(val.ID && val.ID === obj.ID)': context}
 
+    intel_doc['LabelIds'] = str(intel_doc['LabelIds']).strip('[]')
     headers = ['ID', 'Name', 'Description', 'Type', 'AlertCount', 'UnresolvedAlertCount', 'CreatedAt', 'UpdatedAt',
                'LabelIds']
     human_readable = tableToMarkdown('Intel Doc information', intel_doc, headers=headers,
@@ -1284,16 +1285,16 @@ def intel_doc_create(client, data_args):
 
 def start_quick_scan(client, data_args):
     # get computer group ID from computer group name
-    computer_group_name = data_args.get('computer-group-name')
+    computer_group_name = data_args.get('computer_group_name')
     raw_response = client.do_request('GET', f"/api/v2/groups/by-name/{computer_group_name}")
     raw_response_data = raw_response.get('data')
     if not raw_response_data:
-        msg = f'No group exists with name {computer_group_name}.'
-        msg += 'Also, please verify that your account has sufficient permissions to access the groups'
+        msg = f'No group exists with name {computer_group_name} or' \
+              f' your account does not have sufficient permissions to access the groups'
         raise DemistoException(msg)
 
     data = {
-        'intelDocId': int(data_args.get('intel-doc-id')),
+        'intelDocId': int(data_args.get('intel_doc_id')),
         'computerGroupId': int(raw_response_data.get('id'))
     }
     raw_response = client.do_request('POST', '/plugin/products/detect3/api/v1/quick-scans/', json_data=data)
