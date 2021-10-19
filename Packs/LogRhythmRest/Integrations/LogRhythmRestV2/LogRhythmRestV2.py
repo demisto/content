@@ -1316,7 +1316,7 @@ class Client(BaseClient):
     def list_details_and_items_get_request(self, list_id, max_items):
         raw_response = self._http_request('GET', f'lr-admin-api/lists/{list_id}')
         response = raw_response.copy()
-        if max_items:
+        if max_items and response.get('items'):
             items = response.get('items')[:int(max_items)]
             response['items'] = items
         return response, raw_response

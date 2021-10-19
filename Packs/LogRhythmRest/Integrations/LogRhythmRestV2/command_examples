@@ -25,7 +25,7 @@
 !lr-networks-list count=2
 !lr-lists-get
 !lr-hosts-status-update host_id=7 host_status=Active
-!lr-list-details-and-items-get list_id=EA778B8F-20CA-4413-9A2D-CF69FB536793
+!lr-list-details-and-items-get list_guid=EA778B8F-20CA-4413-9A2D-CF69FB536793
 !lr-list-items-add list_id=EA778B8F-20CA-4413-9A2D-CF69FB536793 items=`{"listItemDataType": "PortRange","listItemType": "PortRange","value": "200,300","valueAsListReference":{"listType": "Network"}}`
 !lr-list-items-remove list_id=EA778B8F-20CA-4413-9A2D-CF69FB536793 items=`{"displayValue": "201,301","listItemType": "PortRange","value": "201,301"}`
 !lr-add-host entity-name=`Global Entity` host-status=Retired host-zone=DMZ name=test_host2 os=AIX risk-level="High-High" use-eventlog-credentials=false
