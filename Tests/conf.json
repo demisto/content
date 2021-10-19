@@ -4908,7 +4908,8 @@
         "GitHub": "Cannot use proxy",
         "LogRhythm": "Cannot use proxy",
         "Create-Mock-Feed-Relationships": "recording is redundant for this integration",
-        "RSA Archer v2": "cannot connect to proxy"
+        "RSA Archer v2": "cannot connect to proxy",
+        "LogRhythmRest V2": "has a command that uploads a file - tests that send files shouldn't be mocked"
     },
     "parallel_integrations": [
         "AWS - EC2",
