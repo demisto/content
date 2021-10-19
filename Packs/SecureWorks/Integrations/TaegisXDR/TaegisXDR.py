@@ -73,7 +73,7 @@ class Client(BaseClient):
         :type variables: ``Dict[str, Any]``
         :param variables: The variables to utilize with the query
         """
-        json_data = {"query": query}
+        json_data: Dict[str, Any] = {"query": query}
 
         if variables:
             json_data["variables"] = variables
@@ -396,7 +396,7 @@ def main():
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
 
-    commands = {
+    commands: Dict[str, Any] = {
         "taegis-create-investigation": create_investigation_command,
         "taegis-fetch-alerts": fetch_alerts_command,
         "taegis-fetch-investigation": fetch_investigation_command,
