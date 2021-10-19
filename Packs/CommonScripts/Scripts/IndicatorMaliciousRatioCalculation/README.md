@@ -6,7 +6,7 @@ Returns indicators that appear under resolved incidents, and resolved incident I
 | --- | --- |
 | Script Type | python |
 | Tags | ml |
-| Cortex XSOAR Version | 3.5.0+ |
+| Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
 ---

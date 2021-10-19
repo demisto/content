@@ -41,7 +41,7 @@ scripttarget: 0
 timeout: 300ns
 runas: DBotRole
 runonce: false
-fromversion: "5.0.0"
+fromversion: 5.0.0
 tests:
   - IndicatorMaliciousRatioCalculation_test
 dockerimage: demisto/python:2.7.18.24066
