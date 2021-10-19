@@ -88,7 +88,7 @@ class Client(BaseClient):
                                  url_suffix='tags',
                                  headers=self.headers,
                                  json_data=data,
-                                 timeout=80,
+                                 timeout=90,
                                  )
         return res
 
@@ -96,7 +96,7 @@ class Client(BaseClient):
         res = self._http_request('POST',
                                  url_suffix=f'tag/{public_tag_name}',
                                  headers=self.headers,
-                                 timeout=80,
+                                 timeout=90,
                                  )
         return res
 
@@ -334,6 +334,22 @@ def create_indicators_fields(tag_details: Dict[str, Any]) -> Dict[str, Any]:
     return fields
 
 
+def update_integration_context_with_indicator_data(public_tag_name: str, tag_name: str, tag_type: str) -> None:
+    """
+    Updates the integration context with seen tags (to save some API calls)
+    Args:
+        tag_name: tag name
+        public_tag_name: public tag name
+        tag_type: tag type
+    """
+
+    integration_context = get_integration_context()
+    seen_tags = integration_context.get('seen_tags', {})
+    seen_tags[public_tag_name] = {'tag_name': tag_name, 'tag_type': tag_type}
+    integration_context['seen_tags'] = seen_tags
+    set_integration_context(integration_context)
+
+
 def create_relationships_for_tag(client: Client, name: str, tag_type: str, related_tags: List[str]):
     """
     Creates all the relationships of an indicator.
@@ -347,21 +363,30 @@ def create_relationships_for_tag(client: Client, name: str, tag_type: str, relat
     """
 
     relationships: list = []
-    for related_tag in related_tags:
-        try:
-            related_tag_details = client.get_tag_details(related_tag)
-        except DemistoException:
-            demisto.debug(f'AutoFocus Tags Feed: Could not create relationship for {name} with {related_tag}.')
-            continue
-        if related_tag_details:
+    integration_context = get_integration_context()
+    seen_tags = integration_context.get('seen_tags', {})
+    for related_tag_public_name in related_tags:
+        if related_tag_public_name in seen_tags.keys():
+            related_tag_name = seen_tags.get(related_tag_public_name, {}).get('tag_name', '')
+            related_tag_type = seen_tags.get(related_tag_public_name, {}).get('tag_type', '')
+        else:
+            try:
+                related_tag_details = client.get_tag_details(related_tag_public_name)
+            except DemistoException:
+                demisto.debug(
+                    f'AutoFocus Tags Feed: Could not create relationship for {name} with {related_tag_public_name}.')
+                continue
             tag = related_tag_details.get('tag', {})
             related_tag_name = tag.get('tag_name', '')
             tag_class = tag.get('tag_class', '')
             source = tag.get('source', '')
             related_tag_type = get_tag_class(tag_class, source)
-            if related_tag_type:
-                relationships.append(
-                    create_relationship(name, tag_type, related_tag_name, related_tag_type).to_indicator())
+        if related_tag_type:
+            relationships.append(
+                create_relationship(name, tag_type, related_tag_name, related_tag_type).to_indicator())
+            update_integration_context_with_indicator_data(related_tag_public_name,
+                                                           related_tag_name,
+                                                           related_tag_type)
     return relationships
 
 
@@ -429,6 +454,7 @@ def fetch_indicators(client: Client,
     indicators = []
     for tag_details in iterator:
         tag_dict = tag_details.get('tag', {})
+        public_tag_name = tag_dict.get('public_tag_name', '')
         tag_name = tag_dict.get('tag_name' '')
         tag_class = tag_dict.get('tag_class', '')
         source = tag_dict.get('source', '')
@@ -439,6 +465,7 @@ def fetch_indicators(client: Client,
             'value': tag_name,
             'type': tag_type,
         }
+        update_integration_context_with_indicator_data(public_tag_name, tag_name, tag_type)
         raw_data.update(tag_details)
         indicator_obj = {
             'value': tag_name,
