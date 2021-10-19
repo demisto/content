@@ -1,6 +1,6 @@
 ## Grafana Integration
 
-The panel ID can be found in one of the following ways:
+The panel ID for fetching incidents can be found in one of the following ways:
 1. In Grafana's interface, when viewing a dashboard:
     1. Inspect a panel (click `i` when your mouse is on the panel).
     2. Go to the JSON category.

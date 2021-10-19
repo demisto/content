@@ -10,7 +10,7 @@ from freezegun import freeze_time
 from CommonServerPython import urljoin
 
 
-def create_client(url: str = 'url', verify_certificate: bool = False, proxy: bool = False):
+def create_client(url: str = 'url', verify_certificate: bool = True, proxy: bool = False):
     return Client(urljoin(url, ''), verify_certificate, proxy)
 
 
@@ -28,10 +28,10 @@ def test_change_key(dict_input, prev_key, new_key, expected_result):
     """
 
     Given:
-        - Dictionary we want to change it's keys
+        - Dictionary we want to change one of it's keys
 
     When:
-        - Getting response from Grafana API
+        - Getting response from Grafana API, which has a different key than desired
 
     Then:
         - Returns the dictionary with the wanted key changed
@@ -47,7 +47,7 @@ def test_keys_to_lowercase():
         - Dictionary we want to change it's keys to decapitalized
 
     When:
-        - Getting response about an alert
+        - Getting response about an alert, that has it's keys capitalized
 
     Then:
         - Returns the dictionary with it's keys decapitalized
@@ -60,11 +60,10 @@ def test_keys_to_lowercase():
     assert keys_to_lowercase(dict_input) == expected_result
 
 
-all_capitalized = ('ID', 'iD')
 first_capitalized = ('Id', 'id')
-empty_string = ('', '')
 decapitalize_only_first = ('NewStateDate', 'newStateDate')
-DECAPITALIZE_VALUES = {all_capitalized, first_capitalized, empty_string, decapitalize_only_first}
+empty_string = ('', '')
+DECAPITALIZE_VALUES = [first_capitalized, decapitalize_only_first, empty_string]
 
 
 @pytest.mark.parametrize('str_input, expected_output', DECAPITALIZE_VALUES)
@@ -72,10 +71,10 @@ def test_decapitalize(str_input, expected_output):
     """
 
     Given:
-        - A string we want to decapitalized
+        - A string we want to decapitalize
 
     When:
-        - Lowering keys in dictionary
+        - Getting response about an alert, that has it's keys capitalized, this is executed to lower the keys in the dictionary
 
     Then:
         - Returns the string decapitalized
@@ -85,16 +84,16 @@ def test_decapitalize(str_input, expected_output):
 
 
 first_fetch_hour_ago = (None,
-                        '1 hour',
+                        '1 hour',  # equals to 2020-07-29 10:00:00 UTC
                         dateparser.parse('2020-07-29 10:00:00 UTC').replace(tzinfo=utc, microsecond=0))
 first_fetch_day_ago = (None,
-                       '3 days',
+                       '3 days',  # equals to 2020-07-26 11:00:00 UTC
                        dateparser.parse('2020-07-26 11:00:00 UTC').replace(tzinfo=utc, microsecond=0))
 fetch_from_closer_time_last_fetched = ('1595847600',  # epoch time for 2020-07-27 11:00:00 UTC
-                                       '3 days',
+                                       '3 days',  # equals to 2020-07-26 11:00:00 UTC
                                        dateparser.parse('2020-07-27 11:00:00 UTC').replace(tzinfo=utc, microsecond=0))
 fetch_from_closer_time_given_human = ('1595847600',  # epoch time for 2020-07-27 11:00:00 UTC
-                                      '2 hours',
+                                      '2 hours',  # equals to 2020-07-29 09:00:00 UTC
                                       dateparser.parse('2020-07-29 9:00:00 UTC').replace(tzinfo=utc, microsecond=0))
 fetch_from_closer_time_given_epoch = ('1595847600',  # epoch time for 2020-07-27 11:00:00 UTC
                                       '1596013200',  # epoch time for 2020-07-29 9:00:00 UTC
@@ -118,7 +117,7 @@ def test_calculate_fetch_start_time(last_fetch, first_fetch, expected_output):
         - Returns the time to fetch from - the latter of the 2 given
 
     """
-    # works only with lint
+    # works only with lint due to freeze_time
     assert calculate_fetch_start_time(last_fetch, first_fetch) == expected_output
 
 
@@ -128,9 +127,9 @@ with open("TestData/parse_alerts_values.json") as parse_alerts_values_file:
 no_alerts_to_fetch = ([],
                       5,
                       dateparser.parse('2021-06-09 15:20:01 UTC').replace(tzinfo=utc, microsecond=0),
-                      -1,
+                      2,
                       dateparser.parse('2021-06-09 15:20:01 UTC').replace(tzinfo=utc, microsecond=0),
-                      -1,
+                      2,
                       [])
 after_one_alert_was_fetched_high_limit = (parse_alerts_values_data["after_one_alert_was_fetched_high_limit"],
                                           10,
@@ -140,12 +139,12 @@ after_one_alert_was_fetched_high_limit = (parse_alerts_values_data["after_one_al
                                           2,
                                           ["TryAlert", "Adi's Alert"])
 after_one_alert_was_fetched_low_limit = (parse_alerts_values_data["after_one_alert_was_fetched_low_limit"],
-                                         2,
+                                         1,
                                          dateparser.parse('2021-06-09 15:20:01 UTC').replace(tzinfo=utc, microsecond=0),
                                          1,
-                                         dateparser.parse('2021-07-29 14:03:20 UTC').replace(tzinfo=utc, microsecond=0),
-                                         2,
-                                         ["TryAlert", "Adi's Alert"])
+                                         dateparser.parse('2021-07-08 12:08:40 UTC').replace(tzinfo=utc, microsecond=0),
+                                         3,
+                                         ["TryAlert"])
 keep_all_alerts = (parse_alerts_values_data["keep_all_alerts"],
                    2,
                    dateparser.parse('2020-06-08 10:00:00 UTC').replace(tzinfo=utc, microsecond=0),
@@ -179,13 +178,13 @@ def test_parse_alerts(alerts, max_fetch, last_fetch, last_id_fetched,
     """
 
     Given:
-        - Fetch incidents runs
+        - Fetch incidents runs and got all alerts, that some of them will become fetched incidents
 
     When:
-        - Needs to choose only the relvant incidents to return
+        - Needs to choose only the relevant incidents to fetch
 
     Then:
-        - Returns the new time to fetch from next time, the last id fetched, and the incidents fetched
+        - Returns the incidents fetched, the new time to fetch from next time and the last id fetched
 
     """
     output_time, output_id, output_incidents = parse_alerts(alerts, max_fetch, last_fetch, last_id_fetched)
