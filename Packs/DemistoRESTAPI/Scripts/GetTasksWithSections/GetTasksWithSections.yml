@@ -1,7 +1,7 @@
 commonfields:
-  id: GetIncidentsTasksById
+  id: GetTasksWithSections
   version: -1
-name: GetIncidentsTasksById
+name: GetTasksWithSections
 script: '-'
 type: python
 subtype: python3
@@ -10,15 +10,6 @@ tags:
 - Utility
 comment: Get all tasks for specific incident by the given state.
 enabled: true
-args:
-- name: incident_id
-  required: true
-  default: true
-  description: Incident ID to get tasks from
-- name: states
-  description: 'Comma separated list of states. Possible values: New, InProgress, Completed, Waiting, Error, Skipped, Blocked (leave empty to get all tasks)'
-- name: task_ids
-  isArray: true
 outputs:
 - contextPath: Tasks
   description: The entire task object
@@ -27,6 +18,9 @@ outputs:
   type: string
 - contextPath: Tasks.name
   description: Task name
+  type: string
+- contextPath: Tasks.section
+  description: Task section
   type: string
 - contextPath: Tasks.type
   description: The type of the task (regular, condition, title, playbook, start)
