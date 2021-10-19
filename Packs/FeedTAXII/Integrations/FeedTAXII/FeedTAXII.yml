@@ -162,11 +162,17 @@ script:
     - contextPath: TAXII.Indicator.title
       description: The indicator title.
       type: String
-    - contextPath: TAXII.Indicator.stixindicatorname
-      description: The indicator title.
+    - contextPath: TAXII.Indicator.description
+      description: The indicator description.
       type: String
     - contextPath: TAXII.Indicator.stixindicatordescription
       description: The indicator description.
+      type: String
+    - contextPath: TAXII.Indicator.stixindicatorname
+      description: The indicator title.
+      type: String
+    - contextPath: TAXII.Indicator.stixttptitle
+      description: The ttp title.
       type: String
     - contextPath: TAXII.Indicator.confidence
       description: The indicator confidence.

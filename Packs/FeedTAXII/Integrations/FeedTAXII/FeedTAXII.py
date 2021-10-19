@@ -317,10 +317,9 @@ class StixDecode(object):
             timestamp = StixDecode._parse_stix_timestamp(timestamp)
 
         # extract the Observable info
-        if package.find_all('Observable'):
+        if observables := package.find_all('Observable'):
             pprops = package_extract_properties(package)
 
-            observables = package.find_all('Observable')
             for o in observables:
                 gprops = observable_extract_properties(o)
 
@@ -354,14 +353,12 @@ class StixDecode(object):
                             observable_result.append(r)
 
         # extract the Indicator info
-        if package.find_all('Indicator'):
-            observable = package.find_all('Observable')
+        if indicators := package.find_all('Indicator'):
 
-            if observable:
-                indicator_ref = observable[0].get('idref')
+            if observables:
+                indicator_ref = observables[0].get('idref')
 
                 if indicator_ref:
-                    indicators = package.find_all('Indicator')
                     indicator_info = indicator_extract_properties(indicators[0])
                     indicator_result[indicator_ref] = indicator_info
 
@@ -381,9 +378,7 @@ class StixDecode(object):
                 description = description.text
                 ttp_info['ttp_description'] = description
 
-            behavior = package.find_all('Behavior')
-
-            if behavior:
+            if behavior := package.find_all('Behavior'):
                 if behavior[0].find_all('Malware'):
                     ttp_info.update(ttp_extract_properties(package.find_all('Malware_Instance')[0], 'Malware'))
 
@@ -860,11 +855,9 @@ class TAXIIClient(object):
 
         for observable in observables:
 
-            indicator_ref = observable.get('indicator_ref')
-            if indicator_ref:
-                indicator_info = indicators.get(indicator_ref)
-                if indicator_info:
-                    observable.update(indicators.get(indicator_ref))
+            if indicator_ref := observable.get('indicator_ref'):
+                if indicator_info := indicators.get(indicator_ref):
+                    observable.update(indicator_info)
 
             ttp_ref = observable.get('ttp_ref', [])
             relationships = []
@@ -991,8 +984,7 @@ def observable_extract_properties(observable):
     """Extracts properties from observable"""
     result: Dict[str, str] = {}
 
-    id_ref = observable.get('id')
-    if id_ref:
+    if id_ref := observable.get('id'):
         result['indicator_ref'] = id_ref
 
     title = next((c for c in observable if c.name == 'Title'), None)
@@ -1029,8 +1021,7 @@ def indicator_extract_properties(indicator) -> Dict[str, Any]:
             value = value.text
             result['confidence'] = value
 
-    indicated_ttp = indicator.find_all('Indicated_TTP')
-    if indicated_ttp:
+    if indicated_ttp := indicator.find_all('Indicated_TTP'):
         result['ttp_ref'] = []
         for ttp_value in indicated_ttp:
             ttp = next((c for c in ttp_value if c.name == 'TTP'), None)
@@ -1153,8 +1144,7 @@ def fetch_indicators_command(client):
     # Create the indicators from the observables
     iterator = client.build_iterator(date_to_timestamp(datetime.now()))
     for item in iterator:
-        indicator = item.get('indicator')
-        if indicator:
+        if indicator := item.get('indicator'):
             item['value'] = indicator
             indicator_obj = {
                 'value': indicator,
@@ -1185,8 +1175,7 @@ def fetch_indicators_command(client):
     # Create the indicators from the ttps
     ttps = client.ttps
     for item in ttps.values():
-        indicator = item.get('indicator')
-        if indicator:
+        if indicator := item.get('indicator'):
             item['value'] = indicator
             indicator_obj = {
                 'value': indicator,
