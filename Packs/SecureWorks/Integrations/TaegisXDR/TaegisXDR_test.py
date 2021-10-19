@@ -27,6 +27,7 @@ TAEGIS_INVESTIGATION = {
 
 ''' UTILITY FUNCTIONS '''
 
+
 def mock_client(requests_mock, mock_response):
     base_url = "https://api.ctpx.secureworks.com"
 
@@ -37,7 +38,6 @@ def mock_client(requests_mock, mock_response):
         base_url=base_url,
     )
     return client
-
 
 
 ''' TESTS '''
