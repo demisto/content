@@ -9,6 +9,7 @@ requests.packages.urllib3.disable_warnings()
 DEFAULT_OUTGOING_MAPPER = "User Profile - SCIM (Outgoing)"
 DEFAULT_INCOMING_MAPPER = "User Profile - SCIM (Incoming)"
 
+IAM_GET_USER_ATTRIBUTES = ['id', 'userName', 'emails']
 
 class Client(BaseClient):
 
@@ -122,17 +123,14 @@ def get_user_command(client, args, mapper_in):
     user_profile = args.get("user-profile")
     iam_user_profile = IAMUserProfile(user_profile=user_profile)
     try:
-        iam_attr, iam_attr_value = get_first_available_iam_user_attr(iam_user_profile,
-                                                                     [IAMAttribute.ID, IAMAttribute.USERNAME,
-                                                                      IAMAttribute.EMAIL])
-        github_filter_name: str = IAM_ATTRIBUTE_TO_GITHUB_FILTER.get(iam_attr, '')
-        res = client.get_user(github_filter_name, iam_attr_value)
+        iam_attr, iam_attr_value = get_first_available_iam_user_attr(iam_user_profile, IAM_GET_USER_ATTRIBUTES)
+        res = client.get_user(iam_attr, iam_attr_value)
 
         if res.get('totalResults', 0) == 0:
             error_code, error_message = IAMErrors.USER_DOES_NOT_EXIST
             iam_user_profile.set_result(success=False,
-                                        email=iam_attr_value if iam_attr == IAMAttribute.EMAIL else None,
-                                        username=iam_attr_value if iam_attr == IAMAttribute.USERNAME else None,
+                                        email=iam_attr_value if iam_attr == 'emails' else None,
+                                        username=iam_attr_value if iam_attr == 'userName' else None,
                                         error_message=error_message,
                                         error_code=error_code,
                                         action=IAMActions.GET_USER)
@@ -391,10 +389,5 @@ def main():
 
 from IAMApiModule import *  # noqa: E402
 
-IAM_ATTRIBUTE_TO_GITHUB_FILTER = {
-    IAMAttribute.EMAIL: 'emails',
-    IAMAttribute.ID: 'id',
-    IAMAttribute.USERNAME: 'userName'
-}
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

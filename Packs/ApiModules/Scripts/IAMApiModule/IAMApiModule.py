@@ -428,7 +428,8 @@ class IAMCommand:
                     user_profile = self.update_user(client, args)
 
                 else:
-                    user_profile.app_profile = user_profile.map_object(self.mapper_out, IAMUserProfile.CREATE_INCIDENT_TYPE)
+                    user_profile.app_profile = user_profile.map_object(self.mapper_out,
+                                                                       IAMUserProfile.CREATE_INCIDENT_TYPE)
                     created_user = client.create_user(user_profile.app_profile)
                     user_profile.set_result(
                         action=IAMActions.CREATE_USER,
@@ -467,7 +468,8 @@ class IAMCommand:
                                                                                      use_old_user_data=True)
                 user_app_data = client.get_user(iam_attribute, iam_attribute_val)
                 if user_app_data:
-                    user_profile.app_profile = user_profile.map_object(self.mapper_out, IAMUserProfile.UPDATE_INCIDENT_TYPE)
+                    user_profile.app_profile = user_profile.map_object(self.mapper_out,
+                                                                       IAMUserProfile.UPDATE_INCIDENT_TYPE)
 
                     if allow_enable and self.is_enable_enabled and not user_app_data.is_active:
                         client.enable_user(user_app_data.id)

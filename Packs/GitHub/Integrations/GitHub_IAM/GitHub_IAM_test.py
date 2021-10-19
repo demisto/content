@@ -86,15 +86,15 @@ def test_get_user_command__existing_user(mocker):
     assert outputs.get('username') == 'TestID@networks.com'
 
 
-@pytest.mark.parametrize('args, mock_url', [({'user-profile': {'email': 'mock@mock.com'}},
+@pytest.mark.parametrize('args, mock_url', [({'user-profile': {'emails': 'mock@mock.com'}},
                                              f'{BASE_MOCK_URL}/scim/v2/organizations/{MOCK_ORG}/Users?filter='
                                              'emails eq \"mock@mock.com\"'),
-                                            ({'user-profile': {'username': 'TestID@networks.com',
-                                                               'email': 'mock@mock.com'}},
+                                            ({'user-profile': {'userName': 'TestID@networks.com',
+                                                               'emails': 'mock@mock.com'}},
                                              f'{BASE_MOCK_URL}/scim/v2/organizations/{MOCK_ORG}/Users?filter='
                                              'userName eq \"TestID@networks.com\"'),
-                                            ({'user-profile': {'id': 12345, 'username': 'TestID@networks.com',
-                                                               'email': 'mock@mock.com'}},
+                                            ({'user-profile': {'id': 12345, 'userName': 'TestID@networks.com',
+                                                               'emails': 'mock@mock.com'}},
                                              f'{BASE_MOCK_URL}/scim/v2/organizations/{MOCK_ORG}/Users?filter='
                                              'id eq \"12345\"'),
                                             ])

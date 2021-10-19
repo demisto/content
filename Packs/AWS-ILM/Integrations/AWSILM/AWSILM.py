@@ -13,6 +13,8 @@ patchSchema = 'urn:ietf:params:scim:api:messages:2.0:PatchOp'
 ERROR_CODES_TO_SKIP = [
     404
 ]
+SUPPORTED_GET_USER_IAM_ATTRIBUTES = ['id', 'userName']
+
 
 def build_body_request_for_update_user(old_user_data, new_user_data):
     operations = []
@@ -43,11 +45,11 @@ class Client(BaseClient):
 
         self._http_request(method='GET', url_suffix=userUri)
 
-    def get_user(self, iam_attribute, iam_attribute_val: str) -> Optional['IAMUserAppData']:
+    def get_user(self, iam_attribute: str, iam_attribute_val: str) -> Optional['IAMUserAppData']:
         """ Queries the user in the application using REST API by its email, and returns an IAMUserAppData object
         that holds the user_id, username, is_active and app_data attributes given in the query response.
 
-        :type iam_attribute: ``IAMAttribute``
+        :type iam_attribute: ``str``
         :param iam_attribute: The IAM attribute.
 
         :type iam_attribute_val: ``str``
@@ -56,8 +58,8 @@ class Client(BaseClient):
         :return: An IAMUserAppData object if user exists, None otherwise.
         :rtype: ``Optional[IAMUserAppData]``
         """
-        params = {'filter': f'userName eq "{iam_attribute_val}"'} if iam_attribute == IAMAttribute.USERNAME else None
-        url_suffix: str = f'{userUri}{iam_attribute_val}' if iam_attribute == IAMAttribute.ID else userUri
+        params = {'filter': f'userName eq "{iam_attribute_val}"'} if iam_attribute == 'userName' else None
+        url_suffix: str = f'{userUri}{iam_attribute_val}' if iam_attribute == 'id' else userUri
 
         res = self._http_request(
             method='GET',
@@ -67,7 +69,7 @@ class Client(BaseClient):
         user_app_data = None
         if res.get('totalResults', 0) > 0:
             user_app_data = res.get('Resources')[0]
-        elif iam_attribute == iam_attribute.ID:
+        elif iam_attribute == 'id':
             user_app_data = res
 
         if user_app_data:
@@ -679,7 +681,6 @@ def main():
 
 
 from IAMApiModule import *  # noqa E402
-SUPPORTED_GET_USER_IAM_ATTRIBUTES = [IAMAttribute.ID, IAMAttribute.USERNAME]
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
     main()
