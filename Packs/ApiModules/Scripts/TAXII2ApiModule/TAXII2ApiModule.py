@@ -205,7 +205,6 @@ class Taxii2FeedClient:
             re.compile(CIDR_ISUPPERSET_VAL_PATTERN),
         ]
         self.id_to_object: Dict[str, Any] = {}
-        self.objects_data: Dict[str, Any] = {}
         self.objects_to_fetch = objects_to_fetch
 
     def init_server(self, version=TAXII_VER_2_0):
@@ -369,6 +368,19 @@ class Taxii2FeedClient:
                 ioc_type = STIX_2_TYPES_TO_CORTEX_TYPES.get(stix_type)  # type: ignore
                 break
         return ioc_type
+
+    def update_last_modified_indicator_date(self, indicator_modified_str):
+        if self.last_fetched_indicator__modified is None:
+            self.last_fetched_indicator__modified = indicator_modified_str  # type: ignore[assignment]
+        else:
+            last_datetime = self.stix_time_to_datetime(
+                self.last_fetched_indicator__modified
+            )
+            indicator_created_datetime = self.stix_time_to_datetime(
+                indicator_modified_str
+            )
+            if indicator_created_datetime > last_datetime:
+                self.last_fetched_indicator__modified = indicator_modified_str
 
     """ PARSING FUNCTIONS"""
 
@@ -699,14 +711,14 @@ class Taxii2FeedClient:
         intrusion_set["fields"] = fields
         return [intrusion_set]
 
-    def parse_relationships(self):
+    def parse_relationships(self, relationships_lst):
         """Parse the Relationships objects retrieved from the feed.
 
         Returns:
-            A list of processed relationships.
+            A list of processed relationships an indicator object.
         """
         relationships_list = []
-        for relationships_object in self.objects_data.get('relationship', []):
+        for relationships_object in relationships_lst:
             relationship_type = relationships_object.get('relationship_type')
             if relationship_type not in EntityRelationship.Relationships.RELATIONSHIPS_NAMES.keys():
                 if relationship_type == 'indicates':
@@ -745,7 +757,11 @@ class Taxii2FeedClient:
                                                  fields=mapping_fields)
             relationships_list.append(entity_relation.to_indicator())
 
-        return relationships_list
+        dummy_indicator = {
+            "value": "$$DummyIndicator$$",
+            "relationships": relationships_list
+        }
+        return [dummy_indicator] if dummy_indicator else []
 
     def build_iterator(self, limit: int = -1, **kwargs) -> List[Dict[str, str]]:
         """
@@ -765,58 +781,13 @@ class Taxii2FeedClient:
         page_size = self.get_page_size(limit, limit)
         if page_size <= 0:
             return []
-        envelope = self.poll_collection(page_size, **kwargs)  # got data from server for all objects
-        self.load_stix_objects_from_envelope(envelope, limit)  # sorted objects in client class
-        indicators = self.parse_stix_objects(limit)
+        envelopes = self.poll_collection(page_size, **kwargs)  # got data from server
+        indicators = self.load_stix_objects_from_envelope(envelopes, limit)
 
         return indicators
 
-    def load_stix_objects_from_envelope(self, envelope: Union[types.GeneratorType, Dict[str, str]], limit: int = -1):
-        #
-        # objects_types = ['report', 'indicator', 'malware', 'campaign', 'attack-pattern',
-        #                  'course-of-action', 'intrusion-set', 'tool', 'threat-actor', 'infrastructure', 'relationship']
-        self.objects_data = {obj_type: [] for obj_type in self.objects_to_fetch}
+    def load_stix_objects_from_envelope(self, envelopes: Dict[str, Union[types.GeneratorType, Dict[str, str]]], limit: int = -1):
 
-        # TAXII 2.0
-        if isinstance(envelope, types.GeneratorType):
-            for sub_envelope in envelope:
-                stix_objects = sub_envelope.get("objects")
-                stix_objects = self.extract_indicators_from_stix_objects(stix_objects, self.objects_to_fetch) # filter  required objects
-                if not stix_objects:
-                    # no fetched objects
-                    break
-                for obj in stix_objects:
-                    if obj.get('type') in self.objects_to_fetch:
-                        self.objects_data[obj.get('type', 'other')].append(obj)
-                    self.id_to_object[obj.get('id')] = obj
-
-        # TAXII 2.1
-        elif isinstance(envelope, Dict):
-            cur_limit = limit
-            stix_objects = envelope.get("objects")
-            for obj in stix_objects:
-                if obj.get('type') in self.objects_to_fetch:
-                    self.objects_data[obj.get('type', 'other')].append(obj)
-                self.id_to_object[obj.get('id')] = obj
-
-            while envelope.get("more", False):
-                page_size = self.get_page_size(limit, cur_limit)
-                envelope = self.collection_to_fetch.get_objects(
-                    limit=page_size, next=envelope.get("next", "")
-                )
-                if isinstance(envelope, Dict):
-                    stix_objects = envelope.get("objects")
-                    for obj in stix_objects:
-                        if obj.get('type') in self.objects_to_fetch:
-                            self.objects_data[obj.get('type', 'other')].append(obj)
-                        self.id_to_object[obj.get('id')] = obj
-                else:
-                    raise DemistoException(
-                        "Error: TAXII 2 client received the following response while requesting "
-                        f"indicators: {str(envelope)}\n\nExpected output is json"
-                    )
-
-    def parse_stix_objects(self, limit: int = -1):
         parse_stix_2_objects = {
             "indicator": self.parse_indicator,
             "attack-pattern": self.parse_attack_pattern,
@@ -830,37 +801,13 @@ class Taxii2FeedClient:
             "infrastructure": self.parse_infrastructure
         }
         indicators = []
-        # for obj_type in parse_stix_2_objects.keys():
-        #     stix_object_list = self.objects_data.get(obj_type, [])
-        #     if stix_object_list:
-        #         for obj in stix_object_list:
-        #             result = parse_stix_2_objects[obj_type](obj)
-        #             if not result:
-        #                 continue
-        #             indicators.extend(result)
-        #             indicator_modified_str = obj.get("modified")
-        #             if self.last_fetched_indicator__modified is None:
-        #                 self.last_fetched_indicator__modified = indicator_modified_str  # type: ignore[assignment]
-        #             else:
-        #                 last_datetime = self.stix_time_to_datetime(
-        #                     self.last_fetched_indicator__modified
-        #                 )
-        #                 indicator_created_datetime = self.stix_time_to_datetime(
-        #                     indicator_modified_str
-        #                 )
-        #                 if indicator_created_datetime > last_datetime:
-        #                     self.last_fetched_indicator__modified = indicator_modified_str
 
-        if self.objects_data.get('relationship'):
-            relationship_lst = self.parse_relationships()
-
-            dummy_indicator = {
-                "value": "$$DummyIndicator$$",
-                "relationships": relationship_lst
-            }
-
-            if dummy_indicator:
-                indicators.append(dummy_indicator)
+        # TAXII 2.0
+        if isinstance(list(envelopes.values())[0], types.GeneratorType):
+            indicators.extend(self.parse_generator_type_envelope(envelopes, parse_stix_2_objects))
+        # TAXII 2.1
+        else:
+            indicators.extend(self.parse_dict_envelope(envelopes, parse_stix_2_objects, limit))
         demisto.debug(
             f"TAXII 2 Feed has extracted {len(indicators)} indicators"
         )
@@ -868,19 +815,96 @@ class Taxii2FeedClient:
             return indicators[:limit]
         return indicators
 
+    def parse_generator_type_envelope(self, envelopes: Dict[str, Union[types.GeneratorType, Dict[str, str]]],
+                                      parse_objects_func: Dict[str, Any]):
+        indicators = []
+        relationships_lst = []
+        for obj_type, envelope in envelopes.items():
+            for sub_envelope in envelope:
+                stix_objects = sub_envelope.get("objects")
+                if not stix_objects:
+                    # no fetched objects
+                    break
+                # now we have a list of objects, go over each obj, save id with obj, parse the obj
+                if obj_type != "relationship":
+                    for obj in stix_objects:
+                        self.id_to_object[obj.get('id')] = obj
+                        result = parse_objects_func[obj_type](obj)
+                        if not result:
+                            continue
+                        indicators.extend(result)
+                        self.update_last_modified_indicator_date(obj.get("modified"))
+                else:
+                    relationships_lst.extend(stix_objects)
+        if relationships_lst:
+            indicators.extend(self.parse_relationships(relationships_lst))
+
+        return indicators
+
+    def parse_dict_envelope(self, envelopes: Dict[str, Union[types.GeneratorType, Dict[str, str]]],
+                            parse_objects_func: Dict[str, Any], limit: int = -1):
+        indicators = []
+        relationships_list = []
+        for obj_type, envelope in envelopes.items():
+            cur_limit = limit
+            stix_objects = envelope.get("objects")
+            if obj_type != "relationship":
+                for obj in stix_objects:
+                    self.id_to_object[obj.get('id')] = obj
+                    result = parse_objects_func[obj_type](obj)
+                    if not result:
+                        continue
+                    indicators.extend(result)
+                    self.update_last_modified_indicator_date(obj.get("modified"))
+            else:
+                relationships_list.extend(stix_objects)
+
+            while envelope.get("more", False):
+                page_size = self.get_page_size(limit, cur_limit)
+                envelope = self.collection_to_fetch.get_objects(
+                    limit=page_size, next=envelope.get("next", "")
+                )
+                if isinstance(envelope, Dict):
+                    stix_objects = envelope.get("objects")
+                    if obj_type != "relationship":
+                        for obj in stix_objects:
+                            self.id_to_object[obj.get('id')] = obj
+                            result = parse_objects_func[obj_type](obj)
+                            if not result:
+                                continue
+                            indicators.extend(result)
+                            self.update_last_modified_indicator_date(obj.get("modified"))
+                    else:
+                        relationships_list.extend(stix_objects)
+                else:
+                    raise DemistoException(
+                        "Error: TAXII 2 client received the following response while requesting "
+                        f"indicators: {str(envelope)}\n\nExpected output is json"
+                    )
+        if relationships_list:
+            indicators.extend(self.parse_relationships(relationships_list))
+        return indicators
+
     def poll_collection(
             self, page_size: int, **kwargs
-    ) -> Union[types.GeneratorType, Dict[str, str]]:
+    ) -> Dict[str, Union[types.GeneratorType, Dict[str, str]]]:
         """
         Polls a taxii collection
         :param page_size: size of the request page
         """
+        types_envelopes = {}
         get_objects = self.collection_to_fetch.get_objects
-        if isinstance(self.collection_to_fetch, v20.Collection):
-            envelope = v20.as_pages(get_objects, per_request=page_size, **kwargs)
-        else:
-            envelope = get_objects(limit=page_size, **kwargs)
-        return envelope
+        if len(self.objects_to_fetch) > 1:  # when fetching one type no need to fetch relationship
+            self.objects_to_fetch.append('relationship')
+        for obj_type in self.objects_to_fetch:
+            kwargs['type'] = obj_type
+            if isinstance(self.collection_to_fetch, v20.Collection):
+                envelope = v20.as_pages(get_objects, per_request=page_size, **kwargs)
+            else:
+                envelope = get_objects(limit=page_size, **kwargs)
+            if envelope:
+                types_envelopes[obj_type] = envelope
+        return types_envelopes
 
     def get_page_size(self, max_limit: int, cur_limit: int) -> int:
         """

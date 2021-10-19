@@ -1,6 +1,7 @@
 {
-  "objects": [
-    {
+  "indicator": {
+    "objects": [
+          {
       "created": "2018-04-23T17:01:01.248Z",
       "id": "indicator--545928d9-bfe8-4320-bb98-751f38139892",
       "labels": ["malicious-activity"],
@@ -9,43 +10,12 @@
       "pattern": "[domain-name:value = 'windows-updates.com']",
       "type": "indicator",
       "valid_from": "2018-04-23T17:01:01.248Z"
-    },
-    {
-      "created": "2018-08-03T20:31:05.060Z",
-      "description": "Sofacy (also known as Fancy Bear, APT 28, STRONTIUM, Pawn Storm) is a highly active actor with a Russian nexus. They have been active since the mid 2000s, and have been responsible for targeted intrusion campaigns against various industry vertical such as but not limited to Aerospace, Defense, Energy, Government and Media. Extensive observation and research of Sofacy's activities over time indicated a profile closely mirroring the strategic interests of the Russian government. More recently, this group has been attributed to the GRU, Russia's premier military intelligence service as reported by the US intelligence community within several declassified public documents.\n\nSeveral high profile intrusions have been publicly linked to the Sofacy group, such as the German Bundestag, France's TV5Monde TV station, the Democratic National Committee, the World Anti-Doping Agency, and the Ukrainian military.",
-      "id": "report--708d589b-8d99-48fd-bbb6-2d47648f807f",
-      "labels": ["intrusion-set"],
-      "modified": "2020-07-30T16:55:21.569Z",
-      "name": "Sofacy",
-      "object_refs": [
-        "intrusion-set--75ac5bcc-3915-4815-b9a1-bf87277fc343",
-        "report--2791a5e0-d65a-43c0-936e-c15a6b7ba9d1",
-        "report--40aaefc2-3fe9-423b-a6eb-55abf11639b7",
-        "report--2f5734bf-4127-4997-9288-e9c5530aa737",
-        "report--ffe94621-b007-4115-ad49-fb7c8a26b66a"
-      ],
-      "published": "2020-07-30T16:55:21.569Z",
-      "type": "report"
-    },
-    {
-    "created": "2019-10-10T14:43:27.256Z",
-    "id": "malware--481d22d7-6dd8-4e37-a543-dd21cc1707c4",
-    "labels": ["backdoor"],
-    "modified": "2019-10-10T20:25:46.596Z",
-    "name": "Freenki",
-    "type": "malware"
-    },
-    {
-      "created": "2018-08-03T21:03:51.484Z",
-      "description": "In July 2018, Unit 42 analyzed a targeted attack using a novel file type against at least one government agency in the Middle East. It was carried out by a previously unpublished threat group we track as DarkHydrus. Based on our telemetry, we were able to uncover additional artifacts leading us to believe this adversary group has been in operation with their current playbook since early 2016. This attack diverged from previous attacks we observed from this group as it involved spear-phishing emails sent to targeted organizations with password protected RAR archive attachments that contained malicious Excel Web Query files (.iqy).",
-      "first_seen": "2018-07-15T00:00:00.000Z",
-      "id": "campaign--6320584e-3ef0-4a72-aaf8-0a49fa1d477c",
-      "last_seen": "2018-07-16T00:00:00.000Z",
-      "modified": "2018-08-03T21:03:51.484Z",
-      "name": "IQY Attachment E-mails",
-      "type": "campaign"
-    },
-    {
+      }
+    ]
+  },
+  "attack-pattern": {
+    "objects": [
+          {
       "created": "2017-10-25T14:48:11.535Z",
       "created_by_ref": "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5",
       "description": "An adversary could call standard operating system APIs from a malicious application to gather contact list (i.e., address book) data, or with escalated privileges could directly access files containing contact list data.",
@@ -82,7 +52,7 @@
       "x_mitre_platforms": ["Android", "iOS"],
       "x_mitre_version": "1.0"
     },
-    {
+      {
       "created": "2020-02-05T14:17:46.686Z",
       "created_by_ref": "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5",
       "description": "Adversaries may perform software packing or virtual machine software protection to conceal their code. Software packing is a method of compressing or encrypting an executable. Packing an executable changes the file signature in an attempt to avoid signature-based detection. Most decompression techniques decompress the executable code in memory. Virtual machine software protection translates an executable's original code into a special format that only a special virtual machine can run. A virtual machine is then called to run this code.(Citation: ESET FinFisher Jan 2018) \n\nUtilities used to perform software packing are called packers. Example packers are MPRESS and UPX. A more comprehensive list of known packers is available, (Citation: Wikipedia Exe Compression) but adversaries may create their own packing techniques that do not leave the same artifacts as well-known packers to evade defenses.  ",
@@ -135,8 +105,45 @@
       "x_mitre_version": "1.0",
       "x_panw_parent_technique": "Obfuscated Files or Information",
       "x_panw_parent_technique_subtechnique": "Obfuscated Files or Information: Software Packing"
-    },
-    {
+    }
+    ]
+  },
+  "malware": {
+    "objects": [
+          {
+    "created": "2019-10-10T14:43:27.256Z",
+    "id": "malware--481d22d7-6dd8-4e37-a543-dd21cc1707c4",
+    "labels": ["backdoor"],
+    "modified": "2019-10-10T20:25:46.596Z",
+    "name": "Freenki",
+    "type": "malware"
+  }
+    ]
+  },
+  "report":{
+    "objects": [
+          {
+      "created": "2018-08-03T20:31:05.060Z",
+      "description": "Sofacy (also known as Fancy Bear, APT 28, STRONTIUM, Pawn Storm) is a highly active actor with a Russian nexus. They have been active since the mid 2000s, and have been responsible for targeted intrusion campaigns against various industry vertical such as but not limited to Aerospace, Defense, Energy, Government and Media. Extensive observation and research of Sofacy's activities over time indicated a profile closely mirroring the strategic interests of the Russian government. More recently, this group has been attributed to the GRU, Russia's premier military intelligence service as reported by the US intelligence community within several declassified public documents.\n\nSeveral high profile intrusions have been publicly linked to the Sofacy group, such as the German Bundestag, France's TV5Monde TV station, the Democratic National Committee, the World Anti-Doping Agency, and the Ukrainian military.",
+      "id": "report--708d589b-8d99-48fd-bbb6-2d47648f807f",
+      "labels": ["intrusion-set"],
+      "modified": "2020-07-30T16:55:21.569Z",
+      "name": "Sofacy",
+      "object_refs": [
+        "intrusion-set--75ac5bcc-3915-4815-b9a1-bf87277fc343",
+        "report--2791a5e0-d65a-43c0-936e-c15a6b7ba9d1",
+        "report--40aaefc2-3fe9-423b-a6eb-55abf11639b7",
+        "report--2f5734bf-4127-4997-9288-e9c5530aa737",
+        "report--ffe94621-b007-4115-ad49-fb7c8a26b66a"
+      ],
+      "published": "2020-07-30T16:55:21.569Z",
+      "type": "report"
+    }
+    ]
+  },
+  "course-of-action": {
+    "objects": [
+       {
       "created": "2020-06-23T19:50:31.722Z",
       "description": "Configure antivirus profiles to a value of 'block' for all decoders except imap and pop3 under both Action and WildFire Action. If required by the organization's email implementation, configure imap and pop3 decoders to 'alert' under both Action and WildFire Action.",
       "id": "course-of-action--645c6c45-116e-4265-98d2-e30f56325bc6",
@@ -158,15 +165,37 @@
       "x_panw_coa_bp_section_number": "6",
       "x_panw_coa_bp_status": "published",
       "x_panw_coa_bp_title": "Ensure that antivirus profiles are set to block on all decoders except 'imap' and 'pop3'"
-    },
-    {
+    }
+    ]
+  },
+  "campaign": {
+    "objects": [
+          {
+      "created": "2018-08-03T21:03:51.484Z",
+      "description": "In July 2018, Unit 42 analyzed a targeted attack using a novel file type against at least one government agency in the Middle East. It was carried out by a previously unpublished threat group we track as DarkHydrus. Based on our telemetry, we were able to uncover additional artifacts leading us to believe this adversary group has been in operation with their current playbook since early 2016. This attack diverged from previous attacks we observed from this group as it involved spear-phishing emails sent to targeted organizations with password protected RAR archive attachments that contained malicious Excel Web Query files (.iqy).",
+      "first_seen": "2018-07-15T00:00:00.000Z",
+      "id": "campaign--6320584e-3ef0-4a72-aaf8-0a49fa1d477c",
+      "last_seen": "2018-07-16T00:00:00.000Z",
+      "modified": "2018-08-03T21:03:51.484Z",
+      "name": "IQY Attachment E-mails",
+      "type": "campaign"
+    }
+    ]
+  },
+  "intrusion-set": {
+    "objects": [
+          {
       "created": "2018-08-03T20:30:50.665Z",
       "id": "intrusion-set--8e11eaa4-1964-4b73-85c1-fcfa29159f9b",
       "modified": "2018-08-03T20:30:50.665Z",
       "name": "OilRig",
       "type": "intrusion-set"
-    },
-    {
+    }
+    ]
+  },
+  "tool": {
+    "objects": [
+          {
       "type": "tool",
       "spec_version": "2.1",
       "id": "tool--8e2e2d2b-17d4-4cbf-938f-98ee46b3cd3f",
@@ -175,8 +204,12 @@
       "modified": "2016-04-06T20:03:48.000Z",
       "tool_types": [ "remote-access"],
       "name": "VNC"
-    },
-    {
+    }
+    ]
+  },
+  "threat-actor": {
+    "objects": [
+      {
       "type": "threat-actor",
       "spec_version": "2.1",
       "id": "threat-actor--8e2e2d2b-17d4-4cbf-938f-98ee46b3cd3f",
@@ -192,7 +225,11 @@
       "sophistication": "advanced",
       "resource_level": "team",
       "primary_motivation": "organizational-gain"
-    },
+    }
+    ]
+  },
+  "infrastructure": {
+      "objects": [
     {
       "type":"infrastructure",
       "spec_version": "2.1",
@@ -201,7 +238,11 @@
       "modified":"2016-05-07T11:22:30.000Z",
       "name":"Poison Ivy C2",
       "infrastructure_types": ["command-and-control"]
-    },
+    }
+  ]
+  },
+  "relationship": {
+      "objects": [
     {
       "created": "2018-08-03T21:03:51.484Z",
       "id": "relationship--01a5a209-b94c-450b-b7f9-946497d91055",
@@ -221,4 +262,5 @@
       "type": "relationship"
     }
   ]
+  }
 }

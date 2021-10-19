@@ -118,7 +118,7 @@ configuration:
   type: 0
 - display: STIX Objects To Fetch
   name: objectsToFetch
-  defaultvalue: indicator,report,malware,campaign,attack-pattern,course-of-action,intrusion-set,tool,threat-actor,infrastructure,relationship
+  defaultvalue: indicator,report,malware,campaign,attack-pattern,course-of-action,intrusion-set,tool,threat-actor,infrastructure
   type: 16
   required: false
   options:
@@ -132,7 +132,6 @@ configuration:
   - tool
   - threat-actor
   - infrastructure
-  - relationship
 - additionalinfo: Add a certificate file as text to connect to the TAXII server
   display: Certificate File as Text
   name: cert_text

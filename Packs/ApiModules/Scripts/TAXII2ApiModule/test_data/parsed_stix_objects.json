@@ -76,7 +76,6 @@
         }
       ],
       "mitreid": "T1432",
-      "reportedby": "Unit42",
       "tags": ["T1432"],
       "stixkillchainphases": ["Actions on Objectives", "Collection"],
       "stixdescription": "An adversary could call standard operating system APIs from a malicious application to gather contact list (i.e., address book) data, or with escalated privileges could directly access files containing contact list data."
@@ -165,7 +164,6 @@
         }
       ],
       "mitreid": "T1027.002",
-      "reportedby": "Unit42",
       "tags": ["T1027.002"],
       "stixkillchainphases": ["Installation", "Defense Evasion"],
       "stixdescription": "Adversaries may perform software packing or virtual machine software protection to conceal their code. Software packing is a method of compressing or encrypting an executable. Packing an executable changes the file signature in an attempt to avoid signature-based detection. Most decompression techniques decompress the executable code in memory. Virtual machine software protection translates an executable's original code into a special format that only a special virtual machine can run. A virtual machine is then called to run this code.(Citation: ESET FinFisher Jan 2018) \n\nUtilities used to perform software packing are called packers. Example packers are MPRESS and UPX. A more comprehensive list of known packers is available, (Citation: Wikipedia Exe Compression) but adversaries may create their own packing techniques that do not leave the same artifacts as well-known packers to evade defenses.  "
@@ -198,7 +196,6 @@
       "architecture_execution_envs": [],
       "capabilities": [],
       "sample_refs": [],
-      "reportedby": "Unit42",
       "tags": ["backdoor"]
     }
   },
@@ -231,7 +228,6 @@
       "published": "2020-07-30T16:55:21.569Z",
       "description": "Sofacy (also known as Fancy Bear, APT 28, STRONTIUM, Pawn Storm) is a highly active actor with a Russian nexus. They have been active since the mid 2000s, and have been responsible for targeted intrusion campaigns against various industry vertical such as but not limited to Aerospace, Defense, Energy, Government and Media. Extensive observation and research of Sofacy's activities over time indicated a profile closely mirroring the strategic interests of the Russian government. More recently, this group has been attributed to the GRU, Russia's premier military intelligence service as reported by the US intelligence community within several declassified public documents.\n\nSeveral high profile intrusions have been publicly linked to the Sofacy group, such as the German Bundestag, France's TV5Monde TV station, the Democratic National Committee, the World Anti-Doping Agency, and the Ukrainian military.",
       "report_types": [],
-      "reportedby": "Unit42",
       "tags": ["intrusion-set"]
     }
   },
@@ -268,7 +264,6 @@
     "description": "Configure antivirus profiles to a value of 'block' for all decoders except imap and pop3 under both Action and WildFire Action. If required by the organization's email implementation, configure imap and pop3 decoders to 'alert' under both Action and WildFire Action.",
     "action_type": "",
     "publications": [],
-    "reportedby": "Unit42",
     "tags": []
   }
   },
@@ -293,7 +288,6 @@
       "description": "In July 2018, Unit 42 analyzed a targeted attack using a novel file type against at least one government agency in the Middle East. It was carried out by a previously unpublished threat group we track as DarkHydrus. Based on our telemetry, we were able to uncover additional artifacts leading us to believe this adversary group has been in operation with their current playbook since early 2016. This attack diverged from previous attacks we observed from this group as it involved spear-phishing emails sent to targeted organizations with password protected RAR archive attachments that contained malicious Excel Web Query files (.iqy).",
       "aliases": [],
       "objective": "",
-      "reportedby": "Unit42",
       "tags": []
     }
   },
@@ -319,7 +313,6 @@
       "primary_motivation": "",
       "secondary_motivations": [],
       "publications": [],
-      "reportedby": "Unit42",
       "tags": []
     }
   },
@@ -346,7 +339,6 @@
       "description": "",
       "aliases": [],
       "tool_version": "",
-      "reportedby": "Unit42",
       "tags": []
     }
   },
@@ -385,7 +377,6 @@
       "resource_level": "team",
       "primary_motivation": "organizational-gain",
       "secondary_motivations": [],
-      "reportedby": "Unit42",
       "tags": []
     }
   },
@@ -410,7 +401,6 @@
       "kill_chain_phases": [],
       "firstseen": "2016-05-07T11:22:30.000Z",
       "modified": "2016-05-07T11:22:30.000Z",
-      "reportedby": "Unit42",
       "tags": []
     }
   },

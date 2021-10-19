@@ -205,7 +205,7 @@ def reset_fetch_command(client):
 
 def main():
     objects_types = ['report', 'indicator', 'malware', 'campaign', 'attack-pattern',
-                     'course-of-action', 'intrusion-set', 'tool', 'threat-actor', 'infrastructure', 'relationship']
+                     'course-of-action', 'intrusion-set', 'tool', 'threat-actor', 'infrastructure']
     params = demisto.params()
     args = demisto.args()
     url = params.get("url")
