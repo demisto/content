@@ -35,6 +35,7 @@ script:
     - name: url
       arguments:
         - name: url
+          isArray: true
           required: true
           default: true
           description: URL to check

@@ -1,6 +1,9 @@
 Cortex XDR - XQL Query Engine enables you to run XQL queries on your data sources.
 This integration was integrated and tested with version 3.0 of Cortex XDR - XQL Query Engine
 
+In order to access all of the datasets, make sure your api token role is set to at least 'investigator'. Investigation query view will provide you access to all of the datasets except endpoints and host_inventory.
+For additional information see [Predefined User Roles for Cortex XDR](https://docs-new.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-pro-admin/get-started-with-cortex-xdr-pro/manage-cortex-xdr-roles/administrative-roles.html)
+
 ## Configure Cortex XDR - XQL Query Engine on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -21,7 +24,8 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### xdr-xql-generic-query
 ***
-Execute an XQL query and retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised.
+Execute an XQL query and retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised. When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file.
+
 
 
 #### Base Command
@@ -154,7 +158,8 @@ There are no input arguments for this command.
 
 ### xdr-xql-get-query-results
 ***
-Retrieve results of an executed XQL query API.
+Retrieve results of an executed XQL query API. When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file.
+
 
 
 #### Base Command

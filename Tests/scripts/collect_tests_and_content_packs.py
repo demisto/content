@@ -9,8 +9,9 @@ import json
 import logging
 from copy import deepcopy
 from distutils.version import LooseVersion
-from typing import Dict, Tuple, Union
+from typing import Dict, Tuple, Union, Optional
 
+import os
 import sys
 
 import demisto_sdk.commands.common.tools as tools
