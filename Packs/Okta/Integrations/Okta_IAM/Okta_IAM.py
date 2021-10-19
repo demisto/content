@@ -1,13 +1,11 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
 # noqa: F401
 # noqa: F401
 # noqa: F401
 # noqa: F401
 
-
-import traceback
-import dateparser
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -32,6 +30,7 @@ FETCH_QUERY_EXCEPTION_MSG = 'If you marked the "Query only application events co
                             'the IAM Configuration incident before fetching logs from Okta. ' \
                             'Alternatively, you can unmark this checkbox and provide a ' \
                             '"Fetch Query Filter" parameter instead.'
+GET_USER_ATTRIBUTES = ['id', 'login', 'email']
 
 '''CLIENT CLASS'''
 
@@ -45,7 +44,8 @@ class Client(BaseClient):
         uri = 'users/me'
         self._http_request(method='GET', url_suffix=uri)
 
-    def get_user(self, filter_value, filter_name: str = 'profile.login'):
+    def get_user(self, filter_value, filter_name: str = 'login'):
+        filter_name = filter_name if filter_name == 'id' else f'profile.{filter_name}'
         uri = 'users'
         query_params = {
             'filter': f'{filter_name} eq "{filter_value}"'
@@ -456,14 +456,11 @@ def get_mapping_fields_command(client):
     return GetMappingFieldsResponse([incident_type_scheme])
 
 
-def get_user_command(client, args, mapper_in):
-    user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
+def get_user_command(client, args, mapper_in, mapper_out):
+    user_profile = IAMUserProfile(user_profile=args.get('user-profile'), mapper_out=mapper_out)
     try:
-        iam_attr, iam_attr_value = get_first_available_iam_user_attr(user_profile,
-                                                                     [IAMAttribute.ID, IAMAttribute.USERNAME,
-                                                                      IAMAttribute.EMAIL])
-        okta_filter_name: str = IAM_ATTRIBUTE_TO_OKTA_FILTER.get(iam_attr, '')
-        okta_user = client.get_user(iam_attr_value, okta_filter_name)
+        iam_attr, iam_attr_value = get_first_available_iam_user_attr(user_profile, GET_USER_ATTRIBUTES)
+        okta_user = client.get_user(iam_attr_value, iam_attr)
         if not okta_user:
             error_code, error_message = IAMErrors.USER_DOES_NOT_EXIST
             user_profile.set_result(action=IAMActions.GET_USER,
@@ -496,7 +493,8 @@ def disable_user_command(client, args, is_command_enabled):
                                 skip_reason='Command is disabled.')
     else:
         try:
-            okta_user = client.get_user(user_profile.get_attribute('username'))
+            iam_attr, iam_attr_value = get_first_available_iam_user_attr(user_profile, GET_USER_ATTRIBUTES)
+            okta_user = client.get_user(iam_attr_value, iam_attr)
             if not okta_user:
                 _, error_message = IAMErrors.USER_DOES_NOT_EXIST
                 user_profile.set_result(action=IAMActions.DISABLE_USER,
@@ -528,7 +526,8 @@ def create_user_command(client, args, mapper_out, is_command_enabled, is_update_
                                 skip_reason='Command is disabled.')
     else:
         try:
-            okta_user = client.get_user(user_profile.get_attribute('username'))
+            iam_attr, iam_attr_value = get_first_available_iam_user_attr(user_profile, GET_USER_ATTRIBUTES)
+            okta_user = client.get_user(iam_attr_value, iam_attr)
             if okta_user:
                 # if user exists, update its data
                 return update_user_command(client, args, mapper_out, is_update_user_enabled, is_enable_enabled,
@@ -563,7 +562,9 @@ def update_user_command(client, args, mapper_out, is_command_enabled, is_enable_
                                 skip_reason='Command is disabled.')
     else:
         try:
-            okta_user = client.get_user(user_profile.get_attribute('username', use_old_user_data=True))
+            iam_attr, iam_attr_value = get_first_available_iam_user_attr(user_profile, GET_USER_ATTRIBUTES,
+                                                                         use_old_user_data=True)
+            okta_user = client.get_user(iam_attr_value, iam_attr)
             if okta_user:
                 user_id = okta_user.get('id')
 
@@ -944,7 +945,7 @@ def main():
     demisto.debug(f'Command being called is {command}')
 
     if command == 'iam-get-user':
-        user_profile = get_user_command(client, args, mapper_in)
+        user_profile = get_user_command(client, args, mapper_in, mapper_out)
 
     elif command == 'iam-create-user':
         user_profile = create_user_command(client, args, mapper_out, is_create_enabled,
@@ -1003,12 +1004,6 @@ def main():
 
 
 from IAMApiModule import *  # noqa: E402
-
-IAM_ATTRIBUTE_TO_OKTA_FILTER = {
-    IAMAttribute.EMAIL: 'profile.email',
-    IAMAttribute.ID: 'id',
-    IAMAttribute.USERNAME: 'profile.login'
-}
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
