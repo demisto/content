@@ -21,10 +21,10 @@ class Client(BaseClient):
         res = self._http_request(method='GET', url_suffix=uri)
         return res
 
-    def get_user(self, username):
+    def get_user(self, filter_name, filter_value):
         uri = f'/scim/directory/{self.directory_id}/Users'
         query_params = {
-            'filter': f'userName eq "{username}"'
+            'filter': f'{filter_name} eq "{filter_value}"'
         }
         res = self._http_request(
             method='GET',
@@ -129,7 +129,7 @@ class Client(BaseClient):
         user_profile.set_result(action=action,
                                 success=False,
                                 error_code=error_code,
-                                error_message=error_message)
+                                error_message=f'{error_message}\n{traceback.format_exc()}')
 
         demisto.error(traceback.format_exc())
 
@@ -180,7 +180,8 @@ def main():
     create_if_not_exists = demisto.params().get("create_if_not_exists")
 
     iam_command = IAMCommand(is_create_enabled, is_enable_enabled, is_disable_enabled, is_update_enabled,
-                             create_if_not_exists, mapper_in, mapper_out, attr='username')
+                             create_if_not_exists, mapper_in, mapper_out,
+                             get_user_iam_attrs=['username', 'userName', 'externalId'])
 
     headers = {
         'Content-Type': 'application/json',
