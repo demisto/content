@@ -13,6 +13,7 @@ USER_FIELDS = 'Name,Email,Region,Location,JobTitle,DirectManager,MobilePhone,Tim
 ERROR_CODES_TO_SKIP = [
     404
 ]
+EMAIL_ATTRIBUTE = 'email'
 
 '''CLIENT CLASS'''
 
@@ -37,7 +38,7 @@ class Client(BaseClient):
         # Get manager ID.
         manager_id = ''
         if manager_email:
-            res = self.get_user(manager_email)
+            res = self.get_user(EMAIL_ATTRIBUTE, manager_email)
             if res is not None:
                 manager_id = res.id
         return manager_id
@@ -65,18 +66,21 @@ class Client(BaseClient):
             params=params,
         )
 
-    def get_user(self, email: str) -> Optional[IAMUserAppData]:
+    def get_user(self, filter_name: str, filter_value: str) -> Optional[IAMUserAppData]:
         """ Queries the user in the application using REST API by its email, and returns an IAMUserAppData object
         that holds the user_id, username, is_active and app_data attributes given in the query response.
 
-        :type email: ``str``
-        :param email: Email address of the user
+        :type filter_name: ``str``
+        :param filter_name: Attribute name to filter by.
+
+        :type filter_value: ``str``
+        :param filter_value: The filter attribute value.
 
         :return: An IAMUserAppData object if user exists, None otherwise.
         :rtype: ``Optional[IAMUserAppData]``
         """
         uri = '/data/findUserQuery'
-        data = {'email': email}
+        data = {filter_name: filter_value}
 
         res = self._http_request(
             method='POST',
@@ -282,7 +286,7 @@ class Client(BaseClient):
         user_profile.set_result(action=action,
                                 success=False,
                                 error_code=error_code,
-                                error_message=error_message)
+                                error_message=f'{error_message}\n{traceback.format_exc()}')
 
         demisto.error(traceback.format_exc())
 
@@ -353,7 +357,7 @@ def main():
     create_if_not_exists = params.get("create_if_not_exists")
 
     iam_command = IAMCommand(is_create_enabled, is_enable_enabled, is_disable_enabled, is_update_enabled,
-                             create_if_not_exists, mapper_in, mapper_out)
+                             create_if_not_exists, mapper_in, mapper_out, get_user_iam_attrs=[EMAIL_ATTRIBUTE])
 
     headers = {
         'Content-Type': 'application/json',
