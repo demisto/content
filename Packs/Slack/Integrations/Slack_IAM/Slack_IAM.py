@@ -114,17 +114,17 @@ class Client(BaseClient):
             error_code = e.res.status_code
             try:
                 resp = e.res.json()
-                error_message = resp.get('Errors', {}).get('description') + '\n' + traceback.format_exc()
+                error_message = resp.get('Errors', {}).get('description')
             except ValueError:
-                error_message = str(e) + '\n' + traceback.format_exc()
+                error_message = str(e)
         else:
             error_code = ''
-            error_message = str(e) + '\n' + traceback.format_exc()
+            error_message = str(e)
 
         user_profile.set_result(action=action,
                                 success=False,
                                 error_code=error_code,
-                                error_message=error_message)
+                                error_message=f'{error_message}\n{traceback.format_exc()}')
 
         demisto.error(traceback.format_exc())
 
