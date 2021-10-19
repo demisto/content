@@ -116,7 +116,7 @@ script:
     description: Subscribes to and reads messages from a topic or queue. Must provide either queue-name or topic-name. You can't provide both.
     execution: false
     name: activemq-subscribe
-  dockerimage: demisto/stomp:latest
+  dockerimage: demisto/stomp:1.0.0.24234
   longRunning: false
   longRunningPort: false
   isfetch: true
