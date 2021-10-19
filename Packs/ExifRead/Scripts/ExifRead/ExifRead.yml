@@ -23,7 +23,7 @@ outputs:
   type: string
 scripttarget: 0
 runonce: false
-dockerimage: devdemisto/exifread:1.0.0.24237
+dockerimage: demisto/exifread:1.0.0.24238
 fromversion: 5.0.0
 tests:
   - ExifReadTest
