@@ -36,13 +36,13 @@ def get_outputs_from_user_profile(user_profile):
     return outputs
 
 
-@pytest.mark.parametrize('args, mock_url', [({'user-profile': {'username': 'mock_user_name'}},
-                                             f'{BASE_URL}/table/sys_user?user_name=mock_user_name'),
-                                            ({'user-profile': {'email': 'testdemisto2@paloaltonetworks.com',
-                                                               'username': 'mock_user_name'}},
+@pytest.mark.parametrize('args, mock_url', [({'user-profile': {'email': 'testdemisto2@paloaltonetworks.com'}},
                                              f'{BASE_URL}/table/sys_user?email=testdemisto2@paloaltonetworks.com'),
                                             ({'user-profile': {'email': 'testdemisto2@paloaltonetworks.com',
-                                                               'id': 'mock_id', 'username': 'mock_user_name'}},
+                                                               'user_name': 'mock_user_name'}},
+                                             f'{BASE_URL}/table/sys_user?user_name=mock_user_name'),
+                                            ({'user-profile': {'email': 'testdemisto2@paloaltonetworks.com',
+                                                               'id': 'mock_id', 'user_name': 'mock_user_name'}},
                                              f'{BASE_URL}/table/sys_user?sys_id=mock_id')])
 def test_get_user_command__existing_user(mocker, args, mock_url, requests_mock):
     """
@@ -70,7 +70,7 @@ def test_get_user_command__existing_user(mocker, args, mock_url, requests_mock):
     )
     mocker.patch.object(IAMUserProfile, 'update_with_app_data', return_value={})
 
-    user_profile = get_user_command(client, args, 'mapper_in')
+    user_profile = get_user_command(client, args, 'mapper_in', 'mapper_out')
     outputs = get_outputs_from_user_profile(user_profile)
 
     assert outputs.get('action') == IAMActions.GET_USER

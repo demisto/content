@@ -120,7 +120,7 @@ def test_get_user_command_by_order(mocker, args, mock_url, requests_mock):
     )
     mocker.patch.object(IAMUserProfile, 'update_with_app_data', return_value={})
 
-    iam_user_profile = get_user_command(client, args, 'mapper_in')
+    iam_user_profile = get_user_command(client, args, 'mapper_in', 'mapper_out')
     outputs = get_outputs_from_user_profile(iam_user_profile)
 
     assert outputs.get('action') == IAMActions.GET_USER

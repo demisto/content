@@ -11,6 +11,7 @@ DEFAULT_INCOMING_MAPPER = "User Profile - SCIM (Incoming)"
 
 IAM_GET_USER_ATTRIBUTES = ['id', 'userName', 'emails']
 
+
 class Client(BaseClient):
 
     def __init__(self, base_url, org, headers, ok_codes=None, verify=True, proxy=False):
@@ -119,9 +120,9 @@ def test_module(client):
     return 'ok'
 
 
-def get_user_command(client, args, mapper_in):
+def get_user_command(client, args, mapper_in, mapper_out):
     user_profile = args.get("user-profile")
-    iam_user_profile = IAMUserProfile(user_profile=user_profile)
+    iam_user_profile = IAMUserProfile(user_profile=user_profile, mapper_out=mapper_out)
     try:
         iam_attr, iam_attr_value = get_first_available_iam_user_attr(iam_user_profile, IAM_GET_USER_ATTRIBUTES)
         res = client.get_user(iam_attr, iam_attr_value)
