@@ -1,14 +1,13 @@
 {
-    "name": "Zoom",
-    "description": "Use the Zoom integration manage your Zoom users and meetings",
+    "name": "Envoy",
+    "description": "Envoy is offering an enterprise workplace visitor management software platform.",
     "support": "xsoar",
-    "currentVersion": "1.1.0",
+    "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
-    "created": "2020-04-14T00:00:00Z",
     "categories": [
-        "Messaging"
+        "Identity and Access Management"
     ],
     "tags": [],
     "useCases": [],
