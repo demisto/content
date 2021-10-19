@@ -1,4 +1,5 @@
 {
+    "description": "Layout for GIB Compromised Account",
     "detailsV2": {
         "tabs": [
             {
@@ -316,65 +317,10 @@
                         "items": [
                             {
                                 "endCol": 4,
-                                "fieldId": "gibcompromisedlogin",
-                                "height": 22,
-                                "id": "eba58830-7364-11eb-8aef-c39e29f029fe",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 4,
-                                "fieldId": "gibpassword",
-                                "height": 22,
-                                "id": "aea67dd0-7365-11eb-8aef-c39e29f029fe",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 4,
-                                "fieldId": "gibdropemail",
-                                "height": 22,
-                                "id": "95755d40-7365-11eb-8aef-c39e29f029fe",
-                                "index": 2,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 4,
-                                "fieldId": "gibdropemaildomain",
-                                "height": 22,
-                                "id": "fb0959f0-7364-11eb-8aef-c39e29f029fe",
-                                "index": 3,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Main Information from GIB TIA",
-                        "static": false,
-                        "w": 1,
-                        "x": 1,
-                        "y": 4
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 2,
-                        "hideName": false,
-                        "i": "caseinfoid-0e1b01a0-0f1a-11ec-b4dd-539628da0f41",
-                        "items": [
-                            {
-                                "dropEffect": "move",
-                                "endCol": 4,
                                 "fieldId": "gibdateofdetection",
                                 "height": 22,
                                 "id": "9d3533a0-72c7-11eb-9bde-efbce7414b24",
                                 "index": 0,
-                                "listId": "caseinfoid-0e1b01a0-0f1a-11ec-b4dd-539628da0f41",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -398,30 +344,37 @@
                             },
                             {
                                 "endCol": 4,
-                                "fieldId": "gibsource",
+                                "fieldId": "gibcompromisedlogin",
                                 "height": 22,
-                                "id": "d296ab00-72c7-11eb-9bde-efbce7414b24",
+                                "id": "eba58830-7364-11eb-8aef-c39e29f029fe",
                                 "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 4,
-                                "fieldId": "gibid",
+                                "fieldId": "gibpassword",
                                 "height": 22,
-                                "id": "5ff80ed0-72c8-11eb-9bde-efbce7414b24",
+                                "id": "aea67dd0-7365-11eb-8aef-c39e29f029fe",
                                 "index": 4,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
-                                "dropEffect": "move",
                                 "endCol": 4,
-                                "fieldId": "gibportallink",
+                                "fieldId": "gibdropemail",
                                 "height": 22,
-                                "id": "daf41620-72c7-11eb-9bde-efbce7414b24",
+                                "id": "95755d40-7365-11eb-8aef-c39e29f029fe",
                                 "index": 5,
-                                "listId": "caseinfoid-34740850-72c7-11eb-9bde-efbce7414b24",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "gibdropemaildomain",
+                                "height": 22,
+                                "id": "fb0959f0-7364-11eb-8aef-c39e29f029fe",
+                                "index": 7,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -431,7 +384,36 @@
                                 "fieldId": "gibmalwarename",
                                 "height": 22,
                                 "id": "ed5f3470-72c7-11eb-9bde-efbce7414b24",
-                                "index": 6,
+                                "index": 9,
+                                "listId": "caseinfoid-34740850-72c7-11eb-9bde-efbce7414b24",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "gibid",
+                                "height": 22,
+                                "id": "5ff80ed0-72c8-11eb-9bde-efbce7414b24",
+                                "index": 10,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "gibsource",
+                                "height": 22,
+                                "id": "d296ab00-72c7-11eb-9bde-efbce7414b24",
+                                "index": 11,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "gibportallink",
+                                "height": 22,
+                                "id": "daf41620-72c7-11eb-9bde-efbce7414b24",
+                                "index": 12,
                                 "listId": "caseinfoid-34740850-72c7-11eb-9bde-efbce7414b24",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -441,7 +423,7 @@
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
-                        "name": "General Information from GIB TIA",
+                        "name": "Information from GIB TIA",
                         "static": false,
                         "w": 2,
                         "x": 0,
@@ -451,45 +433,43 @@
                         "displayType": "ROW",
                         "h": 2,
                         "hideName": false,
-                        "i": "caseinfoid-525cc2e0-0f1a-11ec-b4dd-539628da0f41",
+                        "i": "caseinfoid-eb2774e0-30dd-11ec-bc63-2be9e447c87d",
                         "items": [
                             {
                                 "dropEffect": "move",
-                                "endCol": 2,
+                                "endCol": 4,
                                 "fieldId": "gibperson",
                                 "height": 22,
-                                "id": "2144fcc0-0f12-11ec-b4dd-539628da0f41",
+                                "id": "fde45cb0-30dd-11ec-bc63-2be9e447c87d",
                                 "index": 0,
-                                "listId": "caseinfoid-34740850-72c7-11eb-9bde-efbce7414b24",
+                                "listId": "caseinfoid-eb2774e0-30dd-11ec-bc63-2be9e447c87d",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
-                                "endCol": 2,
+                                "endCol": 4,
                                 "fieldId": "gibaddress",
                                 "height": 22,
-                                "id": "16e81820-0f12-11ec-b4dd-539628da0f41",
+                                "id": "fb855e10-30dd-11ec-bc63-2be9e447c87d",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "phonenumber",
+                                "height": 22,
+                                "id": "09654ef0-30de-11ec-bc63-2be9e447c87d",
                                 "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "phonenumber",
-                                "height": 22,
-                                "id": "35888490-0f12-11ec-b4dd-539628da0f41",
-                                "index": 3,
-                                "listId": "caseinfoid-34740850-72c7-11eb-9bde-efbce7414b24",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
+                                "endCol": 4,
                                 "fieldId": "gibemail",
                                 "height": 22,
-                                "id": "27175030-0f12-11ec-b4dd-539628da0f41",
-                                "index": 4,
+                                "id": "01c3e0d0-30de-11ec-bc63-2be9e447c87d",
+                                "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -500,7 +480,7 @@
                         "moved": false,
                         "name": "Person Information from GIB TIA",
                         "static": false,
-                        "w": 1,
+                        "w": 2,
                         "x": 0,
                         "y": 4
                     }
@@ -539,6 +519,5 @@
     "name": "GIB Compromised Account Layout",
     "system": false,
     "version": -1,
-    "fromVersion": "6.0.0",
-    "description": ""
+    "fromVersion": "6.0.0"
 }

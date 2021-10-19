@@ -8,6 +8,16 @@
     "disabled": false,
     "extractSettings": {
         "fieldCliNameToExtractSettings": {
+            "alertcategory": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [],
+                "isExtractingAllIndicatorTypes": false
+            },
+            "gibphishingdomain": {
+                "extractAsIsIndicatorTypeId": "domainRepUnified",
+                "extractIndicatorTypesIDs": [],
+                "isExtractingAllIndicatorTypes": false
+            },
             "gibrelatedindicatorsdata": {
                 "extractAsIsIndicatorTypeId": "",
                 "extractIndicatorTypesIDs": [],

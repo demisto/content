@@ -1,4 +1,5 @@
 {
+    "description": "Layout for GIB Brand Protection Phishing",
     "detailsV2": {
         "tabs": [
             {
@@ -125,7 +126,7 @@
                         "type": "linkedIncidents",
                         "w": 1,
                         "x": 1,
-                        "y": 10
+                        "y": 8
                     },
                     {
                         "displayType": "ROW",
@@ -180,7 +181,7 @@
                         "type": "indicators",
                         "w": 2,
                         "x": 0,
-                        "y": 8
+                        "y": 6
                     },
                     {
                         "displayType": "CARD",
@@ -239,7 +240,7 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 6
+                        "y": 4
                     },
                     {
                         "displayType": "ROW",
@@ -281,7 +282,7 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 10
+                        "y": 8
                     },
                     {
                         "displayType": "CARD",
@@ -305,7 +306,7 @@
                         "static": false,
                         "w": 1,
                         "x": 1,
-                        "y": 6
+                        "y": 4
                     },
                     {
                         "description": "",
@@ -313,74 +314,6 @@
                         "h": 2,
                         "hideName": false,
                         "i": "caseinfoid-34740850-72c7-11eb-9bde-efbce7414b24",
-                        "items": [
-                            {
-                                "dropEffect": "move",
-                                "endCol": 4,
-                                "fieldId": "gibphishingstatus",
-                                "height": 22,
-                                "id": "29a76e80-7362-11eb-8aef-c39e29f029fe",
-                                "index": 3,
-                                "listId": "caseinfoid-34740850-72c7-11eb-9bde-efbce7414b24",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 4,
-                                "fieldId": "gibtitle",
-                                "height": 22,
-                                "id": "8c7ce9e0-0f11-11ec-b4dd-539628da0f41",
-                                "index": 4,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 4,
-                                "fieldId": "gibtargetbrand",
-                                "height": 22,
-                                "id": "34252190-7362-11eb-8aef-c39e29f029fe",
-                                "index": 5,
-                                "listId": "caseinfoid-34740850-72c7-11eb-9bde-efbce7414b24",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 4,
-                                "fieldId": "gibtargetcategory",
-                                "height": 22,
-                                "id": "379cbc20-7362-11eb-8aef-c39e29f029fe",
-                                "index": 6,
-                                "listId": "caseinfoid-34740850-72c7-11eb-9bde-efbce7414b24",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 4,
-                                "fieldId": "gibtargetdomain",
-                                "height": 22,
-                                "id": "386d5290-7362-11eb-8aef-c39e29f029fe",
-                                "index": 7,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Phishing Information from GIB TIA",
-                        "static": false,
-                        "w": 2,
-                        "x": 0,
-                        "y": 4
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 2,
-                        "hideName": false,
-                        "i": "caseinfoid-c0ad1390-0f19-11ec-b4dd-539628da0f41",
                         "items": [
                             {
                                 "endCol": 4,
@@ -403,9 +336,9 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 4,
-                                "fieldId": "gibseverity",
+                                "fieldId": "gibphishingstatus",
                                 "height": 22,
-                                "id": "ccadc250-72c7-11eb-9bde-efbce7414b24",
+                                "id": "29a76e80-7362-11eb-8aef-c39e29f029fe",
                                 "index": 2,
                                 "listId": "caseinfoid-34740850-72c7-11eb-9bde-efbce7414b24",
                                 "sectionItemType": "field",
@@ -414,11 +347,60 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 4,
+                                "fieldId": "gibseverity",
+                                "height": 22,
+                                "id": "ccadc250-72c7-11eb-9bde-efbce7414b24",
+                                "index": 3,
+                                "listId": "caseinfoid-34740850-72c7-11eb-9bde-efbce7414b24",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "gibtargetbrand",
+                                "height": 22,
+                                "id": "34252190-7362-11eb-8aef-c39e29f029fe",
+                                "index": 4,
+                                "listId": "caseinfoid-34740850-72c7-11eb-9bde-efbce7414b24",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "gibtargetcategory",
+                                "height": 22,
+                                "id": "379cbc20-7362-11eb-8aef-c39e29f029fe",
+                                "index": 5,
+                                "listId": "caseinfoid-34740850-72c7-11eb-9bde-efbce7414b24",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "gibtargetdomain",
+                                "height": 22,
+                                "id": "386d5290-7362-11eb-8aef-c39e29f029fe",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "gibtitle",
+                                "height": 22,
+                                "id": "dbb7e350-30dd-11ec-bc63-2be9e447c87d",
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
                                 "fieldId": "gibid",
                                 "height": 22,
                                 "id": "5ff80ed0-72c8-11eb-9bde-efbce7414b24",
-                                "index": 3,
-                                "listId": "caseinfoid-34740850-72c7-11eb-9bde-efbce7414b24",
+                                "index": 9,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -428,7 +410,7 @@
                                 "fieldId": "gibportallink",
                                 "height": 22,
                                 "id": "daf41620-72c7-11eb-9bde-efbce7414b24",
-                                "index": 4,
+                                "index": 10,
                                 "listId": "caseinfoid-34740850-72c7-11eb-9bde-efbce7414b24",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -438,7 +420,7 @@
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
-                        "name": "General Information from GIB TIA",
+                        "name": "Information from GIB TIA",
                         "static": false,
                         "w": 2,
                         "x": 0,
@@ -479,6 +461,5 @@
     "name": "GIB Brand Protection Phishing Layout",
     "system": false,
     "version": -1,
-    "fromVersion": "6.0.0",
-    "description": ""
+    "fromVersion": "6.0.0"
 }

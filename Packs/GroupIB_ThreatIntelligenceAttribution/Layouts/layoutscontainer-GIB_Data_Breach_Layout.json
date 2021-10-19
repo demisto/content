@@ -1,4 +1,5 @@
 {
+    "description": "Layout for GIB Data Breach",
     "detailsV2": {
         "tabs": [
             {
@@ -351,7 +352,7 @@
                                 "endCol": 4,
                                 "fieldId": "gibid",
                                 "height": 22,
-                                "id": "edaa5720-0f1b-11ec-b4dd-539628da0f41",
+                                "id": "61566e50-30de-11ec-bc63-2be9e447c87d",
                                 "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -360,7 +361,7 @@
                                 "endCol": 4,
                                 "fieldId": "gibseverity",
                                 "height": 22,
-                                "id": "f2c36cb0-0f1b-11ec-b4dd-539628da0f41",
+                                "id": "650804a0-30de-11ec-bc63-2be9e447c87d",
                                 "index": 4,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -411,6 +412,5 @@
     "name": "GIB Data Breach Layout",
     "system": false,
     "version": -1,
-    "fromVersion": "6.0.0",
-    "description": ""
+    "fromVersion": "6.0.0"
 }

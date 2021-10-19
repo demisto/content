@@ -1,4 +1,5 @@
 {
+    "description": "Layout for GIB Compromised Card",
     "detailsV2": {
         "tabs": [
             {
@@ -292,9 +293,9 @@
                             {
                                 "endCol": 2,
                                 "fieldId": "details",
-                                "height": 106,
+                                "height": 22,
                                 "id": "incident-details-field",
-                                "index": 1,
+                                "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -316,140 +317,6 @@
                         "items": [
                             {
                                 "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "gibpaymentsystem",
-                                "height": 22,
-                                "id": "10d66090-7368-11eb-8aef-c39e29f029fe",
-                                "index": 0,
-                                "listId": "caseinfoid-34740850-72c7-11eb-9bde-efbce7414b24",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "gibcardtype",
-                                "height": 22,
-                                "id": "ed4b1a80-7367-11eb-8aef-c39e29f029fe",
-                                "index": 1,
-                                "listId": "caseinfoid-34740850-72c7-11eb-9bde-efbce7414b24",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "gibcardnumber",
-                                "height": 22,
-                                "id": "f0460b00-7367-11eb-8aef-c39e29f029fe",
-                                "index": 2,
-                                "listId": "caseinfoid-34740850-72c7-11eb-9bde-efbce7414b24",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "gibcvv",
-                                "height": 22,
-                                "id": "f54a6010-7367-11eb-8aef-c39e29f029fe",
-                                "index": 3,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "gibcardvalidthru",
-                                "height": 22,
-                                "id": "eebf1ce0-7367-11eb-8aef-c39e29f029fe",
-                                "index": 4,
-                                "listId": "caseinfoid-34740850-72c7-11eb-9bde-efbce7414b24",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "gibcardissuer",
-                                "height": 22,
-                                "id": "ef8a0e00-7367-11eb-8aef-c39e29f029fe",
-                                "index": 5,
-                                "listId": "caseinfoid-34740850-72c7-11eb-9bde-efbce7414b24",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Card Information from GIB TIA",
-                        "static": false,
-                        "w": 1,
-                        "x": 1,
-                        "y": 4
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 2,
-                        "hideName": false,
-                        "i": "caseinfoid-dcfb5d30-0f1a-11ec-b4dd-539628da0f41",
-                        "items": [
-                            {
-                                "endCol": 2,
-                                "fieldId": "gibperson",
-                                "height": 22,
-                                "id": "77d4de70-0f12-11ec-b4dd-539628da0f41",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "gibaddress",
-                                "height": 22,
-                                "id": "6f868e80-0f12-11ec-b4dd-539628da0f41",
-                                "index": 2,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "phonenumber",
-                                "height": 22,
-                                "id": "7c1fa780-0f12-11ec-b4dd-539628da0f41",
-                                "index": 3,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "gibemail",
-                                "height": 22,
-                                "id": "72c84c00-0f12-11ec-b4dd-539628da0f41",
-                                "index": 4,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Person Information from GIB TIA",
-                        "static": false,
-                        "w": 1,
-                        "x": 0,
-                        "y": 4
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 2,
-                        "hideName": false,
-                        "i": "caseinfoid-dded5e50-0f1a-11ec-b4dd-539628da0f41",
-                        "items": [
-                            {
-                                "dropEffect": "move",
                                 "endCol": 4,
                                 "fieldId": "gibdateofdetection",
                                 "height": 22,
@@ -466,7 +333,7 @@
                                 "height": 22,
                                 "id": "06050f40-7368-11eb-8aef-c39e29f029fe",
                                 "index": 1,
-                                "listId": "caseinfoid-dded5e50-0f1a-11ec-b4dd-539628da0f41",
+                                "listId": "caseinfoid-34740850-72c7-11eb-9bde-efbce7414b24",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -482,32 +349,63 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 4,
-                                "fieldId": "gibid",
+                                "fieldId": "gibcardnumber",
                                 "height": 22,
-                                "id": "5ff80ed0-72c8-11eb-9bde-efbce7414b24",
+                                "id": "f0460b00-7367-11eb-8aef-c39e29f029fe",
                                 "index": 3,
-                                "listId": "caseinfoid-dded5e50-0f1a-11ec-b4dd-539628da0f41",
+                                "listId": "caseinfoid-34740850-72c7-11eb-9bde-efbce7414b24",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "dropEffect": "move",
                                 "endCol": 4,
-                                "fieldId": "gibsource",
+                                "fieldId": "gibcardtype",
                                 "height": 22,
-                                "id": "d296ab00-72c7-11eb-9bde-efbce7414b24",
+                                "id": "ed4b1a80-7367-11eb-8aef-c39e29f029fe",
                                 "index": 4,
-                                "listId": "caseinfoid-dded5e50-0f1a-11ec-b4dd-539628da0f41",
+                                "listId": "caseinfoid-34740850-72c7-11eb-9bde-efbce7414b24",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "dropEffect": "move",
                                 "endCol": 4,
-                                "fieldId": "gibportallink",
+                                "fieldId": "gibpaymentsystem",
                                 "height": 22,
-                                "id": "daf41620-72c7-11eb-9bde-efbce7414b24",
-                                "index": 5,
+                                "id": "10d66090-7368-11eb-8aef-c39e29f029fe",
+                                "index": 6,
+                                "listId": "caseinfoid-34740850-72c7-11eb-9bde-efbce7414b24",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "gibcvv",
+                                "height": 22,
+                                "id": "f54a6010-7367-11eb-8aef-c39e29f029fe",
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "gibcardvalidthru",
+                                "height": 22,
+                                "id": "eebf1ce0-7367-11eb-8aef-c39e29f029fe",
+                                "index": 8,
+                                "listId": "caseinfoid-34740850-72c7-11eb-9bde-efbce7414b24",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "gibcardissuer",
+                                "height": 22,
+                                "id": "ef8a0e00-7367-11eb-8aef-c39e29f029fe",
+                                "index": 9,
                                 "listId": "caseinfoid-34740850-72c7-11eb-9bde-efbce7414b24",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -517,7 +415,36 @@
                                 "fieldId": "gibmalwarename",
                                 "height": 22,
                                 "id": "ed5f3470-72c7-11eb-9bde-efbce7414b24",
-                                "index": 6,
+                                "index": 10,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "gibid",
+                                "height": 22,
+                                "id": "5ff80ed0-72c8-11eb-9bde-efbce7414b24",
+                                "index": 12,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "gibportallink",
+                                "height": 22,
+                                "id": "daf41620-72c7-11eb-9bde-efbce7414b24",
+                                "index": 13,
+                                "listId": "caseinfoid-34740850-72c7-11eb-9bde-efbce7414b24",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "gibsource",
+                                "height": 22,
+                                "id": "d296ab00-72c7-11eb-9bde-efbce7414b24",
+                                "index": 14,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -526,11 +453,66 @@
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
-                        "name": "General Information from GIB TIA",
+                        "name": "Information from GIB TIA",
                         "static": false,
                         "w": 2,
                         "x": 0,
                         "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-355fb360-30de-11ec-bc63-2be9e447c87d",
+                        "items": [
+                            {
+                                "endCol": 4,
+                                "fieldId": "gibperson",
+                                "height": 22,
+                                "id": "458b1ae0-30de-11ec-bc63-2be9e447c87d",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "gibaddress",
+                                "height": 22,
+                                "id": "4395b380-30de-11ec-bc63-2be9e447c87d",
+                                "index": 1,
+                                "listId": "caseinfoid-355fb360-30de-11ec-bc63-2be9e447c87d",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "phonenumber",
+                                "height": 22,
+                                "id": "4c2db6a0-30de-11ec-bc63-2be9e447c87d",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "gibemail",
+                                "height": 22,
+                                "id": "489a56b0-30de-11ec-bc63-2be9e447c87d",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Person Information from GIB TIA",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 4
                     }
                 ],
                 "type": "custom"
@@ -567,6 +549,5 @@
     "name": "GIB Compromised Card Layout",
     "system": false,
     "version": -1,
-    "fromVersion": "6.0.0",
-    "description": ""
+    "fromVersion": "6.0.0"
 }

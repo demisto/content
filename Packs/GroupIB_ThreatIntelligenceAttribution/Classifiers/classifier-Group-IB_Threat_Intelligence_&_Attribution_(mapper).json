@@ -156,6 +156,15 @@
                     },
                     "simple": ""
                 },
+                "GIB Phishing Domain": {
+                    "complex": {
+                        "accessor": "domain",
+                        "filters": [],
+                        "root": "attrs",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
                 "GIB Phishing Status": {
                     "complex": {
                         "accessor": "status",

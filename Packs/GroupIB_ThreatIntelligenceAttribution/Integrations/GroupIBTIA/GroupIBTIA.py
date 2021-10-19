@@ -697,17 +697,21 @@ class Client(BaseClient):
             pass
 
         # legacy collection
-        params = {"action": "get_last", "date": datetime.now().strftime("%Y-%m-%d"), "module": "get", "type": "domain"}
-        response = self._http_request(method="GET", full_url="https://bt.group-ib.com",
-                                      headers=LEGACY_HEADERS, params=params, timeout=TIMEOUT, retries=RETRIES,
-                                      status_list_to_retry=STATUS_LIST_TO_RETRY)
-        last = response.get("data")
-        params = {"action": "domain", "last": last, "module": "get"}
-        portion = self._http_request(method="GET", full_url="https://bt.group-ib.com",
-                                     headers=LEGACY_HEADERS, params=params, timeout=TIMEOUT, retries=RETRIES,
-                                     status_list_to_retry=STATUS_LIST_TO_RETRY)
-        if portion.get("status") == 200:
-            buffer_list.append("bp/domain")
+        try:
+            params = {"action": "get_last", "date": datetime.now().strftime("%Y-%m-%d"),
+                      "module": "get", "type": "domain"}
+            response = self._http_request(method="GET", full_url="https://bt.group-ib.com",
+                                          headers=LEGACY_HEADERS, params=params, timeout=TIMEOUT, retries=RETRIES,
+                                          status_list_to_retry=STATUS_LIST_TO_RETRY)
+            last = response.get("data")
+            params = {"action": "domain", "last": last, "module": "get"}
+            portion = self._http_request(method="GET", full_url="https://bt.group-ib.com",
+                                         headers=LEGACY_HEADERS, params=params, timeout=TIMEOUT, retries=RETRIES,
+                                         status_list_to_retry=STATUS_LIST_TO_RETRY)
+            if portion.get("status") == 200:
+                buffer_list.append("bp/domain")
+        except Exception:
+            pass
 
         collections_list = []
         for key in MAPPING:

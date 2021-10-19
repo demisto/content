@@ -1,4 +1,5 @@
 {
+    "description": "Layout for GIB Brand Protection Domain",
     "detailsV2": {
         "tabs": [
             {
@@ -534,6 +535,5 @@
     "name": "GIB Brand Protection Domain Layout",
     "system": false,
     "version": -1,
-    "fromVersion": "6.0.0",
-    "description": ""
+    "fromVersion": "6.0.0"
 }

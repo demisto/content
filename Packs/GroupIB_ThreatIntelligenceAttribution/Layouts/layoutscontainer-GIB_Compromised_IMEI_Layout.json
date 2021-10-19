@@ -1,4 +1,5 @@
 {
+    "description": "Layout for GIB Compromised IMEI",
     "group": "indicator",
     "id": "GIB Compromised IMEI Layout",
     "indicatorsDetails": {
@@ -10,7 +11,8 @@
                     {
                         "h": 8,
                         "i": "default-main-eb7cb0ed-9093-4e05-845e-a4c32acc8037-default-main-comments",
-                        "maxW": 3,
+                        "maxH": null,
+                        "maxW": 1,
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
@@ -25,7 +27,8 @@
                         "h": 2,
                         "hideName": true,
                         "i": "default-main-eb7cb0ed-9093-4e05-845e-a4c32acc8037-default-main-relatedIncidents",
-                        "maxW": 3,
+                        "maxH": null,
+                        "maxW": 2,
                         "minH": 1,
                         "minW": 2,
                         "moved": false,
@@ -34,7 +37,7 @@
                         "type": "relatedIncidents",
                         "w": 2,
                         "x": 0,
-                        "y": 8
+                        "y": 6
                     },
                     {
                         "displayType": "ROW",
@@ -78,7 +81,8 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxW": 3,
+                        "maxH": null,
+                        "maxW": 1,
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
@@ -92,7 +96,8 @@
                         "displayType": "ROW",
                         "h": 3,
                         "i": "default-main-eb7cb0ed-9093-4e05-845e-a4c32acc8037-default-main-indicatorTimeline",
-                        "maxW": 3,
+                        "maxH": null,
+                        "maxW": 1,
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
@@ -107,7 +112,8 @@
                         "h": 1,
                         "hideName": true,
                         "i": "default-main-eb7cb0ed-9093-4e05-845e-a4c32acc8037-default-main-reputationStatus",
-                        "maxW": 3,
+                        "maxH": null,
+                        "maxW": 1,
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
@@ -122,7 +128,8 @@
                         "h": 1,
                         "hideName": true,
                         "i": "default-main-eb7cb0ed-9093-4e05-845e-a4c32acc8037-default-main-expirationStatus",
-                        "maxW": 3,
+                        "maxH": null,
+                        "maxW": 1,
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
@@ -136,7 +143,8 @@
                     {
                         "h": 2,
                         "i": "default-main-eb7cb0ed-9093-4e05-845e-a4c32acc8037-default-main-reputationSources",
-                        "maxW": 3,
+                        "maxH": null,
+                        "maxW": 1,
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
@@ -150,7 +158,8 @@
                     {
                         "h": 3,
                         "i": "default-main-eb7cb0ed-9093-4e05-845e-a4c32acc8037-default-main-sources",
-                        "maxW": 3,
+                        "maxH": null,
+                        "maxW": 2,
                         "minH": 1,
                         "minW": 2,
                         "moved": false,
@@ -159,7 +168,7 @@
                         "type": "sources",
                         "w": 2,
                         "x": 0,
-                        "y": 10
+                        "y": 8
                     },
                     {
                         "displayType": "ROW",
@@ -185,7 +194,8 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxW": 3,
+                        "maxH": null,
+                        "maxW": 2,
                         "minH": 1,
                         "minW": 2,
                         "moved": false,
@@ -193,7 +203,7 @@
                         "static": false,
                         "w": 2,
                         "x": 0,
-                        "y": 7
+                        "y": 5
                     },
                     {
                         "displayType": "ROW",
@@ -202,12 +212,32 @@
                         "i": "default-main-eb7cb0ed-9093-4e05-845e-a4c32acc8037-default-main-98041610-7373-11eb-8aef-c39e29f029fe",
                         "items": [
                             {
+                                "endCol": 4,
+                                "fieldId": "creationdate",
+                                "height": 22,
+                                "id": "d40f6d70-7379-11eb-8aef-c39e29f029fe",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
                                 "dropEffect": "move",
                                 "endCol": 4,
                                 "fieldId": "devicemodel",
                                 "height": 22,
                                 "id": "d163a3d0-7378-11eb-8aef-c39e29f029fe",
-                                "index": 0,
+                                "index": 1,
+                                "listId": "default-main-98041610-7373-11eb-8aef-c39e29f029fe",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "gibdatecompromised",
+                                "height": 22,
+                                "id": "a92e8c20-7375-11eb-8aef-c39e29f029fe",
+                                "index": 2,
                                 "listId": "default-main-98041610-7373-11eb-8aef-c39e29f029fe",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -218,7 +248,7 @@
                                 "fieldId": "geolocation",
                                 "height": 22,
                                 "id": "b4a3e8d0-7379-11eb-8aef-c39e29f029fe",
-                                "index": 2,
+                                "index": 3,
                                 "listId": "default-main-98041610-7373-11eb-8aef-c39e29f029fe",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -229,7 +259,7 @@
                                 "fieldId": "ipaddress",
                                 "height": 22,
                                 "id": "b97742d0-7379-11eb-8aef-c39e29f029fe",
-                                "index": 3,
+                                "index": 4,
                                 "listId": "default-main-98041610-7373-11eb-8aef-c39e29f029fe",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -240,7 +270,7 @@
                                 "fieldId": "asn",
                                 "height": 22,
                                 "id": "efe23060-7378-11eb-8aef-c39e29f029fe",
-                                "index": 4,
+                                "index": 5,
                                 "listId": "default-main-98041610-7373-11eb-8aef-c39e29f029fe",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -251,58 +281,17 @@
                                 "fieldId": "geocountry",
                                 "height": 22,
                                 "id": "fbc19650-7378-11eb-8aef-c39e29f029fe",
-                                "index": 5,
-                                "listId": "default-main-98041610-7373-11eb-8aef-c39e29f029fe",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 2,
-                        "moved": false,
-                        "name": "IMEI Information from GIB TIA",
-                        "static": false,
-                        "w": 2,
-                        "x": 0,
-                        "y": 5
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 2,
-                        "hideName": false,
-                        "i": "default-main-c32b67c0-0f1e-11ec-b4dd-539628da0f41",
-                        "items": [
-                            {
-                                "dropEffect": "move",
-                                "endCol": 4,
-                                "fieldId": "creationdate",
-                                "height": 22,
-                                "id": "d40f6d70-7379-11eb-8aef-c39e29f029fe",
-                                "index": 0,
-                                "listId": "default-main-c32b67c0-0f1e-11ec-b4dd-539628da0f41",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 4,
-                                "fieldId": "gibdatecompromised",
-                                "height": 22,
-                                "id": "a92e8c20-7375-11eb-8aef-c39e29f029fe",
-                                "index": 1,
+                                "index": 6,
                                 "listId": "default-main-98041610-7373-11eb-8aef-c39e29f029fe",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
-                                "dropEffect": "move",
                                 "endCol": 4,
                                 "fieldId": "gibmalwarename",
                                 "height": 22,
                                 "id": "b149e530-7375-11eb-8aef-c39e29f029fe",
-                                "index": 2,
-                                "listId": "default-main-c32b67c0-0f1e-11ec-b4dd-539628da0f41",
+                                "index": 7,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -312,7 +301,7 @@
                                 "fieldId": "gibid",
                                 "height": 22,
                                 "id": "ad5d41b0-7375-11eb-8aef-c39e29f029fe",
-                                "index": 3,
+                                "index": 7,
                                 "listId": "default-main-98041610-7373-11eb-8aef-c39e29f029fe",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -322,16 +311,17 @@
                                 "fieldId": "gibcollection",
                                 "height": 22,
                                 "id": "28463200-737c-11eb-8aef-c39e29f029fe",
-                                "index": 4,
+                                "index": 8,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
                         ],
-                        "maxW": 3,
+                        "maxH": null,
+                        "maxW": 2,
                         "minH": 1,
-                        "minW": 1,
+                        "minW": 2,
                         "moved": false,
-                        "name": "General Information from GIB TIA",
+                        "name": "Information from GIB TIA",
                         "static": false,
                         "w": 2,
                         "x": 0,
@@ -345,6 +335,5 @@
     "name": "GIB Compromised IMEI Layout",
     "system": false,
     "version": -1,
-    "fromVersion": "6.0.0",
-    "description": ""
+    "fromVersion": "6.0.0"
 }
