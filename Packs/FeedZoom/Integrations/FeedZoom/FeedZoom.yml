@@ -4,7 +4,7 @@ commonfields:
 fromversion: 5.5.0
 name: Zoom Feed
 beta: true
-display: Zoom Feed
+display: Zoom Feed (Beta)
 category: Data Enrichment & Threat Intelligence
 description: Use the Zoom Feed integration to get indicators from the feed.
 configuration:
