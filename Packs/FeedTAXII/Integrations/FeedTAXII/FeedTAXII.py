@@ -1001,7 +1001,16 @@ def observable_extract_properties(observable):
 
 
 def indicator_extract_properties(indicator) -> Dict[str, Any]:
-    """Extracts properties from indicator"""
+    """Extracts the Indicator properties
+
+    Args:
+        indicator (bs4.element.Tag): The Indicator content in xml.
+
+    Returns:
+        dict: The ttp properties in a dict {'property': 'value'}. (The value can be a list)
+
+    """
+
     result: Dict[str, Any] = {}
 
     title = next((c for c in indicator if c.name == 'Title'), None)
@@ -1023,6 +1032,7 @@ def indicator_extract_properties(indicator) -> Dict[str, Any]:
 
     if indicated_ttp := indicator.find_all('Indicated_TTP'):
         result['ttp_ref'] = []
+        # Each indicator can be related to few ttps
         for ttp_value in indicated_ttp:
             ttp = next((c for c in ttp_value if c.name == 'TTP'), None)
             if ttp is not None:
@@ -1032,7 +1042,18 @@ def indicator_extract_properties(indicator) -> Dict[str, Any]:
     return result
 
 
-def ttp_extract_properties(ttp, behavior):
+def ttp_extract_properties(ttp, behavior) -> Dict[str, str]:
+    """Extracts the TTP properties
+
+    Args:
+        ttp (bs4.element.Tag): The TTP content in xml.
+        behavior (str): The TTP behavior ['Malware', 'Attack Pattern'].
+
+    Returns:
+        dict: The ttp properties in a dict {'property': 'value'}.
+
+    """
+
     result = {'type': behavior}
 
     if behavior == 'Malware':
