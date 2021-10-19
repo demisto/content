@@ -43,13 +43,13 @@ script:
       required: true
       description: The name of the case.
     outputs:
-    - contextPath: accessdata.case.id
+    - contextPath: Accessdata.Case.ID
       description: The identifier of the case.
       type: integer
-    - contextPath: accessdata.case.name
+    - contextPath: Accessdata.Case.Name
       description: The name of the case.
       type: string
-    - contextPath: accessdata.case.casefolder
+    - contextPath: Accessdata.Case.CaseFolder
       description: The path to the case data.
       type: string
     description: Returns a case's information determined by matching names.
@@ -60,13 +60,13 @@ script:
       required: true
       description: The name of the case.
     outputs:
-    - contextPath: accessdata.case.id
+    - contextPath: Accessdata.Case.ID
       description: The identifier of the case.
       type: number
-    - contextPath: accessdata.case.name
+    - contextPath: Accessdata.Case.name
       description: The name of the case.
       type: string
-    - contextPath: accessdata.case.casefolder
+    - contextPath: Accessdata.Case.CaseFolder
       description: The path to the case data.
       type: string
     description: Creates a new case with the provided arguments and returns the new case's information.
@@ -89,7 +89,7 @@ script:
       description: The processing options to process using. Either XML (exported from FTK) or JSON.
       defaultValue: "<processingOptions></processingOptions>"
     outputs:
-    - contextPath: accessdata.case.job.id
+    - contextPath: Accessdata.Case.Job.ID
       description: A identifier of the job started.
       type: number
     description: Processes evidence of file, directory or image type within the specified case.
@@ -103,13 +103,13 @@ script:
       required: true
       description: The identifier of the job.
     outputs:
-    - contextPath: accessdata.case.job.id
+    - contextPath: Accessdata.Case.Job.ID
       description: A identifier of the job started.
       type: number
-    - contextPath: accessdata.case.job.state
+    - contextPath: Accessdata.Case.Job.State
       description: The state that the job is currently in.
       type: string
-    - contextPath: accessdata.case.job.resultdata
+    - contextPath: Accessdata.Case.Job.ResultData
       description: A JSON representation of the job information.
       type: string
     description: Gathers state and information about the specified job.
@@ -126,7 +126,7 @@ script:
       required: true
       description: The JSON representation of the filter to apply.
     outputs:
-    - contextPath: accessdata.case.job.id
+    - contextPath: Accessdata.Case.Job.ID
       description: A identifier of the job started.
       type: number
     description: Exports native files from the case to a directory reduced by the filter specified.
@@ -140,7 +140,7 @@ script:
       required: true
       description: The IP or FQDN of the target endpoint.
     outputs:
-    - contextPath: accessdata.case.job.id
+    - contextPath: Accessdata.Case.Job.ID
       description: A identifier of the job started.
       type: number
     description: Executes a volatile analysis against the endpoint and places results in the specified case.
@@ -154,7 +154,7 @@ script:
       required: true
       description: The IP or FQDN of the target endpoint.
     outputs:
-    - contextPath: accessdata.case.job.id
+    - contextPath: Accessdata.Case.Job.ID
       description: A identifier of the job started.
       type: number
     description: Executes a memory collection against the endpoint and places the image in the specified case.
@@ -180,7 +180,7 @@ script:
       required: true
       description: The identifying type of the output image. 0 = RAW, 1 = AD1
     outputs:
-    - contextPath: accessdata.case.job.id
+    - contextPath: Accessdata.Case.Job.ID
       description: A identifier of the job started.
       type: number
     description: Executes a disk collection against the endpoint and places the image in the specified case.
@@ -197,7 +197,7 @@ script:
       required: true
       description: The value of the attribute.
     outputs:
-    - contextPath: accessdata.filter
+    - contextPath: Accessdata.Filter
       description: A JSON representation of the filter created.
       type: string
     description: Creates an internal filter to be used with other API endpoint calls.
@@ -211,7 +211,7 @@ script:
       required: true
       description: The JSON of the second filter to AND together.
     outputs:
-    - contextPath: accessdata.filter
+    - contextPath: Accessdata.Filter
       description: A JSON representation of the filter created.
       type: string
     description: Combines 2 internal filters together enforcing both.
@@ -225,7 +225,7 @@ script:
       required: true
       description: The JSON of the second filter to OR together.
     outputs:
-    - contextPath: accessdata.filter
+    - contextPath: Accessdata.Filter
       description: A JSON representation of the filter created.
       type: string
     description: Combines 2 internal filters together enforcing either.
