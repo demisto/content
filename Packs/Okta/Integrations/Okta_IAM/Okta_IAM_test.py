@@ -45,11 +45,11 @@ def get_outputs_from_user_profile(user_profile):
                                              f'{BASE_URL}/users?filter='
                                              'profile.email eq "testdemisto2@paloaltonetworks.com"'),
                                             ({'user-profile': {'email': 'testdemisto2@paloaltonetworks.com',
-                                                               'username': 'testdemisto2@paloaltonetworks.com'}},
+                                                               'login': 'testdemisto2@paloaltonetworks.com'}},
                                              f'{BASE_URL}/users?filter='
                                              'profile.login eq "testdemisto2@paloaltonetworks.com"'),
                                             ({'user-profile': {'email': 'testdemisto2@paloaltonetworks.com',
-                                                               'username': 'testdemisto2@paloaltonetworks.com',
+                                                               'login': 'testdemisto2@paloaltonetworks.com',
                                                                'id': 'mock_id'}},
                                              f'{BASE_URL}/users?filter=id eq "mock_id"')])
 def test_get_user_command__existing_user(mocker, requests_mock, args, mock_url):
@@ -68,7 +68,7 @@ def test_get_user_command__existing_user(mocker, requests_mock, args, mock_url):
     requests_mock.get(mock_url, json=[OKTA_USER_OUTPUT])
     mocker.patch.object(IAMUserProfile, 'update_with_app_data', return_value={})
 
-    user_profile = get_user_command(client, args, 'mapper_in')
+    user_profile = get_user_command(client, args, 'mapper_in', '')
     outputs = get_outputs_from_user_profile(user_profile)
 
     assert outputs.get('action') == IAMActions.GET_USER

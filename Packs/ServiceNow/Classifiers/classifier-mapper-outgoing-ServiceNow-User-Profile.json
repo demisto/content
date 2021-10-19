@@ -65,6 +65,10 @@
 				"zip": {
 					"complex": null,
 					"simple": "zipcode"
+				},
+				"sys_id": {
+					"complex": null,
+					"simple": "id"
 				}
 			}
 		},

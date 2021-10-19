@@ -1,8 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-from enum import Enum
-from typing import Tuple
 
 
 class IAMErrors(object):
@@ -27,12 +25,6 @@ class IAMActions(object):
     CREATE_USER = 'create'
     DISABLE_USER = 'disable'
     ENABLE_USER = 'enable'
-
-
-class IAMAttribute(Enum):
-    EMAIL = 'email'
-    ID = 'id'
-    USERNAME = 'username'
 
 
 class IAMVendorActionResult:
@@ -122,8 +114,8 @@ class IAMVendorActionResult:
 class IAMUserProfile:
     """ A User Profile object class for IAM integrations.
 
-    :type _user_profile: ``str``
-    :param _user_profile: The user profile information.
+    :type user_profile: ``str``
+    :param user_profile: The user profile information.
 
     :type _user_profile_delta: ``str``
     :param _user_profile_delta: The user profile delta.
@@ -139,8 +131,12 @@ class IAMUserProfile:
     CREATE_INCIDENT_TYPE = 'User Profile - Create'
     UPDATE_INCIDENT_TYPE = 'User Profile - Update'
 
-    def __init__(self, user_profile, user_profile_delta=None):
+    def __init__(self, user_profile, user_profile_delta=None, mapper_out=None):
         self._user_profile = safe_load_json(user_profile)
+        if mapper_out:
+            print(f'Before mapper out: {self._user_profile}')
+            self.update_with_app_data(self._user_profile, mapper_out, self.CREATE_INCIDENT_TYPE)
+            print(f'After mapper out: {self._user_profile}')
         self._user_profile_delta = safe_load_json(user_profile_delta) if user_profile_delta else {}
         self._vendor_action_results = []
 
@@ -314,11 +310,11 @@ class IAMCommand:
         :param create_if_not_exists: (bool) Whether or not to create a user if does not exist in the application.
         :param mapper_in: (str) Incoming mapper from the application to Cortex XSOAR
         :param mapper_out: (str) Outgoing mapper from the Cortex XSOAR to the application
-        :param get_user_iam_attrs (List[IAMAttribute]): List of IAM attributes supported by integration by precedence
+        :param get_user_iam_attrs (List[str]): List of IAM attributes supported by integration by precedence
                                                         order to get user details.
         """
         if get_user_iam_attrs is None:
-            get_user_iam_attrs = [IAMAttribute.EMAIL]
+            get_user_iam_attrs = ['email']
         self.is_create_enabled = is_create_enabled
         self.is_enable_enabled = is_enable_enabled
         self.is_disable_enabled = is_disable_enabled
@@ -326,7 +322,6 @@ class IAMCommand:
         self.create_if_not_exists = create_if_not_exists
         self.mapper_in = mapper_in
         self.mapper_out = mapper_out
-        self.attr = attr
         self.get_user_iam_attrs = get_user_iam_attrs
 
     def get_user(self, client, args):
@@ -378,8 +373,9 @@ class IAMCommand:
                                     skip_reason='Command is disabled.')
         else:
             try:
-                identifier = user_profile.get_attribute(self.attr)
-                user_app_data = client.get_user(identifier)
+                iam_attribute, iam_attribute_val = get_first_available_iam_user_attr(user_profile,
+                                                                                     self.get_user_iam_attrs)
+                user_app_data = client.get_user(iam_attribute, iam_attribute_val)
                 if not user_app_data:
                     _, error_message = IAMErrors.USER_DOES_NOT_EXIST
                     user_profile.set_result(action=IAMActions.DISABLE_USER,
@@ -420,8 +416,9 @@ class IAMCommand:
                                     skip_reason='Command is disabled.')
         else:
             try:
-                identifier = user_profile.get_attribute(self.attr)
-                user_app_data = client.get_user(identifier)
+                iam_attribute, iam_attribute_val = get_first_available_iam_user_attr(user_profile,
+                                                                                     self.get_user_iam_attrs)
+                user_app_data = client.get_user(iam_attribute, iam_attribute_val)
                 if user_app_data:
                     # if user exists, update it
                     user_profile = self.update_user(client, args)
@@ -461,8 +458,10 @@ class IAMCommand:
                                     skip_reason='Command is disabled.')
         else:
             try:
-                identifier = user_profile.get_attribute(self.attr, use_old_user_data=True)
-                user_app_data = client.get_user(identifier)
+                iam_attribute, iam_attribute_val = get_first_available_iam_user_attr(user_profile,
+                                                                                     self.get_user_iam_attrs,
+                                                                                     use_old_user_data=True)
+                user_app_data = client.get_user(iam_attribute, iam_attribute_val)
                 if user_app_data:
                     app_profile = user_profile.map_object(self.mapper_out, IAMUserProfile.UPDATE_INCIDENT_TYPE)
 
@@ -493,20 +492,9 @@ class IAMCommand:
         return user_profile
 
 
-def get_first_available_iam_user_attr(user_profile: IAMUserProfile,
-                                      iam_attrs: List[IAMAttribute]) -> Optional[Tuple[IAMAttribute, str]]:
-    """
-    Receives list if IAMAttribute. Extracts the first value that exists for the matching attribute in the user profile.
-    Returns None if no such exists.
-    Args:
-        user_profile (IAMUserProfile): IAM user profile.
-        iam_attrs (List[IAMAttribute]): List of IAM attributes to retrieve their value.
-
-    Returns:
-        (Optional[Tuple[IAMAttribute, str]]): First value of given attribute if exists with the given attribute.
-                                              None if no attribute data exists in user profile.
-    """
+def get_first_available_iam_user_attr(user_profile: IAMUserProfile, iam_attrs: List[str],
+                                      use_old_user_data: bool = False):
     for iam_attr in iam_attrs:
-        if attr_value := user_profile.get_attribute(iam_attr.value):
-            return iam_attr, attr_value
-    return None
+        if iam_attr_value := user_profile.get_attribute(iam_attr, use_old_user_data=use_old_user_data):
+            return iam_attr, iam_attr_value
+    return None, None
