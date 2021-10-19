@@ -8178,11 +8178,11 @@ def support_multithreading():
 
 
 def get_tenant_account_name():
-    """
-        Gets the tenant name from the server url.
+    """Gets the tenant name from the server url.
 
-        Returns:
-        The account name.
+    :return: The account name.
+    :rtype: ``str``
+
     """
     urls = demisto.demistoUrls()
     server_url = urls.get('server', '')
