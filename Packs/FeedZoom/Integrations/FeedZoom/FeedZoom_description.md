@@ -8,3 +8,5 @@ This fact makes it very difficult for IT and Security teams to provide these ser
 One example of these providers is Zoom.
 
 This pack aims is to address this issue by automating the collection of endpoint data in the form of an indicator feed. This will facilitate validation of the indicators before using them in enforcement points, for example firewalls, proxies, and more.
+
+Note: This is a beta pack, it might contain bugs. 
