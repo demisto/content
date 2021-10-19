@@ -4,23 +4,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-def get_tenant_account_name():
-    """
-        Gets the tenant name from the server url.
-
-        Returns:
-        The account name.
-    """
-    urls = demisto.demistoUrls()
-    server_url = urls.get('server', '')
-    account_name = ''
-    if '/acc_' in server_url:
-        tenant_name = server_url.split('acc_')[-1]
-        account_name = f"acc_{tenant_name}/" if tenant_name != "" else ""
-
-    return account_name
-
-
 def create_email_html(email_html='', entry_id_list=None):
     if not entry_id_list:
         return email_html

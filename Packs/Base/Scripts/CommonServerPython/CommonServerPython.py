@@ -8175,3 +8175,20 @@ def support_multithreading():
             demisto.lock.release()  # type: ignore[attr-defined]
 
     demisto._Demisto__do = locked_do  # type: ignore[attr-defined]
+
+
+def get_tenant_account_name():
+    """
+        Gets the tenant name from the server url.
+
+        Returns:
+        The account name.
+    """
+    urls = demisto.demistoUrls()
+    server_url = urls.get('server', '')
+    account_name = ''
+    if '/acc_' in server_url:
+        tenant_name = server_url.split('acc_')[-1]
+        account_name = f"acc_{tenant_name}" if tenant_name != "" else ""
+
+    return account_name
