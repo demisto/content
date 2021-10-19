@@ -67,7 +67,7 @@ class Client(BaseClient):
         """ Tests connectivity with the application. """
 
         uri = URI_PREFIX + 'sobjects/User/testid'
-        self._http_request(method='GET', url_suffix=uri)
+        self._http_request(method='GET', url_suffix=uri, ok_codes=(200, 404))
 
     def get_user_by_id(self, user_id: str) -> Optional['IAMUserAppData']:
         """ Queries the user in the application using REST API by its ID, and returns an IAMUserAppData object
