@@ -17,11 +17,13 @@ configuration:
   name: client-id
   required: false
   type: 0
-- display: Username
+- display: ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉     ‎                                           Basic
+    Authentication                          Username
   name: credentials
   required: false
   type: 9
-- display: Certificate Authentication Client certificate (.pem)
+- display: ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉    ‎                                           Certificate
+    Authentication     Client certificate (.pem)
   name: client_cert
   required: false
   type: 12
@@ -34,7 +36,8 @@ configuration:
   required: false
   type: 12
 - defaultvalue: '1'
-  display: Fetch Incidents Subscription ID
+  display: ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉     ‎                                           Fetch
+    Incidents     Subscription ID
   name: subscription-id
   required: false
   type: 0
