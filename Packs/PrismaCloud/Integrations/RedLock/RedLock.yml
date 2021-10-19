@@ -1110,76 +1110,76 @@ script:
     execution: false
     name: redlock-list-scans
     outputs:
-    - contextPath: Redlock.Scans.attributes.deployed
+    - contextPath: Redlock.Scans.deployed
       description: Scan deployed attribute.
       type: Boolean
-    - contextPath: Redlock.Scans.attributes.fail
+    - contextPath: Redlock.Scans.fail
       description: Scan fail attribute.
       type: Number
-    - contextPath: Redlock.Scans.attributes.failureCriteria
+    - contextPath: Redlock.Scans.failureCriteria
       description: Scan failure criteria attribute.
       type: String
-    - contextPath: Redlock.Scans.attributes.matchedPoliciesSummary.high
+    - contextPath: Redlock.Scans.matchedPoliciesSummary.high
       description: Scan matched policies summary attribute.
       type: Number
-    - contextPath: Redlock.Scans.attributes.matchedPoliciesSummary.low
+    - contextPath: Redlock.Scans.matchedPoliciesSummary.low
       description: Scan matched low policies summary attribute.
       type: Number
-    - contextPath: Redlock.Scans.attributes.matchedPoliciesSummary.medium
+    - contextPath: Redlock.Scans.matchedPoliciesSummary.medium
       description: Scan matched medium policies summary attribute.
       type: Number
-    - contextPath: Redlock.Scans.attributes.merged
+    - contextPath: Redlock.Scans.merged
       description: Scan merged attribute.
       type: Boolean
-    - contextPath: Redlock.Scans.attributes.name
+    - contextPath: Redlock.Scans.name
       description: Scan name attribute.
       type: String
-    - contextPath: Redlock.Scans.attributes.pass
+    - contextPath: Redlock.Scans.pass
       description: Scan pass attribute.
       type: Number
-    - contextPath: Redlock.Scans.attributes.scanAttributes.appliedAlertRules
+    - contextPath: Redlock.Scans.scanAttributes.appliedAlertRules
       description: Scan applied alert rules attribute.
       type: String
-    - contextPath: Redlock.Scans.attributes.scanAttributes.branch
+    - contextPath: Redlock.Scans.scanAttributes.branch
       description: Scan Scan branch attribute.
       type: String
-    - contextPath: Redlock.Scans.attributes.scanAttributes.org
+    - contextPath: Redlock.Scans.scanAttributes.org
       description: Scan org attribute.
       type: String
-    - contextPath: Redlock.Scans.attributes.scanAttributes.pullRequestId
+    - contextPath: Redlock.Scans.scanAttributes.pullRequestId
       description: Scan PR ID attribute.
       type: String
-    - contextPath: Redlock.Scans.attributes.scanAttributes.repository
+    - contextPath: Redlock.Scans.scanAttributes.repository
       description: Scan repository attribute.
       type: String
-    - contextPath: Redlock.Scans.attributes.scanAttributes.resourcesScanned
+    - contextPath: Redlock.Scans.scanAttributes.resourcesScanned
       description: Scan resources scanned attribute.
       type: String
-    - contextPath: Redlock.Scans.attributes.scanAttributes.templateType
+    - contextPath: Redlock.Scans.scanAttributes.templateType
       description: Scan template type attribute.
       type: String
-    - contextPath: Redlock.Scans.attributes.scanAttributes.triggeredOn
+    - contextPath: Redlock.Scans.scanAttributes.triggeredOn
       description: Scan triggered on attribute.
       type: String
-    - contextPath: Redlock.Scans.attributes.scanAttributes.userId
+    - contextPath: Redlock.Scans.scanAttributes.userId
       description: Scan user id attribute.
       type: String
-    - contextPath: Redlock.Scans.attributes.scanTime
+    - contextPath: Redlock.Scans.ascanTime
       description: Scan scan time attribute.
       type: Date
-    - contextPath: Redlock.Scans.attributes.status
+    - contextPath: Redlock.Scans.status
       description: Scan status attribute.
       type: String
-    - contextPath: Redlock.Scans.attributes.tags.name
+    - contextPath: Redlock.Scans.tags.name
       description: Scan tags name attribute.
       type: String
-    - contextPath: Redlock.Scans.attributes.tags.value
+    - contextPath: Redlock.Scans.tags.value
       description: Scan tags value attribute.
       type: String
-    - contextPath: Redlock.Scans.attributes.type
+    - contextPath: Redlock.Scans.type
       description: Scan type attribute.
       type: String
-    - contextPath: Redlock.Scans.attributes.user
+    - contextPath: Redlock.Scans.user
       description: Scan user attribute.
       type: List
     - contextPath: Redlock.Scans.id
@@ -1207,7 +1207,7 @@ script:
     - contextPath: Redlock.Scans.id
       description: Scan ID
       type: String
-    - contextPath: Redlock.Scans.attributes.status
+    - contextPath: Redlock.Scans.status
       description: Scan status
       type: String
   - arguments:

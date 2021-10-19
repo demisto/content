@@ -562,7 +562,7 @@ def redlock_list_scans():
             list_filter['filter[timeUnit]'] = relative_time_unit
             list_filter['filter[timeAmount]'] = filter_time_amount
         else:
-            return_error('You must specify a filter_time_unit and filter_time_amount with relative type filter')
+            return_error('You must specify a relative_time_unit and filter_time_amount with relative type filter')
     elif filter_type == 'to_now':
         if to_now_time_unit:
             list_filter['filter[timeUnit]'] = to_now_time_unit
@@ -607,6 +607,11 @@ def redlock_list_scans():
                 "Scan Time": attributes.get('scanTime'),
                 "User": attributes.get('user', [])
             })
+            # flatten the attributes section of the item - i.e removes 'attributes' key
+            item.pop('attributes', None)
+            for key, value in attributes.items():
+                item[key] = value
+
         md = tableToMarkdown("Scans List:", readable_output)
         demisto.results({
             'Type': entryTypes['note'],
@@ -644,7 +649,8 @@ def redlock_get_scan_status():
 
         result = {
             'id': id,
-            'status': status}
+            'status': status
+        }
 
         md = tableToMarkdown("Scan Status:", readable_output)
         demisto.results({
