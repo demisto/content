@@ -1,15 +1,15 @@
 id: TaegisXDR
 name: TaegisXDR
 version: -1
-fromversion: 4.5.0
+fromversion: 6.0.0
 starttaskid: '0'
 tasks:
   '0':
     id: '0'
-    taskid: '0'
+    taskid: 'd3eb4583-50b0-4735-a8bd-1ba9817ec243'
     type: start
     task:
-      id: '0'
+      id: 'd3eb4583-50b0-4735-a8bd-1ba9817ec243'
       version: -1
       name: ''
       iscommand: false
@@ -25,10 +25,10 @@ tasks:
     ignoreworker: false
   '1':
     id: 1
-    taskid: '1'
+    taskid: 'a6f3c531-4241-4299-85f0-f9cf2451f9cd'
     type: regular
     task:
-      id: '1'
+      id: 'a6f3c531-4241-4299-85f0-f9cf2451f9cd'
       version: -1
       name: DeleteContext
       description: ''
@@ -50,10 +50,10 @@ tasks:
     skipunavailable: false
   '2':
     id: 2
-    taskid: '2'
+    taskid: '5b73d1d4-22b3-4005-9e30-f2d998b2a066'
     type: regular
     task:
-      id: '2'
+      id: '5b73d1d4-22b3-4005-9e30-f2d998b2a066'
       version: -1
       name: taegis-fetch-alerts
       description: ''
@@ -73,10 +73,10 @@ tasks:
     skipunavailable: false
   '3':
     id: '3'
-    taskid: '3'
+    taskid: '46be19cf-fbdc-43cc-899a-dbbc2ade83c0'
     type: condition
     task:
-      id: '3'
+      id: '46be19cf-fbdc-43cc-899a-dbbc2ade83c0'
       version: -1
       name: Verify Outputs
       type: condition
@@ -102,10 +102,10 @@ tasks:
     skipunavailable: false
   '4':
     id: 4
-    taskid: '4'
+    taskid: '40438cbd-cbeb-4b4c-9f47-b986c2293cda'
     type: regular
     task:
-      id: '4'
+      id: '40438cbd-cbeb-4b4c-9f47-b986c2293cda'
       version: -1
       name: taegis-fetch-investigation
       description: ''
@@ -125,10 +125,10 @@ tasks:
     skipunavailable: false
   '5':
     id: '5'
-    taskid: '5'
+    taskid: 'd53f65f6-b6f1-432b-8814-d926717028c8'
     type: condition
     task:
-      id: '5'
+      id: 'd53f65f6-b6f1-432b-8814-d926717028c8'
       version: -1
       name: Verify Outputs
       type: condition
@@ -154,10 +154,10 @@ tasks:
     skipunavailable: false
   '6':
     id: 6
-    taskid: '6'
+    taskid: 'bc904365-850b-44c7-a4aa-a7aecb7b3910'
     type: regular
     task:
-      id: '6'
+      id: 'bc904365-850b-44c7-a4aa-a7aecb7b3910'
       version: -1
       name: taegis-create-investigation
       description: ''
@@ -177,10 +177,10 @@ tasks:
     skipunavailable: false
   '7':
     id: '7'
-    taskid: '7'
+    taskid: 'ec1e9586-7dea-4efd-943d-e4f1c62f6149'
     type: condition
     task:
-      id: '7'
+      id: 'ec1e9586-7dea-4efd-943d-e4f1c62f6149'
       version: -1
       name: Verify Outputs
       type: condition
@@ -206,10 +206,10 @@ tasks:
     skipunavailable: false
   '8':
     id: 8
-    taskid: '8'
+    taskid: '83650abe-41d0-4a63-a323-bd53b35329b2'
     type: regular
     task:
-      id: '8'
+      id: '83650abe-41d0-4a63-a323-bd53b35329b2'
       version: -1
       name: taegis-update-investigation
       description: ''
@@ -229,10 +229,10 @@ tasks:
     skipunavailable: false
   '9':
     id: '9'
-    taskid: '9'
+    taskid: '097d2651-dacf-4a32-bd43-126c870ed21f'
     type: condition
     task:
-      id: '9'
+      id: '097d2651-dacf-4a32-bd43-126c870ed21f'
       version: -1
       name: Verify Outputs
       type: condition
@@ -258,10 +258,10 @@ tasks:
     skipunavailable: false
   '10':
     id: 10
-    taskid: '10'
+    taskid: 'd068dde4-4059-4005-9e9e-6c24ec9be7e6'
     type: regular
     task:
-      id: '10'
+      id: 'd068dde4-4059-4005-9e9e-6c24ec9be7e6'
       version: -1
       name: taegis-fetch-investigation-alerts
       description: ''
@@ -281,10 +281,10 @@ tasks:
     skipunavailable: false
   '11':
     id: '11'
-    taskid: '11'
+    taskid: 'ecf92150-9074-4107-a3fe-1599c4b97088'
     type: condition
     task:
-      id: '11'
+      id: 'ecf92150-9074-4107-a3fe-1599c4b97088'
       version: -1
       name: Verify Outputs
       type: condition
@@ -310,10 +310,10 @@ tasks:
     skipunavailable: false
   '12':
     id: '12'
-    taskid: '12'
+    taskid: 'fa0ee95b-6b56-4014-b805-e499bded4098'
     type: title
     task:
-      id: '12'
+      id: 'fa0ee95b-6b56-4014-b805-e499bded4098'
       version: -1
       name: Test Done
       type: title

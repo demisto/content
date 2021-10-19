@@ -1,15 +1,15 @@
 id: SecureWorks
 name: SecureWorks
 version: -1
-fromversion: 4.5.0
+fromversion: 5.0.0
 starttaskid: '0'
 tasks:
   '0':
     id: '0'
-    taskid: '0'
+    taskid: 'eb5ae06d-a140-4710-91f3-5f3669d85f8b'
     type: start
     task:
-      id: '0'
+      id: 'eb5ae06d-a140-4710-91f3-5f3669d85f8b'
       version: -1
       name: ''
       iscommand: false
@@ -25,10 +25,10 @@ tasks:
     ignoreworker: false
   '1':
     id: 1
-    taskid: '1'
+    taskid: '7b9228d5-5a42-4bb1-b25b-3d6f69036635'
     type: regular
     task:
-      id: '1'
+      id: '7b9228d5-5a42-4bb1-b25b-3d6f69036635'
       version: -1
       name: DeleteContext
       description: ''
@@ -50,10 +50,10 @@ tasks:
     skipunavailable: false
   '2':
     id: 2
-    taskid: '2'
+    taskid: '6cd93025-87b8-4dd1-826b-9bfd34578f6e'
     type: regular
     task:
-      id: '2'
+      id: '6cd93025-87b8-4dd1-826b-9bfd34578f6e'
       version: -1
       name: secure-works-create-ticket
       description: ''
@@ -73,10 +73,10 @@ tasks:
     skipunavailable: false
   '3':
     id: '3'
-    taskid: '3'
+    taskid: '616eda51-2a27-49f2-a640-2b5f070ff12b'
     type: condition
     task:
-      id: '3'
+      id: '616eda51-2a27-49f2-a640-2b5f070ff12b'
       version: -1
       name: Verify Outputs
       type: condition
@@ -107,10 +107,10 @@ tasks:
     skipunavailable: false
   '4':
     id: 4
-    taskid: '4'
+    taskid: '26b13554-efd0-400c-9500-7ae994dc05dc'
     type: regular
     task:
-      id: '4'
+      id: '26b13554-efd0-400c-9500-7ae994dc05dc'
       version: -1
       name: secure-works-update-ticket
       description: ''
@@ -130,10 +130,10 @@ tasks:
     skipunavailable: false
   '5':
     id: '5'
-    taskid: '5'
+    taskid: '952fb562-f615-4426-bd8f-8fb8dbbd5f53'
     type: condition
     task:
-      id: '5'
+      id: '952fb562-f615-4426-bd8f-8fb8dbbd5f53'
       version: -1
       name: Verify Outputs
       type: condition
@@ -164,10 +164,10 @@ tasks:
     skipunavailable: false
   '6':
     id: 6
-    taskid: '6'
+    taskid: '7525e17b-90ec-4422-b9f7-7970e76f43f0'
     type: regular
     task:
-      id: '6'
+      id: '7525e17b-90ec-4422-b9f7-7970e76f43f0'
       version: -1
       name: secure-works-close-ticket
       description: ''
@@ -187,10 +187,10 @@ tasks:
     skipunavailable: false
   '7':
     id: '7'
-    taskid: '7'
+    taskid: 'af0003c2-1bc2-4612-ad09-24e101ceb8d3'
     type: condition
     task:
-      id: '7'
+      id: 'af0003c2-1bc2-4612-ad09-24e101ceb8d3'
       version: -1
       name: Verify Outputs
       type: condition
@@ -221,10 +221,10 @@ tasks:
     skipunavailable: false
   '8':
     id: 8
-    taskid: '8'
+    taskid: '27f67155-4314-4ca0-9cb0-cfe2c1585e71'
     type: regular
     task:
-      id: '8'
+      id: '27f67155-4314-4ca0-9cb0-cfe2c1585e71'
       version: -1
       name: secure-works-add-worklogs-ticket
       description: ''
@@ -244,10 +244,10 @@ tasks:
     skipunavailable: false
   '9':
     id: '9'
-    taskid: '9'
+    taskid: '1d3859be-7396-45bf-b6fe-48fb54f97453'
     type: condition
     task:
-      id: '9'
+      id: '1d3859be-7396-45bf-b6fe-48fb54f97453'
       version: -1
       name: Verify Outputs
       type: condition
@@ -278,10 +278,10 @@ tasks:
     skipunavailable: false
   '10':
     id: 10
-    taskid: '10'
+    taskid: '38dca0c5-8bfb-4733-b0d5-bf3b4c16d3a1'
     type: regular
     task:
-      id: '10'
+      id: '38dca0c5-8bfb-4733-b0d5-bf3b4c16d3a1'
       version: -1
       name: secure-works-get-ticket
       description: ''
@@ -301,10 +301,10 @@ tasks:
     skipunavailable: false
   '11':
     id: '11'
-    taskid: '11'
+    taskid: 'bc687841-fd77-4c9d-97b4-b7d61fc1f23d'
     type: condition
     task:
-      id: '11'
+      id: 'bc687841-fd77-4c9d-97b4-b7d61fc1f23d'
       version: -1
       name: Verify Outputs
       type: condition
@@ -565,10 +565,10 @@ tasks:
     skipunavailable: false
   '12':
     id: 12
-    taskid: '12'
+    taskid: '1db70a11-f998-47cb-b719-36aae2608c0f'
     type: regular
     task:
-      id: '12'
+      id: '1db70a11-f998-47cb-b719-36aae2608c0f'
       version: -1
       name: secure-works-assign-ticket
       description: ''
@@ -588,10 +588,10 @@ tasks:
     skipunavailable: false
   '13':
     id: '13'
-    taskid: '13'
+    taskid: '9f7dde52-5761-4dc0-a65c-aa10b296b09f'
     type: condition
     task:
-      id: '13'
+      id: '9f7dde52-5761-4dc0-a65c-aa10b296b09f'
       version: -1
       name: Verify Outputs
       type: condition
@@ -622,10 +622,10 @@ tasks:
     skipunavailable: false
   '14':
     id: 14
-    taskid: '14'
+    taskid: '92801cc9-9012-44cf-bfa0-64520de40b32'
     type: regular
     task:
-      id: '14'
+      id: '92801cc9-9012-44cf-bfa0-64520de40b32'
       version: -1
       name: secure-works-get-tickets-updates
       description: ''
@@ -645,10 +645,10 @@ tasks:
     skipunavailable: false
   '15':
     id: '15'
-    taskid: '15'
+    taskid: '6ee1b359-0dd7-44f3-9f87-229bb7d3b974'
     type: condition
     task:
-      id: '15'
+      id: '6ee1b359-0dd7-44f3-9f87-229bb7d3b974'
       version: -1
       name: Verify Outputs
       type: condition
@@ -869,10 +869,10 @@ tasks:
     skipunavailable: false
   '16':
     id: 16
-    taskid: '16'
+    taskid: '4c96b60e-a63d-490e-bebf-17f793d03fdb'
     type: regular
     task:
-      id: '16'
+      id: '4c96b60e-a63d-490e-bebf-17f793d03fdb'
       version: -1
       name: secure-works-get-close-codes
       description: ''
@@ -892,10 +892,10 @@ tasks:
     skipunavailable: false
   '17':
     id: '17'
-    taskid: '17'
+    taskid: '7340eb8e-966f-4e26-8fec-b8293e8885e5'
     type: condition
     task:
-      id: '17'
+      id: '7340eb8e-966f-4e26-8fec-b8293e8885e5'
       version: -1
       name: Verify Outputs
       type: condition
@@ -926,10 +926,10 @@ tasks:
     skipunavailable: false
   '18':
     id: 18
-    taskid: '18'
+    taskid: 'b26bf180-09c9-470e-9a87-728410b8dfe1'
     type: regular
     task:
-      id: '18'
+      id: 'b26bf180-09c9-470e-9a87-728410b8dfe1'
       version: -1
       name: secure-works-get-tickets-ids
       description: ''
@@ -949,10 +949,10 @@ tasks:
     skipunavailable: false
   '19':
     id: '19'
-    taskid: '19'
+    taskid: '5fdcd244-a84e-4a29-810c-4ce9f11263ac'
     type: condition
     task:
-      id: '19'
+      id: '5fdcd244-a84e-4a29-810c-4ce9f11263ac'
       version: -1
       name: Verify Outputs
       type: condition
@@ -978,10 +978,10 @@ tasks:
     skipunavailable: false
   '20':
     id: 20
-    taskid: '20'
+    taskid: '45182c0f-099e-4ba5-a8fd-f7636ec4569d'
     type: regular
     task:
-      id: '20'
+      id: '45182c0f-099e-4ba5-a8fd-f7636ec4569d'
       version: -1
       name: secure-works-get-ticket-count
       description: ''
@@ -1001,10 +1001,10 @@ tasks:
     skipunavailable: false
   '21':
     id: '21'
-    taskid: '21'
+    taskid: '53b9f149-13bc-464d-ac9f-327e0515eae8'
     type: condition
     task:
-      id: '21'
+      id: '53b9f149-13bc-464d-ac9f-327e0515eae8'
       version: -1
       name: Verify Outputs
       type: condition
@@ -1030,10 +1030,10 @@ tasks:
     skipunavailable: false
   '22':
     id: '22'
-    taskid: '22'
+    taskid: '6fbef5b8-b290-4513-81bd-97635bbb2202'
     type: title
     task:
-      id: '22'
+      id: '6fbef5b8-b290-4513-81bd-97635bbb2202'
       version: -1
       name: Test Done
       type: title
