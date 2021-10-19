@@ -4577,6 +4577,10 @@
             "integrations": ["Tanium Threat Response v2", "Demisto REST API"],
             "fromversion": "6.0.0",
             "timeout": 3000
+        },
+        {
+            "playbookID": "IndicatorMaliciousRatioCalculation_test",
+            "fromversion": "5.0.0"
         }
     ],
     "skipped_tests": {
@@ -4683,7 +4687,7 @@
         "LogRhythm REST test": "Issue 40654"
     },
     "skipped_integrations": {
-        
+
         "_comment1": "~~~ NO INSTANCE ~~~",
         "Ipstack": "Usage limit reached (Issue 38063)",
         "AnsibleAlibabaCloud": "No instance - issue 40447",
@@ -4776,16 +4780,16 @@
         "FraudWatch": "Issue 34299",
         "Cisco Stealthwatch": "No instance - developed by Qmasters",
         "Armis": "No instance - developed by SOAR Experts",
-        
+
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
-        
+
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
-        
+
         "_comment4": "~~~ OTHER ~~~",
         "AlienVault OTX TAXII Feed": "Issue 29197",
         "EclecticIQ Platform": "Issue 8821",
@@ -4964,7 +4968,7 @@
         "HelloWorldPremium-Test"
     ],
     "docker_thresholds": {
-        
+
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {
