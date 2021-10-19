@@ -109,3 +109,4 @@ tags:
 - ml
 comment: Predict phishing incidents using the out-of-the-box pre-trained model.
 fromversion: 5.0.0
+deprecated: true
