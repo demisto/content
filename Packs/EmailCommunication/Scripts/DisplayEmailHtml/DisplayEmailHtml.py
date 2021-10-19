@@ -12,7 +12,7 @@ def create_email_html(email_html='', entry_id_list=None):
 
     for entry_id in entry_id_list:
         email_html = re.sub(f'src="[^>]+"(?=[^>]+alt="{entry_id[0]}")',
-                            f'src={account_name}entry/download/{entry_id[1]} ',
+                            f'src={account_name}/entry/download/{entry_id[1]} ',
                             email_html
                             )
     return email_html
