@@ -1,7 +1,6 @@
 commonfields:
   id: TaegisXDR
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: TaegisXDR
 display: TaegisXDR
 category: Data Enrichment & Threat Intelligence
@@ -36,6 +35,7 @@ script:
       isArray: true
     outputs:
     - contextPath: TaegisXDR.Result
+      description: List of Taegis alerts
     description: List Taegis alerts by ID
   - name: taegis-fetch-investigation
     arguments:
@@ -49,7 +49,7 @@ script:
       defaultValue: "10"
     outputs:
     - contextPath: TaegisXDR.Result
-      type: string
+      description: Dictionary of the located Taegis investigation
     description: Fetch all investigations or a specific investigation
   - name: taegis-create-investigation
     arguments:
@@ -70,6 +70,7 @@ script:
       defaultValue: "2"
     outputs:
     - contextPath: TaegisXDR.Result
+      description: The investigation ID that was created
     description: Create an Investigation within Taegis
   - name: taegis-update-investigation
     arguments:
@@ -90,13 +91,14 @@ script:
       - 'Closed: False Positive alert'
       - 'Closed: Informational'
       - 'Closed: Not Vulnerable'
-      description: New status fo the investigation
+      description: New status for the investigation
     - name: service_desk_id
       description: An ticket or ID for to an external system for reference
     - name: service_desk_type
       description: The type of service desk id (e.g. XSOAR)
     outputs:
     - contextPath: TaegisXDR.Result
+      description: ID of the updated Taegis investigation
     description: Update an existing investigation
   - name: taegis-fetch-investigation-alerts
     arguments:
@@ -105,7 +107,11 @@ script:
       description: The investigation ID related to the alerts
     outputs:
     - contextPath: TaegisXDR.Result
+      description: List of alerts related to a Taegis investigation
     description: Fetch Alert IDs related to a specific investigation
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.9.7.24076
   runonce: false
   subtype: python3
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
