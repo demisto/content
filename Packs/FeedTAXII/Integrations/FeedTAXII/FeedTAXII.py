@@ -1208,11 +1208,11 @@ def fetch_indicators_command(client):
                 'stixttptitle': item.get('stix_ttp_title'),
             }
 
-            fields: Dict[str, str] = {}
+            ttp_fields: Dict[str, str] = {}
             for key, value in indicator_obj.items():
                 if key in client.tags:
-                    fields[key] = value
-            indicator_obj['fields'] = fields
+                    ttp_fields[key] = value
+            indicator_obj['fields'] = ttp_fields
 
             indicator_obj['rawJSON'] = item
 

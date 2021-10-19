@@ -98,14 +98,32 @@ class TestCommands:
                 assert res == expected
 
 
-def test_poll_collection():
+def test_poll_collection(mocker):
+    """
+    Given:
+        - A collection of indicators in STIX format.
+
+    When:
+        - fetch_indicators_command is running.
+
+    Then:
+        - Validate the indicator extract as expected.
+    """
     import requests_mock
-    from FeedTAXII import TAXIIClient
-    client = TAXIIClient(collection='a collection')
+    from FeedTAXII import fetch_indicators_command
+    client = TAXIIClient(collection='a collection', poll_service='http://example/taxii-data')
+
+    with open('FeedTAXII_test/TestCommands/collection_example.xml', 'rb') as xml_f:
+        stix_content = xml_f.read()
+
     with requests_mock.Mocker() as m:
-        m.post('google.com')
-        res = client._poll_collection('http://google.com', '1', '2')
-    assert res
+        m.post('http://example/taxii-data', content=stix_content)
+        res = fetch_indicators_command(client)
+
+    with open('FeedTAXII_test/TestCommands/indicator_from_collection.json') as json_f:
+        expected_result = json.load(json_f)
+
+    assert res == expected_result
 
 
 @pytest.mark.parametrize('tags', (['tags1, tags2'], []))
