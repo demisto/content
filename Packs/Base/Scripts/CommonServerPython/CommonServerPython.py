@@ -8189,6 +8189,6 @@ def get_tenant_account_name():
     account_name = ''
     if '/acc_' in server_url:
         tenant_name = server_url.split('acc_')[-1]
-        account_name = f"acc_{tenant_name}" if tenant_name != "" else ""
+        account_name = "acc_{}".format(tenant_name) if tenant_name != "" else ""
 
     return account_name
