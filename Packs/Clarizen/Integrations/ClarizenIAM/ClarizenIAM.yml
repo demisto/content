@@ -54,7 +54,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: IAM integration for Clarizen. Handles user account auto-provisioning to Clarizen.
+description: IAM integration for Clarizen. Handles user account auto-provisioning
+  to Clarizen.
 display: Clarizen IAM
 name: Clarizen IAM
 script:
@@ -70,7 +71,8 @@ script:
       default: false
       defaultValue: 'true'
       description: 'When set to true, after the command execution the status of the
-        user in the 3rd-party integration will be active. Possible values: "true" and "false".'
+        user in the 3rd-party integration will be active. Possible values: "true"
+        and "false".'
       isArray: false
       name: allow-enable
       predefined:
@@ -125,7 +127,8 @@ script:
       default: false
       defaultValue: 'true'
       description: 'When set to true, after the command execution the status of the
-        user in the 3rd-party integration will be active. Possible values: "true" and "false".'
+        user in the 3rd-party integration will be active. Possible values: "true"
+        and "false".'
       isArray: false
       name: allow-enable
       predefined:
@@ -261,7 +264,7 @@ script:
       within the application. Used for outgoing-mapping through the Get Schema option.
     execution: false
     name: get-mapping-fields
-  dockerimage: demisto/python3:3.9.6.24019
+  dockerimage: demisto/python3:3.9.7.24076
   isfetch: false
   longRunning: false
   longRunningPort: false
