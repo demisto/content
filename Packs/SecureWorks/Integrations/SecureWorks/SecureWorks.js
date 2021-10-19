@@ -455,8 +455,6 @@ function closeTicketCommand(){
         return 'No data returned';
     }
 
-    var ticket = getTicket(id);
-
     var translator = [
         {to: 'ClosureStatusCode', from: 'code'},
         {to: 'ticketId', from: 'ticketID'}
@@ -482,7 +480,7 @@ function closeTicket(id,
         worklogContent,
         closeCode){
 
-    closeBody = {};
+    var closeBody = {};
 
     if(worklogContent){
         closeBody.worklogContent = worklogContent;
@@ -572,7 +570,7 @@ function getTicketCommand() {
         var worklogsTranslated = cleanObject(mapObjFunction(worklogTranslator)(ticket.worklogs));
     }
 
-    entries = [];
+    var entries = [];
     if(args.getAttachments === 'true'){
         entries = getTicketAttachmentsEntries(ticket);
     }
