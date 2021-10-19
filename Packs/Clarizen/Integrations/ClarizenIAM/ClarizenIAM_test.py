@@ -131,7 +131,7 @@ class TestGetUserCommand:
         assert outputs.get('action') == IAMActions.GET_USER
         assert outputs.get('success') is False
         assert outputs.get('errorCode') == 500
-        assert outputs.get('errorMessage') == "INTERNAL SERVER ERROR: {'error': {'message': 'INTERNAL SERVER ERROR'}}"
+        assert "INTERNAL SERVER ERROR: {'error': {'message': 'INTERNAL SERVER ERROR'}}" in outputs.get('errorMessage')
 
 
 class TestCreateUserCommand:

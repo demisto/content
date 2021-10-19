@@ -68,7 +68,7 @@ def test_get_user_command__existing_user(mocker, requests_mock, args, mock_url):
     requests_mock.get(mock_url, json=[OKTA_USER_OUTPUT])
     mocker.patch.object(IAMUserProfile, 'update_with_app_data', return_value={})
 
-    user_profile = get_user_command(client, args, 'mapper_in', '')
+    user_profile = get_user_command(client, args, 'mapper_in', 'mapper_out')
     outputs = get_outputs_from_user_profile(user_profile)
 
     assert outputs.get('action') == IAMActions.GET_USER
@@ -96,7 +96,7 @@ def test_get_user_command__non_existing_user(mocker):
 
     mocker.patch.object(client, 'get_user', return_value=None)
 
-    user_profile = get_user_command(client, args, 'mapper_in')
+    user_profile = get_user_command(client, args, 'mapper_in', 'mapper_out')
     outputs = get_outputs_from_user_profile(user_profile)
 
     assert outputs.get('action') == IAMActions.GET_USER
@@ -131,7 +131,7 @@ def test_get_user_command__bad_response(mocker):
     mocker.patch.object(demisto, 'error')
     mocker.patch.object(Session, 'request', return_value=bad_response)
 
-    user_profile = get_user_command(client, args, 'mapper_in')
+    user_profile = get_user_command(client, args, 'mapper_in', 'mapper_out')
     outputs = get_outputs_from_user_profile(user_profile)
 
     assert outputs.get('action') == IAMActions.GET_USER
@@ -329,7 +329,7 @@ def test_disable_user_command__user_is_already_disabled(mocker):
     mocker.patch.object(demisto, 'error')
     mocker.patch.object(Session, 'request', return_value=bad_response)
 
-    user_profile = disable_user_command(client, args, is_command_enabled=True)
+    user_profile = disable_user_command(client, args, is_command_enabled=True, mapper_out='mapper_out')
     outputs = get_outputs_from_user_profile(user_profile)
 
     assert outputs.get('action') == IAMActions.DISABLE_USER

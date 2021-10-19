@@ -69,7 +69,7 @@ class TestGetUserCommand:
 
             client = mock_client()
             args = {'user-profile': {'username': 'mock_user_name'}}
-            user_profile = IAMCommand(attr='username').get_user(client, args)
+            user_profile = IAMCommand(get_user_iam_attrs=['username']).get_user(client, args)
 
         outputs = get_outputs_from_user_profile(user_profile)
 
@@ -99,7 +99,7 @@ class TestGetUserCommand:
 
             client = mock_client()
             args = {'user-profile': {'username': 'mock_user_name'}}
-            user_profile = IAMCommand(attr='username').get_user(client, args)
+            user_profile = IAMCommand(get_user_iam_attrs=['username']).get_user(client, args)
 
         outputs = get_outputs_from_user_profile(user_profile)
 
@@ -129,14 +129,14 @@ class TestGetUserCommand:
 
             client = mock_client()
             args = {'user-profile': {'username': 'mock_user_name'}}
-            user_profile = IAMCommand(attr='username').get_user(client, args)
+            user_profile = IAMCommand(get_user_iam_attrs=['username']).get_user(client, args)
 
         outputs = get_outputs_from_user_profile(user_profile)
 
         assert outputs.get('action') == IAMActions.GET_USER
         assert outputs.get('success') is False
         assert outputs.get('errorCode') == 500
-        assert outputs.get('errorMessage') == 'INTERNAL SERVER ERROR'
+        assert 'INTERNAL SERVER ERROR' in outputs.get('errorMessage')
 
 
 class TestCreateUserCommand:
@@ -157,7 +157,7 @@ class TestCreateUserCommand:
 
             client = mock_client()
             args = {'user-profile': {'username': 'mock_user_name'}}
-            user_profile = IAMCommand(attr='username').create_user(client, args)
+            user_profile = IAMCommand(get_user_iam_attrs=['username']).create_user(client, args)
 
         outputs = get_outputs_from_user_profile(user_profile)
 
@@ -190,7 +190,7 @@ class TestCreateUserCommand:
 
             client = mock_client()
             args = {'user-profile': {'username': 'mock_user_name'}}
-            user_profile = IAMCommand(attr='username').create_user(client, args)
+            user_profile = IAMCommand(get_user_iam_attrs=['username']).create_user(client, args)
 
         outputs = get_outputs_from_user_profile(user_profile)
 
@@ -225,7 +225,7 @@ class TestUpdateUserCommand:
 
             client = mock_client()
             args = {'user-profile': {'username': 'mock_user_name'}}
-            user_profile = IAMCommand(create_if_not_exists=True, attr='username').update_user(client, args)
+            user_profile = IAMCommand(create_if_not_exists=True, get_user_iam_attrs=['username']).update_user(client, args)
 
         outputs = get_outputs_from_user_profile(user_profile)
 
@@ -253,7 +253,7 @@ class TestUpdateUserCommand:
 
             client = mock_client()
             args = {'user-profile': {'username': 'mock_user_name'}}
-            user_profile = IAMCommand(is_update_enabled=False, attr='username').update_user(client, args)
+            user_profile = IAMCommand(is_update_enabled=False, get_user_iam_attrs=['username']).update_user(client, args)
 
         outputs = get_outputs_from_user_profile(user_profile)
 
@@ -283,7 +283,7 @@ class TestUpdateUserCommand:
 
             client = mock_client()
             args = {'user-profile': {'username': 'mock_user_name'}, 'allow-enable': 'true'}
-            user_profile = IAMCommand(attr='username').update_user(client, args)
+            user_profile = IAMCommand(get_user_iam_attrs=['username']).update_user(client, args)
 
         outputs = get_outputs_from_user_profile(user_profile)
 
@@ -315,7 +315,7 @@ class TestDisableUserCommand:
 
             client = mock_client()
             args = {'user-profile': {'username': 'mock_user_name'}}
-            user_profile = IAMCommand(attr='username').disable_user(client, args)
+            user_profile = IAMCommand(get_user_iam_attrs=['username']).disable_user(client, args)
 
         outputs = get_outputs_from_user_profile(user_profile)
 

@@ -20,7 +20,7 @@ class Client(BaseClient):
 
     def get_user(self, input_type, user_term):
 
-        uri = f'scim/v2/organizations/{self.org}/Users?filter={input_type} eq \"{user_term}\"'
+        uri = f'scim/v2/organizations/{self.org}/Users'#?filter={input_type} eq \"{user_term}\"'
 
         return self._http_request(
             method='GET',
@@ -50,22 +50,6 @@ class Client(BaseClient):
             url_suffix=uri,
             resp_type='text'
         )
-
-    def get_user_id_by_mail(self, email):
-        user_id = ""
-        uri = f"scim/v2/organizations/{self.org}/Users?filter=emails eq \"{email}\""
-
-        res = self._http_request(
-            method='GET',
-            url_suffix=uri
-        )
-        if not res.get('totalResults', 0) == 0:
-            if isinstance(res.get('Resources'), list):
-                item = res.get('Resources')[0]
-                if item:
-                    user_id = item.get('id')
-
-        return user_id
 
 
 def github_handle_error(e):
@@ -124,7 +108,7 @@ def get_user_command(client, args, mapper_in, mapper_out):
     user_profile = args.get("user-profile")
     iam_user_profile = IAMUserProfile(user_profile=user_profile, mapper_out=mapper_out)
     try:
-        iam_attr, iam_attr_value = get_first_available_iam_user_attr(iam_user_profile, IAM_GET_USER_ATTRIBUTES)
+        iam_attr, iam_attr_value = get_first_available_iam_user_attr(user_profile, IAM_GET_USER_ATTRIBUTES, mapper_out)
         res = client.get_user(iam_attr, iam_attr_value)
 
         if res.get('totalResults', 0) == 0:
@@ -138,10 +122,14 @@ def get_user_command(client, args, mapper_in, mapper_out):
 
         else:
             github_user = res.get('Resources')[0]
+            email_result = iam_user_profile.get_attribute('email')
+            if (emails := github_user.get('emails')) and not email_result:
+                first_email = emails[0].get('value')
+                email_result = next((email.get('value') for email in emails if email.get('primary')), first_email)
             iam_user_profile.update_with_app_data(github_user, mapper_in)
             iam_user_profile.set_result(success=True,
                                         iden=github_user.get('id', None),
-                                        email=iam_user_profile.get_attribute('email'),
+                                        email=email_result,
                                         username=github_user.get('userName', None),
                                         action=IAMActions.GET_USER,
                                         details=res,
@@ -170,8 +158,9 @@ def create_user_command(client, args, mapper_out, is_create_enabled, is_update_e
                                         skip_reason='Command is disabled.')
 
         else:
-            email = iam_user_profile.get_attribute('email')
-            user_id = client.get_user_id_by_mail(email)
+            iam_attr, iam_attr_value = get_first_available_iam_user_attr(user_profile, IAM_GET_USER_ATTRIBUTES,
+                                                                         mapper_out)
+            user_id = client.get_user(iam_attr, iam_attr_value)
 
             if user_id:
                 # if user exists - update it
@@ -220,8 +209,9 @@ def update_user_command(client, args, mapper_out, is_update_enabled, is_create_e
                                         skip_reason='Command is disabled.')
 
         else:
-            email = iam_user_profile.get_attribute('email')
-            user_id = client.get_user_id_by_mail(email)
+            iam_attr, iam_attr_value = get_first_available_iam_user_attr(user_profile, IAM_GET_USER_ATTRIBUTES,
+                                                                         mapper_out)
+            user_id = client.get_user(iam_attr, iam_attr_value)
 
             if not user_id:
                 # user doesn't exists
@@ -272,8 +262,9 @@ def disable_user_command(client, args, mapper_out, is_disable_enabled):
                                         skip_reason='Command is disabled.')
 
         else:
-            email = iam_user_profile.get_attribute('email')
-            user_id = client.get_user_id_by_mail(email)
+            iam_attr, iam_attr_value = get_first_available_iam_user_attr(user_profile, IAM_GET_USER_ATTRIBUTES,
+                                                                         mapper_out)
+            user_id = client.get_user(iam_attr, iam_attr_value)
 
             if not user_id:
                 error_code, error_message = IAMErrors.USER_DOES_NOT_EXIST
@@ -285,7 +276,7 @@ def disable_user_command(client, args, mapper_out, is_disable_enabled):
                 res = client.disable_user(user_id)
                 iam_user_profile.set_result(success=True,
                                             iden=user_id,
-                                            email=email,
+                                            email=iam_attr_value if iam_attr == 'email' else None,
                                             action=IAMActions.DISABLE_USER,
                                             details=res,
                                             active=False)
@@ -364,7 +355,7 @@ def main():
             return_results(test_module(client))
 
         elif command == 'iam-get-user':
-            user_profile = get_user_command(client, args, mapper_in)
+            user_profile = get_user_command(client, args, mapper_in, mapper_out)
             return_results(user_profile)
 
         elif command == 'iam-create-user':

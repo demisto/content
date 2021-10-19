@@ -133,13 +133,11 @@ class IAMUserProfile:
 
     def __init__(self, user_profile, user_profile_delta=None, mapper_out=None):
         self._user_profile = safe_load_json(user_profile)
+        # Handle mapping cases of GET commands.
         if mapper_out:
-            print(f'Before mapper out: {self._user_profile}')
-            self.update_with_app_data(self._user_profile, mapper_out, self.CREATE_INCIDENT_TYPE)
-            print(f'After mapper out: {self._user_profile}')
+            self.update_with_app_data(self._user_profile, mapper_out, self.UPDATE_INCIDENT_TYPE)
         self._user_profile_delta = safe_load_json(user_profile_delta) if user_profile_delta else {}
         self._vendor_action_results = []
-        self.app_profile = None
 
     def get_attribute(self, item, use_old_user_data=False):
         if use_old_user_data and self._user_profile.get('olduserdata', {}).get(item):
@@ -199,9 +197,6 @@ class IAMUserProfile:
         """
         if not email:
             email = self.get_attribute('email')
-
-        if not details:
-            details = self.app_profile
 
         vendor_action_result = IAMVendorActionResult(
             success=success,
@@ -304,7 +299,7 @@ class IAMCommand:
     """
 
     def __init__(self, is_create_enabled=True, is_enable_enabled=True, is_disable_enabled=True, is_update_enabled=True,
-                 create_if_not_exists=True, mapper_in=None, mapper_out=None, attr='email', get_user_iam_attrs=None):
+                 create_if_not_exists=True, mapper_in=None, mapper_out=None, get_user_iam_attrs=None):
         """ The IAMCommand c'tor
 
         :param is_create_enabled: (bool) Whether or not to allow creating users in the application.
@@ -335,9 +330,12 @@ class IAMCommand:
         :param args: (dict) The `iam-get-user` command arguments
         :return: (IAMUserProfile) The user profile object.
         """
-        user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
+        user_profile_arg = args.get('user-profile')
+        user_profile = IAMUserProfile(user_profile=user_profile_arg)
         try:
-            iam_attribute, iam_attribute_val = get_first_available_iam_user_attr(user_profile, self.get_user_iam_attrs)
+            iam_attribute, iam_attribute_val = get_first_available_iam_user_attr(user_profile_arg,
+                                                                                 self.get_user_iam_attrs,
+                                                                                 self.mapper_out)
             user_app_data = client.get_user(iam_attribute, iam_attribute_val)
             if not user_app_data:
                 error_code, error_message = IAMErrors.USER_DOES_NOT_EXIST
@@ -369,16 +367,17 @@ class IAMCommand:
         :param args: (dict) The `iam-disable-user` command arguments
         :return: (IAMUserProfile) The user profile object.
         """
-
-        user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
+        user_profile_arg = args.get('user-profile')
+        user_profile = IAMUserProfile(user_profile=user_profile_arg)
         if not self.is_disable_enabled:
             user_profile.set_result(action=IAMActions.DISABLE_USER,
                                     skip=True,
                                     skip_reason='Command is disabled.')
         else:
             try:
-                iam_attribute, iam_attribute_val = get_first_available_iam_user_attr(user_profile,
-                                                                                     self.get_user_iam_attrs)
+                iam_attribute, iam_attribute_val = get_first_available_iam_user_attr(user_profile_arg,
+                                                                                     self.get_user_iam_attrs,
+                                                                                     self.mapper_out)
                 user_app_data = client.get_user(iam_attribute, iam_attribute_val)
                 if not user_app_data:
                     _, error_message = IAMErrors.USER_DOES_NOT_EXIST
@@ -411,8 +410,8 @@ class IAMCommand:
         :param args: (dict) The `iam-create-user` command arguments
         :return: (IAMUserProfile) The user profile object.
         """
-
-        user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
+        user_profile_arg = args.get('user-profile')
+        user_profile = IAMUserProfile(user_profile=user_profile_arg)
 
         if not self.is_create_enabled:
             user_profile.set_result(action=IAMActions.CREATE_USER,
@@ -420,17 +419,17 @@ class IAMCommand:
                                     skip_reason='Command is disabled.')
         else:
             try:
-                iam_attribute, iam_attribute_val = get_first_available_iam_user_attr(user_profile,
-                                                                                     self.get_user_iam_attrs)
+                iam_attribute, iam_attribute_val = get_first_available_iam_user_attr(user_profile_arg,
+                                                                                     self.get_user_iam_attrs,
+                                                                                     self.mapper_out)
                 user_app_data = client.get_user(iam_attribute, iam_attribute_val)
                 if user_app_data:
                     # if user exists, update it
                     user_profile = self.update_user(client, args)
 
                 else:
-                    user_profile.app_profile = user_profile.map_object(self.mapper_out,
-                                                                       IAMUserProfile.CREATE_INCIDENT_TYPE)
-                    created_user = client.create_user(user_profile.app_profile)
+                    app_profile = user_profile.map_object(self.mapper_out, IAMUserProfile.CREATE_INCIDENT_TYPE)
+                    created_user = client.create_user(app_profile)
                     user_profile.set_result(
                         action=IAMActions.CREATE_USER,
                         active=created_user.is_active,
@@ -454,8 +453,8 @@ class IAMCommand:
         :param args: (dict) The `iam-update-user` command arguments
         :return: (IAMUserProfile) The user profile object.
         """
-
-        user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
+        user_profile_arg = args.get('user-profile')
+        user_profile = IAMUserProfile(user_profile=user_profile_arg)
         allow_enable = args.get('allow-enable') == 'true'
         if not self.is_update_enabled:
             user_profile.set_result(action=IAMActions.UPDATE_USER,
@@ -463,18 +462,18 @@ class IAMCommand:
                                     skip_reason='Command is disabled.')
         else:
             try:
-                iam_attribute, iam_attribute_val = get_first_available_iam_user_attr(user_profile,
+                iam_attribute, iam_attribute_val = get_first_available_iam_user_attr(user_profile_arg,
                                                                                      self.get_user_iam_attrs,
+                                                                                     self.mapper_out,
                                                                                      use_old_user_data=True)
                 user_app_data = client.get_user(iam_attribute, iam_attribute_val)
                 if user_app_data:
-                    user_profile.app_profile = user_profile.map_object(self.mapper_out,
-                                                                       IAMUserProfile.UPDATE_INCIDENT_TYPE)
+                    app_profile = user_profile.map_object(self.mapper_out, IAMUserProfile.UPDATE_INCIDENT_TYPE)
 
                     if allow_enable and self.is_enable_enabled and not user_app_data.is_active:
                         client.enable_user(user_app_data.id)
 
-                    updated_user = client.update_user(user_app_data.id, user_profile.app_profile)
+                    updated_user = client.update_user(user_app_data.id, app_profile)
                     user_profile.set_result(
                         action=IAMActions.UPDATE_USER,
                         active=updated_user.is_active,
@@ -498,8 +497,9 @@ class IAMCommand:
         return user_profile
 
 
-def get_first_available_iam_user_attr(user_profile: IAMUserProfile, iam_attrs: List[str],
+def get_first_available_iam_user_attr(user_profile_arg, iam_attrs: List[str], mapper_out: str,
                                       use_old_user_data: bool = False):
+    user_profile: IAMUserProfile = IAMUserProfile(user_profile_arg, mapper_out=mapper_out)
     for iam_attr in iam_attrs:
         if iam_attr_value := user_profile.get_attribute(iam_attr, use_old_user_data=use_old_user_data):
             return iam_attr, iam_attr_value
