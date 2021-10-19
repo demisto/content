@@ -1755,12 +1755,13 @@ script:
     - description: The intel document ID.
       name: intel_doc_id
       required: true
-    - description: The name of a Tanium computer group.
+    - description: The name of a Tanium computer group. See command's description
+        for possible ways to retrieve this value.
       name: computer_group_name
       required: true
     description: Scan a computer group for hashes in intel document. Computer groups
       can be viewed by navigating to `Administration -> Computer Groups` in the UI.
-      Computer group names and IDs can also be retrieved by using the ***tn-list-groups***
+      Computer group names and IDs can also be retrieved by using the `tn-list-groups`
       command.
     name: tanium-tr-start-quick-scan
     outputs:
