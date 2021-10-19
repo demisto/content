@@ -7,22 +7,21 @@ import argparse
 import glob
 import json
 import logging
-import os
-import sys
 from copy import deepcopy
 from distutils.version import LooseVersion
 from typing import Dict, Tuple, Union, Optional
 
-import demisto_sdk.commands.common.tools as tools
-from Tests.scripts.utils.collect_helpers import LANDING_PAGE_SECTIONS_JSON_PATH
-from demisto_sdk.commands.common.constants import *  # noqa: E402
+import os
+import sys
 
+import demisto_sdk.commands.common.tools as tools
 from Tests.scripts.utils import collect_helpers
-from Tests.scripts.utils.content_packs_util import should_test_content_pack, get_pack_metadata, \
-    should_install_content_pack
+from Tests.scripts.utils.collect_helpers import LANDING_PAGE_SECTIONS_JSON_PATH
+from Tests.scripts.utils.content_packs_util import should_test_content_pack, should_install_content_pack, \
+    is_pack_xsoar_supported
 from Tests.scripts.utils.get_modified_files_for_testing import get_modified_files_for_testing
 from Tests.scripts.utils.log_util import install_logging
-
+from demisto_sdk.commands.common.constants import *  # noqa: E402
 
 SANITY_TESTS = {
     'Sanity Test - Playbook with integration',
@@ -240,10 +239,8 @@ def collect_tests_and_content_packs(
                             catched_intergrations.add(integration_id)
 
         if detected_usage and test_playbook_id not in test_ids and test_playbook_id not in skipped_tests:
-            caught_missing_test = True
-            logging.error(f'The playbook "{test_playbook_name}" does not appear in the conf.json file,'
-                          " which means no test with it will run. please update the conf.json file accordingly."
-                          )
+            caught_missing_test = check_if_test_should_not_be_missed(test_playbook_data.get('file_path', ''),
+                                                                     test_playbook_name)
 
     ids_with_no_tests = update_missing_sets(catched_intergrations, catched_playbooks, catched_scripts,
                                             integration_ids, playbook_ids, script_ids)
@@ -267,6 +264,29 @@ def collect_tests_and_content_packs(
                                 f' - not adding to packs to install')
 
     return test_ids, ids_with_no_tests, caught_missing_test, packs_to_install
+
+
+def check_if_test_should_not_be_missed(test_playbook_path: str, test_playbook_name: str) -> bool:
+    """
+    Checks if a missing test from conf JSON should be missed or not.
+    Test should be missed if the support level is not XSOAR.
+    Args:
+        test_playbook_path (str): Path to test playbook.
+        test_playbook_name (str): Name of the test playbook. For logging purposes.
+
+    Returns:
+        (bool): Whether test should be missed.
+    """
+    pack_name: Optional[str] = tools.get_pack_name(test_playbook_path)
+    if is_pack_xsoar_supported(test_playbook_path):
+        logging.error(f'The playbook "{test_playbook_name}" does not appear in the conf.json file,'
+                      " which means no test with it will run. please update the conf.json file accordingly."
+                      )
+        return True
+    else:
+        logging.info(f'The playbook "{test_playbook_name}" does not appear in conf.json file, but pack '
+                     f'{pack_name} is not XSOAR supported. Not failing test collection.')
+        return False
 
 
 def update_missing_sets(catched_intergrations, catched_playbooks, catched_scripts, integration_ids, playbook_ids,
@@ -382,21 +402,22 @@ def update_with_tests_sections(missing_ids, modified_files, test_ids, tests):
     for file_path in modified_files:
         tests_from_file = get_tests(file_path)
         for test in tests_from_file:
-            if test in test_ids or re.match(collect_helpers.NO_TESTS_FORMAT, test, re.IGNORECASE):
-                if collect_helpers.checked_type(file_path, collect_helpers.INTEGRATION_REGEXES):
-                    _id = tools.get_script_or_integration_id(file_path)
+            if collect_helpers.checked_type(file_path, collect_helpers.INTEGRATION_REGEXES):
+                _id = tools.get_script_or_integration_id(file_path)
 
-                else:
-                    _id = get_name(file_path)
+            else:
+                _id = get_name(file_path)
+            if test in test_ids or re.match(collect_helpers.NO_TESTS_FORMAT, test, re.IGNORECASE):
 
                 missing_ids = missing_ids - {_id}
                 tests.add(test)
 
             else:
-                message = "The test '{0}' does not exist in the conf.json file, please re-check your code".format(test)
-                logging.error(message)
-                global _FAILED
-                _FAILED = True
+                if check_if_test_should_not_be_missed(file_path, test):
+                    global _FAILED
+                    _FAILED = True
+                else:
+                    missing_ids = missing_ids - {_id}
 
     return missing_ids
 
@@ -992,24 +1013,26 @@ def get_modified_packs(files_string):
     return modified_packs
 
 
-def remove_ignored_tests(tests: set, id_set: dict) -> set:
+def remove_ignored_tests(tests: set, id_set: dict, modified_packs: set) -> set:
     """Filters out test playbooks, which are in .pack-ignore, from the given tests set
-
     Args:
         tests (set): Tests set to remove the tests to ignore from
         id_set (dict): The id set object
-
+        modified_packs (set): List of the modified packs
     Return:
          set: The filtered tests set
     """
     ignored_tests_set = set()
     content_packs = get_content_pack_name_of_test(tests, id_set)
+    for pack in modified_packs:
+        ignored_tests_set.update(tools.get_ignore_pack_skipped_tests(pack, modified_packs, id_set))
     for pack in content_packs:
-        ignored_tests_set.update(tools.get_ignore_pack_skipped_tests(pack))
+        test = tools.get_ignore_pack_skipped_tests(pack, modified_packs, id_set)
+        ignored_tests_set.update(test)
 
     if ignored_tests_set:
         readable_ignored_tests = "\n".join(map(str, ignored_tests_set))
-        logging.debug(f"Skipping tests that were ignored via .pack-ignore:\n{readable_ignored_tests}")
+        logging.info(f"Skipping tests that were ignored via .pack-ignore:\n{readable_ignored_tests}")
         tests.difference_update(ignored_tests_set)
 
     return tests
@@ -1060,7 +1083,7 @@ def remove_private_tests(tests_without_private_packs):
             tests_without_private_packs.remove(private_test)
 
 
-def filter_tests(tests: set, id_set: json, is_nightly=False) -> set:
+def filter_tests(tests: set, id_set: json, modified_packs: set, is_nightly=False) -> set:
     """
     Filter tests out from the test set if they are:
     a. Ignored
@@ -1071,11 +1094,12 @@ def filter_tests(tests: set, id_set: json, is_nightly=False) -> set:
         tests (set): Set of tests collected so far.
         id_set (dict): The ID set.
         remove_private_packs (bool): Whether to remove private packs
+        modified_packs: The modified packs.
     Returns:
         (set): Set of tests without ignored, non supported and deprecated-packs tests.
     """
     tests_with_no_dummy_strings = {test for test in tests if 'no test' not in test.lower()}
-    tests_without_ignored = remove_ignored_tests(tests_with_no_dummy_strings, id_set)
+    tests_without_ignored = remove_ignored_tests(tests_with_no_dummy_strings, id_set, modified_packs)
     tests_without_non_supported = remove_tests_for_non_supported_packs(tests_without_ignored, id_set)
 
     if is_nightly:
@@ -1210,7 +1234,7 @@ def get_test_list_and_content_packs_to_install(files_string,
     packs_to_install = filter_installed_packs(packs_to_install)
 
     # All filtering out of tests should be done here
-    tests = filter_tests(tests, id_set)
+    tests = filter_tests(tests, id_set, modified_packs)
 
     if not tests or changed_common:
         if not tests:
@@ -1260,7 +1284,7 @@ def get_from_version_and_to_version_bounderies(all_modified_files_paths: set,
     logging.info(modified_packs)
     for pack_name in modified_packs:
         pack_metadata_path = os.path.join(tools.pack_name_to_path(pack_name), PACKS_PACK_META_FILE_NAME)
-        pack_metadata = get_pack_metadata(pack_metadata_path)
+        pack_metadata = tools.get_pack_metadata(pack_metadata_path)
         from_version = pack_metadata.get('serverMinVersion')
         to_version = pack_metadata.get('serverMaxVersion')
         if from_version:
@@ -1370,7 +1394,8 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
     """Create a file containing all the tests we need to run for the CI"""
     if is_nightly:
         packs_to_install = filter_installed_packs(set(os.listdir(PACKS_DIR)))
-        tests = filter_tests(set(CONF.get_test_playbook_ids()), id_set=deepcopy(ID_SET), is_nightly=True)
+        tests = filter_tests(set(CONF.get_test_playbook_ids()), id_set=deepcopy(ID_SET), is_nightly=True,
+                             modified_packs=set())
         logging.info("Nightly - collected all tests that appear in conf.json and all packs from content repo that "
                      "should be tested")
     else:
