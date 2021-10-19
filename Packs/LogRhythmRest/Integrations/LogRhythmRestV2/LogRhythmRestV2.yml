@@ -4027,5 +4027,7 @@ script:
     - contextPath: LogRhythm.Network.id
       description: 'The network ID.'
       type: Number
+defaultclassifier: LogRhythm Classifier
+defaultmapperin: LogRhythm Mapper
 tests:
 - LogRhythmRestV2-test
