@@ -133,7 +133,7 @@ class IAMUserProfile:
 
     def __init__(self, user_profile, user_profile_delta=None):
         self._user_profile = safe_load_json(user_profile)
-        self.old_user_data = self._user_profile.get('olduserdata')
+        self.old_user_data = self._user_profile.get('olduserdata', {})
         self._user_profile_delta = safe_load_json(user_profile_delta) if user_profile_delta else {}
         self._vendor_action_results = []
 
@@ -493,11 +493,12 @@ class IAMCommand:
 
 def get_first_available_iam_user_attr(user_profile: IAMUserProfile, iam_attrs: List[str], mapper_out: str,
                                       use_old_user_data: bool = True):
-    old_user_data: Dict = user_profile.old_user_data
+    mapped_old_user_data: Dict = demisto.mapObject(user_profile.old_user_data, mapper_out,
+                                                   IAMUserProfile.UPDATE_INCIDENT_TYPE)
     user_profile_mapped_data = user_profile.map_object(mapper_out, IAMUserProfile.UPDATE_INCIDENT_TYPE)
     for iam_attr in iam_attrs:
-        if use_old_user_data and old_user_data.get(iam_attr):
-            return iam_attr, old_user_data.get(iam_attr)
+        if use_old_user_data and mapped_old_user_data.get(iam_attr):
+            return iam_attr, mapped_old_user_data.get(iam_attr)
         if user_profile_mapped_data.get(iam_attr):
             return iam_attr, user_profile_mapped_data.get(iam_attr)
     raise DemistoException('Could not find any of the needed attributes. Please make sure you send one of the '
