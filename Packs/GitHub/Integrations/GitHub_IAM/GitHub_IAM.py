@@ -19,8 +19,7 @@ class Client(BaseClient):
         self.org = org
 
     def get_user(self, input_type, user_term):
-
-        uri = f'scim/v2/organizations/{self.org}/Users'#?filter={input_type} eq \"{user_term}\"'
+        uri = f'scim/v2/organizations/{self.org}/Users'  # ?filter={input_type} eq \"{user_term}\"'
 
         return self._http_request(
             method='GET',
@@ -105,10 +104,10 @@ def test_module(client):
 
 
 def get_user_command(client, args, mapper_in, mapper_out):
-    user_profile = args.get("user-profile")
-    iam_user_profile = IAMUserProfile(user_profile=user_profile, mapper_out=mapper_out)
+    iam_user_profile = IAMUserProfile(user_profile=args.get("user-profile"))
     try:
-        iam_attr, iam_attr_value = get_first_available_iam_user_attr(user_profile, IAM_GET_USER_ATTRIBUTES, mapper_out)
+        iam_attr, iam_attr_value = get_first_available_iam_user_attr(iam_user_profile, IAM_GET_USER_ATTRIBUTES,
+                                                                     mapper_out)
         res = client.get_user(iam_attr, iam_attr_value)
 
         if res.get('totalResults', 0) == 0:
@@ -149,8 +148,7 @@ def get_user_command(client, args, mapper_in, mapper_out):
 
 def create_user_command(client, args, mapper_out, is_create_enabled, is_update_enabled):
     try:
-        user_profile = args.get("user-profile")
-        iam_user_profile = IAMUserProfile(user_profile=user_profile)
+        iam_user_profile = IAMUserProfile(user_profile=args.get("user-profile"))
 
         if not is_create_enabled:
             iam_user_profile.set_result(action=IAMActions.CREATE_USER,
@@ -158,7 +156,7 @@ def create_user_command(client, args, mapper_out, is_create_enabled, is_update_e
                                         skip_reason='Command is disabled.')
 
         else:
-            iam_attr, iam_attr_value = get_first_available_iam_user_attr(user_profile, IAM_GET_USER_ATTRIBUTES,
+            iam_attr, iam_attr_value = get_first_available_iam_user_attr(iam_user_profile, IAM_GET_USER_ATTRIBUTES,
                                                                          mapper_out)
             user_id = client.get_user(iam_attr, iam_attr_value)
 
@@ -200,8 +198,7 @@ def create_user_command(client, args, mapper_out, is_create_enabled, is_update_e
 
 def update_user_command(client, args, mapper_out, is_update_enabled, is_create_enabled, create_if_not_exists):
     try:
-        user_profile = args.get("user-profile")
-        iam_user_profile = IAMUserProfile(user_profile=user_profile)
+        iam_user_profile = IAMUserProfile(user_profile=args.get("user-profile"))
 
         if not is_update_enabled:
             iam_user_profile.set_result(action=IAMActions.UPDATE_USER,
@@ -209,7 +206,7 @@ def update_user_command(client, args, mapper_out, is_update_enabled, is_create_e
                                         skip_reason='Command is disabled.')
 
         else:
-            iam_attr, iam_attr_value = get_first_available_iam_user_attr(user_profile, IAM_GET_USER_ATTRIBUTES,
+            iam_attr, iam_attr_value = get_first_available_iam_user_attr(iam_user_profile, IAM_GET_USER_ATTRIBUTES,
                                                                          mapper_out)
             user_id = client.get_user(iam_attr, iam_attr_value)
 
@@ -253,8 +250,7 @@ def update_user_command(client, args, mapper_out, is_update_enabled, is_create_e
 
 def disable_user_command(client, args, mapper_out, is_disable_enabled):
     try:
-        user_profile = args.get("user-profile")
-        iam_user_profile = IAMUserProfile(user_profile=user_profile)
+        iam_user_profile = IAMUserProfile(user_profile=args.get("user-profile"))
 
         if not is_disable_enabled:
             iam_user_profile.set_result(action=IAMActions.DISABLE_USER,
@@ -262,7 +258,7 @@ def disable_user_command(client, args, mapper_out, is_disable_enabled):
                                         skip_reason='Command is disabled.')
 
         else:
-            iam_attr, iam_attr_value = get_first_available_iam_user_attr(user_profile, IAM_GET_USER_ATTRIBUTES,
+            iam_attr, iam_attr_value = get_first_available_iam_user_attr(iam_user_profile, IAM_GET_USER_ATTRIBUTES,
                                                                          mapper_out)
             user_id = client.get_user(iam_attr, iam_attr_value)
 

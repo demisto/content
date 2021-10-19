@@ -139,10 +139,9 @@ def get_mapping_fields_command(client):
 
 
 def get_user_command(client, args, mapper_in, mapper_out):
-    user_profile_arg = args.get('user-profile')
-    user_profile = IAMUserProfile(user_profile=user_profile_arg)
+    user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
     try:
-        iam_attr, iam_attr_value = get_first_available_iam_user_attr(user_profile_arg, IAM_GET_USER_ATTRIBUTES,
+        iam_attr, iam_attr_value = get_first_available_iam_user_attr(user_profile, IAM_GET_USER_ATTRIBUTES,
                                                                      mapper_out)
         service_now_filter_name: str = 'sys_id' if iam_attr == 'id' else iam_attr
         service_now_user = client.get_user(service_now_filter_name, iam_attr_value)
@@ -171,15 +170,14 @@ def get_user_command(client, args, mapper_in, mapper_out):
 
 
 def disable_user_command(client, args, is_command_enabled, mapper_out):
-    user_profile_arg = args.get('user-profile')
-    user_profile = IAMUserProfile(user_profile=user_profile_arg)
+    user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
     if not is_command_enabled:
         user_profile.set_result(action=IAMActions.DISABLE_USER,
                                 skip=True,
                                 skip_reason='Command is disabled.')
     else:
         try:
-            iam_attr, iam_attr_value = get_first_available_iam_user_attr(user_profile_arg, IAM_GET_USER_ATTRIBUTES,
+            iam_attr, iam_attr_value = get_first_available_iam_user_attr(user_profile, IAM_GET_USER_ATTRIBUTES,
                                                                          mapper_out)
             service_now_filter_name: str = 'sys_id' if iam_attr == 'id' else iam_attr
             service_now_user = client.get_user(service_now_filter_name, iam_attr_value)
@@ -209,8 +207,7 @@ def disable_user_command(client, args, is_command_enabled, mapper_out):
 
 
 def create_user_command(client, args, mapper_out, is_command_enabled, is_update_enabled, is_enable_enabled):
-    user_profile_arg = args.get('user-profile')
-    user_profile = IAMUserProfile(user_profile=user_profile_arg)
+    user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
 
     if not is_command_enabled:
         user_profile.set_result(action=IAMActions.CREATE_USER,
@@ -218,7 +215,7 @@ def create_user_command(client, args, mapper_out, is_command_enabled, is_update_
                                 skip_reason='Command is disabled.')
     else:
         try:
-            iam_attr, iam_attr_value = get_first_available_iam_user_attr(user_profile_arg, IAM_GET_USER_ATTRIBUTES,
+            iam_attr, iam_attr_value = get_first_available_iam_user_attr(user_profile, IAM_GET_USER_ATTRIBUTES,
                                                                          mapper_out)
             service_now_filter_name: str = 'sys_id' if iam_attr == 'id' else iam_attr
             service_now_user = client.get_user(service_now_filter_name, iam_attr_value)
@@ -249,8 +246,7 @@ def create_user_command(client, args, mapper_out, is_command_enabled, is_update_
 
 def update_user_command(client, args, mapper_out, is_command_enabled, is_enable_enabled,
                         is_create_user_enabled, create_if_not_exists):
-    user_profile_arg = args.get('user-profile')
-    user_profile = IAMUserProfile(user_profile=user_profile_arg)
+    user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
     allow_enable = args.get('allow-enable') == 'true'
     if not is_command_enabled:
         user_profile.set_result(action=IAMActions.UPDATE_USER,
@@ -258,7 +254,7 @@ def update_user_command(client, args, mapper_out, is_command_enabled, is_enable_
                                 skip_reason='Command is disabled.')
     else:
         try:
-            iam_attr, iam_attr_value = get_first_available_iam_user_attr(user_profile_arg, IAM_GET_USER_ATTRIBUTES,
+            iam_attr, iam_attr_value = get_first_available_iam_user_attr(user_profile, IAM_GET_USER_ATTRIBUTES,
                                                                          mapper_out)
             service_now_filter_name: str = 'sys_id' if iam_attr == 'id' else iam_attr
             service_now_user = client.get_user(service_now_filter_name, iam_attr_value)
