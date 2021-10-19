@@ -139,6 +139,7 @@ class IAMUserProfile:
             print(f'After mapper out: {self._user_profile}')
         self._user_profile_delta = safe_load_json(user_profile_delta) if user_profile_delta else {}
         self._vendor_action_results = []
+        self.app_profile = None
 
     def get_attribute(self, item, use_old_user_data=False):
         if use_old_user_data and self._user_profile.get('olduserdata', {}).get(item):
@@ -198,6 +199,9 @@ class IAMUserProfile:
         """
         if not email:
             email = self.get_attribute('email')
+
+        if not details:
+            details = self.app_profile
 
         vendor_action_result = IAMVendorActionResult(
             success=success,
@@ -424,8 +428,8 @@ class IAMCommand:
                     user_profile = self.update_user(client, args)
 
                 else:
-                    app_profile = user_profile.map_object(self.mapper_out, IAMUserProfile.CREATE_INCIDENT_TYPE)
-                    created_user = client.create_user(app_profile)
+                    user_profile.app_profile = user_profile.map_object(self.mapper_out, IAMUserProfile.CREATE_INCIDENT_TYPE)
+                    created_user = client.create_user(user_profile.app_profile)
                     user_profile.set_result(
                         action=IAMActions.CREATE_USER,
                         active=created_user.is_active,
@@ -463,12 +467,12 @@ class IAMCommand:
                                                                                      use_old_user_data=True)
                 user_app_data = client.get_user(iam_attribute, iam_attribute_val)
                 if user_app_data:
-                    app_profile = user_profile.map_object(self.mapper_out, IAMUserProfile.UPDATE_INCIDENT_TYPE)
+                    user_profile.app_profile = user_profile.map_object(self.mapper_out, IAMUserProfile.UPDATE_INCIDENT_TYPE)
 
                     if allow_enable and self.is_enable_enabled and not user_app_data.is_active:
                         client.enable_user(user_app_data.id)
 
-                    updated_user = client.update_user(user_app_data.id, app_profile)
+                    updated_user = client.update_user(user_app_data.id, user_profile.app_profile)
                     user_profile.set_result(
                         action=IAMActions.UPDATE_USER,
                         active=updated_user.is_active,

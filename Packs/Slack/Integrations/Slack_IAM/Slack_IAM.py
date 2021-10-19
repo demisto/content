@@ -45,7 +45,7 @@ class Client(BaseClient):
     def create_user(self, user_data):
         uri = '/Users'
         user_data["schemas"] = ["urn:scim:schemas:core:1.0"]  # Mandatory user profile field.
-        if not isinstance(user_data["emails"], list):
+        if user_data.get("emails") and not isinstance(user_data["emails"], list):
             user_data["emails"] = [user_data["emails"]]
         if user_data.get("phoneNumbers") and not isinstance(user_data["phoneNumbers"], list):
             user_data["phoneNumbers"] = [user_data["phoneNumbers"]]
@@ -63,6 +63,11 @@ class Client(BaseClient):
 
     def update_user(self, user_id, user_data):
         uri = f'/Users/{user_id}'
+        if user_data.get("emails") and not isinstance(user_data["emails"], list):
+            user_data["emails"] = [user_data["emails"]]
+        if user_data.get("phoneNumbers") and not isinstance(user_data["phoneNumbers"], list):
+            user_data["phoneNumbers"] = [user_data["phoneNumbers"]]
+
         res = self._http_request(
             method='PATCH',
             url_suffix=uri,
@@ -483,7 +488,8 @@ def main():
     create_if_not_exists = demisto.params().get("create_if_not_exists")
 
     iam_command = IAMCommand(is_create_enabled, is_enable_enabled, is_disable_enabled, is_update_enabled,
-                             create_if_not_exists, mapper_in, mapper_out, attr='username')
+                             create_if_not_exists, mapper_in, mapper_out,
+                             get_user_iam_attrs=['username', 'email', 'restricted', 'ultra_restricted'])
 
     base_url = 'https://api.slack.com/scim/v1/'
     headers = {
