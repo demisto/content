@@ -49,7 +49,7 @@ Apply containment for a specific host, so that it no longer has access to other 
 | FireEyeHX.Hosts.excluded_from_containment | Unknown | Determines whether the host is excluded from containment. | 
 | FireEyeHX.Hosts.containment_missing_software | Unknown | Boolean value to indicate for containment missing software. | 
 | FireEyeHX.Hosts.containment_queued | Unknown | Determines whether the host is queued for containment. | 
-| FireEyeHX.Hosts.containment_state | Unknown | The containment state of the host. Possible values normal|contain|contain_fail|containing|contained|uncontain|uncontaining|wtfc|wtfu | 
+| FireEyeHX.Hosts.containment_state | Unknown | The containment state of the host. Possible values normal, contain, contain_fail, containing, contained, uncontain, uncontaining, wtfc, wtfu. | 
 | FireEyeHX.Hosts.stats.alerting_conditions | Unknown | The number of conditions that have alerted for the host. | 
 | FireEyeHX.Hosts.stats.alerts | Unknown | Total number of alerts, including exploit-detection alerts. | 
 | FireEyeHX.Hosts.stats.exploit_blocks | Unknown | The number of blocked exploits on the host. | 
@@ -154,7 +154,7 @@ Release a specific host from containment.
 | FireEyeHX.Hosts.excluded_from_containment | Unknown | Determines whether the host is excluded from containment. | 
 | FireEyeHX.Hosts.containment_missing_software | Unknown | Boolean value to indicate for containment missing software. | 
 | FireEyeHX.Hosts.containment_queued | Unknown | Determines whether the host is queued for containment. | 
-| FireEyeHX.Hosts.containment_state | Unknown | The containment state of the host. Possible values normal|contain|contain_fail|containing|contained|uncontain|uncontaining|wtfc|wtfu | 
+| FireEyeHX.Hosts.containment_state | Unknown | The containment state of the host. Possible values normal, contain, contain_fail, containing, contained, uncontain, uncontaining, wtfc, wtfu. | 
 | FireEyeHX.Hosts.stats.alerting_conditions | Unknown | The number of conditions that have alerted for the host. | 
 | FireEyeHX.Hosts.stats.alerts | Unknown | Total number of alerts, including exploit-detection alerts. | 
 | FireEyeHX.Hosts.stats.exploit_blocks | Unknown | The number of blocked exploits on the host. | 
@@ -662,7 +662,7 @@ Get information on a host associated with an agent.
 | FireEyeHX.Hosts.excluded_from_containment | Unknown | Determines whether the host is excluded from containment. | 
 | FireEyeHX.Hosts.containment_missing_software | Unknown | Boolean value to indicate for containment missing software. | 
 | FireEyeHX.Hosts.containment_queued | Unknown | Determines whether the host is queued for containment. | 
-| FireEyeHX.Hosts.containment_state | Unknown | The containment state of the host. Possible values normal|contain|contain_fail|containing|contained|uncontain|uncontaining|wtfc|wtfu | 
+| FireEyeHX.Hosts.containment_state | Unknown | The containment state of the host. Possible values normal, contain, contain_fail, containing, contained, uncontain, uncontaining, wtfc, wtfu. | 
 | FireEyeHX.Hosts.stats.alerting_conditions | Unknown | The number of conditions that have alerted for the host. | 
 | FireEyeHX.Hosts.stats.alerts | Unknown | Total number of alerts, including exploit-detection alerts. | 
 | FireEyeHX.Hosts.stats.exploit_blocks | Unknown | The number of blocked exploits on the host. | 
@@ -1204,7 +1204,7 @@ Get information on all hosts
 | FireEyeHX.Hosts.excluded_from_containment | Unknown | Determines whether the host is excluded from containment. | 
 | FireEyeHX.Hosts.containment_missing_software | Unknown | Boolean value to indicate for containment missing software. | 
 | FireEyeHX.Hosts.containment_queued | Unknown | Determines whether the host is queued for containment. | 
-| FireEyeHX.Hosts.containment_state | Unknown | The containment state of the host. Possible values normal|contain|contain_fail|containing|contained|uncontain|uncontaining|wtfc|wtfu | 
+| FireEyeHX.Hosts.containment_state | Unknown | The containment state of the host. Possible values normal, contain, contain_fail, containing, contained, uncontain, uncontaining, wtfc, wtfu. | 
 | FireEyeHX.Hosts.stats.alerting_conditions | Unknown | The number of conditions that have alerted for the host. | 
 | FireEyeHX.Hosts.stats.alerts | Unknown | Total number of alerts, including exploit-detection alerts. | 
 | FireEyeHX.Hosts.stats.exploit_blocks | Unknown | The number of blocked exploits on the host. | 
@@ -1234,7 +1234,7 @@ Get information on all hosts
             "Domain": "WORKGROUP",
             "Hostname": "WIN10X64",
             "ID": "Hqb2ns3oui1fpzg0BxI1Ch",
-            "IPAddress": "192.168.1.163",
+            "IPAddress": "1.1.1.1",
             "MACAddress": "00-50-56-89-1c-5b",
             "OS": "win",
             "OSVersion": "Windows 10 Pro"
@@ -1243,7 +1243,7 @@ Get information on all hosts
             "Domain": "localdomain",
             "Hostname": "localhost",
             "ID": "GfLI00Q4zpidezw9I11rV6",
-            "IPAddress": "192.168.1.54",
+            "IPAddress": "1.1.1.1",
             "MACAddress": "00-50-56-89-e7-22",
             "OS": "linux",
             "OSVersion": "CentOS Linux 7 (Core)"
@@ -1255,7 +1255,7 @@ Get information on all hosts
             "Agent Version": "31.28.17",
             "Containment State": "normal",
             "Domain": "localdomain",
-            "Host IP": "192.168.1.54",
+            "Host IP": "1.1.1.1",
             "Host Name": "localhost",
             "Last Alert": null,
             "Last Poll": "2021-10-18T14:02:32.000Z",
@@ -1270,8 +1270,8 @@ Get information on all hosts
 >### FireEye HX Get Hosts Information
 >|Host Name|Host IP|Agent ID|Agent Version|OS|Last Poll|Containment State|Domain|Last Alert|
 >|---|---|---|---|---|---|---|---|---|
->| WIN10X64 | 192.168.1.163 | Hqb2ns3oui1fpzg0BxI1Ch | 31.28.17 | win | 2021-10-18T13:59:44.000Z | normal | WORKGROUP | _id: 2<br/>url: /hx/api/v3/alerts/2 |
->| localhost | 192.168.1.54 | GfLI00Q4zpidezw9I11rV6 | 31.28.17 | linux | 2021-10-18T14:02:32.000Z | normal | localdomain |  |
+>| WIN10X64 | 1.1.1.1 | Hqb2ns3oui1fpzg0BxI1Ch | 31.28.17 | win | 2021-10-18T13:59:44.000Z | normal | WORKGROUP | _id: 2<br/>url: /hx/api/v3/alerts/2 |
+>| localhost | 1.1.1.1 | GfLI00Q4zpidezw9I11rV6 | 31.28.17 | linux | 2021-10-18T14:02:32.000Z | normal | localdomain |  |
 
 
 ### fireeye-hx-initiate-data-acquisition
