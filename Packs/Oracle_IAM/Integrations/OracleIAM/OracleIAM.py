@@ -92,17 +92,20 @@ class Client(BaseClient):
             return IAMUserAppData(user_id, user_name, is_active, user_app_data)
         return None
 
-    def get_user(self, user_name: str) -> Optional['IAMUserAppData']:
+    def get_user(self, filter_name: str, filter_value: str) -> Optional['IAMUserAppData']:
         """ Queries the user in the application using REST API by its email, and returns an IAMUserAppData object
         that holds the user_id, username, is_active and app_data attributes given in the query response.
 
-        :type user_name: ``str``
-        :param user_name: userName of the user
+        :type filter_name: ``str``
+        :param filter_name: Attribute name to filter by.
+
+        :type filter_value: ``str``
+        :param filter_value: The filter attribute value.
 
         :return: An IAMUserAppData object if user exists, None otherwise.
         :rtype: ``Optional[IAMUserAppData]``
         """
-        query_params = {'filter': f'userName eq "{user_name}"'}
+        query_params = {'filter': f'{filter_name} eq "{filter_value}"'}
 
         res = self._http_request(
             method='GET',
@@ -378,7 +381,7 @@ class Client(BaseClient):
         user_profile.set_result(action=action,
                                 success=False,
                                 error_code=error_code,
-                                error_message=error_message)
+                                error_message=f'{error_message}\n{traceback.format_exc()}')
 
         demisto.error(traceback.format_exc())
 
@@ -680,7 +683,7 @@ def main():
     create_if_not_exists = params.get('create_if_not_exists')
 
     iam_command = IAMCommand(is_create_enabled, is_enable_enabled, is_disable_enabled, is_update_enabled,
-                             create_if_not_exists, mapper_in, mapper_out, 'username')
+                             create_if_not_exists, mapper_in, mapper_out, get_user_iam_attrs=['userName'])
 
     headers = {
         'Content-Type': 'application/scim+json',

@@ -23,10 +23,10 @@ class Client(BaseClient):
         res = self._http_request(method='GET', url_suffix=uri)
         return res
 
-    def get_user(self, email):
+    def get_user(self, filter_name: str, filter_value: str):
         uri = '/Users'
         query_params = {
-            'filter': f'email eq {email}'
+            'filter': f'{filter_name} eq {filter_value}'
         }
 
         res = self._http_request(
@@ -114,17 +114,17 @@ class Client(BaseClient):
             error_code = e.res.status_code
             try:
                 resp = e.res.json()
-                error_message = resp.get('Errors', {}).get('description') + '\n' + traceback.format_exc()
+                error_message = resp.get('Errors', {}).get('description')
             except ValueError:
-                error_message = str(e) + '\n' + traceback.format_exc()
+                error_message = str(e)
         else:
             error_code = ''
-            error_message = str(e) + '\n' + traceback.format_exc()
+            error_message = str(e)
 
         user_profile.set_result(action=action,
                                 success=False,
                                 error_code=error_code,
-                                error_message=error_message)
+                                error_message=f'{error_message}\n{traceback.format_exc()}')
 
         demisto.error(traceback.format_exc())
 
