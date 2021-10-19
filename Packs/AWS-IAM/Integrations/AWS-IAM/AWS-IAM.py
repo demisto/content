@@ -20,6 +20,22 @@ class DatetimeEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
+def get_limit(args):
+    limit = arg_to_number(str(args.get("limit"))) if "limit" in args else None
+    page = arg_to_number(str(args.get("page"))) if "page" in args else None
+    page_size = arg_to_number(str(args.get("page_size"))) if "page_size" in args else None
+
+    if limit is None:
+        if page is not None and page_size is not None:
+            if page <= 0:
+                raise Exception('Chosen page number must be greater than 0')
+            limit = page_size * page
+            return limit, True
+        else:
+            limit = 50
+    return limit, False
+
+
 def create_user(args, aws_client):
     client = aws_client.aws_session(
         service=SERVICE,
@@ -1010,24 +1026,35 @@ def list_user_policies(args, aws_client):
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
     )
-    data = []
     user_name = args.get('userName', "")
+    marker = args.get('marker', None)
+    page_size = args.get('page_size', None)
+    limit, is_manual = get_limit(args)
+
     kwargs = {
-        'UserName': user_name
+        'UserName': user_name,
+        'MaxItems': limit
     }
-    paginator = client.get_paginator('list_user_policies')
-    for response in paginator.paginate(**kwargs):
-        for policy in response['PolicyNames']:
-            data.append(policy)
-    data.append("test")
+    if marker:
+        kwargs.update({'Marker': marker})
 
-    red = {
-        'UserName': args.get('userName'),
-        'Policies': data
+    response = client.list_user_policies(**kwargs)
+    data = response.get('PolicyNames', [])
+    marker = response.get('Marker', None)
+
+    if is_manual and page_size and len(data) > page_size:
+        data = data[-1 * args.get('page_size'):]
+
+    res = {
+        'UserName': user_name,
+        'Policies': data,
+        'InlinePoliciesMarker': marker
     }
 
-    ec = {'AWS.IAM.Users(val.UserName && val.UserName === obj.UserName)': red}
-    human_readable = tableToMarkdown('AWS IAM Policies for user'.format(user_name), headers=["Policy Name"], t=data)
+    ec = {'AWS.IAM.Users(val.UserName && val.UserName === obj.UserName)': res}
+    human_readable = tableToMarkdown('AWS IAM Policies for user'.format(user_name),
+                                     headerTransform=pascalToSpace,
+                                     t=data)
     return_outputs(human_readable, ec)
 
 
@@ -1038,27 +1065,40 @@ def list_attached_user_polices(args, aws_client):
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
     )
-    data = []
+
     user_name = args.get('userName', "")
+    marker = args.get('marker', None)
+    page_size = args.get('page_size', None)
+    limit, is_manual = get_limit(args)
+
     kwargs = {
-        'UserName': user_name
+        'UserName': user_name,
+        'MaxItems': limit
     }
-    paginator = client.get_paginator('list_attached_user_policies')
-    for response in paginator.paginate(**kwargs):
-        for member in response['AttachedPolicies']:
-            data.append(member)
+    if marker:
+        kwargs.update({'Marker': marker})
+
+    response = client.list_attached_user_policies(**kwargs)
+    data = response.get('AttachedPolicies', [])
+    marker = response.get('Marker', None)
+
+    if is_manual and page_size and len(data) > page_size:
+        data = data[-1 * args.get('page_size'):]
 
     res = {
-        'UserName': args.get('userName'),
-        'AttachedPolicies': data
+        'UserName': user_name,
+        'AttachedPolicies': data,
+        'AttachedPoliciesMarker': marker
     }
-    ec = {'AWS.IAM.Users(val.UserName && val.UserName === obj.UserName)': res}
-    human_readable = tableToMarkdown('AWS IAM Attached Policies for user'.format(user_name),
-                                     t=data,
-                                     headers=['PolicyName', 'PolicyArn'],
-                                     headerTransform=pascalToSpace)
 
-    return_outputs(human_readable, ce)
+    ec = {'AWS.IAM.Users(val.UserName && val.UserName === obj.UserName)': res}
+
+    human_readable = tableToMarkdown('AWS IAM Attached Policies for user'.format(user_name),
+                                     headers=['PolicyName', 'PolicyArn'],
+                                     headerTransform=pascalToSpace,
+                                     t=data)
+
+    return_outputs(human_readable, ec)
 
 
 def list_attached_group_polices(args, aws_client):
@@ -1068,25 +1108,39 @@ def list_attached_group_polices(args, aws_client):
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
     )
-    data = []
+
     group_name = args.get('groupName', "")
+    marker = args.get('marker', None)
+    page_size = args.get('page_size', None)
+    limit, is_manual = get_limit(args)
+
     kwargs = {
-        'GroupName': group_name
+        'GroupName': group_name,
+        'MaxItems': limit
     }
-    paginator = client.get_paginator('list_attached_group_policies')
-    for response in paginator.paginate(**kwargs):
-        for member in response['AttachedPolicies']:
-            data.append(member)
+    if marker:
+        kwargs.update({'Marker': marker})
+
+    response = client.list_attached_group_policies(**kwargs)
+    data = response.get('AttachedPolicies', [])
+    marker = response.get('Marker', None)
+
+    if is_manual and page_size and len(data) > page_size:
+        data = data[-1 * args.get('page_size'):]
 
     res = {
         'GroupName': group_name,
-        'AttachedPolicies': data
+        'AttachedPolicies': data,
+        'AttachedPoliciesMarker': marker
     }
-    ec = {'AWS.IAM.Users(val.GroupName && val.GroupName === obj.GroupName)': res}
-    human_readable = tableToMarkdown('AWS IAM Attached Policies for group'.format(group_name),
-                                     t=data,
+
+    ec = {'AWS.IAM.Groups(val.GroupName && val.GroupName === obj.GroupName)': res}
+
+    human_readable = tableToMarkdown('AWS IAM Attached Policies for user'.format(group_name),
                                      headers=['PolicyName', 'PolicyArn'],
-                                     headerTransform=pascalToSpace)
+                                     headerTransform=pascalToSpace,
+                                     t=data)
+
     return_outputs(human_readable, ec)
 
 
@@ -1114,7 +1168,6 @@ def get_user_login_profile(args, aws_client):
                                      headers=['CreateDate', 'PasswordResetRequired'],
                                      headerTransform=pascalToSpace)
     return_outputs(human_readable, ec)
-
 
 
 def test_function(aws_client):
