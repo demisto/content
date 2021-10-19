@@ -32,6 +32,13 @@ For more details about the authentication used in this integration, see <a href=
 </li>
 <li>Click <strong>Test</strong> to validate the URLs, token, and connection.</li>
 </ol>
+<h3 id="using-national-cloud">Using National Cloud</h3>
+<p>Using a national cloud endpoint is supported by setting the <strong>Host URL</strong> parameter to one of the following options:</p>
+<li>US Government GCC-High Endpoint: <a href="https://graph.microsoft.us/">https://graph.microsoft.us</a>
+<li>US Government Department of Defence (DoD) Endpoint: <a href="https://dod-graph.microsoft.us">https://dod-graph.microsoft.us</a></li>
+<li>Microsoft 365 Germany Endpoint: <a href="https://graph.microsoft.de">https://graph.microsoft.de</a></li>
+<li>Microsoft Operated by 21Vianet Endpoint: <a href="https://microsoftgraph.chinacloudapi.cn">https://microsoftgraph.chinacloudapi.cn</a></li>
+<p>Please refer to <a href="https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud">Microsoft Integrations - Using National Cloud</a> for more information.</p>
 </div>
 
 <div class="cl-preview-section">

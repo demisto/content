@@ -28,5 +28,11 @@ Follow these steps for a self-deployed configuration.
 8. Enter your tenant ID in the ***Token*** parameter field.
 9. Enter your redirect URI in the ***Redirect URI*** parameter field.
 
+### Using National Cloud
+Using a national cloud endpoint is supported by setting the *Host URL* parameter to one of the following options:
+* US Government GCC-High Endpoint: `https://graph.microsoft.us`
+* US Government Department of Defence (DoD) Endpoint: `https://dod-graph.microsoft.us`
+* Microsoft 365 Germany Endpoint: `https://graph.microsoft.de`
+* Microsoft Operated by 21Vianet Endpoint: `https://microsoftgraph.chinacloudapi.cn`
 
-todo: add an explanation about the national cloud endpoints - list the endpoint for each cloud
+Please refer to [Microsoft Integrations - Using National Cloud](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud) for more information.
