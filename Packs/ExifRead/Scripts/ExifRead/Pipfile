@@ -24,4 +24,4 @@ virtualenv = "==15.0.3"
 ExifRead = "==2.1.2"
 
 [requires]
-python_version = "2.7"
+python_version = "3.9"
