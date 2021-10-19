@@ -36,7 +36,7 @@ class Client(BaseClient):
             if self._verify:
                 r = subprocess.check_output(['wget', '-O-', self._base_url], stderr=subprocess.STDOUT)
             else:
-                r = subprocess.check_output(['wget', '–no-check-certificate', '-O-', self._base_url],
+                r = subprocess.check_output(['wget', '--no-check-certificate', '-O-', self._base_url],
                                             stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
             raise DemistoException(f"Unable to get the url content. Error: {e}.")
