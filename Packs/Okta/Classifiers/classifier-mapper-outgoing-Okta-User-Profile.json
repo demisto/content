@@ -113,7 +113,7 @@
 				},
 				"login": {
 					"complex": null,
-					"simple": "userName"
+					"simple": "username"
 				},
 				"manager": {
 					"complex": null,
