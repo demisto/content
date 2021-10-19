@@ -419,12 +419,19 @@ def test_email_with_special_character(mocker):
         '=?iso-2022-jp?B?GyRCJWEhPCVrLSEkSHxxGyhC?= '
         '=?iso-2022-jp?B?GyRCRnxLXDhsSjg7eiQsST08KCQ1JGwkSiQkSjg7eiROJUYlOSVIGyhC?=',
         'メール�と�日本語文字が表示されない文字のテスト'
-    )
+    ),
+    (
+        '=?UTF-8?Q?TEST_UNDERSCORE?=',
+        'TEST UNDERSCORE'
+    ),
     # (
     #   'This is test =?iso-2022-jp?B?GyRCJWEhPCVrLSEkSHxxGyhC?= '
     #   '=?iso-2022-jp?B?GyRCRnxLXDhsSjg7eiQsST08KCQ1JGwkSiQkSjg7eiROJUYlOSVIGyhC?=',
     #   'This is test メール�と�日本語文字が表示されない文字のテスト'
     # )
+    # ( 'Test =?UTF-8?Q?Seguran=C3=A7a=20?=da =?UTF-8?Q?Informa=C3=A7=C3=A3o?=',
+    #   'Test Segurança da Informação'
+    #  )
     # This test should pass, it extend the case of This example "=?UTF-8?B?VGVzdMKu?= passes" and include multiple
     # encoding parts.
     # **please DO NOT delete the commented tests**.

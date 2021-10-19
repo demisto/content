@@ -112,5 +112,5 @@ tags:
 type: python
 fromversion: 5.0.0
 tests:
-- No tests (auto formatted)
-dockerimage: demisto/python:2.7.18.24019
+- ParseEmailFiles-test
+dockerimage: demisto/python:2.7.18.24066

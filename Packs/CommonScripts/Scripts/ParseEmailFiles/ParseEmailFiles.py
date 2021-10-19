@@ -3287,6 +3287,16 @@ def get_email_address(eml, entry):
     if addresses:
         res = [item[1] for item in addresses]
         res = ', '.join(res)
+        if entry == 'from' and "\r\n" in gel_all_values_from_email_by_entry[0] and \
+                    (not re.search(REGEX_EMAIL, res) or len(addresses) > 1):
+            # this condition refers only to ['from'] header that does not have a valid email or have more then 1
+            # fixed an issue where email['From'] had '\r\n'.
+            # in order to solve, used replace_header() on email object,
+            # and did again get_all() on the new format of ['from']
+            original_value = eml['from']
+            eml.replace_header('from', ' '.join(eml["from"].splitlines()))
+            res = get_email_address(eml, entry)
+            eml.replace_header('from', original_value)  # replace again to the original header (keep on BC)
         return res
     return ''
 
@@ -3303,15 +3313,6 @@ def extract_address_eml(eml, entry):
     """
     email_address = get_email_address(eml, entry)
     if email_address:
-        if entry == 'from' and not re.search(REGEX_EMAIL, email_address):
-            # this condition refers only to ['from'] header that does not have a valid email
-            # fixed an issue where email['From'] had '\r\n'.
-            # in order to solve, used replace_header() on email object,
-            # and did again get_all() on the new format of ['from']
-            original_value = eml['from']
-            eml.replace_header('from', ' '.join(eml["from"].splitlines()))
-            email_address = get_email_address(eml, entry)
-            eml.replace_header('from', original_value)  # replace again to the original header (keep on BC)
         return email_address
     else:
         return ''
@@ -3408,7 +3409,7 @@ def mime_decode(word_mime_encoded):
     if encoding.lower() == 'b':
         byte_string = base64.b64decode(encoded_text)
     elif encoding.lower() == 'q':
-        byte_string = quopri.decodestring(encoded_text)
+        byte_string = quopri.decodestring(encoded_text, header=True)
     return prefix + byte_string.decode(charset) + suffix
 
 
@@ -3432,9 +3433,10 @@ def convert_to_unicode(s, is_msg_header=True):
                 try:
                     res += decoded_s.decode(encoding).encode('utf-8')
                 except UnicodeDecodeError:
-                    demisto.debug('Failed to decode encoded_string:'
-                                  'encoding: {}, encoded_text: {}'.format(encoding, decoded_s))
-                    res += decoded_s.decode(encoding, errors='replace').encode('utf-8')
+                    demisto.debug('Failed to decode encoded_string')
+                    replace_decoded = decoded_s.decode(encoding, errors='replace').encode('utf-8')
+                    demisto.debug('Decoded string with replace usage {}'.format(replace_decoded))
+                    res += replace_decoded
                 ENCODINGS_TYPES.add(encoding)
             else:
                 res += decoded_s

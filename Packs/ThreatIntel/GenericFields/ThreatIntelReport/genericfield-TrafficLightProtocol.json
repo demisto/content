@@ -1,8 +1,5 @@
 {
-    "associatedToAll": false,
-    "associatedTypes": [
-        "Threat Actor"
-    ],
+    "associatedToAll": true,
     "caseInsensitive": true,
     "cliName": "trafficlightprotocol",
     "id": "generic_ThreatIntelReport_trafficlightprotocol",
@@ -22,7 +19,13 @@
     "sla": 0,
     "system": false,
     "threshold": 72,
-    "type": "shortText",
+    "type": "singleSelect",
+    "selectValues": [
+        "RED",
+        "AMBER",
+        "GREEN",
+        "WHITE"
+    ],
     "unmapped": false,
     "unsearchable": false,
     "useAsKpi": false,
