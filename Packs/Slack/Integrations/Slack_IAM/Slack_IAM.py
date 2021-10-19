@@ -23,10 +23,10 @@ class Client(BaseClient):
         res = self._http_request(method='GET', url_suffix=uri)
         return res
 
-    def get_user(self, email):
+    def get_user(self, filter_name: str, filter_value: str):
         uri = '/Users'
         query_params = {
-            'filter': f'email eq {email}'
+            'filter': f'{filter_name} eq {filter_value}'
         }
 
         res = self._http_request(
