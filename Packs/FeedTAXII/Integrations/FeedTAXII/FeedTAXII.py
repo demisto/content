@@ -1195,6 +1195,7 @@ def fetch_indicators_command(client):
                 'description': item.get('description'),
                 'shortdescription': item.get('short_description'),
                 'stixindicatordescription': item.get('ttp_description'),
+                'stixttptitle': item.get('stix_ttp_title'),
             }
 
             fields: Dict[str, str] = {}
