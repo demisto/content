@@ -331,7 +331,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The ID's of the alerts to update.
+      description: The IDs of the alerts to update.
       isArray: true
       name: alert_ids
       required: true
@@ -485,28 +485,28 @@ script:
       description: Current connection state.
       type: String
     - contextPath: Tanium.Connection.platform
-      description: The connection's operating system.
+      description: The connection operating system.
       type: String
     - contextPath: Tanium.Connection.ip
-      description: The connection's ip.
+      description: The connection ip.
       type: String
     - contextPath: Tanium.Connection.connectedAt
       description: Time when the connection was connected.
       type: String
     - contextPath: Tanium.Connection.message
-      description: The connection's message descriding the status.
+      description: The connection message describing the status.
       type: String
     - contextPath: Tanium.Connection.personaId
-      description: The connection's persona Id.
+      description: The connection persona Id.
       type: String
     - contextPath: Tanium.Connection.clientId
       description: The client id.
       type: String
     - contextPath: Tanium.Connection.userId
-      description: The connection's user id.
+      description: The connection user id.
       type: String
     - contextPath: Tanium.Connection.eid
-      description: The connection's eid.
+      description: The connection eid.
       type: String
     - contextPath: Tanium.Connection.hasTools
       description: Has connection tools.
