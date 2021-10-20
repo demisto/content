@@ -439,17 +439,17 @@ script:
     - contextPath: MicrosoftATP.Machine.MachineTags
       description: Set of machine tags.
       type: String
-    - contextPath: MicrosoftATP.Machine.IPAddresses.ipAddress
-      description: IP Address for Machine network interface
+    - contextPath: MicrosoftATP.Machine.NetworkInterfaces.MACAddress
+      description: MAC Address for the Network interface
       type: String
-    - contextPath: MicrosoftATP.Machine.IPAddresses.macAddress
-      description: MAC Address for Machine network interface
+    - contextPath: MicrosoftATP.Machine.NetworkInterfaces.IPAddresses
+      description: IP Address(es) for the Network interface
       type: String
-    - contextPath: MicrosoftATP.Machine.IPAddresses.operationalStatus
-      description: Status of Machine network interface
+    - contextPath: MicrosoftATP.Machine.NetworkInterfaces.Type
+      description: Type of the Network interface (e.g. Ethernet)
       type: String
-    - contextPath: MicrosoftATP.Machine.IPAddresses.type
-      description: Network interface Type (e.g. Ethernet)
+    - contextPath: MicrosoftATP.Machine.NetworkInterfaces.Status
+      description: Status for the Network interface (e.g. Up, Down)
       type: String
   - arguments:
     - default: false

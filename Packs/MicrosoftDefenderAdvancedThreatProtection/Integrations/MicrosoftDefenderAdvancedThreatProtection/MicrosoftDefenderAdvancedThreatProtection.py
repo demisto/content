@@ -1091,15 +1091,60 @@ def get_machine_details_command(client: MsClient, args: dict):
         (str, dict, dict). Human readable, context, raw response
     """
     headers = ['ID', 'ComputerDNSName', 'OSPlatform', 'LastIPAddress', 'LastExternalIPAddress', 'HealthStatus',
-               'RiskScore', 'ExposureLevel', 'IPAddresses']
+               'RiskScore', 'ExposureLevel', 'NetworkInterfaces']
     machine_id = args.get('machine_id')
     machine_response = client.get_machine_details(machine_id)
     machine_data = get_machine_data(machine_response)
 
-    human_readable = tableToMarkdown(f'Microsoft Defender ATP machine {machine_id} details:', machine_data,
-                                     headers=headers, removeNull=True)
+    # Grouping Interface / IP Addresses by MAC Address (unique Interface)
+    if ('IPAddresses' in machine_data) and (type(machine_data['IPAddresses']) == list):
+        interface_list: list = list()
+        for item in machine_data['IPAddresses']:
+            new_interface = True
+            for interface in interface_list:
+                if interface['MACAddress'] == item['macAddress']:
+                    new_interface = False
+                    # Since we have more than one IP, convert the IPAddresses into a list
+                    # and add the new IP
+                    interface['IPAddresses'] = [interface['IPAddresses'], ]
+                    interface['IPAddresses'].append(item['ipAddress'])
+            if new_interface:
+                interface_list.append({
+                    'MACAddress': item['macAddress'],
+                    'IPAddresses': item['ipAddress'],
+                    'Type': item['type'],
+                    'Status': item['operationalStatus']
+                })
+
+        machine_data['NetworkInterfaces'] = interface_list
+        machine_data.pop('IPAddresses')
+
+    machine_data_readable = dict(machine_data)
+    readable_interface_data = ''
+    max_ip_str_len = 0
+    ip_addresses_strings = list()
+    for entry in machine_data_readable['NetworkInterfaces']:
+        ip_addresses_str = ', '.join(entry['IPAddresses'])
+        ip_addresses_strings.append(', '.join(entry['IPAddresses']))
+        if len(ip_addresses_str) > max_ip_str_len:
+            max_ip_str_len = len(ip_addresses_str)
+    for index, entry in enumerate(machine_data_readable['NetworkInterfaces']):
+        readable_interface_data += '{}. | MAC: {} | IP Addresses: {} | Type: {} | Status: {}\n'.format(
+            str(index + 1),
+            entry['MACAddress'],
+            ip_addresses_strings[index - 1].ljust(max_ip_str_len),
+            entry['Type'],
+            entry['Status']
+        )
+    machine_data_readable['NetworkInterfaces'] = readable_interface_data
+
+    human_readable = tableToMarkdown(
+        f'Microsoft Defender ATP machine {machine_id} details:',
+        machine_data_readable,
+        headers=headers,
+        removeNull=True)
     results = CommandResults(
-        outputs_prefix='',
+        outputs_prefix='MicrosoftATP.Machine',
         outputs_key_field='ID',
         outputs=machine_data,
         readable_output=human_readable,
