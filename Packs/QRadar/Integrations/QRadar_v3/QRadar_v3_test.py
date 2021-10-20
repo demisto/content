@@ -1221,7 +1221,7 @@ def test_mirroring_offenses_with_events(mocker, offenses, context_data):
     mocker.patch.object(QRadar_v3, 'set_to_integration_context_with_retries')
     get_modified_remote_data_command(client, {'mirror_options': MIRROR_OFFENSE_AND_EVENTS}, {"lastUpdate": "0"})
     QRadar_v3.set_to_integration_context_with_retries.assert_called_once_with(encode_context_data(
-        context_data.get('with_offenses_ids')))
+        context_data.get('with_offenses_ids')), max_retry_times=1)
 
     # Transfer that list to the long running docker and update the events.
     mocker.patch.object(concurrent.futures.ThreadPoolExecutor, 'submit', side_effect=offenses.get('as_results'))
@@ -1246,7 +1246,7 @@ def test_mirroring_offenses_with_events(mocker, offenses, context_data):
 
         # Make sure the final offense has it's updated events
         QRadar_v3.set_to_integration_context_with_retries.assert_called_once_with(
-            encode_context_data(context_data.get('with_updated_removed')[offense_index]))
+            encode_context_data(context_data.get('with_updated_removed')[offense_index]), max_retry_times=1)
         assert result.mirrored_object.get('events', '')
 
         updated_result_events = result.mirrored_object.get('events')
@@ -1396,7 +1396,7 @@ def test_mirroring_with_events_resubmit_exhausted_offenses(mocker, offenses, con
     get_modified_remote_data_command(client, {'mirror_options': MIRROR_OFFENSE_AND_EVENTS}, {"lastUpdate": "0"})
 
     QRadar_v3.set_to_integration_context_with_retries.assert_called_once_with(encode_context_data(
-        context_data.get('get_modified_output')))
+        context_data.get('get_modified_output')), max_retry_times=1)
     assert set(QRadar_v3.GetModifiedRemoteDataResponse.call_args.args[0]) == set(offenses.get('to_update'))
     assert len(QRadar_v3.GetModifiedRemoteDataResponse.call_args.args[0]) == len(offenses.get('to_update'))
 
@@ -1415,7 +1415,7 @@ def test_mirroring_with_events_resubmit_exhausted_offenses(mocker, offenses, con
 
         # Make sure the final offense has it's updated events
         QRadar_v3.set_to_integration_context_with_retries.assert_called_once_with(
-            encode_context_data(context_data.get('after_get_remote_data')[offense_index]))
+            encode_context_data(context_data.get('after_get_remote_data')[offense_index]), max_retry_times=1)
 
         context_input_for_get_remote_data = context_data.get('after_get_remote_data')[offense_index]
 
@@ -1538,7 +1538,7 @@ def test_mirroring_with_events_remove_resubmitted_offenses(mocker, offenses, con
     get_modified_remote_data_command(client, {'mirror_options': MIRROR_OFFENSE_AND_EVENTS}, {"lastUpdate": "0"})
 
     QRadar_v3.set_to_integration_context_with_retries.assert_called_once_with(encode_context_data(
-        context_data.get('get_modified_output')))
+        context_data.get('get_modified_output')), max_retry_times=1)
     assert set(QRadar_v3.GetModifiedRemoteDataResponse.call_args.args[0]) == set(offenses.get('to_update'))
     assert len(QRadar_v3.GetModifiedRemoteDataResponse.call_args.args[0]) == len(offenses.get('to_update'))
 
@@ -1551,7 +1551,7 @@ def test_mirroring_with_events_remove_resubmitted_offenses(mocker, offenses, con
     get_modified_remote_data_command(client, {'mirror_options': MIRROR_OFFENSE_AND_EVENTS}, {"lastUpdate": "0"})
 
     QRadar_v3.set_to_integration_context_with_retries.assert_called_once_with(encode_context_data(
-        context_data.get('clean_get_modified_output')))
+        context_data.get('clean_get_modified_output')), max_retry_times=1)
     assert set(QRadar_v3.GetModifiedRemoteDataResponse.call_args.args[0]) == set(offenses.get('clean_to_update'))
     assert len(QRadar_v3.GetModifiedRemoteDataResponse.call_args.args[0]) == len(offenses.get('clean_to_update'))
 
@@ -1570,4 +1570,5 @@ def test_mirroring_with_events_remove_resubmitted_offenses(mocker, offenses, con
      MIRRORED_OFFENSES_CTX_KEY: [],
      RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: ['1', '11']}])
 def test_extract_decode_encode(context_data):
-    assert extract_context_data(set_context_data_as_json(context_data, include_id=True), include_id=True) == context_data
+    assert extract_context_data(set_context_data_as_json(context_data, include_id=True),
+                                include_id=True) == context_data

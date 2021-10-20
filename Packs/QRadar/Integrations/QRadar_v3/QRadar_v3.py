@@ -678,9 +678,13 @@ def safely_update_context_data(func: Callable):
             print_debug_msg(f'Attempting to update context data after version {version} with retry {retries}')
             new_context_data, new_version = get_integration_context_with_version()
             if new_version == version:
-                set_to_integration_context_with_retries(context_data)
-                context_was_set = True
-                print_debug_msg(f'Updated integration context after version {version} in retry {retries}.')
+                try:
+                    set_to_integration_context_with_retries(context_data, max_retry_times=1)
+                    context_was_set = True
+                    print_debug_msg(f'Updated integration context after version {version} in retry {retries}.')
+                except Exception as e:
+                    if 'Max retry attempts exceeded' in str(e):
+                        continue
             else:
                 if 'context_data' not in kwargs or 'version' not in kwargs:
                     raise ValueError('context_data and version must be in the func kwargs if '
@@ -691,6 +695,8 @@ def safely_update_context_data(func: Callable):
                     print_debug_msg(f'Could not update context data after version {version} due to new '
                                     f'version {new_version} in retry {retries}')
                     retries = retries + 1
+        if retries == max_retries:
+            raise DemistoException(f'Reached maximum retries, could not update context data for function {func}.')
         return return_value
     return wrapper
 
@@ -3172,7 +3178,7 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
     failure_message = 'Failed communicating with long running container.'
     if mirror_options == MIRROR_OFFENSE_AND_EVENTS:
         offenses_waiting_for_update = context_data.get(MIRRORED_OFFENSES_CTX_KEY, [])
-        max_retries = MAX_FETCH_EVENT_RETIRES * (len(offenses_waiting_for_update) + 3)
+        max_retries = min(MAX_FETCH_EVENT_RETIRES * (len(offenses_waiting_for_update) + 3), 20)
         offense_to_remove = None
         is_waiting_to_be_updated = True
         evented_offense = None
