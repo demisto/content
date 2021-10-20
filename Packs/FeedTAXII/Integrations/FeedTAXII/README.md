@@ -1,5 +1,5 @@
 Ingests indicator feeds from TAXII 1.x servers.
-This integration was integrated and tested with version xx of TAXIIFeed
+This integration was integrated and tested with version 1.1.1 of TAXIIFeed
 
 ## Configure TAXII Feed on Cortex XSOAR
 
