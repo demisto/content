@@ -1,4 +1,4 @@
-from urllib.parse import quote_plus
+from urllib.parse import quote
 
 import pytest
 import requests_mock
@@ -156,7 +156,7 @@ def test_list_mails_command_encoding(mocker, client):
     mocker.patch.object(client.ms_client, 'get_access_token')
 
     search = 'Test&$%^'
-    search_encoded = quote_plus(search)
+    search_encoded = quote(search)
 
     with requests_mock.Mocker() as request_mocker:
         mocked = request_mocker.get(
