@@ -89,8 +89,8 @@ def test_redlock_get_scan_status(mocker):
             'attributes': {
                 'status': 'test'
             }
-    }}
-
+        }
+    }
     expected_readable_output = '### Scan Status:\n|ID|Status|\n|---|---|\n| 111111111 | test |\n'
     expected_context_entry = {'Redlock.Scans(val.id == obj.id)': {'id': '111111111',
                                                                   'status': 'test'}}
