@@ -1,8 +1,7 @@
 This integration supports both Palo Alto Networks Panorama and Palo Alto Networks Firewall. You can create separate instances of each integration, and they are not necessarily related or dependent on one another.
 
 This integration enables you to manage the Palo Alto Networks Firewall and Panorama. For more information see the [PAN-OS documentation](https://docs.paloaltonetworks.com/pan-os.html).
-This integration was integrated and tested with version 8.1.0 and 9.0.1 of Palo Alto Firewall, Palo Alto Panorama.
-
+This integration was integrated and tested with version 8.1.0, 9.0.1 and 10.0.1 of Palo Alto Firewall, Palo Alto Panorama.
 
 ## Use Cases
 * Create custom security rules in Palo Alto Networks PAN-OS.
@@ -35,6 +34,9 @@ This integration was integrated and tested with version 8.1.0 and 9.0.1 of Palo 
    
    3. All file types are forwarded.
 
+## Using polling
+The `polling` argument was added in XSOAR 6.2.0. It enables to handle of jobs related commands in a single command, foregoing the need to use genericPolling based playbooks.
+
 ## Known Limitations
 * Maximum commit queue length is 3. Running numerous Panorama commands simultaneously might cause errors.
 * After you run `panorama-create-` commands and the object is not committed, the `panorama-edit` commands or `panorama-get` commands might not run correctly.
@@ -49,10 +51,10 @@ This integration was integrated and tested with version 8.1.0 and 9.0.1 of Palo 
    * [panorama-check-logs-status](#panorama-check-logs-status)
    * [panorama-get-logs](#panorama-get-logs)
 
-## Configure Panorama on Cortex XSOAR
+## Configure Palo Alto Networks PAN-OS on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Panorama.
+2. Search for Palo Alto Networks PAN-OS.
 3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
@@ -268,7 +270,10 @@ Commits a configuration to Palo Alto Firewall or Panorama, but does not validate
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| description | Commit description. | Optional | 
+| description | Commit description. | Optional |
+| polling | Use XSOAR built-in polling to retrieve the result when it's ready. | Optional |
+| timeout | Timeout (in seconds) for polling. | Optional |
+| interval_in_seconds | Interval (in seconds) to check each polling. | Optional |
 
 #### Context Output
 
@@ -317,6 +322,9 @@ Pushes rules from PAN-OS to the configured device group. In order to push the co
 | validate-only | Pre policy validation. | Optional. |
 | include-template | Whether to include template changes. | Optional. |
 | description | Push description. | Optional |
+| polling | Use XSOAR built-in polling to retrieve the result when it's ready. | Optional |
+| timeout | Timeout (in seconds) for polling. | Optional |
+| interval_in_seconds | Interval (in seconds) to check each polling. | Optional |
 
 
 #### Context Output
@@ -3402,7 +3410,9 @@ Downloads the latest content update.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | target | The device to which to download the content update. | Optional | 
-
+| polling | Use XSOAR built-in polling to retrieve the result when it's ready. | Optional |
+| timeout | Timeout (in seconds) for polling. | Optional |
+| interval_in_seconds | Interval (in seconds) to check each polling. | Optional |
 
 #### Context Output
 
@@ -3471,7 +3481,9 @@ Installs the latest content update.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | target | The device on which to install the content update. | Optional | 
-
+| polling | Use XSOAR built-in polling to retrieve the result when it's ready. | Optional |
+| timeout | Timeout (in seconds) for polling. | Optional |
+| interval_in_seconds | Interval (in seconds) to check each polling. | Optional |
 
 #### Context Output
 
@@ -3634,7 +3646,9 @@ Installs the target PAN-OS version on the specified target device.
 | --- | --- | --- |
 | target | The target device on which to install the target PAN-OS software version. | Optional | 
 | target_version | Target PAN-OS version to install. | Required | 
-
+| polling | Use XSOAR built-in polling to retrieve the result when it's ready. | Optional |
+| timeout | Timeout (in seconds) for polling. | Optional |
+| interval_in_seconds | Interval (in seconds) to check each polling. | Optional |
 
 #### Context Output
 
@@ -4677,7 +4691,9 @@ Installs specific content update file.
 | version_name | Update file name to be installed on PAN-OS. | Required | 
 | category | The category of the content. Possible values are: wildfire, anti-virus, content. | Required | 
 | skip_validity_check | Skips file validity check with PAN-OS update server. Use this option for air-gapped networks and only if you trust the content file. Possible values are: yes, no. Default is no. | Required | 
-
+| polling | Use XSOAR built-in polling to retrieve the result when it's ready. | Optional |
+| timeout | Timeout (in seconds) for polling. | Optional |
+| interval_in_seconds | Interval (in seconds) to check each polling. | Optional |
 
 #### Context Output
 

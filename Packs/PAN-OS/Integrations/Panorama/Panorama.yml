@@ -2,7 +2,7 @@ commonfields:
   id: Panorama
   version: -1
 name: Panorama
-display: Panorama
+display: Palo Alto Networks PAN-OS
 category: Network Security
 description: Manage Palo Alto Networks Firewall and Panorama. For more information
   see Panorama documentation.
