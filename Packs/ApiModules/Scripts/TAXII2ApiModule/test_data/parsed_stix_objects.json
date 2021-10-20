@@ -60,7 +60,7 @@
     },
     "fields": {
       "stixid": "attack-pattern--4e6620ac-c30c-4f6d-918e-fa20cae7c1ce",
-      "firstseen": "2017-10-25T14:48:11.535Z",
+      "firstseenbysource": "2017-10-25T14:48:11.535Z",
       "modified": "2018-10-17T00:14:20.652Z",
       "operatingsystemrefs": ["Android", "iOS"],
       "publications": [
@@ -138,7 +138,7 @@
     "fields":
     {
       "stixid": "attack-pattern--deb98323-e13f-4b0c-8d94-175379069062",
-      "firstseen": "2020-02-05T14:17:46.686Z",
+      "firstseenbysource": "2020-02-05T14:17:46.686Z",
       "modified": "2020-02-05T20:05:41.548Z",
       "operatingsystemrefs": ["macOS", "Windows"],
       "publications": [
@@ -185,7 +185,7 @@
     "fields":
     {
       "stixid": "malware--481d22d7-6dd8-4e37-a543-dd21cc1707c4",
-      "firstseen": "2019-10-10T14:43:27.256Z",
+      "firstseenbysource": "2019-10-10T14:43:27.256Z",
       "modified": "2019-10-10T20:25:46.596Z",
       "description": "",
       "malware_types": [],
@@ -224,7 +224,7 @@
     "fields":
     {
       "stixid": "report--708d589b-8d99-48fd-bbb6-2d47648f807f",
-      "firstseen": "2018-08-03T20:31:05.060Z",
+      "firstseenbysource": "2018-08-03T20:31:05.060Z",
       "published": "2020-07-30T16:55:21.569Z",
       "description": "Sofacy (also known as Fancy Bear, APT 28, STRONTIUM, Pawn Storm) is a highly active actor with a Russian nexus. They have been active since the mid 2000s, and have been responsible for targeted intrusion campaigns against various industry vertical such as but not limited to Aerospace, Defense, Energy, Government and Media. Extensive observation and research of Sofacy's activities over time indicated a profile closely mirroring the strategic interests of the Russian government. More recently, this group has been attributed to the GRU, Russia's premier military intelligence service as reported by the US intelligence community within several declassified public documents.\n\nSeveral high profile intrusions have been publicly linked to the Sofacy group, such as the German Bundestag, France's TV5Monde TV station, the Democratic National Committee, the World Anti-Doping Agency, and the Ukrainian military.",
       "report_types": [],
@@ -259,7 +259,7 @@
       "x_panw_coa_bp_title": "Ensure that antivirus profiles are set to block on all decoders except 'imap' and 'pop3'"
     }, "fields": {
     "stixid": "course-of-action--645c6c45-116e-4265-98d2-e30f56325bc6",
-    "firstseen": "2020-06-23T19:50:31.722Z",
+    "firstseenbysource": "2020-06-23T19:50:31.722Z",
     "modified": "2020-06-26T13:02:55.803Z",
     "description": "Configure antivirus profiles to a value of 'block' for all decoders except imap and pop3 under both Action and WildFire Action. If required by the organization's email implementation, configure imap and pop3 decoders to 'alert' under both Action and WildFire Action.",
     "action_type": "",
@@ -283,7 +283,7 @@
     },
     "fields": {
       "stixid": "campaign--6320584e-3ef0-4a72-aaf8-0a49fa1d477c",
-      "firstseen": "2018-08-03T21:03:51.484Z",
+      "firstseenbysource": "2018-08-03T21:03:51.484Z",
       "modified": "2018-08-03T21:03:51.484Z",
       "description": "In July 2018, Unit 42 analyzed a targeted attack using a novel file type against at least one government agency in the Middle East. It was carried out by a previously unpublished threat group we track as DarkHydrus. Based on our telemetry, we were able to uncover additional artifacts leading us to believe this adversary group has been in operation with their current playbook since early 2016. This attack diverged from previous attacks we observed from this group as it involved spear-phishing emails sent to targeted organizations with password protected RAR archive attachments that contained malicious Excel Web Query files (.iqy).",
       "aliases": [],
@@ -304,7 +304,7 @@
     },
     "fields": {
       "stixid": "intrusion-set--8e11eaa4-1964-4b73-85c1-fcfa29159f9b",
-      "firstseen": "2018-08-03T20:30:50.665Z",
+      "firstseenbysource": "2018-08-03T20:30:50.665Z",
       "modified": "2018-08-03T20:30:50.665Z",
       "description": "",
       "aliases": [],
@@ -333,7 +333,7 @@
     "fields": {
       "stixid": "tool--8e2e2d2b-17d4-4cbf-938f-98ee46b3cd3f",
       "killchainphases": [],
-      "firstseen": "2016-04-06T20:03:48.000Z",
+      "firstseenbysource": "2016-04-06T20:03:48.000Z",
       "modified": "2016-04-06T20:03:48.000Z",
       "tool_types": [ "remote-access"],
       "description": "",
@@ -366,7 +366,7 @@
     "fields":
     {
       "stixid": "threat-actor--8e2e2d2b-17d4-4cbf-938f-98ee46b3cd3f",
-      "firstseen": "2016-04-06T20:03:48.000Z",
+      "firstseenbysource": "2016-04-06T20:03:48.000Z",
       "modified": "2016-04-06T20:03:48.000Z",
       "description": "The Evil Org threat actor group",
       "aliases": ["Syndicate 1", "Evil Syndicate 99"],
@@ -399,7 +399,7 @@
       "infrastructure_types": ["command-and-control"],
       "aliases": [],
       "kill_chain_phases": [],
-      "firstseen": "2016-05-07T11:22:30.000Z",
+      "firstseenbysource": "2016-05-07T11:22:30.000Z",
       "modified": "2016-05-07T11:22:30.000Z",
       "tags": []
     }
