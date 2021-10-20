@@ -20,10 +20,10 @@
                 </stix:STIX_Header>
                 <stix:Indicators>
                     <stix:Indicator id="opensource:indicator-62ed3e13-938b-4edd-b3ee-ec9443dcc6bb" timestamp="2021-10-19T15:06:35.300875+00:00" xsi:type="indicator:IndicatorType" version="2.1.1">
-                        <indicator:Title>phishTank.com id:7324360 with malicious URL:http://app.reauthorization...</indicator:Title>
+                        <indicator:Title>phishTank.com id:7324360 with malicious URL:http://app.example...</indicator:Title>
                         <indicator:Type xsi:type="stixVocabs:IndicatorTypeVocab-1.1">URL Watchlist</indicator:Type>
                         <indicator:Description>This URL:[http://example.org/?n] was identified by phishtank.com as part of a phishing email. This URL appears to still be online as of 2021-10-19T04:13:43+00:00. More detailed infomation can be found at http://www.phishtank.com/phish_detail.php?phish_id=7324360</indicator:Description>
-                        <indicator:Short_Description>phishTank.com id:7324360 with malicious URL:http://app.reauthorization...</indicator:Short_Description>
+                        <indicator:Short_Description>phishTank.com id:7324360 with malicious URL:http://app.example...</indicator:Short_Description>
                         <indicator:Observable idref="opensource:Observable-335290e0-3496-4644-bdaa-25b323814b46">            </indicator:Observable>
                         <indicator:Indicated_TTP>
                             <stixCommon:TTP idref="opensource:ttp-c819f3ef-fbc3-4077-8d56-bf619c8d9b29" xsi:type="ttp:TTPType" version="1.1.1"/>
@@ -143,10 +143,10 @@
                 </stix:STIX_Header>
                 <stix:Indicators>
                     <stix:Indicator id="opensource:indicator-22b34283-f349-4fcf-af36-7bec63f76f55" timestamp="2021-10-19T15:06:35.229459+00:00" xsi:type="indicator:IndicatorType" version="2.1.1">
-                        <indicator:Title>phishTank.com id:7324397 with malicious URL:https://pancakeswap.financ...</indicator:Title>
+                        <indicator:Title>phishTank.com id:7324397 with malicious URL:https://example...</indicator:Title>
                         <indicator:Type xsi:type="stixVocabs:IndicatorTypeVocab-1.1">URL Watchlist</indicator:Type>
                         <indicator:Description>This URL:[https://pancakeswap.finance.exchange-goswap.com/] was identified by phishtank.com as part of a phishing email. This URL appears to still be online as of 2021-10-19T04:13:43+00:00. More detailed infomation can be found at http://www.phishtank.com/phish_detail.php?phish_id=7324397</indicator:Description>
-                        <indicator:Short_Description>phishTank.com id:7324397 with malicious URL:https://pancakeswap.financ...</indicator:Short_Description>
+                        <indicator:Short_Description>phishTank.com id:7324397 with malicious URL:https://example...</indicator:Short_Description>
                         <indicator:Observable idref="opensource:Observable-5af3d9a1-b0ac-4846-95b0-efd498c14594">            </indicator:Observable>
                         <indicator:Indicated_TTP>
                             <stixCommon:TTP idref="opensource:ttp-c819f3ef-fbc3-4077-8d56-bf619c8d9b29" xsi:type="ttp:TTPType" version="1.1.1"/>
@@ -222,10 +222,10 @@
                 </stix:STIX_Header>
                 <stix:Indicators>
                     <stix:Indicator id="opensource:indicator-398bc245-487a-47d6-b886-adf526ad3748" timestamp="2021-10-19T15:06:34.235953+00:00" xsi:type="indicator:IndicatorType" version="2.1.1">
-                        <indicator:Title>phishTank.com id:7324767 with malicious URL:https://999999999999999999...</indicator:Title>
+                        <indicator:Title>phishTank.com id:7324767 with malicious URL:https://example...</indicator:Title>
                         <indicator:Type xsi:type="stixVocabs:IndicatorTypeVocab-1.1">URL Watchlist</indicator:Type>
                         <indicator:Description>This URL:[http://example.org/] was identified by phishtank.com as part of a phishing email. This URL appears to still be online as of 2021-10-19T10:07:34+00:00. More detailed infomation can be found at http://www.phishtank.com/phish_detail.php?phish_id=7324767</indicator:Description>
-                        <indicator:Short_Description>phishTank.com id:7324767 with malicious URL:https://999999999999999999...</indicator:Short_Description>
+                        <indicator:Short_Description>phishTank.com id:7324767 with malicious URL:https://example...</indicator:Short_Description>
                         <indicator:Observable idref="opensource:Observable-cfe14953-f986-450b-93f1-0041a597b8d2">            </indicator:Observable>
                         <indicator:Indicated_TTP>
                             <stixCommon:TTP idref="opensource:ttp-c819f3ef-fbc3-4077-8d56-bf619c8d9b29" xsi:type="ttp:TTPType" version="1.1.1"/>
