@@ -11,7 +11,7 @@ tasks:
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "9"
+      - "20"
     note: false
     quietmode: 0
     separatecontext: false
@@ -55,7 +55,7 @@ tasks:
       {
         "position": {
           "x": 680,
-          "y": 950
+          "y": 1070
         }
       }
   "9":
@@ -117,8 +117,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 680,
-          "y": 0
+          "x": 890,
+          "y": 140
         }
       }
   "10":
@@ -157,8 +157,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 980,
-          "y": 380
+          "x": 1090,
+          "y": 510
         }
       }
   "11":
@@ -197,8 +197,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 980,
-          "y": 740
+          "x": 1090,
+          "y": 860
         }
       }
   "16":
@@ -237,8 +237,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 980,
-          "y": 550
+          "x": 1090,
+          "y": 680
         }
       }
   "19":
@@ -277,22 +277,80 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 980,
-          "y": 180
+          "x": 1000,
+          "y": 340
+        }
+      }
+  "20":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Group-IB Threat Intelligence & Attribution
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "20"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks if the integration is available.
+      id: 9815ee7f-c6ff-4e04-8d4b-f034a70ecd32
+      iscommand: false
+      name: Is Group-IB Threat Intelligence & Attribution enabled?
+      type: condition
+      version: -1
+    taskid: 9815ee7f-c6ff-4e04-8d4b-f034a70ecd32
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": -40
         }
       }
 version: -1
 view: |-
   {
     "linkLabelsPosition": {
-      "16_7_#default#": 0.37,
-      "19_7_#default#": 0.22,
+      "16_7_#default#": 0.35,
+      "19_7_#default#": 0.18,
+      "20_7_#default#": 0.22,
       "9_7_#default#": 0.18
     },
     "paper": {
       "dimensions": {
-        "height": 1195,
-        "width": 680,
+        "height": 1315,
+        "width": 790,
         "x": 680,
         "y": -180
       }
