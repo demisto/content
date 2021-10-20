@@ -1,12 +1,11 @@
 {
-    "name": "Plain Text Feed",
-    "description": "Fetches indicators from a plain text feed.",
+    "name": "MISP Feed",
+    "description": "Indicators feed from MISP",
     "support": "xsoar",
-    "currentVersion": "1.1.6",
+    "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
-    "created": "2020-03-09T16:35:16Z",
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
