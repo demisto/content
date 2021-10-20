@@ -2,22 +2,22 @@ Gets information from the Azure Active Directory Identity Protection service.
 This integration was integrated and tested with the beta version of Azure Active Directory Identity Protection API.
 
 ## Required Permissions
-To use this integration, the following permissions are required on the Azure application.  
+To use this integration, the following permissions are required on the Azure app.  
 - `IdentityRiskEvent.Read.All` 
 - `IdentityRiskyUser.ReadWrite.All`
 - `User.Read`
 
 ## Authorization
-Choose between the following options. Both of them use the [device authorization grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code).
+Choose between the following Azure app options. Both of them use the [device authorization grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code).
 
 #### Cortex XSOAR Azure app
-In order to use the Cortex XSOAR Azure application, use the default application ID `4ffef4a4-601f-4393-a789-432f3f3b8470` and fill in your subscription ID.
+To use the Cortex XSOAR Azure app, use the default application ID `4ffef4a4-601f-4393-a789-432f3f3b8470` and fill in your subscription ID.
 
 #### Self Deployed Azure app 
-To use a self-configured Azure application, add a new Azure App Registration in the Azure Portal
-1. The application must allow public client flows (which can be found under the **Authentication** section of the app).
-2. The application must be a multi-tenant app.
-3. The application should be provided with the permissions listed in the [required permissions](#required-permissions) section above. 
+To use a self-deployed Azure app, add a new Azure App Registration in the Azure Portal
+1. The app must allow public client flows (which can be found under the **Authentication** section of the app).
+2. The app must be multi-tenant.
+3. The app should be granted the permissions listed in the [required permissions](#required-permissions) section above. 
 
 ## Configure Azure Active Directory Identity Protection on Cortex XSOAR
 
@@ -33,7 +33,7 @@ To use a self-configured Azure application, add a new Azure App Registration in 
     | Trust any certificate (not secure) | When selected, certificates are not checked.  | False |
     | Use system proxy settings | When selected, runs the integration instance using a proxy server (https or http) that you defined in the server configuration.  | False |
 5. Run the **!azure-ad-auth-start** command to start the connection process.
-6. Follow the instruction shown, the last of them should be running the **!azure-ad-auth-complete** command.
+6. Follow the instructions shown. The last of them should be running the **!azure-ad-auth-complete** command.
 7. Run the **!azure-ad-auth-test** command to validate the URLs, token, and connection.
     
 #### Base Command
