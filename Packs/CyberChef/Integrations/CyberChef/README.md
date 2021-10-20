@@ -42,9 +42,12 @@ Bake you recipe!
 
 
 #### Command Example
-``` ```
+``` !cyberchef-bake input="One, two, three, four." recipe="{\"op\": \"to decimal\"}"```
+
+```!cyberchef-bake input="79 110 101 44 32 116 119 111 44 32 116 104 114 101 101 44 32 102 111 117 114 46" recipe="{\"op\": \"from decimal\"}" outputType=string```
 
 #### Human Readable Output
+![image](https://user-images.githubusercontent.com/72339940/138084891-3509076f-3491-4eab-b280-1707d2227d08.png)
 
 
 
@@ -72,8 +75,9 @@ CyberChef Magic function
 
 
 #### Command Example
-``` ```
+```!cyberchef-magic input="79 110 101 44 32 116 119 111 44 32 116 104 114 101 101 44 32 102 111 117 114 46"```
 
 #### Human Readable Output
+![image](https://user-images.githubusercontent.com/72339940/138084951-8e8225a5-50d5-42df-904f-9c9d0981767a.png)
 
 
