@@ -3,10 +3,10 @@ Note: This is a beta Integration, which lets you implement and test pre-release 
 The API this integration uses is defined as beta by Microsoft.
 
 ---
-To connect to the Azure Active Directory Identity Protection using either the Cortex XSOAR Azure application or the Self-Deployed Azure application, do one of the following:
+To connect to the Azure Active Directory Identity Protection using either the Cortex XSOAR Azure app or the Self-Deployed Azure app, do one of the following:
 
-- **Cortex XSOAR Azure application**: Use application ID `4ffef4a4-601f-4393-a789-432f3f3b8470`, and fill in your subscription ID (from the Azure Portal).
-- **Self Deployed Azure application**: Do the following:
+- **Cortex XSOAR Azure app**: Use application ID `4ffef4a4-601f-4393-a789-432f3f3b8470`, and fill in your subscription ID (from the Azure Portal).
+- **Self Deployed Azure app**: Do the following:
    1. Add a new Azure App Registration in the Azure Portal, with the following permissions:
    - `IdentityRiskEvent.Read.All`
    - `User.Read`
