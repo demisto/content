@@ -46,7 +46,7 @@ class Client(BaseClient):
                 manager_id = res.id
         return manager_id
 
-    def get_user(self, email: str) -> Optional[IAMUserAppData]:
+    def get_user(self, filter_name: str, filter_value: str) -> Optional[IAMUserAppData]:
         """ Queries the user in the application using REST API by its email, and returns an IAMUserAppData object
         that holds the user_id, username, is_active and app_data attributes given in the query response.
 
@@ -58,7 +58,7 @@ class Client(BaseClient):
         """
         uri = '/api/v2/users.json/'
         params = {'api_key': self.api_key,
-                  'user[email]': email}
+                  f'user[{filter_name}]': filter_value}
         res = self._http_request(
             method='GET',
             url_suffix=uri,
@@ -281,7 +281,7 @@ def main():
     create_if_not_exists = params.get("create_if_not_exists")
 
     iam_command = IAMCommand(is_create_enabled, is_enable_enabled, is_disable_enabled, is_update_enabled,
-                             create_if_not_exists, mapper_in, mapper_out)
+                             create_if_not_exists, mapper_in, mapper_out, get_user_iam_attrs=['id', 'login', 'email'])
 
     headers = {
         'Content-Type': 'application/json',
