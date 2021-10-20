@@ -253,7 +253,7 @@ class MsGraphClient:
 
         self.ms_client = MicrosoftClient(
             tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name, base_url=base_url, verify=verify,
-            proxy=proxy, self_deployed=self_deployed, ok_codes=ok_codes)
+            proxy=proxy, self_deployed=self_deployed, ok_codes=ok_codes, scope=Scopes.management_azure)
         self.server = server
         self.subscription_id = subscription_id
 
