@@ -1,9 +1,7 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 import shutil
-
-
-
-
-''' IMPORTS '''
 import json
 import uuid
 from datetime import datetime
@@ -469,11 +467,11 @@ def template_test(template: str):
                         f' The available Templates for this instance: {", ".join(template_names)}.')
 
 
-def run_polling_command(args: dict=None, cmd: str=None, search_function: Callable=None,
-                        query_function: Callable=None, results_function: Callable=None,
-                        outputs_prefix: str=None, exit_string: str=None, job_id: str=None,
-                        additional_paths: dict=None, success_path: tuple=None,
-                        error_path: list=[])-> list:
+def run_polling_command(args: dict = None, cmd: str = None, search_function: Callable = None,
+                        query_function: Callable = None, results_function: Callable = None,
+                        outputs_prefix: str = None, exit_string: str = None, job_id: str = None,
+                        additional_paths: dict = None, success_path: tuple = None,
+                        error_path: list = [])-> list:
 
     polling_results = []
 
@@ -599,7 +597,6 @@ def run_polling_command(args: dict=None, cmd: str=None, search_function: Callabl
                 )
 
     return polling_results
-
 
 
 @logger
