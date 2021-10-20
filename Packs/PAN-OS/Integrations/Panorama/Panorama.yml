@@ -193,6 +193,8 @@ script:
       description: Interval (in seconds) to check each polling.
       defaultValue: '30'
     - name: job_id
+      deprecated: true
+      description: Do not use this field. Only used internally for polling.
     outputs:
     - contextPath: Panorama.Commit.JobID
       description: Job ID to commit.
@@ -2158,6 +2160,7 @@ script:
       description: Use XSOAR built-in polling to retrieve the result when it's ready.
       defaultValue: "false"
     - name: job_id
+      deprecated: true
       description: Do not use this field. Only used internally for polling.
     - name: timeout
       description: Timeout in seconds for polling.
@@ -2701,6 +2704,7 @@ script:
       description: Use XSOAR built-in polling to retrieve the result when it's ready.
       defaultValue: "false"
     - name: job_id
+      deprecated: true
       description: Do not use this field. Only used internally for polling.
     - name: interval_in_seconds
       description: Interval in seconds between each poll.
@@ -2760,6 +2764,8 @@ script:
       description: Interval in seconds between each poll.
       defaultValue: '30'
     - name: job_id
+      deprecated: true
+      description: Do not use this field. Only used internally for polling.
     outputs:
     - contextPath: Panorama.PANOS.Download.JobID
       description: Job ID of the PAN-OS download.
@@ -2809,6 +2815,8 @@ script:
       description: Interval in seconds between each poll.
       defaultValue: '30'
     - name: job_id
+      deprecated: true
+      description: Do not use this field. Only used internally for polling.
     outputs:
     - contextPath: Panorama.PANOS.Install.JobID
       description: Job ID of the PAN-OS installation.

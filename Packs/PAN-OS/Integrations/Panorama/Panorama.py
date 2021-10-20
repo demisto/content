@@ -467,12 +467,9 @@ def template_test(template: str):
                         f' The available Templates for this instance: {", ".join(template_names)}.')
 
 
-def run_polling_command(args: dict = None, cmd: str = None, search_function: Callable = None,
-                        query_function: Callable = None, results_function: Callable = None,
-                        outputs_prefix: str = None, exit_string: str = None, job_id: str = None,
-                        additional_paths: dict = None, success_path: tuple = None,
-                        error_path: list = [])-> list:
-
+def run_polling_command(args: dict, cmd: str, search_function: Callable, query_function: Callable,
+                        results_function: Callable, outputs_prefix: str, exit_string: str, job_id: str,
+                        success_path: tuple, error_path: list = [], additional_paths: dict = None) -> list:
     polling_results = []
 
     interval_in_seconds = int(args.get('interval_in_seconds', 60))
@@ -4481,13 +4478,9 @@ def panorama_query_logs_command(args: dict):
     rule = args.get('rule')
     filedigest = args.get('filedigest')
     url = args.get('url')
-    ignore_auto_extract = args.get('ignore_auto_extract') == 'true'
     polling = argToBoolean(args.get('polling'))
     job_id = args.get('job_id', None)
     cmd = 'panorama-query-logs'
-    interval_in_seconds = int(args.get('interval_in_seconds', 60))
-    timeout = int(args.get('timeout', 600))
-    polling_results = dict()
     script_results = []
 
     if query and (address_src or address_dst or zone_src or zone_dst
@@ -4499,21 +4492,18 @@ def panorama_query_logs_command(args: dict):
             args=args,
             cmd=cmd,
             search_function=lambda: panorama_query_logs(log_type, number_of_logs, query, address_src, address_dst, ip_,
-                                         zone_src, zone_dst, time_generated, action,
-                                         port_dst, rule, url, filedigest),
+                                                        zone_src, zone_dst, time_generated, action, port_dst, rule,
+                                                        url, filedigest),
             query_function=lambda: panorama_get_traffic_logs(job_id),
             results_function=lambda: panorama_get_logs_command(args),
-            additional_paths={'LogType': log_type},
             outputs_prefix='Panorama.Monitor',
             exit_string='Query logs failed.',
             job_id=job_id,
             success_path=(['response', '@status'], 'success'),
-            error_path=[]
+            error_path=[],
+            additional_paths={'LogType': log_type}
         )
-
-
     else:
-
         result = panorama_query_logs(log_type, number_of_logs, query, address_src, address_dst, ip_,
                                      zone_src, zone_dst, time_generated, action,
                                      port_dst, rule, url, filedigest)
