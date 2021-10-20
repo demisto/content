@@ -56,7 +56,6 @@ configuration:
   name: feedFetchInterval
   required: false
   type: 19
-
 - additionalinfo: When selected, the exclusion list is ignored for indicators from
     this feed. This means that if an indicator from this feed is on the exclusion
     list, the indicator might still be added to the system.
@@ -91,6 +90,11 @@ configuration:
   name: feedTags
   required: false
   type: 0
+- defaultvalue: 'true'
+  display: Create relationships
+  name: create_relationships
+  required: false
+  type: 8
 display: HelloWorld Feed
 name: HelloWorld Feed
 script:
