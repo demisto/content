@@ -1,8 +1,4 @@
-import io
-import json
-from datetime import datetime
-
-from CommonServerPython import tableToMarkdown, pascalToSpace, date_to_timestamp
+from CommonServerPython import tableToMarkdown, pascalToSpace
 import demistomock as demisto
 import importlib
 
@@ -27,7 +23,7 @@ class AWSClient:
         pass
 
 
-class boto3Client:
+class Boto3Client:
     def list_user_policies(self):
         pass
 
@@ -59,14 +55,14 @@ def test_list_user_policies(mocker):
                                                                            'Policies': ['AllAccessPolicy', 'KeyPolicy'],
                                                                            'InlinePoliciesMarker': '111'}}
 
-    mocker.patch.object(AWSClient, "aws_session", return_value=boto3Client())
-    mocker.patch.object(boto3Client, "list_user_policies", return_value=response)
+    mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
+    mocker.patch.object(Boto3Client, "list_user_policies", return_value=response)
     mocker.patch.object(demisto, 'results')
 
     client = AWSClient()
     AWS_IAM.list_user_policies(args, client)
     contents = demisto.results.call_args[0][0]
-    human_readable = tableToMarkdown('AWS IAM Policies for user'.format('test'),
+    human_readable = tableToMarkdown('AWS IAM Policies for user {}'.format('test'),
                                      headers=["PolicyNames"],
                                      headerTransform=pascalToSpace,
                                      t=['AllAccessPolicy', 'KeyPolicy'])
@@ -83,14 +79,14 @@ def test_list_attached_user_polices(mocker):
                                                                            'AttachedPolicies': ATTACHED_POLICIES,
                                                                            'AttachedPoliciesMarker': '111'}}
 
-    mocker.patch.object(AWSClient, "aws_session", return_value=boto3Client())
-    mocker.patch.object(boto3Client, "list_attached_user_policies", return_value=ATTACHED_RESPONSE)
+    mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
+    mocker.patch.object(Boto3Client, "list_attached_user_policies", return_value=ATTACHED_RESPONSE)
     mocker.patch.object(demisto, 'results')
 
     client = AWSClient()
     AWS_IAM.list_attached_user_policies(args, client)
     contents = demisto.results.call_args[0][0]
-    human_readable = tableToMarkdown('AWS IAM Attached Policies for user'.format('test'),
+    human_readable = tableToMarkdown('AWS IAM Attached Policies for user {}'.format('test'),
                                      headers=['PolicyName', 'PolicyArn'],
                                      headerTransform=pascalToSpace,
                                      t=ATTACHED_POLICIES)
@@ -107,14 +103,14 @@ def test_list_attached_group_polices(mocker):
                                                                                'AttachedPolicies': ATTACHED_POLICIES,
                                                                                'AttachedPoliciesMarker': '111'}}
 
-    mocker.patch.object(AWSClient, "aws_session", return_value=boto3Client())
-    mocker.patch.object(boto3Client, "list_attached_group_policies", return_value=ATTACHED_RESPONSE)
+    mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
+    mocker.patch.object(Boto3Client, "list_attached_group_policies", return_value=ATTACHED_RESPONSE)
     mocker.patch.object(demisto, 'results')
 
     client = AWSClient()
     AWS_IAM.list_attached_group_policies(args, client)
     contents = demisto.results.call_args[0][0]
-    human_readable = tableToMarkdown('AWS IAM Attached Policies for group'.format('test'),
+    human_readable = tableToMarkdown('AWS IAM Attached Policies for group {}'.format('test'),
                                      headers=['PolicyName', 'PolicyArn'],
                                      headerTransform=pascalToSpace,
                                      t=ATTACHED_POLICIES)
@@ -135,13 +131,13 @@ def test_list_attached_group_polices(mocker):
     }
 
     ec = {'AWS.IAM.Users(val.UserName && val.UserName === obj.UserName).LoginProfile': res.get('LoginProfile')}
-    human_readable = tableToMarkdown('AWS IAM Login Profile for user '.format('test'),
+    human_readable = tableToMarkdown('AWS IAM Login Profile for user {}'.format('test'),
                                      t=res.get('LoginProfile'),
                                      headers=['UserName', 'CreateDate', 'PasswordResetRequired'],
                                      headerTransform=pascalToSpace)
 
-    mocker.patch.object(AWSClient, "aws_session", return_value=boto3Client())
-    mocker.patch.object(boto3Client, "get_login_profile", return_value=res)
+    mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
+    mocker.patch.object(Boto3Client, "get_login_profile", return_value=res)
     mocker.patch.object(demisto, 'results')
 
     client = AWSClient()

@@ -1054,7 +1054,7 @@ def list_user_policies(args, aws_client):
     }
 
     ec = {'AWS.IAM.Users(val.UserName && val.UserName === obj.UserName)': res}
-    human_readable = tableToMarkdown('AWS IAM Policies for user'.format(user_name),
+    human_readable = tableToMarkdown('AWS IAM Policies for user {}'.format(user_name),
                                      headers=["PolicyNames"],
                                      headerTransform=pascalToSpace,
                                      t=data)
@@ -1096,7 +1096,7 @@ def list_attached_user_policies(args, aws_client):
 
     ec = {'AWS.IAM.Users(val.UserName && val.UserName === obj.UserName)': res}
 
-    human_readable = tableToMarkdown('AWS IAM Attached Policies for user'.format(user_name),
+    human_readable = tableToMarkdown('AWS IAM Attached Policies for user {}'.format(user_name),
                                      headers=['PolicyName', 'PolicyArn'],
                                      headerTransform=pascalToSpace,
                                      t=data)
@@ -1139,7 +1139,7 @@ def list_attached_group_policies(args, aws_client):
 
     ec = {'AWS.IAM.Groups(val.GroupName && val.GroupName === obj.GroupName)': res}
 
-    human_readable = tableToMarkdown('AWS IAM Attached Policies for group'.format(group_name),
+    human_readable = tableToMarkdown('AWS IAM Attached Policies for group {}'.format(group_name),
                                      headers=['PolicyName', 'PolicyArn'],
                                      headerTransform=pascalToSpace,
                                      t=data)
@@ -1168,7 +1168,7 @@ def get_user_login_profile(args, aws_client):
     ec = {'AWS.IAM.Users(val.UserName && val.UserName === obj.UserName).LoginProfile': data}
     data_for_human_readable = copy.deepcopy(data)
     data_for_human_readable.update({'CreateDate': date_to_timestamp(data.get('CreateDate'), "%Y-%m-%dT%H:%M:%SZ")})
-    human_readable = tableToMarkdown('AWS IAM Login Profile for user '.format(user_name),
+    human_readable = tableToMarkdown('AWS IAM Login Profile for user {}'.format(user_name),
                                      t=data,
                                      headers=['UserName', 'CreateDate', 'PasswordResetRequired'],
                                      headerTransform=pascalToSpace)
