@@ -1164,7 +1164,7 @@ script:
     - contextPath: Redlock.Scans.scanAttributes.userId
       description: Scan user id attribute.
       type: String
-    - contextPath: Redlock.Scans.ascanTime
+    - contextPath: Redlock.Scans.scanTime
       description: Scan scan time attribute.
       type: Date
     - contextPath: Redlock.Scans.status

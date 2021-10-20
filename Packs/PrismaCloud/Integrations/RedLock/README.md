@@ -1044,30 +1044,30 @@ List DevOps Scans
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Redlock.Scans.attributes.deployed | Boolean | Scan deployed attribute. | 
-| Redlock.Scans.attributes.fail | Number | Scan fail attribute. | 
-| Redlock.Scans.attributes.failureCriteria | String | Scan failure criteria attribute. | 
-| Redlock.Scans.attributes.matchedPoliciesSummary.high | Number | Scan matched policies summary attribute. | 
-| Redlock.Scans.attributes.matchedPoliciesSummary.low | Number | Scan matched low policies summary attribute. | 
-| Redlock.Scans.attributes.matchedPoliciesSummary.medium | Number | Scan matched medium policies summary attribute. | 
-| Redlock.Scans.attributes.merged | Boolean | Scan merged attribute. | 
-| Redlock.Scans.attributes.name | String | Scan name attribute. | 
-| Redlock.Scans.attributes.pass | Number | Scan pass attribute. | 
-| Redlock.Scans.attributes.scanAttributes.appliedAlertRules | String | Scan applied alert rules attribute. | 
-| Redlock.Scans.attributes.scanAttributes.branch | String | Scan Scan branch attribute. | 
-| Redlock.Scans.attributes.scanAttributes.org | String | Scan org attribute. | 
-| Redlock.Scans.attributes.scanAttributes.pullRequestId | String | Scan PR ID attribute. | 
-| Redlock.Scans.attributes.scanAttributes.repository | String | Scan repository attribute. | 
-| Redlock.Scans.attributes.scanAttributes.resourcesScanned | String | Scan resources scanned attribute. | 
-| Redlock.Scans.attributes.scanAttributes.templateType | String | Scan template type attribute. | 
-| Redlock.Scans.attributes.scanAttributes.triggeredOn | String | Scan triggered on attribute. | 
-| Redlock.Scans.attributes.scanAttributes.userId | String | Scan user id attribute. | 
-| Redlock.Scans.attributes.scanTime | Date | Scan scan time attribute. | 
-| Redlock.Scans.attributes.status | String | Scan status attribute. | 
-| Redlock.Scans.attributes.tags.name | String | Scan tags name attribute. | 
-| Redlock.Scans.attributes.tags.value | String | Scan tags value attribute. | 
-| Redlock.Scans.attributes.type | String | Scan type attribute. | 
-| Redlock.Scans.attributes.user | String | Scan user attribute. | 
+| Redlock.Scans.deployed | Boolean | Scan deployed attribute. | 
+| Redlock.Scans.fail | Number | Scan fail attribute. | 
+| Redlock.Scans.failureCriteria | String | Scan failure criteria attribute. | 
+| Redlock.Scans.matchedPoliciesSummary.high | Number | Scan matched policies summary attribute. | 
+| Redlock.Scans.matchedPoliciesSummary.low | Number | Scan matched low policies summary attribute. | 
+| Redlock.Scans.matchedPoliciesSummary.medium | Number | Scan matched medium policies summary attribute. | 
+| Redlock.Scans.merged | Boolean | Scan merged attribute. | 
+| Redlock.Scans.name | String | Scan name attribute. | 
+| Redlock.Scans.pass | Number | Scan pass attribute. | 
+| Redlock.Scans.scanAttributes.appliedAlertRules | String | Scan applied alert rules attribute. | 
+| Redlock.Scans.scanAttributes.branch | String | Scan Scan branch attribute. | 
+| Redlock.Scans.scanAttributes.org | String | Scan org attribute. | 
+| Redlock.Scans.scanAttributes.pullRequestId | String | Scan PR ID attribute. | 
+| Redlock.Scans.scanAttributes.repository | String | Scan repository attribute. | 
+| Redlock.Scans.scanAttributes.resourcesScanned | String | Scan resources scanned attribute. | 
+| Redlock.Scans.scanAttributes.templateType | String | Scan template type attribute. | 
+| Redlock.Scans.scanAttributes.triggeredOn | String | Scan triggered on attribute. | 
+| Redlock.Scans.scanAttributes.userId | String | Scan user id attribute. | 
+| Redlock.Scans.scanTime | Date | Scan scan time attribute. | 
+| Redlock.Scans.status | String | Scan status attribute. | 
+| Redlock.Scans.tags.name | String | Scan tags name attribute. | 
+| Redlock.Scans.tags.value | String | Scan tags value attribute. | 
+| Redlock.Scans.type | String | Scan type attribute. | 
+| Redlock.Scans.user | String | Scan user attribute. | 
 | Redlock.Scans.id | String | Scan id. | 
 | Redlock.Scans.links.self | String | Scan links. | 
 | Redlock.Scans.relationships.scanResult.links.related | String | Scan relationships scan result links . | 
@@ -1180,7 +1180,7 @@ Get scan status
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Redlock.Scans.id | String | Scan ID | 
-| Redlock.Scans.attributes.status | String | Scan status | 
+| Redlock.Scans.status | String | Scan status | 
 
 
 #### Command Example
