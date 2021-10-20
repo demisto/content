@@ -13,13 +13,10 @@ configuration:
   name: apikey
   required: true
   type: 4
-- display: Escalation Organization
-  name: escalation_organization
-  required: true
-  type: 0
-- display: Escalation Group
+- display: Reopen Group
+  additionalinfo: Group to send to when reopening
   defaultvalue: Default
-  name: escalation_group
+  name: reopen_group
   required: true
   type: 0
 - display: Trust any certificate (not secure)
@@ -49,10 +46,12 @@ configuration:
   required: false
   type: 15
 - display: Comment entry tag
+  additionalinfo: Adding this tag to a Note will sync as a comment in ZTAP
   defaultvalue: comment
   name: comment_tag
   type: 0
 - display: Escalate entry tag
+  additionalinfo: Adding this tag to a Note will reassign the alert back to CriticalStart SOC
   defaultvalue: escalate
   name: escalate_tag
   type: 0
@@ -141,7 +140,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.9.6.22912
+  dockerimage: demisto/python3:3.9.7.24076
 fromversion: 6.0.0
 defaultmapperin: ZeroTrustAnalyticsPlatform - Incoming Mapper
 defaultclassifier: ZeroTrustAnalyticsPlatform - Classifier

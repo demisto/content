@@ -20,10 +20,6 @@
                     "complex": null,
                     "simple": "assigned_group.organization.name"
                 },
-                "ZTAP Escalate Organization": {
-                    "complex": null,
-                    "simple": "xsoar_escalation_organization"
-                },
                 "ZTAP Trigger Count": {
                     "complex": null,
                     "simple": "event_counts_by_tier.tier1"

@@ -18,6 +18,7 @@ from test_data.api_data import (
     log_data,
     organization_data,
     group_data,
+    user_data,
 )
 from test_data.xsoar_data import (
     alert_response,
@@ -40,8 +41,7 @@ def get_test_client():
     client.comment_tag = TEST_COMMENT_TAG
     client.escalate_tag = TEST_ESCALATE_TAG
     client.input_tag = TEST_INPUT_TAG
-    client.escalation_organization = TEST_ESCALATE_ORG
-    client.escalation_group = TEST_ESCALATE_GROUP
+    client.reopen_group = TEST_ESCALATE_GROUP
     return client
 
 
@@ -53,6 +53,7 @@ def test_fetch_incidents(mocker):
         client, "get_escalation_path", return_value=escalation_path_data()
     )
     mocker.patch.object(client, "get_events", return_value=event_data())
+    mocker.patch.object(client, "get_active_user", return_value=user_data())
 
     last_run = {
         "last_run": "2021-01-01T00:00:00Z",
@@ -99,6 +100,7 @@ def test_fetch_incidents_already_escalated(mocker):
     mocker.patch.object(client, "get_alerts", return_value=alert_data())
     mocker.patch.object(client, "get_escalation_path", return_value=old_escalation_path)
     mocker.patch.object(client, "get_events", return_value=event_data())
+    mocker.patch.object(client, "get_active_user", return_value=user_data())
 
     last_run = {
         "last_run": "2021-01-01T00:00:00Z",
@@ -137,6 +139,7 @@ def test_fetch_incidents_first_fetch(mocker):
         client, "get_escalation_path", return_value=recent_escalation_path
     )
     mocker.patch.object(client, "get_events", return_value=event_data())
+    mocker.patch.object(client, "get_active_user", return_value=user_data())
 
     last_run = {}
     max_fetch = 100
@@ -166,6 +169,7 @@ def test_fetch_incidents_existing_ids(mocker):
         client, "get_escalation_path", return_value=escalation_path_data()
     )
     mocker.patch.object(client, "get_events", return_value=event_data())
+    mocker.patch.object(client, "get_active_user", return_value=user_data())
 
     last_run = {
         "last_run": "2021-05-11T20:11:31Z",
@@ -200,6 +204,7 @@ def test_get_remote_data(mocker):
     mocker.patch.object(client, "get_events", return_value=event_data())
     mocker.patch.object(client, "get_comments", return_value=comment_data())
     mocker.patch.object(client, "get_logs", return_value=log_data())
+    mocker.patch.object(client, "get_active_user", return_value=user_data())
 
     args = {
         "id": "1",
@@ -223,6 +228,7 @@ def test_get_remote_data_no_new_events(mocker):
     mocker.patch.object(client, "get_alert", return_value=alert_data()[0])
     mocker.patch.object(client, "get_comments", return_value=[])
     mocker.patch.object(client, "get_logs", return_value=[])
+    mocker.patch.object(client, "get_active_user", return_value=user_data())
 
     args = {
         "id": "1",
@@ -250,6 +256,7 @@ def test_get_remote_data_closed_incident(mocker):
     mocker.patch.object(client, "get_events", return_value=[])
     mocker.patch.object(client, "get_comments", return_value=[])
     mocker.patch.object(client, "get_logs", return_value=[])
+    mocker.patch.object(client, "get_active_user", return_value=user_data())
 
     client.close_incident = True
     args = {
@@ -288,6 +295,7 @@ def test_get_remote_data_reopen_incident(mocker):
     mocker.patch.object(client, "get_alert", return_value=reopened_alert)
     mocker.patch.object(client, "get_comments", return_value=[])
     mocker.patch.object(client, "get_logs", return_value=[])
+    mocker.patch.object(client, "get_active_user", return_value=user_data())
 
     client.reopen_incident = True
     args = {
@@ -329,6 +337,7 @@ def test_update_remote_system(mocker):
     mocker.patch.object(client, "get_alert", return_value=alert_data()[0])
     mocker.patch.object(client, "get_logs", return_value=[])
     mocker.patch.object(client, "upload_comment")
+    mocker.patch.object(client, "get_active_user", return_value=user_data())
 
     client.close_incident = True
     args = {
@@ -357,6 +366,7 @@ def test_update_remote_system_escalate(mocker):
     mocker.patch.object(client, "get_logs", return_value=[])
     mocker.patch.object(client, "reassign_alert_to_org")
     mocker.patch.object(client, "get_organizations", return_value=organization_data())
+    mocker.patch.object(client, "get_active_user", return_value=user_data())
 
     client.close_incident = True
     args = {
@@ -384,6 +394,7 @@ def test_update_remote_system_closed(mocker):
     mocker.patch.object(client, "get_alert", return_value=alert_data()[0])
     mocker.patch.object(client, "get_logs", return_value=[])
     mocker.patch.object(client, "close_alert")
+    mocker.patch.object(client, "get_active_user", return_value=user_data())
 
     client.close_incident = True
     args = {
@@ -420,6 +431,7 @@ def test_update_remote_system_reopen(mocker):
     mocker.patch.object(client, "get_logs", return_value=[])
     mocker.patch.object(client, "reopen_alert")
     mocker.patch.object(client, "get_groups", return_value=group_data())
+    mocker.patch.object(client, "get_active_user", return_value=user_data())
 
     args = {
         "remoteId": "1",

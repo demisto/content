@@ -44,7 +44,6 @@ def alert_response():
             "xsoar_mirror_id": "1",
             "xsoar_mirror_tags": ["comment_tag", "escalate_tag"],
             "xsoar_input_tag": "input_tag",
-            "xsoar_escalation_organization": "dummy_org",
         },
         {
             "datetime_created": "2021-05-11T20:09:50Z",
@@ -61,7 +60,6 @@ def alert_response():
             "xsoar_mirror_id": "2",
             "xsoar_mirror_tags": ["comment_tag", "escalate_tag"],
             "xsoar_input_tag": "input_tag",
-            "xsoar_escalation_organization": "dummy_org",
         },
     ]
 

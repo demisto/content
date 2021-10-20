@@ -112,7 +112,7 @@ def organization_data():
     return [
         {
             "id": 2,
-            "psa_id": "dummy_org_id",
+            "psa_id": "dummy_id",
             "name": "dummy_org",
             "monitoring_organization": {
                 "id": 1,
@@ -126,7 +126,7 @@ def organization_data():
             "name": "child_org",
             "monitoring_organization": {
                 "id": 1,
-                "psa_id": "csmssp",
+                "psa_id": "dummy_id",
                 "name": "CriticalStart MDR",
             },
         },
@@ -146,3 +146,11 @@ def group_data():
             "organization": {"id": 1, "name": "dummy_org"},
         },
     ]
+
+
+def user_data():
+    return {
+        "id": 1,
+        "name": "Active User",
+        "organization": {"id": 1, "name": "dummy_org", "psa_id": "dummy_id"},
+    }

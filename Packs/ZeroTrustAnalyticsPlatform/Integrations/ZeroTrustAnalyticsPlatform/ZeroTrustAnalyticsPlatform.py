@@ -31,8 +31,10 @@ ZTAP_STATUS_TO_XSOAR = {
     "resolved": "Resolved",
 }
 
+ESCALATE_REASON = "User escalated back to CriticalStart."
+
 # Ignore new comments with this string
-XSOAR_EXCLUDE_MESSAGE = "From Cortex XSOAR"
+XSOAR_EXCLUDE_MESSAGE = "via Cortex XSOAR"
 
 # ISO8601 format with UTC, default in XSOAR
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
@@ -71,8 +73,7 @@ class Client(BaseClient):
         get_attachments=False,
         close_incident=False,
         reopen_incident=False,
-        escalation_organization="",
-        escalation_group="",
+        reopen_group="",
     ):
         headers = {
             "Authorization": api_key,
@@ -88,8 +89,14 @@ class Client(BaseClient):
         self.get_attachments = get_attachments
         self.close_incident = close_incident
         self.reopen_incident = reopen_incident
-        self.escalation_organization = escalation_organization
-        self.escalation_group = escalation_group
+        self.reopen_group = reopen_group
+        self._active_user = None
+
+    @property
+    def active_user(self):
+        if not self._active_user:
+            self._active_user = self.get_active_user()
+        return self._active_user
 
     def http_request(self, method, url_suffix, params, json_data=None):
         response = self._http_request(
@@ -214,31 +221,34 @@ class Client(BaseClient):
         return org["monitoring_organization"]["id"]
 
     def get_reopen_group_id(self):
-        group = self.get_escalation_group()
+        group = self.get_reopen_group()
         return group["id"]
 
-    def get_escalation_group(self):
+    def get_active_user(self):
+        params = {"active_only": True}
+        response = self.http_request(method="GET", url_suffix="/users/", params=params)
+        return response["objects"][0]
+
+    def get_reopen_group(self):
+        active_org_name = self.active_user["organization"]["name"]
         for group in self.get_groups():
-            if (
-                group["organization"]["name"].lower()
-                == self.escalation_organization.lower()
-            ):
-                if group["name"].lower() == self.escalation_group.lower():
+            if group["organization"]["name"].lower() == active_org_name.lower():
+                if group["name"].lower() == self.reopen_group.lower():
                     return group
         full_name = self.get_full_escalation_name()
         raise ValueError(f"Escalation group {full_name} not found")
 
     def get_escalation_organization(self):
-        params = {"q": self.escalation_organization}
+        active_psa_id = self.active_user["organization"]["psa_id"]
+        params = {"q": active_psa_id}
         for org in self.get_organizations(params):
-            if org["name"].lower() == self.escalation_organization.lower():
+            if org["psa_id"] == active_psa_id:
                 return org
-        raise ValueError(
-            f"Escalation organization ({self.escalation_organization}) not found"
-        )
+        raise ValueError(f"Escalation organization ({active_psa_id}) not found")
 
     def get_full_escalation_name(self):
-        return f"{self.escalation_group} ({self.escalation_organization})"
+        active_org_name = self.active_user["organization"]["name"]
+        return f"{self.reopen_group} ({active_org_name})"
 
     def paginate(self, method, url_suffix, params, json_data=None):
         limit = self.PAGINATE_LIMIT
@@ -254,6 +264,10 @@ class Client(BaseClient):
             method=method, url_suffix=url_suffix, params=params, json_data=json_data
         )
         objects = response["objects"]
+
+        view_id = response.get("view")
+        if view_id:
+            params["view"] = view_id
 
         # Additional requests
         total = response["total"]
@@ -532,19 +546,20 @@ def attachment_note_from_link(
 
 
 def was_alert_first_escalated(
-    client: Client, alert_id: str, full_escalation_name: str, since: datetime
+    client: Client, alert_id: str, org_name: str, since: datetime
 ):
     """
     We are searching by alert org assignment time, however an alert could have
     been escalated to a different org. Make sure the alert was escalated
     to the escalation organization within the time window we are searching (last update -> now)
     """
+    # Group names are in the format "PATH NAME (GROUP NAME)"
+    end_of_group = ("(" + org_name + ")").lower()
     escalation_path = client.get_escalation_path(alert_id)
 
     for escalation in escalation_path:
-        if (
-            escalation["type"] == "Group"
-            and escalation["group"].lower() == full_escalation_name.lower()
+        if escalation["type"] == "Group" and escalation["group"].lower().endswith(
+            end_of_group
         ):
             escalation_time = dateparser.parse(escalation["time"])
             # Only check against the first escalation to this organization
@@ -577,14 +592,15 @@ def fetch_incidents(
         )
         existing_ids = []
 
-    full_escalation_name = client.get_full_escalation_name()
+    org_name = client.active_user["organization"]["name"]
+    org_psa_id = client.active_user["organization"]["psa_id"]
     start_time_iso = oldest_alert_time.isoformat()
     now_iso = datetime.now().isoformat() + "Z"
     params = {
         "sort by": "last time org assigned",
         "last time org assigned": f"{start_time_iso}&{now_iso}",
         "incident status": ["open"],
-        "assigned group": full_escalation_name,
+        "assigned organization": org_psa_id,
         "limit": max_fetch,
     }
     alerts = client.get_alerts(params=params)
@@ -600,9 +616,7 @@ def fetch_incidents(
             newest_ids.append(alert_id)
             continue
 
-        if not was_alert_first_escalated(
-            client, alert_id, full_escalation_name, oldest_alert_time
-        ):
+        if not was_alert_first_escalated(client, alert_id, org_name, oldest_alert_time):
             continue
 
         newest_ids.append(alert_id)
@@ -616,9 +630,6 @@ def fetch_incidents(
         alert["xsoar_mirror_id"] = alert_id
         alert["xsoar_mirror_tags"] = [client.comment_tag, client.escalate_tag]
         alert["xsoar_input_tag"] = client.input_tag
-
-        # Escalation org
-        alert["xsoar_escalation_organization"] = client.escalation_organization
 
         incident = alert_to_incident(alert)
         incidents.append(incident)
@@ -721,11 +732,15 @@ def update_remote_system(
 
     if parsed_args.entries:
         for entry in parsed_args.entries:
+            user = str(entry.get("user", ""))
             contents = str(entry.get("contents", ""))
-            text = f"{contents}\n\n{XSOAR_EXCLUDE_MESSAGE}"
+            footer = f"Sent by {user} {XSOAR_EXCLUDE_MESSAGE}"
             if client.comment_tag in entry["tags"]:
+                text = f"{contents}\n\n---\n\n{footer}"
                 client.upload_comment(alert_id, text)
             elif client.escalate_tag in entry["tags"]:
+                footer = ESCALATE_REASON + "\n\n" + footer
+                text = f"{contents}\n\n---\n\n{footer}"
                 try:
                     client.reassign_alert_to_org(
                         alert_id, client.get_escalate_org_id(), text
@@ -753,7 +768,9 @@ def update_remote_system(
             demisto.info(f"Closing ZTAP Alert {alert_id}")
             close_notes = delta_or_data(parsed_args, "closeNotes")
             close_reason = delta_or_data(parsed_args, "closeReason")
-            close_description = f"{XSOAR_EXCLUDE_MESSAGE}: {close_notes}\n\nClose Reason: {close_reason}"
+            close_description = f"{close_notes}\n\nClose Reason: {close_reason}"
+            close_description += "\n\n---\n\nIncident closed in XSOAR."
+            close_description += f"\n\nSent {XSOAR_EXCLUDE_MESSAGE}"
             outcome = XSOAR_STATUS_TO_ZTAP.get(close_reason, "unresolved")
             client.close_alert(alert_id, close_description, outcome)
 
@@ -765,7 +782,7 @@ def update_remote_system(
             and local_last_reopened > remote_last_closed
         ):
             demisto.info(f"Reopening ZTAP Alert {alert_id}")
-            close_description = f"{XSOAR_EXCLUDE_MESSAGE}: Incident reopened."
+            close_description = f"Incident reopened in XSOAR.---\n\nSent {XSOAR_EXCLUDE_MESSAGE}"
             client.reopen_alert(
                 alert_id, client.get_reopen_group_id(), close_description
             )
@@ -822,7 +839,7 @@ def test_module(client: Client) -> str:
     try:
         client.get_alerts(params=params)
         client.get_escalation_organization()
-        client.get_escalation_group()
+        client.get_reopen_group()
         message = "ok"
     except DemistoException as e:
         if "Unauthorized" in str(e):
@@ -856,8 +873,7 @@ def main() -> None:
     get_attachments = params.get("get_attachments", False)
     close_incident = params.get("close_incident", False)
     reopen_incident = params.get("reopen_incident", False)
-    escalation_organization = params.get("escalation_organization", "")
-    escalation_group = params.get("escalation_group", "Default")
+    reopen_group = params.get("reopen_group", "Default")
 
     demisto.debug(f"Command being called is {demisto.command()}")
     try:
@@ -873,8 +889,7 @@ def main() -> None:
             get_attachments=get_attachments,
             close_incident=close_incident,
             reopen_incident=reopen_incident,
-            escalation_organization=escalation_organization,
-            escalation_group=escalation_group,
+            reopen_group=reopen_group,
         )
 
         if demisto.command() == "test-module":
