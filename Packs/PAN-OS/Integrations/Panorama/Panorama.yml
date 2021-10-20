@@ -226,6 +226,8 @@ script:
       defaultValue: "true"
     - name: description
       description: Push description.
+    description: Pushes rules from PAN-OS to the configured device group. In order to push the configuration to Prisma Access managed tenants (single or multi tenancy), use the device group argument with the device group which is associated with the tenant ID.
+    name: panorama-push-to-device-group
     outputs:
     - contextPath: Panorama.Push.DeviceGroup
       description: Device group in which the policies were pushed.
