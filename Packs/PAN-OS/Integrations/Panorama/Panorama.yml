@@ -2414,6 +2414,8 @@ script:
       description: The source IP address.
     - name: source-user
       description: The source user.
+    - name: target
+      description: Target number of the firewall. Use only on a Panorama instance.
     outputs:
     - contextPath: Panorama.SecurityPolicyMatch.Query
       description: Query for the session to test.
