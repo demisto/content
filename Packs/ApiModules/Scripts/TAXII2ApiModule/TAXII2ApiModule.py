@@ -85,7 +85,7 @@ MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS = {
     'delivery': ThreatIntel.KillChainPhases.DELIVERY,
     'weaponization': ThreatIntel.KillChainPhases.WEAPONIZATION,
     'act-on-objectives': ThreatIntel.KillChainPhases.ACT_ON_OBJECTIVES,
-    'command-and-control': ThreatIntel.KillChainPhases.COMMAND_AND_CONTROL
+    'command-and-control': ThreatIntel.KillChainPhases.COMMAND_AND_CONTROL,
 }
 
 
@@ -103,7 +103,7 @@ THREAT_INTEL_TYPE_TO_DEMISTO_TYPES = {
     'intrusion-set': ThreatIntel.ObjectsNames.INTRUSION_SET,
     'tool': ThreatIntel.ObjectsNames.TOOL,
     'threat-actor': ThreatIntel.ObjectsNames.THREAT_ACTOR,
-    'infrastructure': ThreatIntel.ObjectsNames.INFRASTRUCTURE
+    'infrastructure': ThreatIntel.ObjectsNames.INFRASTRUCTURE,
 }
 
 
@@ -122,8 +122,8 @@ class Taxii2FeedClient:
             tags: Optional[list] = None,
             tlp_color: Optional[str] = None,
             limit_per_request: int = DFLT_LIMIT_PER_REQUEST,
-            cert_text: str = None,
-            key_text: str = None
+            certificate: str = None,
+            key: str = None,
     ):
         """
         TAXII 2 Client used to poll and parse indicators in XSOAR formar
@@ -138,8 +138,8 @@ class Taxii2FeedClient:
         :param tags: custom tags to be added to the created indicator
         :param limit_per_request: Limit the objects requested per poll request
         :param tlp_color: Traffic Light Protocol color
-        :param cert_text: Certificate File as Text
-        :param key_text: Key File as Text
+        :param certificate: TLS Certificate
+        :param key: TLS Certificate key
         """
         self._conn = None
         self.server = None
@@ -174,24 +174,10 @@ class Taxii2FeedClient:
             else:
                 self.auth = requests.auth.HTTPBasicAuth(username, password)
 
-        if (cert_text and not key_text) or (not cert_text and key_text):
-            raise Exception('You can not configure either certificate text or key, both are required.')
-        if cert_text and key_text:
-
-            cert_text_list = cert_text.split('-----')
-            # replace spaces with newline characters
-            cert_text_fixed = '-----'.join(cert_text_list[:2] + [cert_text_list[2].replace(' ', '\n')] + cert_text_list[3:])
-            cf = tempfile.NamedTemporaryFile(delete=False)
-            cf.write(cert_text_fixed.encode())
-            cf.flush()
-
-            key_text_list = key_text.split('-----')
-            # replace spaces with newline characters
-            key_text_fixed = '-----'.join(key_text_list[:2] + [key_text_list[2].replace(' ', '\n')] + key_text_list[3:])
-            kf = tempfile.NamedTemporaryFile(delete=False)
-            kf.write(key_text_fixed.encode())
-            kf.flush()
-            self.crt = (cf.name, kf.name)
+        if (certificate and not key) or (not certificate and key):
+            raise DemistoException('You can not configure either certificate or key, both should be provided.')
+        if certificate and key:
+            self.crt = (self.build_certificate(certificate), self.build_certificate(key))
 
         self.field_map = field_map if field_map else {}
         self.tags = tags if tags else []
@@ -290,7 +276,18 @@ class Taxii2FeedClient:
         self.init_collection_to_fetch()
 
     @staticmethod
-    def get_indicator_publication(indicator: Dict[str: Any]) -> Dict[str: Any]:
+    def build_certificate(cert_var):
+        var_list = cert_var.split('-----')
+        # replace spaces with newline characters
+        certificate_fixed = '-----'.join(
+            var_list[:2] + [var_list[2].replace(' ', '\n')] + var_list[3:])
+        cf = tempfile.NamedTemporaryFile(delete=False)
+        cf.write(certificate_fixed.encode())
+        cf.flush()
+        return cf.name
+
+    @staticmethod
+    def get_indicator_publication(indicator):
 
         """
         Build publications grid field from the indicator external_references field
@@ -310,7 +307,7 @@ class Taxii2FeedClient:
         return publications
 
     @staticmethod
-    def get_attack_id_and_value_from_name(attack_indicator: Dict[str: Any]) -> Dict[str: Any]:
+    def get_attack_id_and_value_from_name(attack_indicator):
 
         """
         Split indicator name into MITRE ID and indicator value: 'T1108: Redundant Access' -> MITRE ID = T1108,
@@ -327,21 +324,15 @@ class Taxii2FeedClient:
         return ind_id, value
 
     @staticmethod
-    def change_attack_pattern_to_stix_attack_pattern(indicator: Dict[str: Any]) -> Dict[str: Any]:
-        kill_chain_phases = indicator['fields']['killchainphases']
-        del indicator['fields']['killchainphases']
-        description = indicator['fields']['description']
-        del indicator['fields']['description']
-
-        indicator_type = indicator['type']
-        indicator['type'] = f'STIX {indicator_type}'
-        indicator['fields']['stixkillchainphases'] = kill_chain_phases
-        indicator['fields']['stixdescription'] = description
+    def change_attack_pattern_to_stix_attack_pattern(indicator):
+        indicator['type'] = f'STIX {indicator["type"]}'
+        indicator['fields']['stixkillchainphases'] = indicator['fields'].pop('killchainphases', None)
+        indicator['fields']['stixdescription'] = indicator['fields'].pop('description', None)
 
         return indicator
 
     @staticmethod
-    def is_sub_report(report_obj: Dict[str: Any]) -> bool:
+    def is_sub_report(report_obj) -> bool:
         obj_refs = report_obj.get('object_refs', [])
         for obj_ref in obj_refs:
             if obj_ref.startswith('report--'):
@@ -349,7 +340,7 @@ class Taxii2FeedClient:
         return True
 
     @staticmethod
-    def get_ioc_type(indicator: Dict[str: Any], id_to_object: Dict[str: Dict[str:Any]]) -> str:
+    def get_ioc_type(indicator, id_to_object) -> str:
         """
         Get IOC type by extracting it from the pattern field.
 
@@ -477,7 +468,7 @@ class Taxii2FeedClient:
             "type": ThreatIntel.ObjectsNames.REPORT,
             "value": report_obj.get('name'),
             "score": ThreatIntel.ObjectsScore.REPORT,
-            "rawJSON": report_obj
+            "rawJSON": report_obj,
         }
         fields = {
             'stixid': report_obj.get('id'),
@@ -711,7 +702,7 @@ class Taxii2FeedClient:
         intrusion_set["fields"] = fields
         return [intrusion_set]
 
-    def parse_relationships(self, relationships_lst: List[Dict[str: Any]]) -> List[Dict[str: Any]]:
+    def parse_relationships(self, relationships_lst):
         """Parse the Relationships objects retrieved from the feed.
 
         Returns:
@@ -743,7 +734,7 @@ class Taxii2FeedClient:
 
             mapping_fields = {
                 'lastseenbysource': relationships_object.get('modified'),
-                'firstseenbysource': relationships_object.get('created')
+                'firstseenbysource': relationships_object.get('created'),
             }
 
             entity_a = self.get_ioc_value(relationships_object.get('source_ref'), self.id_to_object)
@@ -816,7 +807,7 @@ class Taxii2FeedClient:
         return indicators
 
     def parse_generator_type_envelope(self, envelopes: Dict[str, Union[types.GeneratorType, Dict[str, str]]],
-                                      parse_objects_func: Dict[str, Any]) -> List[Dict[str: Any]]:
+                                      parse_objects_func):
         indicators = []
         relationships_lst = []
         for obj_type, envelope in envelopes.items():
@@ -842,7 +833,7 @@ class Taxii2FeedClient:
         return indicators
 
     def parse_dict_envelope(self, envelopes: Dict[str, Union[types.GeneratorType, Dict[str, str]]],
-                            parse_objects_func: Dict[str, Any], limit: int = -1) -> List[Dict[str: Any]]:
+                            parse_objects_func, limit: int = -1):
         indicators = []
         relationships_list = []
         for obj_type, envelope in envelopes.items():
