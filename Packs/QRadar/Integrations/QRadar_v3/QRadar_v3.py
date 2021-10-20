@@ -1501,9 +1501,9 @@ def long_running_execution_command(client: Client, params: Dict):
     mirror_direction = MIRROR_DIRECTION.get(params.get('mirror_options', DEFAULT_MIRRORING_DIRECTION))
     while True:
         try:
+            print_debug_msg(f'Starting fetch loop. Fetch mode: {fetch_mode}.')
             is_reset_triggered(handle_reset=True)
             ctx = get_integration_context()
-            print_debug_msg(f'Starting fetch loop. Fetch mode: {fetch_mode}.')
             incidents, new_highest_id = get_incidents_long_running_execution(
                 client=client,
                 offenses_per_fetch=offenses_per_fetch,
