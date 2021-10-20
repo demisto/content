@@ -10,12 +10,12 @@ def test_wildfire_report(mocker):
     Given:
         A sha256 represents a file uploaded to WildFire.
     When:
-        wildfire-get-report command is running.
+        internal-wildfire-get-report command is running.
     Then:
         Ensure that the command is running as expected.
     """
     mock_sha256 = 'abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890'
-    mocker.patch.object(demisto, 'command', return_value='wildfire-get-report')
+    mocker.patch.object(demisto, 'command', return_value='internal-wildfire-get-report')
     mocker.patch.object(demisto, 'params', return_value={'server': 'https://test.com/', 'token': '123456'})
     mocker.patch.object(demisto, 'args', return_value={'sha256': mock_sha256})
 
@@ -40,12 +40,12 @@ def test_report_not_found(mocker):
     Given:
         A sha256 represents a file not uploaded to WildFire.
     When:
-        wildfire-get-report command is running.
+        internal-wildfire-get-report command is running.
     Then:
         Ensure that the command is running as expected.
     """
     mock_sha256 = 'abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567891'
-    mocker.patch.object(demisto, 'command', return_value='wildfire-get-report')
+    mocker.patch.object(demisto, 'command', return_value='internal-wildfire-get-report')
     mocker.patch.object(demisto, 'params', return_value={'server': 'https://test.com/', 'token': '123456'})
     mocker.patch.object(demisto, 'args', return_value={'sha256': mock_sha256})
     demisto_mock = mocker.patch.object(demisto, 'results')
@@ -63,27 +63,17 @@ def test_incorrect_sha256(mocker):
     Given:
         An incorrect sha256.
     When:
-        wildfire-get-report command is running.
+        internal-wildfire-get-report command is running.
     Then:
         Ensure that the command is running as expected.
     """
     mock_sha256 = 'abcdef1234567890abcdef1234567890abcdef1234567890abcdef123456789'  # The length is 63 insteadof 64
-    mocker.patch.object(demisto, 'command', return_value='wildfire-get-report')
+    mocker.patch.object(demisto, 'command', return_value='internal-wildfire-get-report')
     mocker.patch.object(demisto, 'params', return_value={'server': 'https://test.com/', 'token': '123456'})
     mocker.patch.object(demisto, 'args', return_value={'sha256': mock_sha256})
     demisto_mock = mocker.patch.object(demisto, 'results')
-    expected_error = {'title': "Couldn't fetch the Wildfire report.",
-                      'description': 'Failed to download report.\nError:\nInvalid hash. Only SHA256 are supported.',
-                      'techInfo': 'Failed to execute command wildfire-get-report.\nError:\nInvalid hash. Only SHA256 '
-                                  'are supported.\nTrace back:\nTraceback (most recent call last):\n  File '
-                                  '"/Users/meichler/dev/demisto/content/Packs/Palo_Alto_Networks_WildFire/Integrations'
-                                  '/WildFireReports/WildFireReports.py", line 110, in main\n    '
-                                  'wildfire_get_report_command(client, args)\n  File "/Users/meichler/dev/demisto/'
-                                  'content/Packs/Palo_Alto_Networks_WildFire/Integrations/WildFireReports/'
-                                  'WildFireReports.py", line 48, in wildfire_get_report_command\n    '
-                                  'raise Exception(\'Invalid hash. Only SHA256 are supported.\')\nException: '
-                                  'Invalid hash. Only SHA256 are supported.\n'}
+    expected_description_error = 'Failed to download report.\nError:\nInvalid hash. Only SHA256 are supported.'
 
     main()
 
-    assert demisto_mock.call_args_list[0].args[0].get('error') == expected_error
+    assert demisto_mock.call_args_list[0].args[0].get('error', {}).get('description') == expected_description_error

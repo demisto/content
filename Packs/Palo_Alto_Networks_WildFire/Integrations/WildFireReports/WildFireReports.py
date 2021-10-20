@@ -28,7 +28,9 @@ class Client(BaseClient):
 def test_module(client: Client) -> str:
     try:
         wildfire_hash_example = 'dca86121cc7427e375fd24fe5871d727'  # guardrails-disable-line
-        client.get_file_report(wildfire_hash_example)
+        res = client.get_file_report(wildfire_hash_example)
+        if res.status_code == 401:
+            return 'Authorization Error: make sure API Key is correctly set'
     except DemistoException as e:
         if 'Forbidden' in str(e):
             return 'Authorization Error: make sure API Key is correctly set'
@@ -88,12 +90,16 @@ def main():
     if not token:
         token = demisto.getLicenseCustomField("WildFire-Reports.token")
     if not token:
+        if command == 'test-module':
+            return_error('Authorization Error: It\'s seems that the token is empty and you have not a TIM license '
+                         'that is up-to-date, Please fill the token or update your TIM license and try again.')
         return_results({
             'status': 'error',
             'error': {
                 'title': "Couldn't fetch the Wildfire report.",
                 'description': "The token can't be empty.",
-                'techInfo': "The token can't be empty, Please fill the token in the instance configuration or in the license."
+                'techInfo': "The token can't be empty, Please fill the token in the instance configuration "
+                            "or update your TIM license."
             }
         })
         sys.exit()
@@ -117,7 +123,7 @@ def main():
             result = test_module(client)
             return_results(result)
 
-        elif command == 'wildfire-get-report':
+        elif command == 'internal-wildfire-get-report':
             wildfire_get_report_command(client, args)
 
     # Log exceptions and return errors
