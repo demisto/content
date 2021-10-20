@@ -35,17 +35,8 @@ class Client(BaseClient):
         self.get_user('me')
         return 'ok'
 
-    def get_user(self, email: str) -> Optional[IAMUserAppData]:
-        """ Queries the user in the application using REST API by its email, and returns an IAMUserAppData object
-        that holds the user_id, username, is_active and app_data attributes given in the query response.
-
-        :type email: ``str``
-        :param email: Email address of the user
-
-        :return: An IAMUserAppData object if user exists, None otherwise.
-        :rtype: ``Optional[IAMUserAppData]``
-        """
-        uri = f'/users/{email}'
+    def get_user(self, _, filter_value: str) -> Optional[IAMUserAppData]:
+        uri = f'/users/{filter_value}'
 
         res = self._http_request(
             method='GET',
@@ -227,6 +218,7 @@ def main():
                              create_if_not_exists=False,
                              mapper_in=mapper_in,
                              mapper_out=mapper_out,
+                             get_user_iam_attrs=['id', 'emails']
                              )
     client = Client(
         base_url=BASE_URL,

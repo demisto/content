@@ -1,5 +1,6 @@
 from Zoom_IAM import Client
 from IAMApiModule import *
+import pytest
 
 APP_USER_OUTPUT = {
     "user_id": "mock_id",
@@ -50,9 +51,7 @@ def test_disable_user_command__allow_disable(mocker):
     client = mock_client()
     args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com', 'givenname': 'mock_first_name'},
             'allow-disable': 'true'}
-
     mocker.patch.object(client, 'get_user', return_value=USER_APP_DATA)
-    mocker.patch.object(IAMUserProfile, 'map_object', return_value={})
     mocker.patch.object(client, 'disable_user', return_value=DISABLED_USER_APP_DATA)
 
     user_profile = IAMCommand().disable_user(client, args)
