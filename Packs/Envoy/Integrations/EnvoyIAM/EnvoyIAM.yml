@@ -1,7 +1,6 @@
-beta: false
 category: Identity and Access Management
 commonfields:
-  id: ExceedLMS IAM
+  id: Envoy IAM
   version: -1
 configuration:
 - display: Base URL
@@ -45,19 +44,19 @@ configuration:
   name: create_if_not_exists
   required: false
   type: 8
-- defaultvalue: User Profile - ExceedLMS (Incoming)
+- defaultvalue: User Profile - SCIM (Incoming)
   display: Incoming Mapper
   name: mapper_in
   required: true
   type: 0
-- defaultvalue: User Profile - ExceedLMS (Outgoing)
+- defaultvalue: User Profile - SCIM (Outgoing)
   display: Outgoing Mapper
   name: mapper_out
   required: true
   type: 0
-description: Integrate with Exceed LMS Identity Access Management services to execute CRUD operations to employee lifecycle processes.
-display: ExceedLMS IAM
-name: ExceedLMS IAM
+description: Integrate with Envoy Identity Access Management services to execute CRUD operations to employee lifecycle processes.
+display: Envoy IAM
+name: Envoy IAM
 script:
   commands:
   - arguments:
@@ -222,7 +221,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Disables an active user.
+    description: Disable an active user.
     execution: true
     name: iam-disable-user
     outputs:
@@ -263,16 +262,15 @@ script:
     execution: false
     name: get-mapping-fields
   dockerimage: demisto/python3:3.9.7.24076
-  feed: false
   isfetch: false
-  ismappable: true
-  isremotesyncout: true
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
   type: python
+  ismappable: true
+  isremotesyncout: true
 tests:
 - No tests
 fromversion: 6.0.0
