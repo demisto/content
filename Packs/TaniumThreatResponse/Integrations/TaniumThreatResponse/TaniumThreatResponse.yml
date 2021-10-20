@@ -1719,10 +1719,10 @@ script:
       description: The date of the download request.
       type: Date
   - arguments:
-    - description: Intel Document in OpenIOC format containing hashes
+    - description: Intel Document in OpenIOC format containing hashes.
       name: intel-doc
       required: true
-    description: Upload intel document to Tanium Threat Response
+    description: Upload intel document to Tanium Threat Response.
     name: tanium-tr-intel-doc-create
     outputs:
     - contextPath: Tanium.IntelDoc.AlertCount
@@ -1765,10 +1765,10 @@ script:
       command in the `Tanium` integration.
     name: tanium-tr-start-quick-scan
     outputs:
-    - contextPath: Tanium.IntelDoc.ID
+    - contextPath: Tanium.QuickScan.IntelDocId
       description: The unique identifier for this intel in this instance of the system.
       type: number
-    - contextPath: Tanium.ComputerGroup.ID
+    - contextPath: Tanium.QuickScan.ComputerGroupId
       description: The ID of a Tanium computer group.
       type: number
     - contextPath: Tanium.QuickScan.ID
