@@ -4570,6 +4570,8 @@
         },
         {
             "integrations": "Azure Sentinel",
+            "fromversion": "5.5.0",
+            "is_mockable": false,
             "playbookID": "TestAzureSentinelPlaybookV2"
         },
         {
@@ -4799,8 +4801,7 @@
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
         "AttackIQFireDrill": "License issues #29774",
-        "SentinelOne V2": "License expired issue #24933",
-        "Azure Sentinel": "issue with the tenant_id parameter"
+        "SentinelOne V2": "License expired issue #24933"
     },
     "nightly_integrations": [
         "Laline v2",
