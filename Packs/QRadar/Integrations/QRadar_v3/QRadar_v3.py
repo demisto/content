@@ -685,6 +685,8 @@ def safely_update_context_data(func: Callable):
                 except Exception as e:
                     if 'Max retry attempts exceeded' in str(e):
                         continue
+                    else:
+                        raise e
             else:
                 if 'context_data' not in kwargs or 'version' not in kwargs:
                     raise ValueError('context_data and version must be in the func kwargs if '
