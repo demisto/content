@@ -1,5 +1,4 @@
 CyberChef is a web-application developed by GCHQ that's been called the “Cyber Swiss Army Knife”. 
-This integration was integrated and tested with version xx of CyberChef
 
 ## Configure CyberChef on Cortex XSOAR
 
