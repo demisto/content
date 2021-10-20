@@ -1,3 +1,10 @@
+args:
+- default: false
+  description: 'Incident id to create the tasks table'
+  isArray: false
+  name: incident_id
+  required: false
+  secret: false
 commonfields:
   id: GetTasksWithSections
   version: -1
@@ -20,7 +27,7 @@ outputs:
   description: Task name
   type: string
 - contextPath: Tasks.section
-  description: Task section
+  description: Task section path
   type: string
 - contextPath: Tasks.type
   description: The type of the task (regular, condition, title, playbook, start)

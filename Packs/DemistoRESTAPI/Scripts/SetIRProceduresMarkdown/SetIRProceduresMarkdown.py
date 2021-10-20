@@ -14,69 +14,72 @@ from CommonServerPython import *
 from typing import Dict, Any
 import traceback
 
+SECTIONS_TO_KEEY = {'Mitigation', 'Remediation', 'Eradication', 'Threat Hunting'}
 
 ''' COMMAND FUNCTION '''
 
 
-def create_markdown_tasks(args: Dict[str, Any]) -> CommandResults:
-    incident_id = args.get('incident_id')
-    if not incident_id:
-        raise ValueError('Incident ID is required')
-    hunting_task_ids = argToList(args.get('hunting_task_ids'))
-    mitigation_task_ids = argToList(args.get('mitigation_task_ids'))
-    remediation_task_ids = argToList(args.get('remediation_task_ids'))
-    eradication_task_ids = argToList(args.get('eradication_task_ids'))
+def add_url_to_tasks(tasks, workplan_url):
+    tasks = tasks.copy()
+    for task in tasks:
+        task_id = task.get('id')
+        task_url = os.path.join(workplan_url, task_id)
+        task['id'] = f"[{task_id}]({task_url})"
+    return tasks
 
-    all_tasks = list(
-        set(hunting_task_ids) | set(mitigation_task_ids) | set(remediation_task_ids) | set(eradication_task_ids))
-    res = demisto.executeCommand('GetIncidentsTasksById',
-                                 {'incident_id': incident_id, 'task_ids': ','.join(all_tasks)})
+
+def create_markdown_tasks() -> CommandResults:
+    urls = demisto.demistoUrls()
+    workplan_url = urls.get('workPlan')
+    res = demisto.executeCommand('GetTasksWithSections', {})
     if isError(res[0]):
         raise DemistoException('Command GetIncidentsTasksById was not successful')
 
-    tasks = demisto.get(res[0], 'Contents')
-    hunting_table, mitigation_table, remediation_table, eradication_table = get_tables(tasks, eradication_task_ids,
-                                                                                       hunting_task_ids,
-                                                                                       mitigation_task_ids,
-                                                                                       remediation_task_ids)
-    headers = ['Task Name', 'Task State', 'Completion Time']
-    hunting_table_md = tableToMarkdown('Hunting Tasks', hunting_table, headers=headers)
-    mitigation_table_md = tableToMarkdown('Mitigation Tasks', mitigation_table, headers=headers)
-    remediation_table_md = tableToMarkdown('Remediation Tasks', remediation_table, headers=headers)
-    eradication_table_md = tableToMarkdown('Eradication Tasks', eradication_table, headers=headers)
+    all_tasks = []
+    tasks_nested_results = demisto.get(res[0], 'Contents')
+    headers = ['id', 'name', 'state', 'completedDate']
+    md_lst = []
+    for k1, v1 in tasks_nested_results.items():
+        if k1 not in SECTIONS_TO_KEEY:
+            continue
+        if 'tasks' in v1.keys():
+            tasks = list(v1.values())[0]
+            all_tasks.extend(tasks)
+            tasks = add_url_to_tasks(tasks, workplan_url)
+            md_lst.append(tableToMarkdown(k1, tasks, headers=headers)[1:])
+        else:
+            md_lst.append(f'## {k1}')
+            for k2, v2 in v1.items():
+                tasks = list(v2.values())[0]
+                all_tasks.extend(tasks)
+                tasks = add_url_to_tasks(tasks, workplan_url)
+                md_lst.append(tableToMarkdown(k2, tasks, headers=headers))
 
-    full_table = hunting_table_md + mitigation_table_md + remediation_table_md + eradication_table_md
+    completed_tasks = list(filter(lambda x: x.get('state') == 'Completed', all_tasks))
+    hunting_completed_tasks = list(filter(lambda x: 'hunting' in x.get('section').lower(), completed_tasks))
+    mitigation_completed_tasks = list(filter(lambda x: 'mitigation' in x.get('section').lower(), completed_tasks))
+    remediation_completed_tasks = list(filter(lambda x: 'remediation' in x.get('section').lower(), completed_tasks))
+    eradication_completed_tasks = list(filter(lambda x: 'eradication' in x.get('section').lower(), completed_tasks))
 
-    return CommandResults(
-        outputs_prefix='Tasks',
-        outputs_key_field='id',
-        entry_type=EntryType.NOTE,
-        outputs=tasks,
-        readable_output=full_table
-    )
+    number_of_total_tasks = len(all_tasks)
+    number_of_completed_tasks = len(completed_tasks)
+    number_of_remaining_tasks = number_of_total_tasks - number_of_completed_tasks
+    number_of_completed_hunting_tasks = len(hunting_completed_tasks)
+    number_of_completed_mitigation_tasks = len(mitigation_completed_tasks)
+    number_of_completed_remediation_tasks = len(remediation_completed_tasks)
+    number_of_completed_eradication_tasks = len(eradication_completed_tasks)
+    table = assign_params(number_of_total_tasks=number_of_total_tasks,
+                          number_of_completed_tasks=number_of_completed_tasks,
+                          number_of_remaining_tasks=number_of_remaining_tasks,
+                          number_of_completed_hunting_tasks=number_of_completed_hunting_tasks,
+                          number_of_completed_mitigation_tasks=number_of_completed_mitigation_tasks,
+                          number_of_completed_remediation_tasks=number_of_completed_remediation_tasks,
+                          number_of_completed_eradication_tasks=number_of_completed_eradication_tasks)
 
+    md_lst.insert(0, tableToMarkdown('Task Overview', table, headerTransform=string_to_table_header)[2:])
 
-def get_tables(tasks, eradication_task_ids, hunting_task_ids, mitigation_task_ids, remediation_task_ids):
-    hunting_table = []
-    mitigation_table = []
-    remediation_table = []
-    eradication_table = []
-    for task in tasks:
-        task_id = task.get('id')
-        task_name = task.get('name')
-        task_state = task.get('state')
-        task_completion_time = task.get('completedDate') if task.get(
-            'completedDate') != '0001-01-01T00:00:00Z' else 'Not Started'
-        row = {'Task Name': task_name, 'Task State': task_state, 'Completion Time': task_completion_time}
-        if task_id in hunting_task_ids:
-            hunting_table.append(row)
-        if task_id in mitigation_task_ids:
-            mitigation_table.append(row)
-        if task_id in remediation_task_ids:
-            remediation_table.append(row)
-        if task_id in eradication_task_ids:
-            eradication_table.append(row)
-    return hunting_table, mitigation_table, remediation_table, eradication_table
+    md = '\n'.join(md_lst)
+    return CommandResults(readable_output=md)
 
 
 ''' MAIN FUNCTION '''
@@ -84,7 +87,9 @@ def get_tables(tasks, eradication_task_ids, hunting_task_ids, mitigation_task_id
 
 def main():
     try:
-        return_results(create_markdown_tasks(demisto.args()))
+        return_results(
+            create_markdown_tasks()
+        )
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute SetIRProceduresMarkdown. Error: {str(ex)}')
@@ -92,5 +97,5 @@ def main():
 
 ''' ENTRY POINT '''
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ('__main__', '__builtin__', 'builtins',):
     main()

@@ -1,80 +1,13 @@
-args:
-- default: false
-  description: 'Incident id to create the tasks table'
-  isArray: false
-  name: incident_id
-  required: false
-  secret: false
-- default: false
-  description: 'Comma separated list of hunting tasks ids '
-  isArray: true
-  name: hunting_task_ids
-  required: false
-  secret: false
-- default: false
-  description: 'Comma separated list of mitigation tasks ids '
-  isArray: true
-  name: mitigation_task_ids
-  required: false
-  secret: false
-- default: false
-  description: 'Comma separated list of remediation tasks ids '
-  isArray: true
-  name: remediation_task_ids
-  required: false
-  secret: false
-- default: false
-  description: 'Comma separated list of eradication tasks ids '
-  isArray: true
-  name: eradication_task_ids
-  required: false
-  secret: false
-comment: 'Creates a markdown table based on te info of the GetIncidentTasksById command'
+comment: 'Creates a markdown table based on te info of the GetTasksWithSection command'
 commonfields:
   id: SetIRProceduresMarkdown
   version: -1
 enabled: false
 name: SetIRProceduresMarkdown
-outputs:
-- contextPath: Tasks
-  description: The entire task object
-- contextPath: Tasks.id
-  description: Task ID
-  type: string
-- contextPath: Tasks.name
-  description: Task name
-  type: string
-- contextPath: Tasks.type
-  description: The type of the task (regular, condition, title, playbook, start)
-  type: string
-- contextPath: Tasks.owner
-  description: Task owner
-  type: string
-- contextPath: Tasks.state
-  description: Task state (inprogress, Completed, WillNotBeExecuted, Error, Waiting, Blocked, and empty string for not started)
-  type: string
-- contextPath: Tasks.scriptId
-  description: Task related script (empty if manual)
-  type: string
-- contextPath: Tasks.startDate
-  description: Task start date
-  type: unknown
-- contextPath: Tasks.completedDate
-  description: Task completed date
-  type: unknown
-- contextPath: Tasks.dueDate
-  description: Task due date (SLA)
-  type: unknown
-- contextPath: Tasks.parentPlaybookID
-  description: Task parent playbook ID (in case the task is part of sub-playbook)
-  type: unknown
-- contextPath: Tasks.completedBy
-  description: Task completed by (username)
-  type: string
 script: '-'
 system: false
 tags:
-- Utility
+- dynamic-section
 timeout: '0'
 type: python
 subtype: python3
