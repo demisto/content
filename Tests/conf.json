@@ -4581,6 +4581,24 @@
         {
             "playbookID": "IndicatorMaliciousRatioCalculation_test",
             "fromversion": "5.0.0"
+        },
+        {
+            "playbookID": "MISPfeed Test",
+            "fromversion": "5.5.0",
+            "integrations": [
+                "MISP Feed"
+            ]
+        },
+        {
+            "integrations": [
+                "MISP Feed",
+                "Demisto REST API"
+            ],
+            "playbookID": "Fetch Indicators Test",
+            "fromversion": "6.0.0",
+            "is_mockable": false,
+            "instance_names": "MISP_feed_instance",
+            "timeout": 2400
         }
     ],
     "skipped_tests": {
