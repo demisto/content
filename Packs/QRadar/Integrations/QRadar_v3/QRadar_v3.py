@@ -1638,7 +1638,7 @@ def print_mirror_events_stats(context_data: dict, stage: str) -> Set[str]:
     updated = context_data.get(UPDATED_MIRRORED_OFFENSES_CTX_KEY, [])
     waiting_for_update = context_data.get(MIRRORED_OFFENSES_CTX_KEY, [])
     resubmitted_ids = context_data.get(RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY, [])
-    last_fetch_key = context_data.get(LAST_FETCH_KEY, '0')
+    last_fetch_key = context_data.get(LAST_FETCH_KEY, 'Missing')
     last_mirror_update = context_data.get('last_mirror_update', 0)
     samples = context_data.get('samples', [])
     sample_length = 0
@@ -1666,7 +1666,7 @@ def move_updated_offenses(context_data: dict, version: Any, include_context_data
         include_context_data: The context data changes to include
         updated_list: The list of updated offenses
 
-    Returns: (The new context data, the context data version the changes were based on, None)
+    Returns: (The new context data, the context data version the changes were based on, The new context_data)
     """
     new_context_data = include_context_data.copy()
     if updated_list:
@@ -1675,9 +1675,15 @@ def move_updated_offenses(context_data: dict, version: Any, include_context_data
         not_updated_list = exclude_lists(original=context_data.get(MIRRORED_OFFENSES_CTX_KEY, []),
                                          exclude=updated_list, key="id")
         new_context_data.update({UPDATED_MIRRORED_OFFENSES_CTX_KEY: all_updated_mirrored_offenses,
-                                 MIRRORED_OFFENSES_CTX_KEY: not_updated_list})  # type: ignore
-    print_mirror_events_stats(new_context_data, "Long Running Command - After Update")
-    return encode_context_data(new_context_data, include_id=True), version, None
+                                 MIRRORED_OFFENSES_CTX_KEY: not_updated_list,
+                                 RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY:
+                                     context_data.get(RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY, [])})  # type: ignore
+        if not new_context_data.get('samples'):
+            new_context_data.update({'samples': context_data.get('samples')})
+        if not new_context_data.get('last_mirror_update'):
+            new_context_data.update({'last_mirror_update': str(context_data.get('last_mirror_update', 0))})
+
+    return encode_context_data(new_context_data, include_id=True), version, new_context_data
 
 
 def long_running_execution_command(client: Client, params: Dict):
@@ -1733,7 +1739,8 @@ def long_running_execution_command(client: Client, params: Dict):
                 mirror_direction=mirror_direction
             )
 
-            context_data = extract_context_data(ctx.copy(), include_id=True)
+            orig_context_data = extract_context_data(ctx.copy(), include_id=True)
+            context_data = {LAST_FETCH_KEY: orig_context_data.get(LAST_FETCH_KEY)}
 
             updated_mirrored_offenses = None
             if mirror_options == MIRROR_OFFENSE_AND_EVENTS:
@@ -1754,8 +1761,11 @@ def long_running_execution_command(client: Client, params: Dict):
 
                 demisto.createIncidents(incidents)
 
-            move_updated_offenses(context_data=ctx, version=ctx_version, include_context_data=context_data,
-                                  updated_list=updated_mirrored_offenses)
+            new_context_data = move_updated_offenses(context_data=ctx, version=ctx_version,
+                                                     include_context_data=context_data,
+                                                     updated_list=updated_mirrored_offenses)
+
+            print_mirror_events_stats(new_context_data, "Long Running Command - After Update")
 
         except Exception:
             demisto.error('Error occurred during long running loop')
