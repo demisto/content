@@ -290,7 +290,7 @@ class Taxii2FeedClient:
         self.init_collection_to_fetch()
 
     @staticmethod
-    def get_indicator_publication(indicator):
+    def get_indicator_publication(indicator: Dict[str: Any]) -> Dict[str: Any]:
 
         """
         Build publications grid field from the indicator external_references field
@@ -310,7 +310,7 @@ class Taxii2FeedClient:
         return publications
 
     @staticmethod
-    def get_attack_id_and_value_from_name(attack_indicator):
+    def get_attack_id_and_value_from_name(attack_indicator: Dict[str: Any]) -> Dict[str: Any]:
 
         """
         Split indicator name into MITRE ID and indicator value: 'T1108: Redundant Access' -> MITRE ID = T1108,
@@ -327,7 +327,7 @@ class Taxii2FeedClient:
         return ind_id, value
 
     @staticmethod
-    def change_attack_pattern_to_stix_attack_pattern(indicator: dict):
+    def change_attack_pattern_to_stix_attack_pattern(indicator: Dict[str: Any]) -> Dict[str: Any]:
         kill_chain_phases = indicator['fields']['killchainphases']
         del indicator['fields']['killchainphases']
         description = indicator['fields']['description']
@@ -341,7 +341,7 @@ class Taxii2FeedClient:
         return indicator
 
     @staticmethod
-    def is_sub_report(report_obj):
+    def is_sub_report(report_obj: Dict[str: Any]) -> bool:
         obj_refs = report_obj.get('object_refs', [])
         for obj_ref in obj_refs:
             if obj_ref.startswith('report--'):
@@ -349,7 +349,7 @@ class Taxii2FeedClient:
         return True
 
     @staticmethod
-    def get_ioc_type(indicator, id_to_object):
+    def get_ioc_type(indicator: Dict[str: Any], id_to_object: Dict[str: Dict[str:Any]]) -> str:
         """
         Get IOC type by extracting it from the pattern field.
 
@@ -369,7 +369,7 @@ class Taxii2FeedClient:
                 break
         return ioc_type
 
-    def update_last_modified_indicator_date(self, indicator_modified_str):
+    def update_last_modified_indicator_date(self, indicator_modified_str: str):
         if self.last_fetched_indicator__modified is None:
             self.last_fetched_indicator__modified = indicator_modified_str  # type: ignore[assignment]
         else:
@@ -464,7 +464,7 @@ class Taxii2FeedClient:
 
         return [attack_pattern]
 
-    def parse_report(self, report_obj):
+    def parse_report(self, report_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
         """
         Parses a single report object
         :param report_obj: report object
@@ -527,7 +527,7 @@ class Taxii2FeedClient:
 
         return [threat_actor]
 
-    def parse_infrastructure(self, infrastructure_obj):
+    def parse_infrastructure(self, infrastructure_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
         """
         Parses a single infrastructure object
         :param infrastructure_obj: infrastructure object
@@ -711,7 +711,7 @@ class Taxii2FeedClient:
         intrusion_set["fields"] = fields
         return [intrusion_set]
 
-    def parse_relationships(self, relationships_lst):
+    def parse_relationships(self, relationships_lst: List[Dict[str: Any]]) -> List[Dict[str: Any]]:
         """Parse the Relationships objects retrieved from the feed.
 
         Returns:
@@ -816,7 +816,7 @@ class Taxii2FeedClient:
         return indicators
 
     def parse_generator_type_envelope(self, envelopes: Dict[str, Union[types.GeneratorType, Dict[str, str]]],
-                                      parse_objects_func: Dict[str, Any]):
+                                      parse_objects_func: Dict[str, Any]) -> List[Dict[str: Any]]:
         indicators = []
         relationships_lst = []
         for obj_type, envelope in envelopes.items():
@@ -842,7 +842,7 @@ class Taxii2FeedClient:
         return indicators
 
     def parse_dict_envelope(self, envelopes: Dict[str, Union[types.GeneratorType, Dict[str, str]]],
-                            parse_objects_func: Dict[str, Any], limit: int = -1):
+                            parse_objects_func: Dict[str, Any], limit: int = -1) -> List[Dict[str: Any]]:
         indicators = []
         relationships_list = []
         for obj_type, envelope in envelopes.items():
