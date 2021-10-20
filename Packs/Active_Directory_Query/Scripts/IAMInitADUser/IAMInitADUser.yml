@@ -49,6 +49,17 @@ args:
   name: notification_email_template_list_name
   required: false
   secret: false
+- default: false
+  description: Whether or not to send emails (used for developing purposes).
+  isArray: false
+  name: send_email
+  required: false
+  secret: false
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  defaultValue: "true"
 comment: |-
   - Generates a password.
   - Sets an Active Directory user account with this password.

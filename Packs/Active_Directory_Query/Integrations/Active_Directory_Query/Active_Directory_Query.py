@@ -34,7 +34,6 @@ COOMON_ACCOUNT_CONTROL_FLAGS = {
 }
 NORMAL_ACCOUNT = 512
 DISABLED_ACCOUNT = 514
-PASSWORD_NOT_REQUIRED = 544
 INACTIVE_LIST_OPTIONS = [514, 546, 66050, 66082, 262658, 262690, 328226]
 DEFAULT_LIMIT = 20
 
@@ -1291,7 +1290,7 @@ def enable_user_iam(default_base_dn, dn, disabled_users_group_cn):
     :param disabled_users_group_cn: The disabled group cn, the user will be removed from this group when enabled
     """
     modification = {
-        'userAccountControl': [('MODIFY_REPLACE', PASSWORD_NOT_REQUIRED)]
+        'userAccountControl': [('MODIFY_REPLACE', NORMAL_ACCOUNT)]
     }
     modify_object(dn, modification)
     if disabled_users_group_cn:

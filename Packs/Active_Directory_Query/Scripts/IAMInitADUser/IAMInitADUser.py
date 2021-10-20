@@ -28,12 +28,13 @@ def main():
     user_profile = safe_load_json(args.get('user_profile'))
     sam_account_name = args.get('sAMAccountName')
 
-    should_enable_user = args.get('enable_user') == 'true'
+    should_enable_user = argToBoolean(args.get('enable_user'))
 
     manager_email_template_list_name = args.get('manager_email_template_list_name')
 
     notification_emails_list = args.get('notification_email_addresses')
     notification_email_template_list_name = args.get('notification_email_template_list_name')
+    should_send_email = argToBoolean(args.get('send_mail'))
 
     try:
         user_data = safe_load_json(user_profile)
@@ -65,12 +66,14 @@ def main():
         # Send email to manager, unless the user is an acquisition hire
         if user_data.get('acquisitionhire', '').lower() != 'yes' and manager_email:
             email_body = Template(manager_email_template or DEFAULT_EMAIL_TEMPLATE).safe_substitute(**user_data)
-            send_email(manager_email, email_subject, email_body)
+            if should_send_email:
+                send_email(manager_email, email_subject, email_body)
             demisto.debug(f'IAMInitADUser: Sent email with user {sam_account_name} details to manager.')
 
         # Send email to notification_emails_list
         email_body = Template(notification_email_template or DEFAULT_EMAIL_TEMPLATE).safe_substitute(**user_data)
-        send_email(notification_emails_list, email_subject, email_body)
+        if should_send_email:
+            send_email(notification_emails_list, email_subject, email_body)
         demisto.debug(f'IAMInitADUser: Sent a notification email with user {sam_account_name} details.')
 
         outputs['success'] = True
