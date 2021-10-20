@@ -126,7 +126,7 @@ def test_poll_collection(mocker):
     assert res == expected_result
 
 
-@pytest.mark.parametrize('tags', (['tags1, tags2'], []))
+@pytest.mark.parametrize('tags', (['title', 'description'], []))
 def test_tags_parameter(mocker, tags):
     """
     Given:
@@ -141,4 +141,4 @@ def test_tags_parameter(mocker, tags):
         raw_indicators = json.load(f)
         mocker.patch.object(client, 'build_iterator', return_value=raw_indicators)
         res = fetch_indicators_command(client)
-        assert tags == res[0]['fields']['tags']
+        assert tags == list(res[0]['fields'].keys())
