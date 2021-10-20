@@ -1719,10 +1719,29 @@ script:
       description: The date of the download request.
       type: Date
   - arguments:
-    - description: Intel Document in OpenIOC format containing hashes.
-      name: intel-doc
+    - default: false
+      description: The file entry ID.
+      isArray: false
+      name: entry_id
       required: true
-    description: Upload intel document to Tanium Threat Response.
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The suffix at the end of a filename. (Available file types - yara,
+        stix, ioc)
+      isArray: false
+      name: file_extension
+      predefined:
+      - ioc
+      - yara
+      - stix
+      required: true
+      secret: false
+    deprecated: false
+    description: Add a new intel document to the system by providing its document
+      contents.
+    execution: false
+    hidden: false
     name: tanium-tr-intel-doc-create
     outputs:
     - contextPath: Tanium.IntelDoc.AlertCount

@@ -3,21 +3,18 @@ from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
 
-
 import ast
 import json
 import os
 import urllib.parse
-from typing import Any
+from typing import Any, Tuple
 
 import urllib3
 from dateutil.parser import parse
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-
 ''' GLOBALS/PARAMS '''
-
 
 FETCH_TIME = demisto.params().get('fetch_time')
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
@@ -1264,19 +1261,44 @@ def get_process_timeline(client, data_args):
     return human_readable, outputs, raw_response
 
 
+def get_file_data(entry_id: str) -> Tuple[str, str, str]:
+    """ Gets a file name and content from the file's entry ID.
+
+        :type entry_id: ``str``
+        :param entry_id:
+            the file's entry ID.
+
+        :return: file name, path and content
+        :rtype: ``tuple``
+
+    """
+    file = demisto.getFilePath(entry_id)
+    file_path = file.get('path')
+    file_name = file.get('name')
+    with open(file_path, 'r') as f:
+        file_content = f.read()
+    return file_name, file_path, file_content
+
+
 def intel_doc_create(client, data_args):
-    # OpenIOC format is XML
-    headers = {
-        'Content-Type': 'application/xml'
-    }
+    entry_id = data_args.get('entry_id')
+    file_extension = data_args.get('file_extension')
+
+    try:
+        file_name, _, file_content = get_file_data(str(entry_id))
+    except Exception as e:
+        raise DemistoException(f'Check your file entry ID.\n{str(e)}')
+
     raw_response = client.do_request('POST', '/plugin/products/detect3/api/v1/intels/',
-                                     data=data_args.get('intel-doc'), headers=headers)
+                                     headers={'Content-Disposition': f'filename=file.{file_extension}',
+                                              'Content-Type': 'application/xml'}, data=file_content)
     intel_doc = get_intel_doc_item(raw_response)
 
     context = createContext(intel_doc, removeNull=True)
     outputs = {'Tanium.IntelDoc(val.ID && val.ID === obj.ID)': context}
 
-    intel_doc['LabelIds'] = str(intel_doc['LabelIds']).strip('[]')
+    if intel_doc:
+        intel_doc['LabelIds'] = str(intel_doc['LabelIds']).strip('[]')
 
     human_readable = tableToMarkdown('Intel Doc uploaded', intel_doc, headerTransform=pascalToSpace, removeNull=True)
 
