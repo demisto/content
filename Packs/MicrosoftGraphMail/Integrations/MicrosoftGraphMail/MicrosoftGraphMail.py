@@ -7,6 +7,7 @@ from typing import Union, Optional
 import requests
 import base64
 import binascii
+from urllib.parse import urlencode, quote_plus
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -113,7 +114,7 @@ class MsGraphClient:
         odata = f'{odata}&$top={page_size}' if odata else f'$top={page_size}'
 
         if search:
-            odata = f'{odata}&$search="{search}"'
+            odata = f'{odata}&$search="{quote_plus(search)}"'
         suffix = with_folder if folder_id else no_folder
         if odata:
             suffix += f'?{odata}'
@@ -455,7 +456,7 @@ class MsGraphClient:
             'toRecipients': MsGraphClient._build_recipient_input(to_recipients),
             'ccRecipients': MsGraphClient._build_recipient_input(cc_recipients),
             'bccRecipients': MsGraphClient._build_recipient_input(bcc_recipients),
-            'subject': subject,
+            'subject': urlencode(subject),
             'body': MsGraphClient._build_body_input(body=body, body_type=body_type),
             'bodyPreview': body[:255],
             'importance': importance,
@@ -1634,5 +1635,7 @@ def main():
 
 from MicrosoftApiModule import *  # noqa: E402
 
-if __name__ in ["builtins", "__main__"]:
+# if __name__ in ["builtins", "__main__"]:
+#     main()
+if __name__ == '__main__':
     main()
