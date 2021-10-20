@@ -1,13 +1,17 @@
+from unittest import mock
+
 from FeedZoom import Client
 
 
 URL = "https://support.zoom.us/hc/en-us/articles/201362683-Network-Firewall-or-Proxy-Server-Settings-for-Zoom"
 
 
+@mock.patch('subprocess.check_output')
 def test_build_iterator(requests_mock):
     with open('test_data/zoom_endpoint_mock.html', 'r') as file:
         response = file.read()
-    requests_mock.get(URL, text=response)
+    requests_mock.return_value = response
+
     expected_cidr = '3.7.35.0/25'
     expected_ipv6 = '2620:123:2000::/40'
     expected_glob = '*.zoom.us'
