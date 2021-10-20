@@ -1041,18 +1041,25 @@ script:
     outputs:
     - contextPath: FireEyeHX.Acquisitions.Data._id
       description: The acquisition unique ID.
+      type: string
     - contextPath: FireEyeHX.Acquisitions.Data.state
       description: The acquisition state
+      type: string
     - contextPath: FireEyeHX.Acquisitions.Data.md5
       description: File md5
+      type: string
     - contextPath: FireEyeHX.Acquisitions.Data.host._id
       description: Agent ID
+      type: string
     - contextPath: FireEyeHX.Acquisitions.Data.host.hostname
       description: Hostname
+      type: string
     - contextPath: FireEyeHX.Acquisitions.Data.instance
       description: FIreEye HX instance
+      type: string
     - contextPath: FireEyeHX.Acquisitions.Data.finish_time
       description: Time when the acquisition finished
+      type: date
   - arguments:
     - description: The acquisition unique ID
       name: acquisitionId
@@ -1063,18 +1070,25 @@ script:
     outputs:
     - contextPath: FireEyeHX.Acquisitions.Data._id
       description: The acquisition unique ID.
+      type: string
     - contextPath: FireEyeHX.Acquisitions.Data.state
       description: The acquisition state.
+      type: string
     - contextPath: FireEyeHX.Acquisitions.Data.md5
       description: File md5.
+      type: string
     - contextPath: FireEyeHX.Acquisitions.Data.host._id
       description: Agent ID
+      type: string
     - contextPath: FireEyeHX.Acquisitions.Data.finish_time
       description: Time when the acquisition finished
+      type: string
     - contextPath: FireEyeHX.Acquisitions.Data.host.hostname
       description: Hostname
+      type: string
     - contextPath: FireEyeHX.Acquisitions.Data.instance
       description: FIreEye HX instance
+      type: date
   dockerimage: demisto/python3:3.9.7.24076
   isfetch: true
   runonce: false
