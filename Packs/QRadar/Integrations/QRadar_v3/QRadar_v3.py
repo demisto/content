@@ -1145,8 +1145,10 @@ def print_debug_msg(msg: str):
     """
     debug_msg = f'QRadarMsg - {msg}'
     if lock.acquire(timeout=LOCK_WAIT_TIME):
-        demisto.debug(debug_msg)
-        lock.release()
+        try:
+            demisto.debug(debug_msg)
+        finally:
+            lock.release()
 
 
 def is_reset_triggered(handle_reset: bool = False):
@@ -1166,14 +1168,15 @@ def is_reset_triggered(handle_reset: bool = False):
         - False if lock was acquired, and reset flag was not found in integration context.
     """
     if lock.acquire(timeout=LOCK_WAIT_TIME):
-        ctx = get_integration_context()
-        if ctx and RESET_KEY in ctx:
-            if handle_reset:
-                print_debug_msg('Reset fetch-incidents.')
-                set_integration_context({'retry_compatible': True, 'samples': ctx.get('samples', '[]')})
+        try:
+            ctx = get_integration_context()
+            if ctx and RESET_KEY in ctx:
+                if handle_reset:
+                    print_debug_msg('Reset fetch-incidents.')
+                    set_integration_context({'retry_compatible': True, 'samples': ctx.get('samples', '[]')})
+                return True
+        finally:
             lock.release()
-            return True
-        lock.release()
     return False
 
 
