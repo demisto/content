@@ -5,7 +5,7 @@ This integration was integrated and tested with version 2021-04-01 of Azure Sent
 
 Follow these steps for a self-deployed configuration.
 
-1. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the **Register an application** section of the following [Microsoft article](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app#register-an-application). (Note: There is no need to create a redirect URI or complete subsequent steps of the article.)
+1. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the **Register an application** section of the following [Microsoft article](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app#register-an-application). (Note: There is no need to create a redirect URI or complete subsequent steps of the article).
 2. In your registered app - create a new Client secret.
    1. Navigate in the Azure Portal to **App registrations** > your registered application > **Certificates & secrets** and click **+ New client secret**.
    2. Copy and save the new secret value to use in the add credentials step.
