@@ -198,13 +198,13 @@ def test_alert_to_incident():
     """
 
     Given:
-        - Fetch incidents runs
+        - An alert fetched in fetch incidents
 
     When:
-        - Needs to turn the alert given into an incident to return
+        - Fetch incidents runs and needs to turn the alert given into an incident to return
 
     Then:
-        - Returns the incident
+        - Returns the incident created
 
     """
     alert = {
@@ -237,13 +237,13 @@ with open("TestData/concatenate_url_values.json") as concatenate_url_values_file
 url_with_nothing_at_the_end = ('https://base_url',
                                concatenate_url_values_data['url_with_nothing_at_the_end'][0],
                                concatenate_url_values_data['url_with_nothing_at_the_end'][1])
-url_with_end_characters = ('https://00.000.000.000:0000/',
-                           concatenate_url_values_data['url_with_end_characters'][0],
-                           concatenate_url_values_data['url_with_end_characters'][1])
+url_with_end_character = ('https://00.000.000.000:0000/',
+                          concatenate_url_values_data['url_with_end_character'][0],
+                          concatenate_url_values_data['url_with_end_character'][1])
 no_url_field_at_given_list = ('https://base_url',
                               concatenate_url_values_data['no_url_field_at_given_list'][0],
                               concatenate_url_values_data['no_url_field_at_given_list'][1])
-CONCATENATE_URL_VALUES = [url_with_nothing_at_the_end, url_with_end_characters, no_url_field_at_given_list]
+CONCATENATE_URL_VALUES = [url_with_nothing_at_the_end, url_with_end_character, no_url_field_at_given_list]
 
 
 @pytest.mark.parametrize('base_url, dict_input, expected_result', CONCATENATE_URL_VALUES)
@@ -251,10 +251,10 @@ def test_concatenate_url(base_url, dict_input, expected_result):
     """
 
     Given:
-        - A url entry in a dictionary, with the suffix only as value
+        - A url entry in a dictionary, with the value of the suffix only
 
     When:
-        - A dashboard url is given
+        - The url is about to be shown to the user
 
     Then:
         - Returns the dictionary with the url value as base and suffix
@@ -270,14 +270,14 @@ with open("TestData/alerts_to_filter_by_time.json") as alerts_to_filter_by_time_
 keep_all_alerts = (alerts_to_filter_by_time_data['keep_all_alerts'][0],
                    dateparser.parse('2020-06-08 10:00:00 UTC').replace(tzinfo=utc, microsecond=0),
                    alerts_to_filter_by_time_data['keep_all_alerts'][1])
-keep_one_alert_same_time = (alerts_to_filter_by_time_data['keep_one_alert_same_time'][0],
-                            dateparser.parse('2021-07-29 14:03:20 UTC').replace(tzinfo=utc, microsecond=0),
-                            alerts_to_filter_by_time_data['keep_one_alert_same_time'][1])
 keep_two_alerts = (alerts_to_filter_by_time_data['keep_two_alerts'][0],
                    dateparser.parse('2021-06-10 10:00:00 UTC').replace(tzinfo=utc, microsecond=0),
                    alerts_to_filter_by_time_data['keep_two_alerts'][1])
+keep_one_alert_same_time = (alerts_to_filter_by_time_data['keep_one_alert_same_time'][0],
+                            dateparser.parse('2021-07-29 14:03:20 UTC').replace(tzinfo=utc, microsecond=0),
+                            alerts_to_filter_by_time_data['keep_one_alert_same_time'][1])
 
-ALERTS_TO_FILTER_BY_TIME = [keep_all_alerts, keep_one_alert_same_time, keep_two_alerts]
+ALERTS_TO_FILTER_BY_TIME = [keep_all_alerts, keep_two_alerts, keep_one_alert_same_time]
 
 
 @pytest.mark.parametrize('alerts, last_fetch, expected_alerts', ALERTS_TO_FILTER_BY_TIME)
@@ -285,13 +285,13 @@ def test_filter_alerts_by_time(alerts, last_fetch, expected_alerts):
     """
 
     Given:
-        - Fetch incidents runs
+        - All alerts got from Grafana
 
     When:
-        - Needs to filter alerts so only recent ones will return
+        - Fetch incidents runs needs to filter alerts so only recent ones will be returned
 
     Then:
-        - Returns the recent alerts
+        - Returns the alerts that happened after the last fetch
 
     """
     assert filter_alerts_by_time(alerts, last_fetch) == expected_alerts
@@ -312,7 +312,12 @@ keep_one_alert_greater_id_same_time = (alerts_to_filter_by_date_data['keep_one_a
                                        dateparser.parse('2021-07-08 12:08:40 UTC').replace(tzinfo=utc, microsecond=0),
                                        2,
                                        alerts_to_filter_by_date_data['keep_one_alert_greater_id_same_time'][1])
-ALERTS_TO_FILTER_BY_DATE = [keep_all_alerts_first_fetch, keep_all_alerts_not_first, keep_one_alert_greater_id_same_time]
+dont_keep_alert_smaller_id_same_time = (alerts_to_filter_by_date_data['dont_keep_alert_smaller_id_same_time'][0],
+                                        dateparser.parse('2021-07-08 12:08:40 UTC').replace(tzinfo=utc, microsecond=0),
+                                        2,
+                                        alerts_to_filter_by_date_data['dont_keep_alert_smaller_id_same_time'][1])
+ALERTS_TO_FILTER_BY_DATE = [keep_all_alerts_first_fetch, keep_all_alerts_not_first, keep_one_alert_greater_id_same_time,
+                            dont_keep_alert_smaller_id_same_time]
 
 
 @pytest.mark.parametrize('alerts, last_fetch, last_id_fetched, expected_alerts', ALERTS_TO_FILTER_BY_DATE)
@@ -320,11 +325,11 @@ def test_filter_alerts_by_id(alerts, last_fetch, last_id_fetched, expected_alert
     """
 
     Given:
-        - Fetch incidents runs
+        - Alerts got from Grafana
 
     When:
-        - Needs to filter alerts so if more then one lert happened at the same time as the last fetched alert, only those that
-        were not fetched will be fetched now
+        - Fetch incidents runs and needs to filter alerts so if more then one alert happened at the same time as the last fetched
+        alert, only those that were not fetched will be fetched now
 
     Then:
         - Returns the alerts that need to be fetched
