@@ -47,11 +47,15 @@ class Client(BaseClient):
         return manager_id
 
     def get_user(self, filter_name: str, filter_value: str) -> Optional[IAMUserAppData]:
-        """ Queries the user in the application using REST API by its email, and returns an IAMUserAppData object
+        """ Queries the user in the application using REST API by its iam get attributes,
+        and returns an IAMUserAppData object
         that holds the user_id, username, is_active and app_data attributes given in the query response.
 
-        :type email: ``str``
-        :param email: Email address of the user
+        :type filter_name: ``str``
+        :param filter_name: Name of the filter to retrieve the user by.
+
+        :type filter_value: ``str``
+        :param filter_value: Value corresponding to given filter to retrieve user by.
 
         :return: An IAMUserAppData object if user exists, None otherwise.
         :rtype: ``Optional[IAMUserAppData]``

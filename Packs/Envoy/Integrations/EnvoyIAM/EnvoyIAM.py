@@ -26,17 +26,23 @@ class Client(BaseClient):
         uri = 'scim/v2/Users'
         self._http_request(method='GET', url_suffix=uri)
 
-    def get_user(self, email: str) -> Optional[IAMUserAppData]:
-        """ Queries the user in the application using REST API by its email, and returns an IAMUserAppData object
+    def get_user(self, filter_name: str, filter_value: str) -> Optional[IAMUserAppData]:
+        """ Queries the user in the application using REST API by its iam get attributes,
+        and returns an IAMUserAppData object
         that holds the user_id, username, is_active and app_data attributes given in the query response.
 
-        :type email: ``str``
-        :param email: Email address of the user
+        :type filter_name: ``str``
+        :param filter_name: Name of the filter to retrieve the user by.
+
+        :type filter_value: ``str``
+        :param filter_value: Value corresponding to given filter to retrieve user by.
 
         :return: An IAMUserAppData object if user exists, None otherwise.
         :rtype: ``Optional[IAMUserAppData]``
         """
-        uri = f'scim/v2/Users?filter=email eq {email}'
+        if filter_name == 'emails':
+            filter_name = 'email'
+        uri = f'scim/v2/Users?filter={filter_name} eq {filter_value}'
 
         res = self._http_request(
             method='GET',
@@ -380,7 +386,7 @@ def main():
     create_if_not_exists = params.get("create_if_not_exists")
 
     iam_command = IAMCommand(is_create_enabled, is_enable_enabled, is_disable_enabled, is_update_enabled,
-                             create_if_not_exists, mapper_in, mapper_out)
+                             create_if_not_exists, mapper_in, mapper_out, get_user_iam_attrs=['emails'])
 
     headers = {
         'Content-Type': 'application/json',
