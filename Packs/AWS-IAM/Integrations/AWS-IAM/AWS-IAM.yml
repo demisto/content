@@ -2426,10 +2426,10 @@ script:
     execution: false
     name: aws-iam-list-attached-group-policies
     outputs:
-    - contextPath: AWS.IAM.Users.AttachedPolicies.PolicyName
+    - contextPath: AWS.IAM.Groups.AttachedPolicies.PolicyName
       description: Policy Name.
       type: String
-    - contextPath: AWS.IAM.Users.AttachedPolicies.PolicyArn
+    - contextPath: AWS.IAM.Groups.AttachedPolicies.PolicyArn
       description: The Amazon Resource Name (ARN) of the attached policy.
       type: String
     - contextPath: AWS.IAM.Groups.AttachedPoliciesMarker
@@ -2448,10 +2448,10 @@ script:
     execution: false
     name: aws-iam-get-user-login-profile
     outputs:
-    - contextPath: AWS.IAM.Users.CreateDate
+    - contextPath: AWS.IAM.Users.LoginProfile.CreateDate
       description: The date when the password for the user was created.
       type: Date
-    - contextPath: AWS.IAM.Users.PasswordResetRequired
+    - contextPath: AWS.IAM.Users.LoginProfile.PasswordResetRequired
       description: Specifies whether the user is required to set a new password on
         next sign-in.
       type: Boolean
