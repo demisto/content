@@ -41,7 +41,7 @@ class Client(BaseClient):
         # Get manager ID.
         manager_id = ''
         if manager_email:
-            res = self.get_user(manager_email)
+            res = self.get_user('email', manager_email)
             if res is not None:
                 manager_id = res.id
         return manager_id
