@@ -118,7 +118,7 @@ def test_list_attached_group_polices(mocker):
     assert contents.get('EntryContext') == ec
 
 
-def test_list_attached_group_polices(mocker):
+def test_get_user_login_profile(mocker):
     res = {
         'LoginProfile': {
             'UserName': 'test',
