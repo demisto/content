@@ -4490,8 +4490,6 @@ def panorama_query_logs_command(args: dict):
     cmd = 'panorama-query-logs'
     interval_in_seconds = int(args.get('interval_in_seconds', 60))
     timeout = int(args.get('timeout', 600))
-    if url and url[-1] != '/':
-        url += '/'
     polling_results = dict()
     script_results = []
 
