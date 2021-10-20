@@ -3087,7 +3087,7 @@ def encode_context_data(context_data: dict, include_id: bool = False) -> dict:
 
 @safely_update_context_data
 def remove_offense_from_context_data(context_data: dict, version: Any, offense_id: str,
-                                     offense_to_remove: str) -> Tuple[dict, Any, Any]:
+                                     offense_to_remove: str) -> Tuple[dict, Any, dict]:
     """Remove an offense from context data UPDATED_MIRRORED_OFFENSES_CTX_KEY and RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY.
 
     Args:
@@ -3096,7 +3096,7 @@ def remove_offense_from_context_data(context_data: dict, version: Any, offense_i
         offense_id: The offense id to remove from RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY.
         offense_to_remove: The offense to remove from UPDATED_MIRRORED_OFFENSES_CTX_KEY.
 
-    Returns: (The new context_data, The context_data version the change was based on, None)
+    Returns: (The new context_data, The context_data version the change was based on, The new context_data)
     """
     updated = context_data.get(UPDATED_MIRRORED_OFFENSES_CTX_KEY, [])
     resubmitted = context_data.get(RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY, [])
@@ -3109,7 +3109,7 @@ def remove_offense_from_context_data(context_data: dict, version: Any, offense_i
     context_data[RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY] = resubmitted
     context_data[UPDATED_MIRRORED_OFFENSES_CTX_KEY] = updated
 
-    return encode_context_data(context_data), version, None
+    return encode_context_data(context_data), version, context_data
 
 
 def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) -> GetRemoteDataResponse:
@@ -3211,11 +3211,11 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
         elif is_waiting_to_be_updated:
             failure_message = 'In queue.'
 
-        print_mirror_events_stats(context_data, f"Get Remote Data End for id {offense.get('id')}")
+        new_context_data = remove_offense_from_context_data(offense_id=offense_id, offense_to_remove=offense_to_remove,
+                                                            version=context_version,
+                                                            context_data=context_data)
 
-        remove_offense_from_context_data(offense_id=offense_id, offense_to_remove=offense_to_remove,
-                                         version=context_version,
-                                         context_data=context_data)
+        print_mirror_events_stats(new_context_data, f"Get Remote Data End for id {offense.get('id')}")
 
     enriched_offense = enrich_offenses_result(client, offense, ip_enrich, asset_enrich)
 
