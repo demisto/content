@@ -1888,6 +1888,8 @@ script:
       description: Whether the IP addresses remain registered to the tag after the
         device reboots ('true':persistent, 'false':non-persistent). Default is 'true'.
       defaultValue: "true"
+    - name: timeout
+      description: Timeout value to automatically unregister the IPs. Only applicable to PAN-OS 9.x and higher. Can not be used with persistent as true.
     outputs:
     - contextPath: Panorama.DynamicTags.Tag
       description: Name of the tag.
@@ -2618,7 +2620,7 @@ script:
     arguments:
     - name: route_name
       required: true
-      description: The name of the static route to delete.
+      description: The virtual router from which the routes will be deleted.
     - name: virtual_router
       required: true
       description: The virtual router from which the routes will be deleted.
