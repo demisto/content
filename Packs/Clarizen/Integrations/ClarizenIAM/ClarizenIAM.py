@@ -13,7 +13,7 @@ USER_FIELDS = 'Name,Email,Region,Location,JobTitle,DirectManager,MobilePhone,Tim
 ERROR_CODES_TO_SKIP = [
     404
 ]
-EMAIL_ATTRIBUTE = 'email'
+EMAIL_ATTRIBUTE = 'Email'
 
 '''CLIENT CLASS'''
 
