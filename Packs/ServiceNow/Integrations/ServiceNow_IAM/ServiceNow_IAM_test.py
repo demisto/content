@@ -153,7 +153,6 @@ def test_create_user_command__success(mocker):
     args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com'}}
 
     mocker.patch.object(client, 'get_user', return_value=None)
-    mocker.patch.object(IAMUserProfile, 'map_object', return_value={})
     mocker.patch.object(client, 'create_user', return_value=SERVICENOW_USER_OUTPUT)
 
     user_profile = create_user_command(client, args, 'mapper_out', is_command_enabled=True,
@@ -218,7 +217,6 @@ def test_update_user_command__non_existing_user(mocker):
     args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com', 'givenname': 'mock_first_name'}}
 
     mocker.patch.object(client, 'get_user', return_value=None)
-    mocker.patch.object(IAMUserProfile, 'map_object', return_value={})
     mocker.patch.object(client, 'create_user', return_value=SERVICENOW_USER_OUTPUT)
 
     user_profile = update_user_command(client, args, 'mapper_out', is_command_enabled=True, is_enable_enabled=False,
@@ -279,7 +277,6 @@ def test_update_user_command__allow_enable(mocker):
             'allow-enable': 'true'}
 
     mocker.patch.object(client, 'get_user', return_value=SERVICENOW_DISABLED_USER_OUTPUT)
-    mocker.patch.object(IAMUserProfile, 'map_object', return_value={})
     mocker.patch.object(client, 'update_user', return_value=SERVICENOW_USER_OUTPUT)
 
     user_profile = update_user_command(client, args, 'mapper_out', is_command_enabled=True, is_enable_enabled=True,

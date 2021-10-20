@@ -54,8 +54,8 @@ def get_outputs_from_user_profile(user_profile):
 
 class TestGetUserCommand:
 
-    @pytest.mark.parametrize('args, mock_url', [({'user-profile': {'username': 'mock_user_name'}}, userUri),
-                                                ({'user-profile': {'username': 'mock_user_name', 'id': 'mock_id'}},
+    @pytest.mark.parametrize('args, mock_url', [({'user-profile': {'userName': 'mock_user_name'}}, userUri),
+                                                ({'user-profile': {'userName': 'mock_user_name', 'id': 'mock_id'}},
                                                  f'{userUri}mock_id')])
     def test_existing_user(self, args, mock_url):
         """
@@ -104,12 +104,12 @@ class TestGetUserCommand:
             - Ensure the resulted User Profile object holds information about an unsuccessful result.
         """
         client = mock_client()
-        args = {'user-profile': {'username': 'mock_user_name'}}
+        args = {'user-profile': {'userName': 'mock_user_name'}}
 
         with requests_mock.Mocker() as m:
             m.get(userUri, json={"totalResults": 0, "Resources": []})
 
-            user_profile = IAMCommand(get_user_iam_attrs=['username']).get_user(client, args)
+            user_profile = IAMCommand(get_user_iam_attrs=['userName']).get_user(client, args)
 
         outputs = get_outputs_from_user_profile(user_profile)
 
@@ -161,13 +161,13 @@ class TestCreateUserCommand:
             - Ensure a User Profile object with the user data is returned
         """
         client = mock_client()
-        args = {'user-profile': {'username': 'mock_user_name'}}
+        args = {'user-profile': {'userName': 'mock_user_name'}}
 
         with requests_mock.Mocker() as m:
             m.get(userUri, json={"totalResults": 0, "Resources": []})
             m.post(userUri, json=APP_USER_OUTPUT)
 
-            user_profile = IAMCommand(get_user_iam_attrs=['username']).create_user(client, args)
+            user_profile = IAMCommand(get_user_iam_attrs=['userName']).create_user(client, args)
 
         outputs = get_outputs_from_user_profile(user_profile)
 
@@ -192,14 +192,14 @@ class TestCreateUserCommand:
             - Ensure the command is considered successful and the user is still disabled
         """
         client = mock_client()
-        args = {'user-profile': {'username': 'mock_user_name'}, 'allow-enable': 'false'}
+        args = {'user-profile': {'userName': 'mock_user_name'}, 'allow-enable': 'false'}
 
         with requests_mock.Mocker() as m:
             m.get(userUri, json={"totalResults": 1, "Resources": [APP_USER_OUTPUT]})
             m.get(f'{userUri}mock_id', json=APP_USER_OUTPUT)
             m.patch(f'{userUri}mock_id', json=APP_UPDATED_USER_OUTPUT)
 
-            user_profile = IAMCommand(get_user_iam_attrs=['username']).create_user(client, args)
+            user_profile = IAMCommand(get_user_iam_attrs=['userName']).create_user(client, args)
 
         outputs = get_outputs_from_user_profile(user_profile)
 
@@ -228,13 +228,13 @@ class TestUpdateUserCommand:
             - Ensure a User Profile object with the user data is returned
         """
         client = mock_client()
-        args = {'user-profile': {'username': 'mock_user_name'}}
+        args = {'user-profile': {'userName': 'mock_user_name'}}
 
         with requests_mock.Mocker() as m:
             m.get(userUri, json={"totalResults": 0, "Resources": []})
             m.post(userUri, json=APP_USER_OUTPUT)
 
-            user_profile = IAMCommand(create_if_not_exists=True, get_user_iam_attrs=['username']).update_user(client,
+            user_profile = IAMCommand(create_if_not_exists=True, get_user_iam_attrs=['userName']).update_user(client,
                                                                                                               args)
 
         outputs = get_outputs_from_user_profile(user_profile)
@@ -259,9 +259,9 @@ class TestUpdateUserCommand:
             - Ensure the command is considered successful and skipped
         """
         client = mock_client()
-        args = {'user-profile': {'username': 'mock_user_name'}}
+        args = {'user-profile': {'userName': 'mock_user_name'}}
 
-        user_profile = IAMCommand(is_update_enabled=False, get_user_iam_attrs=['username']).update_user(client, args)
+        user_profile = IAMCommand(is_update_enabled=False, get_user_iam_attrs=['userName']).update_user(client, args)
 
         outputs = get_outputs_from_user_profile(user_profile)
 
@@ -318,12 +318,12 @@ class TestDisableUserCommand:
             - Ensure the command is considered successful and skipped
         """
         client = mock_client()
-        args = {'user-profile': {'username': 'mock_user_name'}}
+        args = {'user-profile': {'userName': 'mock_user_name'}}
 
         with requests_mock.Mocker() as m:
             m.get(userUri, json={"totalResults": 0, "Resources": []})
 
-            user_profile = IAMCommand(get_user_iam_attrs=['username']).disable_user(client, args)
+            user_profile = IAMCommand(get_user_iam_attrs=['userName']).disable_user(client, args)
 
         outputs = get_outputs_from_user_profile(user_profile)
 

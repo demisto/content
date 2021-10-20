@@ -19,7 +19,7 @@ class Client(BaseClient):
         self.org = org
 
     def get_user(self, input_type, user_term):
-        uri = f'scim/v2/organizations/{self.org}/Users'  # ?filter={input_type} eq \"{user_term}\"'
+        uri = f'scim/v2/organizations/{self.org}/Users?filter={input_type} eq \"{user_term}\"'
 
         return self._http_request(
             method='GET',

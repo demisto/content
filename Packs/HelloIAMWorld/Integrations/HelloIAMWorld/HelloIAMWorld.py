@@ -23,18 +23,21 @@ class Client(BaseClient):
         uri = '/test'                                 # TODO: replace to a valid test API endpoint
         self._http_request(method='GET', url_suffix=uri)
 
-    def get_user(self, email: str) -> Optional[IAMUserAppData]:
+    def get_user(self, filter_name: str, filter_value: str) -> Optional[IAMUserAppData]:
         """ Queries the user in the application using REST API by its email, and returns an IAMUserAppData object
         that holds the user_id, username, is_active and app_data attributes given in the query response.
 
-        :type email: ``str``
-        :param email: Email address of the user
+        :type filter_name: ``str``
+        :param filter_name: Filter name to filter the needed user by. E.g, 'email', 'username'.
+
+        :type filter_value: ``str``
+        :param filter_value: Value of the filter.
 
         :return: An IAMUserAppData object if user exists, None otherwise.
         :rtype: ``Optional[IAMUserAppData]``
         """
-        uri = '/users'                               # TODO: replace to the correct GET User API endpoint
-        query_params = {'email': email}              # TODO: make sure you pass the correct query parameters
+        uri = '/users'                                          # TODO: replace to the correct GET User API endpoint
+        query_params = {filter_name: filter_value}              # TODO: make sure you pass the correct query parameters
 
         res = self._http_request(
             method='GET',
