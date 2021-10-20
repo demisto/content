@@ -489,7 +489,7 @@ def main():
 
     iam_command = IAMCommand(is_create_enabled, is_enable_enabled, is_disable_enabled, is_update_enabled,
                              create_if_not_exists, mapper_in, mapper_out,
-                             get_user_iam_attrs=['username', 'email', 'restricted', 'ultra_restricted'])
+                             get_user_iam_attrs=['userName', 'emails'])
 
     base_url = 'https://api.slack.com/scim/v1/'
     headers = {
