@@ -36,10 +36,10 @@ def http_request(method, command, api_url, use_ssl, data=None):
         try_num += 1
         url = f'{api_url}/{command}/'
         res = requests.request(method,
-                               url,
-                               verify=use_ssl,
-                               data=data,
-                               headers=HEADERS)
+                           url,
+                           verify=use_ssl,
+                           data=data,
+                           headers=HEADERS)
 
         if res.status_code == 200:
             return res
@@ -117,7 +117,13 @@ def calculate_dbot_score(blacklists, threshold, compromised_is_malicious):
 def url_command(**kwargs):
     url = demisto.args().get('url')
 
-    url_information = query_url_information(url, kwargs.get('api_url'), kwargs.get('use_ssl')).json()
+    try:
+        url_information = query_url_information(url, kwargs.get('api_url'), kwargs.get('use_ssl')).json()
+    except UnicodeEncodeError:
+        return_results(CommandResults(
+            readable_output="Service Does not support special characters.",
+        ))
+        return
 
     ec = {
         'URL': {
