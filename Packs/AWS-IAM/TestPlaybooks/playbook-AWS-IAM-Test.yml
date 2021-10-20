@@ -1,14 +1,15 @@
 id: AWS - IAM Test Playbook
-version: -1
+version: 41
+vcShouldKeepItemLegacyProdMachine: false
 name: AWS - IAM Test Playbook
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 7e975573-5751-417b-8975-68abf9a1b18f
+    taskid: 2f2ec0ea-b21a-49e0-897d-76b3ceed03ba
     type: start
     task:
-      id: 7e975573-5751-417b-8975-68abf9a1b18f
+      id: 2f2ec0ea-b21a-49e0-897d-76b3ceed03ba
       version: -1
       name: ""
       iscommand: false
@@ -33,10 +34,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 9a430660-b7f1-4415-8774-894c697f9472
+    taskid: 7e2947da-c0d8-4797-8fcc-bc0f1a6bf1da
     type: regular
     task:
-      id: 9a430660-b7f1-4415-8774-894c697f9472
+      id: 7e2947da-c0d8-4797-8fcc-bc0f1a6bf1da
       version: -1
       name: aws-iam-list-users
       description: Lists the IAM users, returns all users in the AWS account.
@@ -59,12 +60,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 854d9d58-df97-4e36-8c22-efcd36d4bdd8
+    taskid: 7eb2720a-83b3-451b-890f-e1d48bf425af
     type: regular
     task:
-      id: 854d9d58-df97-4e36-8c22-efcd36d4bdd8
+      id: 7eb2720a-83b3-451b-890f-e1d48bf425af
       version: -1
       name: aws-iam-create-group
       description: Creates a new iam group.
@@ -96,10 +101,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 5b3afa0d-cf9a-4936-8ae3-38db47534bd0
+    taskid: 96e643d1-e90d-4ef4-8589-b6cac336275c
     type: regular
     task:
-      id: 5b3afa0d-cf9a-4936-8ae3-38db47534bd0
+      id: 96e643d1-e90d-4ef4-8589-b6cac336275c
       version: -1
       name: aws-iam-list-groups
       description: Lists all the IAM groups in the AWS account
@@ -128,10 +133,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 6af62556-586f-4ced-8ef0-a6d73c5b5bf3
+    taskid: 51b71255-491e-43ec-8b2a-1b39b1bb9333
     type: regular
     task:
-      id: 6af62556-586f-4ced-8ef0-a6d73c5b5bf3
+      id: 51b71255-491e-43ec-8b2a-1b39b1bb9333
       version: -1
       name: aws-iam-list-policies
       description: Lists all the managed policies that are available in your AWS account,
@@ -159,12 +164,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: d31c12ed-c48b-4b86-827b-76a322757834
+    taskid: 52e8bc16-d065-4ed0-8dca-778be848dabd
     type: regular
     task:
-      id: d31c12ed-c48b-4b86-827b-76a322757834
+      id: 52e8bc16-d065-4ed0-8dca-778be848dabd
       version: -1
       name: aws-iam-list-roles
       description: Lists all IAM roles
@@ -187,12 +196,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 80ad180e-d53a-49d4-86d0-96c6e347663f
+    taskid: e37a8348-4e71-4549-83e0-00bbd967d243
     type: regular
     task:
-      id: 80ad180e-d53a-49d4-86d0-96c6e347663f
+      id: e37a8348-4e71-4549-83e0-00bbd967d243
       version: -1
       name: aws-iam-delete-group
       description: Deletes the specified IAM group. The group must not contain any
@@ -201,6 +214,9 @@ tasks:
       type: regular
       iscommand: true
       brand: AWS - IAM
+    nexttasks:
+      '#none#':
+      - "82"
     scriptarguments:
       groupName:
         simple: playbookgrp
@@ -209,18 +225,22 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 6145
+          "y": 6345
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 243868a3-1f3e-400e-8f14-a3b4202a2866
+    taskid: 4d935afc-af83-43ac-8098-448ad3755ff8
     type: regular
     task:
-      id: 243868a3-1f3e-400e-8f14-a3b4202a2866
+      id: 4d935afc-af83-43ac-8098-448ad3755ff8
       version: -1
       name: aws-iam-create-instance-profile
       description: Creates a new instance profile.
@@ -246,12 +266,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 82d6783e-53d3-4dcc-8e03-4c6ad706a105
+    taskid: dff4eef5-c5d1-46a2-80d8-efc5222b3b88
     type: regular
     task:
-      id: 82d6783e-53d3-4dcc-8e03-4c6ad706a105
+      id: dff4eef5-c5d1-46a2-80d8-efc5222b3b88
       version: -1
       name: aws-iam-delete-instance-profile
       description: Deletes the specified instance profile. The instance profile must
@@ -277,12 +301,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: b2745a60-e90f-4193-8b28-472b008cc616
+    taskid: b77a4bab-1d52-4724-8e81-73a2611e5382
     type: regular
     task:
-      id: b2745a60-e90f-4193-8b28-472b008cc616
+      id: b77a4bab-1d52-4724-8e81-73a2611e5382
       version: -1
       name: aws-iam-list-instance-profiles
       description: Lists all the instance profiles tin your AWS account.
@@ -305,12 +333,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 9e7afefa-d9ae-40d1-87bf-4c966cb4f762
+    taskid: 955bf43a-cd1f-408b-85ed-fbd4c9038632
     type: regular
     task:
-      id: 9e7afefa-d9ae-40d1-87bf-4c966cb4f762
+      id: 955bf43a-cd1f-408b-85ed-fbd4c9038632
       version: -1
       name: aws-iam-add-role-to-instance-profile
       description: Adds the specified IAM role to the specified instance profile.
@@ -341,12 +373,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: c1787a3e-ff1b-49c6-8e47-6eb3805d8215
+    taskid: aec13d6e-1c0e-4d7b-897a-5d3ec6adb385
     type: regular
     task:
-      id: c1787a3e-ff1b-49c6-8e47-6eb3805d8215
+      id: aec13d6e-1c0e-4d7b-897a-5d3ec6adb385
       version: -1
       name: aws-iam-remove-role-from-instance-profile
       description: Removes the specified IAM role from the specified EC2 instance
@@ -374,12 +410,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 10d8b7bb-336e-4f00-8fb6-43fc8455765f
+    taskid: 734bbd7c-9464-43d7-887b-914d0651c3b8
     type: regular
     task:
-      id: 10d8b7bb-336e-4f00-8fb6-43fc8455765f
+      id: 734bbd7c-9464-43d7-887b-914d0651c3b8
       version: -1
       name: aws-iam-list-instance-profiles-for-role
       description: Lists the instance profiles that have the specified associated
@@ -406,12 +446,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: a5bf160d-76e3-4b24-89c4-229ad22de598
+    taskid: ffe1acd4-54e0-4835-8388-165fb2cd5b58
     type: regular
     task:
-      id: a5bf160d-76e3-4b24-89c4-229ad22de598
+      id: ffe1acd4-54e0-4835-8388-165fb2cd5b58
       version: -1
       name: aws-iam-get-instance-profile
       description: Retrieves information about the specified instance profile.
@@ -437,12 +481,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 821268b6-5619-4e81-85cb-252c4a4c4bcd
+    taskid: 80baa5f9-6b42-41ff-8acb-a59be46fcfff
     type: regular
     task:
-      id: 821268b6-5619-4e81-85cb-252c4a4c4bcd
+      id: 80baa5f9-6b42-41ff-8acb-a59be46fcfff
       version: -1
       name: aws-iam-get-role
       description: Retrieves information about the specified role.
@@ -468,12 +516,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 0c609751-5e70-4644-867f-e9ce081e30de
+    taskid: d6f62af6-c710-4e97-8ae5-e1d57cdbaf9d
     type: regular
     task:
-      id: 0c609751-5e70-4644-867f-e9ce081e30de
+      id: d6f62af6-c710-4e97-8ae5-e1d57cdbaf9d
       version: -1
       name: aws-iam-delete-role
       description: 'Deletes the specified role. The role must not have any policies
@@ -499,12 +551,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 0832b4a2-549c-4e63-89a1-3a7bf66e71c2
+    taskid: e992ba82-357d-4603-8fd3-fb6ad8dec927
     type: regular
     task:
-      id: 0832b4a2-549c-4e63-89a1-3a7bf66e71c2
+      id: e992ba82-357d-4603-8fd3-fb6ad8dec927
       version: -1
       name: aws-iam-create-role
       description: Creates a new role for your AWS account.
@@ -544,12 +600,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 8b15a0d4-0997-4310-8e21-05f0c31097d8
+    taskid: b0e6aa70-d404-486c-804b-7417f8dd1960
     type: regular
     task:
-      id: 8b15a0d4-0997-4310-8e21-05f0c31097d8
+      id: b0e6aa70-d404-486c-804b-7417f8dd1960
       version: -1
       name: VerifyContext
       description: |-
@@ -579,12 +639,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 82549a61-bbe7-4d02-8181-6266efa238fb
+    taskid: 97cbf9fd-d05a-403f-8da9-6a4756dfa83b
     type: regular
     task:
-      id: 82549a61-bbe7-4d02-8181-6266efa238fb
+      id: 97cbf9fd-d05a-403f-8da9-6a4756dfa83b
       version: -1
       name: VerifyContext
       description: |-
@@ -614,12 +678,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: ccd4d446-efde-46e3-8418-e3424c3fd48b
+    taskid: 552385a8-6930-4493-874a-484250dcabf3
     type: regular
     task:
-      id: ccd4d446-efde-46e3-8418-e3424c3fd48b
+      id: 552385a8-6930-4493-874a-484250dcabf3
       version: -1
       name: VerifyContext
       description: |-
@@ -649,12 +717,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: 16a53899-0115-4a5f-8bd5-74b7a1484923
+    taskid: ada412b9-4927-49d9-87f6-4b3ff765ed3e
     type: regular
     task:
-      id: 16a53899-0115-4a5f-8bd5-74b7a1484923
+      id: ada412b9-4927-49d9-87f6-4b3ff765ed3e
       version: -1
       name: VerifyContext
       description: |-
@@ -684,12 +756,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: 3b082594-5dfd-4a69-8220-7ab8fad39177
+    taskid: dfd53f4c-5d25-4777-8cec-2f5a3ff7d127
     type: regular
     task:
-      id: 3b082594-5dfd-4a69-8220-7ab8fad39177
+      id: dfd53f4c-5d25-4777-8cec-2f5a3ff7d127
       version: -1
       name: VerifyContext
       description: |-
@@ -719,12 +795,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 32215f42-b682-4eb2-8af6-df65cf3bb11b
+    taskid: 180958e3-db30-4020-8f22-6928b499aa25
     type: regular
     task:
-      id: 32215f42-b682-4eb2-8af6-df65cf3bb11b
+      id: 180958e3-db30-4020-8f22-6928b499aa25
       version: -1
       name: VerifyContext
       description: |-
@@ -754,12 +834,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 9c42d436-832d-468a-8948-fdf6f5a5374c
+    taskid: c0219430-1901-4452-8012-4665b8a96196
     type: regular
     task:
-      id: 9c42d436-832d-468a-8948-fdf6f5a5374c
+      id: c0219430-1901-4452-8012-4665b8a96196
       version: -1
       name: VerifyContext
       description: |-
@@ -789,12 +873,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 17c7e74f-c0e7-4c65-8f2f-f3feaaa65cfb
+    taskid: a33997a3-d494-4bce-8a44-e8cd5cab0e0a
     type: regular
     task:
-      id: 17c7e74f-c0e7-4c65-8f2f-f3feaaa65cfb
+      id: a33997a3-d494-4bce-8a44-e8cd5cab0e0a
       version: -1
       name: VerifyContext
       description: |-
@@ -824,12 +912,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 94ffc721-a110-496a-89d9-9a38517203bf
+    taskid: 8100782e-6cd1-45a6-8a2a-627ce7de5a33
     type: regular
     task:
-      id: 94ffc721-a110-496a-89d9-9a38517203bf
+      id: 8100782e-6cd1-45a6-8a2a-627ce7de5a33
       version: -1
       name: VerifyContext
       description: |-
@@ -859,12 +951,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: 6fa26a32-e8ed-4644-86d7-e360dbe242c6
+    taskid: 7d32df56-e77a-4341-8aa1-db1498dc2297
     type: regular
     task:
-      id: 6fa26a32-e8ed-4644-86d7-e360dbe242c6
+      id: 7d32df56-e77a-4341-8aa1-db1498dc2297
       version: -1
       name: VerifyContext
       description: |-
@@ -894,12 +990,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: a33847a1-4efd-40cb-8ca8-824470f02efd
+    taskid: b500b381-1af4-4656-8511-2ed543a4de9a
     type: regular
     task:
-      id: a33847a1-4efd-40cb-8ca8-824470f02efd
+      id: b500b381-1af4-4656-8511-2ed543a4de9a
       version: -1
       name: VerifyContext
       description: |-
@@ -929,12 +1029,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: 2c021a6b-a565-4de9-8059-3935e3653aa7
+    taskid: 73d08a74-1653-484f-840d-d9cae12e4c76
     type: regular
     task:
-      id: 2c021a6b-a565-4de9-8059-3935e3653aa7
+      id: 73d08a74-1653-484f-840d-d9cae12e4c76
       version: -1
       name: VerifyContext
       description: |-
@@ -964,12 +1068,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: 254c1731-9b3e-4a64-8cc9-4fd1db5d070b
+    taskid: 80df1c48-230f-4255-8d50-e8607c3b29f9
     type: regular
     task:
-      id: 254c1731-9b3e-4a64-8cc9-4fd1db5d070b
+      id: 80df1c48-230f-4255-8d50-e8607c3b29f9
       version: -1
       name: VerifyContext
       description: |-
@@ -999,12 +1107,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: cd3739d3-bf1a-41e7-82aa-9518a8897a19
+    taskid: 4ec425f3-0adc-4168-8cb6-82867c46a067
     type: regular
     task:
-      id: cd3739d3-bf1a-41e7-82aa-9518a8897a19
+      id: 4ec425f3-0adc-4168-8cb6-82867c46a067
       version: -1
       name: VerifyContext
       description: |-
@@ -1034,12 +1146,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: deb763b5-ece5-487b-844c-f7597436b65e
+    taskid: 20afc234-1da0-4228-8ec1-2d8997cb763c
     type: regular
     task:
-      id: deb763b5-ece5-487b-844c-f7597436b65e
+      id: 20afc234-1da0-4228-8ec1-2d8997cb763c
       version: -1
       name: VerifyContext
       description: |-
@@ -1069,12 +1185,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: 5369bee3-d332-438e-8c4f-6499d850fcc8
+    taskid: 7d5a8cf2-1376-4db8-8559-8638c4681811
     type: regular
     task:
-      id: 5369bee3-d332-438e-8c4f-6499d850fcc8
+      id: 7d5a8cf2-1376-4db8-8559-8638c4681811
       version: -1
       name: VerifyContext
       description: |-
@@ -1104,12 +1224,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "54":
     id: "54"
-    taskid: f1bc309c-cce2-43ce-8689-529f8bc672aa
+    taskid: 13eda832-b213-4eb5-8ef1-eeb720be8c33
     type: regular
     task:
-      id: f1bc309c-cce2-43ce-8689-529f8bc672aa
+      id: 13eda832-b213-4eb5-8ef1-eeb720be8c33
       version: -1
       name: VerifyContext
       description: |-
@@ -1139,12 +1263,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: bb44556d-34b9-413c-89fe-00f4cb750777
+    taskid: 77f29bb1-e169-43bb-85c4-6b3daa8dadf6
     type: regular
     task:
-      id: bb44556d-34b9-413c-89fe-00f4cb750777
+      id: 77f29bb1-e169-43bb-85c4-6b3daa8dadf6
       version: -1
       name: VerifyContext
       description: |-
@@ -1174,12 +1302,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: 4b6a45fe-8410-4ba7-8985-5b6af9f3a8d1
+    taskid: fe1a7ebe-0ab6-4552-8147-cfb157e3231e
     type: regular
     task:
-      id: 4b6a45fe-8410-4ba7-8985-5b6af9f3a8d1
+      id: fe1a7ebe-0ab6-4552-8147-cfb157e3231e
       version: -1
       name: VerifyContext
       description: |-
@@ -1209,12 +1341,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "64":
     id: "64"
-    taskid: f2757138-cb46-4b1f-8003-eef33e560d1a
+    taskid: 174145b4-eeab-484f-8b73-7ff4586e27c8
     type: regular
     task:
-      id: f2757138-cb46-4b1f-8003-eef33e560d1a
+      id: 174145b4-eeab-484f-8b73-7ff4586e27c8
       version: -1
       name: VerifyContext
       description: |-
@@ -1244,12 +1380,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "65":
     id: "65"
-    taskid: 490b0b7c-68d0-4654-81a5-11cb136a9664
+    taskid: 9b623b1b-f9cb-4381-8874-8f1e77a2f3dc
     type: regular
     task:
-      id: 490b0b7c-68d0-4654-81a5-11cb136a9664
+      id: 9b623b1b-f9cb-4381-8874-8f1e77a2f3dc
       version: -1
       name: VerifyContext
       description: |-
@@ -1279,12 +1419,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "68":
     id: "68"
-    taskid: d37d5f29-6dbd-41fe-83b6-b9d23533fc46
+    taskid: 5bfba667-c142-42c1-895c-1823fe3ed19d
     type: regular
     task:
-      id: d37d5f29-6dbd-41fe-83b6-b9d23533fc46
+      id: 5bfba667-c142-42c1-895c-1823fe3ed19d
       version: -1
       name: VerifyContext
       description: |-
@@ -1314,12 +1458,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "69":
     id: "69"
-    taskid: d476aaaf-a4f6-4ee0-834d-c6360cd7e798
+    taskid: 4f72dfba-4278-4dce-8814-90f2e68af830
     type: regular
     task:
-      id: d476aaaf-a4f6-4ee0-834d-c6360cd7e798
+      id: 4f72dfba-4278-4dce-8814-90f2e68af830
       version: -1
       name: VerifyContext
       description: |-
@@ -1349,12 +1497,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "70":
     id: "70"
-    taskid: 77b36aff-951c-48a9-8bce-97b2478f30cc
+    taskid: 38831d46-55ea-41ed-816f-208a856c083d
     type: regular
     task:
-      id: 77b36aff-951c-48a9-8bce-97b2478f30cc
+      id: 38831d46-55ea-41ed-816f-208a856c083d
       version: -1
       name: VerifyContext
       description: |-
@@ -1369,7 +1521,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
+      - "86"
     scriptarguments:
       path:
         simple: AWS.IAM.Groups.Arn
@@ -1384,12 +1536,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "71":
     id: "71"
-    taskid: 0cd8bc6e-81c7-4b61-8a2e-97edd44ba848
+    taskid: 9a733b72-6d4f-4899-85a7-e2469925889a
     type: regular
     task:
-      id: 0cd8bc6e-81c7-4b61-8a2e-97edd44ba848
+      id: 9a733b72-6d4f-4899-85a7-e2469925889a
       version: -1
       name: VerifyContext
       description: |-
@@ -1404,7 +1560,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
+      - "86"
     scriptarguments:
       path:
         simple: AWS.IAM.Groups.GroupId
@@ -1419,12 +1575,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "74":
     id: "74"
-    taskid: b146f008-0ce0-46fc-83ff-cb0636f7b144
+    taskid: bf097c50-3ac7-4345-87fc-f278432f75e2
     type: regular
     task:
-      id: b146f008-0ce0-46fc-83ff-cb0636f7b144
+      id: bf097c50-3ac7-4345-87fc-f278432f75e2
       version: -1
       name: Generate TestPlaybook Profile Name
       description: Set a value in context under the key you entered.
@@ -1451,12 +1611,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "75":
     id: "75"
-    taskid: b076799f-ce73-490b-813b-5e20d7433916
+    taskid: 123e83ff-837f-42d9-8b95-c3abca4ca097
     type: regular
     task:
-      id: b076799f-ce73-490b-813b-5e20d7433916
+      id: 123e83ff-837f-42d9-8b95-c3abca4ca097
       version: -1
       name: Generate TestPlaybook Role Name
       description: Set a value in context under the key you entered.
@@ -1483,12 +1647,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "76":
     id: "76"
-    taskid: b7f70617-7c86-4413-8cd6-2d80f5256640
+    taskid: 1187b2de-b4c5-4564-8080-80e7f8d11f01
     type: regular
     task:
-      id: b7f70617-7c86-4413-8cd6-2d80f5256640
+      id: 1187b2de-b4c5-4564-8080-80e7f8d11f01
       version: -1
       name: List Role Policies
       description: Lists the names of the inline policies that are embedded in the
@@ -1514,12 +1682,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "77":
     id: "77"
-    taskid: 728c80a3-97f4-4278-856a-ec1d4f9555df
+    taskid: 7f2d6a5d-19aa-46f5-83c4-c35a0d4a3ea7
     type: regular
     task:
-      id: 728c80a3-97f4-4278-856a-ec1d4f9555df
+      id: 7f2d6a5d-19aa-46f5-83c4-c35a0d4a3ea7
       version: -1
       name: GetTime
       description: |
@@ -1542,12 +1714,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "78":
     id: "78"
-    taskid: b3d3833a-2b47-48fc-88b6-d3b9d5d33178
+    taskid: e6b856dd-54f0-455f-845c-a25f8d0e6cd2
     type: regular
     task:
-      id: b3d3833a-2b47-48fc-88b6-d3b9d5d33178
+      id: e6b856dd-54f0-455f-845c-a25f8d0e6cd2
       version: -1
       name: Generate TestPlaybook Profile Name
       description: Set a value in context under the key you entered.
@@ -1574,12 +1750,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "79":
     id: "79"
-    taskid: be60036f-1e9d-44fb-85b2-f64684979724
+    taskid: 46c27862-5312-4b09-8560-a8051a15528c
     type: regular
     task:
-      id: be60036f-1e9d-44fb-85b2-f64684979724
+      id: 46c27862-5312-4b09-8560-a8051a15528c
       version: -1
       name: aws-iam-get-role-policy
       description: Retrieves the specified inline policy document that is embedded
@@ -1607,12 +1787,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "80":
     id: "80"
-    taskid: 68162b7d-6125-4f1b-899e-6531b8c5be24
+    taskid: 59d79466-dd51-4826-89e3-ad9c2eb2df27
     type: regular
     task:
-      id: 68162b7d-6125-4f1b-899e-6531b8c5be24
+      id: 59d79466-dd51-4826-89e3-ad9c2eb2df27
       version: -1
       name: aws-iam-list-role-policies
       description: Lists the names of the inline policies that are embedded in the
@@ -1638,13 +1822,211 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-system: true
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "82":
+    id: "82"
+    taskid: d2b8181f-f163-4d30-888a-1cf0dbb9c981
+    type: regular
+    task:
+      id: d2b8181f-f163-4d30-888a-1cf0dbb9c981
+      version: -1
+      name: aws-iam-list-user-policies
+      script: AWS - IAM|||aws-iam-list-user-policies
+      type: regular
+      iscommand: true
+      brand: AWS - IAM
+    nexttasks:
+      '#none#':
+      - "83"
+    scriptarguments:
+      userName:
+        simple: ${TestPBUserName}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 6530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "83":
+    id: "83"
+    taskid: 08d316bd-9278-457a-867d-380d36a46d4d
+    type: regular
+    task:
+      id: 08d316bd-9278-457a-867d-380d36a46d4d
+      version: -1
+      name: aws-iam-list-attached-user-policies
+      script: AWS - IAM|||aws-iam-list-attached-user-policies
+      type: regular
+      iscommand: true
+      brand: AWS - IAM
+    nexttasks:
+      '#none#':
+      - "88"
+    scriptarguments:
+      userName:
+        simple: ${TestPBUserName}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 6770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "86":
+    id: "86"
+    taskid: 82643b35-74e7-4d40-80e2-ade128e08261
+    type: regular
+    task:
+      id: 82643b35-74e7-4d40-80e2-ade128e08261
+      version: -1
+      name: aws-iam-list-attached-group-policies
+      script: AWS - IAM|||aws-iam-list-attached-group-policies
+      type: regular
+      iscommand: true
+      brand: AWS - IAM
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      groupName:
+        simple: playbookgrp
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 6155
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "87":
+    id: "87"
+    taskid: c58db6c7-d1ec-45b2-8160-2fc10bd17643
+    type: condition
+    task:
+      id: c58db6c7-d1ec-45b2-8160-2fc10bd17643
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "89"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AWS.IAM.Users.CreateDate
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 7270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "88":
+    id: "88"
+    taskid: 107d09d9-f086-4472-80ff-cde739d924ee
+    type: regular
+    task:
+      id: 107d09d9-f086-4472-80ff-cde739d924ee
+      version: -1
+      name: aws-iam-get-user-login-profile
+      script: AWS - IAM|||aws-iam-get-user-login-profile
+      type: regular
+      iscommand: true
+      brand: AWS - IAM
+    nexttasks:
+      '#none#':
+      - "87"
+    scriptarguments:
+      userName:
+        simple: ${TestPBUserName}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 7050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "89":
+    id: "89"
+    taskid: 8cf35338-facb-4d92-8f52-9496753f4021
+    type: title
+    task:
+      id: 8cf35338-facb-4d92-8f52-9496753f4021
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 7520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 6190,
+        "height": 7535,
         "width": 1240,
         "x": 50,
         "y": 50
@@ -1653,4 +2035,3 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 5.0.0

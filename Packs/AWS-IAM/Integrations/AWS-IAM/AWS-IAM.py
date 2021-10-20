@@ -1,3 +1,5 @@
+import copy
+
 import demistomock as demisto
 from CommonServerPython import *
 from datetime import datetime, date
@@ -1053,12 +1055,13 @@ def list_user_policies(args, aws_client):
 
     ec = {'AWS.IAM.Users(val.UserName && val.UserName === obj.UserName)': res}
     human_readable = tableToMarkdown('AWS IAM Policies for user'.format(user_name),
+                                     headers=["PolicyNames"],
                                      headerTransform=pascalToSpace,
                                      t=data)
     return_outputs(human_readable, ec)
 
 
-def list_attached_user_polices(args, aws_client):
+def list_attached_user_policies(args, aws_client):
     client = aws_client.aws_session(
         service=SERVICE,
         role_arn=args.get('roleArn'),
@@ -1101,7 +1104,7 @@ def list_attached_user_polices(args, aws_client):
     return_outputs(human_readable, ec)
 
 
-def list_attached_group_polices(args, aws_client):
+def list_attached_group_policies(args, aws_client):
     client = aws_client.aws_session(
         service=SERVICE,
         role_arn=args.get('roleArn'),
@@ -1136,7 +1139,7 @@ def list_attached_group_polices(args, aws_client):
 
     ec = {'AWS.IAM.Groups(val.GroupName && val.GroupName === obj.GroupName)': res}
 
-    human_readable = tableToMarkdown('AWS IAM Attached Policies for user'.format(group_name),
+    human_readable = tableToMarkdown('AWS IAM Attached Policies for group'.format(group_name),
                                      headers=['PolicyName', 'PolicyArn'],
                                      headerTransform=pascalToSpace,
                                      t=data)
@@ -1163,9 +1166,11 @@ def get_user_login_profile(args, aws_client):
         'PasswordResetRequired': user_profile['PasswordResetRequired']
     })
     ec = {'AWS.IAM.Users(val.UserName && val.UserName === obj.UserName).LoginProfile': data}
-    human_readable = tableToMarkdown('AWS IAM Users',
+    data_for_human_readable = copy.deepcopy(data)
+    data_for_human_readable.update({'CreateDate': date_to_timestamp(data.get('CreateDate'), "%Y-%m-%dT%H:%M:%SZ")})
+    human_readable = tableToMarkdown('AWS IAM Login Profile for user '.format(user_name),
                                      t=data,
-                                     headers=['CreateDate', 'PasswordResetRequired'],
+                                     headers=['UserName', 'CreateDate', 'PasswordResetRequired'],
                                      headerTransform=pascalToSpace)
     return_outputs(human_readable, ec)
 
@@ -1298,9 +1303,9 @@ def main():
         elif command == 'aws-iam-list-user-policies':
             list_user_policies(args, aws_client)
         elif command == 'aws-iam-list-attached-user-polices':
-            list_attached_user_polices(args, aws_client)
+            list_attached_user_policies(args, aws_client)
         elif command == 'aws-iam-list-attached-group-policies':
-            list_attached_group_polices(args, aws_client)
+            list_attached_group_policies(args, aws_client)
         elif command == 'aws-iam-get-user-login-profile':
             get_user_login_profile(args, aws_client)
 

@@ -2375,7 +2375,7 @@ script:
     description: Lists all managed policies that are attached to the specified IAM
       user.
     execution: false
-    name: aws-iam-list-attached-user-polices
+    name: aws-iam-list-attached-user-policies
     outputs:
     - contextPath: AWS.IAM.Users.AttachedPolicies.PolicyName
       description: Policy Name.
@@ -2429,7 +2429,7 @@ script:
     - contextPath: AWS.IAM.Users.AttachedPolicies.PolicyName
       description: Policy Name.
       type: String
-    - contextPath: WS.IAM.Users.AttachedPolicies.PolicyArn
+    - contextPath: AWS.IAM.Users.AttachedPolicies.PolicyArn
       description: The Amazon Resource Name (ARN) of the attached policy.
       type: String
     - contextPath: AWS.IAM.Groups.AttachedPoliciesMarker
