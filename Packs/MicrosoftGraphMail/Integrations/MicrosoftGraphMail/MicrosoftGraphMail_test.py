@@ -150,7 +150,7 @@ def test_list_mails_command_encoding(mocker, client):
     Then
     - Validate that the queried value is properly url-encoded
     """
-    client = MsGraphClient(True, 'tenant', 'auth_token_url', 'enc_key', 'app_name', 'https://base_url.com',
+    client = MsGraphClient(True, 'tenant', 'auth_token_url', 'enc_key', 'app_name', 'https://example.com',
                            use_ssl=True, proxy=False, ok_codes=(200,), mailbox_to_fetch='mailbox',
                            folder_to_fetch='folder', first_fetch_interval=10, emails_fetch_limit=10)
     mocker.patch.object(client.ms_client, 'get_access_token')
@@ -160,7 +160,7 @@ def test_list_mails_command_encoding(mocker, client):
 
     with requests_mock.Mocker() as request_mocker:
         mocked = request_mocker.get(
-            f'https://base_url.com/users/user_id/messages?$top=20&$search=%22{search_encoded}%22', json={}
+            f'https://example.com/users/user_id/messages?$top=20&$search=%22{search_encoded}%22', json={}
         )
         client.list_mails('user_id', search=search)
     assert mocked.call_count == 1
