@@ -526,7 +526,7 @@ def run_polling_command(args: dict, cmd: str, search_function: Callable, query_f
                     error = error.get(key, {})
             else:
                 error = 'Unknown'
-            polling_results.append(f"{exit_string} - {error}")
+            polling_results.append(CommandResults(f"{exit_string} - {error}"))
 
     # Check existing job
     else:
@@ -555,7 +555,7 @@ def run_polling_command(args: dict, cmd: str, search_function: Callable, query_f
 
         # Check the status of a completed job
         else:
-            status_output = {'JobID': job_id}
+            status_output: Dict[str, Any] = {'JobID': job_id}
             if additional_paths:
                 for k, v in additional_paths.items():
                     status_output[k] = v
@@ -5251,7 +5251,7 @@ def panorama_download_latest_content_update_content(target: str):
 
 def panorama_download_latest_content_update_command(args: dict = {}):
     target = args.get('target')
-    job_id = args.get('job_id')
+    job_id = args.get('job_id', None)
     polling = argToBoolean(args.get('polling'))
     cmd = 'panorama-download-latest-content-update'
     script_results = []
@@ -5331,7 +5331,7 @@ def panorama_content_update_download_status_command(args: dict):
     if DEVICE_GROUP:
         raise Exception('Content download status is only supported on Firewall (not Panorama).')
     target = str(args['target']) if 'target' in args else None
-    job_id = args['job_id']
+    job_id = args.get('job_id', None)
     result = panorama_content_update_download_status(target, job_id)
 
     content_download_status = {
