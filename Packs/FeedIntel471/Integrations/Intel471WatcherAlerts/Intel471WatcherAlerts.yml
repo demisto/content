@@ -24,6 +24,7 @@ configuration:
   type: 9
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to incidents
     fetched from the feed
+  defaultvalue: 'AMBER'
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -51,9 +52,9 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-- additionalinfo: The name of the watcher group for which alerts should be fetched.
-  display: Watcher group
-  name: watcher_group
+- additionalinfo: The UID(s) of the watcher group(s) for which alerts should be fetched (comma separated).
+  display: Watcher group UID(s)
+  name: watcher_group_uids
   required: false
   type: 0
 - display: Use system proxy settings
@@ -70,23 +71,6 @@ display: Intel471 Watcher Alerts Feed
 name: Intel471 Watcher Alerts Feed
 script:
   commands:
-  - arguments:
-    - default: false
-      description: '[Enter a description of the argument, including any important
-        information users need to know, for example, default values.]'
-      isArray: false
-      name: dummy
-      required: true
-      secret: false
-    deprecated: false
-    description: '[Enter a description of the command, including any important information
-      users need to know, for example required permissions.]'
-    execution: false
-    name: baseintegration-dummy
-    outputs:
-    - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
-      type: String
   - name: fetch-incidents
     arguments: []
     description: Fetches Intel 471 Watcher Alerts.
@@ -98,6 +82,6 @@ script:
   type: python
   subtype: python3
   dockerimage: demisto/jmespath:1.0.0.23980
-fromversion: 5.5.0
+fromversion: 6.0.0
 tests:
 - No tests (auto formatted)

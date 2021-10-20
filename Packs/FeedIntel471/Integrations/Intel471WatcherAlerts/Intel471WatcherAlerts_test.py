@@ -1,42 +1,37 @@
-"""Base Integration for Cortex XSOAR - Unit Tests file
-
-Pytest Unit Tests: all funcion names must start with "test_"
-
-More details: https://xsoar.pan.dev/docs/integrations/unit-testing
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-You must add at least a Unit Test function for every XSOAR command
-you are implementing with your integration
-"""
-
-import json
-import io
+import demistomock as demisto
+from typing import Dict
+from Intel471WatcherAlerts import fetch_incidents, Client, FEED_URL, USER_AGENT
 
 
-def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
-        return json.loads(f.read())
+def test_fetch_incidents(mocker):
+    base_url = FEED_URL
+    verify_certificate = not demisto.params().get('insecure', False)
+    proxy = demisto.params().get('proxy', False)
 
-
-# TODO: REMOVE the following dummy unit test function
-def test_baseintegration_dummy():
-    """Tests helloworld-say-hello command function.
-
-    Checks the output of the command function with the expected output.
-
-    No mock is needed here because the say_hello_command does not call
-    any external API.
-    """
-    from BaseIntegration import Client, baseintegration_dummy_command
-
-    client = Client(base_url='some_mock_url', verify=False)
-    args = {
-        'dummy': 'this is a dummy response'
+    headers: Dict = {
+        'user-agent': USER_AGENT
     }
-    response = baseintegration_dummy_command(client, args)
 
-    mock_response = util_load_json('test_data/baseintegration-dummy.json')
+    username = demisto.params().get('credentials', {}).get('identifier')
+    password = demisto.params().get('credentials', {}).get('password')
 
-    assert response.outputs == mock_response
-# TODO: ADD HERE unit tests for every command
+    client = Client(
+        base_url=base_url,
+        verify=verify_certificate,
+        headers=headers,
+        auth=(username, password),
+        proxy=proxy)
+
+    last_alert_uid: str = demisto.getIntegrationContext().get('last_alert_uid', '')
+
+    latest_alert_uid, next_run, incidents = fetch_incidents(
+        client=client,
+        max_results=100,
+        last_run=0,
+        first_fetch_time=0,
+        watcher_group_uids=None,
+        severity='Medium',
+        last_alert_uid=None
+    )
+
+    assert len(incidents) > 0
