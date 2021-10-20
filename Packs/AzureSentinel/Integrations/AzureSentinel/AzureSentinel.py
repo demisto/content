@@ -110,6 +110,8 @@ class AzureSentinelClient:
         if res.content:
             return res.json()
 
+        return res
+
 
 ''' INTEGRATION HELPER METHODS '''
 
@@ -722,6 +724,21 @@ def incident_add_comment_command(client, args):
     )
 
 
+def incident_delete_comment_command(client, args):
+
+    inc_id = args.get('incident_id')
+    comment_id = args.get('comment_id')
+    url_suffix = f'incidents/{inc_id}/comments/{comment_id}'
+
+    res = client.http_request('DELETE', url_suffix)
+    if isinstance(res, requests.Response) and res.status_code == 204:
+        readable_output = f'Comment {comment_id} does not exist.'
+    else:
+        readable_output = f'Comment {comment_id} was deleted successfully.'
+
+    return CommandResults(readable_output=readable_output)
+
+
 def list_incident_entities_command(client, args):
     """
     Get a list of incident's entities.
@@ -890,6 +907,7 @@ def main():
             'azure-sentinel-delete-incident': delete_incident_command,
             'azure-sentinel-list-incident-comments': list_incident_comments_command,
             'azure-sentinel-incident-add-comment': incident_add_comment_command,
+            'azure-sentinel-incident-delete-comment': incident_delete_comment_command,
             'azure-sentinel-list-incident-relations': list_incident_relations_command,
             'azure-sentinel-list-incident-entities': list_incident_entities_command,
             'azure-sentinel-list-incident-alerts': list_incident_alerts_command,
