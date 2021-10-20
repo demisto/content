@@ -645,11 +645,9 @@ def panorama_commit_command(args: dict):
     Commit and show message in the war room
     """
     polling = argToBoolean(args.get('polling'))
-    timeout = int(args.get('timeout', 600))
-    interval_in_seconds = int(args.get('interval_in_seconds', 60))
     job_id = args.get('job_id', None)
-    script_results = []
     cmd = 'panorama-commit'
+    script_results = []
 
     if polling:
 
@@ -5255,8 +5253,6 @@ def panorama_download_latest_content_update_command(args: dict = {}):
     target = args.get('target')
     job_id = args.get('job_id')
     polling = argToBoolean(args.get('polling'))
-    timeout = int(args.get('timeout', 600))
-    interval_in_seconds = int(args.get('interval_in_seconds', 60))
     cmd = 'panorama-download-latest-content-update'
     script_results = []
 
@@ -5387,8 +5383,6 @@ def panorama_install_latest_content_update_command(args: dict = {}):
     target = args.get('target')
     polling = argToBoolean(args.get('polling'))
     job_id = args.get('job_id', None)
-    timeout = int(args.get('timeout', 600))
-    interval_in_seconds = int(args.get('interval_in_seconds', 60))
     cmd = 'panorama-install-latest-content-update'
     script_results = []
 
@@ -5534,8 +5528,6 @@ def panorama_download_panos_version_command(args: dict):
     target = args.get('target', None)
     target_version = args.get('target_version')
     polling = argToBoolean(args.get('polling'))
-    timeout = int(args.get('timeout', 600))
-    interval_in_seconds = int(args.get('interval_in_seconds', 60))
     job_id = args.get('job_id', None)
     cmd = 'panorama-download-panos-version'
     script_results = []
@@ -5658,8 +5650,6 @@ def panorama_install_panos_version_command(args: dict):
     target = str(args['target']) if 'target' in args else None
     target_version = str(args['target_version'])
     polling = argToBoolean(args.get('polling'))
-    timeout = int(args.get('timeout', 600))
-    interval_in_seconds = int(args.get('interval_in_seconds', 60))
     job_id = args.get('job_id', None)
     cmd = 'panorama-install-panos-version'
     script_results = []
