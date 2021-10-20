@@ -287,7 +287,7 @@ class Taxii2FeedClient:
         return cf.name
 
     @staticmethod
-    def get_indicator_publication(indicator):
+    def get_indicator_publication(indicator: Dict[str, Any]):
 
         """
         Build publications grid field from the indicator external_references field
@@ -307,24 +307,7 @@ class Taxii2FeedClient:
         return publications
 
     @staticmethod
-    def get_attack_id_and_value_from_name(attack_indicator):
-
-        """
-        Split indicator name into MITRE ID and indicator value: 'T1108: Redundant Access' -> MITRE ID = T1108,
-        indicator value = 'Redundant Access'.
-        """
-        ind_name = attack_indicator.get('name')
-        idx = ind_name.index(':')
-        ind_id = ind_name[:idx]
-        value = ind_name[idx + 2:]
-
-        if attack_indicator.get('x_mitre_is_subtechnique'):
-            value = attack_indicator.get('x_panw_parent_technique_subtechnique')
-
-        return ind_id, value
-
-    @staticmethod
-    def change_attack_pattern_to_stix_attack_pattern(indicator):
+    def change_attack_pattern_to_stix_attack_pattern(indicator: Dict[str, Any]):
         indicator['type'] = f'STIX {indicator["type"]}'
         indicator['fields']['stixkillchainphases'] = indicator['fields'].pop('killchainphases', None)
         indicator['fields']['stixdescription'] = indicator['fields'].pop('description', None)
@@ -332,7 +315,7 @@ class Taxii2FeedClient:
         return indicator
 
     @staticmethod
-    def is_sub_report(report_obj) -> bool:
+    def is_sub_report(report_obj: Dict[str, Any]) -> bool:
         obj_refs = report_obj.get('object_refs', [])
         for obj_ref in obj_refs:
             if obj_ref.startswith('report--'):
@@ -340,7 +323,7 @@ class Taxii2FeedClient:
         return True
 
     @staticmethod
-    def get_ioc_type(indicator, id_to_object) -> str:
+    def get_ioc_type(indicator: str, id_to_object: Dict[str, Dict[str, Any]]) -> str:
         """
         Get IOC type by extracting it from the pattern field.
 
@@ -375,7 +358,7 @@ class Taxii2FeedClient:
 
     """ PARSING FUNCTIONS"""
 
-    def parse_indicator(self, indicator_obj: Dict[str, str]) -> List[Dict[str, str]]:
+    def parse_indicator(self, indicator_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
         """
         Parses a single indicator object
         :param indicator_obj: indicator object
@@ -423,31 +406,29 @@ class Taxii2FeedClient:
         :return: attack pattern extracted from the attack pattern object in cortex format
         """
         publications = self.get_indicator_publication(attack_pattern_obj)
-        mitre_id, value = self.get_attack_id_and_value_from_name(attack_pattern_obj)
 
         kill_chain_mitre = [chain.get('phase_name', '') for chain in attack_pattern_obj.get('kill_chain_phases', [])]
         kill_chain_phases = [MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS.get(phase) for phase in kill_chain_mitre]
 
         attack_pattern = {
-            "value": value,
+            "value": attack_pattern_obj.get('name'),
             "type": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
             "score": ThreatIntel.ObjectsScore.ATTACK_PATTERN,
             "rawJSON": attack_pattern_obj,
-            "fields": {
-                'stixid': attack_pattern_obj.get('id'),
-                "killchainphases": kill_chain_phases,
-                "firstseenbysource": attack_pattern_obj.get('created'),
-                "modified": attack_pattern_obj.get('modified'),
-                'description': attack_pattern_obj.get('description', ''),
-                'operatingsystemrefs': attack_pattern_obj.get('x_mitre_platforms'),
-                "publications": publications,
-                "mitreid": mitre_id,
-                "tags": list(self.tags),
-            }
         }
-        attack_pattern['fields']['tags'].extend([mitre_id])
+        fields = {
+            'stixid': attack_pattern_obj.get('id'),
+            "killchainphases": kill_chain_phases,
+            "firstseenbysource": attack_pattern_obj.get('created'),
+            "modified": attack_pattern_obj.get('modified'),
+            'description': attack_pattern_obj.get('description', ''),
+            'operatingsystemrefs': attack_pattern_obj.get('x_mitre_platforms'),
+            "publications": publications,
+            "tags": list(self.tags),
+        }
         if self.tlp_color:
-            attack_pattern['fields']['trafficlightprotocol'] = self.tlp_color
+            fields['trafficlightprotocol'] = self.tlp_color
+        attack_pattern["fields"] = fields
 
         if not is_demisto_version_ge('6.2.0'):
             # For versions less than 6.2 - that only support STIX and not the newer types - Malware, Tool, etc.
@@ -476,7 +457,7 @@ class Taxii2FeedClient:
             'published': report_obj.get('published'),
             'description': report_obj.get('description', ''),
             "report_types": report_obj.get('report_types', []),
-            "tags": list((set(report_obj.get('labels'))).union(set(self.tags))),
+            "tags": list((set(report_obj.get('labels', []))).union(set(self.tags))),
         }
         if self.tlp_color:
             fields['trafficlightprotocol'] = self.tlp_color
@@ -702,7 +683,7 @@ class Taxii2FeedClient:
         intrusion_set["fields"] = fields
         return [intrusion_set]
 
-    def parse_relationships(self, relationships_lst):
+    def parse_relationships(self, relationships_lst: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """Parse the Relationships objects retrieved from the feed.
 
         Returns:
@@ -718,16 +699,16 @@ class Taxii2FeedClient:
                     demisto.debug(f"Invalid relation type: {relationship_type}")
                     continue
 
-            a_threat_intel_type = relationships_object.get('source_ref').split('--')[0]
+            a_threat_intel_type = relationships_object.get('source_ref', '').split('--')[0]
             a_type = THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.get(a_threat_intel_type, '')  # type: ignore
             if a_threat_intel_type == 'indicator':
-                id = relationships_object.get('source_ref')
+                id = relationships_object.get('source_ref', '')
                 a_type = self.get_ioc_type(id, self.id_to_object)
 
-            b_threat_intel_type = relationships_object.get('target_ref').split('--')[0]
+            b_threat_intel_type = relationships_object.get('target_ref', '').split('--')[0]
             b_type = THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.get(b_threat_intel_type, '')  # type: ignore
             if b_threat_intel_type == 'indicator':
-                b_type = self.get_ioc_type(relationships_object.get('target_ref'), self.id_to_object)
+                b_type = self.get_ioc_type(relationships_object.get('target_ref', ''), self.id_to_object)
 
             if not a_type or not b_type:
                 continue
@@ -777,7 +758,7 @@ class Taxii2FeedClient:
 
         return indicators
 
-    def load_stix_objects_from_envelope(self, envelopes: Dict[str, Union[types.GeneratorType, Dict[str, str]]], limit: int = -1):
+    def load_stix_objects_from_envelope(self, envelopes: Dict[str, Any], limit: int = -1):
 
         parse_stix_2_objects = {
             "indicator": self.parse_indicator,
@@ -806,7 +787,7 @@ class Taxii2FeedClient:
             return indicators[:limit]
         return indicators
 
-    def parse_generator_type_envelope(self, envelopes: Dict[str, Union[types.GeneratorType, Dict[str, str]]],
+    def parse_generator_type_envelope(self, envelopes: Dict[str, Any],
                                       parse_objects_func):
         indicators = []
         relationships_lst = []
@@ -832,13 +813,13 @@ class Taxii2FeedClient:
 
         return indicators
 
-    def parse_dict_envelope(self, envelopes: Dict[str, Union[types.GeneratorType, Dict[str, str]]],
+    def parse_dict_envelope(self, envelopes: Dict[str, Any],
                             parse_objects_func, limit: int = -1):
         indicators = []
-        relationships_list = []
+        relationships_list: List[Dict[str, Any]] = []
         for obj_type, envelope in envelopes.items():
             cur_limit = limit
-            stix_objects = envelope.get("objects")
+            stix_objects = envelope.get("objects", [])
             if obj_type != "relationship":
                 for obj in stix_objects:
                     self.id_to_object[obj.get('id')] = obj
@@ -1053,8 +1034,7 @@ class Taxii2FeedClient:
             if ioc_obj.get('type') == 'report':
                 return ioc_obj.get('name')
             elif ioc_obj.get('type') == 'attack-pattern':
-                _, value = Taxii2FeedClient.get_attack_id_and_value_from_name(ioc_obj)
-                return value
+                return ioc_obj.get('name')
             elif "file:hashes.'SHA-256' = '" in ioc_obj.get('name'):
                 return Taxii2FeedClient.get_ioc_value_from_ioc_name(ioc_obj)
             else:

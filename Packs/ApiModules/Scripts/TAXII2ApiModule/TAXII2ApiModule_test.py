@@ -277,7 +277,8 @@ class TestFetchingStixObjects:
 
         """
         expected = CORTEX_17_IOCS_19_OBJS
-        mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False, tlp_color='GREEN', objects_to_fetch=[])
+        mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False, tlp_color='GREEN',
+                                       objects_to_fetch=[])
 
         actual = mock_client.load_stix_objects_from_envelope({"indicator": STIX_ENVELOPE_17_IOCS_19_OBJS}, -1)
 
@@ -300,7 +301,8 @@ class TestFetchingStixObjects:
 
         """
         expected = CORTEX_COMPLEX_20_IOCS_19_OBJS
-        mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False, tlp_color='GREEN', objects_to_fetch=[])
+        mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False, tlp_color='GREEN',
+                                       objects_to_fetch=[])
 
         actual = mock_client.load_stix_objects_from_envelope({"indicator": STIX_ENVELOPE_20_IOCS_19_OBJS}, -1)
 
@@ -323,7 +325,8 @@ class TestFetchingStixObjects:
 
         """
         expected = CORTEX_COMPLEX_14_IOCS_19_OBJS
-        mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False, skip_complex_mode=True, objects_to_fetch=[])
+        mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False, skip_complex_mode=True,
+                                       objects_to_fetch=[])
 
         actual = mock_client.load_stix_objects_from_envelope({"indicator": STIX_ENVELOPE_20_IOCS_19_OBJS}, -1)
 

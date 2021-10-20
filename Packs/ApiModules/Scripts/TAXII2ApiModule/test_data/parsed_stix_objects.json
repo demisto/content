@@ -18,7 +18,7 @@
     }
   },
   {
-    "value": "Access Contact List (Mobile)",
+    "value": "T1432: Access Contact List (Mobile)",
     "type": "STIX Attack Pattern",
     "score": 2,
     "rawJSON": {
@@ -75,14 +75,13 @@
           "title": ""
         }
       ],
-      "mitreid": "T1432",
-      "tags": ["T1432"],
+      "tags": [],
       "stixkillchainphases": ["Actions on Objectives", "Collection"],
       "stixdescription": "An adversary could call standard operating system APIs from a malicious application to gather contact list (i.e., address book) data, or with escalated privileges could directly access files containing contact list data."
     }
   },
   {
-    "value": "Obfuscated Files or Information: Software Packing",
+    "value": "T1027.002: Software Packing",
     "type": "STIX Attack Pattern",
     "score": 2,
     "rawJSON": {
@@ -163,8 +162,7 @@
           "source": "Wikipedia Exe Compression"
         }
       ],
-      "mitreid": "T1027.002",
-      "tags": ["T1027.002"],
+      "tags": [],
       "stixkillchainphases": ["Installation", "Defense Evasion"],
       "stixdescription": "Adversaries may perform software packing or virtual machine software protection to conceal their code. Software packing is a method of compressing or encrypting an executable. Packing an executable changes the file signature in an attempt to avoid signature-based detection. Most decompression techniques decompress the executable code in memory. Virtual machine software protection translates an executable's original code into a special format that only a special virtual machine can run. A virtual machine is then called to run this code.(Citation: ESET FinFisher Jan 2018) \n\nUtilities used to perform software packing are called packers. Example packers are MPRESS and UPX. A more comprehensive list of known packers is available, (Citation: Wikipedia Exe Compression) but adversaries may create their own packing techniques that do not leave the same artifacts as well-known packers to evade defenses.  "
     }
@@ -414,7 +412,7 @@
         "entityA": "IQY Attachment E-mails",
         "entityAFamily": "Indicator",
         "entityAType": "Campaign",
-        "entityB": "Access Contact List (Mobile)",
+        "entityB": "T1432: Access Contact List (Mobile)",
         "entityBFamily": "Indicator",
         "entityBType": "Attack Pattern",
         "fields": {
