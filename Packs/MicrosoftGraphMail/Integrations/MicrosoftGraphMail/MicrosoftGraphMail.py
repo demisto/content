@@ -7,7 +7,7 @@ from typing import Union, Optional
 import requests
 import base64
 import binascii
-from urllib.parse import urlencode, quote_plus
+from urllib.parse import quote_plus
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -1635,7 +1635,5 @@ def main():
 
 from MicrosoftApiModule import *  # noqa: E402
 
-# if __name__ in ["builtins", "__main__"]:
-#     main()
-if __name__ == '__main__':
+if __name__ in ["builtins", "__main__"]:
     main()
