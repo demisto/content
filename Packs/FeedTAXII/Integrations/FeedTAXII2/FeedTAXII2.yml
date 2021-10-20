@@ -117,7 +117,7 @@ configuration:
   required: false
   type: 0
 - display: STIX Objects To Fetch
-  name: objectsToFetch
+  name: objects_to_fetch
   defaultvalue: indicator,report,malware,campaign,attack-pattern,course-of-action,intrusion-set,tool,threat-actor,infrastructure
   type: 16
   required: false
@@ -134,12 +134,12 @@ configuration:
   - infrastructure
 - additionalinfo: Add a certificate file as text to connect to the TAXII server
   display: Certificate File as Text
-  name: cert_text
+  name: certificate
   required: false
   type: 12
 - additionalinfo: Add a key file as text to connect to the TAXII server
   display: Key File as Text
-  name: key_text
+  name: key
   required: false
   type: 4
 - additionalinfo: Set the number of stix object that will be requested with each taxii

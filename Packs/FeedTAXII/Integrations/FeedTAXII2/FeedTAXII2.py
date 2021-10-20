@@ -86,7 +86,7 @@ def fetch_indicators_command(
             added_after = get_added_after(
                 fetch_full_feed, initial_interval, last_run_ctx.get(collection.id)
             )
-            fetched_iocs = client.build_iterator(limit, **{"added_after": added_after})
+            fetched_iocs = client.build_iterator(limit, added_after=added_after)
             indicators.extend(fetched_iocs)
             if limit >= 0:
                 limit -= len(fetched_iocs)
@@ -96,7 +96,7 @@ def fetch_indicators_command(
     else:
         # fetch from a single collection
         added_after = get_added_after(fetch_full_feed, initial_interval, last_fetch_time)
-        indicators = client.build_iterator(limit, **{"added_after": added_after})
+        indicators = client.build_iterator(limit, added_after=added_after)
         last_run_ctx[client.collection_to_fetch.id] = (
             client.last_fetched_indicator__modified
             if client.last_fetched_indicator__modified
@@ -133,11 +133,9 @@ def get_indicators_command(
     :return: indicators in cortex TIM format
     """
 
-    filter_args = {}
     limit = try_parse_integer(limit)
     if added_after:
         added_after, _ = parse_date_range(added_after, date_format=TAXII_TIME_FORMAT)
-        filter_args["added_after"] = added_after
     raw = argToBoolean(raw)
 
     if client.collection_to_fetch is None:
@@ -147,7 +145,7 @@ def get_indicators_command(
         indicators: list = []
         for collection in client.collections:
             client.collection_to_fetch = collection
-            fetched_iocs = client.build_iterator(limit, **filter_args)
+            fetched_iocs = client.build_iterator(limit, added_after=added_after)
             indicators.extend(fetched_iocs)
             if limit >= 0:
                 limit -= len(fetched_iocs)
@@ -155,7 +153,7 @@ def get_indicators_command(
                     break
 
     else:
-        indicators = client.build_iterator(limit=limit, **filter_args)
+        indicators = client.build_iterator(limit=limit, added_after=added_after)
 
     if raw:
         demisto.results({"indicators": [x.get("rawJSON") for x in indicators]})
@@ -226,9 +224,9 @@ def main():
     is_incremental_feed = params.get('feedIncremental') or False
     limit = try_parse_integer(params.get("limit") or -1)
     limit_per_request = try_parse_integer(params.get("limit_per_request"))
-    cert_text = params.get('cert_text', None)
-    key_text = params.get('key_text', None)
-    objects_to_fetch = argToList(params.get('objectsToFetch') or objects_types)
+    certificate = params.get('certificate', None)
+    key = params.get('key', None)
+    objects_to_fetch = argToList(params.get('objects_to_fetch') or objects_types)
 
     command = demisto.command()
     demisto.info(f"Command being called in {CONTEXT_PREFIX} is {command}")
@@ -246,8 +244,8 @@ def main():
             tags=feed_tags,
             limit_per_request=limit_per_request,
             tlp_color=tlp_color,
-            cert_text=cert_text,
-            key_text=key_text
+            certificate=certificate,
+            key=key,
         )
         client.initialise()
         commands = {

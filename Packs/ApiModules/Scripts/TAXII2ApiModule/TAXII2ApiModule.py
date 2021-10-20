@@ -445,7 +445,7 @@ class Taxii2FeedClient:
             "fields": {
                 'stixid': attack_pattern_obj.get('id'),
                 "killchainphases": kill_chain_phases,
-                "firstseen": attack_pattern_obj.get('created'),
+                "firstseenbysource": attack_pattern_obj.get('created'),
                 "modified": attack_pattern_obj.get('modified'),
                 'description': attack_pattern_obj.get('description', ''),
                 'operatingsystemrefs': attack_pattern_obj.get('x_mitre_platforms'),
@@ -481,7 +481,7 @@ class Taxii2FeedClient:
         }
         fields = {
             'stixid': report_obj.get('id'),
-            'firstseen': report_obj.get('created'),
+            'firstseenbysource': report_obj.get('created'),
             'published': report_obj.get('published'),
             'description': report_obj.get('description', ''),
             "report_types": report_obj.get('report_types', []),
@@ -508,7 +508,7 @@ class Taxii2FeedClient:
         }
         fields = {
             'stixid': threat_actor_obj.get('id'),
-            "firstseen": threat_actor_obj.get('created'),
+            "firstseenbysource": threat_actor_obj.get('created'),
             "modified": threat_actor_obj.get('modified'),
             'description': threat_actor_obj.get('description', ''),
             'aliases': threat_actor_obj.get("aliases", []),
@@ -549,7 +549,7 @@ class Taxii2FeedClient:
             "infrastructure_types": infrastructure_obj.get("infrastructure_types", []),
             "aliases": infrastructure_obj.get('aliases', []),
             "kill_chain_phases": kill_chain_phases,
-            "firstseen": infrastructure_obj.get('created'),
+            "firstseenbysource": infrastructure_obj.get('created'),
             "modified": infrastructure_obj.get('modified'),
             "tags": list(set(self.tags))
         }
@@ -576,7 +576,7 @@ class Taxii2FeedClient:
         }
         fields = {
             'stixid': malware_obj.get('id'),
-            "firstseen": malware_obj.get('created'),
+            "firstseenbysource": malware_obj.get('created'),
             "modified": malware_obj.get('modified'),
             "description": malware_obj.get('description', ''),
             "malware_types": malware_obj.get('malware_types', []),
@@ -612,7 +612,7 @@ class Taxii2FeedClient:
         fields = {
             'stixid': tool_obj.get('id'),
             "killchainphases": kill_chain_phases,
-            "firstseen": tool_obj.get('created'),
+            "firstseenbysource": tool_obj.get('created'),
             "modified": tool_obj.get('modified'),
             "tool_types": tool_obj.get("tool_types", []),
             "description": tool_obj.get('description', ''),
@@ -641,7 +641,7 @@ class Taxii2FeedClient:
         }
         fields = {
             'stixid': coa_obj.get('id'),
-            "firstseen": coa_obj.get('created'),
+            "firstseenbysource": coa_obj.get('created'),
             "modified": coa_obj.get('modified'),
             'description': coa_obj.get('description', ''),
             "action_type": coa_obj.get('action_type', ''),
@@ -667,7 +667,7 @@ class Taxii2FeedClient:
         }
         fields = {
             'stixid': campaign_obj.get('id'),
-            "firstseen": campaign_obj.get('created'),
+            "firstseenbysource": campaign_obj.get('created'),
             "modified": campaign_obj.get('modified'),
             'description': campaign_obj.get('description', ''),
             "aliases": campaign_obj.get('aliases', []),
@@ -695,7 +695,7 @@ class Taxii2FeedClient:
         }
         fields = {
             'stixid': intrusion_set_obj.get('id'),
-            "firstseen": intrusion_set_obj.get('created'),
+            "firstseenbysource": intrusion_set_obj.get('created'),
             "modified": intrusion_set_obj.get('modified'),
             'description': intrusion_set_obj.get('description', ''),
             "aliases": intrusion_set_obj.get('aliases', []),
