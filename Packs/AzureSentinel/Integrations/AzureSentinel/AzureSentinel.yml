@@ -148,8 +148,8 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximum number of incidents to return. The default and maximum
-        value is 50.
+      description: The maximum number of incidents to return. The default value is 50 and maximum
+        value is 200.
       isArray: false
       name: limit
       required: false
@@ -343,16 +343,6 @@ script:
       isArray: false
       name: provider
       required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: 'The source of the watchlist. Possible values: "Local file" and "Remote storage".'
-      isArray: false
-      name: source
-      predefined:
-      - Local file
-      - Remote storage
-      required: true
       secret: false
     - default: false
       description: The labels of the watchlist.
