@@ -27,7 +27,7 @@ class Client(BaseClient):
         uri = '/api/v2/users.json/'
         params = {'api_key': self.api_key,
                   'user[login]': 123}
-        self._http_request(method='GET', url_suffix=uri, params=params)
+        self._http_request(method='GET', url_suffix=uri, params=params, timeout=30)
 
     def get_manager_id(self, manager_email: Optional[str]) -> str:
         """ Gets the user's manager ID from manager email.
@@ -66,7 +66,8 @@ class Client(BaseClient):
         res = self._http_request(
             method='GET',
             url_suffix=uri,
-            params=params
+            params=params,
+            timeout=30
         )
         if isinstance(res, dict):
             res = [res]
@@ -96,7 +97,8 @@ class Client(BaseClient):
             method='POST',
             url_suffix=uri,
             json_data=user_data,
-            params=params
+            params=params,
+            timeout=30
         )
         user_id = user_app_data.get('id')
         is_active = user_app_data.get('is_active')
@@ -124,7 +126,8 @@ class Client(BaseClient):
             url_suffix=uri,
             json_data=user_data,
             params=params,
-            resp_type='response'
+            resp_type='response',
+            timeout=30
         )
 
         username = user_data.get('login')
@@ -170,7 +173,8 @@ class Client(BaseClient):
         res = self._http_request(
             method='GET',
             url_suffix=uri,
-            params=params
+            params=params,
+            timeout=30
         )
         if isinstance(res, dict):
             res = [res]
