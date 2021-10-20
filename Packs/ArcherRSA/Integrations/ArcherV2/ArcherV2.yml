@@ -6,7 +6,6 @@ configuration:
 - display: Server URL (e.g., https://192.168.0.1/rsaarcher or https://192.168.0.1/)
   name: url
   required: true
-  additionalinfo: Change only if you have other API Endpoint.
   type: 0
 - display: "Advanced: API Endpoint"
   hidden: false
