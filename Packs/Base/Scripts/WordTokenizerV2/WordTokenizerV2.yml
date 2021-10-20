@@ -168,7 +168,7 @@ args:
   - byLetters
   required: false
   secret: false
-comment: Tokenize the words in a input text.
+comment: Deprecated. Use DBotPreProcessTextData instead.
 commonfields:
   id: WordTokenizerNLP
   version: -1
