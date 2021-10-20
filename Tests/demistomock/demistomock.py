@@ -1076,7 +1076,7 @@ def mapObject(obj, mapper, mapper_type):
       dict: the obj after mapping
 
     """
-    return obj
+    return {}
 
 
 def getModules():
