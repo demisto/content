@@ -1422,6 +1422,21 @@ script:
       description: A comma-separated list of URL categories.
     - name: profile_setting
       description: A profile setting group.
+    - name: where
+      description: Where to move the rule. Can be "before", "after", "top", or "bottom".
+        If you specify "top" or "bottom", you need to supply the "dst" argument.
+      auto: PREDEFINED
+      defaultValue: bottom
+      predefined:
+        - before
+        - after
+        - top
+        - bottom
+    - name: dst
+      description: Destination rule relative to the rule that you are moving.
+        This field is only relevant if you specify "top" or "bottom" in the "where" argument.
+    description: Creates a policy rule.
+    execution: true
     outputs:
     - contextPath: Panorama.SecurityRule.Name
       description: Rule name.
@@ -1468,8 +1483,6 @@ script:
     - contextPath: Panorama.SecurityRules.ProfileSetting
       description: Profile setting group.
       type: String
-    description: Creates a policy rule.
-    execution: true
   - name: panorama-custom-block-rule
     arguments:
     - name: rulename
