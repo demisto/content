@@ -120,10 +120,10 @@ def test_poll_collection(mocker):
         m.post('http://example/taxii-data', content=stix_content)
         res = fetch_indicators_command(client)
 
-    # with open('FeedTAXII_test/TestCommands/indicator_from_collection.json') as json_f:
-    #     expected_result = json.load(json_f)
+    with open('FeedTAXII_test/TestCommands/indicators_example.json') as json_f:
+        expected_result = json.load(json_f)
 
-    assert res
+    assert res == expected_result
 
 
 @pytest.mark.parametrize('tags', (['tags1, tags2'], []))
