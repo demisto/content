@@ -1,13 +1,13 @@
 import shutil
 
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
+
+
 
 ''' IMPORTS '''
 import json
 import uuid
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union, Callable
 
 import requests
 
@@ -469,6 +469,139 @@ def template_test(template: str):
                         f' The available Templates for this instance: {", ".join(template_names)}.')
 
 
+def run_polling_command(args: dict=None, cmd: str=None, search_function: Callable=None,
+                        query_function: Callable=None, results_function: Callable=None,
+                        outputs_prefix: str=None, exit_string: str=None, job_id: str=None,
+                        additional_paths: dict=None, success_path: tuple=None,
+                        error_path: list=[])-> list:
+
+    polling_results = []
+
+    interval_in_seconds = int(args.get('interval_in_seconds', 60))
+    timeout = int(args.get('timeout', 600))
+
+    ScheduledCommand.raise_error_if_not_supported()
+
+    # Create a new job if there is no job_id
+    if not job_id:
+
+        result = search_function()
+
+        # If the job was started successfully
+        if 'result' in result.get('response', None) and result.get('response', {}).get('result', {}).get('job', None):
+
+            job_id = result.get('response', {}).get('result', {}).get('job', None)
+            output = {
+                'JobID': job_id,
+                'Status': 'Pending',
+                'Description': args.get('description')
+            }
+            if additional_paths:
+                for k, v in additional_paths.items():
+                    output[k] = v
+
+            polling_args = {
+                'job_id': job_id,
+                'polling': True,
+                **args
+            }
+
+            scheduled_command = ScheduledCommand(
+                command=cmd,
+                next_run_in_seconds=interval_in_seconds,
+                args=polling_args,
+                timeout_in_seconds=timeout
+            )
+            readable_output = f"Running {cmd} (Job ID: {job_id})"
+
+            polling_results.append(CommandResults(
+                outputs_prefix=outputs_prefix,
+                outputs_key_field='JobID',
+                outputs=output,
+                readable_output=readable_output,
+                scheduled_command=scheduled_command,
+                ignore_auto_extract=True
+            ))
+
+        # Otherwise return the error information
+        else:
+            if error_path:
+                error = result
+                for key in error_path:
+                    error = error.get(key, {})
+            else:
+                error = 'Unknown'
+            polling_results.append(f"{exit_string} - {error}")
+
+    # Check existing job
+    else:
+
+        result = query_function()
+
+        # Reschedule job if it's not complete
+        if result['response']['result']['job']['status'] != 'FIN':
+            polling_args = {
+                'job_id': job_id,
+                'polling': True,
+                **args
+            }
+
+            scheduled_command = ScheduledCommand(
+                command=cmd,
+                next_run_in_seconds=interval_in_seconds,
+                args=polling_args,
+                timeout_in_seconds=timeout
+            )
+            polling_results.append(
+                CommandResults(
+                    scheduled_command=scheduled_command
+                )
+            )
+
+        # Check the status of a completed job
+        else:
+            status_output = {'JobID': job_id}
+            if additional_paths:
+                for k, v in additional_paths.items():
+                    status_output[k] = v
+
+            status = dict_safe_get(result, success_path[0], default_return_value={})
+
+            # If the job is successful
+            if status == success_path[1]:
+
+                results = results_function()
+
+            # Otherwise return an error in the results
+            else:
+                if error_path:
+                    details = dict_safe_get(result, error_path, default_return_value={})
+                else:
+                    details = None
+                status_output['Status'] = 'Failed'
+                status_output['Message'] = details
+
+                status_warnings = []
+                if result.get("response", {}).get('result', {}).get('job', {}).get('warnings'):
+                    status_warnings = result.get("response", {}).get('result', {}).get('job', {}).get('warnings', {}).get(
+                        'line',
+                        [])
+                ignored_error = ['configured with no certificate profile']
+                status_output["Warnings"] = [item for item in status_warnings if item not in ignored_error]
+
+                polling_results.append(
+                    CommandResults(
+                        outputs_prefix=outputs_prefix,
+                        outputs_key_field='JobID',
+                        outputs=status_output,
+                        ignore_auto_extract=True
+                    )
+                )
+
+    return polling_results
+
+
+
 @logger
 def panorama_command(args: dict):
     """
@@ -517,28 +650,59 @@ def panorama_commit_command(args: dict):
     """
     Commit and show message in the war room
     """
-    result = panorama_commit(args)
+    polling = argToBoolean(args.get('polling'))
+    timeout = int(args.get('timeout', 600))
+    interval_in_seconds = int(args.get('interval_in_seconds', 60))
+    job_id = args.get('job_id', None)
+    script_results = []
+    cmd = 'panorama-commit'
 
-    if 'result' in result['response']:
-        # commit has been given a jobid
-        commit_output = {
-            'JobID': result['response']['result']['job'],
-            'Status': 'Pending',
-            'Description': args.get('description')
-        }
-        return_results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': result,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Commit:', commit_output, ['JobID', 'Status'], removeNull=True),
-            'EntryContext': {
-                "Panorama.Commit(val.JobID == obj.JobID)": commit_output
-            }
-        })
+    if polling:
+
+        script_results = run_polling_command(
+            args=args,
+            cmd=cmd,
+            search_function=lambda: panorama_commit(args),
+            query_function=lambda: panorama_commit_status(args),
+            results_function=lambda: panorama_commit_status_command(args),
+            outputs_prefix='Panorama.Commit',
+            exit_string='There are no pending changes to commit.',
+            success_path=(['response', 'result', 'job', 'result'], 'OK'),
+            error_path=['response', 'result', 'job', 'details', 'line'],
+            job_id=job_id
+        )
+
     else:
-        # no changes to commit
-        return_results(result['response']['msg'])
+        result = panorama_commit(args)
+
+        if 'result' in result['response']:
+            # commit has been given a jobid
+            commit_output = {
+                'JobID': result['response']['result']['job'],
+                'Status': 'Pending',
+                'Description': args.get('description')
+            }
+
+            readable_output = tableToMarkdown(
+                'Commit:',
+                commit_output,
+                ['JobID', 'Status'],
+                removeNull=True
+            )
+
+            script_results.append(CommandResults(
+                outputs_prefix='Panorama.Commit',
+                outputs_key_field='JobID',
+                outputs=commit_output,
+                readable_output=readable_output,
+                ignore_auto_extract=True
+            ))
+
+        else:
+            # no changes to commit
+            script_results.append(result['response']['msg'])
+
+    return_results(script_results)
 
 
 @logger
@@ -4320,39 +4484,70 @@ def panorama_query_logs_command(args: dict):
     rule = args.get('rule')
     filedigest = args.get('filedigest')
     url = args.get('url')
+    ignore_auto_extract = args.get('ignore_auto_extract') == 'true'
+    polling = argToBoolean(args.get('polling'))
+    job_id = args.get('job_id', None)
+    cmd = 'panorama-query-logs'
+    interval_in_seconds = int(args.get('interval_in_seconds', 60))
+    timeout = int(args.get('timeout', 600))
+    polling_results = dict()
+    script_results = []
 
     if query and (address_src or address_dst or zone_src or zone_dst
                   or time_generated or action or port_dst or rule or url or filedigest):
         raise Exception('Use the free query argument or the fixed search parameters arguments to build your query.')
 
-    result = panorama_query_logs(log_type, number_of_logs, query, address_src, address_dst, ip_,
-                                 zone_src, zone_dst, time_generated, action,
-                                 port_dst, rule, url, filedigest)
+    if polling:
+        script_results = run_polling_command(
+            args=args,
+            cmd=cmd,
+            search_function=lambda: panorama_query_logs(log_type, number_of_logs, query, address_src, address_dst, ip_,
+                                         zone_src, zone_dst, time_generated, action,
+                                         port_dst, rule, url, filedigest),
+            query_function=lambda: panorama_get_traffic_logs(job_id),
+            results_function=lambda: panorama_get_logs_command(args),
+            additional_paths={'LogType': log_type},
+            outputs_prefix='Panorama.Monitor',
+            exit_string='Query logs failed.',
+            job_id=job_id,
+            success_path=(['response', '@status'], 'success'),
+            error_path=[]
+        )
 
-    if result['response']['@status'] == 'error':
-        if 'msg' in result['response'] and 'line' in result['response']['msg']:
-            raise Exception(f"Query logs failed. Reason is: {result['response']['msg']['line']}")
-        else:
-            raise Exception('Query logs failed.')
 
-    if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result']:
-        raise Exception('Missing JobID in response.')
+    else:
 
-    query_logs_output = {
-        'JobID': result['response']['result']['job'],
-        'Status': 'Pending',
-        'LogType': log_type,
-        'Message': result['response']['result']['msg']['line']
-    }
+        result = panorama_query_logs(log_type, number_of_logs, query, address_src, address_dst, ip_,
+                                     zone_src, zone_dst, time_generated, action,
+                                     port_dst, rule, url, filedigest)
 
-    return_results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': result,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Query Logs:', query_logs_output, ['JobID', 'Status'], removeNull=True),
-        'EntryContext': {"Panorama.Monitor(val.JobID == obj.JobID)": query_logs_output}
-    })
+        if result['response']['@status'] == 'error':
+            if 'msg' in result['response'] and 'line' in result['response']['msg']:
+                message = '. Reason is: ' + result['response']['msg']['line']
+                raise Exception('Query logs failed' + message)
+            else:
+                raise Exception('Query logs failed.')
+
+        if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result']:
+            raise Exception('Missing JobID in response.')
+
+        query_logs_output = {
+            'JobID': result['response']['result']['job'],
+            'Status': 'Pending',
+            'LogType': log_type,
+            'Message': result['response']['result']['msg']['line']
+        }
+
+        script_results.append({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Query Logs:', query_logs_output, ['JobID', 'Status'], removeNull=True),
+            'EntryContext': {"Panorama.Monitor(val.JobID == obj.JobID)": query_logs_output}
+        })
+
+    return_results(script_results)
 
 
 def panorama_check_logs_status_command(job_id: str):
@@ -4541,7 +4736,7 @@ def panorama_get_logs_command(args: dict):
             else:
                 pretty_logs = prettify_logs(logs['entry'])
                 query_logs_output['Logs'] = pretty_logs
-                human_readable = tableToMarkdown('Query ' + log_type + ' Logs:', query_logs_output['Logs'],
+                human_readable = tableToMarkdown(f'Query {log_type} Logs:', query_logs_output['Logs'],
                                                  ['TimeGenerated', 'SourceAddress', 'DestinationAddress', 'Application',
                                                   'Action', 'Rule', 'URLOrFilename'], removeNull=True)
             return_results({
@@ -5069,35 +5264,64 @@ def panorama_download_latest_content_update_content(target: str):
     return result
 
 
-def panorama_download_latest_content_update_command(target: Optional[str] = None):
+def panorama_download_latest_content_update_command(args: dict = {}):
+    target = args.get('target')
+    job_id = args.get('job_id')
+    polling = argToBoolean(args.get('polling'))
+    timeout = int(args.get('timeout', 600))
+    interval_in_seconds = int(args.get('interval_in_seconds', 60))
+    cmd = 'panorama-download-latest-content-update'
+    script_results = []
+
     """
     Download content and show message in war room
     """
     if DEVICE_GROUP:
         raise Exception('Download latest content is only supported on Firewall (not Panorama).')
-    result = panorama_download_latest_content_update_content(target)
 
-    if 'result' in result['response']:
-        # download has been given a jobid
-        download_status_output = {
-            'JobID': result['response']['result']['job'],
-            'Status': 'Pending'
-        }
-        entry_context = {"Panorama.Content.Download(val.JobID == obj.JobID)": download_status_output}
-        human_readable = tableToMarkdown('Content download:',
-                                         download_status_output, ['JobID', 'Status'], removeNull=True)
+    if polling:
 
-        return_results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': result,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': human_readable,
-            'EntryContext': entry_context
-        })
+        script_results = run_polling_command(
+            args=args,
+            cmd=cmd,
+            search_function=lambda: panorama_download_latest_content_update_content(target),
+            query_function=lambda: panorama_content_update_download_status(target, job_id),
+            results_function=lambda: panorama_content_update_download_status_command(args),
+            outputs_prefix='Panorama.Content.Download',
+            exit_string='Content failed to download.',
+            success_path=(['response', 'result', 'job', 'result'], 'OK'),
+            error_path=['response', 'result', 'job'],
+            job_id=job_id
+        )
+
     else:
-        # no download took place
-        return_results(result['response']['msg'])
+        result = panorama_download_latest_content_update_content(target)
+
+        if 'result' in result['response']:
+            # download has been given a jobid
+            download_status_output = {
+                'JobID': result['response']['result']['job'],
+                'Status': 'Pending'
+            }
+            readable_output = tableToMarkdown(
+                'Content download:',
+                download_status_output,
+                ['JobID', 'Status'],
+                removeNull=True
+            )
+
+            script_results.append(CommandResults(
+                outputs_prefix='Panorama.Content.Download',
+                outputs_key_field='JobID',
+                outputs=download_status_output,
+                readable_output=readable_output,
+                ignore_auto_extract=True
+            ))
+
+        else:
+            # no download took place
+            script_results.append(result['response']['msg'])
+    return_results(script_results)
 
 
 @logger
@@ -5171,34 +5395,61 @@ def panorama_install_latest_content_update(target: str):
     return result
 
 
-def panorama_install_latest_content_update_command(target: Optional[str] = None):
-    """
-        Check jobID of content content install status
-    """
-    if DEVICE_GROUP:
-        raise Exception('Content download status is only supported on Firewall (not Panorama).')
-    result = panorama_install_latest_content_update(target)
+def panorama_install_latest_content_update_command(args: dict = {}):
 
-    if 'result' in result['response']:
-        # installation has been given a jobid
-        content_install_info = {
-            'JobID': result['response']['result']['job'],
-            'Status': 'Pending'
-        }
-        entry_context = {"Panorama.Content.Install(val.JobID == obj.JobID)": content_install_info}
-        human_readable = tableToMarkdown('Result:', content_install_info, ['JobID', 'Status'], removeNull=True)
+    target = args.get('target')
+    polling = argToBoolean(args.get('polling'))
+    job_id = args.get('job_id', None)
+    timeout = int(args.get('timeout', 600))
+    interval_in_seconds = int(args.get('interval_in_seconds', 60))
+    cmd = 'panorama-install-latest-content-update'
+    script_results = []
 
-        return_results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': result,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': human_readable,
-            'EntryContext': entry_context
-        })
+    # Is polling requested
+    if polling:
+
+        script_results = run_polling_command(
+            args=args,
+            cmd=cmd,
+            search_function=lambda: panorama_install_latest_content_update(target),
+            query_function=lambda: panorama_content_update_install_status(target, job_id),
+            results_function=lambda: panorama_content_update_install_status_command(args),
+            outputs_prefix='Panorama.Content.Install',
+            exit_string='Failed to install content update.',
+            success_path=(['response', 'result', 'job', 'result'], 'OK'),
+            error_path=['details', 'result', 'job'],
+            job_id=job_id
+        )
+
     else:
-        # no content install took place
-        return_results(result['response']['msg'])
+        """
+            Check jobID of content content install status
+        """
+        if DEVICE_GROUP:
+            raise Exception('Content download status is only supported on Firewall (not Panorama).')
+        result = panorama_install_latest_content_update(target)
+
+        if 'result' in result['response']:
+            # installation has been given a jobid
+            content_install_info = {
+                'JobID': result['response']['result']['job'],
+                'Status': 'Pending'
+            }
+
+            readable_output = tableToMarkdown('Result:', content_install_info, ['JobID', 'Status'], removeNull=True)
+
+            script_results.append(CommandResults(
+                outputs_prefix='Panorama.Content.Install',
+                outputs_key_field='JobID',
+                outputs=content_install_info,
+                readable_output=readable_output,
+                ignore_auto_extract=True
+            ))
+        else:
+            # no content install took place
+            script_results.append(result['response']['msg'])
+
+    return_results(script_results)
 
 
 @logger
@@ -5293,29 +5544,52 @@ def panorama_download_panos_version_command(args: dict):
     """
     if DEVICE_GROUP:
         raise Exception('Downloading PAN-OS version is only supported on Firewall (not Panorama).')
-    target = str(args['target']) if 'target' in args else None
-    target_version = str(args['target_version'])
-    result = panorama_download_panos_version(target, target_version)
+    target = args.get('target', None)
+    target_version = args.get('target_version')
+    polling = argToBoolean(args.get('polling'))
+    timeout = int(args.get('timeout', 600))
+    interval_in_seconds = int(args.get('interval_in_seconds', 60))
+    job_id = args.get('job_id', None)
+    cmd = 'panorama-download-panos-version'
+    script_results = []
 
-    if 'result' in result['response']:
-        # download has been given a jobid
-        panos_version_download = {
-            'JobID': result['response']['result']['job']
-        }
-        entry_context = {"Panorama.PANOS.Download(val.JobID == obj.JobID)": panos_version_download}
-        human_readable = tableToMarkdown('Result:', panos_version_download, ['JobID', 'Status'], removeNull=True)
+    if polling:
 
-        return_results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': result,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': human_readable,
-            'EntryContext': entry_context
-        })
+        script_results = run_polling_command(
+            args=args,
+            cmd=cmd,
+            search_function=lambda: panorama_download_panos_version(target, target_version),
+            query_function=lambda: panorama_download_panos_status(target, job_id),
+            results_function=lambda: panorama_download_panos_status_command(args),
+            outputs_prefix='Panorama.PANOS.Download',
+            exit_string=f'Panorama version {target_version} download failed',
+            success_path=(['response', 'result', 'job', 'result'], 'OK'),
+            error_path=['response', 'result', 'job'],
+            job_id=job_id
+        )
+
     else:
-        # no panos download took place
-        return_results(result['response']['msg'])
+        result = panorama_download_panos_version(target, target_version)
+
+        if 'result' in result['response']:
+            # download has been given a jobid
+            panos_version_download = {
+                'JobID': result['response']['result']['job']
+            }
+            readable_output = tableToMarkdown('Result:', panos_version_download, ['JobID', 'Status'], removeNull=True)
+            script_results.append(CommandResults(
+                outputs_prefix='Panorama.PANOS.Download',
+                outputs_key_field='JobID',
+                outputs=panos_version_download,
+                readable_output=readable_output,
+                ignore_auto_extract=True
+            ))
+
+        else:
+            # no panos download took place
+            script_results.append(result['response']['msg'])
+
+    return_results(script_results)
 
 
 @logger
@@ -5396,27 +5670,50 @@ def panorama_install_panos_version_command(args: dict):
         raise Exception('PAN-OS installation is only supported on Firewall (not Panorama).')
     target = str(args['target']) if 'target' in args else None
     target_version = str(args['target_version'])
-    result = panorama_install_panos_version(target, target_version)
+    polling = argToBoolean(args.get('polling'))
+    timeout = int(args.get('timeout', 600))
+    interval_in_seconds = int(args.get('interval_in_seconds', 60))
+    job_id = args.get('job_id', None)
+    cmd = 'panorama-install-panos-version'
+    script_results = []
 
-    if 'result' in result['response']:
-        # panos install has been given a jobid
-        panos_install = {
-            'JobID': result['response']['result']['job']
-        }
-        entry_context = {"Panorama.PANOS.Install(val.JobID == obj.JobID)": panos_install}
-        human_readable = tableToMarkdown('PAN-OS Installation:', panos_install, ['JobID', 'Status'], removeNull=True)
+    if polling:
 
-        return_results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': result,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': human_readable,
-            'EntryContext': entry_context
-        })
+        script_results = run_polling_command(
+            args=args,
+            cmd=cmd,
+            search_function=lambda: panorama_install_panos_version(target, target_version),
+            query_function=lambda: panorama_install_panos_status(target, job_id),
+            results_function=lambda: panorama_install_panos_status_command(args),
+            outputs_prefix='Panorama.PANOS.Install',
+            exit_string=f'Failed to install PAN-OS version {target_version}',
+            success_path=(['response', 'result', 'job', 'result'], 'OK'),
+            error_path=['response', 'result', 'job'],
+            job_id=job_id
+        )
+
     else:
-        # no panos install took place
-        return_results(result['response']['msg'])
+        result = panorama_install_panos_version(target, target_version)
+
+        if 'result' in result['response']:
+            # panos install has been given a jobid
+            panos_install = {
+                'JobID': result['response']['result']['job']
+            }
+
+            readable_output = tableToMarkdown('PAN-OS Installation:', panos_install, ['JobID', 'Status'], removeNull=True)
+            script_results.append(CommandResults(
+                outputs_prefix='Panorama.PANOS.Install',
+                outputs_key_field='JobID',
+                outputs=panos_install,
+                readable_output=readable_output
+            ))
+
+        else:
+            # no panos install took place
+            script_results.append(result['response']['msg'])
+
+    return_results(script_results)
 
 
 @logger
@@ -7368,7 +7665,7 @@ def main():
 
         # Download the latest content update
         elif demisto.command() == 'panorama-download-latest-content-update':
-            panorama_download_latest_content_update_command(args.get('target'))
+            panorama_download_latest_content_update_command(args)
 
         # Download the latest content update
         elif demisto.command() == 'panorama-content-update-download-status':
@@ -7376,7 +7673,7 @@ def main():
 
         # Install the latest content update
         elif demisto.command() == 'panorama-install-latest-content-update':
-            panorama_install_latest_content_update_command(args.get('target'))
+            panorama_install_latest_content_update_command(args)
 
         # Content update install status
         elif demisto.command() == 'panorama-content-update-install-status':
