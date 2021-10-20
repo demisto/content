@@ -1527,6 +1527,19 @@ script:
     - name: tags
       description: Tags for which to use for the custom block policy rule.
       isArray: true
+    - name: where
+      auto: PREDEFINED
+      defaultValue: bottom
+      description: Where to move the rule. Can be "before", "after", "top", or "bottom".
+        If you specify "top" or "bottom", you need to supply the "dst" argument.
+      predefined:
+        - before
+        - after
+        - top
+        - bottom
+    - name: dst
+      description: Destination rule relative to the rule that you are moving.
+        This field is only relevant if you specify "top" or "bottom" in the "where" argument.
     outputs:
     - contextPath: Panorama.SecurityRule.Name
       description: Rule name.
