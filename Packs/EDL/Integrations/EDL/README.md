@@ -31,7 +31,8 @@ Unlike `PAN-OS EDL Management`, this integration hosts the EDL on the Cortex XSO
 | EDL Size | Maximum number of entries in the service instance. | True |
 | Update EDL On Demand Only | When set to true, will only update the service indicators via the **edl-update** command. | False |
 | Refresh Rate | How often to refresh the export indicators list (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) | False |
-| Listen Port | By default HTTP. Runs the *External Dynamic List* on this port from within Cortex XSOAR | True |
+| Listen Port | By default HTTP. Runs the *External Dynamic List* on this port from within Cortex XSOAR. You can use any available port except for 80, 443, or 9100. 
+When the `instance.execute.external.<instance_name>` key is set to true, Cortex XSOAR redirects the endpoint from HTTPS to the container on the port that you specify here, using port 443 as the secured publicly open port. | True |
 | Certificate (Required for HTTPS) | Configure a certificate for the EDL instance. The certificate is provided by pasting its value into this field. Use only when accesing the EDL instance by port. | False |
 | Private Key (Required for HTTPS) | Configure a private key. The private key is provided by pasting its value into this field. Use only when accesing the EDL instance by port. | False |
 | Credentials | Set user and password for accessing the EDL instance. (Only applicable when https is used and a certificate profile is configured on the pan-os edl object) | False |
