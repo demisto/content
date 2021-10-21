@@ -233,7 +233,7 @@ class IAMUserProfile:
         if not self._user_profile:
             raise DemistoException('You must provide the user profile data.')
         app_data = demisto.mapObject(self._user_profile, mapper_name, incident_type)
-        if 'olduserdata' in app_data:
+        if 'olduserdata' in self._user_profile:
             app_data['olduserdata'] = demisto.mapObject(app_data['olduserdata'], mapper_name, incident_type)
         return app_data
 
