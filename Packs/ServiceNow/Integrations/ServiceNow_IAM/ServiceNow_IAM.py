@@ -36,7 +36,7 @@ class Client(BaseClient):
             params=query_params
         )
 
-        if res and len(res.get('result', [])) == 1:
+        if res and len(res.get('result', [])) > 0:
             return res.get('result')[0]
         return None
 
