@@ -623,7 +623,7 @@ class Client(BaseClient):
                 starting_date_from = last_fetch.get("starting_date_from")
                 starting_date_to = last_fetch.get("starting_date_to")
                 date_to = last_fetch.get("current_date_to")
-                page = last_fetch.get("page")
+                page = last_fetch.get("page", 0)
             else:
                 starting_date_from = date_from
                 starting_date_to = datetime.now().strftime(DATE_FORMAT)
