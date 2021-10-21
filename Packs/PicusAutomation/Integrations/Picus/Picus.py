@@ -515,6 +515,33 @@ def main() -> None:
         elif demisto.command() == 'picus-trigger-update':
             result = triggerUpdate()
             return_results(result)
+        elif demisto.command()=='Picus_getAccessToken':
+            result = getAccessToken()
+            return_results(result)
+        elif demisto.command()=='Picus_getVectorList':
+            result = getVectorList()
+            return_results(result)
+        elif demisto.command()=='Picus_getPeerList':
+            result = getPeerList()
+            return_results(result)
+        elif demisto.command()=='Picus_getAttackResults':
+            result = getAttackResults()
+            return_results(result)
+        elif demisto.command()=='Picus_runAttacks':
+            result = runAttacks()
+            return_results(result)
+        elif demisto.command()=='Picus_getThreatResults':
+            result = getThreatResults()
+            return_results(result)
+        elif demisto.command()=='Picus_setParamPB':
+            result = setParamPB()
+            return_results(result)
+        elif demisto.command()=='Picus_getMitigationList':
+            result = getMitigationList()
+            return_results(result)
+        elif demisto.command() == 'Picus_getVectorCompare':
+            result = getVectorCompare()
+            return_results(result)
 
     # Log exceptions and return errors
     except Exception as e:

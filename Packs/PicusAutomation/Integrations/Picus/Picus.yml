@@ -280,10 +280,6 @@ script:
       optional parameters for pagination.
     execution: false
     name: Picus_getVectorList
-  - deprecated: true
-    description: Returns the peer list with current statuses.
-    execution: false
-    name: Picus_getPeerList
   - arguments:
     - default: false
       description: Untrusted peer name.
@@ -457,6 +453,10 @@ script:
     description: Makes a comparison of the given vector's results.
     execution: false
     name: Picus_getVectorCompare
+  - deprecated: true
+    description: Returns the peer list with current statuses.
+    execution: false
+    name: Picus_getPeerList
   dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: false
