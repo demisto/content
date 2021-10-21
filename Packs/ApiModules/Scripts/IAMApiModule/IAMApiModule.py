@@ -138,9 +138,8 @@ class IAMUserProfile:
         self._user_profile_delta = safe_load_json(user_profile_delta) if user_profile_delta else {}
         self._vendor_action_results = []
 
-    def get_attribute(self, item, use_old_user_data=False, user_profile: Optional[Dict] = None):
-        if not user_profile:
-            user_profile = self._user_profile
+    def get_attribute(self, item, use_old_user_data=False, user_profile_data: Optional[Dict] = None):
+        user_profile = user_profile_data if user_profile_data else self._user_profile
         if use_old_user_data and user_profile.get('olduserdata', {}).get(item):
             return user_profile.get('olduserdata', {}).get(item)
         return user_profile.get(item)
