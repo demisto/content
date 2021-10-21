@@ -802,6 +802,7 @@ def prepare_args_to_search(controller):
     if 'include_feed_correlations' in args_to_misp_format:
         args_to_misp_format['includeFeedCorrelations'] = 1 if demisto_args.get(
             'include_feed_correlations') == 'true' else 0
+        args_to_misp_format.pop('include_feed_correlations')
     if 'limit' not in args_to_misp_format:
         args_to_misp_format['limit'] = '50'
     if 'tags' in args_to_misp_format:
