@@ -34,6 +34,7 @@ COOMON_ACCOUNT_CONTROL_FLAGS = {
 }
 NORMAL_ACCOUNT = 512
 DISABLED_ACCOUNT = 514
+PASSWORD_NOT_REQUIRED = 544
 INACTIVE_LIST_OPTIONS = [514, 546, 66050, 66082, 262658, 262690, 328226]
 DEFAULT_LIMIT = 20
 
@@ -268,7 +269,7 @@ def get_user_activity_by_samaccountname(default_base_dn, samaccountname):
     :return: True if the user active, False otherwise.
     """
     active = False
-    query = f'(&(objectClass=User)(objectCategory=person)(samaccountname={samaccountname}))'
+    query = f'(&(objectClass=User)(objectCategory=person)(sAMAccountName={samaccountname}))'
     entries = search_with_paging(
         query,
         default_base_dn,
@@ -293,11 +294,11 @@ def get_user_dn_by_email(default_base_dn, email):
     """
     dn = ''
     samaccountname = email.split('@')[0]
-    query = f'(&(objectClass=User)(objectCategory=person)(samaccountname={samaccountname}))'
+    query = f'(&(objectClass=User)(objectCategory=person)(sAMAccountName={samaccountname}))'
     entries = search_with_paging(
         query,
         default_base_dn,
-        attributes=["samaccountname"],
+        attributes=["sAMAccountName"],
         size_limit=1,
         page_size=1
     )
@@ -609,7 +610,7 @@ def get_user_iam(default_base_dn, args, mapper_in, mapper_out):
     try:
         user_profile = args.get("user-profile")
         user_profile_delta = args.get('user-profile-delta')
-        default_attribute = "samaccountname"
+        default_attribute = "sAMAccountName"
 
         iam_user_profile = IAMUserProfile(user_profile=user_profile, user_profile_delta=user_profile_delta)
 
@@ -874,7 +875,7 @@ def create_user_iam(default_base_dn, args, mapper_out, disabled_users_group_cn):
         iam_user_profile = IAMUserProfile(user_profile=user_profile, user_profile_delta=user_profile_delta)
         ad_user = iam_user_profile.map_object(mapper_name=mapper_out, incident_type=IAMUserProfile.CREATE_INCIDENT_TYPE)
 
-        sam_account_name = ad_user.get("samaccountname")
+        sam_account_name = ad_user.get("sAMAccountName")
 
         if not sam_account_name:
             raise DemistoException("User must have a sAMAccountName, please make sure a mapping "
@@ -885,7 +886,7 @@ def create_user_iam(default_base_dn, args, mapper_out, disabled_users_group_cn):
                                    "in \"" + mapper_out + "\" outgoing mapper, in the User Profile incident type "
                                    "and schema type, under the \"ou\" field.")
 
-        user_exists = check_if_user_exists_by_attribute(default_base_dn, "samaccountname", sam_account_name)
+        user_exists = check_if_user_exists_by_attribute(default_base_dn, "sAMAccountName", sam_account_name)
 
         if user_exists:
             iam_user_profile = update_user_iam(default_base_dn, args, False, mapper_out, disabled_users_group_cn)
@@ -902,8 +903,8 @@ def create_user_iam(default_base_dn, args, mapper_out, disabled_users_group_cn):
             success = conn.add(user_dn, object_classes, ad_user)
             if success:
                 iam_user_profile.set_result(success=True,
-                                            email=ad_user.get('email'),
-                                            username=ad_user.get('name'),
+                                            email=ad_user.get('mail'),
+                                            username=ad_user.get('sAMAccountName'),
                                             details=ad_user,
                                             action=IAMActions.CREATE_USER,
                                             active=False)  # the user should be activated with the IAMInitADUser script
@@ -928,14 +929,14 @@ def create_user_iam(default_base_dn, args, mapper_out, disabled_users_group_cn):
 def get_iam_user_profile(user_profile, mapper_out):
     iam_user_profile = IAMUserProfile(user_profile=user_profile)
     ad_user = iam_user_profile.map_object(mapper_name=mapper_out, incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
-    sam_account_name = ad_user.get("samaccountname")
+    sam_account_name = ad_user.get("sAMAccountName")
 
-    old_user_data = user_profile.get_attribute('olduserdata')
+    old_user_data = iam_user_profile.get_attribute('olduserdata')
     if old_user_data:
         iam_old_user_profile = IAMUserProfile(user_profile=old_user_data)
         ad_old_user = iam_old_user_profile.map_object(mapper_name=mapper_out,
                                                       incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
-        sam_account_name = ad_old_user.get("samaccountname") or sam_account_name
+        sam_account_name = ad_old_user.get("sAMAccountName") or sam_account_name
 
     return iam_user_profile, ad_user, sam_account_name
 
@@ -966,7 +967,7 @@ def update_user_iam(default_base_dn, args, create_if_not_exists, mapper_out, dis
                                    "and schema type, under the \"ou\" field.")
 
         new_ou = ad_user.get("ou")
-        user_exists = check_if_user_exists_by_attribute(default_base_dn, "samaccountname", sam_account_name)
+        user_exists = check_if_user_exists_by_attribute(default_base_dn, "sAMAccountName", sam_account_name)
 
         if not user_exists:
             if create_if_not_exists:
@@ -1012,8 +1013,8 @@ def update_user_iam(default_base_dn, args, create_if_not_exists, mapper_out, dis
             else:
                 active = get_user_activity_by_samaccountname(default_base_dn, sam_account_name)
                 iam_user_profile.set_result(success=True,
-                                            email=ad_user.get('email'),
-                                            username=ad_user.get('name'),
+                                            email=ad_user.get('mail'),
+                                            username=ad_user.get('sAMAccountName'),
                                             action=IAMActions.UPDATE_USER,
                                             details=ad_user,
                                             active=active)
@@ -1284,7 +1285,7 @@ def enable_user_iam(default_base_dn, dn, disabled_users_group_cn):
     :param disabled_users_group_cn: The disabled group cn, the user will be removed from this group when enabled
     """
     modification = {
-        'userAccountControl': [('MODIFY_REPLACE', NORMAL_ACCOUNT)]
+        'userAccountControl': [('MODIFY_REPLACE', PASSWORD_NOT_REQUIRED)]
     }
     modify_object(dn, modification)
     if disabled_users_group_cn:
@@ -1308,12 +1309,12 @@ def disable_user_iam(default_base_dn, disabled_users_group_cn, args, mapper_out)
         iam_user_profile = IAMUserProfile(user_profile=user_profile, user_profile_delta=user_profile_delta)
         ad_user = iam_user_profile.map_object(mapper_name=mapper_out, incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
 
-        sam_account_name = ad_user.get("samaccountname")
+        sam_account_name = ad_user.get("sAMAccountName")
         if not sam_account_name:
             raise DemistoException("User must have a sAMAccountName, please make sure a mapping "
                                    "exists in \"" + mapper_out + "\" outgoing mapper.")
 
-        user_exists = check_if_user_exists_by_attribute(default_base_dn, "samaccountname", sam_account_name)
+        user_exists = check_if_user_exists_by_attribute(default_base_dn, "sAMAccountName", sam_account_name)
         if not user_exists:
             iam_user_profile.set_result(success=True, action=IAMActions.DISABLE_USER,
                                         skip=True, skip_reason="User doesn't exist")
@@ -1342,8 +1343,8 @@ def disable_user_iam(default_base_dn, disabled_users_group_cn, args, mapper_out)
                 raise DemistoException('Failed to remove user from the group "' + disabled_users_group_cn + '".')
 
         iam_user_profile.set_result(success=True,
-                                    email=ad_user.get('email'),
-                                    username=ad_user.get('name'),
+                                    email=ad_user.get('mail'),
+                                    username=ad_user.get('sAMAccountName'),
                                     action=IAMActions.DISABLE_USER,
                                     details=ad_user,
                                     active=False)
@@ -1496,7 +1497,7 @@ def delete_group():
 def get_mapping_fields_command(search_base):
     ad_attributes = get_all_attributes(search_base)
     # add keys that are not attributes but can be used in mapping
-    ad_attributes.extend(("dn", "samaccountname", "manageremail"))
+    ad_attributes.extend(("dn", "manageremail"))
 
     incident_type_scheme = SchemeTypeMapping(type_name=IAMUserProfile.DEFAULT_INCIDENT_TYPE)
 

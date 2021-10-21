@@ -88,7 +88,7 @@ script:
       isArray: false
       name: status
       predefined:
-      - Normal
+      - normal
       - containment_pending
       - contained
       - lift_containment_pending
@@ -2489,7 +2489,7 @@ script:
     description: Resolve incidents.
     execution: false
     name: cs-falcon-resolve-incident
-  dockerimage: demisto/python3:3.9.6.24019
+  dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: true
   longRunning: false
