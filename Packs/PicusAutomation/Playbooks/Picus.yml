@@ -40,7 +40,7 @@ tasks:
       version: -1
       name: Get Vector List
       description: Get Vector List
-      script: '|||Picus_getVectorList'
+      script: '|||picus-get-vector-list'
       type: regular
       iscommand: true
       brand: ""
@@ -69,10 +69,10 @@ tasks:
       version: -1
       name: Set Parameter
       description: Set Parameter for running playbook
-      script: PicusIntegration|||Picus_setParamPB
+      script: '|||picus-set-paramPB'
       type: regular
       iscommand: true
-      brand: PicusIntegration
+      brand: ""
     nexttasks:
       '#none#':
       - "10"
@@ -98,7 +98,7 @@ tasks:
       version: -1
       name: Get Secure Attacks
       description: Get secure attack results
-      script: '|||Picus_getAttackResults'
+      script: '|||picus-get-attack-results'
       type: regular
       iscommand: true
       brand: ""
@@ -136,7 +136,7 @@ tasks:
       version: -1
       name: Run Attacks
       description: Run attacks on Picus based on previous task results
-      script: '|||Picus_runAttacks'
+      script: '|||picus-run-attacks'
       type: regular
       iscommand: true
       brand: ""
@@ -174,7 +174,7 @@ tasks:
       version: -1
       name: Get Threat Results
       description: Get threat results of played attacks
-      script: '|||Picus_getThreatResults'
+      script: '|||picus-get-threat-results'
       type: regular
       iscommand: true
       brand: ""
@@ -244,7 +244,7 @@ tasks:
       version: -1
       name: Get Mitigations
       description: Get mitigation list for insecure results
-      script: '|||Picus_getMitigationList'
+      script: '|||picus-get-mitigation-list'
       type: regular
       iscommand: true
       brand: ""
@@ -307,7 +307,7 @@ tasks:
       version: -1
       name: Get Peer List
       description: Get Peer List
-      script: '|||Picus_getPeerList'
+      script: '|||picus-get-peer-list'
       type: regular
       iscommand: true
       brand: ""
@@ -450,7 +450,7 @@ tasks:
       version: -1
       name: Get Insecure Attacks
       description: Get insecure attack results
-      script: '|||Picus_getAttackResults'
+      script: '|||picus-get-attack-results'
       type: regular
       iscommand: true
       brand: ""

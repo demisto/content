@@ -13,14 +13,14 @@ This playbook does not use any sub-playbooks.
 This playbook does not use any scripts.
 
 ### Commands
-* Picus_getVectorList
-* Picus_getAttackResults
+* picus-get-vector-list
+* picus-get-attack-results
 * filter-insecure-attacks
-* Picus_runAttacks
-* Picus_setParamPB
-* Picus_getThreatResults
-* Picus_getPeerList
-* Picus_getMitigationList
+* picus-run-attacks
+* picus-set-paramPB
+* picus-get-threat-results
+* picus-get-peer-list
+* picus-get-mitigation-list
 
 ## Playbook Inputs
 ---
