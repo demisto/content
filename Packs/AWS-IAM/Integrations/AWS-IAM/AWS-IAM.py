@@ -1305,7 +1305,7 @@ def main():
             get_policy(args, aws_client)
         elif command == 'aws-iam-list-user-policies':
             list_user_policies(args, aws_client)
-        elif command == 'aws-iam-list-attached-user-polices':
+        elif command == 'aws-iam-list-attached-user-policies':
             list_attached_user_policies(args, aws_client)
         elif command == 'aws-iam-list-attached-group-policies':
             list_attached_group_policies(args, aws_client)
