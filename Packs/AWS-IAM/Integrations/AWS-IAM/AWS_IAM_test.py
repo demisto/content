@@ -1,4 +1,8 @@
-from CommonServerPython import tableToMarkdown, pascalToSpace
+import copy
+
+import pytest
+
+from CommonServerPython import tableToMarkdown, pascalToSpace, date_to_timestamp
 import demistomock as demisto
 import importlib
 
@@ -37,7 +41,25 @@ class Boto3Client:
         pass
 
 
-def test_list_user_policies(mocker):
+PAGINATION_CHECK = [
+    ({
+         'userName': 'test'
+     },
+     ['AllAccessPolicy', 'KeyPolicy'])
+    ,
+    (
+        {
+            'userName': 'test',
+            'page': 2,
+            'page_size': 1,
+            'marker': '111'
+        },
+        ['KeyPolicy'])
+]
+
+
+@pytest.mark.parametrize('args, res', PAGINATION_CHECK)
+def test_list_user_policies(mocker, args, res):
     response = {
         'PolicyNames': [
             'AllAccessPolicy',
@@ -47,12 +69,8 @@ def test_list_user_policies(mocker):
         'Marker': '111'
     }
 
-    args = {
-        'userName': 'test'
-    }
-
     ec = {'AWS.IAM.Users(val.UserName && val.UserName === obj.UserName)': {'UserName': 'test',
-                                                                           'Policies': ['AllAccessPolicy', 'KeyPolicy'],
+                                                                           'Policies': res,
                                                                            'InlinePoliciesMarker': '111'}}
 
     mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
@@ -65,7 +83,7 @@ def test_list_user_policies(mocker):
     human_readable = tableToMarkdown('AWS IAM Policies for user {}'.format('test'),
                                      headers=["PolicyNames"],
                                      headerTransform=pascalToSpace,
-                                     t=['AllAccessPolicy', 'KeyPolicy'])
+                                     t=res)
     assert contents.get('HumanReadable') == human_readable
     assert contents.get('EntryContext') == ec
 
@@ -130,10 +148,20 @@ def test_get_user_login_profile(mocker):
         'userName': 'test'
     }
 
-    ec = {'AWS.IAM.Users(val.UserName && val.UserName === obj.UserName).LoginProfile': res.get('LoginProfile')}
+    data = ({
+        'UserName': 'test',
+        'LoginProfile': {
+            'CreateDate': '2011-09-19T23:00:56Z',
+            'PasswordResetRequired': False
+        }
+    })
+
+    ec = {'AWS.IAM.Users(val.UserName && val.UserName === obj.UserName)': data}
+
     human_readable = tableToMarkdown('AWS IAM Login Profile for user {}'.format('test'),
-                                     t=res.get('LoginProfile'),
-                                     headers=['UserName', 'CreateDate', 'PasswordResetRequired'],
+                                     t=data.get('LoginProfile'),
+                                     headers=['CreateDate', 'PasswordResetRequired'],
+                                     removeNull=True,
                                      headerTransform=pascalToSpace)
 
     mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())

@@ -1158,20 +1158,25 @@ def get_user_login_profile(args, aws_client):
     kwargs = {
         'UserName': user_name
     }
+
     response = client.get_login_profile(**kwargs)
     user_profile = response['LoginProfile']
     data = ({
-        'UserName': user_profile['UserName'],
-        'CreateDate': user_profile['CreateDate'],
-        'PasswordResetRequired': user_profile['PasswordResetRequired']
+        'UserName': user_profile.get('UserName', None),
+        'LoginProfile': {
+            'CreateDate': user_profile.get('CreateDate', None),
+            'PasswordResetRequired': user_profile.get('PasswordResetRequired', None)
+        }
     })
-    ec = {'AWS.IAM.Users(val.UserName && val.UserName === obj.UserName).LoginProfile': data}
-    data_for_human_readable = copy.deepcopy(data)
-    data_for_human_readable.update({'CreateDate': date_to_timestamp(data.get('CreateDate'), "%Y-%m-%dT%H:%M:%SZ")})
+
+    ec = {'AWS.IAM.Users(val.UserName && val.UserName === obj.UserName)': data}
+
     human_readable = tableToMarkdown('AWS IAM Login Profile for user {}'.format(user_name),
-                                     t=data,
-                                     headers=['UserName', 'CreateDate', 'PasswordResetRequired'],
+                                     t=data.get('LoginProfile'),
+                                     headers=['CreateDate', 'PasswordResetRequired'],
+                                     removeNull=True,
                                      headerTransform=pascalToSpace)
+
     return_outputs(human_readable, ec)
 
 
