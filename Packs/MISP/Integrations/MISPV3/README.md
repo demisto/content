@@ -88,6 +88,12 @@ Search for events in MISP. This search command will return only information abou
 | MISP.Event.Object.Description | String | Description of the object. | 
 | MISP.Event.Object.ID | Number | ID of the object. | 
 | MISP.Event.Object.UUID | String | UUID of the object. | 
+| MISP.Event.Feed.ID | String | Feed id. | 
+| MISP.Event.Feed.Name | String | Feed name. | 
+| MISP.Event.Feed.Provider | String | Feed provider. | 
+| MISP.Event.Feed.SourceFormat | String | Feed source format \(MISP for example\). | 
+| MISP.Event.Feed.URL | String | Feed url. | 
+| MISP.Event.Feed.EventUUIDS | Unknown | List of event uusids include the feed. | 
 
 
 #### Command Example
