@@ -43,6 +43,7 @@ class MsGraphClient:
             api_version: str = 'v1.0',
             odata: Optional[str] = None,
             request_body: Optional[Dict] = None,
+            resp_type: str = 'json',
     ):
         url_suffix = urljoin(api_version, resource)
         if odata:
@@ -51,7 +52,7 @@ class MsGraphClient:
             method=http_method,
             url_suffix=url_suffix,
             json_data=request_body,
-            resp_type='content' if http_method == 'DELETE' else 'json',
+            resp_type=resp_type,
         )
 
 
@@ -86,18 +87,21 @@ def generic_command(client: MsGraphClient, args: Dict[str, Any]) -> CommandResul
             request_body = json.loads(request_body)
         except json.decoder.JSONDecodeError as e:
             raise ValueError(f'Invalid request body - {str(e)}')
+    http_method = args.get('http_method', 'GET')
+    resp_type = 'content' if (http_method == 'DELETE' or argToBoolean(args.get('no_content', 'false'))) else 'json'
 
     response = client.generic_request(
         resource=args.get('resource', ''),
-        http_method=args.get('http_method', 'GET'),
+        http_method=http_method,
         api_version=args.get('api_version', 'v1.0'),
         odata=args.get('odata', '$top=10'),
         request_body=request_body,
+        resp_type=resp_type,
     )
 
     results = {'raw_response': response}
 
-    if args.get('populate_context'):
+    if argToBoolean(args.get('populate_context', 'true')):
         results['outputs'] = response.get('value')
         results['outputs_prefix'] = 'MicrosoftGraph'
 

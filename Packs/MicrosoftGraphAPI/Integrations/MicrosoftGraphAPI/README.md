@@ -97,6 +97,7 @@ Run a Microsoft Graph API query.
 | request_body | The request body (required for POST queries). | Optional | 
 | odata | OData system query options, e.g. $filter=startswith(givenName, 'J'). For more details see https://docs.microsoft.com/en-us/graph/query-parameters. Default is "$top=10". | Optional |
 | populate_context | If "true", will populate the API response to the context data. Default is "true". | Optional | 
+| no_content | Set to true if the API returns "No Content" in the response. | Optional | 
 
 
 #### Context Output
@@ -120,3 +121,4 @@ So in order to list all the applications using the integration, we would run the
 Some of the Graph APIs do not support the `top` resource, and in that case the following error message will be returned: `This resource does not support custom page sizes. Please retry without a page size argument.`
 In this case, you can modify the *odata* command argument to not include the `top` resource.
 For example, run the command with the *odata* command argument set to `$count=true` to include a count of the total number of items in a collection alongside the page of data values returned from Microsoft Graph.
+- In case the API returns `No Content`, set the *no_content* to *true*.
