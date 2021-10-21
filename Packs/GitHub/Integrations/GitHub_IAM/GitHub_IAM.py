@@ -130,7 +130,7 @@ def get_user_command(client, args, mapper_in, mapper_out):
                                         email=email_result,
                                         username=github_user.get('userName', None),
                                         action=IAMActions.GET_USER,
-                                        details=res,
+                                        details=github_user,
                                         active=github_user.get('active', None))
 
         return iam_user_profile
@@ -156,9 +156,9 @@ def create_user_command(client, args, mapper_out, is_create_enabled, is_update_e
 
         else:
             iam_attr, iam_attr_value = iam_user_profile.get_first_available_iam_user_attr(IAM_GET_USER_ATTRIBUTES)
-            user_id = client.get_user(iam_attr, iam_attr_value)
+            get_user_response = client.get_user(iam_attr, iam_attr_value)
 
-            if user_id:
+            if get_user_response.get('totalResults', 0) > 0:
                 # if user exists - update it
                 create_if_not_exists = False
                 iam_user_profile = update_user_command(client, args, mapper_out, is_update_enabled,
@@ -205,9 +205,9 @@ def update_user_command(client, args, mapper_out, is_update_enabled, is_create_e
 
         else:
             iam_attr, iam_attr_value = iam_user_profile.get_first_available_iam_user_attr(IAM_GET_USER_ATTRIBUTES)
-            user_id = client.get_user(iam_attr, iam_attr_value)
+            get_user_response = client.get_user(iam_attr, iam_attr_value)
 
-            if not user_id:
+            if get_user_response.get('totalResults', 0) == 0:
                 # user doesn't exists
                 if create_if_not_exists:
                     iam_user_profile = create_user_command(client, args, mapper_out, is_create_enabled, False)
@@ -218,6 +218,7 @@ def update_user_command(client, args, mapper_out, is_update_enabled, is_create_e
                                                 skip=True,
                                                 skip_reason=error_message)
             else:
+                user_id: str = get_user_response.get('Resources')[0].get('id', '')
                 github_user = iam_user_profile.map_object(mapper_name=mapper_out,
                                                           incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
                 emails = github_user.get("emails")
