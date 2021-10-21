@@ -1,11 +1,11 @@
 {
-    "id": "Intel471FeedTitanWatcherGroup",
+    "id": "incident_intel471feedtitanwatchergroup",
     "version": -1,
     "modified": "2021-10-08T09:57:12.616246783Z",
     "name": "Titan Watcher Group",
     "ownerOnly": true,
     "description": "Name of the Titan watcher group that triggered the alert",
-    "cliName": "Intel471FeedTitanWatcherGroup",
+    "cliName": "intel471feedtitanwatchergroup",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,

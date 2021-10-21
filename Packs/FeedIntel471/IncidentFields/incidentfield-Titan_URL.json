@@ -1,11 +1,11 @@
 {
-    "id": "Intel471FeedTitanURL",
+    "id": "incident_intel471feedtitanurl",
     "version": -1,
     "modified": "2021-10-08T09:55:05.248561846Z",
     "name": "Titan URL",
     "ownerOnly": true,
     "description": "URL of the source object in Intel 471's Titan Portal",
-    "cliName": "Intel471FeedTitanURL",
+    "cliName": "intel471feedtitanurl",
     "type": "url",
     "closeForm": false,
     "editForm": true,
