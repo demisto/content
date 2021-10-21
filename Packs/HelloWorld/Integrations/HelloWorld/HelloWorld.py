@@ -801,6 +801,9 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
         ip_data = client.get_ip_reputation(ip)
         ip_data['ip'] = ip
 
+        # TODO: edit this from API
+        relationships_list = []
+
         # HelloWorld score to XSOAR reputation mapping
         # See: https://xsoar.pan.dev/docs/integrations/dbot
         # We are using Common.DBotScore as macros to simplify
@@ -840,7 +843,8 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
         ip_standard_context = Common.IP(
             ip=ip,
             asn=ip_data.get('asn'),
-            dbot_score=dbot_score
+            dbot_score=dbot_score,
+            relationships=relationships_list
         )
 
         # INTEGRATION DEVELOPER TIP
@@ -874,7 +878,8 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
             outputs_prefix='HelloWorld.IP',
             outputs_key_field='ip',
             outputs=ip_data,
-            indicator=ip_standard_context
+            indicator=ip_standard_context,
+            relationships=relationships_list
         ))
     return command_results
 
