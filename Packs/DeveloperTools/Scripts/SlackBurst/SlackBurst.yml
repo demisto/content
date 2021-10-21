@@ -30,7 +30,7 @@ dependson:
   should:
   - SlackV3|||send-notification
 runonce: false
-dockerimage: demisto/python3
+dockerimage: demisto/python3:3.7.3.286
 runas: DBotWeakRole
 comment: Sends a burst of messages to the Slack channel for load testing.
 fromversion: 6.1.0

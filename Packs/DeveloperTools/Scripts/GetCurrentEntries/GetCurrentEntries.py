@@ -13,10 +13,10 @@ def main():
     for entry in entries:
         if entry.get('contents'):
             dict_safe_key = re.sub(r'\W+', '', entry.get('contents'))
-            if not dict_safe_key in entry_contents:
+            if dict_safe_key not in entry_contents:
                 entry_contents[dict_safe_key] = 1
             else:
-                entry_contents[dict_safe_key] = entry_contents.get(dict_safe_key) + 1
+                entry_contents[dict_safe_key] = entry_contents.get(dict_safe_key, 0) + 1
 
     demisto.results(
         {
@@ -31,7 +31,6 @@ def main():
 
 
 ''' ENTRY POINT '''
-
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
