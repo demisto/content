@@ -7,6 +7,11 @@ configuration:
   name: url
   required: true
   type: 0
+- display: BMC Remedyforce Login URL
+  name: auth_url
+  required: false
+  type: 0
+  defaultvalue: https://login.salesforce.com
 - display: Username
   hidden: false
   name: username
@@ -1152,7 +1157,7 @@ script:
     - contextPath: BmcRemedyforce.ServiceRequest.Type
       description: The type of the service request.
       type: String
-  dockerimage: demisto/python3:3.9.1.14969
+  dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: true
   longRunning: false

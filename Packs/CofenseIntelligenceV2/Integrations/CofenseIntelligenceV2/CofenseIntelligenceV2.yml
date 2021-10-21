@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: CofenseIntelligenceV2
 display: Cofense Intelligence v2
-category: Utilities
+category: Data Enrichment & Threat Intelligence 
 description: 'Use the Cofense Intelligence integration to check the reputation of
   URLs, IP addresses, file hashes, and email addresses.'
 configuration:
@@ -98,7 +98,7 @@ script:
           required: true
           default: true
           description: IP address to check.
-          isArray: false
+          isArray: true
         - name: days_back
           required: false
           description: The maximum number of days from which to start returning data. 90 days is recomended by Cofense.
@@ -487,7 +487,7 @@ script:
           required: true
           default: true
           description: The MD5 hash of the file to check.
-          isArray: false
+          isArray: true
         - name: days_back
           required: false
           description: The maximum number of days from which to start returning data. 90 days is recomended by Cofense.
@@ -697,7 +697,7 @@ script:
           required: true
           default: true
           description: Sender email address to check.
-          isArray: false
+          isArray: true
         - name: days_back
           required: false
           description: The maximum number of days from which to start returning data. 90 days is recomended by Cofense.
@@ -895,7 +895,7 @@ script:
           required: true
           default: true
           description: URL to check.
-          isArray: false
+          isArray: true
         - name: days_back
           required: false
           description: The maximum number of days from which to start returning data. 90 days is recomended by Cofense.
@@ -1096,7 +1096,7 @@ script:
         - contextPath: CofenseIntelligence.URL.Threats.threatType
           description: If malware, will have value ‘malware’, otherwise it is empty.
           type: String
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.9.7.24076
   runonce: false
   subtype: python3
 tests:

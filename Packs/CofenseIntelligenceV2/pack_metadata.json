@@ -1,8 +1,8 @@
 {
     "name": "Cofense Intelligence v2",
-    "description": "Cofense Intelligence v2",
+    "description": "Cofense Intelligence allows users to search for threat intelligence reports based on IPs, email address, file hashes, URLs and extracted strings.",
     "support": "partner",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.3",
     "author": "Cofense",
      "url": "https://cofense.com/contact-support/",
      "email": "support@cofense.com",
@@ -11,5 +11,8 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "githubUser": [
+        "elebow"
+    ]
 }

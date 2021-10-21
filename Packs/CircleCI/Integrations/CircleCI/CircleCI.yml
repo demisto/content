@@ -274,8 +274,14 @@ script:
       name: project
       required: false
       secret: false
+    - default: false
+      description: Name of the branch.
+      isArray: false
+      name: branch
+      required: false
+      secret: false
     deprecated: false
-    description: Retrieves jobs list from the CircleCI workflow.
+    description: Retrieves the jobs list from the CircleCI workflow.
     execution: false
     name: circleci-workflow-last-runs
     outputs:
@@ -300,12 +306,36 @@ script:
     - contextPath: CircleCI.WorkflowRun.stopped_at
       description: Time the run stopped.
       type: Date
+  - arguments:
+    - default: false
+      description: A JSON object containing pipeline parameters and their values.
+      isArray: false
+      name: parameters
+      required: true
+      secret: false
+    deprecated: false
+    description: Triggers a new pipeline on the project.
+    execution: false
+    name: circleci-trigger-workflow
+    outputs:
+    - contextPath: CircleCI.WorkflowTrigger.id
+      description: The workflow ID.
+      type: number
+    - contextPath: CircleCI.WorkflowTrigger.created_at
+      description: Date when the workflow was created.
+      type: number
+    - contextPath: CircleCI.WorkflowTrigger.number
+      description: The workflow number.
+      type: number
+    - contextPath: CircleCI.WorkflowTrigger.state
+      description: The workflow state.
+      type: number
   isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.9.6.22912
+  dockerimage: demisto/python3:3.9.7.24076
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)

@@ -1,0 +1,261 @@
+{
+    "actions": {
+        "alert": true,
+        "antigena": {},
+        "breach": true,
+        "model": true,
+        "setPriority": false,
+        "setTag": false,
+        "setType": false
+    },
+    "active": true,
+    "activeTimes": {
+        "devices": {},
+        "tags": {},
+        "type": "exclusions",
+        "version": 2
+    },
+    "autoSuppress": true,
+    "autoUpdatable": true,
+    "autoUpdate": true,
+    "behaviour": "decreasing",
+    "created": {
+        "by": "Unknown"
+    },
+    "description": "A device is writing suspicious terms to network file shares that may indicate a threat. This is particularly relevant for ransomware infections that overwrite internal data.\\n\\nAction: Investigate the file writes that are occurring to see if they are overwriting important internal data.",
+    "edited": {
+        "by": "System"
+    },
+    "history": [
+        {
+            "active": true,
+            "by": "System",
+            "message": "Excluding a commonly seen, non-malicious filename that has a similar pattern to ransom notes, README_DO_NOT_TOUCH_FILES.txt",
+            "modified": "2021-08-13 20:59:30",
+            "phid": 69331
+        },
+        {
+            "active": false,
+            "by": "System",
+            "message": "Updated regex string in SMB Write component",
+            "modified": "2021-07-16 19:14:20",
+            "phid": 69039
+        },
+        {
+            "active": false,
+            "by": "System",
+            "message": "Removing components that are now covered by the new model Possible Ransom Note Write",
+            "modified": "2021-07-08 00:47:21",
+            "phid": 68975
+        },
+        {
+            "active": false,
+            "by": "System",
+            "message": "Adding new regex to detect ransom notes",
+            "modified": "2021-05-26 13:07:05",
+            "phid": 68573
+        },
+        {
+            "active": false,
+            "by": "System",
+            "message": "Updated regex string in SMB Write and Move components",
+            "modified": "2021-03-26 19:08:25",
+            "phid": 67901
+        },
+        {
+            "active": false,
+            "by": "System",
+            "message": "Modified regex strings in SMB Write and Move components to detect wasted and wasted_info in filenames",
+            "modified": "2021-03-20 15:14:30",
+            "phid": 67852
+        },
+        {
+            "active": false,
+            "by": "System",
+            "message": "Updated regex string in SMB Write and Move components",
+            "modified": "2020-10-08 23:28:04",
+            "phid": 65995
+        },
+        {
+            "active": false,
+            "by": "System",
+            "message": "add back lockbit ransomware extension",
+            "modified": "2020-09-02 20:26:25",
+            "phid": 65510
+        },
+        {
+            "active": false,
+            "by": "System",
+            "message": "Added AgeLocker and Thanos to regex in the last three components",
+            "modified": "2020-07-27 13:49:06",
+            "phid": 64836
+        },
+        {
+            "active": false,
+            "by": "System",
+            "message": "Updating regex",
+            "modified": "2020-07-11 04:58:25",
+            "phid": 64625
+        },
+        {
+            "active": false,
+            "by": "System",
+            "message": "Adding unique messages filter to the components for multiple writes/moves",
+            "modified": "2020-06-24 18:15:45",
+            "phid": 64408
+        },
+        {
+            "active": false,
+            "by": "System",
+            "message": "Updating regex",
+            "modified": "2020-06-23 07:10:05",
+            "phid": 64389
+        },
+        {
+            "active": false,
+            "by": "System",
+            "message": "Added Ragnar ransom note and file extension",
+            "modified": "2020-06-19 07:13:01",
+            "phid": 64361
+        },
+        {
+            "active": false,
+            "by": "System",
+            "message": "add maze ransom note, update prolock extensions",
+            "modified": "2020-05-26 12:27:18",
+            "phid": 64176
+        },
+        {
+            "active": false,
+            "by": "System",
+            "message": "add lockbit ransomware detection",
+            "modified": "2020-05-06 00:08:23",
+            "phid": 63911
+        },
+        {
+            "active": false,
+            "by": "System",
+            "message": "add proLock ransomware detection",
+            "modified": "2020-04-21 15:59:04",
+            "phid": 63792
+        },
+        {
+            "active": false,
+            "by": "System",
+            "message": "Adding Sodbinki and Petya to regex, and excluding common paths",
+            "modified": "2020-03-26 16:43:44",
+            "phid": 63562
+        },
+        {
+            "active": false,
+            "by": "System",
+            "message": "Improved regex for .onion and email addresses in filenames",
+            "modified": "2020-02-10 16:43:11",
+            "phid": 63190
+        },
+        {
+            "active": false,
+            "by": "System",
+            "message": "Reducing the scoring of the Bitcoin component to 1",
+            "modified": "2020-02-07 23:16:58",
+            "phid": 63174
+        },
+        {
+            "active": false,
+            "by": "System",
+            "message": "Added a new component for a commonly seen ransom note string",
+            "modified": "2019-11-29 14:25:58",
+            "phid": 13633
+        },
+        {
+            "active": false,
+            "by": "System",
+            "message": "Added additional ransom notes to the regex string of the final component",
+            "modified": "2019-11-21 16:26:40",
+            "phid": 2157
+        },
+        {
+            "active": false,
+            "by": "System",
+            "message": "Removing a deprecated filter from the SMB Move component, and adding the .ryk extension",
+            "modified": "2019-11-04 23:41:11",
+            "phid": 2065
+        },
+        {
+            "active": false,
+            "by": "System",
+            "message": "Reducing priority to 4, as this is included in the higher priority Suspicious SMB Activity meta-model",
+            "modified": "2019-08-05 12:23:08",
+            "phid": 1661
+        },
+        {
+            "active": false,
+            "by": "System",
+            "message": "Moving folder and adding in a Ryuk ransomware note filename",
+            "modified": "2019-07-09 00:36:33",
+            "phid": 1560
+        },
+        {
+            "active": false,
+            "by": "System",
+            "message": "Adding a new LockerGoga ransom note string to the regex",
+            "modified": "2019-03-21 23:23:54",
+            "phid": 857
+        },
+        {
+            "active": false,
+            "by": "System",
+            "message": "Removing read.txt from ransom note regex",
+            "modified": "2019-03-13 06:47:50",
+            "phid": 787
+        },
+        {
+            "active": false,
+            "by": "System",
+            "message": "Updated component regex",
+            "modified": "2019-03-12 02:26:36",
+            "phid": 686
+        },
+        {
+            "active": false,
+            "by": "Nobody",
+            "message": "updated description and display filters",
+            "modified": "2019-02-08 14:13:46",
+            "phid": 287
+        }
+    ],
+    "interval": 300,
+    "logic": {
+        "data": [
+            {
+                "cid": 254503,
+                "weight": 1
+            },
+            {
+                "cid": 254504,
+                "weight": 1
+            },
+            {
+                "cid": 254502,
+                "weight": 1
+            }
+        ],
+        "targetScore": 1,
+        "type": "weightedComponentList",
+        "version": 1
+    },
+    "message": "Excluding a commonly seen, non-malicious filename that has a similar pattern to ransom notes, README_DO_NOT_TOUCH_FILES.txt",
+    "modified": "2021-08-13 20:59:30",
+    "name": "Compromise::Ransomware::Ransom or Offensive Words Written to SMB",
+    "phid": 69331,
+    "pid": 287,
+    "priority": 4,
+    "sequenced": false,
+    "sharedEndpoints": true,
+    "tags": [
+        "AP: Exploit"
+    ],
+    "throttle": 3600,
+    "uuid": "80010119-6d7f-0000-0305-5e0000000325",
+    "version": 75
+}

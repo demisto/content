@@ -34,6 +34,19 @@ def oproxy_client_tenant():
                            tenant_id=tenant_id, base_url=base_url, verify=True, proxy=False, ok_codes=ok_codes)
 
 
+def oproxy_client_multi_resource():
+    tenant_id = TENANT
+    auth_id = f'{AUTH_ID}@{TOKEN_URL}'
+    enc_key = ENC_KEY
+    app_name = APP_NAME
+    base_url = BASE_URL
+    ok_codes = OK_CODES
+
+    return MicrosoftClient(self_deployed=False, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
+                           tenant_id=tenant_id, base_url=base_url, verify=True, proxy=False,
+                           ok_codes=ok_codes, multi_resource=True, resources=['https://resource1.com', 'https://resource2.com'])
+
+
 def oproxy_client_refresh():
     refresh_token = REFRESH_TOKEN
     auth_id = f'{AUTH_ID}@{TOKEN_URL}'
@@ -225,7 +238,8 @@ def test_oproxy_request(mocker, requests_mock, client, enc_content, tokens, res)
         'app_name': APP_NAME,
         'registration_id': AUTH_ID,
         'encrypted_token': enc_content + ENC_KEY,
-        'scope': None
+        'scope': None,
+        'resource': ''
     }
     mocker.patch.object(client, '_add_info_headers')
     mocker.patch.object(client, 'get_encrypted', side_effect=get_encrypted)
@@ -262,3 +276,23 @@ def test_self_deployed_request(requests_mock):
     req_body = requests_mock._adapter.last_request._request.body
     assert req_body == urllib.parse.urlencode(body)
     assert req_res == (TOKEN, 3600, '')
+
+
+def test_oproxy_use_resource(mocker):
+    """
+    Given:
+        multi_resource client
+    When
+        When configuration is oproxy authentication type and multi resource
+    Then
+        Verify post request is using resource value
+    """
+    resource = 'https://resource2.com'
+    client = oproxy_client_multi_resource()
+    context = {"access_token": TOKEN}
+
+    mocked_post = mocker.patch('requests.post', json=context, status_code=200, ok=True)
+    mocker.patch.object(client, 'get_encrypted', return_value='encrypt')
+
+    client._oproxy_authorize(resource)
+    assert resource == mocked_post.call_args_list[0][1]['json']['resource']

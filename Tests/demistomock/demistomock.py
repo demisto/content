@@ -990,12 +990,13 @@ def integrationInstance():
     return ""
 
 
-def createIndicators(indicators_batch):
+def createIndicators(indicators_batch, noUpdate=False):
     """(Integration only)
     Creates indicators from given indicator objects batch
 
     Args:
       indicators_batch (list): List of indicators objects to create
+      noUpdate (bool): No update on fetched feed (no new indicators to fetch), Available from Server version 6.5.0.
 
     Returns:
       None: No data returned
@@ -1006,7 +1007,9 @@ def createIndicators(indicators_batch):
 
 def searchIndicators(fromDate='', query='', size=100, page=0, toDate='', value='', searchAfter=None,
                      populateFields=None):
-    """Searches for indicators according to given query
+    """Searches for indicators according to given query.
+    If using Elasticsearch with Cortex XSOAR 6.1 or later,
+    the searchAfter argument must be used instead of the page argument.
 
     Args:
       fromdate (str): The start date to search from (Default value = '')
@@ -1021,6 +1024,26 @@ def searchIndicators(fromDate='', query='', size=100, page=0, toDate='', value='
     Returns:
       dict: Object contains the search results
 
+    You can searchIndicators one batch at a time, without needing to load all indicators at once, by adding the argument
+    searchAfter after the demisto.executeCommand.
+    When you run a search for the query type:IP, the return value includes searchAfter
+    ```
+    >>> demisto.executeCommand(searchIndicators, "query": 'type:IP', "size" :1000})
+    {
+        "iocs": [],
+        "searchAfter": [1596106239679, dd7aa6abfcb3adf793922618005b2ad5],
+        "total": 7432
+    }
+    ```
+    You can then use the returned value of searchAfter to iterate over all batches.
+    ```
+    >>> res = demisto.executeCommand("searchIndicators", {"query" : 'type:IP', "size" : 1000})
+    >>> search_after_title = 'searchAfter'
+    >>> while search_after_title in res and res[search_after_title] is not None:
+    >>>     demisto.results(res)
+    >>>     res = demisto.executeCommand("searchIndicators",
+    >>>                                 {"query" : 'type:IP', "size" : 1000, "searchAfter" : res[search_after_title]})
+    ```
     """
     return {}
 
@@ -1053,7 +1076,7 @@ def mapObject(obj, mapper, mapper_type):
       dict: the obj after mapping
 
     """
-    return {}
+    return obj
 
 
 def getModules():

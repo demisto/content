@@ -321,3 +321,48 @@ Retrieves the jobs list from the CircleCI workflow.
 >| master | 2021-06-29T00:04:56.069Z | 2482 | 7743 | d832d004-0069-4412-8e6d-41265143411z | failed | 2021-06-29T02:13:59.354Z |
 >| master | 2021-06-28T00:04:55.409Z | 3129 | 9778 | 531e678e-73e3-4f2a-ac80-55aa203461za | failed | 2021-06-28T02:47:52.916Z |
 
+### circleci-trigger-workflow
+***
+Triggers a new pipeline on the project.
+
+
+#### Base Command
+
+`circleci-trigger-workflow`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| parameters | A JSON object containing pipeline parameters and their values. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CircleCI.WorkflowTrigger.id | number | The workflow ID. | 
+| CircleCI.WorkflowTrigger.created_at | number | Date when the workflow was created. | 
+| CircleCI.WorkflowTrigger.number | number | The workflow number. | 
+| CircleCI.WorkflowTrigger.state | number | The workflow state. | 
+
+
+#### Command Example
+```!circleci-trigger-workflow parameters={"param1": "value"}```
+
+#### Context Example
+```json
+{
+    "CircleCI": {
+        "WorkflowTrigger": {
+            "created_at": "2021-07-28T15:49:33.906Z",
+            "id": "9bc69b28-f241-4918",
+            "number": 103232,
+            "state": "pending"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>CircleCI Workflow created successfully, ID=103232

@@ -16,6 +16,11 @@ configuration:
   - Pull_requests
   required: false
   type: 15
+- display: Server URL
+  name: url
+  defaultvalue: 'https://api.github.com'
+  type: 0
+  required: false
 - display: API Token
   name: token
   required: false
@@ -2808,6 +2813,18 @@ script:
       - 'false'
       required: false
       secret: false
+    - default: false
+      description: The name of the organization.
+      isArray: false
+      name: organization
+      required: false
+      secret: false
+    - default: false
+      description: The name of the repository.
+      isArray: false
+      name: repository
+      required: false
+      secret: false
     deprecated: false
     description: Gets the content of a file from GitHub.
     execution: false
@@ -2922,13 +2939,15 @@ script:
       required: true
       secret: false
     - default: false
-      description: Entry ID for the file to commit. Either "entry_id" or "file_text" must be provided.
+      description: Entry ID for the file to commit. Either "entry_id" or "file_text"
+        must be provided.
       isArray: false
       name: entry_id
       required: false
       secret: false
     - default: false
-      description: Plain text for the file to commit. Either "entry_id" or "file_text" must be provided.
+      description: Plain text for the file to commit. Either "entry_id" or "file_text"
+        must be provided.
       isArray: false
       name: file_text
       required: false
@@ -2940,8 +2959,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: The blob SHA of the file being replaced. Use the Github-list-files command
-        to get the SHA value of the file.  Required if you are updating a file. 
+      description: The blob SHA of the file being replaced. Use the Github-list-files
+        command to get the SHA value of the file.  Required if you are updating a
+        file.
       isArray: false
       name: file_sha
       required: false
@@ -3011,8 +3031,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The repository for the pull request. Defaults to the repository parameter
-        if not provided.
+      description: The repository for the pull request. Defaults to the repository
+        parameter if not provided.
       isArray: false
       name: repository
       required: false
@@ -3808,7 +3828,237 @@ script:
       name: content_type
     description: 'Add an Issue as a card in column of a spesific project  '
     name: GitHub-add-issue-to-project-board
-  dockerimage: demisto/pyjwt3:1.0.0.19327
+  - arguments:
+    - default: true
+      description: Relative path to retrieve its data.
+      isArray: false
+      name: relative_path
+      required: true
+      secret: false
+    - default: false
+      description: The branch name from which to get the file data. Default is master.
+      isArray: false
+      name: branch_name
+      required: false
+      secret: false
+    - default: false
+      description: The name of the organization containing the file.
+      isArray: false
+      name: organization
+      required: false
+      secret: false
+    - default: false
+      description: The repository of the file.
+      isArray: false
+      name: repository
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets the data of the a given path.
+    execution: false
+    name: GitHub-get-path-data
+    outputs:
+    - contextPath: GitHub.PathData.name
+      description: Path name.
+      type: String
+    - contextPath: GitHub.PathData.path
+      description: Relative path for the given repository.
+      type: String
+    - contextPath: GitHub.PathData.sha
+      description: Path SHA.
+      type: String
+    - contextPath: GitHub.PathData.size
+      description: Path size in bytes. Will be 0 if path to a dir was given.
+      type: Number
+    - contextPath: GitHub.PathData.url
+      description: Path URL.
+      type: String
+    - contextPath: GitHub.PathData.html_url
+      description: Path HTML URL.
+      type: String
+    - contextPath: GitHub.PathData.git_url
+      description: Path Git URL.
+      type: String
+    - contextPath: GitHub.PathData.download_url
+      description: Path download URL. If a directory path was given will be empty.
+      type: String
+    - contextPath: GitHub.PathData.type
+      description: Path data, e.g file, dir.
+      type: String
+    - contextPath: GitHub.PathData.content
+      description: Content of the path if a file path was given.
+      type: String
+    - contextPath: GitHub.PathData.encoding
+      description: Encoding method if path to a file was given.
+      type: String
+    - contextPath: GitHub.PathData.entries.name
+      description: If dir was given in file_path, name of the dir entry.
+      type: String
+    - contextPath: GitHub.PathData.entries.path
+      description: If dir was given in file_path, path of the dir entry.
+      type: String
+    - contextPath: GitHub.PathData.entries.sha
+      description: If dir was given in file_path, SHA of the dir entry.
+      type: String
+    - contextPath: GitHub.PathData.entries.size
+      description: If dir was given in file_path, size of the dir entry. Will be 0
+        if entry is also a dir.
+      type: Number
+    - contextPath: GitHub.PathData.entries.url
+      description: If dir was given in file_path, URL of the dir entry.
+      type: String
+    - contextPath: GitHub.PathData.entries.html_url
+      description: If dir was given in file_path, HTML URL of the dir entry.
+      type: String
+    - contextPath: GitHub.PathData.entries.git_url
+      description: If dir was given in file_path, Git URL of the dir entry.
+      type: String
+    - contextPath: GitHub.PathData.entries.download_url
+      description: If dir was given in file_path, download URL of the dir entry. Will
+        be empty if entry is also a dir.
+      type: String
+    - contextPath: GitHub.PathData.entries.type
+      description: If dir was given in file_path, type of the dir entry.
+      type: String
+  - arguments:
+    - default: false
+      description: Page number to retrieve releases from. If limit argument is not given, defaults to 1.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: Size of the page. If limit argument is not given, defaults to 50.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      description: Maximum number of releases data to retrieve. Will get results of the first pages. Cannot be given with page_size or page arguments.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: The name of the organization containing the repository. Defaults to organization instance parameter if not given.
+      isArray: false
+      name: organization
+      required: false
+      secret: false
+    - default: false
+      description: The repository containing the releases. Defaults to repository instance parameter if not given.
+      isArray: false
+      name: repository
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets releases data from a given repository and organization.
+    execution: false
+    name: GitHub-releases-list
+    outputs:
+    - contextPath: GitHub.Release.url
+      description: Release URL.
+      type: String
+    - contextPath: GitHub.Release.assets_url
+      description: Release assets URL.
+      type: String
+    - contextPath: GitHub.Release.upload_url
+      description: Upload URL.
+      type: String
+    - contextPath: GitHub.Release.html_url
+      description: HTML URL.
+      type: String
+    - contextPath: GitHub.Release.id
+      description: Release ID.
+      type: Number
+    - contextPath: GitHub.Release.author.login
+      description: The release author login username.
+      type: String
+    - contextPath: GitHub.Release.author.id
+      description: The release author user ID.
+      type: Number
+    - contextPath: GitHub.Release.author.node_id
+      description: The release author node ID.
+      type: String
+    - contextPath: GitHub.Release.author.avatar_url
+      description: The release author avatar URL.
+      type: String
+    - contextPath: GitHub.Release.author.gravatar_id
+      description: The release author gravatar ID.
+      type: String
+    - contextPath: GitHub.Release.author.url
+      description: The release author URL.
+      type: String
+    - contextPath: GitHub.Release.author.html_url
+      description: The release author HTML URL.
+      type: String
+    - contextPath: GitHub.Release.author.followers_url
+      description: The release author followers URL.
+      type: String
+    - contextPath: GitHub.Release.author.following_url
+      description: The release author following URL.
+      type: String
+    - contextPath: GitHub.Release.author.gists_url
+      description: The release author gists URL.
+      type: String
+    - contextPath: GitHub.Release.author.starred_url
+      description: The release author starred URL.
+      type: String
+    - contextPath: GitHub.Release.author.subscriptions_url
+      description: The release author subscriptions URL.
+      type: String
+    - contextPath: GitHub.Release.author.organizations_url
+      description: The release author organizations URL.
+      type: String
+    - contextPath: GitHub.Release.author.repos_url
+      description: The release author repos URL.
+      type: String
+    - contextPath: GitHub.Release.author.events_url
+      description: The release author events URL.
+      type: String
+    - contextPath: GitHub.Release.author.received_events_url
+      description: The release author received events URL.
+      type: String
+    - contextPath: GitHub.Release.author.type
+      description: The release author type. (E.g, "User").
+      type: String
+    - contextPath: GitHub.Release.author.site_admin
+      description: Whether the release author is site admin.
+      type: Boolean
+    - contextPath: GitHub.Release.node_id
+      description: Release Node ID.
+      type: String
+    - contextPath: GitHub.Release.tag_name
+      description: Release tag name.
+      type: String
+    - contextPath: GitHub.Release.target_commitish
+      description: Release target commit.
+      type: String
+    - contextPath: GitHub.Release.name
+      description: Release name.
+      type: String
+    - contextPath: GitHub.Release.draft
+      description: Whether release is draft.
+      type: Boolean
+    - contextPath: GitHub.Release.prerelease
+      description: Whether release is pre release.
+      type: Boolean
+    - contextPath: GitHub.Release.created_at
+      description: Date when release was created.
+      type: Date
+    - contextPath: GitHub.Release.published_at
+      description: Date when release was published.
+      type: Date
+    - contextPath: GitHub.Release.tarball_url
+      description: Release tar URL download.
+      type: String
+    - contextPath: GitHub.Release.zipball_url
+      description: Release zip URL download.
+      type: String
+    - contextPath: GitHub.Release.body
+      description: Release body.
+      type: String
+  dockerimage: demisto/pyjwt3:1.0.0.23674
   feed: false
   isfetch: true
   longRunning: false

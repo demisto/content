@@ -84,6 +84,24 @@ def toEntry(table):
     }
 
 
+def test_is_ip_valid():
+        valid_ip_v6 = "FE80:0000:0000:0000:0202:B3FF:FE1E:8329"
+        valid_ip_v6_b = "FE80::0202:B3FF:FE1E:8329"
+        invalid_ip_v6 = "KKKK:0000:0000:0000:0202:B3FF:FE1E:8329"
+        valid_ip_v4 = "10.10.10.10"
+        invalid_ip_v4 = "10.10.10.9999"
+        invalid_not_ip_with_ip_structure = "1.1.1.1.1.1.1.1.1.1.1.1.1.1.1"
+        not_ip = "Demisto"
+        assert not is_ip_valid(valid_ip_v6)
+        assert is_ip_valid(valid_ip_v6, True)
+        assert is_ip_valid(valid_ip_v6_b, True)
+        assert not is_ip_valid(invalid_ip_v6, True)
+        assert not is_ip_valid(not_ip, True)
+        assert is_ip_valid(valid_ip_v4)
+        assert not is_ip_valid(invalid_ip_v4)
+        assert not is_ip_valid(invalid_not_ip_with_ip_structure)
+
+
 DATA = [
     {
         'header_1': 'a1',
@@ -163,326 +181,524 @@ DATA_WITH_URLS = [(
 COMPLEX_DATA_WITH_URLS = [(
     [
         {'data':
-         {'id': '1',
-          'result':
-          {'files':
-           [
-               {
-                          'filename': 'name',
-                          'size': 0,
-                          'url': 'url'
+             {'id': '1',
+              'result':
+                  {'files':
+                      [
+                          {
+                              'filename': 'name',
+                              'size': 0,
+                              'url': 'url'
                           }
-           ]
-           },
-          'links': ['link']
-          }
+                      ]
+                  },
+              'links': ['link']
+              }
          },
         {'data':
-         {'id': '2',
-          'result':
-          {'files':
-           [
-               {
-                   'filename': 'name',
-                   'size': 0,
-                   'url': 'url'
-               }
-           ]
-           },
-          'links': ['link']
-          }
+             {'id': '2',
+              'result':
+                  {'files':
+                      [
+                          {
+                              'filename': 'name',
+                              'size': 0,
+                              'url': 'url'
+                          }
+                      ]
+                  },
+              'links': ['link']
+              }
          }
     ],
     [
         {'data':
-         {'id': '1',
-          'result':
-          {'files':
-           [
-               {
-                   'filename': 'name',
-                   'size': 0,
-                   'url': '[url](url)'
-               }
-           ]
-           },
-          'links': ['[link](link)']
-          }
+             {'id': '1',
+              'result':
+                  {'files':
+                      [
+                          {
+                              'filename': 'name',
+                              'size': 0,
+                              'url': '[url](url)'
+                          }
+                      ]
+                  },
+              'links': ['[link](link)']
+              }
          },
         {'data':
-         {'id': '2',
-          'result':
-          {'files':
-           [
-               {
-                   'filename': 'name',
-                   'size': 0,
-                   'url': '[url](url)'
-               }
-           ]
-           },
-          'links': ['[link](link)']
-          }
+             {'id': '2',
+              'result':
+                  {'files':
+                      [
+                          {
+                              'filename': 'name',
+                              'size': 0,
+                              'url': '[url](url)'
+                          }
+                      ]
+                  },
+              'links': ['[link](link)']
+              }
          }
     ])]
 
 
-@pytest.mark.parametrize('data, expected_table', TABLE_TO_MARKDOWN_ONLY_DATA_PACK)
-def test_tbl_to_md_only_data(data, expected_table):
-    # sanity
-    table = tableToMarkdown('tableToMarkdown test', data)
+class TestTableToMarkdown:
+    @pytest.mark.parametrize('data, expected_table', TABLE_TO_MARKDOWN_ONLY_DATA_PACK)
+    @staticmethod
+    def test_sanity(data, expected_table):
+        """
+        Given:
+          - list of objects.
+        When:
+          - calling tableToMarkdown.
+        Then:
+          - return a valid table.
+        """
+        table = tableToMarkdown('tableToMarkdown test', data)
 
-    assert table == expected_table
+        assert table == expected_table
 
+    @staticmethod
+    def test_header_transform_underscoreToCamelCase():
+        """
+        Given:
+          - list of objects.
+          - an header transformer.
+        When:
+          - calling tableToMarkdown.
+        Then:
+          - return a valid table with updated headers.
+        """
+        # header transform
+        table = tableToMarkdown('tableToMarkdown test with headerTransform', DATA,
+                                headerTransform=underscoreToCamelCase)
+        expected_table = (
+            '### tableToMarkdown test with headerTransform\n'
+            '|Header1|Header2|Header3|\n'
+            '|---|---|---|\n'
+            '| a1 | b1 | c1 |\n'
+            '| a2 | b2 | c2 |\n'
+            '| a3 | b3 | c3 |\n'
+        )
+        assert table == expected_table
 
-def test_tbl_to_md_header_transform_underscoreToCamelCase():
-    # header transform
-    table = tableToMarkdown('tableToMarkdown test with headerTransform', DATA,
-                            headerTransform=underscoreToCamelCase)
-    expected_table = '''### tableToMarkdown test with headerTransform
-|Header1|Header2|Header3|
-|---|---|---|
-| a1 | b1 | c1 |
-| a2 | b2 | c2 |
-| a3 | b3 | c3 |
-'''
-    assert table == expected_table
+    @staticmethod
+    def test_multiline():
+        """
+        Given:
+          - list of objects.
+          - some values contains a new line and the "|" sign.
+        When:
+          - calling tableToMarkdown.
+        Then:
+          - return a valid table with "br" tags instead of new lines and escaped pipe sign.
+        """
+        data = copy.deepcopy(DATA)
+        for i, d in enumerate(data):
+            d['header_2'] = 'b%d.1\nb%d.2' % (i + 1, i + 1,)
+            d['header_3'] = 'c%d|1' % (i + 1,)
 
+        table = tableToMarkdown('tableToMarkdown test with multiline', data)
+        expected_table = (
+            '### tableToMarkdown test with multiline\n'
+            '|header_1|header_2|header_3|\n'
+            '|---|---|---|\n'
+            '| a1 | b1.1<br>b1.2 | c1\|1 |\n'
+            '| a2 | b2.1<br>b2.2 | c2\|1 |\n'
+            '| a3 | b3.1<br>b3.2 | c3\|1 |\n'
+        )
+        assert table == expected_table
 
-def test_tbl_to_md_multiline():
-    # escaping characters: multiline + md-chars
-    data = copy.deepcopy(DATA)
-    for i, d in enumerate(data):
-        d['header_2'] = 'b%d.1\nb%d.2' % (i + 1, i + 1,)
-        d['header_3'] = 'c%d|1' % (i + 1,)
+    @staticmethod
+    def test_url():
+        """
+        Given:
+          - list of objects.
+          - some values contain a URL.
+          - some values are missing.
+        When:
+          - calling tableToMarkdown.
+        Then:
+          - return a valid table.
+        """
+        data = copy.deepcopy(DATA)
+        for d in data:
+            d['header_2'] = None
+            d['header_3'] = '[url](https:\\demisto.com)'
+        table_url_missing_info = tableToMarkdown('tableToMarkdown test with url and missing info', data)
+        expected_table_url_missing_info = (
+            '### tableToMarkdown test with url and missing info\n'
+            '|header_1|header_2|header_3|\n'
+            '|---|---|---|\n'
+            '| a1 |  | [url](https:\demisto.com) |\n'
+            '| a2 |  | [url](https:\demisto.com) |\n'
+            '| a3 |  | [url](https:\demisto.com) |\n'
+        )
+        assert table_url_missing_info == expected_table_url_missing_info
 
-    table = tableToMarkdown('tableToMarkdown test with multiline', data)
-    expected_table = '''### tableToMarkdown test with multiline
-|header_1|header_2|header_3|
-|---|---|---|
-| a1 | b1.1<br>b1.2 | c1\\|1 |
-| a2 | b2.1<br>b2.2 | c2\\|1 |
-| a3 | b3.1<br>b3.2 | c3\\|1 |
-'''
-    assert table == expected_table
+    @staticmethod
+    def test_single_column():
+        """
+        Given:
+          - list of objects.
+          - a single header.
+        When:
+          - calling tableToMarkdown.
+        Then:
+          - return a valid column style table.
+        """
+        # single column table
+        table_single_column = tableToMarkdown('tableToMarkdown test with single column', DATA, ['header_1'])
+        expected_table_single_column = (
+            '### tableToMarkdown test with single column\n'
+            '|header_1|\n'
+            '|---|\n'
+            '| a1 |\n'
+            '| a2 |\n'
+            '| a3 |\n'
+        )
+        assert table_single_column == expected_table_single_column
 
+    @staticmethod
+    def test_list_values():
+        """
+        Given:
+          - list of objects.
+          - some values are lists.
+        When:
+          - calling tableToMarkdown.
+        Then:
+          - return a valid table where the list values are comma-separated and each item in a new line.
+        """
+        # list values
+        data = copy.deepcopy(DATA)
+        for i, d in enumerate(data):
+            d['header_3'] = [i + 1, 'second item']
+            d['header_2'] = 'hi'
 
-def test_tbl_to_md_url():
-    # url + empty data
-    data = copy.deepcopy(DATA)
-    for i, d in enumerate(data):
-        d['header_3'] = '[url](https:\\demisto.com)'
-        d['header_2'] = None
-    table_url_missing_info = tableToMarkdown('tableToMarkdown test with url and missing info', data)
-    expected_table_url_missing_info = '''### tableToMarkdown test with url and missing info
-|header_1|header_2|header_3|
-|---|---|---|
-| a1 |  | [url](https:\\demisto.com) |
-| a2 |  | [url](https:\\demisto.com) |
-| a3 |  | [url](https:\\demisto.com) |
-'''
-    assert table_url_missing_info == expected_table_url_missing_info
+        table_list_field = tableToMarkdown('tableToMarkdown test with list field', data)
+        expected_table_list_field = (
+            '### tableToMarkdown test with list field\n'
+            '|header_1|header_2|header_3|\n'
+            '|---|---|---|\n'
+            '| a1 | hi | 1,<br>second item |\n'
+            '| a2 | hi | 2,<br>second item |\n'
+            '| a3 | hi | 3,<br>second item |\n'
+        )
+        assert table_list_field == expected_table_list_field
 
+    @staticmethod
+    def test_empty_fields():
+        """
+        Given:
+          - list of objects.
+          - all values are empty.
+        When:
+          - calling tableToMarkdown with removeNull=false.
+          - calling tableToMarkdown with removeNull=true.
+        Then:
+          - return an empty table.
+          - return a "no results" message.
+        """
+        data = [
+            {
+                'a': None,
+                'b': None,
+                'c': None,
+            } for _ in range(3)
+        ]
+        table_all_none = tableToMarkdown('tableToMarkdown test with all none fields', data)
+        expected_table_all_none = (
+            '### tableToMarkdown test with all none fields\n'
+            '|a|b|c|\n'
+            '|---|---|---|\n'
+            '|  |  |  |\n'
+            '|  |  |  |\n'
+            '|  |  |  |\n'
+        )
+        assert table_all_none == expected_table_all_none
 
-def test_tbl_to_md_single_column():
-    # single column table
-    table_single_column = tableToMarkdown('tableToMarkdown test with single column', DATA, ['header_1'])
-    expected_table_single_column = '''### tableToMarkdown test with single column
-|header_1|
-|---|
-| a1 |
-| a2 |
-| a3 |
-'''
-    assert table_single_column == expected_table_single_column
-
-
-def test_is_ip_valid():
-    valid_ip_v6 = "FE80:0000:0000:0000:0202:B3FF:FE1E:8329"
-    valid_ip_v6_b = "FE80::0202:B3FF:FE1E:8329"
-    invalid_ip_v6 = "KKKK:0000:0000:0000:0202:B3FF:FE1E:8329"
-    valid_ip_v4 = "10.10.10.10"
-    invalid_ip_v4 = "10.10.10.9999"
-    invalid_not_ip_with_ip_structure = "1.1.1.1.1.1.1.1.1.1.1.1.1.1.1"
-    not_ip = "Demisto"
-    assert not is_ip_valid(valid_ip_v6)
-    assert is_ip_valid(valid_ip_v6, True)
-    assert is_ip_valid(valid_ip_v6_b, True)
-    assert not is_ip_valid(invalid_ip_v6, True)
-    assert not is_ip_valid(not_ip, True)
-    assert is_ip_valid(valid_ip_v4)
-    assert not is_ip_valid(invalid_ip_v4)
-    assert not is_ip_valid(invalid_not_ip_with_ip_structure)
-
-
-def test_tbl_to_md_list_values():
-    # list values
-    data = copy.deepcopy(DATA)
-    for i, d in enumerate(data):
-        d['header_3'] = [i + 1, 'second item']
-        d['header_2'] = 'hi'
-
-    table_list_field = tableToMarkdown('tableToMarkdown test with list field', data)
-    expected_table_list_field = '''### tableToMarkdown test with list field
-|header_1|header_2|header_3|
-|---|---|---|
-| a1 | hi | 1,<br>second item |
-| a2 | hi | 2,<br>second item |
-| a3 | hi | 3,<br>second item |
-'''
-    assert table_list_field == expected_table_list_field
-
-
-def test_tbl_to_md_empty_fields():
-    # all fields are empty
-    data = [
-        {
-            'a': None,
-            'b': None,
-            'c': None,
-        } for _ in range(3)
-    ]
-    table_all_none = tableToMarkdown('tableToMarkdown test with all none fields', data)
-    expected_table_all_none = '''### tableToMarkdown test with all none fields
-|a|b|c|
-|---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-'''
-    assert table_all_none == expected_table_all_none
-
-    # all fields are empty - removed
-    table_all_none2 = tableToMarkdown('tableToMarkdown test with all none fields2', data, removeNull=True)
-    expected_table_all_none2 = '''### tableToMarkdown test with all none fields2
+        # all fields are empty - removed
+        table_all_none2 = tableToMarkdown('tableToMarkdown test with all none fields2', data, removeNull=True)
+        expected_table_all_none2 = '''### tableToMarkdown test with all none fields2
 **No entries.**
 '''
-    assert table_all_none2 == expected_table_all_none2
+        assert table_all_none2 == expected_table_all_none2
+
+    @staticmethod
+    def test_header_not_on_first_object():
+        """
+        Given:
+          - list of objects
+          - list of headers with header that doesn't appear in the first object.
+        When:
+          - calling tableToMarkdown.
+        Then:
+          - return a valid table with the extra header.
+        """
+        # header not on first object
+        data = copy.deepcopy(DATA)
+        data[1]['extra_header'] = 'sample'
+        table_extra_header = tableToMarkdown('tableToMarkdown test with extra header', data,
+                                            headers=['header_1', 'header_2', 'extra_header'])
+        expected_table_extra_header = (
+            '### tableToMarkdown test with extra header\n'
+            '|header_1|header_2|extra_header|\n'
+            '|---|---|---|\n'
+            '| a1 | b1 |  |\n'
+            '| a2 | b2 | sample |\n'
+            '| a3 | b3 |  |\n'
+        )
+        assert table_extra_header == expected_table_extra_header
+
+    @staticmethod
+    def test_no_header():
+        """
+        Given:
+          - list of objects.
+          - a list with non-existing headers.
+        When:
+          - calling tableToMarkdown.
+        Then:
+          - return a "no result" message.
+        """
+        # no header
+        table_no_headers = tableToMarkdown('tableToMarkdown test with no headers', DATA,
+                                        headers=['no', 'header', 'found'], removeNull=True)
+        expected_table_no_headers = (
+            '### tableToMarkdown test with no headers\n'
+            '**No entries.**\n'
+        )
+        assert table_no_headers == expected_table_no_headers
+
+    @staticmethod
+    def test_dict_value():
+        """
+        Given:
+          - list of objects.
+          - some values are lists.
+        When:
+          - calling tableToMarkdown.
+        Then:
+          - return a valid table.
+        """
+        # dict value
+        data = copy.deepcopy(DATA)
+        data[1]['extra_header'] = {'sample': 'qwerty', 'sample2': 'asdf'}
+        table_dict_record = tableToMarkdown('tableToMarkdown test with dict record', data,
+                                            headers=['header_1', 'header_2', 'extra_header'])
+        expected_dict_record = (
+            '### tableToMarkdown test with dict record\n'
+            '|header_1|header_2|extra_header|\n'
+            '|---|---|---|\n'
+            '| a1 | b1 |  |\n'
+            '| a2 | b2 | sample: qwerty<br>sample2: asdf |\n'
+            '| a3 | b3 |  |\n'
+        )
+        assert table_dict_record == expected_dict_record
+
+    @staticmethod
+    def test_string_header():
+        """
+        Given:
+          - list of objects.
+          - a single header as a string.
+        When:
+          - calling tableToMarkdown.
+        Then:
+          - return a valid table.
+        """
+        # string header (instead of list)
+        table_string_header = tableToMarkdown('tableToMarkdown string header', DATA, 'header_1')
+        expected_string_header_tbl = (
+            '### tableToMarkdown string header\n'
+            '|header_1|\n'
+            '|---|\n'
+            '| a1 |\n'
+            '| a2 |\n'
+            '| a3 |\n'
+        )
+        assert table_string_header == expected_string_header_tbl
+
+    @staticmethod
+    def test_list_of_strings_instead_of_dict():
+        """
+        Given:
+          - list of strings.
+          - a single header as a list.
+        When:
+          - calling tableToMarkdown.
+        Then:
+          - return a valid table.
+        """
+        # list of string values instead of list of dict objects
+        table_string_array = tableToMarkdown('tableToMarkdown test with string array', ['foo', 'bar', 'katz'], ['header_1'])
+        expected_string_array_tbl = (
+            '### tableToMarkdown test with string array\n'
+            '|header_1|\n'
+            '|---|\n'
+            '| foo |\n'
+            '| bar |\n'
+            '| katz |\n'
+        )
+        assert table_string_array == expected_string_array_tbl
+
+    @staticmethod
+    def test_list_of_strings_instead_of_dict_and_string_header():
+        """
+        Given:
+          - list of strings.
+          - a single header as a string.
+        When:
+          - calling tableToMarkdown.
+        Then:
+          - return a valid table.
+        """
+        # combination: string header + string values list
+        table_string_array_string_header = tableToMarkdown('tableToMarkdown test with string array and string header',
+                                                           ['foo', 'bar', 'katz'], 'header_1')
+
+        expected_string_array_string_header_tbl = (
+            '### tableToMarkdown test with string array and string header\n'
+            '|header_1|\n'
+            '|---|\n'
+            '| foo |\n'
+            '| bar |\n'
+            '| katz |\n'
+        )
+
+        assert table_string_array_string_header == expected_string_array_string_header_tbl
+
+    @staticmethod
+    def test_single_key_dict():
+        # combination: string header + string values list
+        table_single_key_dict = tableToMarkdown('tableToMarkdown test with single key dict',
+                                                        {'single': ['Arthur', 'Blob', 'Cactus']})
+        expected_single_key_dict_tbl = (
+            '### tableToMarkdown test with single key dict\n'
+            '|single|\n'
+            '|---|\n'
+            '| Arthur |\n'
+            '| Blob |\n'
+            '| Cactus |\n'
+        )
+        assert table_single_key_dict == expected_single_key_dict_tbl
 
 
-def test_tbl_to_md_header_not_on_first_object():
-    # header not on first object
-    data = copy.deepcopy(DATA)
-    data[1]['extra_header'] = 'sample'
-    table_extra_header = tableToMarkdown('tableToMarkdown test with extra header', data,
-                                         headers=['header_1', 'header_2', 'extra_header'])
-    expected_table_extra_header = '''### tableToMarkdown test with extra header
-|header_1|header_2|extra_header|
-|---|---|---|
-| a1 | b1 |  |
-| a2 | b2 | sample |
-| a3 | b3 |  |
-'''
-    assert table_extra_header == expected_table_extra_header
-
-
-def test_tbl_to_md_no_header():
-    # no header
-    table_no_headers = tableToMarkdown('tableToMarkdown test with no headers', DATA,
-                                       headers=['no', 'header', 'found'], removeNull=True)
-    expected_table_no_headers = '''### tableToMarkdown test with no headers
-**No entries.**
-'''
-    assert table_no_headers == expected_table_no_headers
-
-
-def test_tbl_to_md_dict_value():
-    # dict value
-    data = copy.deepcopy(DATA)
-    data[1]['extra_header'] = {'sample': 'qwerty', 'sample2': 'asdf'}
-    table_dict_record = tableToMarkdown('tableToMarkdown test with dict record', data,
-                                        headers=['header_1', 'header_2', 'extra_header'])
-    expected_dict_record = '''### tableToMarkdown test with dict record
-|header_1|header_2|extra_header|
-|---|---|---|
-| a1 | b1 |  |
-| a2 | b2 | sample: qwerty<br>sample2: asdf |
-| a3 | b3 |  |
-'''
-    assert table_dict_record == expected_dict_record
-
-
-def test_tbl_to_md_string_header():
-    # string header (instead of list)
-    table_string_header = tableToMarkdown('tableToMarkdown string header', DATA, 'header_1')
-    expected_string_header_tbl = '''### tableToMarkdown string header
-|header_1|
-|---|
-| a1 |
-| a2 |
-| a3 |
-'''
-    assert table_string_header == expected_string_header_tbl
-
-
-def test_tbl_to_md_list_of_strings_instead_of_dict():
-    # list of string values instead of list of dict objects
-    table_string_array = tableToMarkdown('tableToMarkdown test with string array', ['foo', 'bar', 'katz'], ['header_1'])
-    expected_string_array_tbl = '''### tableToMarkdown test with string array
-|header_1|
-|---|
-| foo |
-| bar |
-| katz |
-'''
-    assert table_string_array == expected_string_array_tbl
-
-
-def test_tbl_to_md_list_of_strings_instead_of_dict_and_string_header():
-    # combination: string header + string values list
-    table_string_array_string_header = tableToMarkdown('tableToMarkdown test with string array and string header',
-                                                       ['foo', 'bar', 'katz'], 'header_1')
-    expected_string_array_string_header_tbl = '''### tableToMarkdown test with string array and string header
-|header_1|
-|---|
-| foo |
-| bar |
-| katz |
-'''
-    assert table_string_array_string_header == expected_string_array_string_header_tbl
-
-
-def test_tbl_to_md_dict_with_special_character():
-    data = {
-        'header_1': u'foo',
-        'header_2': [u'\xe2.rtf']
-    }
-    table_with_character = tableToMarkdown('tableToMarkdown test with special character', data)
-    expected_string_with_special_character = '''### tableToMarkdown test with special character
+    @staticmethod
+    def test_dict_with_special_character():
+        """
+        When:
+          - calling tableToMarkdown.
+        Given:
+          - list of objects.
+          - some values contain special characters.
+        Then:
+          - return a valid table.
+        """
+        data = {
+            'header_1': u'foo',
+            'header_2': [u'\xe2.rtf']
+        }
+        table_with_character = tableToMarkdown('tableToMarkdown test with special character', data)
+        expected_string_with_special_character = '''### tableToMarkdown test with special character
 |header_1|header_2|
 |---|---|
 | foo | â.rtf |
 '''
-    assert table_with_character == expected_string_with_special_character
+        assert table_with_character == expected_string_with_special_character
+
+    @staticmethod
+    def test_title_with_special_character():
+        """
+        When:
+          - calling tableToMarkdown.
+        Given:
+          - a title with a special character.
+        Then:
+          - return a valid table.
+        """
+        data = {
+            'header_1': u'foo'
+        }
+        table_with_character = tableToMarkdown('tableToMarkdown test with special character Ù', data)
+        expected_string_with_special_character = (
+            '### tableToMarkdown test with special character Ù\n'
+            '|header_1|\n'
+            '|---|\n'
+            '| foo |\n'
+        )
+        assert table_with_character == expected_string_with_special_character
 
 
-def test_tbl_to_md_header_with_special_character():
-    data = {
-        'header_1': u'foo'
-    }
-    table_with_character = tableToMarkdown('tableToMarkdown test with special character Ù', data)
-    expected_string_with_special_character = '''### tableToMarkdown test with special character Ù
-|header_1|
-|---|
-| foo |
+    @pytest.mark.parametrize('data, expected_table', DATA_WITH_URLS)
+    @staticmethod
+    def test_clickable_url(data, expected_table):
+        """
+        Given:
+          - list of objects.
+          - some values are URLs.
+        When:
+          - calling tableToMarkdown.
+        Then:
+          - return a valid table with clickable URLs.
+        """
+        table = tableToMarkdown('tableToMarkdown test', data, url_keys=['url1', 'url2'])
+        assert table == expected_table
+
+    @staticmethod
+    def test_keep_headers_list():
+        """
+        Given:
+          - list of objects.
+        When:
+          - calling tableToMarkdown.
+        Then:
+          - return a valid table.
+          - the given headers list is not modified.
+        """
+        headers = ['header_1', 'header_2']
+        data = {
+            'header_1': 'foo',
+        }
+        table = tableToMarkdown('tableToMarkdown test', data, removeNull=True, headers=headers)
+        assert 'header_2' not in table
+        assert headers == ['header_1', 'header_2']
+
+    @staticmethod
+    def test_date_fields_param():
+        """
+        Given:
+          - List of objects with date fields in epoch format.
+        When:
+          - Calling tableToMarkdown with the given date fields.
+        Then:
+          - Return the date data in the markdown table in human-readable format.
+        """
+        data = [
+            {
+                "docker_image": "demisto/python3",
+                "create_time": '1631521313466'
+            },
+            {
+                "docker_image": "demisto/python2",
+                "create_time": 1631521521466
+            }
+        ]
+
+        table = tableToMarkdown('tableToMarkdown test', data, headers=["docker_image", "create_time"],
+                                date_fields=['create_time'])
+
+        expected_md_table = '''### tableToMarkdown test
+|docker_image|create_time|
+|---|---|
+| demisto/python3 | 2021-09-13 08:21:53 |
+| demisto/python2 | 2021-09-13 08:25:21 |
 '''
-    assert table_with_character == expected_string_with_special_character
-
-
-@pytest.mark.parametrize('data, expected_table', DATA_WITH_URLS)
-def test_tbl_to_md_clickable_url(data, expected_table):
-    table = tableToMarkdown('tableToMarkdown test', data, url_keys=['url1', 'url2'])
-    assert table == expected_table
-
-
-def test_tbl_keep_headers_list():
-    headers = ['header_1', 'header_2']
-    data = {
-        'header_1': 'foo'
-    }
-    table = tableToMarkdown('tableToMarkdown test', data, removeNull=True, headers=headers)
-    assert 'header_2' not in table
-    assert headers == ['header_1', 'header_2']
+        assert table == expected_md_table
 
 
 @pytest.mark.parametrize('data, expected_data', COMPLEX_DATA_WITH_URLS)
@@ -569,18 +785,22 @@ def test_date_to_timestamp():
     assert date_to_timestamp(datetime.strptime('2018-11-06T08:56:41', "%Y-%m-%dT%H:%M:%S")) == 1541494601000
 
 
-def test_pascalToSpace():
-    use_cases = [
-        ('Validate', 'Validate'),
-        ('validate', 'Validate'),
-        ('TCP', 'TCP'),
-        ('eventType', 'Event Type'),
-        ('eventID', 'Event ID'),
-        ('eventId', 'Event Id'),
-        ('IPAddress', 'IP Address'),
-    ]
-    for s, expected in use_cases:
-        assert pascalToSpace(s) == expected, 'Error on {} != {}'.format(pascalToSpace(s), expected)
+PASCAL_TO_SPACE_USE_CASES = [
+    ('Validate', 'Validate'),
+    ('validate', 'Validate'),
+    ('TCP', 'TCP'),
+    ('eventType', 'Event Type'),
+    ('eventID', 'Event ID'),
+    ('eventId', 'Event Id'),
+    ('IPAddress', 'IP Address'),
+    ('isDisabled', 'Is Disabled'),
+    ('device-group', 'Device - Group'),
+]
+
+
+@pytest.mark.parametrize('s, expected', PASCAL_TO_SPACE_USE_CASES)
+def test_pascalToSpace(s, expected):
+    assert pascalToSpace(s) == expected, 'Error on {} != {}'.format(pascalToSpace(s), expected)
 
 
 def test_safe_load_json():
@@ -866,7 +1086,8 @@ SENSITIVE_PARAM = {
 
 def test_logger_replace_strs_credentials(mocker):
     mocker.patch.object(demisto, 'params', return_value=SENSITIVE_PARAM)
-    basic_auth = b64_encode('{}:{}'.format(SENSITIVE_PARAM['authentication']['identifier'], SENSITIVE_PARAM['authentication']['password']))
+    basic_auth = b64_encode(
+        '{}:{}'.format(SENSITIVE_PARAM['authentication']['identifier'], SENSITIVE_PARAM['authentication']['password']))
     ilog = IntegrationLogger()
     # log some secrets
     ilog('my cred pass: cred_pass. my ssh key: ssh_key_secret. my ssh key: {}.'
@@ -1486,6 +1707,34 @@ class TestCommandResults:
         assert list(results.to_context()['EntryContext'].keys())[0] == \
                'File(val.sha1 == obj.sha1 && val.md5 == obj.md5)'
 
+    @pytest.mark.parametrize('score, expected_readable',
+                             [(CommonServerPython.Common.DBotScore.NONE, 'Unknown'),
+                              (CommonServerPython.Common.DBotScore.GOOD, 'Good'),
+                              (CommonServerPython.Common.DBotScore.SUSPICIOUS, 'Suspicious'),
+                              (CommonServerPython.Common.DBotScore.BAD, 'Bad')])
+    def test_dbot_readable(self, score, expected_readable):
+        from CommonServerPython import Common, DBotScoreType
+        dbot_score = Common.DBotScore(
+            indicator='8.8.8.8',
+            integration_name='Test',
+            indicator_type=DBotScoreType.IP,
+            score=score
+        )
+        assert dbot_score.to_readable() == expected_readable
+
+    def test_dbot_readable_invalid(self):
+        from CommonServerPython import Common, DBotScoreType
+        dbot_score = Common.DBotScore(
+            indicator='8.8.8.8',
+            integration_name='Test',
+            indicator_type=DBotScoreType.IP,
+            score=0
+        )
+        dbot_score.score = 7
+        assert dbot_score.to_readable() == 'Undefined'
+        dbot_score.score = None
+        assert dbot_score.to_readable() == 'Undefined'
+
     def test_readable_only_context(self):
         """
         Given:
@@ -2090,9 +2339,12 @@ class TestBaseClient:
 
     def test_http_request_json_negative(self, requests_mock):
         from CommonServerPython import DemistoException
-        requests_mock.get('http://example.com/api/v2/event', text='notjson')
-        with raises(DemistoException, match="Failed to parse json"):
+        text = 'notjson'
+        requests_mock.get('http://example.com/api/v2/event', text=text)
+        with raises(DemistoException, match="Failed to parse json") as exception:
             self.client._http_request('get', 'event')
+        assert exception.value.res
+        assert exception.value.res.text == text
 
     def test_http_request_text(self, requests_mock):
         requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
@@ -2148,6 +2400,69 @@ class TestBaseClient:
                 'http': 'http://testproxy:8899',
                 'https': 'https://testproxy:8899'
             }
+            assert m.called is True
+
+    def test_http_request_proxy_without_http_prefix(self):
+        """
+            Given
+                - proxy param is set to true
+                - proxy configs are without http/https prefix
+
+            When
+            - run an http get request
+
+            Then
+            -  the request will run and will use proxy configs that will include http:// prefix.
+        """
+        from CommonServerPython import BaseClient
+        import requests_mock
+
+        os.environ['http_proxy'] = 'testproxy:8899'
+        os.environ['https_proxy'] = 'testproxy:8899'
+
+        os.environ['REQUESTS_CA_BUNDLE'] = '/test1.pem'
+        client = BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), proxy=True, verify=True)
+
+        with requests_mock.mock() as m:
+            m.get('http://example.com/api/v2/event')
+
+            res = client._http_request('get', 'event', resp_type='response')
+
+            assert m.last_request.verify == '/test1.pem'
+            assert m.last_request.proxies == {
+                'http': 'http://testproxy:8899',
+                'https': 'http://testproxy:8899'
+            }
+            assert m.called is True
+
+    def test_http_request_proxy_empty_proxy(self):
+        """
+            Given
+                - proxy param is set to true
+                - proxy configs are empty
+
+            When
+            - run an http get request
+
+            Then
+            -  the request will run and will use empty proxy configs and will not add https prefixes
+        """
+        from CommonServerPython import BaseClient
+        import requests_mock
+
+        os.environ['http_proxy'] = ''
+        os.environ['https_proxy'] = ''
+
+        os.environ['REQUESTS_CA_BUNDLE'] = '/test1.pem'
+        client = BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), proxy=True, verify=True)
+
+        with requests_mock.mock() as m:
+            m.get('http://example.com/api/v2/event')
+
+            res = client._http_request('get', 'event', resp_type='response')
+
+            assert m.last_request.verify == '/test1.pem'
+            assert m.last_request.proxies == {}
             assert m.called is True
 
     def test_http_request_verify_false(self):
@@ -2876,6 +3191,60 @@ def test_handle_proxy(mocker):
     assert os.getenv('REQUESTS_CA_BUNDLE') is None
 
 
+def test_handle_proxy_without_http_prefix():
+    """
+        Given
+            proxy is configured in environment vars without http/https prefixes
+
+        When
+            run handle_proxy()
+
+        Then
+            the function will return proxies with http:// prefix
+    """
+    os.environ['HTTP_PROXY'] = 'testproxy:8899'
+    os.environ['HTTPS_PROXY'] = 'testproxy:8899'
+    proxies = handle_proxy(checkbox_default_value=True)
+    assert proxies['http'] == 'http://testproxy:8899'
+    assert proxies['https'] == 'http://testproxy:8899'
+
+
+def test_handle_proxy_with_http_prefix():
+    """
+        Given
+            proxy is configured in environment vars with http/https prefixes
+
+        When
+            run handle_proxy()
+
+        Then
+            the function will return proxies unchanged
+    """
+    os.environ['HTTP_PROXY'] = 'http://testproxy:8899'
+    os.environ['HTTPS_PROXY'] = 'https://testproxy:8899'
+    proxies = handle_proxy(checkbox_default_value=True)
+    assert proxies['http'] == 'http://testproxy:8899'
+    assert proxies['https'] == 'https://testproxy:8899'
+
+
+def test_handle_proxy_with_socks5_prefix():
+    """
+        Given
+            proxy is configured in environment vars with socks5 (socks proxy) prefixes
+
+        When
+            run handle_proxy()
+
+        Then
+            the function will return proxies unchanged
+    """
+    os.environ['HTTP_PROXY'] = 'socks5://testproxy:8899'
+    os.environ['HTTPS_PROXY'] = 'socks5://testproxy:8899'
+    proxies = handle_proxy(checkbox_default_value=True)
+    assert proxies['http'] == 'socks5://testproxy:8899'
+    assert proxies['https'] == 'socks5://testproxy:8899'
+
+
 @pytest.mark.parametrize(argnames="dict_obj, keys, expected, default_return_value",
                          argvalues=[
                              ({'a': '1'}, ['a'], '1', None),
@@ -3347,7 +3716,7 @@ class TestExecuteCommand:
         from CommonServerPython import execute_command, EntryType
         demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand',
                                                    return_value=[{'Type': EntryType.NOTE,
-                                                                 'Contents': {'hello': 'world'}}])
+                                                                  'Contents': {'hello': 'world'}}])
         res = execute_command('command', {'arg1': 'value'})
         execute_command_args = demisto_execute_mock.call_args_list[0][0]
         assert demisto_execute_mock.call_count == 1
@@ -4454,8 +4823,8 @@ class TestCommonTypes:
             score=Common.DBotScore.GOOD
         )
         dbot_context = {'DBotScore(val.Indicator && val.Indicator == obj.Indicator && '
-                   'val.Vendor == obj.Vendor && val.Type == obj.Type)':
-                       {'Indicator': 'user@example.com', 'Type': 'email', 'Vendor': 'Test', 'Score': 1}}
+                        'val.Vendor == obj.Vendor && val.Type == obj.Type)':
+                            {'Indicator': 'user@example.com', 'Type': 'email', 'Vendor': 'Test', 'Score': 1}}
 
         assert dbot_context == dbot_score.to_context()
 
@@ -4464,7 +4833,8 @@ class TestCommonTypes:
             address='user@example.com',
             dbot_score=dbot_score
         )
-        assert email_context.to_context()[email_context.CONTEXT_PATH] == {'Address': 'user@example.com', 'Domain': 'example.com'}
+        assert email_context.to_context()[email_context.CONTEXT_PATH] == {'Address': 'user@example.com',
+                                                                          'Domain': 'example.com'}
 
 
 class TestIndicatorsSearcher:
@@ -5173,3 +5543,145 @@ def test_smart_get_dict():
     assert s.get('t1', 2) == 2
     assert s.get('t2') == 1
     assert s.get('t3') is None
+
+
+class TestCustomIndicator:
+    def test_custom_indicator_init_success(self):
+        """
+        Given: Data needed for creating a custom indicator
+        When: Data is valid
+        Then: Create a valid custom indicator
+        """
+        from CommonServerPython import Common, DBotScoreType
+        dbot_score = Common.DBotScore(
+            'test',
+            DBotScoreType.CUSTOM,
+            'VirusTotal',
+            score=Common.DBotScore.BAD,
+            malicious_description='malicious!'
+        )
+        indicator = Common.CustomIndicator('test', 'test_value', dbot_score, {'param': 'value'}, 'prefix')
+        assert indicator.CONTEXT_PATH == 'prefix(val.value && val.value == obj.value)'
+        assert indicator.param == 'value'
+        assert indicator.value == 'test_value'
+
+    def test_custom_indicator_init_existing_type(self):
+        """
+        Given: Data needed for creating a custom indicator
+        When: Type already exists
+        Then: raise a Value Error
+        """
+        with pytest.raises(ValueError):
+            from CommonServerPython import Common, DBotScoreType
+            dbot_score = Common.DBotScore(
+                'test',
+                DBotScoreType.CUSTOM,
+                'VirusTotal',
+                score=Common.DBotScore.BAD,
+                malicious_description='malicious!'
+            )
+            Common.CustomIndicator('ip', 'test_value', dbot_score, {'param': 'value'}, 'prefix')
+
+    def test_custom_indicator_init_no_prefix(self):
+        """
+        Given: Data needed for Custom indicator
+        When: Prefix provided is None
+        Then: Raise ValueError
+        """
+        with pytest.raises(ValueError):
+            from CommonServerPython import Common, DBotScoreType
+            dbot_score = Common.DBotScore(
+                'test',
+                DBotScoreType.CUSTOM,
+                'VirusTotal',
+                score=Common.DBotScore.BAD,
+                malicious_description='malicious!'
+            )
+            Common.CustomIndicator('test', 'test_value', dbot_score, {'param': 'value'}, None)
+
+    def test_custom_indicator_init_no_dbot_score(self):
+        """
+        Given: Data needed for Custom indicator
+        When: Dbotscore is not a DBotScore object
+        Then: Raise ValueError
+        """
+        with pytest.raises(ValueError):
+            from CommonServerPython import Common
+            dbot_score = ''
+            Common.CustomIndicator('test', 'test_value', dbot_score, {'param': 'value'}, 'prefix')
+
+    def test_custom_indicator_to_context(self):
+        """
+        Given: Data needed for Custom indicator
+        When: there's a call to to_context
+        Then: create a valid context
+        """
+        from CommonServerPython import Common, DBotScoreType
+        dbot_score = Common.DBotScore(
+            'test',
+            DBotScoreType.CUSTOM,
+            'VirusTotal',
+            score=Common.DBotScore.BAD,
+            malicious_description='malicious!'
+        )
+        indicator = Common.CustomIndicator('test', 'test_value', dbot_score, {'param': 'value'}, 'prefix')
+        context = indicator.to_context()
+        assert context['DBotScore(val.Indicator &&'
+                       ' val.Indicator == obj.Indicator &&'
+                       ' val.Vendor == obj.Vendor && val.Type == obj.Type)']['Indicator'] == 'test'
+        assert context['prefix(val.value && val.value == obj.value)']['value'] == 'test_value'
+        assert context['prefix(val.value && val.value == obj.value)']['param'] == 'value'
+
+    def test_custom_indicator_no_params(self):
+        """
+        Given: Data needed for creating a custom indicator
+        When: params are None
+        Then: Raise an error
+        """
+        with pytest.raises(TypeError):
+            from CommonServerPython import Common, DBotScoreType
+            dbot_score = Common.DBotScore(
+                'test',
+                DBotScoreType.CUSTOM,
+                'VirusTotal',
+                score=Common.DBotScore.BAD,
+                malicious_description='malicious!'
+            )
+            Common.CustomIndicator('test', 'test_value', dbot_score, None, 'prefix')
+
+    def test_custom_indicator_no_value(self):
+        """
+        Given: Data needed for creating a custom indicator
+        When: value is None
+        Then: Raise an error
+        """
+        with pytest.raises(ValueError):
+            from CommonServerPython import Common, DBotScoreType
+            dbot_score = Common.DBotScore(
+                'test',
+                DBotScoreType.CUSTOM,
+                'VirusTotal',
+                score=Common.DBotScore.BAD,
+                malicious_description='malicious!'
+            )
+            Common.CustomIndicator('test', None, dbot_score, {'param': 'value'}, 'prefix')
+
+@pytest.mark.parametrize(
+    "demistoUrls,expected_result",
+    [({'server': 'https://localhost:8443:/acc_test_tenant'}, 'acc_test_tenant'),
+     ({'server': 'https://localhost:8443'}, '')])
+def test_get_tenant_name(mocker, demistoUrls, expected_result):
+    """
+        Given
+        - demistoUrls dictionary
+        When
+        - Running on multi tenant mode
+        - Running on single tenant mode
+        Then
+        - Return tenant account name if is multi tenant
+    """
+    from CommonServerPython import get_tenant_account_name
+    mocker.patch.object(demisto, 'demistoUrls', return_value=demistoUrls)
+
+    result = get_tenant_account_name()
+    assert result == expected_result

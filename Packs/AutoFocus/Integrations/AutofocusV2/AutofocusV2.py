@@ -317,6 +317,8 @@ def run_polling_command(args: dict, cmd: str, search_function: Callable, results
 def parse_response(resp, err_operation):
     try:
         # Handle error responses gracefully
+        if demisto.params().get('handle_error', True) and resp.status_code == 409:
+            raise Exception("Response status code: 409 \nRequested sample not found")
         res_json = resp.json()
         resp.raise_for_status()
         return res_json
@@ -337,8 +339,8 @@ def parse_response(resp, err_operation):
             return return_error(err_msg)
     # Unexpected errors (where no json object was received)
     except Exception as err:
-        err_msg = f'{err_operation}: {err}'
-        return return_error(err_msg)
+        demisto.results(f'{err_operation}: {err}')
+        sys.exit(0)
 
 
 def http_request(url_suffix, method='POST', data={}, err_operation=None):
@@ -603,8 +605,12 @@ def sample_analysis(sample_id, os, filter_data_flag):
     }
     if os:
         data['platforms'] = [os]  # type: ignore
+
     result = http_request(path, data=data, err_operation='Sample analysis failed')
+    if 'error' in result:
+        return demisto.results(result['error'])
     analysis_obj = parse_sample_analysis_response(result, filter_data_flag)
+
     return analysis_obj
 
 
@@ -954,6 +960,14 @@ def search_indicator(indicator_type, indicator_value):
     # Unexpected errors (where no json object was received)
     except Exception as err:
         try:
+            if demisto.params().get('handle_error', True) and result.status_code == 404:
+                return {
+                    'indicator': {
+                        'indicatorType': indicator_type,
+                        'indicatorValue': indicator_value,
+                        'latestPanVerdicts': {'PAN_DB': 'UNKNOWN'},
+                    }
+                }
             text_error = result.json()
         except ValueError:
             text_error = {}
@@ -1116,6 +1130,14 @@ def resolve_ip_address(ip):
         return socket.gethostbyaddr(ip)[0]
 
     return None
+
+
+def convert_url_to_ascii_character(url_name):
+    def convert_non_ascii_chars(non_ascii):
+        # converts non-ASCII chars to IDNA notation
+        return str(non_ascii.group(0)).encode('idna').decode("utf-8")
+
+    return re.sub('([^a-zA-Z\W]+)', convert_non_ascii_chars, url_name)
 
 
 ''' COMMANDS'''
@@ -1364,7 +1386,9 @@ def search_ip_command(ip, reliability, create_relationships):
     relationships = []
 
     for ip_address in ip_list:
-        raw_res = search_indicator('ipv4_address', ip_address)
+        ip_type = 'ipv6_address' if is_ipv6_valid(ip_address) else 'ipv4_address'
+        raw_res = search_indicator(ip_type, ip_address)
+
         if not raw_res.get('indicator'):
             raise ValueError('Invalid response for indicator')
 
@@ -1502,12 +1526,12 @@ def search_url_command(url, reliability, create_relationships):
     relationships = []
 
     for url_name in url_list:
-
-        raw_res = search_indicator('url', url_name)
+        raw_res = search_indicator('url', convert_url_to_ascii_character(url_name))
         if not raw_res.get('indicator'):
             raise ValueError('Invalid response for indicator')
 
         indicator = raw_res.get('indicator')
+        indicator['indicatorValue'] = url_name
         raw_tags = raw_res.get('tags')
 
         score = calculate_dbot_score(indicator, indicator_type)
@@ -1532,6 +1556,7 @@ def search_url_command(url, reliability, create_relationships):
         )
 
         autofocus_url_output = parse_indicator_response(indicator, raw_tags, indicator_type)
+        autofocus_url_output = {k: v for k, v in autofocus_url_output.items() if v}
 
         tags = autofocus_url_output.get('Tags')
         table_name = f'{VENDOR_NAME} {indicator_type} reputation for: {url_name}'

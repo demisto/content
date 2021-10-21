@@ -636,8 +636,14 @@ script:
       name: activity_id
       required: false
       secret: false
+    - default: false
+      description: Timeout of the request to Microsoft CAS, in seconds. Default is 60 seconds.
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
     deprecated: false
-    description: Returns a list of activities that match the specified filters.
+    description: Returns a list of activities that match the specified filters. In case of timeout errors, please consider increasing the timeout argument.
     execution: false
     name: microsoft-cas-activities-list
     outputs:
@@ -1110,7 +1116,7 @@ script:
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.userGroups.usersCount
       description: The number of users in the user group.
       type: Number
-  dockerimage: demisto/python3:3.9.5.22569
+  dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: true
   longRunning: false

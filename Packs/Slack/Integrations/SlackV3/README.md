@@ -14,7 +14,6 @@ Slack V3 utilizes ["Socket Mode"](https://api.slack.com/apis/connections/socket)
     | `bot_token` | Slack API bot token. | False |
     | `app_token` | Slack API app token. | False |
     | `incidentNotificationChannel` | Dedicated Slack channel to receive notifications. | False |
-    | `notify_incidents` | Send notifications about incidents to the dedicated channel. | False |
     | `min_severity` | Minimum incident severity to send messages to Slack by. | False |
     | `incidentType` | Type of incidents created in Slack. | False |
     | `allow_incidents` | Allow external users to create incidents via direct messages. | False |
@@ -27,6 +26,7 @@ Slack V3 utilizes ["Socket Mode"](https://api.slack.com/apis/connections/socket)
     | `paginated_count` | Number of objects to return in each paginated call. | False |
     | `proxy_url` | Proxy URL to use in Slack API calls. | False |
     | `filtered_tags` | Comma-separated list of tags by which to filter the messages sent from XSOAR. Only supported in Cortex XSOAR V6.1 and above. | False |
+    | `permitted_notifications` | Types of Notifications to send in the dedicated channel. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -442,3 +442,87 @@ Get details about a specified user.
 >|---|---|---|
 >| U0XXXXXXXX | demisto_integration | cortex_xsoar |
 
+
+### slack-edit-message
+***
+Edit an existing Slack message.
+
+
+#### Base Command
+
+`slack-edit-message`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| channel | The channel the message is posted in. | Optional |
+| threadID | The ID of the thread of which to edit - can be retrieved from a previous send-notification command. | Required | 
+| message | The updated message. | Optional | 
+| blocks | A JSON string of the block to send. | Optional | 
+| ignore_add_url | Whether to include a URL to the relevant component in XSOAR. Can be "true" or "false". Default value is "false". | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Slack.Thread.ID | String | The timestamp identifier for the message. | 
+| Slack.Thread.Channel | String | The channel ID the message was posted in. | 
+| Slack.Thread.Text | String | The text the message was updated with. | 
+
+
+#### Command Example
+```!slack-edit-message channel="random" threadID="1629281551.001000" message="Eyy"```
+
+#### Context Example
+```json
+{
+    "Slack": {
+        "Thread": {
+            "ID": "1629281551.001000",
+            "Channel": "C0XXXXXXXX",
+            "Text": "Eyy"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>The message was successfully edited.
+
+
+### slack-pin-message
+***
+Pins a selected message to the given channel.
+
+
+#### Base Command
+
+`slack-pin-message`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| channel | The channel the message is posted in. | Optional |
+| threadID | The ID of the thread of which to pin - can be retrieved from a previous send-notification command. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+
+#### Command Example
+```!slack-pin-message channel=random threadID=1629281551.001000```
+
+#### Human Readable Output
+
+>The message was successfully pinned.
+
+### Known Limitations
+SlackV3 mirrors incidents by listening to messages being sent in channels the bot has been added to.
+Because of this, you may have some users in Slack who are not users in XSOAR. This will occasionally cause the module 
+health to indicate that an error has occurred because a user was unable to be found. In this circumstance, the error is expected and is purely cosmetic in nature.
+
+Please note: If a dedicated channel is configured, however there are no notifications being sent, please verify that the **Types of Notifications** to send parameter is populated.

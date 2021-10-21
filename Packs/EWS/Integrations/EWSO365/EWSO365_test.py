@@ -475,3 +475,33 @@ def test_parse_incident_from_item():
     )
     incident = parse_incident_from_item(message)
     assert incident['attachment']
+
+
+def test_parse_incident_from_item_with_attachments():
+    """
+    Given:
+        - Message item with attachment that contains email attachments
+
+    When:
+        - Parsing incident from item
+
+    Verify:
+        - Parsing runs successfully
+    """
+    content = b'ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901;' \
+              b' d=microsoft.com; cv=none;b=ES/YXpFlV19rlN1iV+ORg5RzID8GPSQL' \
+              b'nUT26MNdeTzcQSwK679doIz5Avpv8Ps2H/aBkBamwRNOCJBkl7iCHyy+04yRj3ghikw3u/ufIFHi0sQ7QG95mO1PVPLibv9A=='
+
+    message = Message(
+        datetime_created=EWSDate(year=2021, month=1, day=25),
+        to_recipients=[],
+        attachments=[
+            ItemAttachment(
+                item=Item(mime_content=content, headers=[]),
+                attachment_id=AttachmentId(),
+                last_modified_time=EWSDate(year=2021, month=1, day=25),
+            ),
+        ],
+    )
+    incident = parse_incident_from_item(message)
+    assert incident['attachment']

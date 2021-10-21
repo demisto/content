@@ -20,11 +20,11 @@ The following permissions are required for all commands:
  <li>Mail.Send - Delegated</li>
  <li>User.Read - Delegated</li>
 </ul>
-<h2>Configure Microsoft Graph Mail Single User on Cortex XSOAR</h2>
+<h2>Configure O365 Outlook Mail Single User (Using Graph API) on Cortex XSOAR</h2>
 <ol>
   <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
   &nbsp;&gt;&nbsp;<strong>Servers &amp; Services</strong>.</li>
-  <li>Search for Microsoft Graph Mail Single User.</li>
+  <li>Search for O365 Outlook Mail Single User (Using Graph API).</li>
   <li>
     Click&nbsp;<strong>Add instance</strong>&nbsp;to create and configure a new integration instance.
     <ul>
@@ -749,27 +749,27 @@ Replies to an email using Graph Mail Single User.
 #### Input
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| to | A CSV list of email addresses for the 'to' field. | Required | 
-| body | The contents (body) of the email to be sent. | Optional | 
-| subject | Subject for the email to be sent. | Required | 
-| inReplyTo | ID of the item to reply to. | Required | 
-| attachIDs | A CSV list of War Room entry IDs that contain files, and are used to attach files to the outgoing email. For example: attachIDs=15@8,19@8. | Optional | 
-| cc | A CSV list of email addresses for the 'cc' field. | Optional | 
-| bcc | A CSV list of email addresses for the 'bcc' field. | Optional | 
-| htmlBody | HTML formatted content (body) of the email to be sent. This argument overrides the "body" argument. | Optional | 
-| attachNames | A CSV list of names of attachments to send. Should be the same number of elements as attachIDs. | Optional | 
-| attachCIDs | A CSV list of CIDs to embed attachments within the email itself. | Optional | 
-| from | Email address of the sender. | Optional | 
+| to | A CSV list of email addresses for the 'to' field. | Required |
+| body | The contents (body) of the email to be sent. | Optional |
+| subject | Subject for the email to be sent. | Required |
+| inReplyTo | ID of the item to reply to. | Required |
+| attachIDs | A CSV list of War Room entry IDs that contain files, and are used to attach files to the outgoing email. For example: attachIDs=15@8,19@8. | Optional |
+| cc | A CSV list of email addresses for the 'cc' field. | Optional |
+| bcc | A CSV list of email addresses for the 'bcc' field. | Optional |
+| htmlBody | HTML formatted content (body) of the email to be sent. This argument overrides the "body" argument. | Optional |
+| attachNames | A CSV list of names of attachments to send. Should be the same number of elements as attachIDs. | Optional |
+| attachCIDs | A CSV list of CIDs to embed attachments within the email itself. | Optional |
+| from | Email address of the sender. | Optional |
 #### Context Output
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftGraph.SentMail.body | String | The body of the email. | 
-| MicrosoftGraph.SentMail.bodyPreview | String | The body preview of the email. | 
-| MicrosoftGraph.SentMail.subject | String | The subject of the email. | 
-| MicrosoftGraph.SentMail.toRecipients | String | The 'To' recipients of the email. | 
-| MicrosoftGraph.SentMail.ccRecipients | String | The CC recipients of the email. | 
-| MicrosoftGraph.SentMail.bccRecipients | String | The BCC recipients of the email. | 
-| MicrosoftGraph.SentMail.ID | String | The immutable ID of the message. | 
+| MicrosoftGraph.SentMail.body | String | The body of the email. |
+| MicrosoftGraph.SentMail.bodyPreview | String | The body preview of the email. |
+| MicrosoftGraph.SentMail.subject | String | The subject of the email. |
+| MicrosoftGraph.SentMail.toRecipients | String | The 'To' recipients of the email. |
+| MicrosoftGraph.SentMail.ccRecipients | String | The CC recipients of the email. |
+| MicrosoftGraph.SentMail.bccRecipients | String | The BCC recipients of the email. |
+| MicrosoftGraph.SentMail.ID | String | The immutable ID of the message. |
 #### Command Example
 ``` !reply-mail to=dev@demistodev.onmicrosoft.com body="This is the body" subject="This is the subject" inReplyTo=AAMkAGY3OTQyM cc=dev3@demistodev.onmicrosoft.com bcc=dev2@demistodev.onmicrosoft.com attachCIDs=3604@6e069bc4-2a1e-43ea-8ed3-ea558e377751 ```
 ##### Context Example

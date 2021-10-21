@@ -75,7 +75,13 @@ Every command and playbook that runs in QRadar v2 also runs in QRadar v3. No adj
 ## Mirroring
 This integration supports in mirroring from QRadar offenses to XSOAR.
 * When a field of an offense is updated in QRadar services, it is mirrored in XSOAR.
-* Mirroring events from QRadar to XSOAR is not supported.
+### Mirroring events
+* Mirroring events from QRadar to XSOAR is supported via **Mirror Offense and Events** option.
+* Events will only be mirrored in the incoming direction.
+* Mirroring events will only work when the **Long running instance** parameter is enabled.
+* Filtering events via *events_limit* and *events_columns* options for mirrored incidents will be the same as in the fetched incidents.
+* The integration will always mirror the events that occurred first in each offense.
+
 For further information about mirroring configurations, see [here](https://xsoar.pan.dev/docs/integrations/mirroring_integration).
 ## Choose your API version
 1. Visit the [QRadar API versions page](https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_getting_started.html) for a full list of available API versions according to the QRadar version.
@@ -2350,3 +2356,153 @@ There is no context output for this command.
 #### Human Readable Output
 
 >fetch-incidents was reset successfully.
+
+
+### qradar-ips-source-get
+***
+Get Source IPs
+
+
+#### Base Command
+
+`qradar-ips-source-get`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| source_ip | Comma separated list. Source IPs to retrieve their data, E.g "192.168.0.1,192.160.0.2". | Optional | 
+| filter | Query to filter IPs. E.g, filter=`source_ip="192.168.0.1"`. For reference please consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html. | Optional | 
+| fields | If used, will filter all fields except for the ones specified. Use this argument to specify which fields should be returned in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names, for reference, consult: https://www.ibm.com/docs/en/qradar-common?topic=endpoints-get-siemsource-addresses | Optional | 
+| range | Range of results to return. e.g.: 0-20. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| QRadar.SourceIP.ID | Number | The ID of the destination address. | 
+| QRadar.SourceIP.DomainID | String | The ID of associated domain. | 
+| QRadar.SourceIP.EventFlowCount | Number | The number of events and flows that are associated with the destination address. | 
+| QRadar.SourceIP.FirstEventFlowSeen | Date | Date when the first event or flow was seen. | 
+| QRadar.SourceIP.LastEventFlowSeen | Date | Date when the last event or flow was seen. | 
+| QRadar.SourceIP.SourceIP | String | The IP address. | 
+| QRadar.SourceIP.Magnitude | Number | The magnitude of the destination address. | 
+| QRadar.SourceIP.Network | String | The network of the destination address. | 
+| QRadar.SourceIP.OffenseIDs | Unknown | List of offense IDs the destination address is part of. | 
+| QRadar.SourceIP.LocalDestinationAddressIDs | Unknown | List of local destination address IDs associated with the source address. | 
+
+
+#### Command Example
+```!qradar-ips-source-get filter=`source_ip="172.42.18.211"` range=0-2```
+
+#### Context Example
+```json
+{
+    "QRadar": {
+        "SourceIP": {
+            "DomainID": 0,
+            "EventFlowCount": 1081,
+            "FirstEventFlowSeen": "2021-03-31T10:02:25.972000+00:00",
+            "ID": 1,
+            "LastEventFlowSeen": "2021-08-14T09:59:52.596000+00:00",
+            "LocalDestinationAddressIDs": [
+                1,
+                2,
+                3,
+                4,
+                5
+            ],
+            "Magnitude": 0,
+            "Network": "Net-10-172-192.Net_172_16_0_0",
+            "OffenseIDs": [
+                1,
+                4,
+                5,
+                9,
+                10,
+                11
+            ],
+            "SourceIP": "172.42.18.211"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Source IPs
+>|DomainID|EventFlowCount|FirstEventFlowSeen|ID|LastEventFlowSeen|LocalDestinationAddressIDs|Magnitude|Network|OffenseIDs|SourceIP|
+>|---|---|---|---|---|---|---|---|---|---|
+>| 0 | 1081 | 2021-03-31T10:02:25.972000+00:00 | 1 | 2021-08-14T09:59:52.596000+00:00 | 1,<br/>2,<br/>3,<br/>4,<br/>5 | 0 | Net-10-172-192.Net_172_16_0_0 | 1,<br/>4,<br/>5,<br/>9,<br/>10,<br/>11,<br/>12,<br/>13,<br/>14,<br/>15,<br/>16,<br/>17,<br/>18,<br/>19,<br/>20,<br/>21,<br/>22,<br/>23,<br/>24,<br/>25,<br/>27,<br/>28,<br/>29,<br/>30,<br/>31,<br/>32,<br/>33,<br/>34,<br/>35,<br/>36,<br/>37,<br/>38,<br/>39,<br/>40,<br/>41,<br/>42 | 172.42.18.211 |
+
+
+### qradar-ips-local-destination-get
+***
+Get Source IPs
+
+
+#### Base Command
+
+`qradar-ips-local-destination-get`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| local_destination_ip | Comma separated list. Local destination IPs to retrieve their data, E.g "192.168.0.1,192.160.0.2". | Optional | 
+| filter | If used, will filter all fields except for the ones specified. Use this argument to specify which fields should be returned in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names, for reference, consult: https://www.ibm.com/docs/en/qradar-common?topic=endpoints-get-siemlocal-destination-addresses | Optional | 
+| fields | If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names, for reference, consult: https://www.ibm.com/docs/en/qradar-common?topic=endpoints-get-siemlocal-destination-addresses. | Optional | 
+| range | Range of results to return. e.g.: 0-20. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| QRadar.LocalDestinationIP.ID | Number | The ID of the destination address. | 
+| QRadar.LocalDestinationIP.DomainID | String | The ID of associated domain. | 
+| QRadar.LocalDestinationIP.EventFlowCount | Number | The number of events and flows that are associated with the destination address. | 
+| QRadar.LocalDestinationIP.FirstEventFlowSeen | Date | Date when the first event or flow was seen. | 
+| QRadar.LocalDestinationIP.LastEventFlowSeen | Date | Date when the last event or flow was seen. | 
+| QRadar.LocalDestinationIP.LocalDestinationIP | String | The IP address. | 
+| QRadar.LocalDestinationIP.Magnitude | Number | The magnitude of the destination address. | 
+| QRadar.LocalDestinationIP.Network | String | The network of the destination address. | 
+| QRadar.LocalDestinationIP.OffenseIDs | Unknown | List of offense IDs the destination address is part of. | 
+| QRadar.LocalDestinationIP.SourceAddressIDs | Unknown | List of source address IDs associated with the destination address. | 
+
+
+#### Command Example
+```!qradar-ips-local-destination-get filter=`local_destination_ip="172.42.18.211"````
+
+#### Context Example
+```json
+{
+    "QRadar": {
+        "LocalDestinationIP": {
+            "DomainID": 0,
+            "EventFlowCount": 1635,
+            "FirstEventFlowSeen": "2021-03-31T10:02:25.965000+00:00",
+            "ID": 1,
+            "LastEventFlowSeen": "2021-08-14T09:59:52.596000+00:00",
+            "LocalDestinationIP": "172.42.18.211",
+            "Magnitude": 0,
+            "Network": "Net-10-172-192.Net_172_16_0_0",
+            "OffenseIDs": [
+                1,
+                4,
+                5
+            ],
+            "SourceAddressIDs": [
+                1,
+                2
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Local Destination IPs
+>|DomainID|EventFlowCount|FirstEventFlowSeen|ID|LastEventFlowSeen|LocalDestinationIP|Magnitude|Network|OffenseIDs|SourceAddressIDs|
+>|---|---|---|---|---|---|---|---|---|---|
+>| 0 | 1635 | 2021-03-31T10:02:25.965000+00:00 | 1 | 2021-08-14T09:59:52.596000+00:00 | 172.42.18.211 | 0 | Net-10-172-192.Net_172_16_0_0 | 1,<br/>4,<br/>5,<br/>9,<br/>10,<br/>11,<br/>12,<br/>13,<br/>14,<br/>15,<br/>16,<br/>17,<br/>18,<br/>19,<br/>20,<br/>21,<br/>22,<br/>23,<br/>24,<br/>25,<br/>26,<br/>27,<br/>28,<br/>29,<br/>30,<br/>31,<br/>32,<br/>33,<br/>34,<br/>35,<br/>36,<br/>37,<br/>38,<br/>39,<br/>40,<br/>41,<br/>42 | 1,<br/>2 |

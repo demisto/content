@@ -64,11 +64,15 @@ args:
   - ssdeep
   - accountRep
   - CIDR
-  - STIX Attack Pattern
-  - STIX Malware
-  - STIX Report
-  - STIX Threat Actor
-  - STIX Tool
+  - Attack Pattern
+  - Malware
+  - Report
+  - Threat Actor
+  - Tool
+  - Campaign
+  - Course of Action
+  - Infrastructure
+  - Intrusion Set
   required: false
   secret: false
 - default: false
@@ -287,7 +291,7 @@ tags:
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.9.5.21272
+dockerimage: demisto/python3:3.9.7.24076
 fromversion: 6.2.0
 tests:
 - Relationships scripts - Test

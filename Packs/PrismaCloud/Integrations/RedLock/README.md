@@ -10,13 +10,14 @@
 | username | API Access Key | True |
 | password | API Secret | True |
 | customer | Customer name | False |
-| proxy | Use system proxy settings | False |
-| unsecure | Trust any certificate \(not secure\) | False |
-| ruleName | Fetch only incidents matching this rule name | False |
-| policySeverity | Fetch only incidents with this severity | False |
 | isFetch | Fetch incidents | False |
 | incidentType | Incident type | False |
-
+| fetch_time | First fetch timestamp \(&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year\) | False |
+| ruleName | Fetch only incidents matching this rule name | False |
+| policyName | Fetch only incidents matching this policy name | False |
+| policySeverity | Fetch only incidents with this severity | False |
+| proxy | Use system proxy settings | False |
+| unsecure | Trust any certificate \(not secure\) | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -1009,3 +1010,287 @@ Search configuration inventory on the Prisma Cloud (RedLock) platform using RQL 
 >|Account|Deleted|Region|Resource Name|Service|
 >|---|---|---|---|---|
 >| Felix - AWS - pan-lab | false | AWS Virginia | tl-console | Amazon EC2 |
+
+
+### redlock-list-scans
+***
+List DevOps Scans
+
+
+#### Base Command
+
+`redlock-list-scans`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_by | Aggregate scan results by group. Possible values are: scanId,  assetType, assetName, resourceList. Default is scanId. | Optional | 
+| page_size | Pagination size. Default is 25. | Optional | 
+| page_number | Pagination number. Default is 1. | Optional | 
+| sort | Sorting parameters. The sort order is ascending unless the field is prefixed with minus (-), in which case it is descending. | Optional | 
+| filter_type |  Time filter type. Possible values are: to_now, absolute, relative. Default is relative. | Optional | 
+| filter_time_amount | Number of time units. Default is 1. | Optional | 
+| to_now_time_unit | To Now Time unit. Possible values are: epoch, login, hour, day, week, month, year. Default is day. | Optional | 
+| filter_start_time | Start time , for example: 11/01/2021 10:10:10. | Optional | 
+| filter_end_time | End time in Unix time (the number of seconds that have elapsed since the Unix epoch) for the absolute time type. | Optional | 
+| filter_asset_type | Asset type to search with. | Optional | 
+| filter_asset_name | Asset name to search with. | Optional | 
+| filter_user | User to filter with, example: ayman@example.domain. | Optional | 
+| filter_status | Status to filter with, example: passed. Possible values are: . | Optional | 
+| relative_time_unit | Relative Time unit. Possible values are: epoch, login, year. Default is login. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Redlock.Scans.deployed | Boolean | Scan deployed attribute. | 
+| Redlock.Scans.fail | Number | Scan fail attribute. | 
+| Redlock.Scans.failureCriteria | String | Scan failure criteria attribute. | 
+| Redlock.Scans.matchedPoliciesSummary.high | Number | Scan matched policies summary attribute. | 
+| Redlock.Scans.matchedPoliciesSummary.low | Number | Scan matched low policies summary attribute. | 
+| Redlock.Scans.matchedPoliciesSummary.medium | Number | Scan matched medium policies summary attribute. | 
+| Redlock.Scans.merged | Boolean | Scan merged attribute. | 
+| Redlock.Scans.name | String | Scan name attribute. | 
+| Redlock.Scans.pass | Number | Scan pass attribute. | 
+| Redlock.Scans.scanAttributes.appliedAlertRules | String | Scan applied alert rules attribute. | 
+| Redlock.Scans.scanAttributes.branch | String | Scan Scan branch attribute. | 
+| Redlock.Scans.scanAttributes.org | String | Scan org attribute. | 
+| Redlock.Scans.scanAttributes.pullRequestId | String | Scan PR ID attribute. | 
+| Redlock.Scans.scanAttributes.repository | String | Scan repository attribute. | 
+| Redlock.Scans.scanAttributes.resourcesScanned | String | Scan resources scanned attribute. | 
+| Redlock.Scans.scanAttributes.templateType | String | Scan template type attribute. | 
+| Redlock.Scans.scanAttributes.triggeredOn | String | Scan triggered on attribute. | 
+| Redlock.Scans.scanAttributes.userId | String | Scan user id attribute. | 
+| Redlock.Scans.scanTime | Date | Scan scan time attribute. | 
+| Redlock.Scans.status | String | Scan status attribute. | 
+| Redlock.Scans.tags.name | String | Scan tags name attribute. | 
+| Redlock.Scans.tags.value | String | Scan tags value attribute. | 
+| Redlock.Scans.type | String | Scan type attribute. | 
+| Redlock.Scans.user | String | Scan user attribute. | 
+| Redlock.Scans.id | String | Scan id. | 
+| Redlock.Scans.links.self | String | Scan links. | 
+| Redlock.Scans.relationships.scanResult.links.related | String | Scan relationships scan result links . | 
+
+
+#### Command Example
+```!redlock-list-scans filter_type="absolute" filter_start_time="01/01/2021 10:10:10" filter_end_time="10/08/2021 10:10:10" filter_asset_type="GitHub" filter_asset_name="Github Asset Dev" filter_user="user@domain.example"```
+
+#### Context Example
+```json
+{
+    "Redlock": {
+        "Scans": [
+            {
+                "attributes": {
+                    "deployed": false,
+                    "fail": 1,
+                    "failureCriteria": "H:1 or M:1 or L:1",
+                    "matchedPoliciesSummary": {
+                        "high": 1,
+                        "low": 7,
+                        "medium": 4
+                    },
+                    "merged": false,
+                    "name": [
+                        "Github Asset Dev"
+                    ],
+                    "pass": 0,
+                    "resourceList": [],
+                    "scanAttributes": {
+                        "appliedAlertRules": "*",
+                        "branch": "vulnerable",
+                        "org": "my-devsecops",
+                        "pullRequestId": "96",
+                        "repository": "moon",
+                        "resourcesScanned": "1",
+                        "templateType": "k8s",
+                        "triggeredOn": "Pull Request",
+                        "userId": "my-devsecops"
+                    },
+                    "scanTime": "2021-09-27T11:26:23Z",
+                    "status": "failed",
+                    "tags": [
+                        {
+                            "name": "Org",
+                            "value": "Engineering"
+                        },
+                        {
+                            "name": "Team",
+                            "value": "DevSecOps"
+                        },
+                        {
+                            "name": "env",
+                            "value": "QA"
+                        },
+                        {
+                            "name": "phase",
+                            "value": "testing"
+                        }
+                    ],
+                    "type": [
+                        "GitHub"
+                    ],
+                    "user": [
+                        "user@domain.example"
+                    ]
+                },
+                "id": "81bb4c30-0a83-4e33-bbf7-0bb96ca15b9d",
+                "links": {
+                    "self": "/v2/scans/81bb4c30-0a83-4e33-bbf7-0bb96ca15b9d"
+                },
+                "relationships": {
+                    "scanResult": {
+                        "links": {
+                            "related": "/v2/scans/results"
+                        }
+                    }
+                }
+            }    
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Scans List:
+>|ID|Name|Scan Time|Type|User|
+>|---|---|---|---|---|
+>| 81bb4c30-0a83-4e33-bbf7-0bb96ca15b9d | Github Asset Dev | 2021-09-27T11:26:23Z | GitHub | user@domain.example |
+
+
+### redlock-get-scan-status
+***
+Get scan status
+
+
+#### Base Command
+
+`redlock-get-scan-status`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| scan_id | The scan ID. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Redlock.Scans.id | String | Scan ID | 
+| Redlock.Scans.status | String | Scan status | 
+
+
+#### Command Example
+```!redlock-get-scan-status scan_id="81bb4c30-0a83-4e33-bbf7-0bb96ca15b9d"```
+
+#### Context Example
+```json
+{
+    "Redlock": {
+        "Scans": {
+            "attributes": {
+                "status": "failed"
+            },
+            "id": "81bb4c30-0a83-4e33-bbf7-0bb96ca15b9d"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Scan Status:
+>|ID|Status|
+>|---|---|
+>| 81bb4c30-0a83-4e33-bbf7-0bb96ca15b9d | failed |
+
+
+### redlock-get-scan-results
+***
+Get scan results
+
+
+#### Base Command
+
+`redlock-get-scan-results`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| scan_id | The scan ID. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Redlock.Scans.id | String | Scan ID | 
+| Redlock.Scans.results.attributes.blameList.file | String | Scan results blame list file | 
+| Redlock.Scans.results.attributes.blameList.locations.line | Number | Scan results blame list locations line | 
+| Redlock.Scans.results.attributes.blameList.locations.path | String | Scan results blame list locations path | 
+| Redlock.Scans.results.attributes.desc | String | Scan results description | 
+| Redlock.Scans.results.attributes.docUrl | String | Scan results doc URL | 
+| Redlock.Scans.results.attributes.files | String | Scan results files | 
+| Redlock.Scans.results.attributes.name | String | Scan results name | 
+| Redlock.Scans.results.attributes.policyId | String | Scan results policy ID | 
+| Redlock.Scans.results.attributes.rule | String | Scan results rule | 
+| Redlock.Scans.results.attributes.severity | String | Scan results severity | 
+| Redlock.Scans.results.attributes.systemDefault | Boolean | Scan results system default | 
+| Redlock.Scans.results.id | String | Scan results ID | 
+
+
+#### Command Example
+```!redlock-get-scan-results scan_id="81bb4c30-0a83-4e33-bbf7-0bb96ca15b9d"```
+
+#### Context Example
+```json
+{
+    "Redlock": {
+        "Scans": {
+            "id": "81bb4c30-0a83-4e33-bbf7-0bb96ca15b9d",
+            "results": [
+                {
+                    "attributes": {
+                        "blameList": [
+                            {
+                                "file": "./my-devsecops-moon-405fc6e/iac/vulnerable-iac.yaml",
+                                "locations": [
+                                    {
+                                        "line": 2,
+                                        "path": "/kind"
+                                    },
+                                    {
+                                        "line": 18,
+                                        "path": "/spec/template/spec/containers"
+                                    }
+                                ]
+                            }
+                        ],
+                        "desc": "Ensure that all capabilities are dropped.",
+                        "docUrl": "https://some-url",
+                        "files": [
+                            "./my-devsecops-moon-405fc6e/iac/vulnerable-iac.yaml:[2,18]"
+                        ],
+                        "name": "All capabilities should be dropped",
+                        "policyId": "cca6bb6a-4e05-47a1-acaa-29f198799aa2",
+                        "rule": "($.kind equals Pod and (spec.containers[?any(securityContext.capabilities.drop does not exist or securityContext.capabilities.drop[*] does not contain ALL)] exists or spec. initContainers[?any(securityContext.capabilities.drop does not exist or securityContext.capabilities.drop[*] does not contain ALL )] exists)) or ($.kind is member of (Deployment, Job, DaemonSet, ReplicaSet, ReplicationController, StatefulSet) and (spec.template.spec.containers[?any(securityContext.capabilities.drop does not exist or securityContext.capabilities.drop[*] does not contain ALL)] exists or spec. initContainers[?any(securityContext.capabilities.drop does not exist or securityContext.capabilities.drop[*] does not contain ALL)] exists))",
+                        "severity": "high",
+                        "systemDefault": false
+                    },
+                    "id": "cca6bb6a-4e05-47a1-acaa-29f198799aa2"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Scan Results:
+>|Description|ID|Name|Policy ID|Severity|
+>|---|---|---|---|---|
+>| Ensure that all capabilities are dropped. | cca6bb6a-4e05-47a1-acaa-29f198799aa2 | All capabilities should be dropped | cca6bb6a-4e05-47a1-acaa-29f198799aa2 | high |

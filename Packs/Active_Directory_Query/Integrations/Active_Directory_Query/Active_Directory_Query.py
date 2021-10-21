@@ -34,6 +34,7 @@ COOMON_ACCOUNT_CONTROL_FLAGS = {
 }
 NORMAL_ACCOUNT = 512
 DISABLED_ACCOUNT = 514
+PASSWORD_NOT_REQUIRED = 544
 INACTIVE_LIST_OPTIONS = [514, 546, 66050, 66082, 262658, 262690, 328226]
 DEFAULT_LIMIT = 20
 
@@ -48,6 +49,10 @@ DEFAULT_PERSON_ATTRIBUTES = [
     'userAccountControl'
 ]
 DEFAULT_COMPUTER_ATTRIBUTES = [
+    'name',
+    'memberOf'
+]
+DEFAULT_GROUP_ATTRIBUTES = [
     'name',
     'memberOf'
 ]
@@ -74,10 +79,17 @@ def initialize_server(host, port, secure_connection, unsecure):
     :rtype: Server
     """
 
+    if secure_connection == "TLS":
+        demisto.debug(f"initializing sever with TLS (unsecure: {unsecure}). port: {port or 'default(636)'}")
+        tls = Tls(validate=ssl.CERT_NONE)
+        if port:
+            return Server(host, port=port, use_ssl=unsecure, tls=tls)
+        return Server(host, use_ssl=unsecure, tls=tls)
+
     if secure_connection == "SSL":
         # intialize server with ssl
         # port is configured by default as 389 or as 636 for LDAPS if not specified in configuration
-        demisto.debug("initializing sever with ssl (unsecure: {}). port: {}". format(unsecure, port or 'default(636)'))
+        demisto.debug(f"initializing sever with SSL (unsecure: {unsecure}). port: {port or 'default(636)'}")
         if not unsecure:
             demisto.debug("will require server certificate.")
             tls = Tls(validate=ssl.CERT_REQUIRED, ca_certs_file=os.environ.get('SSL_CERT_FILE'))
@@ -87,7 +99,7 @@ def initialize_server(host, port, secure_connection, unsecure):
         if port:
             return Server(host, port=port, use_ssl=True)
         return Server(host, use_ssl=True)
-    demisto.debug("initializing server without secure connection. port: {}". format(port or 'default(389)'))
+    demisto.debug(f"initializing server without secure connection. port: {port or 'default(389)'}")
     if port:
         return Server(host, port=port)
     return Server(host)
@@ -151,6 +163,35 @@ def endpoint_entry(computer_object, custom_attributes):
                 demisto.error(f'Failed parsing custom attribute {attr}, error: {e}')
 
     return endpoint
+
+
+def group_entry(group_object, custom_attributes):
+    # create an group entry from a group object
+    group = {
+        'Type': 'AD',
+        'ID': group_object.get('dn'),
+        'Name': group_object.get('name'),
+        'Groups': group_object.get('memberOf'),
+    }
+
+    lower_cased_person_object_keys = {
+        person_object_key.lower(): person_object_key for person_object_key in group_object.keys()
+    }
+
+    for attr in custom_attributes:
+        if attr == '*':
+            continue
+        try:
+            group[attr] = group_object[attr]
+        except KeyError as e:
+            lower_cased_custom_attr = attr.lower()
+            if lower_cased_custom_attr in lower_cased_person_object_keys:
+                cased_custom_attr = lower_cased_person_object_keys.get(lower_cased_custom_attr, '')
+                group[cased_custom_attr] = group_object[cased_custom_attr]
+            else:
+                demisto.error(f'Failed parsing custom attribute {attr}, error: {e}')
+
+    return group
 
 
 def base_dn_verified(base_dn):
@@ -228,7 +269,7 @@ def get_user_activity_by_samaccountname(default_base_dn, samaccountname):
     :return: True if the user active, False otherwise.
     """
     active = False
-    query = f'(&(objectClass=User)(objectCategory=person)(samaccountname={samaccountname}))'
+    query = f'(&(objectClass=User)(objectCategory=person)(sAMAccountName={samaccountname}))'
     entries = search_with_paging(
         query,
         default_base_dn,
@@ -253,11 +294,11 @@ def get_user_dn_by_email(default_base_dn, email):
     """
     dn = ''
     samaccountname = email.split('@')[0]
-    query = f'(&(objectClass=User)(objectCategory=person)(samaccountname={samaccountname}))'
+    query = f'(&(objectClass=User)(objectCategory=person)(sAMAccountName={samaccountname}))'
     entries = search_with_paging(
         query,
         default_base_dn,
-        attributes=["samaccountname"],
+        attributes=["sAMAccountName"],
         size_limit=1,
         page_size=1
     )
@@ -285,8 +326,8 @@ def get_all_attributes(search_base):
         return []
     if not r[0]:
         return []
-    attributes = r[0].entry_attributes
-    return attributes
+    attributes = r[0].allowedAttributes
+    return [attr for attr in attributes]
 
 
 ''' COMMANDS '''
@@ -408,6 +449,7 @@ def computer_dn(compuer_name, search_base):
 
 
 def group_dn(group_name, search_base):
+    group_name = escape_filter_chars(group_name)
     search_filter = '(&(objectClass=group)(cn={}))'.format(group_name)
     entries = search(
         search_filter,
@@ -568,7 +610,7 @@ def get_user_iam(default_base_dn, args, mapper_in, mapper_out):
     try:
         user_profile = args.get("user-profile")
         user_profile_delta = args.get('user-profile-delta')
-        default_attribute = "samaccountname"
+        default_attribute = "sAMAccountName"
 
         iam_user_profile = IAMUserProfile(user_profile=user_profile, user_profile_delta=user_profile_delta)
 
@@ -684,16 +726,28 @@ def search_group_members(default_base_dn, page_size):
     group_dn = args.get('group-dn')
     nested_search = '' if args.get('disable-nested-search') == 'true' else ':1.2.840.113556.1.4.1941:'
     time_limit = int(args.get('time_limit', 180))
+    account_name = args.get('sAMAccountName')
 
     custom_attributes: List[str] = []
-    default_attributes = DEFAULT_PERSON_ATTRIBUTES if member_type == 'person' else DEFAULT_COMPUTER_ATTRIBUTES
+
+    default_attribute_mapping = {
+        'person': DEFAULT_PERSON_ATTRIBUTES,
+        'group': DEFAULT_GROUP_ATTRIBUTES,
+        'computer': DEFAULT_COMPUTER_ATTRIBUTES,
+    }
+    default_attributes = default_attribute_mapping.get(member_type, DEFAULT_COMPUTER_ATTRIBUTES)
 
     if args.get('attributes'):
         custom_attributes = args['attributes'].split(",")
 
     attributes = list(set(custom_attributes + default_attributes))
 
-    query = "(&(objectCategory={})(objectClass=user)(memberOf{}={}))".format(member_type, nested_search, group_dn)
+    if member_type == 'group':
+        query = "(&(objectCategory={})(memberOf{}={})(sAMAccountName={}))".format(member_type, nested_search, group_dn,
+                                                                                  account_name)
+    else:
+        query = "(&(objectCategory={})(objectClass=user)(memberOf{}={})(sAMAccountName={}))"\
+            .format(member_type, nested_search, group_dn, account_name)
 
     entries = search_with_paging(
         query,
@@ -723,9 +777,13 @@ def search_group_members(default_base_dn, page_size):
         demisto_entry['EntryContext']['ActiveDirectory.Users(obj.dn == val.dn)'] = entries['flat']
         demisto_entry['EntryContext']['Account'] = [account_entry(
             entry, custom_attributes) for entry in entries['flat']]
-    else:
+    elif member_type == 'computer':
         demisto_entry['EntryContext']['ActiveDirectory.Computers(obj.dn == val.dn)'] = entries['flat']
         demisto_entry['EntryContext']['Endpoint'] = [endpoint_entry(
+            entry, custom_attributes) for entry in entries['flat']]
+    elif member_type == 'group':
+        demisto_entry['EntryContext']['ActiveDirectory.Groups(obj.dn == val.dn)'] = entries['flat']
+        demisto_entry['EntryContext']['Group'] = [group_entry(
             entry, custom_attributes) for entry in entries['flat']]
 
     demisto.results(demisto_entry)
@@ -817,7 +875,7 @@ def create_user_iam(default_base_dn, args, mapper_out, disabled_users_group_cn):
         iam_user_profile = IAMUserProfile(user_profile=user_profile, user_profile_delta=user_profile_delta)
         ad_user = iam_user_profile.map_object(mapper_name=mapper_out, incident_type=IAMUserProfile.CREATE_INCIDENT_TYPE)
 
-        sam_account_name = ad_user.get("samaccountname")
+        sam_account_name = ad_user.get("sAMAccountName")
 
         if not sam_account_name:
             raise DemistoException("User must have a sAMAccountName, please make sure a mapping "
@@ -828,7 +886,7 @@ def create_user_iam(default_base_dn, args, mapper_out, disabled_users_group_cn):
                                    "in \"" + mapper_out + "\" outgoing mapper, in the User Profile incident type "
                                    "and schema type, under the \"ou\" field.")
 
-        user_exists = check_if_user_exists_by_attribute(default_base_dn, "samaccountname", sam_account_name)
+        user_exists = check_if_user_exists_by_attribute(default_base_dn, "sAMAccountName", sam_account_name)
 
         if user_exists:
             iam_user_profile = update_user_iam(default_base_dn, args, False, mapper_out, disabled_users_group_cn)
@@ -845,8 +903,8 @@ def create_user_iam(default_base_dn, args, mapper_out, disabled_users_group_cn):
             success = conn.add(user_dn, object_classes, ad_user)
             if success:
                 iam_user_profile.set_result(success=True,
-                                            email=ad_user.get('email'),
-                                            username=ad_user.get('name'),
+                                            email=ad_user.get('mail'),
+                                            username=ad_user.get('sAMAccountName'),
                                             details=ad_user,
                                             action=IAMActions.CREATE_USER,
                                             active=False)  # the user should be activated with the IAMInitADUser script
@@ -868,11 +926,19 @@ def create_user_iam(default_base_dn, args, mapper_out, disabled_users_group_cn):
         return iam_user_profile
 
 
-def get_old_samaccountname(old_user_data, mapper_out):
-    iam_old_user_profile = IAMUserProfile(user_profile=old_user_data)
-    ad_old_user = iam_old_user_profile.map_object(mapper_name=mapper_out,
-                                                  incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
-    return ad_old_user.get("samaccountname")
+def get_iam_user_profile(user_profile, mapper_out):
+    iam_user_profile = IAMUserProfile(user_profile=user_profile)
+    ad_user = iam_user_profile.map_object(mapper_name=mapper_out, incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
+    sam_account_name = ad_user.get("sAMAccountName")
+
+    old_user_data = iam_user_profile.get_attribute('olduserdata')
+    if old_user_data:
+        iam_old_user_profile = IAMUserProfile(user_profile=old_user_data)
+        ad_old_user = iam_old_user_profile.map_object(mapper_name=mapper_out,
+                                                      incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
+        sam_account_name = ad_old_user.get("sAMAccountName") or sam_account_name
+
+    return iam_user_profile, ad_user, sam_account_name
 
 
 def update_user_iam(default_base_dn, args, create_if_not_exists, mapper_out, disabled_users_group_cn):
@@ -888,16 +954,8 @@ def update_user_iam(default_base_dn, args, create_if_not_exists, mapper_out, dis
     try:
         user_profile = args.get("user-profile")
         allow_enable = args.get('allow-enable') == 'true'
-        old_sam_account_name = ''
-        old_user_exists = ''
 
-        user_profile_delta = args.get('user-profile-delta')
-        iam_user_profile = IAMUserProfile(user_profile=user_profile, user_profile_delta=user_profile_delta)
-
-        ad_user = iam_user_profile.map_object(mapper_name=mapper_out, incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
-
-        # check it user exists and if it doesn't, create it
-        sam_account_name = ad_user.get("samaccountname")
+        iam_user_profile, ad_user, sam_account_name = get_iam_user_profile(user_profile, mapper_out)
 
         if not sam_account_name:
             raise DemistoException("User must have a sAMAccountName, please make sure a mapping "
@@ -909,31 +967,18 @@ def update_user_iam(default_base_dn, args, create_if_not_exists, mapper_out, dis
                                    "and schema type, under the \"ou\" field.")
 
         new_ou = ad_user.get("ou")
-        user_exists = check_if_user_exists_by_attribute(default_base_dn, "samaccountname", sam_account_name)
+        user_exists = check_if_user_exists_by_attribute(default_base_dn, "sAMAccountName", sam_account_name)
 
-        user_profile = json.loads(user_profile)
-        if old_user_data := user_profile.get('olduserdata'):
-            # if olduserdata exists - the user's email is updated:
-            old_sam_account_name = get_old_samaccountname(old_user_data, mapper_out)
-            old_user_exists = check_if_user_exists_by_attribute(default_base_dn, "samaccountname", old_sam_account_name)
-
-        if not user_exists and not old_user_exists and create_if_not_exists:
-            iam_user_profile = create_user_iam(default_base_dn, args, mapper_out, disabled_users_group_cn)
-
-        elif old_user_exists and user_exists:
-            # In this case we update the user but using an email that is already in use
-            raise DemistoException("The sAMAccountName \"" + sam_account_name + "\" already exists."
-                                   "Try to update \"" + old_sam_account_name + "\" with a different sAMAccountName.")
-
-        elif user_exists or old_user_exists:
-            # There are 2 options here:
-            # 1. We update the user, the email stays the same - therefore user_exists=True and old_user_exists=False
-            # 2. We update the user, the email changes too - therefore user_exists=False and old_user_exists=True
-            if not old_user_exists:
-                # In this case the sAMAccountName doesn't change
-                old_sam_account_name = sam_account_name
-
-            dn = user_dn(old_sam_account_name, default_base_dn)
+        if not user_exists:
+            if create_if_not_exists:
+                iam_user_profile = create_user_iam(default_base_dn, args, mapper_out, disabled_users_group_cn)
+            else:
+                _, error_message = IAMErrors.USER_DOES_NOT_EXIST
+                iam_user_profile.set_result(action=IAMActions.UPDATE_USER,
+                                            skip=True,
+                                            skip_reason=error_message)
+        else:
+            dn = user_dn(sam_account_name, default_base_dn)
 
             if allow_enable:
                 enable_user_iam(default_base_dn, dn, disabled_users_group_cn)
@@ -968,8 +1013,8 @@ def update_user_iam(default_base_dn, args, create_if_not_exists, mapper_out, dis
             else:
                 active = get_user_activity_by_samaccountname(default_base_dn, sam_account_name)
                 iam_user_profile.set_result(success=True,
-                                            email=ad_user.get('email'),
-                                            username=ad_user.get('name'),
+                                            email=ad_user.get('mail'),
+                                            username=ad_user.get('sAMAccountName'),
                                             action=IAMActions.UPDATE_USER,
                                             details=ad_user,
                                             active=active)
@@ -1240,7 +1285,7 @@ def enable_user_iam(default_base_dn, dn, disabled_users_group_cn):
     :param disabled_users_group_cn: The disabled group cn, the user will be removed from this group when enabled
     """
     modification = {
-        'userAccountControl': [('MODIFY_REPLACE', NORMAL_ACCOUNT)]
+        'userAccountControl': [('MODIFY_REPLACE', PASSWORD_NOT_REQUIRED)]
     }
     modify_object(dn, modification)
     if disabled_users_group_cn:
@@ -1264,12 +1309,12 @@ def disable_user_iam(default_base_dn, disabled_users_group_cn, args, mapper_out)
         iam_user_profile = IAMUserProfile(user_profile=user_profile, user_profile_delta=user_profile_delta)
         ad_user = iam_user_profile.map_object(mapper_name=mapper_out, incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
 
-        sam_account_name = ad_user.get("samaccountname")
+        sam_account_name = ad_user.get("sAMAccountName")
         if not sam_account_name:
             raise DemistoException("User must have a sAMAccountName, please make sure a mapping "
                                    "exists in \"" + mapper_out + "\" outgoing mapper.")
 
-        user_exists = check_if_user_exists_by_attribute(default_base_dn, "samaccountname", sam_account_name)
+        user_exists = check_if_user_exists_by_attribute(default_base_dn, "sAMAccountName", sam_account_name)
         if not user_exists:
             iam_user_profile.set_result(success=True, action=IAMActions.DISABLE_USER,
                                         skip=True, skip_reason="User doesn't exist")
@@ -1298,8 +1343,8 @@ def disable_user_iam(default_base_dn, disabled_users_group_cn, args, mapper_out)
                 raise DemistoException('Failed to remove user from the group "' + disabled_users_group_cn + '".')
 
         iam_user_profile.set_result(success=True,
-                                    email=ad_user.get('email'),
-                                    username=ad_user.get('name'),
+                                    email=ad_user.get('mail'),
+                                    username=ad_user.get('sAMAccountName'),
                                     action=IAMActions.DISABLE_USER,
                                     details=ad_user,
                                     active=False)
@@ -1452,7 +1497,7 @@ def delete_group():
 def get_mapping_fields_command(search_base):
     ad_attributes = get_all_attributes(search_base)
     # add keys that are not attributes but can be used in mapping
-    ad_attributes.extend(("dn", "samaccountname", "manageremail"))
+    ad_attributes.extend(("dn", "manageremail"))
 
     incident_type_scheme = SchemeTypeMapping(type_name=IAMUserProfile.DEFAULT_INCIDENT_TYPE)
 
@@ -1513,6 +1558,10 @@ def main():
         else:
             # here username should be the user dn
             conn = Connection(server, user=USERNAME, password=PASSWORD)
+
+        if SECURE_CONNECTION == 'TLS':
+            conn.open()
+            conn.start_tls()
 
         # bind operation is the “authenticate” operation.
         try:

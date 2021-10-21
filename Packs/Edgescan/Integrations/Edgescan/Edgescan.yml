@@ -24,17 +24,19 @@ configuration:
   name: max_fetch
   required: false
   type: 0
-- additionalinfo: This has to be an exact value. No filter operator available.
-  display: Fetch vulnerabilities with CVSS
-  name: cvss_score
+- additionalinfo: Fetch vulnerabilities with CVS score greater than. This can be a
+    decimal point number. Disabled if empty. Mutually exclusive with cvss_score
+  display: Fetch vulnerabilities with CVSS greater than
+  name: cvss_score_greater_than
   required: false
   type: 0
-- defaultvalue: '3'
+- additionalinfo: Disabled if empty
   display: Fetch vulnerabilities with risk more than
   name: risk_more_than
   required: false
   type: 0
-- additionalinfo: How many days to fetch back on first run.
+- additionalinfo: 'How many days to fetch back on first run. It can be: 360 days,
+    12 months, 1 year, etc.'
   defaultvalue: 3 days
   display: First fetch time
   name: first_fetch
@@ -48,6 +50,13 @@ configuration:
   name: incidentType
   required: false
   type: 13
+- additionalinfo: Fetch vulnerabilities with CVS score that exactly equals the provided
+    value. This can be a decimal point number. Disabled if empty. Mutually exclusive with cvss_score_greater_than
+  display: Fetch vulnerabilities with CVSS with exact value
+  hidden: false
+  name: cvss_score
+  required: false
+  type: 0
 description: Cloud-based continuous vulnerability management and penetration testing
   solution.
 display: Edgescan
@@ -1017,7 +1026,43 @@ script:
     - contextPath: Edgescan.VulnerabilitiesRiskAccept
       description: The vulnerability retest result
       type: Unknown
-  dockerimage: demisto/python3:3.9.6.22912
+  - arguments:
+    - default: false
+      description: The ID of the vulnerability to add the annotation to
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: The text of the annotation to add
+      isArray: false
+      name: text
+      required: true
+      secret: false
+    deprecated: false
+    description: This command adds a text annotation to a vulnerability
+    execution: false
+    name: edgescan-vulnerabilities-add-annotation
+    outputs:
+    - contextPath: Edgescan.AnnotationAdd.id
+      description: The ID of the added annotation
+      type: Number
+    - contextPath: Edgescan.AnnotationAdd.category
+      description: The category of the added annotation
+      type: String
+    - contextPath: Edgescan.AnnotationAdd.text
+      description: The text of the added annotation
+      type: String
+    - contextPath: Edgescan.AnnotationAdd.user
+      description: The user that has added the annotation
+      type: String
+    - contextPath: Edgescan.AnnotationAdd.user_id
+      description: The user ID of the added annotation
+      type: Number
+    - contextPath: Edgescan.AnnotationAdd.created_at
+      description: The date when the annoation was added
+      type: Date
+  dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: true
   longRunning: false

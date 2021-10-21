@@ -30,6 +30,11 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: Suppress errors for non found indicators
+  name: handle_error
+  required: false
+  defaultvalue: true
+  type: 8
 - display: Additional malicious verdicts
   name: mark_as_malicious
   required: false
@@ -1380,7 +1385,7 @@ script:
     - contextPath: Domain.Name
       description: The domain name.
       type: String
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.9.7.24076
   isfetch: false
   longRunning: false
   longRunningPort: false

@@ -6,7 +6,7 @@ import re
 
 from base64 import b64decode
 from flask import Flask, Response, request
-from netaddr import IPAddress, IPSet
+from netaddr import IPSet
 from typing import Any, Dict, cast, Iterable
 from math import ceil
 import urllib3
@@ -134,12 +134,13 @@ def create_new_edl(request_args: RequestArguments) -> str:
     iocs = []
     formatted_iocs: set = set()
     while True:
-        indicator_searcher.limit = limit - len(formatted_iocs)
+        current_limit = limit + (limit - len(formatted_iocs))
+        indicator_searcher.limit = current_limit
         new_iocs = find_indicators_to_limit(indicator_searcher)
         iocs.extend(new_iocs)
         formatted_iocs = format_indicators(iocs, request_args)
         # continue searching iocs if 1) iocs was truncated or 2) got all available iocs
-        if len(formatted_iocs) >= len(iocs) or indicator_searcher.total <= limit:
+        if len(formatted_iocs) >= len(iocs) or indicator_searcher.total <= current_limit:
             break
     return iterable_to_str(list(formatted_iocs)[request_args.offset:limit])
 
@@ -279,11 +280,11 @@ def format_indicators(iocs: list, request_args: RequestArguments) -> set:
             if indicator.startswith('*.'):
                 formatted_indicators.add(indicator.lstrip('*.'))
 
-        if request_args.collapse_ips != DONT_COLLAPSE and ioc_type == FeedIndicatorType.IP:
-            ipv4_formatted_indicators.add(IPAddress(indicator))
+        if request_args.collapse_ips != DONT_COLLAPSE and ioc_type in (FeedIndicatorType.IP, FeedIndicatorType.CIDR):
+            ipv4_formatted_indicators.add(indicator)
 
         elif request_args.collapse_ips != DONT_COLLAPSE and ioc_type == FeedIndicatorType.IPv6:
-            ipv6_formatted_indicators.add(IPAddress(indicator))
+            ipv6_formatted_indicators.add(indicator)
 
         else:
             formatted_indicators.add(indicator)
@@ -452,9 +453,6 @@ def test_module(_: Dict, params: Dict):
     on_demand = params.get('on_demand', None)
     if not on_demand:
         try_parse_integer(params.get('edl_size'), EDL_LIMIT_ERR_MSG)  # validate EDL Size was set
-        query = params.get('indicators_query')  # validate indicators_query isn't empty
-        if not query:
-            raise ValueError('"Indicator Query" is required. Provide a valid query.')
         cache_refresh_rate = params.get('cache_refresh_rate', '')
         if not cache_refresh_rate:
             raise ValueError(EDL_MISSING_REFRESH_ERR_MSG)

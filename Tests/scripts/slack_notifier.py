@@ -33,14 +33,15 @@ DMST_SDK_NIGHTLY_GITLAB_JOBS_PREFIX = 'demisto-sdk-nightly'
 SDK_NIGHTLY_CIRCLE_OPTS = {
     SDK_UNITTESTS_TYPE, SDK_FAILED_STEPS_TYPE, SDK_RUN_AGAINST_FAILED_STEPS_TYPE
 }
+CONTENT_REPO_ID_CIRCLE_CI = '60525392'
 
 
-def get_failed_steps_list():
+def get_failed_steps_list(build_number: str):
     options = options_handler()
     if options.gitlab_server:
-        return get_gitlab_failed_steps(options.ci_token, options.buildNumber, options.gitlab_server,
+        return get_gitlab_failed_steps(options.ci_token, build_number, options.gitlab_server,
                                        options.gitlab_project_id)
-    return get_circle_failed_steps(options.ci_token, options.buildNumber)
+    return get_circle_failed_steps(options.ci_token, build_number)
 
 
 def get_circle_failed_steps(ci_token, build_number):
@@ -199,11 +200,11 @@ def get_coverage_color(coverage_percent: float) -> str:
     return 'good'
 
 
-def get_coverage_attachment(build_url: str) -> Optional[Dict]:
+def get_coverage_attachment(build_number: str) -> Optional[Dict]:
     """
     Returns content coverage report attachment.
     Args:
-        build_url (str): Build URL of the nightly.
+        build_number (str): Build number in CircleCI.
 
     Returns:
         (Dict): Attachment of the coverage if coverage report exists.
@@ -221,20 +222,23 @@ def get_coverage_attachment(build_url: str) -> Optional[Dict]:
         logging.error(
             f'Unexpected value for line coverage rage: {coverage_percent_str}. Expected float from line coverage rate.')
         return None
+    coverage_url: str = f'https://{build_number}-{CONTENT_REPO_ID_CIRCLE_CI}-gh.circle-artifacts.com/0/artifacts' \
+                        '/coverage_report/html/index.html'
     return {
         'fallback': f'Coverage Report Content: {coverage_percent:.2f}% Total Coverage',
         'color': get_coverage_color(coverage_percent),
         'title': f'Coverage Report Content: {coverage_percent:.2f}% Total Coverage',
-        'title_link': build_url,
+        'title_link': coverage_url,
         'fields': []
     }
 
 
-def get_attachments_for_unit_test(build_url: str, is_sdk_build: bool = False) -> List[Dict]:
+def get_attachments_for_unit_test(build_url: str, build_number: str, is_sdk_build: bool = False) -> List[Dict]:
     """
     Creates attachment for unit tests. Including failed unit tests attachment and coverage if exists.
     Args:
         build_url (str): Build URL.
+        build_number (str): Build number.
         is_sdk_build (bool): Whether build is SDK build.
 
     Returns:
@@ -242,14 +246,14 @@ def get_attachments_for_unit_test(build_url: str, is_sdk_build: bool = False) ->
     """
     unit_tests_attachments = get_failed_unit_tests_attachment(build_url, is_sdk_build)
     if not is_sdk_build:
-        coverage_attachment = get_coverage_attachment(build_url)
+        coverage_attachment = get_coverage_attachment(build_number)
         if coverage_attachment:
             unit_tests_attachments.append(coverage_attachment)
     return unit_tests_attachments
 
 
-def get_attachments_for_bucket_upload_flow(build_url, job_name, packs_results_file_path=None):
-    if failed_entities := get_failed_steps_list():
+def get_attachments_for_bucket_upload_flow(build_url, job_name, build_number, packs_results_file_path=None):
+    if failed_entities := get_failed_steps_list(build_number):
         steps_fields = get_entities_fields(f'Failed Steps - ({len(failed_entities)})', failed_entities)
     else:
         steps_fields = []
@@ -303,8 +307,8 @@ def get_attachments_for_bucket_upload_flow(build_url, job_name, packs_results_fi
     return content_team_attachment
 
 
-def get_attachments_for_all_steps(build_url, build_title):
-    if failed_entities := get_failed_steps_list():
+def get_attachments_for_all_steps(build_url, build_title, build_number):
+    if failed_entities := get_failed_steps_list(build_number):
         steps_fields = get_entities_fields(f'Failed Steps - ({len(failed_entities)})', failed_entities)
     else:
         steps_fields = []
@@ -410,7 +414,7 @@ def get_fields():
     return content_team_fields, content_fields, failed_tests
 
 
-def slack_notifier(build_url, slack_token, test_type, env_results_file_name=None, packs_results_file=None,
+def slack_notifier(build_url, slack_token, test_type, build_number, env_results_file_name=None, packs_results_file=None,
                    job_name="", slack_channel=CONTENT_CHANNEL, gitlab_server=None):
     branches = run_command("git branch")
     branch_name_reg = re.search(r'\* (.*)', branches)
@@ -420,37 +424,36 @@ def slack_notifier(build_url, slack_token, test_type, env_results_file_name=None
         logging.info("Extracting build status")
         if test_type == UNITTESTS_TYPE:
             logging.info("Starting Slack notifications about nightly build - unit tests")
-            content_team_attachments = get_attachments_for_unit_test(build_url)
+            content_team_attachments = get_attachments_for_unit_test(build_url, build_number)
         elif test_type == SDK_UNITTESTS_TYPE:
             logging.info("Starting Slack notifications about SDK nightly build - unit tests")
-            content_team_attachments = get_attachments_for_unit_test(build_url, is_sdk_build=True)
+            content_team_attachments = get_attachments_for_unit_test(build_url, build_number, is_sdk_build=True)
         elif test_type == 'test_playbooks':
             logging.info("Starting Slack notifications about nightly build - tests playbook")
             content_team_attachments, _ = get_attachments_for_test_playbooks(build_url, env_results_file_name)
         elif test_type == SDK_FAILED_STEPS_TYPE:
             logging.info('Starting Slack notifications about SDK nightly build - test playbook')
-            content_team_attachments = get_attachments_for_all_steps(build_url, build_title=SDK_BUILD_TITLE)
+            content_team_attachments = get_attachments_for_all_steps(build_url, SDK_BUILD_TITLE, build_number)
         elif test_type == BucketUploadFlow.BUCKET_UPLOAD_TYPE:
             logging.info('Starting Slack notifications about upload to production bucket build')
-            content_team_attachments = get_attachments_for_bucket_upload_flow(
-                build_url=build_url, job_name=job_name, packs_results_file_path=packs_results_file
-            )
+            content_team_attachments = get_attachments_for_bucket_upload_flow(build_url, job_name, build_number,
+                                                                              packs_results_file)
         elif test_type == SDK_RUN_AGAINST_FAILED_STEPS_TYPE:
             logging.info("Starting Slack notifications about SDK nightly build - run against an xsoar instance")
-            content_team_attachments = get_attachments_for_all_steps(build_url, build_title=SDK_XSOAR_BUILD_TITLE)
+            content_team_attachments = get_attachments_for_all_steps(build_url, SDK_XSOAR_BUILD_TITLE, build_number)
         elif job_name and test_type == job_name:
             if job_name.startswith(DMST_SDK_NIGHTLY_GITLAB_JOBS_PREFIX):
                 # We run the various circleci sdk nightly builds in a single pipeline in GitLab
                 # as different jobs so it requires different handling
                 logging.info(f"Starting Slack notifications for {job_name}")
                 if 'unittest' in job_name:
-                    content_team_attachments = get_attachments_for_unit_test(build_url, is_sdk_build=True)
+                    content_team_attachments = get_attachments_for_unit_test(build_url, build_number, is_sdk_build=True)
                     # override the 'title' from the attachment to be the job name
                     content_team_attachments[0]['title'] = content_team_attachments[0]['title'].replace(
                         'SDK Nightly Unit Tests', job_name
                     )
                 else:
-                    content_team_attachments = get_attachments_for_all_steps(build_url, build_title=job_name)
+                    content_team_attachments = get_attachments_for_all_steps(build_url, job_name, build_number)
                     # override the 'fields' from the attachment since any failure will be the same as the job name
                     content_team_attachments[0]['fields'] = []
         else:
@@ -481,16 +484,17 @@ def main():
     job_name = options.job_name
     slack_channel = options.slack_channel or CONTENT_CHANNEL
     gitlab_server = options.gitlab_server
+    build_number = options.buildNumber
     if nightly:
-        slack_notifier(url, slack, test_type, env_results_file_name)
+        slack_notifier(url, slack, test_type, build_number, env_results_file_name)
     elif bucket_upload:
-        slack_notifier(url, slack, test_type,
+        slack_notifier(url, slack, test_type, build_number,
                        packs_results_file=os.path.join(
                            ci_artifacts_path, BucketUploadFlow.PACKS_RESULTS_FILE), job_name=job_name,
                        slack_channel=slack_channel, gitlab_server=gitlab_server)
     elif test_type in SDK_NIGHTLY_CIRCLE_OPTS or test_type == job_name:
         slack_notifier(
-            url, slack, test_type, job_name=job_name,
+            url, slack, test_type, build_number, job_name=job_name,
             slack_channel=slack_channel, gitlab_server=gitlab_server
         )
     else:

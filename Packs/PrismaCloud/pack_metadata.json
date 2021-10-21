@@ -2,7 +2,7 @@
     "name": "Prisma Cloud",
     "description": "Automate and unify security incident response across your cloud environments, while still giving a degree of control to dedicated cloud teams.",
     "support": "xsoar",
-    "currentVersion": "1.7.2",
+    "currentVersion": "2.0.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -61,6 +61,10 @@
         "Azure-Network": {
             "mandatory": false,
             "display_name": "Azure - Network"
+        },
+        "Azure-Storage": {
+            "mandatory": false,
+            "display_name": "Azure - Storage"
         }
     }
 }
