@@ -294,7 +294,7 @@ def __create_incident_with_playbook(client: DefaultApi,
                                     playbook_id,
                                     integrations,
                                     logging_manager,
-                                    ) -> Tuple[Optional[Incident], int]:
+                                    ) -> tuple[Optional[Incident], int]:
     # create incident
     create_incident_request = demisto_client.demisto_api.CreateIncidentRequest()
     create_incident_request.create_investigation = True

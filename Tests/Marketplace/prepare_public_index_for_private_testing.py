@@ -4,7 +4,6 @@ import sys
 import shutil
 import json
 import argparse
-import logging
 from zipfile import ZipFile
 from contextlib import contextmanager
 from datetime import datetime
@@ -12,6 +11,7 @@ from Tests.private_build.upload_packs_private import download_and_extract_index,
     extract_packs_artifacts
 from Tests.Marketplace.marketplace_services import init_storage_client
 from Tests.scripts.utils.log_util import install_logging
+from Tests.scripts.utils import logging_wrapper as logging
 
 MAX_SECONDS_TO_WAIT_FOR_LOCK = 600
 LOCK_FILE_PATH = 'lock.txt'

@@ -24,6 +24,7 @@ from Tests.scripts.utils import content_packs_util
 
 from TestSuite import repo, test_tools
 
+# pylint: disable=no-member
 with open('Tests/scripts/infrastructure_tests/tests_data/mock_id_set.json', 'r') as mock_id_set_f:
     MOCK_ID_SET = json.load(mock_id_set_f)
 with open('Tests/scripts/infrastructure_tests/tests_data/mock_conf.json', 'r') as mock_conf_f:

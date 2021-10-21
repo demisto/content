@@ -1,5 +1,4 @@
 import argparse
-import logging
 import sys
 
 from Tests.configure_and_test_integration_instances import set_marketplace_url, MARKET_PLACE_CONFIGURATION, \
@@ -7,6 +6,7 @@ from Tests.configure_and_test_integration_instances import set_marketplace_url, 
 from Tests.test_content import get_json_file
 from Tests.Marketplace.search_and_install_packs import install_all_content_packs_from_build_bucket
 from Tests.scripts.utils.log_util import install_logging
+from Tests.scripts.utils import logging_wrapper as logging
 from Tests.Marketplace.marketplace_constants import GCPConfig
 
 

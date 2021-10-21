@@ -1,6 +1,5 @@
 from __future__ import print_function
 
-import logging
 import os
 import ast
 import json
@@ -18,6 +17,7 @@ from Tests.Marketplace.marketplace_services import init_storage_client, Pack, lo
 from Tests.Marketplace.upload_packs import download_and_extract_index
 from Tests.Marketplace.marketplace_constants import GCPConfig, PACKS_FULL_PATH, IGNORED_FILES, PACKS_FOLDER, Metadata
 from Tests.scripts.utils.content_packs_util import is_pack_deprecated
+from Tests.scripts.utils import logging_wrapper as logging
 
 PACK_METADATA_FILE = 'pack_metadata.json'
 PACK_PATH_VERSION_REGEX = re.compile(fr'^{GCPConfig.PRODUCTION_STORAGE_BASE_PATH}/[A-Za-z0-9-_.]+/(\d+\.\d+\.\d+)/[A-Za-z0-9-_.]'

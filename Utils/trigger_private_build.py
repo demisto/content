@@ -5,10 +5,10 @@ import json
 import time
 import argparse
 import requests
-import logging
 from typing import List
 import demisto_sdk.commands.common.tools as tools
 from Tests.scripts.utils.log_util import install_logging
+from Tests.scripts.utils import logging_wrapper as logging
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
@@ -153,7 +153,7 @@ def main():
         if len(workflow_ids_diff) == 1:
             workflow_id = workflow_ids_diff[0]
             logging.success(f'Private repo build triggered successfully, workflow id: {workflow_id}\n URL:'
-                            f' {WORKFLOW_HTML_URL}/{workflow_id}')  # pylint: disable=no-member
+                            f' {WORKFLOW_HTML_URL}/{workflow_id}')
 
             # write the workflow id to text file to use it in get_private_build_status.py
             with open(PRIVATE_REPO_WORKFLOW_ID_FILE, "w") as f:

@@ -266,10 +266,10 @@ def send_email_to_reviewers(reviewers_emails: list, api_token: str, pack_name: s
                     f" Cortex XSOAR Content Team."
 
     sg = sendgrid.SendGridAPIClient(api_token)
-    email_from = Email(EMAIL_FROM)  # type: ignore[name-defined]
+    email_from = Email(EMAIL_FROM)
     to_email = reviewers_emails
-    content = Content("text/html", email_content)  # type: ignore[name-defined]
-    mail = Mail(email_from, to_email, email_subject, content)  # type: ignore[name-defined]
+    content = Content("text/html", email_content)
+    mail = Mail(email_from, to_email, email_subject, content)
 
     try:
         response = sg.client.mail.send.post(request_body=mail.get())

@@ -7,7 +7,6 @@ import uuid
 import prettytable
 import glob
 import requests
-import logging
 from datetime import datetime
 from google.cloud.storage import Bucket
 
@@ -22,6 +21,7 @@ from Tests.Marketplace.marketplace_constants import PackStatus, Metadata, GCPCon
 from demisto_sdk.commands.common.tools import run_command, str2bool
 
 from Tests.scripts.utils.log_util import install_logging
+from Tests.scripts.utils import logging_wrapper as logging
 
 
 def get_packs_names(target_packs: str, previous_commit_hash: str = "HEAD^") -> set:

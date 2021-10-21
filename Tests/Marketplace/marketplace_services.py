@@ -2,7 +2,6 @@ import base64
 import fnmatch
 import glob
 import json
-import logging
 import os
 import re
 import shutil
@@ -26,6 +25,7 @@ import Tests.Marketplace.marketplace_statistics as mp_statistics
 from Tests.Marketplace.marketplace_constants import PackFolders, Metadata, GCPConfig, BucketUploadFlow, PACKS_FOLDER, \
     PackTags, PackIgnored, Changelog
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace
+from Tests.scripts.utils import logging_wrapper as logging
 
 
 class Pack(object):

@@ -3,7 +3,6 @@ import os
 import sys
 import argparse
 import shutil
-import logging
 import re
 from zipfile import ZipFile
 from google.cloud.storage import Blob, Bucket
@@ -15,6 +14,7 @@ from Tests.Marketplace.marketplace_services import init_storage_client, Pack, \
 from Tests.Marketplace.marketplace_constants import PackStatus, GCPConfig, BucketUploadFlow, PACKS_FOLDER, \
     PACKS_FULL_PATH, IGNORED_FILES
 from Tests.Marketplace.upload_packs import extract_packs_artifacts, print_packs_summary, get_packs_summary
+from Tests.scripts.utils import logging_wrapper as logging
 
 LATEST_ZIP_REGEX = re.compile(fr'^{GCPConfig.GCS_PUBLIC_URL}/[\w./-]+/content/packs/([A-Za-z0-9-_.]+/\d+\.\d+\.\d+/'
                               r'[A-Za-z0-9-_.]+\.zip$)')

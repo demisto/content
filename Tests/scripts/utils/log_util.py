@@ -1,4 +1,5 @@
-import logging
+# import logging
+from Tests.scripts.utils import logging_wrapper as logging
 import os
 import sys
 
@@ -118,3 +119,5 @@ def install_simple_logging():
         _add_logging_level('SUCCESS', 25)
     coloredlogs.install(fmt='%(message)s',
                         level_styles=LEVEL_STYLES)
+
+loggong_wrapper = logging

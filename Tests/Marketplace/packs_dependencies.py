@@ -1,6 +1,5 @@
 import argparse
 import json
-import logging
 import os
 from concurrent.futures import as_completed
 from contextlib import contextmanager
@@ -9,8 +8,10 @@ from typing import Tuple, Iterable, List, Callable
 
 from Tests.Marketplace.marketplace_constants import GCPConfig, PACKS_FOLDER, PACKS_FULL_PATH, IGNORED_FILES
 from Tests.scripts.utils.log_util import install_logging
+from Tests.scripts.utils import logging_wrapper as logging
 from demisto_sdk.commands.find_dependencies.find_dependencies import PackDependencies, parse_for_pack_metadata
 from pebble import ProcessPool, ProcessFuture
+
 
 PROCESS_FAILURE = False
 

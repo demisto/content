@@ -3,7 +3,6 @@ from __future__ import print_function
 import argparse
 import ast
 import json
-import logging
 import os
 import subprocess
 import sys
@@ -24,6 +23,7 @@ from ruamel import yaml
 from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies, \
     upload_zipped_packs, install_all_content_packs_for_nightly
 from Tests.scripts.utils.log_util import install_logging
+from Tests.scripts.utils import logging_wrapper as logging
 from Tests.test_content import extract_filtered_tests, get_server_numeric_version
 from Tests.test_integration import __get_integration_config, __test_integration_instance, disable_all_integrations
 from Tests.tools import run_with_proxy_configured
