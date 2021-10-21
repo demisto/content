@@ -259,8 +259,12 @@ class IAMUserProfile:
         self._user_profile = demisto.mapObject(app_data, mapper_name, incident_type)
 
     def get_first_available_iam_user_attr(self, iam_attrs: List[str], use_old_user_data: bool = True):
-
+        # Special treatment for ID field, because he is not included in outgoing mappers.
         for iam_attr in iam_attrs:
+            # Special treatment for ID field, because he is not included in outgoing mappers.
+            if iam_attr == 'id':
+                if attr_value := self.get_attribute(iam_attr, use_old_user_data):
+                    return iam_attr, attr_value
             if attr_value := self.get_attribute(iam_attr, use_old_user_data, self.mapped_user_profile):
                 return iam_attr, attr_value
         raise DemistoException('Could not find any of the needed attributes. Please make sure you send one of the '
