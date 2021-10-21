@@ -1,10 +1,7 @@
-import copy
-
 import pytest
-
-from CommonServerPython import tableToMarkdown, pascalToSpace, date_to_timestamp
-import demistomock as demisto
 import importlib
+import demistomock as demisto
+from CommonServerPython import tableToMarkdown, pascalToSpace
 
 AWS_IAM = importlib.import_module("AWS-IAM")
 
@@ -42,11 +39,9 @@ class Boto3Client:
 
 
 PAGINATION_CHECK = [
-    ({
-         'userName': 'test'
-     },
-     ['AllAccessPolicy', 'KeyPolicy'])
-    ,
+    (
+        {'userName': 'test'},
+        ['AllAccessPolicy', 'KeyPolicy']),
     (
         {
             'userName': 'test',
