@@ -297,6 +297,8 @@ def fetch_indicators(client: Client, tlp_color: Optional[str] = None, feed_tags:
         if tlp_color:
             indicator_obj['fields']['trafficlightprotocol'] = tlp_color
 
+        # Example of creating indicator relationships.
+        # For more information see: https://xsoar.pan.dev/docs/integrations/feeds#indicator-objects
         if (relations := item.get('relations')) and create_relationships:
             relationships = []
             for relation in relations:
