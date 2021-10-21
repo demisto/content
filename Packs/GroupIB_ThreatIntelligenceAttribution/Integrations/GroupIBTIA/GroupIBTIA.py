@@ -618,7 +618,8 @@ class Client(BaseClient):
             date_from = date_from.strftime('%Y-%m-%d')
 
         if collection_name == "compromised/breached":
-            if last_fetch:
+            # we need the isinstance check for BC because it used to be a string
+            if last_fetch and isinstance(last_fetch, dict):
                 starting_date_from = last_fetch.get("starting_date_from")
                 starting_date_to = last_fetch.get("starting_date_to")
                 date_to = last_fetch.get("current_date_to")
