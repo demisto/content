@@ -596,7 +596,7 @@ tasks:
         complex:
           root: output
       right:
-        simple: HTTPS://autodesk.com/POSTSTUFF
+        simple: https://autodesk.com/POSTSTUFF
     results:
     - AreValuesEqual
     separatecontext: false
