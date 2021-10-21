@@ -145,6 +145,16 @@ script:
       defaultValue: '50'
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Whether to return the event related feeds. Possible values: "true" and "false".'
+      isArray: false
+      name: include_feed_correlations
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
     deprecated: false
     description: Search for events in MISP. This search command will return only information
       about the matched events. To get information about attributes,
@@ -254,6 +264,42 @@ script:
     - contextPath: MISP.Event.Object.UUID
       description: UUID of the object.
       type: String
+    - contextPath: MISP.Event.Attribute.Feed.ID
+      description: Feed id.
+      type: String
+    - contextPath: MISP.Event.Attribute.Feed.Name
+      description: Feed name.
+      type: String
+    - contextPath: MISP.Event.Attribute.Feed.Provider
+      description: Feed provider.
+      type: String
+    - contextPath: MISP.Event.Attribute.Feed.SourceFormat
+      description: Feed source format (MISP for example).
+      type: String
+    - contextPath: MISP.Event.Attribute.Feed.URL
+      description: Feed url.
+      type: String
+    - contextPath: MISP.Event.Attribute.Feed.EventUUIDS
+      description: List of event uusids include the feed.
+      type: Unknown
+    - contextPath: MISP.Event.Feed.ID
+      description: Feed id.
+      type: String
+    - contextPath: MISP.Event.Feed.Name
+      description: Feed name.
+      type: String
+    - contextPath: MISP.Event.Feed.Provider
+      description: Feed provider.
+      type: String
+    - contextPath: MISP.Event.Feed.SourceFormat
+      description: Feed source format (MISP for example).
+      type: String
+    - contextPath: MISP.Event.Feed.URL
+      description: Feed url.
+      type: String
+    - contextPath: MISP.Event.Feed.EventUUIDS
+      description: List of event uusids include the feed.
+      type: Unknown
   - arguments:
     - default: true
       description: Domain to search.
@@ -2506,6 +2552,16 @@ script:
       - 'false'
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Whether to return the attribute feed hits. Possible values: "true" and "false".'
+      isArray: false
+      name: include_feed_correlations
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
     deprecated: false
     description: Search for attributes in MISP.
     execution: false
@@ -2601,6 +2657,24 @@ script:
     - contextPath: MISP.Attribute.Sighting.Type
       description: Sighting type.
       type: String
+    - contextPath: MISP.Attribute.Feed.ID
+      description: Feed id.
+      type: String
+    - contextPath: MISP.Attribute.Feed.Name
+      description: Feed name.
+      type: String
+    - contextPath: MISP.Attribute.Feed.Provider
+      description: Feed provider.
+      type: String
+    - contextPath: MISP.Attribute.Feed.SourceFormat
+      description: Feed source format (MISP for example).
+      type: String
+    - contextPath: MISP.Attribute.Feed.URL
+      description: Feed url.
+      type: String
+    - contextPath: MISP.Attribute.Feed.EventUUIDS
+      description: List of event uusids include the feed.
+      type: Unknown
   - arguments:
     - default: false
       description: UUID of the attribute to be updated.

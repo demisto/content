@@ -114,7 +114,11 @@ MISP_ENTITIES_TO_CONTEXT_DATA = {
     'meta-category': 'MetaCategory',
     'decay_score': 'DecayScore',
     'first_seen': 'first_seen',
-    'last_seen': 'last_seen'
+    'last_seen': 'last_seen',
+    'provider': 'Provider',
+    'source_format': 'SourceFormat',
+    'url': 'URL',
+    'event_uuids': 'EventUUIDS',
 }
 
 MISP_ANALYSIS_TO_IDS = {
@@ -176,6 +180,7 @@ MISP_SEARCH_ARGUMENTS = [
     'limit',
     'page',
     'enforceWarninglist',
+    'include_feed_correlations',
 ]
 
 EVENT_FIELDS = [
@@ -203,7 +208,8 @@ EVENT_FIELDS = [
     'Galaxy',
     'Tag',
     'decay_score',
-    'Object'
+    'Object',
+    'Feed',
 ]
 
 ATTRIBUTE_FIELDS = [
@@ -793,6 +799,9 @@ def prepare_args_to_search(controller):
         args_to_misp_format['include_correlations'] = 1 if demisto_args.get('include_correlations') == 'true' else 0
     if 'enforceWarninglist' in args_to_misp_format:
         args_to_misp_format['enforceWarninglist'] = 1 if demisto_args.get('enforceWarninglist') == 'true' else 0
+    if 'include_feed_correlations' in args_to_misp_format:
+        args_to_misp_format['includeFeedCorrelations'] = 1 if demisto_args.get(
+            'include_feed_correlations') == 'true' else 0
     if 'limit' not in args_to_misp_format:
         args_to_misp_format['limit'] = '50'
     if 'tags' in args_to_misp_format:
