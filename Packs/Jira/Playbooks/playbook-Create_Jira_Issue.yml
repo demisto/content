@@ -31,7 +31,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": -250
+          "y": -430
         }
       }
     note: false
@@ -75,7 +75,7 @@ tasks:
       {
         "position": {
           "x": 740,
-          "y": 180
+          "y": 0
         }
       }
     note: false
@@ -289,7 +289,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+      - "17"
     scriptarguments:
       issueId:
         complex:
@@ -302,7 +302,7 @@ tasks:
       {
         "position": {
           "x": 740,
-          "y": 380
+          "y": 200
         }
       }
     note: false
@@ -390,7 +390,39 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": -60
+          "y": -240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: dbd7ea78-1832-4b3a-8d59-6c3b7943f1c1
+    type: regular
+    task:
+      id: dbd7ea78-1832-4b3a-8d59-6c3b7943f1c1
+      version: -1
+      name: Set  fields to layout
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      jiraissuekey:
+        simple: ${Ticket.Key}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 400
         }
       }
     note: false
@@ -406,10 +438,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1485,
+        "height": 1665,
         "width": 1520,
         "x": 50,
-        "y": -250
+        "y": -430
       }
     }
   }
@@ -499,5 +531,5 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
-- No test.
+- No test
 fromversion: 6.0.0
