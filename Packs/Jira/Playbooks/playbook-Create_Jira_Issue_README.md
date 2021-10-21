@@ -20,6 +20,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Commands
 * jira-create-issue
+* setIncident
 * jira-get-issue
 
 ## Playbook Inputs
@@ -27,8 +28,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Summary | Set a short description of the ticket. |  | Required |
-| Description | Set the impact for the new ticket. Leave empty for Jira default impact. |  | Optional |
+| Summary | Set the summary of the ticket. |  | Required |
+| Description | Set the description of the ticket. |  | Optional |
 | ProjectKey | Jira Project Key |  | Required |
 | IssueTypeName | TaskName |  | Required |
 | SyncTicket | Set the value of the desired sync method with Jira Issue. you can choose one of three options:<br/>1. StatePolling<br/>2. Mirror <br/>3. Blank for none <br/><br/>GenericPolling polls for the state of the ticket and runs until the ticket state is either resolved or closed. <br/><br/>Mirror - You can use the Mirror option to perform a full sync with the Jira Ticket. The ticket data is synced automatically between Jira and Cortex xSOAR with the Jira mirror feature.<br/>If this option is selected, FieldPolling is true by default.  |  | Optional |
@@ -46,4 +47,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Create Jira Issue](../doc_files/Jira_Ticket_State_Polling.png)
+![Create Jira Issue](../doc_files/Create_Jira_Issue.png)
