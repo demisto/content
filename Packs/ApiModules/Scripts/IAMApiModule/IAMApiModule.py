@@ -262,7 +262,15 @@ class IAMUserProfile:
 
         for iam_attr in iam_attrs:
             if attr_value := self.get_attribute(iam_attr, use_old_user_data, self.mapped_user_profile):
+
+                if iam_attr == 'emails' and not isinstance(attr_value, str):
+                    if isinstance(attr_value, dict):
+                        attr_value = attr_value.get('value')
+                    elif isinstance(attr_value, list):
+                        attr_value = [email for email in attr_value if email.get('primary', False)][0].get(
+                            'value')
                 return iam_attr, attr_value
+
         raise DemistoException('Could not find any of the needed attributes. Please make sure you send one of the '
                                f'following attributes: {iam_attrs}, or have the outgoing mapper configured to map to'
                                'one of the listed attributes.')
@@ -480,7 +488,7 @@ class IAMCommand:
 
                     updated_user = client.update_user(user_app_data.id, app_profile)
 
-                    if updated_user.is_active is None:
+                    if not updated_user.is_active:
                         updated_user.is_active = True if allow_enable else False
 
                     user_profile.set_result(

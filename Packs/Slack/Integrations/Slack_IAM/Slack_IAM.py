@@ -24,18 +24,17 @@ class Client(BaseClient):
         return res
 
     def get_user(self, filter_name: str, filter_value: str):
-        uri = '/Users'
+        uri = f'/Users/{filter_value}' if filter_name == 'id' else '/Users'
         query_params = {
             'filter': f'{filter_name} eq {filter_value}'
-        }
-
+        } if filter_name != 'id' else {}
         res = self._http_request(
             method='GET',
             url_suffix=uri,
             params=query_params
         )
-        if res and res.get('totalResults') == 1:
-            user_app_data = res.get('Resources')[0]
+        if res:
+            user_app_data = res.get('Resources')[0] if res.get('totalResults') == 1 else res
             user_id = user_app_data.get('id')
             is_active = user_app_data.get('active')
             username = user_app_data.get('userName')
@@ -82,6 +81,10 @@ class Client(BaseClient):
 
     def disable_user(self, user_id):
         user_data = {'active': False}
+        return self.update_user(user_id, user_data)
+
+    def enable_user(self, user_id):
+        user_data = {'active': True}
         return self.update_user(user_id, user_data)
 
     def get_app_fields(self):
@@ -489,7 +492,7 @@ def main():
 
     iam_command = IAMCommand(is_create_enabled, is_enable_enabled, is_disable_enabled, is_update_enabled,
                              create_if_not_exists, mapper_in, mapper_out,
-                             get_user_iam_attrs=['userName', 'emails'])
+                             get_user_iam_attrs=['id', 'userName', 'emails'])
 
     base_url = 'https://api.slack.com/scim/v1/'
     headers = {
