@@ -8,6 +8,16 @@
     "disabled": false,
     "extractSettings": {
         "fieldCliNameToExtractSettings": {
+            "alertcategory": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [],
+                "isExtractingAllIndicatorTypes": false
+            },
+            "gibphishingdomain": {
+                "extractAsIsIndicatorTypeId": "domainRepUnified",
+                "extractIndicatorTypesIDs": [],
+                "isExtractingAllIndicatorTypes": false
+            },
             "gibrelatedindicatorsdata": {
                 "extractAsIsIndicatorTypeId": "",
                 "extractIndicatorTypesIDs": [],
@@ -18,10 +28,10 @@
     },
     "hours": 0,
     "hoursR": 0,
-    "id": "GIB Brand Protection Phishing Kit",
-    "layout": "GIB Brand Protection Phishing Kit Layout",
+    "id": "GIB Brand Protection Domain",
+    "layout": "GIB Brand Protection Domain Layout",
     "locked": false,
-    "name": "GIB Brand Protection Phishing Kit",
+    "name": "GIB Brand Protection Domain",
     "onChangeRepAlg": 2,
     "playbookId": "Incident Postprocessing - Group-IB Threat Intelligence & Attribution",
     "readonly": false,
