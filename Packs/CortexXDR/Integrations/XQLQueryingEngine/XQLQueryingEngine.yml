@@ -1,75 +1,101 @@
+beta: false
+category: Endpoint
 commonfields:
   id: Cortex XDR - XQL Query Engine
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
-name: Cortex XDR - XQL Query Engine
-display: Cortex XDR - XQL Query Engine
-category: Endpoint
-description: Cortex XDR - XQL Query Engine enables you to run XQL queries on your
-  data sources.
 configuration:
-- display: Server URL
+- defaultvalue: https://example.com/
+  display: Server URL
   name: url
-  defaultvalue: https://example.com/
-  type: 0
   required: true
-- display: ""
-  displaypassword: API Key ID
+  type: 0
+- displaypassword: API Key ID
   name: apikey_id
   type: 9
   required: true
   hiddenusername: true
-- display: ""
-  displaypassword: API Key
+- displaypassword: API Key
   name: apikey
   type: 9
   required: true
   hiddenusername: true
 - display: Trust any certificate (not secure)
   name: insecure
-  type: 8
   required: false
+  type: 8
 - display: Use system proxy settings
   name: proxy
-  type: 8
   required: false
+  type: 8
+description: Cortex XDR - XQL Query Engine enables you to run XQL queries on your
+  data sources.
+display: Cortex XDR - XQL Query Engine
+name: Cortex XDR - XQL Query Engine
 script:
-  script: ''
-  type: python
   commands:
-  - name: xdr-xql-generic-query
-    arguments:
-    - name: query
+  - arguments:
+    - default: false
+      description: String of the XQL query. By default up to 100 results are returned. To retrieve more results, enter a custom limit in the query.
+      isArray: false
+      name: query
       required: true
-      description: String of the XQL query. By default up to 100 results are returned.
-        To retrieve more results, enter a custom limit in the query.
-    - name: time_frame
-      description: 'Time in relative date format (for example: "1 day", "3 weeks ago").
-        The default is the last 24 hours.'
-    - name: tenant_id
+      secret: false
+    - default: false
+      description: |-
+        Time in relative date format (for example: "1 day", "3 weeks ago"). The default is the last 24 hours.
+      isArray: false
+      name: time_frame
+      required: false
+      secret: false
+    - default: false
       description: |-
         List of strings used for running APIs on local and Managed Security tenants. Valid values:
         For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).
         For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children.
       isArray: true
-    - name: interval_in_seconds
+      name: tenant_id
+      required: false
+      secret: false
+    - default: false
       description: Interval in seconds between each poll.
-    - name: max_fields
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+    - default: false
       description: The maximum number of returned fields per result.
-      defaultValue: "20"
-    - name: query_name
-      required: true
+      isArray: false
+      name: max_fields
+      required: false
+      secret: false
+      defaultValue: 20
+    - default: false
       description: The name of the query.
-    - name: parse_result_file_to_context
+      isArray: false
+      name: query_name
+      required: true
+      secret: false
+    - default: false
+      description: If set to 'true', if a query returns more than 1000 results, it will be extracted as JSON data to the context,
+        instead of being returned as a .gz file. If set to 'false' and the query results are greater than 1000,
+        it will return the .gz file without extracting the results to context (default is false).
+      isArray: false
+      name: parse_result_file_to_context
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
-      description: If set to 'true', if a query returns more than 1000 results, it will be extracted as JSON data to the 
-      context, instead of being returned as a .gz file. 
-      If set to 'false' and the query results are greater than 1000, it will return
-      the .gz file without extracting the results to context (default is false).
+        - "true"
+        - "false"
       defaultValue: "false"
+      required: false
+      secret: false
+    deprecated: false
+    description: |-
+      Execute an XQL query and retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised.
+      When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file,
+      unless the argument 'parse_result_file_to_context' is set to true and then the results will be extracted to the context.
+    execution: false
+    polling: true
+    name: xdr-xql-generic-query
     outputs:
     - contextPath: PaloAltoNetworksXQL.GenericQuery.execution_id
       description: An integer representing a unique ID of a successful XQL query execution.
@@ -92,8 +118,8 @@ script:
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
     - contextPath: PaloAltoNetworksXQL.GenericQuery.remaining_quota
-      description: Floating number representing the number of query units available
-        for you to use.
+      description: Floating number representing the number of query units available for you
+        to use.
       type: Number
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results._time
       description: Result time.
@@ -129,8 +155,7 @@ script:
       description: Initiator signer.
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_signature_status
-      description: 'Signing status of the initiator. Possible values: Unsigned, Signed,
-        Invalid Signature, and Unknown.'
+      description: 'Signing status of the initiator. Possible values: Unsigned, Signed, Invalid Signature, and Unknown.'
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_name
       description: The name of the process that initiated the causality chain.
@@ -145,14 +170,13 @@ script:
       description: Causality group owner process ID.
       type: Number
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_sha256
-      description: The SHA256 value of the causality group owner.
+      description: The SHA256 value of the causality group owner. 
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_signature_vendor
       description: Causality group owner signer.
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_signature_status
-      description: 'Signing status of the causality group owner. Possible values:
-        Unsigned, Signed, Invalid Signature, and Unknown.'
+      description: 'Signing status of the causality group owner. Possible values: Unsigned, Signed, Invalid Signature, and Unknown.'
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_type
       description: The type of the causality group owner.
@@ -181,12 +205,11 @@ script:
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.agent_install_type
       description: Initiator install type.
       type: String
-    description: Execute an XQL query and retrieve results of an executed XQL query
-      API. The command will be executed every 10 seconds until results are retrieved
-      or until a timeout error is raised.
-    polling: true
-  - name: xdr-xql-get-quota
-    arguments: []
+  - deprecated: false
+    description: Retrieve the amount of query quota available and used.
+    execution: false
+    hidden: false
+    name: xdr-xql-get-quota
     outputs:
     - contextPath: PaloAltoNetworksXQL.Quota.license_quota
       description: Amount of daily quota allocated to your tenant based on your license
@@ -198,162 +221,191 @@ script:
     - contextPath: PaloAltoNetworksXQL.Quota.used_quota
       description: Amount of query quota used over the past 24 hours.
       type: Number
-    description: Retrieve the amount of query quota available and used.
-  - name: xdr-xql-get-query-results
-    arguments:
-    - name: query_id
-      required: true
+  - arguments:
+    - default: false
       description: Integer representing the unique execution ID generated by the response
         to start an XQL query API.
-    - name: max_fields
+      isArray: false
+      name: query_id
+      required: true
+      secret: false
+    - default: false
       description: The maximum number of returned fields per result.
-      defaultValue: "20"
-    - name: parse_result_file_to_context
+      isArray: false
+      name: max_fields
+      required: false
+      secret: false
+      defaultValue: 20
+    - default: false
+      description: If set to 'true', if a query returns more than 1000 results, it will be extracted as JSON data to the context,
+        instead of being returned as a .gz file. If set to 'false' and the query results are greater than 1000,
+        it will return the .gz file without extracting the results to context (default is false).
+      isArray: false
+      name: parse_result_file_to_context
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
-      description: If set to 'true', if a query returns more than 1000 results, it will be extracted as JSON data to the 
-      context, instead of being returned as a .gz file. 
-      If set to 'false' and the query results are greater than 1000, it will return
-      the .gz file without extracting the results to context (default is false).
+        - "true"
+        - "false"
       defaultValue: "false"
-    outputs:
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.execution_id
-      description: An integer representing a unique ID of a successful XQL query execution.
-        The execution_id value can be passed to the xdr-xql-get-query-results command.
-      type: String
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.query_name
-      description: The given name of the query.
-      type: String
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.status
-      description: |-
-        String representing the status of the API call; SUCCESS, FAIL, or PENDING.
-        For multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available.
-      type: String
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.number_of_results
-      description: Integer representing the number of results returned.
-      type: Number
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.query_cost
-      description: |-
-        Floating number representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
-        For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
-      type: Unknown
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.remaining_quota
-      description: Floating number representing the number of query units available
-        for you to use.
-      type: Number
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results._time
-      description: Result time.
-      type: Date
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.agent_hostname
-      description: The agent host name.
-      type: String
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.agent_ip_addresses
-      description: The agent IP addresses.
-      type: String
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.mac
-      description: Host MAC address.
-      type: Unknown
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_effective_username
-      description: Parent user name.
-      type: String
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_image_name
-      description: The name of the process that initiated the activity.
-      type: String
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_image_path
-      description: Path of the initiating process.
-      type: String
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_command_line
-      description: Command line arguments of the initiator.
-      type: String
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_os_pid
-      description: Initiator process ID.
-      type: Number
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_image_sha256
-      description: The SHA256 value of the initiator.
-      type: String
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_signature_vendor
-      description: Initiator signer.
-      type: String
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_signature_status
-      description: 'Signing status of the initiator. Possible values: Unsigned, Signed,
-        Invalid Signature, and Unknown.'
-      type: String
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_name
-      description: The name of the process that initiated the causality chain.
-      type: String
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_path
-      description: Causality group owner path of the initiating process.
-      type: String
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_command_line
-      description: Command line arguments of the causality group owner.
-      type: String
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_os_pid
-      description: Causality group owner process ID.
-      type: Number
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_sha256
-      description: The SHA256 value of the causality group owner.
-      type: String
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_signature_vendor
-      description: Causality group owner signer.
-      type: String
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_signature_status
-      description: 'Signing status of the causality group owner. Possible values:
-        Unsigned, Signed, Invalid Signature, and Unknown.'
-      type: String
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_type
-      description: The type of the causality group owner.
-      type: String
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_image_name
-      description: The name of the operating system that initiated the activity.
-      type: String
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_image_path
-      description: Operating system parent path.
-      type: String
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_command_line
-      description: Command line arguments of the operating system parent.
-      type: String
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_os_pid
-      description: Operating system parent process ID.
-      type: Number
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.action_remote_process_image_sha256
-      description: The SHA256 value of the operating system parent.
-      type: Unknown
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results._vendor
-      description: The result vendor.
-      type: String
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results._product
-      description: The result product.
-      type: String
-    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.agent_install_type
-      description: Initiator install type.
-      type: String
-    description: Retrieve results of an executed XQL query API.
+      required: false
+      secret: false
+    deprecated: false
+    description: |-
+      Retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised.
+      When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file,
+      unless the argument 'parse_result_file_to_context' is set to true and then the results will be extracted to the context.
+    execution: false
+    hidden: false
     polling: true
-  - name: xdr-xql-file-event-query
-    arguments:
-    - name: endpoint_id
+    name: xdr-xql-get-query-results
+    outputs:
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.execution_id
+        description: An integer representing a unique ID of a successful XQL query execution.
+          The execution_id value can be passed to the xdr-xql-get-query-results command.
+        type: String
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.query_name
+        description: The given name of the query.
+        type: String
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.status
+        description: |-
+          String representing the status of the API call; SUCCESS, FAIL, or PENDING.
+          For multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available.
+        type: String
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.number_of_results
+        description: Integer representing the number of results returned.
+        type: Number
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.query_cost
+        description: |-
+          Floating number representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
+          For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
+        type: Unknown
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.remaining_quota
+        description: Floating number representing the number of query units available for you
+          to use.
+        type: Number
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results._time
+        description: Result time.
+        type: Date
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.agent_hostname
+        description: The agent host name.
+        type: String
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.agent_ip_addresses
+        description: The agent IP addresses.
+        type: String
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.mac
+        description: Host MAC address.
+        type: Unknown
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_effective_username
+        description: Parent user name.
+        type: String
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_image_name
+        description: The name of the process that initiated the activity.
+        type: String
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_image_path
+        description: Path of the initiating process.
+        type: String
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_command_line
+        description: Command line arguments of the initiator.
+        type: String
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_os_pid
+        description: Initiator process ID.
+        type: Number
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_image_sha256
+        description: The SHA256 value of the initiator.
+        type: String
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_signature_vendor
+        description: Initiator signer.
+        type: String
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_signature_status
+        description: 'Signing status of the initiator. Possible values: Unsigned, Signed, Invalid Signature, and Unknown.'
+        type: String
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_name
+        description: The name of the process that initiated the causality chain.
+        type: String
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_path
+        description: Causality group owner path of the initiating process.
+        type: String
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_command_line
+        description: Command line arguments of the causality group owner.
+        type: String
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_os_pid
+        description: Causality group owner process ID.
+        type: Number
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_sha256
+        description: The SHA256 value of the causality group owner.
+        type: String
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_signature_vendor
+        description: Causality group owner signer.
+        type: String
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_signature_status
+        description: 'Signing status of the causality group owner. Possible values: Unsigned, Signed, Invalid Signature, and Unknown.'
+        type: String
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_type
+        description: The type of the causality group owner.
+        type: String
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_image_name
+        description: The name of the operating system that initiated the activity.
+        type: String
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_image_path
+        description: Operating system parent path.
+        type: String
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_command_line
+        description: Command line arguments of the operating system parent.
+        type: String
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_os_pid
+        description: Operating system parent process ID.
+        type: Number
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.action_remote_process_image_sha256
+        description: The SHA256 value of the operating system parent.
+        type: Unknown
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results._vendor
+        description: The result vendor.
+        type: String
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results._product
+        description: The result product.
+        type: String
+      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.agent_install_type
+        description: Initiator install type.
+        type: String
+  - arguments:
+    - default: false
       description: XDR endpoint ID to run the query on.
       isArray: true
-    - name: file_sha256
-      required: true
+      name: endpoint_id
+      required: false
+      secret: false
+    - default: false
       description: SHA256 file to run the query on.
       isArray: true
-    - name: extra_fields
+      name: file_sha256
+      required: true
+      secret: false
+    - default: false
       description: Extra fields to add to the query results.
       isArray: true
-    - name: time_frame
-      description: 'Time in relative date format (for example: "1 day", "3 weeks ago").
-        The default is the last 24 hours.'
-    - name: limit
-      description: "Integer representing the maximum number of results to return.\
-        \ For example:\nIf limit = 100 and the query produced 1,000 results, only\
-        \ the first 100 results will be returned.\nIf limit = 100 and the query produced\
-        \ 50 results, only 50 results will be returned.\nIf limit=5000, 5,000 results\
-        \ are returned.\nIf limit=null or empty (default) up to 100 results are returned. "
-      defaultValue: "100"
-    - name: tenant_id
+      name: extra_fields
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Time in relative date format (for example: "1 day", "3 weeks ago"). The default is the last 24 hours.
+      isArray: false
+      name: time_frame
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Integer representing the maximum number of results to return. For example:
+        If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.
+        If limit = 100 and the query produced 50 results, only 50 results will be returned.
+        If limit=5000, 5,000 results are returned.
+        If limit=null or empty (default) up to 100 results are returned. 
+      isArray: false
+      name: limit
+      required: false
+      defaultValue: 100
+      secret: false
+    - default: false
       description: |-
         List of strings used for running APIs on local and Managed Security tenants. Valid values:
 
@@ -361,19 +413,34 @@ script:
 
         For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children.
       isArray: true
-    - name: query_name
-      required: true
+      name: tenant_id
+      required: false
+      secret: false
+    - default: false
       description: The name of the query.
-    - name: parse_result_file_to_context
+      isArray: false
+      name: query_name
+      required: true
+      secret: false
+    - default: false
+      description: If set to 'true', if a query returns more than 1000 results, it will be extracted as JSON data to the context,
+        instead of being returned as a .gz file. If set to 'false' and the query results are greater than 1000,
+        it will return the .gz file without extracting the results to context (default is false).
+      isArray: false
+      name: parse_result_file_to_context
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
-      description: If set to 'true', if a query returns more than 1000 results, it will be extracted as JSON data to the 
-      context, instead of being returned as a .gz file. 
-      If set to 'false' and the query results are greater than 1000, it will return
-      the .gz file without extracting the results to context (default is false).
+        - "true"
+        - "false"
       defaultValue: "false"
+      required: false
+      secret: false
+    deprecated: false
+    description: Query file events by the SHA256 file.
+    execution: false
+    hidden: false
+    polling: true
+    name: xdr-xql-file-event-query
     outputs:
     - contextPath: PaloAltoNetworksXQL.FileEvent.query_name
       description: The given name of the query.
@@ -396,8 +463,8 @@ script:
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
     - contextPath: PaloAltoNetworksXQL.FileEvent.remaining_quota
-      description: Floating number representing the number of query units available
-        for you to use.
+      description: Floating number representing the number of query units available for you
+        to use.
       type: Number
     - contextPath: PaloAltoNetworksXQL.FileEvent.results.agent_hostname
       description: The agent host name.
@@ -429,32 +496,45 @@ script:
     - contextPath: PaloAltoNetworksXQL.FileEvent.results._product
       description: The result product.
       type: String
-    description: Query file events by the SHA256 file.
-    polling: true
-  - name: xdr-xql-process-event-query
-    arguments:
-    - name: endpoint_id
+  - arguments:
+    - default: false
       description: XDR endpoint ID to run the query on.
       isArray: true
-    - name: process_sha256
-      required: true
-      description: The SHA256 hash of the primary involved process to search on the
-        XDR dataset.
+      name: endpoint_id
+      required: false
+      secret: false
+    - default: false
+      description:  The SHA256 hash of the primary involved process to search on the XDR dataset.
       isArray: true
-    - name: extra_fields
+      name: process_sha256
+      required: true
+      secret: false
+    - default: false
       description: Extra fields to add to the query results.
       isArray: true
-    - name: time_frame
-      description: 'Time in relative date format (for example: "1 day", "3 weeks ago").
-        The default is the last 24 hours.'
-    - name: limit
-      description: "Integer representing the maximum number of results to return.\
-        \ For example:\nIf limit = 100 and the query produced 1,000 results, only\
-        \ the first 100 results will be returned.\nIf limit = 100 and the query produced\
-        \ 50 results, only 50 results will be returned.\nIf limit=5000, 5,000 results\
-        \ are returned.\nIf limit=null or empty (default) up to 100 results are returned. "
-      defaultValue: "100"
-    - name: tenant_id
+      name: extra_fields
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Time in relative date format (for example: "1 day", "3 weeks ago"). The default is the last 24 hours.
+      isArray: false
+      name: time_frame
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Integer representing the maximum number of results to return. For example:
+        If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.
+        If limit = 100 and the query produced 50 results, only 50 results will be returned.
+        If limit=5000, 5,000 results are returned.
+        If limit=null or empty (default) up to 100 results are returned. 
+      isArray: false
+      name: limit
+      required: false
+      defaultValue: 100
+      secret: false
+    - default: false
       description: |-
         List of strings used for running APIs on local and Managed Security tenants. Valid values:
 
@@ -462,19 +542,34 @@ script:
 
         For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children.
       isArray: true
-    - name: query_name
-      required: true
+      name: tenant_id
+      required: false
+      secret: false
+    - default: false
       description: The name of the query.
-    - name: parse_result_file_to_context
+      isArray: false
+      name: query_name
+      required: true
+      secret: false
+    - default: false
+      description: If set to 'true', if a query returns more than 1000 results, it will be extracted as JSON data to the context,
+        instead of being returned as a .gz file. If set to 'false' and the query results are greater than 1000,
+        it will return the .gz file without extracting the results to context (default is false).
+      isArray: false
+      name: parse_result_file_to_context
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
-      description: If set to 'true', if a query returns more than 1000 results, it will be extracted as JSON data to the 
-      context, instead of being returned as a .gz file. 
-      If set to 'false' and the query results are greater than 1000, it will return
-      the .gz file without extracting the results to context (default is false).
+        - "true"
+        - "false"
       defaultValue: "false"
+      required: false
+      secret: false
+    deprecated: false
+    description: Query process events by the SHA256 process.
+    execution: false
+    hidden: false
+    polling: true
+    name: xdr-xql-process-event-query
     outputs:
     - contextPath: PaloAltoNetworksXQL.ProcessEvent.query_name
       description: The given name of the query.
@@ -497,8 +592,8 @@ script:
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
     - contextPath: PaloAltoNetworksXQL.ProcessEvent.remaining_quota
-      description: Floating number representing the number of query units available
-        for you to use.
+      description: Floating number representing the number of query units available for you
+        to use.
       type: Number
     - contextPath: PaloAltoNetworksXQL.ProcessEvent.results.agent_hostname
       description: The agent host name.
@@ -557,31 +652,45 @@ script:
     - contextPath: PaloAltoNetworksXQL.ProcessEvent.results._product
       description: The result product.
       type: String
-    description: Query process events by the SHA256 process.
-    polling: true
-  - name: xdr-xql-dll-module-query
-    arguments:
-    - name: endpoint_id
+  - arguments:
+    - default: false
       description: XDR endpoint ID to run the query on.
       isArray: true
-    - name: loaded_module_sha256
-      required: true
+      name: endpoint_id
+      required: false
+      secret: false
+    - default: false
       description: SHA256 DLL module to search on the XDR dataset.
       isArray: true
-    - name: extra_fields
+      name: loaded_module_sha256
+      required: true
+      secret: false
+    - default: false
       description: Extra fields to add to the query results.
       isArray: true
-    - name: time_frame
-      description: 'Time in relative date format (for example: "1 day", "3 weeks ago").
-        The default is the last 24 hours.'
-    - name: limit
-      description: "Integer representing the maximum number of results to return.\
-        \ For example:\nIf limit = 100 and the query produced 1,000 results, only\
-        \ the first 100 results will be returned.\nIf limit = 100 and the query produced\
-        \ 50 results, only 50 results will be returned.\nIf limit=5000, 5,000 results\
-        \ are returned.\nIf limit=null or empty (default) up to 100 results are returned. "
-      defaultValue: "100"
-    - name: tenant_id
+      name: extra_fields
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Time in relative date format (for example: "1 day", "3 weeks ago"). The default is the last 24 hours.
+      isArray: false
+      name: time_frame
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Integer representing the maximum number of results to return. For example:
+        If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.
+        If limit = 100 and the query produced 50 results, only 50 results will be returned.
+        If limit=5000, 5,000 results are returned.
+        If limit=null or empty (default) up to 100 results are returned. 
+      isArray: false
+      name: limit
+      required: false
+      defaultValue: 100
+      secret: false
+    - default: false
       description: |-
         List of strings used for running APIs on local and Managed Security tenants. Valid values:
 
@@ -589,19 +698,34 @@ script:
 
         For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children.
       isArray: true
-    - name: query_name
-      required: true
+      name: tenant_id
+      required: false
+      secret: false
+    - default: false
       description: The name of the query.
-    - name: parse_result_file_to_context
+      isArray: false
+      name: query_name
+      required: true
+      secret: false
+    - default: false
+      description: If set to 'true', if a query returns more than 1000 results, it will be extracted as JSON data to the context,
+        instead of being returned as a .gz file. If set to 'false' and the query results are greater than 1000,
+        it will return the .gz file without extracting the results to context (default is false).
+      isArray: false
+      name: parse_result_file_to_context
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
-      description: If set to 'true', if a query returns more than 1000 results, it will be extracted as JSON data to the 
-      context, instead of being returned as a .gz file. 
-      If set to 'false' and the query results are greater than 1000, it will return
-      the .gz file without extracting the results to context (default is false).
+        - "true"
+        - "false"
       defaultValue: "false"
+      required: false
+      secret: false
+    deprecated: false
+    description: Query DLL module events by the SHA256 DLL.
+    execution: false
+    hidden: false
+    polling: true
+    name: xdr-xql-dll-module-query
     outputs:
     - contextPath: PaloAltoNetworksXQL.DllModule.query_name
       description: The given name of the query.
@@ -624,8 +748,8 @@ script:
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
     - contextPath: PaloAltoNetworksXQL.DllModule.remaining_quota
-      description: Floating number representing the number of query units available
-        for you to use.
+      description: Floating number representing the number of query units available for you
+        to use.
       type: Number
     - contextPath: PaloAltoNetworksXQL.DllModule.results.agent_hostname
       description: The agent host name.
@@ -681,37 +805,57 @@ script:
     - contextPath: PaloAltoNetworksXQL.DllModule.results._product
       description: The result product.
       type: String
-    description: Query DLL module events by the SHA256 DLL.
-    polling: true
-  - name: xdr-xql-network-connection-query
-    arguments:
-    - name: endpoint_id
+  - arguments:
+    - default: false
       description: XDR endpoint ID to run the query on.
       isArray: true
-    - name: local_ip
+      name: endpoint_id
+      required: false
+      secret: false
+    - default: false
       description: Source IP of the network connection query.
       isArray: true
-    - name: remote_ip
-      required: true
+      name: local_ip
+      required: false
+      secret: false
+    - default: false
       description: Destination IP of the network connection query.
       isArray: true
-    - name: port
+      name: remote_ip
+      required: true
+      secret: false
+    - default: false
       description: Destination port of the network connection query.
       isArray: true
-    - name: extra_fields
+      name: port
+      required: false
+      secret: false
+    - default: false
       description: Extra fields to add to the query results.
       isArray: true
-    - name: time_frame
-      description: 'Time in relative date format (for example: "1 day", "3 weeks ago").The
-        default is the last 24 hours.'
-    - name: limit
-      description: "Integer representing the maximum number of results to return.\
-        \ For example:\nIf limit = 100 and the query produced 1,000 results, only\
-        \ the first 100 results will be returned.\nIf limit = 100 and the query produced\
-        \ 50 results, only 50 results will be returned.\nIf limit=5000, 5,000 results\
-        \ are returned.\nIf limit=null or empty (default) up to 100 results are returned. "
-      defaultValue: "100"
-    - name: tenant_id
+      name: extra_fields
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Time in relative date format (for example: "1 day", "3 weeks ago").The default is the last 24 hours.
+      isArray: false
+      name: time_frame
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Integer representing the maximum number of results to return. For example:
+        If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.
+        If limit = 100 and the query produced 50 results, only 50 results will be returned.
+        If limit=5000, 5,000 results are returned.
+        If limit=null or empty (default) up to 100 results are returned. 
+      isArray: false
+      name: limit
+      required: false
+      defaultValue: 100
+      secret: false
+    - default: false
       description: |-
         List of strings used for running APIs on local and Managed Security tenants. Valid values:
 
@@ -719,19 +863,35 @@ script:
 
         For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children.
       isArray: true
-    - name: query_name
-      required: true
+      name: tenant_id
+      required: false
+      secret: false
+    - default: false
       description: The name of the query.
-    - name: parse_result_file_to_context
+      isArray: false
+      name: query_name
+      required: true
+      secret: false
+    - default: false
+      description: If set to 'true', if a query returns more than 1000 results, it will be extracted as JSON data to the context,
+        instead of being returned as a .gz file. If set to 'false' and the query results are greater than 1000,
+        it will return the .gz file without extracting the results to context (default is false).
+      isArray: false
+      name: parse_result_file_to_context
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
-      description: If set to 'true', if a query returns more than 1000 results, it will be extracted as JSON data to the 
-      context, instead of being returned as a .gz file. 
-      If set to 'false' and the query results are greater than 1000, it will return
-      the .gz file without extracting the results to context (default is false).
+        - "true"
+        - "false"
       defaultValue: "false"
+      required: false
+      secret: false
+    deprecated: false
+    description: Query network connections between a source IP, destination IP and
+      port.
+    execution: false
+    hidden: false
+    polling: true
+    name: xdr-xql-network-connection-query
     outputs:
     - contextPath: PaloAltoNetworksXQL.NetworkConnection.query_name
       description: The given name of the query.
@@ -754,8 +914,8 @@ script:
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
     - contextPath: PaloAltoNetworksXQL.NetworkConnection.remaining_quota
-      description: Floating number representing the number of query units available
-        for you to use.
+      description: Floating number representing the number of query units available for you
+        to use.
       type: Number
     - contextPath: PaloAltoNetworksXQL.NetworkConnection.results.agent_hostname
       description: The agent host name.
@@ -814,33 +974,46 @@ script:
     - contextPath: PaloAltoNetworksXQL.NetworkConnection.results._product
       description: The result product.
       type: String
-    description: Query network connections between a source IP, destination IP and
-      port.
-    polling: true
-  - name: xdr-xql-registry-query
-    arguments:
-    - name: endpoint_id
+  - arguments:
+    - default: false
       description: XDR endpoint ID to run the query on.
       isArray: true
-    - name: reg_key_name
-      required: true
+      name: endpoint_id
+      required: false
+      secret: false
+    - default: false
       description: 'Registry key name to search (for example: HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\Print\Environments\Windows
         x64\Drivers\Version-3\Remote Desktop Easy Print).'
       isArray: true
-    - name: extra_fields
+      name: reg_key_name
+      required: true
+      secret: false
+    - default: false
       description: Extra fields to add to the query results.
       isArray: true
-    - name: time_frame
-      description: 'Time in relative date format (for example: "1 day", "3 weeks ago").
-        The default is the last 24 hours.'
-    - name: limit
-      description: "Integer representing the maximum number of results to return.\
-        \ For example:\nIf limit = 100 and the query produced 1,000 results, only\
-        \ the first 100 results will be returned.\nIf limit = 100 and the query produced\
-        \ 50 results, only 50 results will be returned.\nIf limit=5000, 5,000 results\
-        \ are returned.\nIf limit=null or empty (default) up to 100 results are returned. "
-      defaultValue: "100"
-    - name: tenant_id
+      name: extra_fields
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Time in relative date format (for example: "1 day", "3 weeks ago"). The default is the last 24 hours.
+      isArray: false
+      name: time_frame
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Integer representing the maximum number of results to return. For example:
+        If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.
+        If limit = 100 and the query produced 50 results, only 50 results will be returned.
+        If limit=5000, 5,000 results are returned.
+        If limit=null or empty (default) up to 100 results are returned. 
+      isArray: false
+      name: limit
+      required: false
+      defaultValue: 100
+      secret: false
+    - default: false
       description: |-
         List of strings used for running APIs on local and Managed Security tenants. Valid values:
 
@@ -848,19 +1021,34 @@ script:
 
         For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children.
       isArray: true
-    - name: query_name
-      required: true
+      name: tenant_id
+      required: false
+      secret: false
+    - default: false
       description: The name of the query.
-    - name: parse_result_file_to_context
+      isArray: false
+      name: query_name
+      required: true
+      secret: false
+    - default: false
+      description: If set to 'true', if a query returns more than 1000 results, it will be extracted as JSON data to the context,
+        instead of being returned as a .gz file. If set to 'false' and the query results are greater than 1000,
+        it will return the .gz file without extracting the results to context (default is false).
+      isArray: false
+      name: parse_result_file_to_context
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
-      description: If set to 'true', if a query returns more than 1000 results, it will be extracted as JSON data to the 
-      context, instead of being returned as a .gz file. 
-      If set to 'false' and the query results are greater than 1000, it will return
-      the .gz file without extracting the results to context (default is false).
+        - "true"
+        - "false"
       defaultValue: "false"
+      required: false
+      secret: false
+    deprecated: false
+    description: Query windows registry by registry key name.
+    execution: false
+    hidden: false
+    polling: true
+    name: xdr-xql-registry-query
     outputs:
     - contextPath: PaloAltoNetworksXQL.Registry.query_name
       description: The given name of the query.
@@ -883,8 +1071,8 @@ script:
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
     - contextPath: PaloAltoNetworksXQL.Registry.remaining_quota
-      description: Floating number representing the number of query units available
-        for you to use.
+      description: Floating number representing the number of query units available for you
+        to use.
       type: Number
     - contextPath: PaloAltoNetworksXQL.Registry.results.agent_hostname
       description: The agent host name.
@@ -928,34 +1116,53 @@ script:
     - contextPath: PaloAltoNetworksXQL.Registry.results._product
       description: The result product.
       type: String
-    description: Query windows registry by registry key name.
-    polling: true
-  - name: xdr-xql-event-log-query
-    arguments:
-    - name: endpoint_id
+  - arguments:
+    - default: false
       description: XDR endpoint ID to run the query on.
       isArray: true
-    - name: event_id
-      required: true
-      description: 'event log ID to search. - Windows: Event ID of the event-log -
-        Linux: For action_evtlog_source = AuthLog, one of the following: 0 = Unknown
-        1 = Successful Login 2 = Failed Login 3 = Failed Password (Same as failed
-        login, but should include a username) 4 = Logout'
+      name: endpoint_id
+      required: false
+      secret: false
+    - default: false
+      description: 'event log ID to search. 
+        - Windows: Event ID of the event-log 
+        - Linux: For action_evtlog_source = AuthLog, one of the following: 
+        0 = Unknown
+        1 = Successful Login 
+        2 = Failed Login 
+        3 = Failed Password (Same as failed
+        login, but should include a username) 
+        4 = Logout'
       isArray: true
-    - name: extra_fields
+      name: event_id
+      required: true
+      secret: false
+    - default: false
       description: Extra fields to add to the query results.
       isArray: true
-    - name: time_frame
-      description: 'Time in relative date format (for example: "1 day", "3 weeks ago").
-        The default is the last 24 hours.'
-    - name: limit
-      description: "Integer representing the maximum number of results to return.\
-        \ For example:\nIf limit = 100 and the query produced 1,000 results, only\
-        \ the first 100 results will be returned.\nIf limit = 100 and the query produced\
-        \ 50 results, only 50 results will be returned.\nIf limit=5000, 5,000 results\
-        \ are returned.\nIf limit=null or empty (default) up to 100 results are returned. "
-      defaultValue: "100"
-    - name: tenant_id
+      name: extra_fields
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Time in relative date format (for example: "1 day", "3 weeks ago"). The default is the last 24 hours.
+      isArray: false
+      name: time_frame
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Integer representing the maximum number of results to return. For example:
+        If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.
+        If limit = 100 and the query produced 50 results, only 50 results will be returned.
+        If limit=5000, 5,000 results are returned.
+        If limit=null or empty (default) up to 100 results are returned. 
+      isArray: false
+      name: limit
+      required: false
+      defaultValue: 100
+      secret: false
+    - default: false
       description: |-
         List of strings used for running APIs on local and Managed Security tenants. Valid values:
 
@@ -963,19 +1170,34 @@ script:
 
         For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children.
       isArray: true
-    - name: query_name
-      required: true
+      name: tenant_id
+      required: false
+      secret: false
+    - default: false
       description: The name of the query.
-    - name: parse_result_file_to_context
+      isArray: false
+      name: query_name
+      required: true
+      secret: false
+    - default: false
+      description: If set to 'true', if a query returns more than 1000 results, it will be extracted as JSON data to the context,
+        instead of being returned as a .gz file. If set to 'false' and the query results are greater than 1000,
+        it will return the .gz file without extracting the results to context (default is false).
+      isArray: false
+      name: parse_result_file_to_context
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
-      description: If set to 'true', if a query returns more than 1000 results, it will be extracted as JSON data to the 
-      context, instead of being returned as a .gz file. 
-      If set to 'false' and the query results are greater than 1000, it will return
-      the .gz file without extracting the results to context (default is false).
+        - "true"
+        - "false"
       defaultValue: "false"
+      required: false
+      secret: false
+    deprecated: false
+    description: Query event logs by event ID.
+    execution: false
+    hidden: false
+    polling: true
+    name: xdr-xql-event-log-query
     outputs:
     - contextPath: PaloAltoNetworksXQL.EventLog.query_name
       description: The given name of the query.
@@ -998,8 +1220,8 @@ script:
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
     - contextPath: PaloAltoNetworksXQL.EventLog.remaining_quota
-      description: Floating number representing the number of query units available
-        for you to use.
+      description: Floating number representing the number of query units available for you
+        to use.
       type: Number
     - contextPath: PaloAltoNetworksXQL.EventLog.results.agent_hostname
       description: The agent host name.
@@ -1043,33 +1265,51 @@ script:
     - contextPath: PaloAltoNetworksXQL.EventLog.results._product
       description: The result product.
       type: String
-    description: Query event logs by event ID.
-    polling: true
-  - name: xdr-xql-dns-query
-    arguments:
-    - name: endpoint_id
+  - arguments:
+    - default: false
       description: XDR endpoint ID to run the query on.
       isArray: true
-    - name: external_domain
+      name: endpoint_id
+      required: false
+      secret: false
+    - default: false
       description: Query by external domain name.
       isArray: true
-    - name: dns_query
+      name: external_domain
+      required: false
+      secret: false
+    - default: false
       description: Query by DNS query.
       isArray: true
-    - name: extra_fields
+      name: dns_query
+      required: false
+      secret: false
+    - default: false
       description: Extra fields to add to the query results.
       isArray: true
-    - name: time_frame
-      description: 'Time in relative date format (for example: "1 day", "3 weeks ago").
-        The default is the last 24 hours.'
-    - name: limit
-      description: "Integer representing the maximum number of results to return.\
-        \ For example:\nIf limit = 100 and the query produced 1,000 results, only\
-        \ the first 100 results will be returned.\nIf limit = 100 and the query produced\
-        \ 50 results, only 50 results will be returned.\nIf limit=5000, 5,000 results\
-        \ are returned.\nIf limit=null or empty (default) up to 100 results are returned. "
-      defaultValue: "100"
-    - name: tenant_id
+      name: extra_fields
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Time in relative date format (for example: "1 day", "3 weeks ago"). The default is the last 24 hours.
+      isArray: false
+      name: time_frame
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Integer representing the maximum number of results to return. For example:
+        If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.
+        If limit = 100 and the query produced 50 results, only 50 results will be returned.
+        If limit=5000, 5,000 results are returned.
+        If limit=null or empty (default) up to 100 results are returned. 
+      isArray: false
+      name: limit
+      required: false
+      defaultValue: 100
+      secret: false
+    - default: false
       description: |-
         List of strings used for running APIs on local and Managed Security tenants. Valid values:
 
@@ -1077,19 +1317,34 @@ script:
 
         For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children.
       isArray: true
-    - name: query_name
-      required: true
+      name: tenant_id
+      required: false
+      secret: false
+    - default: false
       description: The name of the query.
-    - name: parse_result_file_to_context
+      isArray: false
+      name: query_name
+      required: true
+      secret: false
+    - default: false
+      description: If set to 'true', if a query returns more than 1000 results, it will be extracted as JSON data to the context,
+        instead of being returned as a .gz file. If set to 'false' and the query results are greater than 1000,
+        it will return the .gz file without extracting the results to context (default is false).
+      isArray: false
+      name: parse_result_file_to_context
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
-      description: If set to 'true', if a query returns more than 1000 results, it will be extracted as JSON data to the 
-      context, instead of being returned as a .gz file. 
-      If set to 'false' and the query results are greater than 1000, it will return
-      the .gz file without extracting the results to context (default is false).
+        - "true"
+        - "false"
       defaultValue: "false"
+      required: false
+      secret: false
+    deprecated: false
+    description: Query by DNS query or domain name.
+    execution: false
+    hidden: false
+    polling: true
+    name: xdr-xql-dns-query
     outputs:
     - contextPath: PaloAltoNetworksXQL.DNS.query_name
       description: The given name of the query.
@@ -1112,8 +1367,8 @@ script:
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
     - contextPath: PaloAltoNetworksXQL.DNS.remaining_quota
-      description: Floating number representing the number of query units available
-        for you to use.
+      description: Floating number representing the number of query units available for you
+        to use.
       type: Number
     - contextPath: PaloAltoNetworksXQL.DNS.results.agent_hostname
       description: The agent host name.
@@ -1146,8 +1401,7 @@ script:
       description: DNS query name.
       type: String
     - contextPath: PaloAltoNetworksXQL.DNS.results.action_app_id_transitions
-      description: List of application IDs action, actual activities that took place
-        and recorded by the agent
+      description: List of application IDs action, actual activities that took place and recorded by the agent
       type: String
     - contextPath: PaloAltoNetworksXQL.DNS.results.action_total_download
       description: Total downloads.
@@ -1185,33 +1439,51 @@ script:
     - contextPath: PaloAltoNetworksXQL.DNS.results._product
       description: The result product.
       type: String
-    description: Query by DNS query or domain name.
-    polling: true
-  - name: xdr-xql-file-dropper-query
-    arguments:
-    - name: endpoint_id
+  - arguments:
+    - default: false
       description: XDR endpoint ID to run the query on.
       isArray: true
-    - name: file_sha256
+      name: endpoint_id
+      required: false
+      secret: false
+    - default: false
       description: SHA256 file to search on the XDR dataset.
       isArray: true
-    - name: file_path
+      name: file_sha256
+      required: false
+      secret: false
+    - default: false
       description: File path to search on the XDR dataset.
       isArray: true
-    - name: extra_fields
+      name: file_path
+      required: false
+      secret: false
+    - default: false
       description: Extra fields to add to the query results.
       isArray: true
-    - name: time_frame
-      description: 'Time in relative date format (for example: "1 day", "3 weeks ago").
-        The default is the last 24 hours.'
-    - name: limit
-      description: "Integer representing the maximum number of results to return.\
-        \ For example:\nIf limit = 100 and the query produced 1,000 results, only\
-        \ the first 100 results will be returned.\nIf limit = 100 and the query produced\
-        \ 50 results, only 50 results will be returned.\nIf limit=5000, 5,000 results\
-        \ are returned.\nIf limit=null or empty (default) up to 100 results are returned. "
-      defaultValue: "100"
-    - name: tenant_id
+      name: extra_fields
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Time in relative date format (for example: "1 day", "3 weeks ago"). The default is the last 24 hours.
+      isArray: false
+      name: time_frame
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Integer representing the maximum number of results to return. For example:
+        If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.
+        If limit = 100 and the query produced 50 results, only 50 results will be returned.
+        If limit=5000, 5,000 results are returned.
+        If limit=null or empty (default) up to 100 results are returned. 
+      isArray: false
+      name: limit
+      required: false
+      defaultValue: 100
+      secret: false
+    - default: false
       description: |-
         List of strings used for running APIs on local and Managed Security tenants. Valid values:
 
@@ -1219,19 +1491,35 @@ script:
 
         For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children.
       isArray: true
-    - name: query_name
-      required: true
+      name: tenant_id
+      required: false
+      secret: false
+    - default: false
       description: The name of the query.
-    - name: parse_result_file_to_context
+      isArray: false
+      name: query_name
+      required: true
+      secret: false
+    - default: false
+      description: If set to 'true', if a query returns more than 1000 results, it will be extracted as JSON data to the context,
+        instead of being returned as a .gz file. If set to 'false' and the query results are greater than 1000,
+        it will return the .gz file without extracting the results to context (default is false).
+      isArray: false
+      name: parse_result_file_to_context
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
-      description: If set to 'true', if a query returns more than 1000 results, it will be extracted as JSON data to the 
-      context, instead of being returned as a .gz file. 
-      If set to 'false' and the query results are greater than 1000, it will return
-      the .gz file without extracting the results to context (default is false).
+        - "true"
+        - "false"
       defaultValue: "false"
+      required: false
+      secret: false
+    deprecated: false
+    description: Search for the process that wrote the given file, by its SHA256 or
+      file path.
+    execution: false
+    hidden: false
+    polling: true
+    name: xdr-xql-file-dropper-query
     outputs:
     - contextPath: PaloAltoNetworksXQL.FileDropper.query_name
       description: The given name of the query.
@@ -1254,8 +1542,8 @@ script:
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
     - contextPath: PaloAltoNetworksXQL.FileDropper.remaining_quota
-      description: Floating number representing the number of query units available
-        for you to use.
+      description: Floating number representing the number of query units available for you
+        to use.
       type: Number
     - contextPath: PaloAltoNetworksXQL.FileDropper.results.agent_hostname
       description: The agent host name.
@@ -1329,32 +1617,45 @@ script:
     - contextPath: PaloAltoNetworksXQL.FileDropper.results._product
       description: The result product.
       type: String
-    description: Search for the process that wrote the given file, by its SHA256 or
-      file path.
-    polling: true
-  - name: xdr-xql-process-instance-network-activity-query
-    arguments:
-    - name: endpoint_id
+  - arguments:
+    - default: false
       description: XDR endpoint ID to run the query on.
       isArray: true
-    - name: process_instance_id
-      required: true
+      name: endpoint_id
+      required: false
+      secret: false
+    - default: false
       description: Process instance ID to search on the XDR dataset.
       isArray: true
-    - name: extra_fields
+      name: process_instance_id
+      required: true
+      secret: false
+    - default: false
       description: Extra fields to add to the query results.
       isArray: true
-    - name: time_frame
-      description: 'Time in relative date format (for example: "1 day", "3 weeks ago").
-        The default is the last 24 hours.'
-    - name: limit
-      description: "Integer representing the maximum number of results to return.\
-        \ For example:\nIf limit = 100 and the query produced 1,000 results, only\
-        \ the first 100 results will be returned.\nIf limit = 100 and the query produced\
-        \ 50 results, only 50 results will be returned.\nIf limit=5000, 5,000 results\
-        \ are returned.\nIf limit=null or empty (default) up to 100 results are returned. "
-      defaultValue: "100"
-    - name: tenant_id
+      name: extra_fields
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Time in relative date format (for example: "1 day", "3 weeks ago"). The default is the last 24 hours.
+      isArray: false
+      name: time_frame
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Integer representing the maximum number of results to return. For example:
+        If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.
+        If limit = 100 and the query produced 50 results, only 50 results will be returned.
+        If limit=5000, 5,000 results are returned.
+        If limit=null or empty (default) up to 100 results are returned. 
+      isArray: false
+      name: limit
+      required: false
+      defaultValue: 100
+      secret: false
+    - default: false
       description: |-
         List of strings used for running APIs on local and Managed Security tenants. Valid values:
 
@@ -1362,19 +1663,35 @@ script:
 
         For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children.
       isArray: true
-    - name: query_name
-      required: true
+      name: tenant_id
+      required: false
+      secret: false
+    - default: false
       description: The name of the query.
-    - name: parse_result_file_to_context
+      isArray: false
+      name: query_name
+      required: true
+      secret: false
+    - default: false
+      description: If set to 'true', if a query returns more than 1000 results, it will be extracted as JSON data to the context,
+        instead of being returned as a .gz file. If set to 'false' and the query results are greater than 1000,
+        it will return the .gz file without extracting the results to context (default is false).
+      isArray: false
+      name: parse_result_file_to_context
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
-      description: If set to 'true', if a query returns more than 1000 results, it will be extracted as JSON data to the 
-      context, instead of being returned as a .gz file. 
-      If set to 'false' and the query results are greater than 1000, it will return
-      the .gz file without extracting the results to context (default is false).
+        - "true"
+        - "false"
       defaultValue: "false"
+      required: false
+      secret: false
+    deprecated: false
+    description: Search for network connection created by a given process instance
+      ID.
+    execution: false
+    hidden: false
+    polling: true
+    name: xdr-xql-process-instance-network-activity-query
     outputs:
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.query_name
       description: The given name of the query.
@@ -1397,8 +1714,8 @@ script:
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.remaining_quota
-      description: Floating number representing the number of query units available
-        for you to use.
+      description: Floating number representing the number of query units available for you
+        to use.
       type: Number
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.agent_hostname
       description: The agent host name.
@@ -1425,8 +1742,7 @@ script:
       description: DNS query name.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.action_app_id_transitions
-      description: List of application IDs action, actual activities that took place
-        and recorded by the agent.
+      description: List of application IDs action, actual activities that took place and recorded by the agent.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.action_total_download
       description: Total downloads.
@@ -1476,32 +1792,45 @@ script:
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results._product
       description: The result product.
       type: String
-    description: Search for network connection created by a given process instance
-      ID.
-    polling: true
-  - name: xdr-xql-process-causality-network-activity-query
-    arguments:
-    - name: endpoint_id
+  - arguments:
+    - default: false
       description: XDR endpoint ID to run the query on.
       isArray: true
-    - name: process_causality_id
-      required: true
+      name: endpoint_id
+      required: false
+      secret: false
+    - default: false
       description: Process causality ID to search on the XDR dataset.
       isArray: true
-    - name: extra_fields
+      name: process_causality_id
+      required: true
+      secret: false
+    - default: false
       description: Extra fields to add to the query results.
       isArray: true
-    - name: time_frame
-      description: 'Time in relative date format (for example: "1 day", "3 weeks ago").
-        The default is the last 24 hours.'
-    - name: limit
-      description: "Integer representing the maximum number of results to return.\
-        \ For example:\nIf limit = 100 and the query produced 1,000 results, only\
-        \ the first 100 results will be returned.\nIf limit = 100 and the query produced\
-        \ 50 results, only 50 results will be returned.\nIf limit=5000, 5,000 results\
-        \ are returned.\nIf limit=null or empty (default) up to 100 results are returned. "
-      defaultValue: "100"
-    - name: tenant_id
+      name: extra_fields
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Time in relative date format (for example: "1 day", "3 weeks ago"). The default is the last 24 hours.
+      isArray: false
+      name: time_frame
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Integer representing the maximum number of results to return. For example:
+        If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.
+        If limit = 100 and the query produced 50 results, only 50 results will be returned.
+        If limit=5000, 5,000 results are returned.
+        If limit=null or empty (default) up to 100 results are returned. 
+      isArray: false
+      name: limit
+      required: false
+      defaultValue: 100
+      secret: false
+    - default: false
       description: |-
         List of strings used for running APIs on local and Managed Security tenants. Valid values:
 
@@ -1509,19 +1838,35 @@ script:
 
         For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children.
       isArray: true
-    - name: query_name
-      required: true
+      name: tenant_id
+      required: false
+      secret: false
+    - default: false
       description: The name of the query.
-    - name: parse_result_file_to_context
+      isArray: false
+      name: query_name
+      required: true
+      secret: false
+    - default: false
+      description: If set to 'true', if a query returns more than 1000 results, it will be extracted as JSON data to the context,
+        instead of being returned as a .gz file. If set to 'false' and the query results are greater than 1000,
+        it will return the .gz file without extracting the results to context (default is false).
+      isArray: false
+      name: parse_result_file_to_context
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
-      description: If set to 'true', if a query returns more than 1000 results, it will be extracted as JSON data to the 
-      context, instead of being returned as a .gz file. 
-      If set to 'false' and the query results are greater than 1000, it will return
-      the .gz file without extracting the results to context (default is false).
+        - "true"
+        - "false"
       defaultValue: "false"
+      required: false
+      secret: false
+    deprecated: false
+    description: Search for network connection created by a given process causality
+      ID.
+    execution: false
+    hidden: false
+    polling: true
+    name: xdr-xql-process-causality-network-activity-query
     outputs:
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.query_name
       description: The given name of the query.
@@ -1544,8 +1889,8 @@ script:
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.remaining_quota
-      description: Floating number representing the number of query units available
-        for you to use.
+      description: Floating number representing the number of query units available for you
+        to use.
       type: Number
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.agent_hostname
       description: The agent host name.
@@ -1572,8 +1917,7 @@ script:
       description: DNS query name.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.action_app_id_transitions
-      description: List of application IDs action, actual activities that took place
-        and recorded by the agent.
+      description: List of application IDs action, actual activities that took place and recorded by the agent.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.action_total_download
       description: Total downloads.
@@ -1623,11 +1967,15 @@ script:
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results._product
       description: The result product.
       type: String
-    description: Search for network connection created by a given process causality
-      ID.
-    polling: true
   dockerimage: demisto/python3:3.9.7.24076
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
+  script: '-'
   subtype: python3
-sourcemoduleid: Cortex XDR - XQL Query Engine
-polling: true
+  type: python
+tests:
+- Cortex XDR - XQL Query - Test
+fromversion: 5.5.0

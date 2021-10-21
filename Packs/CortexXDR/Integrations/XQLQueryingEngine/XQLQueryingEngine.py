@@ -588,7 +588,7 @@ def start_xql_query_polling_command(client: Client, args: dict) -> Union[Command
     Returns:
         CommandResults: The command results.
     """
-    if not (query_name: = args.get('query_name')):
+    if not (query_name := args.get('query_name')):
         raise DemistoException('Please provide a query name')
     execution_id = start_xql_query(client, args)
     if not execution_id:
@@ -644,8 +644,8 @@ def get_xql_query_results_polling_command(client: Client, args: dict) -> Union[C
             return [file, command_results]
         else:
             # Parse the results to context:
-            file_data = gzip.decompress(file_data).decode()
-            outputs['results'] = [json.loads(line) for line in file_data.split("\n") if len(line) > 0]
+            data = gzip.decompress(file_data).decode()
+            outputs['results'] = [json.loads(line) for line in data.split("\n") if len(line) > 0]
 
     # if status is pending, in versions above 6.2.0, the command will be called again in the next run until success.
     if outputs.get('status') == 'PENDING':
