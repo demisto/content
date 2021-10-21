@@ -340,7 +340,7 @@
                             {
                                 "dropEffect":"move",
                                 "endCol":2,
-                                "fieldId":"titanurl",
+                                "fieldId":"Intel471FeedTitanURL",
                                 "height":53,
                                 "id":"042d3aa0-2815-11ec-a73f-578251800355",
                                 "index":0,
@@ -350,7 +350,7 @@
                             },
                             {
                                 "endCol":2,
-                                "fieldId":"titanwatchergroup",
+                                "fieldId":"Intel471FeedTitanWatcherGroup",
                                 "height":53,
                                 "id":"3205bed0-281e-11ec-a73f-578251800355",
                                 "index":1,
@@ -359,7 +359,7 @@
                             },
                             {
                                 "endCol":2,
-                                "fieldId":"titanwatcher",
+                                "fieldId":"Intel471FeedTitanWatcher",
                                 "height":22,
                                 "id":"37f75a10-281e-11ec-a73f-578251800355",
                                 "index":2,

@@ -1,11 +1,11 @@
 {
-    "id": "incident_titanwatcher",
+    "id": "Intel471FeedTitanWatcher",
     "version": -1,
     "modified": "2021-10-08T09:57:25.507855855Z",
     "name": "Titan Watcher",
     "ownerOnly": true,
     "description": "Name of the Titan watcher that triggered the alert",
-    "cliName": "titanwatcher",
+    "cliName": "Intel471FeedTitanWatcher",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,

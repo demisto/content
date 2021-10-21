@@ -1,37 +1,38 @@
-import demistomock as demisto
-from typing import Dict
-from Intel471WatcherAlerts import fetch_incidents, Client, FEED_URL, USER_AGENT
+import pytest
+import Intel471WatcherAlerts as feed
 
 
-def test_fetch_incidents(mocker):
-    base_url = FEED_URL
-    verify_certificate = not demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy', False)
+GET_REPORT_TYPE_DATA = [
+    (
+        'https://titan.intel471.com/report/inforep/fd1636d9f5a66098bcea8ae341b0304d',  # input
+        'INFO REPORT:\n'  # expected
 
-    headers: Dict = {
-        'user-agent': USER_AGENT
-    }
+    ),
+    (
+        'https://titan.intel471.com/report/fintel/3820588e7fab5f9e24cd582fe2a9f276',  # input
+        'FINTEL:\n'  # expected
 
-    username = demisto.params().get('credentials', {}).get('identifier')
-    password = demisto.params().get('credentials', {}).get('password')
-
-    client = Client(
-        base_url=base_url,
-        verify=verify_certificate,
-        headers=headers,
-        auth=(username, password),
-        proxy=proxy)
-
-    last_alert_uid: str = demisto.getIntegrationContext().get('last_alert_uid', '')
-
-    latest_alert_uid, next_run, incidents = fetch_incidents(
-        client=client,
-        max_results=100,
-        last_run=0,
-        first_fetch_time=0,
-        watcher_group_uids=None,
-        severity='Medium',
-        last_alert_uid=None
+    ),
+    (
+        'https://titan.intel471.com/report/spotrep/3ff4ef482649a94e792f8476edc84381',  # input
+        'SPOT REPORT:\n'  # expected
+        
     )
+]
 
-    assert len(incidents) > 0
+
+@pytest.mark.parametrize("input,expected_results", GET_REPORT_TYPE_DATA)
+def test_get_report_type(mocker, input, expected_results):
+    """
+    Given:
+        - set of parameters from demisto.
+
+    When:
+        - create an instance and on every run.
+
+    Then:
+        - Returns a report type.
+
+    """
+    report_type: str = feed.get_report_type(**input)
+    assert report_type == expected_results
