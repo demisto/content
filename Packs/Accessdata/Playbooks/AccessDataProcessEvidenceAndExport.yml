@@ -1,6 +1,6 @@
-id: AccessData-Process-Evidence
+id: AccessData_Process_Evidence
 version: 36
-fromversion: 2.0.0
+fromversion: 6.0.0
 vcShouldKeepItemLegacyProdMachine: false
 name: 'AccessData: Process Evidence and Export'
 description: Creates a new case and processes targetted evidence.
