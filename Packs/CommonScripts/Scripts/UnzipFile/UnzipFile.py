@@ -121,7 +121,7 @@ def extract_using_unrar(file_path, dir_path, password=None):
     :param password: password if the zip file is encrypted
     """
     if password:
-        cmd = 'unrar x -p {} {} {}'.format(password, file_path, dir_path)
+        cmd = 'unrar x -p{} {} {}'.format(password, file_path, dir_path)
     else:
         cmd = 'unrar x -p- {} {}'.format(file_path, dir_path)
     process = Popen(shlex.split(cmd), stdout=PIPE, stderr=PIPE)
