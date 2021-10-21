@@ -230,7 +230,7 @@ script:
       type: string
     description: Combines 2 internal filters together enforcing either.
 
-  dockerimage: demisto/accessdata-python3:latest
+  dockerimage: demisto/accessdata:latest
   runonce: false
   script: '-'
   type: python
