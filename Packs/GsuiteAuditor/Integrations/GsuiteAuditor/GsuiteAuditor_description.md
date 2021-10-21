@@ -17,4 +17,3 @@ In order to get the sufficient permissions for the integration to run properly, 
     or pass it as the value of the *admin_email* argument in the command.
       
     The email address precedence is the *admin_email* argument in the command followed by the Admin Email in the integration configuration.
-

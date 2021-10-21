@@ -7,7 +7,7 @@ configuration:
   hidden: false
   displaypassword: User's Service Account JSON
   name: credentials
-  required: false
+  required: true
   type: 9
 - display: Use system proxy settings
   name: proxy
@@ -85,11 +85,11 @@ script:
       required: false
       secret: false
     - default: false
-      description: |-
-        Comma-separated group IDs on which user activities are filtered. 
-        The response will contain activities for only those users who are a part of 
-        at least one of the group IDs mentioned here. For example: "id:abc123,id:xyz456".
-        To retrieve a group ID, use the 'gsuite-get-group' command in the 'G Suite Admin' Pack.
+      description: "Comma-separated group IDs on which user activities are filtered.\
+        \ \nThe response will contain activities for only those users who are a part\
+        \ of \nat least one of the group IDs mentioned here. For example: \"id:abc123,id:xyz456\"\
+        .\nTo retrieve a group ID, use the 'gsuite-get-group' command in the 'G Suite\
+        \ Admin' Pack."
       isArray: false
       name: group_id
       required: false
@@ -101,15 +101,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Sets the beginning of the time range shown in the report. For example
-        - 2010-10-28T10:26:35.000Z.'
+      description: Sets the beginning of the time range shown in the report. For example
+        - 2010-10-28T10:26:35.000Z.
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: 'Sets the end of the time range shown in the report. For example
-        - 2010-10-28T10:26:35.000Z.'
+      description: Sets the end of the time range shown in the report. For example
+        - 2010-10-28T10:26:35.000Z.
       isArray: false
       name: end_time
       required: false
@@ -128,8 +128,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Email address of the G Suite domain admin. The request is preformed 
-      based on this user's permissions.
+      description: Email address of the G Suite domain admin. The request is preformed
+        based on this user's permissions.
       isArray: false
       name: admin_email
       required: false
@@ -201,4 +201,3 @@ script:
 tests:
 - No tests (auto formatted)
 fromversion: 5.5.0
-
