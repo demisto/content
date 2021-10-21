@@ -264,24 +264,6 @@ script:
     - contextPath: MISP.Event.Object.UUID
       description: UUID of the object.
       type: String
-    - contextPath: MISP.Event.Attribute.Feed.ID
-      description: Feed id.
-      type: String
-    - contextPath: MISP.Event.Attribute.Feed.Name
-      description: Feed name.
-      type: String
-    - contextPath: MISP.Event.Attribute.Feed.Provider
-      description: Feed provider.
-      type: String
-    - contextPath: MISP.Event.Attribute.Feed.SourceFormat
-      description: Feed source format (MISP for example).
-      type: String
-    - contextPath: MISP.Event.Attribute.Feed.URL
-      description: Feed url.
-      type: String
-    - contextPath: MISP.Event.Attribute.Feed.EventUUIDS
-      description: List of event uusids include the feed.
-      type: Unknown
     - contextPath: MISP.Event.Feed.ID
       description: Feed id.
       type: String
