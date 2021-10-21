@@ -33,17 +33,24 @@ class Client:
         else:
             return res.get('result', {}).get('message') or res
 
-    def get_user(self, email: str) -> Optional[IAMUserAppData]:
-        """ Queries the user in the application using smartsheet SDK by its email, and returns an IAMUserAppData object
-        that holds the user_id, is_active and app_data attributes given in the query response.
+    def get_user(self, attr_name: str, attr_value: str) -> Optional[IAMUserAppData]:
+        """ Queries the user in the application using smartsheet SDK by its id/email, and returns an IAMUserAppData 
+        object that holds the user_id, is_active and app_data attributes given in the query response.
 
-        :type email: ``str``
-        :param email: Email address of the user
+        :type attr_name: ``str``
+        :param attr_name: Name of attribute to search by
+
+        :type attr_value: ``str``
+        :param attr_value: Value of the attribute
 
         :return: An IAMUserAppData object if user exists, None otherwise.
         :rtype: ``Optional[IAMUserAppData]``
         """
-        res = self.user.list_users(email=email).to_dict()
+        if attr_name == 'id':
+            res = self.user.list_users(id=attr_value).to_dict()
+
+        else:  # attr_name == 'email'
+            res = self.user.list_users(email=attr_value).to_dict()
 
         if res.get('result', {}).get('statusCode') > 299:
             raise DemistoException(res.get('result', {}).get('message'), res=res)
@@ -192,7 +199,7 @@ class Client:
         user_profile.set_result(action=action,
                                 success=False,
                                 error_code=error_code,
-                                error_message=error_message)
+                                error_message=f'{error_message}\n{traceback.format_exc()}')
 
         demisto.error(traceback.format_exc())
 
@@ -246,7 +253,7 @@ def main():
     send_mail = params.get("send_mail")
 
     iam_command = IAMCommand(is_create_enabled, is_enable_enabled, is_disable_enabled, is_update_enabled,
-                             create_if_not_exists, mapper_in, mapper_out)
+                             create_if_not_exists, mapper_in, mapper_out, get_user_iam_attrs=['id', 'email'])
 
     smartsheet_obj = smartsheet.Smartsheet(access_token=access_token)
     smartsheet_obj.errors_as_exceptions(False)
