@@ -4,7 +4,6 @@
 	"defaultIncidentType": "Prisma Cloud",
 	"fromVersion": "5.0.0",
 	"id": "230ea712-b969-4d73-8e1e-a1360ab8942c",
-	"description": "Classifies incoming Prisma Cloud events, that are being created through the 'fetch incidents' command in the Prisma Cloud integration.",
 	"keyTypeMap": {
 		"05befc8b-c78a-45e9-98dc-c7fbaef580e7": "AWS CloudTrail Misconfiguration",
 		"0d07ac51-fbfe-44fe-8edb-3314c9995ee0": "AWS CloudTrail Misconfiguration",
