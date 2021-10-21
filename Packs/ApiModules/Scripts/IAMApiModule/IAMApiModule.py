@@ -501,6 +501,4 @@ def get_first_available_iam_user_attr(user_profile: IAMUserProfile, iam_attrs: L
             return iam_attr, mapped_old_user_data.get(iam_attr)
         if user_profile_mapped_data.get(iam_attr):
             return iam_attr, user_profile_mapped_data.get(iam_attr)
-    raise DemistoException('Could not find any of the needed attributes. Please make sure you send one of the '
-                           f'following attributes: {iam_attrs}, or have the outgoing mapper configured to map to'
-                           'one of the listed attributes.')
+    raise DemistoException(f'Your user profile argument must contain at least one attribute that is mapped into one of the following attributes in the {mapper_out} mapper: {iam_attrs}')
