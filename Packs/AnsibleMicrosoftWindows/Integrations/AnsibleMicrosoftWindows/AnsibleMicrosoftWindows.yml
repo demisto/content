@@ -6022,4 +6022,4 @@ script:
   subtype: python3
   type: python
 tests:
-- No tests (auto formatted)
+- Test-AnsibleWindows
