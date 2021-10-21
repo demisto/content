@@ -6,16 +6,18 @@
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
+    | API Key | Account's private token. | False |
+    | AutoFocus Endpoint URL | The AutoFocus endpoint URL. | False |
     | Fetch indicators |  | False |
     | Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |
     | Source Reliability | Reliability of the source providing the intelligence data. | True |
     | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed. | False |
-    | Feed Fetch Interval |  | False |
+    | Feed Fetch Interval | The feed fetch interval. | False |
     | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
-    | Trust any certificate (not secure) |  | False |
+    | Create Relationships | Create relationships between indicators as part of Enrichment. | False |    
+    | Trust any certificate (not secure) | Whether to trust any certificate (not secure). | False |
     | Use system proxy settings |  | False |
     | Tags | Supports CSV values. | False |
-    | API Key |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -50,4 +52,4 @@ DarkHotel|	Threat Actor|	publications: {'link': 'https://securelist.com/the-dark
 
 #### Notes
 Be aware, due to API limitations, `fetch-indicators` fetches only a limited number of indicators for each interval.
-Fetching all the indicators can take up to 7 hours. 
+Fetching all the indicators can take up to 13 hours. 
