@@ -16,12 +16,12 @@ class Client(BaseClient):
 
         result = []
 
-        response = self.list_notifications()
+        response = self.list_notifications_files()
 
         try:
             for indicator in response.get('data'):
                 result.append({
-                    'value': indicator.get('attributes'),
+                    'data': indicator,
                     'type': 'file',
                     'FeedURL': self._base_url
                 })
@@ -30,45 +30,34 @@ class Client(BaseClient):
             raise ValueError(f'Could not parse returned data as indicator. \n\nError message: {err}')
         return result
 
-    def list_notifications(
+    def list_notifications_files(
             self,
-            from_time: Optional[datetime] = None,
-            to_time: Optional[datetime] = None,
             tag: Optional[str] = None,
-            cursor: Optional[str] = None,
             limit: Optional[int] = None
     ) -> dict:
-        """Retrieve VT Hunting Livehunt notifications.
-
-        See Also:
-            https://developers.virustotal.com/v3.0/reference#list-hunting-notifications
+        """Retrieve VT Hunting Livehunt notifications files.
         """
-        time_format = "%Y-%m-%dT%H:%M:%S"
         filter_ = ''
         if tag:
-            filter_ += f'{tag} '
-        if from_time:
-            filter_ += f'date:{from_time.strftime(time_format)}+ '
-        if to_time:
-            filter_ += f'date:{to_time.strftime(time_format)}- '
+            filter_ = f'{tag}'
         return self._http_request(
             'GET',
-            'intelligence/hunting_notifications',
+            'intelligence/hunting_notification_files',
             params=assign_params(
                 filter=filter_,
                 limit=limit,
-                cursor=cursor
             )
         )
 
 def test_module(client: Client, args: dict) -> str:
-    client.list_notifications()
+    client.list_notifications_files()
     return 'ok'
 
 def fetch_indicators(client: Client,
                      tlp_color: Optional[str] = None,
                      feed_tags: List = [],
-                     limit: int = -1) -> List[Dict]:
+                     limit: int = -1,
+                     tag: Optional[str] = None) -> List[Dict]:
     """Retrieves indicators from the feed
     Args:
         client (Client): Client object with request
@@ -85,7 +74,7 @@ def fetch_indicators(client: Client,
 
     # extract values from iterator
     for item in iterator:
-        value_ = item
+        value_ = item.get('data')
         type_ = FeedIndicatorType.File
         raw_data = {
             'value': value_,
@@ -94,8 +83,6 @@ def fetch_indicators(client: Client,
 
         # Create indicator object for each value.
         # The object consists of a dictionary with required and optional keys and values, as described blow.
-        for key, value in item.items():
-            raw_data.update({key: value})
         indicator_obj = {
             # The indicator value.
             'value': value_,
@@ -109,7 +96,9 @@ def fetch_indicators(client: Client,
             # in Cortex XSOAR to their values.
             'fields': {},
             # A dictionary of the raw data returned from the feed source about the indicator.
-            'rawJSON': raw_data
+            'rawJSON': raw_data,
+            'sha256': value_['id'],
+            'fileType': value_.get('attributes', {}).get('type_description')
         }
 
         if feed_tags:
@@ -136,13 +125,14 @@ def get_indicators_command(client: Client,
         Outputs.
     """
     limit = int(args.get('limit', 10))
+    tag = args.get('tag')
     tlp_color = params.get('tlp_color')
     feed_tags = argToList(params.get('feedTags', ''))
-    indicators = fetch_indicators(client, tlp_color, feed_tags, limit)
+    indicators = fetch_indicators(client, tlp_color, feed_tags, limit, tag)
 
     human_readable = tableToMarkdown('Indicators from VirusTotal Livehunt Feed:',
                                      indicators,
-                                     headers=['value', 'type'],
+                                     headers=['sha256', 'fileType'],
                                      headerTransform=string_to_table_header,
                                      removeNull=True)
 

@@ -89,7 +89,21 @@ display: VirusTotal Livehunt Feed
 name: VirusTotal Livehunt Feed
 script:
   commands:
-  - deprecated: false
+  - arguments:
+    - default: false
+      defaultValue: '10'
+      description: The maximum number of results to return. The default value is 10.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Filter files by notification tag.
+      isArray: false
+      name: tag
+      required: false
+      secret: false
+    deprecated: false
     description: Gets the indicators from VirusTotal Livehunt.
     execution: false
     name: vt-livehunt-get-indicators
