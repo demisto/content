@@ -1206,7 +1206,7 @@ def fetch_indicators_command(client):
                 'shortdescription': item.get('short_description'),
                 'stixindicatordescription': item.get('ttp_description'),
                 'stixttptitle': item.get('stix_ttp_title'),
-                'stixmalwaretypes': item.get('malware_type')
+                'stixmalwaretypes': item.get('malware_type').lower().replace(' ', '-')
             }
 
             ttp_fields: Dict[str, str] = {}
