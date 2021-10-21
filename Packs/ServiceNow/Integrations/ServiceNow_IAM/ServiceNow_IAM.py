@@ -139,10 +139,9 @@ def get_mapping_fields_command(client):
 
 
 def get_user_command(client, args, mapper_in, mapper_out):
-    user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
+    user_profile = IAMUserProfile(user_profile=args.get('user-profile'), mapper_out)
     try:
-        iam_attr, iam_attr_value = get_first_available_iam_user_attr(user_profile, IAM_GET_USER_ATTRIBUTES,
-                                                                     mapper_out)
+        iam_attr, iam_attr_value = user_profile.get_first_available_iam_user_attr(IAM_GET_USER_ATTRIBUTES)
         service_now_filter_name: str = 'sys_id' if iam_attr == 'id' else iam_attr
         service_now_user = client.get_user(service_now_filter_name, iam_attr_value)
         if not service_now_user:
