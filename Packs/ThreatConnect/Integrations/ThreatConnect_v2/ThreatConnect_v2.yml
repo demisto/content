@@ -2162,7 +2162,7 @@ script:
     - contextPath: File.Extension
       description: The extension of the file.
       type: String
-  dockerimage: demisto/threatconnect-py3-sdk:1.0.0.21898
+  dockerimage: demisto/threatconnect-py3-sdk:1.0.0.23423
   runonce: false
   script: ''
   subtype: python3
