@@ -236,7 +236,8 @@ class IAMUserProfile:
             raise DemistoException('You must provide the user profile data.')
         app_data = demisto.mapObject(self._user_profile, mapper_name, incident_type)
         if 'olduserdata' in self._user_profile:
-            app_data['olduserdata'] = demisto.mapObject(app_data['olduserdata'], mapper_name, incident_type)
+            app_data['olduserdata'] = demisto.mapObject(self._user_profile.get('olduserdata', {}), mapper_name,
+                                                        incident_type)
         return app_data
 
     def update_with_app_data(self, app_data, mapper_name, incident_type=None):
