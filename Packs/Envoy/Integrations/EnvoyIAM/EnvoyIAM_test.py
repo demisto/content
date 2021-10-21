@@ -254,11 +254,10 @@ def test_update_user_command__allow_enable(mocker):
         - Ensure the user is enabled at the end of the command execution.
     """
     client = mock_client()
-    args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com', 'givenname': 'mock_first_name'},
+    args = {'user-profile': {'emails': 'testdemisto2@paloaltonetworks.com', 'givenname': 'mock_first_name'},
             'allow-enable': 'true'}
 
     mocker.patch.object(client, 'get_user', return_value=DISABLED_USER_APP_DATA)
-    mocker.patch.object(IAMUserProfile, 'map_object', return_value={})
     mocker.patch.object(client, 'update_user', return_value=USER_APP_DATA)
 
     user_profile = IAMCommand(get_user_iam_attrs=['emails']).update_user(client, args)
