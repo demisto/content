@@ -34,7 +34,7 @@ def main():
 
     notification_emails_list = args.get('notification_email_addresses')
     notification_email_template_list_name = args.get('notification_email_template_list_name')
-    should_send_email = argToBoolean(args.get('send_mail'))
+    should_send_email = argToBoolean(args.get('send_email', 'true'))
 
     try:
         user_data = safe_load_json(user_profile)
