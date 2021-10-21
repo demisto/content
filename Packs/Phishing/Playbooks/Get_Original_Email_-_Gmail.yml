@@ -1,7 +1,8 @@
-id: get_original_email_-_gmail
+id: Get Original Email - Gmail
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Get Original Email - Gmail
-fromversion: 5.0.0
 description: |
   Use this playbook to retrieve the original email in the thread, including headers and attahcments, when the reporting user forwarded the original email not as an attachment.
 
@@ -16,9 +17,9 @@ tasks:
       id: d8403573-b211-4d44-885c-a365045c61a2
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -26,11 +27,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 152.5,
-          "y": 50
+          "x": 122.5,
+          "y": -240
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
     taskid: 81842102-b7a7-4202-8319-54c4b8660756
@@ -48,7 +55,7 @@ tasks:
       '#default#':
       - "3"
       "yes":
-      - "4"
+      - "17"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -82,11 +89,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 152.5,
-          "y": 195
+          "x": 122.5,
+          "y": -95
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
     taskid: 185c00fb-4375-4607-8b99-7538c88315bc
@@ -95,28 +108,35 @@ tasks:
       id: 185c00fb-4375-4607-8b99-7538c88315bc
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2120
+          "x": 40,
+          "y": 2300
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: cc460fc4-1d86-464c-8853-e996eed85049
+    taskid: 810c068d-4e12-4731-8107-83c030751df1
     type: regular
     task:
-      id: cc460fc4-1d86-464c-8853-e996eed85049
+      id: 810c068d-4e12-4731-8107-83c030751df1
       version: -1
       name: Retrieve the forwarded email from Gmail
-      description: Get the data and metadata of the forwarded email from the Gmail service.
+      description: Get the data and metadata of the forwarded email from the Gmail
+        service.
       script: Gmail|||gmail-get-mail
       type: regular
       iscommand: true
@@ -125,10 +145,15 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      format: {}
       message-id:
         complex:
           root: inputs.EmailID
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: inputs.EmailID
+                iscontext: true
       user-id:
         complex:
           root: inputs.User
@@ -145,6 +170,12 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
     taskid: 18de5315-16b2-4d5c-8a81-2c50623ea89d
@@ -181,6 +212,12 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
     taskid: c09ebecb-9dc8-4e00-8fe4-0dbf0cd27d32
@@ -197,7 +234,7 @@ tasks:
       '#default#':
       - "3"
       "yes":
-      - "8"
+      - "19"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -221,6 +258,12 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
     taskid: ea86d0cc-f9dc-4496-812c-bd3f5c52d08c
@@ -238,7 +281,6 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
-      append: {}
       key:
         simple: InReplyTo
       value:
@@ -253,12 +295,18 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 13ee64a0-66aa-4265-8995-62cf1f44982c
+    taskid: ead0502f-8bdf-4d43-849d-4de4023c7052
     type: regular
     task:
-      id: 13ee64a0-66aa-4265-8995-62cf1f44982c
+      id: ead0502f-8bdf-4d43-849d-4de4023c7052
       version: -1
       name: Search for original email
       description: Search Gmail for the original email.
@@ -270,22 +318,12 @@ tasks:
       '#none#':
       - "14"
     scriptarguments:
-      after: {}
-      before: {}
-      fields: {}
-      filename: {}
-      from: {}
-      has-attachments: {}
-      in: {}
-      include-spam-trash: {}
-      labels-ids: {}
-      max-results: {}
-      page-token: {}
-      query: {}
+      after:
+        complex:
+          root: AfterDate
       subject:
         complex:
           root: GmailSubject
-      to: {}
       user-id:
         complex:
           root: inputs.From
@@ -297,11 +335,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 490,
-          "y": 1420
+          "x": 480,
+          "y": 1600
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
     taskid: 4bf99d41-0f5c-4f08-8c98-785cb0e5503d
@@ -319,7 +363,6 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
-      append: {}
       key:
         simple: GmailSubject
       value:
@@ -343,6 +386,12 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
     taskid: 4dbd3cc6-ae7c-4de5-89d2-b3e1b47acec5
@@ -360,11 +409,8 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      all: {}
-      index: {}
       key:
         simple: Gmail
-      keysToKeep: {}
       subplaybook:
         simple: "yes"
     reputationcalc: 1
@@ -377,6 +423,12 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
     taskid: 7e75aef4-9998-407c-8ace-b342f3ef812f
@@ -395,21 +447,27 @@ tasks:
       - "13"
       - "15"
     scriptarguments:
-      append: {}
       key:
         simple: OriginalEmail
       value:
-        simple: ${.=val.Gmail.filter(g => g.Headers.filter(h => h.Name === "Message-ID" && h.Value == val.InReplyTo).length > 0)}
+        simple: ${.=val.Gmail.filter(g => g.Headers.filter(h => h.Name === "Message-ID"
+          && h.Value == val.InReplyTo).length > 0)}
     reputationcalc: 1
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 602.5,
-          "y": 1770
+          "x": 590,
+          "y": 1950
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
     taskid: 29868c31-fc31-4b25-8523-5a9c937af420
@@ -444,11 +502,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 387.5,
-          "y": 1945
+          "x": 377.5,
+          "y": 2125
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "14":
     id: "14"
     taskid: 0ce28338-abb6-4b8d-8155-3444a9df6ca9
@@ -457,7 +521,8 @@ tasks:
       id: 0ce28338-abb6-4b8d-8155-3444a9df6ca9
       version: -1
       name: Was the original email retrieved?
-      description: Verify that the original email is in context (matched by the InReplyTo ID).
+      description: Verify that the original email is in context (matched by the InReplyTo
+        ID).
       type: condition
       iscommand: false
       brand: ""
@@ -473,22 +538,28 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: ${.=val.Gmail.filter(g => g.Headers.filter(h => h.Name === "Message-ID" && h.Value == val.InReplyTo).length > 0)}
-            iscontext: false
+              simple: ${.=val.Gmail.filter(g => g.Headers.filter(h => h.Name === "Message-ID"
+                && h.Value == val.InReplyTo).length > 0)}
     view: |-
       {
         "position": {
-          "x": 490,
-          "y": 1595
+          "x": 480,
+          "y": 1775
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 7c1f40cb-1a0e-44dd-8d87-ff2fd67e572c
+    taskid: 8992e96c-4684-4e30-8b83-8a84274b9e7d
     type: regular
     task:
-      id: 7c1f40cb-1a0e-44dd-8d87-ff2fd67e572c
+      id: 8992e96c-4684-4e30-8b83-8a84274b9e7d
       version: -1
       name: Set output
       description: Set the playbook outputs to context.
@@ -500,30 +571,165 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      append: {}
       key:
         simple: Email
       value:
-        simple: '${OriginalEmail={Subject: val[''Subject''], To: val[''To''], From: val[''From''], Text: val[''Body''], HTML: val[''HTML''], Headers: val[''Headers''], CC: val[''CC''], BCC: val[''BCC'']}}'
+        simple: '${OriginalEmail={Subject: val[''Subject''], To: val[''To''], From:
+          val[''From''], Text: val[''Body''], HTML: val[''Html''], Headers: val[''Headers''],
+          CC: val[''CC''], BCC: val[''BCC'']}}'
     reputationcalc: 1
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 817.5,
-          "y": 1945
+          "x": 807.5,
+          "y": 2125
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 7d487616-0bce-4a7d-8cf8-99e9cd08c48d
+    type: condition
+    task:
+      id: 7d487616-0bce-4a7d-8cf8-99e9cd08c48d
+      version: -1
+      name: Verify Playbook Inputs
+      description: Verify the playbook inputs.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.EmailID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.User
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.From
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 5c2fab18-f852-4293-8e48-91df60ba1b76
+    type: regular
+    task:
+      id: 5c2fab18-f852-4293-8e48-91df60ba1b76
+      version: -1
+      name: Set AfterDate
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      key:
+        simple: AfterDate
+      value:
+        complex:
+          root: incident
+          accessor: autime
+          transformers:
+          - operator: substring
+            args:
+              from:
+                value:
+                  simple: "0"
+              to:
+                value:
+                  simple: "10"
+          - operator: TimeStampToDate
+          - operator: ModifyDateTime
+            args:
+              variation:
+                value:
+                  simple: inputs.SearchDays
+                iscontext: true
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: '-'
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: T
+              fields:
+                value:
+                  simple: "1"
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: /
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "6_19_yes": 0.55
+    },
     "paper": {
       "dimensions": {
-        "height": 2135,
+        "height": 2605,
         "width": 1147.5,
-        "x": 50,
-        "y": 50
+        "x": 40,
+        "y": -240
       }
     }
   }
@@ -535,6 +741,7 @@ inputs:
       accessor: emailmessageid
   required: false
   description: Email ID of the forwarded message.
+  playbookInputQuery:
 - key: User
   value:
     complex:
@@ -551,6 +758,7 @@ inputs:
               simple: $1
   required: false
   description: Email address of the reporting user.
+  playbookInputQuery:
 - key: From
   value:
     complex:
@@ -567,6 +775,13 @@ inputs:
               simple: $1
   required: false
   description: Email address of the thread originator.
+  playbookInputQuery:
+- key: SearchDays
+  value:
+    simple: 7 Days
+  required: true
+  description: The number of days included in the email search.
+  playbookInputQuery:
 outputs:
 - contextPath: Email
   description: The email object
@@ -599,4 +814,5 @@ outputs:
   description: Original attachments
   type: unknown
 tests:
-- No test
+- No tests (auto formatted)
+fromversion: 5.0.0
