@@ -1268,8 +1268,8 @@ def scan_status_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def scan_results_command(client: Client, args: Dict[str, Any]) -> Union[
-    Dict[str, Any], CommandResults, List[CommandResults]]:
+def scan_results_command(client: Client, args: Dict[str, Any]) ->\
+        Union[Dict[str, Any], CommandResults, List[CommandResults]]:
     """helloworld-scan-results command: Returns results for a HelloWorld scan
 
     :type client: ``Client``
