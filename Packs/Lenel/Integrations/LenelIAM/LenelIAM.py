@@ -10,7 +10,6 @@ urllib3.disable_warnings()
 ERROR_CODES_TO_SKIP = [
     404
 ]
-ACTIVE_FIELD = "ACTIVE__XR"
 SUPPORTED_GET_USER_IAM_ATTRIBUTES = ['id', 'user_name', 'email', 'employee_id']
 SCIM_EXTENSION_SCHEMA = "urn:scim:schemas:extension:custom:1.0:user"
 
@@ -43,7 +42,7 @@ class Client(BaseClient):
         try:
             res_json = res.json()
             if res_json.get("session_token") is not None:
-                self.headers['Session-Token'] = res_json.get("session_token")
+                self._headers['Session-Token'] = res_json.get("session_token")
             else:
                 demisto.error("No session token has been found.")
         except ValueError:
@@ -63,7 +62,7 @@ class Client(BaseClient):
         self._http_request(method='POST', url_suffix=uri, data=data, params=query_params)
 
     @staticmethod
-    def get_cardholder_filter(iam_attribute, iam_attribute_val) -> Optional[str]:
+    def get_cardholder(iam_attribute, iam_attribute_val) -> Optional[str]:
         filter_options = {
             'id': f'ID={iam_attribute_val}',
             'employee_id': f'SSNO="{iam_attribute_val}"',
@@ -86,9 +85,9 @@ class Client(BaseClient):
         :rtype: ``Optional[IAMUserAppData]``
         """
         uri = '/cardholders'
-        cardholder_filter = self.get_cardholder_filter(iam_attribute, iam_attribute_val)
+        cardholder_filter = self.get_cardholder(iam_attribute, iam_attribute_val)
         query_params = {
-                'cardholder_filter': iam_attribute,
+                'cardholder_filter': cardholder_filter,
                 'version': self.version
             }
 
@@ -103,11 +102,8 @@ class Client(BaseClient):
 
         if result and count and count == 1:
             result = result[0]
-            lenel_active = result['property_value_map'].get(ACTIVE_FIELD)
-            if lenel_active and lenel_active.lower() == 'true':
-                is_active = True
-            else:
-                is_active = False
+            lenel_active = result['property_value_map'].get('ACTIVE__XR')
+            is_active = lenel_active and lenel_active.lower() == 'true'
             user_id = result['property_value_map']['ID']
             username = result['property_value_map']['USERNAME']
 
@@ -131,15 +127,14 @@ class Client(BaseClient):
         res = self._http_request(
             method='POST',
             url_suffix=uri,
-            json_data=user_data,
+            data=user_data,
             params=query_params
         )
         res_json = res.json()
         property_value_map = res_json['property_value_map']
         user_id = property_value_map.get('ID')
         username = property_value_map.get('USERNAME')
-        is_active = True
-        return IAMUserAppData(user_id, username, is_active, res_json)
+        return IAMUserAppData(user_id, username, is_active=True, app_data=res_json)
 
     def update_user(self, user_id: str, user_data: Dict[str, Any]) -> IAMUserAppData:
         """ Updates a user in the application using REST API.
@@ -165,7 +160,7 @@ class Client(BaseClient):
             params=query_params
         )
 
-        return self.get_user(user_id)
+        return self.get_user('id', user_id)
 
     def enable_user(self, user_id: str) -> IAMUserAppData:
         """ Enables a user in the application using REST API.
@@ -180,9 +175,12 @@ class Client(BaseClient):
         # In this example, we use the same endpoint as in update_user() method,
         # But other APIs might have a unique endpoint for this request.
 
-        lenel_user = {"property_value_map": {}}
-        lenel_user['property_value_map']['ID'] = user_id
-        lenel_user['property_value_map'][ACTIVE_FIELD] = True
+        lenel_user = {
+            "property_value_map": {
+                'ID': user_id,
+                'ACTIVE__XR': True,
+            }
+        }
         return self.update_user(user_id, lenel_user)
 
     def disable_user(self, user_id: str) -> IAMUserAppData:
@@ -197,10 +195,12 @@ class Client(BaseClient):
         # Note: DISABLE user API endpoints might vary between different APIs.
         # In this example, we use the same endpoint as in update_user() method,
         # But other APIs might have a unique endpoint for this request.
-
-        lenel_user = {"property_value_map": {}}
-        lenel_user['property_value_map']['ID'] = user_id
-        lenel_user['property_value_map'][ACTIVE_FIELD] = False
+        lenel_user = {
+            "property_value_map": {
+                'ID': user_id,
+                'ACTIVE__XR': False,
+            }
+        }
         res = self.update_user(user_id, lenel_user)
         full_data = res.full_data
 
@@ -208,27 +208,26 @@ class Client(BaseClient):
         details.append(full_data)
         # Deactivate the badges associated with the user account
         filter = f'PERSONID={user_id}'
-        get_badges_res = client.get_badges(filter)
+        get_badges_res = self.get_badges(filter)
         res_badgejson = get_badges_res.json()
 
         badge_list = res_badgejson.get("item_list")
         if badge_list:
             for badge in badge_list:
                 badge_key = badge["property_value_map"]['BADGEKEY']
-                deactivate_badge_res = client.deactivate_badge(badge_key)
+                deactivate_badge_res = self.deactivate_badge(badge_key)
                 details.append({
                     f"Badge Key {badge_key}": deactivate_badge_res.json()
                 })
-                if deactivate_badge_res.status_code == 200:
+                if deactivate_badge_res:
                     demisto.info(f"Deactivated badge for user: {user_id}. Badge Key: {badge_key}")
                 else:
                     demisto.error(f"Failed to deactivate badge for user: {user_id}. Badge Key: {badge_key}. "
                                   f"Error Response: {deactivate_badge_res.json()}")
-                    return None
         else:
             demisto.info(f"No badge associated with the user {user_id} for deactivation")
 
-        return self.get_user(user_id)
+        return self.get_user('id', user_id)
 
     def get_badges(self, filter):
         uri = '/instances'

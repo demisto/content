@@ -1,0 +1,53 @@
+{
+	"defaultIncidentType": "",
+	"description": "Maps a User Profile data to the Lenel IAM user data.",
+	"id": "User Profile - Lenel (Outgoing)",
+	"mapping": {
+		"User Profile - Create": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"email": {
+					"complex": null,
+					"simple": "email"
+				},
+				"firstName": {
+					"complex": null,
+					"simple": "givenname"
+				},
+				"lastName": {
+					"complex": null,
+					"simple": "surname"
+				},
+				"displayName": {
+					"complex": null,
+					"simple": "displayname"
+				}
+			}
+		},
+		"User Profile - Update": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"email": {
+					"complex": null,
+					"simple": "email"
+				},
+				"firstName": {
+					"complex": null,
+					"simple": "givenname"
+				},
+				"lastName": {
+					"complex": null,
+					"simple": "surname"
+				},
+				"displayName": {
+					"complex": null,
+					"simple": "displayname"
+				}
+			}
+		}
+	},
+	"name": "User Profile - Lenel (Outgoing)",
+	"type": "mapping-outgoing",
+	"version": -1,
+	"fromVersion": "6.0.0"
+}
