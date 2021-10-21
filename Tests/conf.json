@@ -681,6 +681,9 @@
             "integrations": "Check Point"
         },
         {
+            "playbookID": "Slack Load Testing Worker"
+        },
+        {
             "playbookID": "RegPathReputationBasicLists_test"
         },
         {
@@ -4611,6 +4614,7 @@
         }
     ],
     "skipped_tests": {
+        "Slack Load Testing Worker": "It's ran in another PB",
         "MISP V2 Test": "The integration is deprecated as we released MISP V3",
         "Zscaler Test": "We won't get license (Issues 40157,17784)",
         "Github IAM - Test Playbook": "Issue 32383",

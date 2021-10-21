@@ -1,7 +1,6 @@
 commonfields:
   id: SlackBurst
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: SlackBurst
 script: ''
 type: python
@@ -20,6 +19,7 @@ args:
   description: Channel to send Burst.
 - name: endurance
   auto: PREDEFINED
+  description: Send one message every second.
   predefined:
   - "true"
   - "false"
@@ -29,8 +29,10 @@ subtype: python3
 dependson:
   should:
   - SlackV3|||send-notification
-pswd: ""
 runonce: false
 dockerimage: demisto/python3
 runas: DBotWeakRole
-engineinfo: {}
+comment: Sends a burst of messages to the Slack channel for load testing.
+fromversion: 6.1.0
+tests:
+- No tests (auto formatted)

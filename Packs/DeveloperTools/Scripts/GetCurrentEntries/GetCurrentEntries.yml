@@ -1,19 +1,21 @@
 commonfields:
   id: GetCurrentEntries
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: GetCurrentEntries
 script: ''
 type: python
 tags: []
 enabled: true
+comment: Used to pull entries from the War Room for validation.
 args:
 - name: incident_id
+  description: ID of the incident.
   required: true
 scripttarget: 0
 subtype: python3
-pswd: ""
 runonce: false
 dockerimage: demisto/python3:3.7.3.286
 runas: DBotWeakRole
-engineinfo: {}
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

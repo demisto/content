@@ -1,19 +1,7 @@
 {
     "id": "SlackStress",
     "version": -1,
-    "sequenceNumber": 1378428,
-    "primaryTerm": 3,
-    "modified": "2021-10-19T13:24:04.101626Z",
-    "sortValues": null,
-    "packID": "",
-    "itemVersion": "",
-    "fromServerVersion": "",
-    "toServerVersion": "",
-    "definitionId": "",
     "vcShouldIgnore": false,
-    "vcShouldKeepItemLegacyProdMachine": false,
-    "commitMessage": "",
-    "shouldCommit": false,
     "locked": false,
     "name": "SlackStress",
     "prevName": "SlackStress",
@@ -29,15 +17,13 @@
     "readonly": false,
     "default": false,
     "autorun": true,
-    "preProcessingScript": "",
-    "closureScript": "",
     "disabled": false,
     "reputationCalc": 0,
     "onChangeRepAlg": 0,
-    "layout": "",
     "detached": false,
     "extractSettings": {
         "mode": "Specific",
         "fieldCliNameToExtractSettings": {}
-    }
+    },
+    "fromVersion": "5.5.0"
 }

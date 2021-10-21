@@ -1,6 +1,5 @@
 id: Slack Load Testing Worker
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Slack Load Testing Worker
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -414,3 +414,6 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 6.1.0
+description: Used to send messages to a mirrored channel on Slack and validate they
+  were mirrored into XSOAR.
