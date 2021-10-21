@@ -199,6 +199,9 @@ class IAMUserProfile:
         if not email:
             email = self.get_attribute('email')
 
+        if not details:
+            details = self.mapped_user_profile
+
         vendor_action_result = IAMVendorActionResult(
             success=success,
             active=active,
