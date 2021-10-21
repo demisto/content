@@ -7,6 +7,7 @@ import pytest
 from requests import Response
 from threatconnect import ThreatConnect
 
+from CommonServerPython import outputPaths
 
 data_test_calculate_freshness_time = [
     (0, '2020-04-20'),
@@ -275,15 +276,17 @@ data_test_create_context_debotscore = [
 
 
 @ pytest.mark.parametrize('params, rate, expected_score', data_test_create_context_debotscore)
-def test_create_context_debotscore(params, rate, expected_score, mocker):
+def test_create_context_dbotscore(params, rate, expected_score, mocker):
     expected_output = {'Indicator': '88.88.88.88', 'Score': expected_score, 'Type': 'ip', 'Vendor': 'ThreatConnect',
                        'Reliability': 'B - Usually reliable'}
     indicator = deepcopy(IP_INDICATOR)
     indicator[0]['rating'] = float(rate)
     mocker.patch.object(demisto, 'params', return_value=params)
-    output = create_context(indicator, True)[0].get('DBotScore', [{}])[0]
-    assert output == expected_output, f'expected_output({indicator}, True)[0].get(\'DBotScore\')\n\treturns: {output}' \
-                                      f'\n\tinstead: {expected_output}'
+    dbotscore_path = outputPaths['dbotscore']
+    output = create_context(indicator, True)[0].get(dbotscore_path, [{}])[0]
+    assert output == expected_output, f'expected_output({indicator}, True)[0].get({dbotscore_path})\n\t' \
+                                      f'returns: {output}\n\t' \
+                                      f'instead: {expected_output}'
 
 
 data_test_associate_indicator_request = [
@@ -309,7 +312,7 @@ def test_ip_get_indicators_multiple_owners(mocker):
     assert indicators == EXPECTED_INDOCATORS_OUTPUT
 
 
-def test_create_context_debotscore_samilar_indicator(mocker):
+def test_create_context_dbotscore_similar_indicator(mocker):
     indicator = deepcopy(IP_INDICATOR)
     indicator.extend(deepcopy(IP_INDICATOR))
     indicator[0]['confidence'] = 0
@@ -320,7 +323,8 @@ def test_create_context_debotscore_samilar_indicator(mocker):
     context, _ = create_context(indicator, True)
     # validate there is one indicator with the highest score - 3
     assert context
-    assert len(context['DBotScore']) == 1
-    assert context['DBotScore'][0]['Indicator'] == '88.88.88.88'
-    assert context['DBotScore'][0]['Score'] == 3
-    assert context['DBotScore'][0]['Reliability'] == 'B - Usually reliable'
+    dbot_score = context[outputPaths['dbotscore']]
+    assert len(dbot_score) == 1
+    assert dbot_score[0]['Indicator'] == '88.88.88.88'
+    assert dbot_score[0]['Score'] == 3
+    assert dbot_score[0]['Reliability'] == 'B - Usually reliable'

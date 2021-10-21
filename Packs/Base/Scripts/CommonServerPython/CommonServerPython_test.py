@@ -17,7 +17,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, FeedIndicatorType, \
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
-    url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict
+    url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, outputPaths
 import CommonServerPython
 
 try:
@@ -668,6 +668,7 @@ class TestTableToMarkdown:
         assert 'header_2' not in table
         assert headers == ['header_1', 'header_2']
 
+# Note this test will fail when run locally (in pycharm/vscode) as it assumes the machine (docker image) has UTC timezone set
     @staticmethod
     def test_date_fields_param():
         """
@@ -1433,19 +1434,19 @@ class TestBuildDBotEntry(object):
     def test_build_dbot_entry(self):
         from CommonServerPython import build_dbot_entry
         res = build_dbot_entry('user@example.com', 'Email', 'Vendor', 1)
-        assert res == {'DBotScore': {'Indicator': 'user@example.com', 'Type': 'email', 'Vendor': 'Vendor', 'Score': 1}}
+        assert res == {outputPaths['dbotscore']: {'Indicator': 'user@example.com', 'Type': 'email', 'Vendor': 'Vendor', 'Score': 1}}
 
     def test_build_dbot_entry_no_malicious(self):
         from CommonServerPython import build_dbot_entry
         res = build_dbot_entry('user@example.com', 'Email', 'Vendor', 3, build_malicious=False)
-        assert res == {'DBotScore': {'Indicator': 'user@example.com', 'Type': 'email', 'Vendor': 'Vendor', 'Score': 3}}
+        assert res == {outputPaths['dbotscore']: {'Indicator': 'user@example.com', 'Type': 'email', 'Vendor': 'Vendor', 'Score': 3}}
 
     def test_build_dbot_entry_malicious(self):
         from CommonServerPython import build_dbot_entry, outputPaths
         res = build_dbot_entry('user@example.com', 'Email', 'Vendor', 3, 'Malicious email')
 
         assert res == {
-            "DBotScore": {
+            outputPaths['dbotscore']: {
                 "Vendor": "Vendor",
                 "Indicator": "user@example.com",
                 "Score": 3,
@@ -1492,7 +1493,7 @@ class TestBuildDBotEntry(object):
         from CommonServerPython import build_dbot_entry, outputPaths
         res = build_dbot_entry('md5hash', 'md5', 'Vendor', 3)
         assert res == {
-            "DBotScore": {
+            outputPaths['dbotscore']: {
                 "Indicator": "md5hash",
                 "Type": "file",
                 "Vendor": "Vendor",

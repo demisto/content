@@ -56,7 +56,7 @@ def create_context(indicators, include_dbot_score=False):
     rating_threshold = int(params.get('rating', '3'))
     confidence_threshold = int(params.get('confidence', '3'))
     context = {
-        'DBotScore': [],
+        outputPaths['dbotscore']: [],
         outputPaths['ip']: [],
         outputPaths['url']: [],
         outputPaths['domain']: [],
@@ -185,7 +185,7 @@ def create_context(indicators, include_dbot_score=False):
                 context['TC.Indicator(val.ID && val.ID === obj.ID)'][0]['IndicatorAttributes'] = ind[
                     'indicator_attributes']
 
-    context['DBotScore'] = list(indicators_dbot_score.values())
+    context[outputPaths['dbotscore']] = list(indicators_dbot_score.values())
     context = {k: createContext(v, removeNull=True)[:MAX_CONTEXT] for k, v in context.items() if v}
     return context, context.get('TC.Indicator(val.ID && val.ID === obj.ID)', [])
 

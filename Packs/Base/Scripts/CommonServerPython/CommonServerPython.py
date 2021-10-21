@@ -6202,7 +6202,7 @@ outputPaths = {
     'domain': 'Domain(val.Name && val.Name == obj.Name)',
     'cve': 'CVE(val.ID && val.ID == obj.ID)',
     'email': 'Account.Email(val.Address && val.Address == obj.Address)',
-    'dbotscore': 'DBotScore'
+    'dbotscore': Common.DBotScore.CONTEXT_PATH
 }
 
 
