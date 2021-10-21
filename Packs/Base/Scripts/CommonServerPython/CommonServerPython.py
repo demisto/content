@@ -8175,3 +8175,34 @@ def support_multithreading():
             demisto.lock.release()  # type: ignore[attr-defined]
 
     demisto._Demisto__do = locked_do  # type: ignore[attr-defined]
+
+class MirrorInvestigation(object):
+
+    @classmethod
+    def get_file_from_incoming_entry(cls, args, file_validator = None, get_file_path = demisto.getFilePath):
+        # (dict, Callable, Callable) -> Optional[dict]
+        """Gets an "demisto.args" from send-notification like command and return file entry if exists.
+
+        Args:
+            args: The "args" object in the command
+            file_validator: validates the file and returns id
+            get_file_path: gets an id and returns file entry
+        
+        Returns:
+            file object if exists, else None
+        """
+        if file_validator is None:
+            file_validator = cls.file_validator
+        id_ = file_validator(args)
+        if id_:
+            return get_file_path(id_)
+        return None
+
+    @staticmethod
+    def file_validator(args):
+        entry_object = args.get('entryObject', {})
+        if entry_object.get('fileID'):
+            entry = args.get('entry')
+            demisto.debug('Found file with entryID: {}'.format(entry))
+            return entry
+        return None

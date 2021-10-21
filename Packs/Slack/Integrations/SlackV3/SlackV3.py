@@ -1371,8 +1371,11 @@ def slack_send():
                 default_response = parsed_message.get('default_response')
             except Exception:
                 demisto.info('Slack - could not parse JSON from entitlement message.')
-
-    response = slack_send_request(to, channel, group, entry, ignore_add_url, thread_id, message=message, blocks=blocks)
+    file_dict = MirrorInvestigation.get_file_from_incoming_entry(args)
+    response = slack_send_request(
+        to, channel, group, entry, ignore_add_url, thread_id, 
+        message=message, blocks=blocks, file_dict=file_dict
+    )
 
     if response:
         thread = response.get('ts')
