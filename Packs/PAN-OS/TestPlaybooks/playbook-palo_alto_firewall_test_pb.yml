@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 1abd2da1-8f42-4ede-8f39-75d989923837
+    taskid: 35a09cc7-d381-4234-8f01-2b155081fb29
     type: start
     task:
-      id: 1abd2da1-8f42-4ede-8f39-75d989923837
+      id: 35a09cc7-d381-4234-8f01-2b155081fb29
       version: -1
       name: ""
       iscommand: false
@@ -34,10 +34,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: d646e9a1-203c-48eb-8286-8325a43d2d6f
+    taskid: fee4071c-fdaa-4b5b-8d88-0e5b7daff62b
     type: regular
     task:
-      id: d646e9a1-203c-48eb-8286-8325a43d2d6f
+      id: fee4071c-fdaa-4b5b-8d88-0e5b7daff62b
       version: -1
       name: panorama
       description: Run any panorama command supported in api.
@@ -70,10 +70,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: cbe2f98c-c347-433d-8824-a41115826bfc
+    taskid: debbdeed-b11b-494e-8b64-aee7f937b756
     type: regular
     task:
-      id: cbe2f98c-c347-433d-8824-a41115826bfc
+      id: debbdeed-b11b-494e-8b64-aee7f937b756
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -106,10 +106,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 899e2249-1e8f-40a4-80c3-8e62728a71ba
+    taskid: 71a2617b-5f71-4355-8335-25f72d7717d9
     type: title
     task:
-      id: 899e2249-1e8f-40a4-80c3-8e62728a71ba
+      id: 71a2617b-5f71-4355-8335-25f72d7717d9
       version: -1
       name: Addresses
       type: title
@@ -135,10 +135,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 1702ed87-3cf5-403d-837f-8fb1d3291ee3
+    taskid: 1ff2dd2f-53e4-4641-8c4a-c4c6f58d7bf9
     type: title
     task:
-      id: 1702ed87-3cf5-403d-837f-8fb1d3291ee3
+      id: 1ff2dd2f-53e4-4641-8c4a-c4c6f58d7bf9
       version: -1
       name: Addresses and Address Groups
       type: title
@@ -165,10 +165,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 81be90fb-38e3-44ff-8a69-2eb78132ecfd
+    taskid: 66d19582-9044-4360-853f-790ee531a0fd
     type: title
     task:
-      id: 81be90fb-38e3-44ff-8a69-2eb78132ecfd
+      id: 66d19582-9044-4360-853f-790ee531a0fd
       version: -1
       name: Custom URL Category
       type: title
@@ -194,10 +194,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: e71bc2ad-9405-4d61-8208-aaba7c79453b
+    taskid: 0e3b6bfd-fb42-4809-822f-3a7113e07c50
     type: regular
     task:
-      id: e71bc2ad-9405-4d61-8208-aaba7c79453b
+      id: 0e3b6bfd-fb42-4809-822f-3a7113e07c50
       version: -1
       name: panorama-address-add
       script: '|||panorama-create-address'
@@ -231,10 +231,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: fab18350-0772-43ac-87f0-3096f210901f
+    taskid: b0cbc17b-7bc1-4f1e-8b59-b54e17a8d768
     type: condition
     task:
-      id: fab18350-0772-43ac-87f0-3096f210901f
+      id: b0cbc17b-7bc1-4f1e-8b59-b54e17a8d768
       version: -1
       name: Test panorama-create-address
       type: condition
@@ -275,10 +275,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: e6a21af4-e6ab-44a9-822b-e1ce0c95b14d
+    taskid: 99f1c79d-3cab-4fa7-8398-0503ab8b66cb
     type: regular
     task:
-      id: e6a21af4-e6ab-44a9-822b-e1ce0c95b14d
+      id: 99f1c79d-3cab-4fa7-8398-0503ab8b66cb
       version: -1
       name: Panorama Addresses get
       script: '|||panorama-list-addresses'
@@ -305,10 +305,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 106b0a43-b4f8-4678-89fd-471946094e1e
+    taskid: ace7eef0-dc17-42bc-8ec4-866ff931a6ea
     type: regular
     task:
-      id: 106b0a43-b4f8-4678-89fd-471946094e1e
+      id: ace7eef0-dc17-42bc-8ec4-866ff931a6ea
       version: -1
       name: panorama-delete-address
       script: '|||panorama-delete-address'
@@ -338,10 +338,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 75903666-f45a-4afb-8ca6-90da6afe2c29
+    taskid: 3dbfdeca-6810-4f74-8dfe-5f00318af3a9
     type: regular
     task:
-      id: 75903666-f45a-4afb-8ca6-90da6afe2c29
+      id: 3dbfdeca-6810-4f74-8dfe-5f00318af3a9
       version: -1
       name: panorama-list-address-groups
       script: '|||panorama-list-address-groups'
@@ -372,10 +372,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: e84b2603-4787-4917-8d59-596760ccd51c
+    taskid: 43440c3c-7255-4858-82be-b316e1cf2ce9
     type: regular
     task:
-      id: e84b2603-4787-4917-8d59-596760ccd51c
+      id: 43440c3c-7255-4858-82be-b316e1cf2ce9
       version: -1
       name: panorama-create-address-group(dynamic)
       script: '|||panorama-create-address-group'
@@ -411,10 +411,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: fac16eb9-3704-4998-808d-1a02e1dc1e6f
+    taskid: 52fab3e2-6d78-4dd8-8ba7-a109bec958e4
     type: regular
     task:
-      id: fac16eb9-3704-4998-808d-1a02e1dc1e6f
+      id: 52fab3e2-6d78-4dd8-8ba7-a109bec958e4
       version: -1
       name: panorama-create-address-group(static)
       script: '|||panorama-create-address-group'
@@ -452,10 +452,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: ce665e93-2655-493c-8b57-ddf29119e2ba
+    taskid: 5c09a00f-3aba-452b-8e16-58ca9abf1877
     type: regular
     task:
-      id: ce665e93-2655-493c-8b57-ddf29119e2ba
+      id: 5c09a00f-3aba-452b-8e16-58ca9abf1877
       version: -1
       name: panorama-get-address-group
       script: '|||panorama-get-address-group'
@@ -485,10 +485,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 2010aeb2-a7eb-4849-8d67-19c94d384d5c
+    taskid: 7311e56f-5e5e-4ec0-8c89-ff77fa45a680
     type: regular
     task:
-      id: 2010aeb2-a7eb-4849-8d67-19c94d384d5c
+      id: 7311e56f-5e5e-4ec0-8c89-ff77fa45a680
       version: -1
       name: panorama-address-group-delete
       script: '|||panorama-delete-address-group'
@@ -518,10 +518,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 4a2e6fd6-8549-4f68-8867-7d248eb001f3
+    taskid: 8e90b1d6-6289-438a-8e2b-7ff27fa825b0
     type: condition
     task:
-      id: 4a2e6fd6-8549-4f68-8867-7d248eb001f3
+      id: 8e90b1d6-6289-438a-8e2b-7ff27fa825b0
       version: -1
       name: Test panorama-address-group-create(static)
       type: condition
@@ -572,10 +572,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: fd483f58-6dca-4921-8ae3-1492c724ac8b
+    taskid: 648fd1ec-d243-4c27-8e11-3f7f9e56824d
     type: regular
     task:
-      id: fd483f58-6dca-4921-8ae3-1492c724ac8b
+      id: 648fd1ec-d243-4c27-8e11-3f7f9e56824d
       version: -1
       name: panorama-edit-address-group
       script: '|||panorama-edit-address-group'
@@ -611,10 +611,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 1d7c2d66-a93b-4447-8d27-416973023173
+    taskid: 93754e99-1f95-49d6-83cc-e39648283e73
     type: condition
     task:
-      id: 1d7c2d66-a93b-4447-8d27-416973023173
+      id: 93754e99-1f95-49d6-83cc-e39648283e73
       version: -1
       name: Test panorama-address-group-edit
       type: condition
@@ -653,10 +653,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 68b62fcc-8369-45c5-8c86-996f45cd9c4e
+    taskid: 772ed33c-80cf-425c-8fb8-7a15528002a1
     type: regular
     task:
-      id: 68b62fcc-8369-45c5-8c86-996f45cd9c4e
+      id: 772ed33c-80cf-425c-8fb8-7a15528002a1
       version: -1
       name: panorama-delete-address-group
       script: '|||panorama-delete-address-group'
@@ -686,10 +686,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 46763f7a-e227-4137-88d1-373dcb329c83
+    taskid: 2f4a3a72-3535-4bfa-8ba8-443a3a4c1526
     type: regular
     task:
-      id: 46763f7a-e227-4137-88d1-373dcb329c83
+      id: 2f4a3a72-3535-4bfa-8ba8-443a3a4c1526
       version: -1
       name: panorama-get-custom-url-category
       script: '|||panorama-get-custom-url-category'
@@ -719,10 +719,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: f335e48c-f7b2-4b2a-87ba-8eca39f82c66
+    taskid: 2f57e90a-e4b7-430d-8cbe-33704f874c2b
     type: regular
     task:
-      id: f335e48c-f7b2-4b2a-87ba-8eca39f82c66
+      id: 2f57e90a-e4b7-430d-8cbe-33704f874c2b
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -752,10 +752,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: d94458ed-7941-4230-84db-788c9cd7a830
+    taskid: 0ed9feeb-b0f2-4862-8383-be3024eb80a0
     type: regular
     task:
-      id: d94458ed-7941-4230-84db-788c9cd7a830
+      id: 0ed9feeb-b0f2-4862-8383-be3024eb80a0
       version: -1
       name: Sleep 14 seconds
       description: Sleep for X seconds
@@ -786,10 +786,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: 0ca2e268-3d05-4774-85d9-72a0b103f4cf
+    taskid: 36bf48dc-5d11-43f1-8476-44f3f483a8ac
     type: regular
     task:
-      id: 0ca2e268-3d05-4774-85d9-72a0b103f4cf
+      id: 36bf48dc-5d11-43f1-8476-44f3f483a8ac
       version: -1
       name: panorama-get-url-category
       script: '|||panorama-get-url-category'
@@ -819,10 +819,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: e95e16ab-2311-445e-8fa9-b2966d3378e9
+    taskid: 303db14c-aa80-4433-8fac-7f3d1055071f
     type: condition
     task:
-      id: e95e16ab-2311-445e-8fa9-b2966d3378e9
+      id: 303db14c-aa80-4433-8fac-7f3d1055071f
       version: -1
       name: Test panorama-url-category-get
       type: condition
@@ -871,10 +871,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: 399cff33-0401-43ce-868c-338e123d9150
+    taskid: 4e84f15c-e51b-45da-804a-d05a9f89d433
     type: title
     task:
-      id: 399cff33-0401-43ce-868c-338e123d9150
+      id: 4e84f15c-e51b-45da-804a-d05a9f89d433
       version: -1
       name: Done
       type: title
@@ -885,7 +885,7 @@ tasks:
       {
         "position": {
           "x": 1472.5,
-          "y": 7945
+          "y": 8120
         }
       }
     note: false
@@ -897,10 +897,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: efdfe173-c64d-404d-87fd-eeec8f88059c
+    taskid: 6f51a58c-aa13-4dff-8d3c-bed26836c783
     type: title
     task:
-      id: efdfe173-c64d-404d-87fd-eeec8f88059c
+      id: 6f51a58c-aa13-4dff-8d3c-bed26836c783
       version: -1
       name: URL Filter
       type: title
@@ -926,10 +926,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "60":
     id: "60"
-    taskid: 7e127246-d6d0-4347-86c2-2516a9893912
+    taskid: 8d545d35-ff4b-4d08-80ac-5b5a59e71fde
     type: title
     task:
-      id: 7e127246-d6d0-4347-86c2-2516a9893912
+      id: 8d545d35-ff4b-4d08-80ac-5b5a59e71fde
       version: -1
       name: Security Rules Creation
       type: title
@@ -955,10 +955,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "61":
     id: "61"
-    taskid: 1a0abb3f-0b5c-4351-8e6c-0edf6b5eafae
+    taskid: 2cf07c7a-eca1-46d9-8718-7d4e38a91678
     type: title
     task:
-      id: 1a0abb3f-0b5c-4351-8e6c-0edf6b5eafae
+      id: 2cf07c7a-eca1-46d9-8718-7d4e38a91678
       version: -1
       name: Dynamic Address Groups
       type: title
@@ -984,10 +984,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "62":
     id: "62"
-    taskid: ea0ac705-d639-4a58-8b72-f62f3ed7f543
+    taskid: 15d8db16-9f1a-4268-8282-7124024e2074
     type: title
     task:
-      id: ea0ac705-d639-4a58-8b72-f62f3ed7f543
+      id: 15d8db16-9f1a-4268-8282-7124024e2074
       version: -1
       name: Static Address Groups
       type: title
@@ -1013,10 +1013,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "67":
     id: "67"
-    taskid: 27c2201e-7a6b-4180-834e-03a6fbe4b3be
+    taskid: e69dd490-b44b-46c7-82da-3b2a3c7d27d1
     type: regular
     task:
-      id: 27c2201e-7a6b-4180-834e-03a6fbe4b3be
+      id: e69dd490-b44b-46c7-82da-3b2a3c7d27d1
       version: -1
       name: panorama-create-rule
       description: Create policy rule in Palo Alto Firewall or Panorama
@@ -1055,10 +1055,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "68":
     id: "68"
-    taskid: 4af2a143-4624-45d5-8015-f2a40cbbeef6
+    taskid: 827175ac-4e76-406d-8c6e-8d5e0c7efda1
     type: regular
     task:
-      id: 4af2a143-4624-45d5-8015-f2a40cbbeef6
+      id: 827175ac-4e76-406d-8c6e-8d5e0c7efda1
       version: -1
       name: panorama-edit-rule
       description: Edit a policy rule in Palo Alto Firewall or Panorama
@@ -1095,10 +1095,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "70":
     id: "70"
-    taskid: 1494de3c-b6bb-4563-8f79-8ee48f480c67
+    taskid: 0a503bb5-8265-4866-844a-b1da45190696
     type: regular
     task:
-      id: 1494de3c-b6bb-4563-8f79-8ee48f480c67
+      id: 0a503bb5-8265-4866-844a-b1da45190696
       version: -1
       name: panorama-rule-delete
       description: Delete a policy rule in Palo Alto Firewall or Panorama
@@ -1131,10 +1131,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "74":
     id: "74"
-    taskid: 99b20e7f-2403-418d-8877-ee3c323bfc2a
+    taskid: b07ac4f6-11a7-4f6d-81a8-2b79d50bf65b
     type: regular
     task:
-      id: 99b20e7f-2403-418d-8877-ee3c323bfc2a
+      id: b07ac4f6-11a7-4f6d-81a8-2b79d50bf65b
       version: -1
       name: panorama-get-url-filter
       description: Get a URL Filtering rule  from Palo Alto Firewall or Panorama
@@ -1165,10 +1165,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "80":
     id: "80"
-    taskid: 282c59b2-dfa5-4188-883a-3303a7e6d968
+    taskid: dec85b91-5953-45e1-8be5-440d64ab11d0
     type: title
     task:
-      id: 282c59b2-dfa5-4188-883a-3303a7e6d968
+      id: dec85b91-5953-45e1-8be5-440d64ab11d0
       version: -1
       name: PCAPS
       type: title
@@ -1194,10 +1194,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "81":
     id: "81"
-    taskid: 7ccafeca-f66a-49c3-83b7-79b857e50b27
+    taskid: 5c4388ab-21e3-4026-8a15-8c22607f06f0
     type: regular
     task:
-      id: 7ccafeca-f66a-49c3-83b7-79b857e50b27
+      id: 5c4388ab-21e3-4026-8a15-8c22607f06f0
       version: -1
       name: panorama-get-pcap (filter pcap)
       description: Get panorama pcaps
@@ -1230,10 +1230,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "82":
     id: "82"
-    taskid: 7cae3bcc-c62f-4ab8-8871-1af8dde9d255
+    taskid: 1a953c0d-664d-46c1-8746-b4510466dfd2
     type: regular
     task:
-      id: 7cae3bcc-c62f-4ab8-8871-1af8dde9d255
+      id: 1a953c0d-664d-46c1-8746-b4510466dfd2
       version: -1
       name: panorama-list-pcaps
       description: Returns a list of pcap names
@@ -1264,10 +1264,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "83":
     id: "83"
-    taskid: d4fbd4e5-13cb-4f0d-8e22-0bef1531982b
+    taskid: 3daca6e5-34ef-4b16-8b1b-64cb8cd7d918
     type: title
     task:
-      id: d4fbd4e5-13cb-4f0d-8e22-0bef1531982b
+      id: 3daca6e5-34ef-4b16-8b1b-64cb8cd7d918
       version: -1
       name: EDL
       type: title
@@ -1293,10 +1293,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "84":
     id: "84"
-    taskid: 3c94c162-f0f1-4fc0-8208-d876b4c7d829
+    taskid: 820bca4a-2874-4c65-836c-af93f3b8d62f
     type: regular
     task:
-      id: 3c94c162-f0f1-4fc0-8208-d876b4c7d829
+      id: 820bca4a-2874-4c65-836c-af93f3b8d62f
       version: -1
       name: panorama-list-edls
       description: Returns a list of external dynamic lists
@@ -1324,10 +1324,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "85":
     id: "85"
-    taskid: 6bd84e2f-8669-4df4-8d00-9fca634f73ef
+    taskid: 255df583-b396-4ed3-8467-de53254cd04c
     type: regular
     task:
-      id: 6bd84e2f-8669-4df4-8d00-9fca634f73ef
+      id: 255df583-b396-4ed3-8467-de53254cd04c
       version: -1
       name: panorama-get-edl
       description: Get information for an external dynamic list
@@ -1358,10 +1358,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "86":
     id: "86"
-    taskid: af2b1872-9bdb-42ac-859d-3ffef5e8ea15
+    taskid: 4e3b3ed8-75b3-4ccb-8b25-310d812e5757
     type: condition
     task:
-      id: af2b1872-9bdb-42ac-859d-3ffef5e8ea15
+      id: 4e3b3ed8-75b3-4ccb-8b25-310d812e5757
       version: -1
       name: Test panorama edl commands
       type: condition
@@ -1402,10 +1402,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "87":
     id: "87"
-    taskid: 9cc03d09-cb1f-4d04-8171-f157f32961c4
+    taskid: dbe36d4c-c1db-4f82-84c0-6232b8f4cfb9
     type: regular
     task:
-      id: 9cc03d09-cb1f-4d04-8171-f157f32961c4
+      id: dbe36d4c-c1db-4f82-84c0-6232b8f4cfb9
       version: -1
       name: panorama-refresh-edl
       description: Refresh a given external dynamic list
@@ -1436,10 +1436,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "88":
     id: "88"
-    taskid: 08395038-d514-4b3d-8844-f72856bc6cb9
+    taskid: 2da4794e-7b0e-4b72-87cb-530657c28127
     type: regular
     task:
-      id: 08395038-d514-4b3d-8844-f72856bc6cb9
+      id: 2da4794e-7b0e-4b72-87cb-530657c28127
       version: -1
       name: panorama-register-ip-tag
       description: Register IPs to a tag
@@ -1474,10 +1474,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "89":
     id: "89"
-    taskid: 9e80d912-db4d-44d1-8394-f51848a64313
+    taskid: b0752f08-37a0-47b0-8897-fe3c41da6233
     type: regular
     task:
-      id: 9e80d912-db4d-44d1-8394-f51848a64313
+      id: b0752f08-37a0-47b0-8897-fe3c41da6233
       version: -1
       name: panorama-unregister-ip-tag
       description: Unregister IPs to a tag
@@ -1510,10 +1510,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "90":
     id: "90"
-    taskid: d769da78-19a6-43ae-8b82-6498d42706cd
+    taskid: 5989bdf6-4ebe-460c-8cf3-5269cc4a8a3b
     type: regular
     task:
-      id: d769da78-19a6-43ae-8b82-6498d42706cd
+      id: 5989bdf6-4ebe-460c-8cf3-5269cc4a8a3b
       version: -1
       name: panorama-list-rules
       description: Returns a list of predefined Security Rules
@@ -1541,10 +1541,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "92":
     id: "92"
-    taskid: 4f135deb-b151-4b70-861e-98bdb2379c23
+    taskid: ad6bb122-6618-4277-8236-91079b60398b
     type: playbook
     task:
-      id: 4f135deb-b151-4b70-861e-98bdb2379c23
+      id: ad6bb122-6618-4277-8236-91079b60398b
       version: -1
       name: PAN-OS Commit Configuration
       description: Commit the PAN-OS Panorama or Firewall configuration.\nIf specified
@@ -1576,10 +1576,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "93":
     id: "93"
-    taskid: 78a41b18-2b32-4f4a-87b2-3f3f9442cc8d
+    taskid: 339e4ee1-d677-40aa-8f48-ca71ad56705f
     type: title
     task:
-      id: 78a41b18-2b32-4f4a-87b2-3f3f9442cc8d
+      id: 339e4ee1-d677-40aa-8f48-ca71ad56705f
       version: -1
       name: Finished Addresses UC
       type: title
@@ -1607,10 +1607,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "94":
     id: "94"
-    taskid: 1a59a6f2-3e90-4398-8ab6-b5a436e3d371
+    taskid: 80780a52-50ec-41e8-843c-05cf22aaf607
     type: title
     task:
-      id: 1a59a6f2-3e90-4398-8ab6-b5a436e3d371
+      id: 80780a52-50ec-41e8-843c-05cf22aaf607
       version: -1
       name: FInished Objects UC
       type: title
@@ -1638,10 +1638,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "95":
     id: "95"
-    taskid: 6fc1dc60-3a8e-4dad-87ad-1275e7b28d6e
+    taskid: 3fa65f0d-4da8-41d3-887c-74a676e7cbfb
     type: playbook
     task:
-      id: 6fc1dc60-3a8e-4dad-87ad-1275e7b28d6e
+      id: 3fa65f0d-4da8-41d3-887c-74a676e7cbfb
       version: -1
       name: PAN-OS Commit Configuration
       description: Commit the PAN-OS Panorama or Firewall configuration.\nIf specified
@@ -1676,10 +1676,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "96":
     id: "96"
-    taskid: 133471db-55fa-4c48-8776-a31f457a4c20
+    taskid: 1fbca0c4-4af5-45c5-8690-2b58972e5cab
     type: title
     task:
-      id: 133471db-55fa-4c48-8776-a31f457a4c20
+      id: 1fbca0c4-4af5-45c5-8690-2b58972e5cab
       version: -1
       name: Security Policy Match
       type: title
@@ -1705,10 +1705,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "97":
     id: "97"
-    taskid: 89ef0088-9ffe-4f17-8307-776aa240776f
+    taskid: efa77301-406f-4bad-8b9e-881c805bda16
     type: regular
     task:
-      id: 89ef0088-9ffe-4f17-8307-776aa240776f
+      id: efa77301-406f-4bad-8b9e-881c805bda16
       version: -1
       name: panorama-security-policy-match
       description: Checks whether a session matches the specified security policy.
@@ -1746,10 +1746,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "98":
     id: "98"
-    taskid: 4f3fff6d-009c-498c-8560-b94a734e867a
+    taskid: 6447b830-480e-4a60-8e74-d834271c2f71
     type: title
     task:
-      id: 4f3fff6d-009c-498c-8560-b94a734e867a
+      id: 6447b830-480e-4a60-8e74-d834271c2f71
       version: -1
       name: URL FIltering
       type: title
@@ -1775,10 +1775,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "99":
     id: "99"
-    taskid: 53a4ed22-2f2c-42b5-8881-cc11e917f45a
+    taskid: 3be72029-7cc4-4999-83db-c5f649d63f06
     type: regular
     task:
-      id: 53a4ed22-2f2c-42b5-8881-cc11e917f45a
+      id: 3be72029-7cc4-4999-83db-c5f649d63f06
       version: -1
       name: panorama-get-url-category-from-cloud
       description: Gets a URL category from URL Filtering.
@@ -1810,10 +1810,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "100":
     id: "100"
-    taskid: 3517ae26-5307-47d7-8e58-06f32e32c601
+    taskid: a85c8106-d400-4950-82d1-c93d46eaea65
     type: title
     task:
-      id: 3517ae26-5307-47d7-8e58-06f32e32c601
+      id: a85c8106-d400-4950-82d1-c93d46eaea65
       version: -1
       name: Static Routes (network)
       type: title
@@ -1839,10 +1839,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "101":
     id: "101"
-    taskid: 51c8347c-1853-4374-8f96-09e75209c901
+    taskid: 481dd16b-dd75-4015-8363-4241e9f8bb25
     type: regular
     task:
-      id: 51c8347c-1853-4374-8f96-09e75209c901
+      id: 481dd16b-dd75-4015-8363-4241e9f8bb25
       version: -1
       name: panorama-list-static-routes
       description: List the static routes of a virtual router.
@@ -1873,10 +1873,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "102":
     id: "102"
-    taskid: b526ae3c-841f-4d18-8091-dbc5ab80607d
+    taskid: 4525e3ed-5965-4fc6-823b-ee41a8a0acc9
     type: regular
     task:
-      id: b526ae3c-841f-4d18-8091-dbc5ab80607d
+      id: 4525e3ed-5965-4fc6-823b-ee41a8a0acc9
       version: -1
       name: panorama-get-static-route
       description: Get a specific static route of a virtual router.
@@ -1922,10 +1922,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "103":
     id: "103"
-    taskid: 28c56737-8637-402f-814b-8ec81e019e9d
+    taskid: 35c923f4-23db-4c6f-81e6-c3a7ccc93743
     type: title
     task:
-      id: 28c56737-8637-402f-814b-8ec81e019e9d
+      id: 35c923f4-23db-4c6f-81e6-c3a7ccc93743
       version: -1
       name: DAG
       type: title
@@ -1951,10 +1951,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "104":
     id: "104"
-    taskid: 7e82ec05-3e1b-4aaa-8bd1-8917604d3028
+    taskid: 6cf636ba-5ae4-4b06-815b-ca5f07d5c7e8
     type: playbook
     task:
-      id: 7e82ec05-3e1b-4aaa-8bd1-8917604d3028
+      id: 6cf636ba-5ae4-4b06-815b-ca5f07d5c7e8
       version: -1
       name: PAN-OS Commit Configuration
       description: Commit the PAN-OS Panorama or Firewall configuration.\nIf specified
@@ -1989,10 +1989,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "105":
     id: "105"
-    taskid: 3b5d732a-ff69-4c1f-8592-2cae4d934d11
+    taskid: 8dad7d6a-086d-4a4e-8e9a-8d9107ca21e1
     type: regular
     task:
-      id: 3b5d732a-ff69-4c1f-8592-2cae4d934d11
+      id: 8dad7d6a-086d-4a4e-8e9a-8d9107ca21e1
       version: -1
       name: panorama-edit-rule
       description: Edits a policy rule.
@@ -2031,10 +2031,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "106":
     id: "106"
-    taskid: 3292f0c6-424b-45ae-8f65-6a785a60a0fb
+    taskid: d839070e-fd74-4769-809a-4a41b318e4c9
     type: regular
     task:
-      id: 3292f0c6-424b-45ae-8f65-6a785a60a0fb
+      id: d839070e-fd74-4769-809a-4a41b318e4c9
       version: -1
       name: panorama-address-add failed
       description: Prints an error entry with a given message
@@ -2065,10 +2065,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "107":
     id: "107"
-    taskid: e56c1795-cd43-426d-8aa7-535df67a5425
+    taskid: 538c74b7-be71-43b2-83fe-7e243e26d446
     type: regular
     task:
-      id: e56c1795-cd43-426d-8aa7-535df67a5425
+      id: 538c74b7-be71-43b2-83fe-7e243e26d446
       version: -1
       name: panorama-create-address-group failed
       description: Prints an error entry with a given message
@@ -2096,10 +2096,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "108":
     id: "108"
-    taskid: b20d5946-4523-4ad3-83de-864a8f7d5b5f
+    taskid: 526e306d-1eb1-4ca8-8852-f81e9506c80e
     type: regular
     task:
-      id: b20d5946-4523-4ad3-83de-864a8f7d5b5f
+      id: 526e306d-1eb1-4ca8-8852-f81e9506c80e
       version: -1
       name: panorama-show-location-ip
       description: Show the IP location information as returned by the APIs
@@ -2130,10 +2130,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "109":
     id: "109"
-    taskid: dd7f1914-98c5-4de9-88cd-31a1e1b33c2a
+    taskid: 6d2d9417-e9a0-4d12-8967-0d65a4e0ffb8
     type: regular
     task:
-      id: dd7f1914-98c5-4de9-88cd-31a1e1b33c2a
+      id: 6d2d9417-e9a0-4d12-8967-0d65a4e0ffb8
       version: -1
       name: panorama-show-device-version
       description: Show firewall device software version.
@@ -2161,10 +2161,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "110":
     id: "110"
-    taskid: e7bd8256-d4b6-442b-8f40-543dc0e79d59
+    taskid: f8c73df0-2b2a-40f4-8a9c-f8419c6b87b1
     type: condition
     task:
-      id: e7bd8256-d4b6-442b-8f40-543dc0e79d59
+      id: f8c73df0-2b2a-40f4-8a9c-f8419c6b87b1
       version: -1
       name: Is 8.1 pan-os Firewall?
       type: condition
@@ -2205,10 +2205,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "111":
     id: "111"
-    taskid: dcea649c-ebfe-4b51-8574-46e5c521676f
+    taskid: 9e90ef18-a7f1-4817-8d28-5be9c7cb65ed
     type: regular
     task:
-      id: dcea649c-ebfe-4b51-8574-46e5c521676f
+      id: 9e90ef18-a7f1-4817-8d28-5be9c7cb65ed
       version: -1
       name: panorama-get-pcap (threat)
       description: Returns information for a Panorama PCAP file. The recommended maximum
@@ -2249,10 +2249,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "112":
     id: "112"
-    taskid: da8d7a33-1ce3-4be3-8e8e-8d1f0fc0581e
+    taskid: 18caf1b6-54fb-47a0-87fb-720eeb6dc124
     type: condition
     task:
-      id: da8d7a33-1ce3-4be3-8e8e-8d1f0fc0581e
+      id: 18caf1b6-54fb-47a0-87fb-720eeb6dc124
       version: -1
       name: Is 8.1 pan-os Firewall?
       type: condition
@@ -2293,10 +2293,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "113":
     id: "113"
-    taskid: e92016a2-8010-4c97-8ba8-ebe154283f5d
+    taskid: 8aa91e51-4bb4-4c6f-8453-44552507d7e5
     type: regular
     task:
-      id: e92016a2-8010-4c97-8ba8-ebe154283f5d
+      id: 8aa91e51-4bb4-4c6f-8453-44552507d7e5
       version: -1
       name: panorama-refresh-edl on Panorama
       description: Refresh a given external dynamic list
@@ -2333,10 +2333,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "114":
     id: "114"
-    taskid: 59a0cb95-33b1-4dfb-8648-84b5595e1f2d
+    taskid: 3ecd200a-6218-4cd8-8a91-0a148601a6d6
     type: regular
     task:
-      id: 59a0cb95-33b1-4dfb-8648-84b5595e1f2d
+      id: 3ecd200a-6218-4cd8-8a91-0a148601a6d6
       version: -1
       name: panorama-show-device-version
       description: Show firewall device software version.
@@ -2364,10 +2364,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "115":
     id: "115"
-    taskid: b6f063ac-30d7-4578-8e5c-e7aac81a07af
+    taskid: 7e99fe1b-13d9-42e4-8ea4-ad613587eaba
     type: title
     task:
-      id: b6f063ac-30d7-4578-8e5c-e7aac81a07af
+      id: 7e99fe1b-13d9-42e4-8ea4-ad613587eaba
       version: -1
       name: User-ID Interface and Agents
       type: title
@@ -2394,10 +2394,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "116":
     id: "116"
-    taskid: 31ec5bfe-a56e-453f-84c7-6afb26405eb9
+    taskid: 98784a0b-cf5a-4a1b-82a0-7326ffad2d00
     type: regular
     task:
-      id: 31ec5bfe-a56e-453f-84c7-6afb26405eb9
+      id: 98784a0b-cf5a-4a1b-82a0-7326ffad2d00
       version: -1
       name: panorama-show-user-id-interfaces-config
       description: Shows the user ID interface configuration
@@ -2407,7 +2407,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "123"
+      - "130"
     separatecontext: false
     view: |-
       {
@@ -2425,10 +2425,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "117":
     id: "117"
-    taskid: fd741688-dbf4-4e18-8b30-138f0ce169bb
+    taskid: 256186c8-c8c6-4ade-87ff-65b4628e84d7
     type: regular
     task:
-      id: fd741688-dbf4-4e18-8b30-138f0ce169bb
+      id: 256186c8-c8c6-4ade-87ff-65b4628e84d7
       version: -1
       name: panorama-list-configured-user-id-agents
       description: Retrieves list of user-ID agents configured in the system.
@@ -2438,7 +2438,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "123"
+      - "130"
     separatecontext: false
     view: |-
       {
@@ -2456,10 +2456,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "118":
     id: "118"
-    taskid: 770c650e-2a41-4c0f-892a-9288a84f7c99
+    taskid: eccdbc3e-57bc-4090-8c3b-9446b5f17029
     type: playbook
     task:
-      id: 770c650e-2a41-4c0f-892a-9288a84f7c99
+      id: eccdbc3e-57bc-4090-8c3b-9446b5f17029
       version: -1
       name: PAN-OS Commit Configuration
       description: Commit the PAN-OS Panorama or Firewall configuration.\nIf specified
@@ -2489,10 +2489,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "119":
     id: "119"
-    taskid: 810e8e22-18d6-465a-8c92-e72766a84919
+    taskid: 40c17c73-8de0-4a2f-89b4-b3c844357ab5
     type: regular
     task:
-      id: 810e8e22-18d6-465a-8c92-e72766a84919
+      id: 40c17c73-8de0-4a2f-89b4-b3c844357ab5
       version: -1
       name: panorama-edit-url-filter (add a override blocklist url)
       description: Edit a URL filtering rule.
@@ -2529,10 +2529,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "120":
     id: "120"
-    taskid: 94d13b6b-8d83-4226-81c4-6edbac1bdd56
+    taskid: fa5d03c7-7c3c-47b5-82aa-fce2cb6c7559
     type: regular
     task:
-      id: 94d13b6b-8d83-4226-81c4-6edbac1bdd56
+      id: fa5d03c7-7c3c-47b5-82aa-fce2cb6c7559
       version: -1
       name: panorama-edit-url-filter (remove a override blocklist url)
       description: Edit a URL filtering rule.
@@ -2569,10 +2569,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "121":
     id: "121"
-    taskid: 22a13e67-78cf-4ac2-82a2-a14533e51a1d
+    taskid: ad3eee78-18f4-46ea-894a-16732b87341a
     type: regular
     task:
-      id: 22a13e67-78cf-4ac2-82a2-a14533e51a1d
+      id: ad3eee78-18f4-46ea-894a-16732b87341a
       version: -1
       name: panorama-show-device-version
       description: Show firewall device software version.
@@ -2600,10 +2600,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "122":
     id: "122"
-    taskid: b519c4a4-2304-4c2e-89b0-bf02f15f18ca
+    taskid: 94c43fdc-9b06-48fa-8e5e-776bc3452bf4
     type: condition
     task:
-      id: b519c4a4-2304-4c2e-89b0-bf02f15f18ca
+      id: 94c43fdc-9b06-48fa-8e5e-776bc3452bf4
       version: -1
       name: Is 8.1 pan-os Firewall?
       type: condition
@@ -2644,10 +2644,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "123":
     id: "123"
-    taskid: c7f2cd21-9cd0-4cce-8aec-1fe4d86ca118
+    taskid: 128cf48c-a0d8-4a21-8465-41acacc91f7f
     type: condition
     task:
-      id: c7f2cd21-9cd0-4cce-8aec-1fe4d86ca118
+      id: 128cf48c-a0d8-4a21-8465-41acacc91f7f
       version: -1
       name: Is Demisto Version 6.2.0+
       type: condition
@@ -2726,7 +2726,7 @@ tasks:
       {
         "position": {
           "x": 1472.5,
-          "y": 6750
+          "y": 6925
         }
       }
     note: false
@@ -2738,10 +2738,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "124":
     id: "124"
-    taskid: 361ccc3d-a020-4a1c-88b1-0c6d345bbd23
+    taskid: edf48b36-2a9e-4502-892f-5acc86f048fd
     type: title
     task:
-      id: 361ccc3d-a020-4a1c-88b1-0c6d345bbd23
+      id: edf48b36-2a9e-4502-892f-5acc86f048fd
       version: -1
       name: Polling Commands
       type: title
@@ -2755,7 +2755,7 @@ tasks:
       {
         "position": {
           "x": 1472.5,
-          "y": 6925
+          "y": 7100
         }
       }
     note: false
@@ -2767,10 +2767,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "125":
     id: "125"
-    taskid: ef19d068-a732-4edf-8dec-c76dee858419
+    taskid: 94f8004e-dbeb-4e3a-8b4f-48bfec48e765
     type: regular
     task:
-      id: ef19d068-a732-4edf-8dec-c76dee858419
+      id: 94f8004e-dbeb-4e3a-8b4f-48bfec48e765
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -2789,7 +2789,7 @@ tasks:
       {
         "position": {
           "x": 1472.5,
-          "y": 7070
+          "y": 7245
         }
       }
     note: false
@@ -2801,10 +2801,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "126":
     id: "126"
-    taskid: c112f752-0f56-44f5-8792-2a291c73c77e
+    taskid: 7c4a0c9b-c754-4c4e-875c-d6e5abab4447
     type: regular
     task:
-      id: c112f752-0f56-44f5-8792-2a291c73c77e
+      id: 7c4a0c9b-c754-4c4e-875c-d6e5abab4447
       version: -1
       name: panorama-commit
       description: Commits a configuration to the Palo Alto firewall or Panorama,
@@ -2826,7 +2826,7 @@ tasks:
       {
         "position": {
           "x": 1472.5,
-          "y": 7245
+          "y": 7420
         }
       }
     note: false
@@ -2838,10 +2838,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "127":
     id: "127"
-    taskid: 70bee4ed-5148-4380-8fc1-c6cbb174b6ee
+    taskid: 14b3de1f-7223-43ff-87a9-60ca7d46da85
     type: condition
     task:
-      id: 70bee4ed-5148-4380-8fc1-c6cbb174b6ee
+      id: 14b3de1f-7223-43ff-87a9-60ca7d46da85
       version: -1
       name: Verify context
       type: condition
@@ -2873,7 +2873,7 @@ tasks:
       {
         "position": {
           "x": 1472.5,
-          "y": 7420
+          "y": 7595
         }
       }
     note: false
@@ -2885,10 +2885,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "128":
     id: "128"
-    taskid: d1cea277-5945-43f0-893c-e27d7706e806
+    taskid: f0281e49-e2d9-4211-8b14-748a937cfb49
     type: regular
     task:
-      id: d1cea277-5945-43f0-893c-e27d7706e806
+      id: f0281e49-e2d9-4211-8b14-748a937cfb49
       version: -1
       name: panorama-download-latest-content-update
       description: Downloads the latest content update.
@@ -2907,7 +2907,7 @@ tasks:
       {
         "position": {
           "x": 1472.5,
-          "y": 7595
+          "y": 7770
         }
       }
     note: false
@@ -2919,10 +2919,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "129":
     id: "129"
-    taskid: 88ab9ca2-450d-4b76-8b7a-d4511fd11318
+    taskid: ba353c06-9aae-43cd-8157-e7aed77e342e
     type: condition
     task:
-      id: 88ab9ca2-450d-4b76-8b7a-d4511fd11318
+      id: ba353c06-9aae-43cd-8157-e7aed77e342e
       version: -1
       name: Verify context
       type: condition
@@ -2954,7 +2954,38 @@ tasks:
       {
         "position": {
           "x": 1472.5,
-          "y": 7770
+          "y": 7945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "130":
+    id: "130"
+    taskid: 1010a151-65e4-428b-88aa-0fca6aee6fa8
+    type: regular
+    task:
+      id: 1010a151-65e4-428b-88aa-0fca6aee6fa8
+      version: -1
+      name: DemistoVersion
+      description: Return the Demisto server version.
+      scriptName: DemistoVersion
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "123"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1472.5,
+          "y": 6750
         }
       }
     note: false
@@ -2972,7 +3003,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 7960,
+        "height": 8135,
         "width": 2457.5,
         "x": 50,
         "y": 50
