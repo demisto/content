@@ -58,7 +58,12 @@
     "compromised/breached": [
         {
             "last_fetch": {
-                "compromised/breached": "2021-06-12T03:02:00"
+                "compromised/breached": {
+                    "starting_date_from": "2020-01-01",
+                    "page": 0,
+                    "starting_date_to": "2021-01-01",
+                    "current_date_to": "2021-01-01"
+                }
             }
         },
         [
@@ -66,6 +71,20 @@
               "name": "Data Breach: some@gmail.com",
               "occurred": "2021-06-12T03:02:00Z",
               "rawJSON": "{\"addInfo\": {\"address\": [\"\"]}, \"email\": [\"some@gmail.com\"], \"id\": [\"277c4112d348c91f6dabe9467f0d11dd\"], \"leakName\": \"some.com\", \"password\": [\"CD91C480FDE9D7ACB8AC4B78310EA2ED\", \"1390DDDFA28AE085D23518A035707231\"], \"updateTime\": \"2021-06-12T03:02:00\", \"uploadTime\": \"2021-06-12T03:02:00\", \"name\": \"Data Breach: some@gmail.com\", \"gibType\": \"compromised/breached\", \"relatedIndicatorsData\": [], \"systemSeverity\": 0}"
+            }
+        ]
+    ],
+    "bp/domain": [
+        {
+            "last_fetch": {
+                "bp/domain": 3684188313
+            }
+        },
+        [
+            {
+              "name": "Phishing Domain: some.ru",
+              "occurred": "2016-07-19T20:04:01Z",
+              "rawJSON": "{\"id\": 14940404, \"ts_create\": \"2016-07-19 20:04:01\", \"ts_update\": \"2021-01-01 00:35:46\", \"attrs\": {\"domain\": \"some.ru\", \"date_registered\": null, \"date_expired\": null, \"tld\": \"de\", \"detection_rate\": \"0/68\", \"name_server\": [\"Server\"], \"person\": \"Person\", \"address\": \"Address\", \"phone\": \"Phone\", \"organization\": null, \"registrar\": null, \"page_title\": \"Title\", \"email\": \"some@gmail.com\", \"favicon_md5\": \"38f5f976255a663bced929bb3c252880\", \"status\": \"Status\", \"type\": \"Type\", \"server_ip\": \"11.11.11.11\", \"server_ip_asn\": \"ASN\", \"server_ip_city\": \"City\", \"server_ip_country_code\": \"Code\", \"server_ip_country_name\": \"Country\", \"server_ip_provider\": \"Provider\", \"server_ip_region\": \"Region\", \"ip_history\": [], \"keywords\": [\"keywords\"], \"history\": [], \"screenshot\": \"https://bt.group-ib.com/?module=brand_domain_screenshot&action=data&id=14940404\", \"html\": \"https://bt.group-ib.com/?module=brand_domain_html&action=download&id=14940404\", \"favicon\": \"https://bt.group-ib.com/?module=brand_domain_favicon&action=data&id=14940404\"}, \"name\": \"Phishing Domain: some.ru\", \"gibType\": \"bp/domain\", \"relatedIndicatorsData\": [\"some.ru\", \"11.11.11.11\"], \"systemSeverity\": 0}"
             }
         ]
     ]

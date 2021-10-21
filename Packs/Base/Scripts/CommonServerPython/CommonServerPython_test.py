@@ -5666,3 +5666,23 @@ class TestCustomIndicator:
                 malicious_description='malicious!'
             )
             Common.CustomIndicator('test', None, dbot_score, {'param': 'value'}, 'prefix')
+
+@pytest.mark.parametrize(
+    "demistoUrls,expected_result",
+    [({'server': 'https://localhost:8443:/acc_test_tenant'}, 'acc_test_tenant'),
+     ({'server': 'https://localhost:8443'}, '')])
+def test_get_tenant_name(mocker, demistoUrls, expected_result):
+    """
+        Given
+        - demistoUrls dictionary
+        When
+        - Running on multi tenant mode
+        - Running on single tenant mode
+        Then
+        - Return tenant account name if is multi tenant
+    """
+    from CommonServerPython import get_tenant_account_name
+    mocker.patch.object(demisto, 'demistoUrls', return_value=demistoUrls)
+
+    result = get_tenant_account_name()
+    assert result == expected_result
