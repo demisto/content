@@ -7,15 +7,13 @@
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Fetch indicators |  | False |
-    | Indicator Reputation | Indicators from this integration instance will be marked with this reputation | False |
-    | Source Reliability | Reliability of the source providing the intelligence data | True |
-    | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed | False |
+    | Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |
+    | Source Reliability | Reliability of the source providing the intelligence data. | True |
+    | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed. | False |
     | Feed Fetch Interval |  | False |
     | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
-    |  |  | False |
-    |  |  | False |
     | Tags | Supports CSV values. | False |
     | API Key |  | False |
 
@@ -51,5 +49,5 @@ Value |	Type	| Fields
 DarkHotel|	Threat Actor|	publications: {'link': 'https://securelist.com/the-darkhotel-apt/66779/', 'title': 'The DarkHotel APT', 'source': 'Kaspersky', 'timestamp': '2018-08-20T15:25:31'},aliases: ParasiticBeast, description: The DarkHotel attackers were most infamously behind a series of attacks between 2008 and 2014 against organizations located primarily in  Japan, Taiwan, China, Russia and South Korea. This campaign infiltrated multiple hotel networks and used them as a jumping-off point to infect hotel guests., lastseenbysource: 2021-05-03T01:55:18Z, updateddate: 2019-08-28T08:56:30Z ,reportedby: Unit 42
 
 #### Notes
-- Be aware, due to API limitations, `fetch-indicators` fetches only limited number of indicators each interval.
-Fetching all the indicators may take longer than expected. 
+Be aware, due to API limitations, `fetch-indicators` fetches only a limited number of indicators for each interval.
+Fetching all the indicators can take up to 7 hours. 

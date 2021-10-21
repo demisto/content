@@ -22,7 +22,7 @@ configuration:
   required: false
   type: 8
 - additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+    reputation.
   display: Indicator Reputation
   name: feedReputation
   options:
@@ -32,7 +32,7 @@ configuration:
   - Bad
   required: false
   type: 18
-- additionalinfo: Reliability of the source providing the intelligence data
+- additionalinfo: Reliability of the source providing the intelligence data.
   display: Source Reliability
   name: feedReliability
   options:
@@ -46,7 +46,7 @@ configuration:
   type: 15
   defaultvalue: 'A - Completely reliable'
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
-    fetched from the feed
+    fetched from the feed.
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -100,7 +100,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use the AutoFocus Tags Feeds integration to fetch indicators from AutoFocus
+description: Use the AutoFocus Tags Feed integration to fetch indicators from AutoFocus
   Tags.
 display: AutoFocus Tags Feed
 name: AutoFocusTagsFeed
