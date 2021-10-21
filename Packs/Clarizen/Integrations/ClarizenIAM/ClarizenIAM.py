@@ -21,11 +21,21 @@ EMAIL_ATTRIBUTE = 'Email'
 class Client(BaseClient):
     """ A client class that implements logic to authenticate with the application. """
 
-    def __init__(self, base_url, verify=True, proxy=False, ok_codes=(), headers=None, auth=None, manager_email=None):
-        super().__init__(base_url, verify, proxy, ok_codes, headers, auth)
-        self.username = auth[0]
-        self.password = auth[1]
+    def __init__(self, base_url, verify=True, proxy=False, ok_codes=(), headers=None,
+                 username=None, password=None, manager_email=None):
+        super().__init__(base_url, verify, proxy, ok_codes)
+        self.headers = headers
+        self.headers['Authorization'] = 'Session ' + self.get_session_id(username, password)
         self.manager_id = self.get_manager_id(manager_email)
+
+    def get_session_id(self, username: str, password: str):
+        auth_uri = '/authentication/login'
+        params = {
+            "userName": username,
+            "Password": password
+        }
+        res = self._http_request('POST', auth_uri, params=params)
+        return res.get('sessionId')
 
     def get_manager_id(self, manager_email: Optional[str]) -> str:
         """ Gets the user's manager ID from manager email.
@@ -43,16 +53,10 @@ class Client(BaseClient):
                 manager_id = res.id
         return manager_id
 
-    def test(self):
+    def test(self, username: str, password: str):
         """ Tests connectivity with the application. """
 
-        uri = '/authentication/login'
-        params = {
-            "userName": self.username,
-            "Password": self.password,
-        }
-
-        return self._http_request(method='POST', url_suffix=uri, data={}, params=params)
+        return self.get_session_id(username, password)
 
     def get_user_by_id(self, user_id):
         uri = f'/data/objects{user_id}'
@@ -311,15 +315,11 @@ def get_error_details(res: Dict[str, Any]) -> str:
 '''COMMAND FUNCTIONS'''
 
 
-def test_module(client: Client):
+def test_module(client: Client, username: str, password: str):
     """ Tests connectivity with the client. """
-
-    res = client.test()
-    if res.status_code == 200:
-        return_results('ok')
-    else:
-        return_error(f'Error testing {res.status_code} - {res.text}')
-
+    
+    client.test(username, password)
+    return 'ok'
 
 def get_mapping_fields(client: Client) -> GetMappingFieldsResponse:
     """ Creates and returns a GetMappingFieldsResponse object of the user schema in the application
@@ -339,7 +339,7 @@ def get_mapping_fields(client: Client) -> GetMappingFieldsResponse:
 def main():
     user_profile = None
     params = demisto.params()
-    base_url = urljoin(params['url'].strip('/'), '/V2.0/services')
+    base_url = params.get('url', '').strip('/')
     username = params.get('credentials', {}).get('identifier')
     password = params.get('credentials', {}).get('password')
     mapper_in = params.get('mapper_in')
@@ -370,7 +370,8 @@ def main():
         proxy=proxy,
         headers=headers,
         ok_codes=(200, 201),
-        auth=(username, password),
+        username=username,
+        password=password,
         manager_email=manager_email,
     )
 
@@ -397,7 +398,7 @@ def main():
 
     try:
         if command == 'test-module':
-            test_module(client)
+            return_results(test_module(client, username, password))
 
         elif command == 'get-mapping-fields':
             return_results(get_mapping_fields(client))
