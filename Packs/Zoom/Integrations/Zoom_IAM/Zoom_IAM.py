@@ -32,7 +32,7 @@ class Client(BaseClient):
     def test(self):
         """ Tests connectivity with the application. """
 
-        self.get_user('me')
+        self.get_user('', 'me')
         return 'ok'
 
     def get_user(self, _, filter_value: str) -> Optional[IAMUserAppData]:

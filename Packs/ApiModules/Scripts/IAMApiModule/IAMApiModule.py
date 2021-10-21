@@ -138,9 +138,8 @@ class IAMUserProfile:
         self._user_profile_delta = safe_load_json(user_profile_delta) if user_profile_delta else {}
         self._vendor_action_results = []
 
-    def get_attribute(self, item, use_old_user_data=False, user_profile: Optional[Dict] = None):
-        if not user_profile:
-            user_profile = self._user_profile
+    def get_attribute(self, item, use_old_user_data=False, user_profile_data: Optional[Dict] = None):
+        user_profile = user_profile_data if user_profile_data else self._user_profile
         if use_old_user_data and user_profile.get('olduserdata', {}).get(item):
             return user_profile.get('olduserdata', {}).get(item)
         return user_profile.get(item)
@@ -237,7 +236,8 @@ class IAMUserProfile:
             raise DemistoException('You must provide the user profile data.')
         app_data = demisto.mapObject(self._user_profile, mapper_name, incident_type)
         if 'olduserdata' in self._user_profile:
-            app_data['olduserdata'] = demisto.mapObject(app_data['olduserdata'], mapper_name, incident_type)
+            app_data['olduserdata'] = demisto.mapObject(self._user_profile.get('olduserdata', {}), mapper_name,
+                                                        incident_type)
         return app_data
 
     def update_with_app_data(self, app_data, mapper_name, incident_type=None):

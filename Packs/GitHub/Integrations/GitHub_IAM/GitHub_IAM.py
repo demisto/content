@@ -266,12 +266,15 @@ def disable_user_command(client, args, mapper_out, is_disable_enabled):
                                             skip=True,
                                             skip_reason=error_message)
             else:
-                user_id: str = get_user_response.get('Resources')[0].get('id', '')
+                user_data = get_user_response.get('Resources')[0]
+                user_id: str = user_data.get('id', '')
+                username: str = user_data.get('userName')
                 res = client.disable_user(user_id)
                 iam_user_profile.set_result(success=True,
-                                            iden=user_id,
+                                            iden=user_data.get('id', ''),
                                             email=iam_attr_value if iam_attr == 'email' else None,
                                             action=IAMActions.DISABLE_USER,
+                                            username=username,
                                             details=res,
                                             active=False)
 
