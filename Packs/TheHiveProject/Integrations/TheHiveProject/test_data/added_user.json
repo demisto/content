@@ -1,0 +1,14 @@
+  {
+    "_id": "4",
+    "id": "example@example.com",
+    "createdBy": "example@example.com",
+    "createdAt": "2021-04-24T11:27:32Z",
+    "updatedAt": "2021-04-24T11:27:32Z",
+    "_type": "user",
+    "login": "example@example.com",
+    "name": "Test User",
+    "roles": ["admin", "read"],
+    "organisation": "organisation one",
+    "hasKey": true,
+    "status": "Ok"
+  }

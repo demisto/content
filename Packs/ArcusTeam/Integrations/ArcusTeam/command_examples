@@ -1,2 +1,2 @@
-!arcusteam-get-devices vendor="cisco" model="2901_Integrated_Services_Router" series="2900_Series_Integrated_Services_Routers"
-!arcusteam-get-vulnerabilities firmware_id=d8e81c52ba635da73458028d6514e8bb device_id=c11eb29c5346d182b94ee1fcde6d0b21 return_fields=risk,cve,cwe,description,codename,exploit_published,exploit_used,modified_date
+!arcusteam-get-devices vendor="Cisco" model="Nexus 6001" series="Nexus 6000"
+!arcusteam-get-vulnerabilities firmware_id=f5db998da08c1917bb76ea98b051bff6 device_id=e91e3216d1d0f6480a89acbd9536a1ca return_fields=risk,cve,cwe,description,exploit_published,exploit_used,modified_date

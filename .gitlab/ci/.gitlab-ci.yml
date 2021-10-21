@@ -18,6 +18,7 @@ stages:
 variables:
   DONT_CACHE_LAST_RESPONSE: "true"
   GCS_MARKET_BUCKET: "marketplace-dist"
+  STORAGE_BASE_PATH: ""
   SLACK_CHANNEL: "dmst-content-team"
   DEMISTO_README_VALIDATION: "true"
   ARTIFACTS_FOLDER: "/builds/xsoar/content/artifacts"
@@ -30,7 +31,7 @@ variables:
   GIT_DEPTH: 0
   GET_SOURCES_ATTEMPTS: 3  # see https://docs.gitlab.com/ee/ci/runners/configure_runners.html#job-stages-attempts
   ENV_RESULTS_PATH: "/builds/xsoar/content/artifacts/env_results.json"
-  GCS_PRODUCTION_BUCKET: "marketplace-dist" # change to marketplace-dist this after testing period
+  GCS_PRODUCTION_BUCKET: "marketplace-dist"
   DEMISTO_CONNECTION_POOL_MAXSIZE: "180" # see this issue for more info https://github.com/demisto/etc/issues/36886
   SDK_REF: "master" # The default sdk branch to use
 
