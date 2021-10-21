@@ -1,0 +1,36 @@
+commonfields:
+  id: SlackBurst
+  version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: SlackBurst
+script: ''
+type: python
+tags: []
+enabled: true
+args:
+- name: quantity
+  required: true
+  description: Amount of messages to send.
+  defaultValue: "50"
+- name: slack_instance
+  required: true
+  description: Instance of Slack to send messages using.
+- name: slack_channel
+  required: true
+  description: Channel to send Burst.
+- name: endurance
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  defaultValue: "false"
+scripttarget: 0
+subtype: python3
+dependson:
+  should:
+  - SlackV3|||send-notification
+pswd: ""
+runonce: false
+dockerimage: demisto/python3
+runas: DBotWeakRole
+engineinfo: {}

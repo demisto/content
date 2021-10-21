@@ -600,6 +600,13 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "SlackV3",
+            "playbookID": "Mirror Stress Test - Orchestrator",
+            "timeout": 600,
+            "pid_threshold": 8,
+            "fromversion": "6.1.0"
+        },
+        {
             "integrations": "Cortex XDR - IR",
             "playbookID": "Test XDR Playbook",
             "fromversion": "4.1.0",

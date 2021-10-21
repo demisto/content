@@ -74,6 +74,7 @@ MAX_LIMIT_TIME: int
 PAGINATED_COUNT: int
 ENABLE_DM: bool
 PERMITTED_NOTIFICATION_TYPES: List[str]
+LONG_RUNNING_ENABLED: bool
 
 
 ''' HELPER FUNCTIONS '''
@@ -1012,6 +1013,17 @@ async def create_incidents(incidents: list, user_name: str, user_email: str, use
     return data
 
 
+async def get_bot_id_async() -> str:
+    """
+    Gets the app bot ID
+
+    Returns:
+        The app bot ID
+    """
+    response = await ASYNC_CLIENT.auth_test()
+    return response.get('bot_id')
+
+
 async def listen(client: SocketModeClient, req: SocketModeRequest):
     demisto.info("Handling request")
     if req.envelope_id:
@@ -1036,17 +1048,33 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
         message_bot_id = data.get('bot_id', '')
         thread = event.get('thread_ts', None)
         message = data.get('message', {})
+        entitlement_reply = None
         # Check if slash command received. If so, ignore for now.
         if data.get('command', None):
             demisto.debug("Slash command event received. Ignoring.")
             return
 
         actions = data.get('actions', [])
+        integration_context = get_integration_context(SYNC_CONTEXT)
         if subtype == 'bot_message' or message_bot_id or message.get('subtype') == 'bot_message' \
                 or \
                 event.get('bot_id', None):
-            if len(actions) == 0:
+
+            # Get the bot ID so we can invite him
+            if integration_context.get('bot_user_id'):
+                bot_id = integration_context['bot_user_id']
+                if bot_id == 'null':
+                    bot_id = await get_bot_id_async()
+                    set_to_integration_context_with_retries({'bot_user_id': bot_id}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+            else:
+                bot_id = await get_bot_id_async()
+                set_to_integration_context_with_retries({'bot_user_id': bot_id}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+            if event.get('subtype') == 'bot_message':
                 demisto.debug("Received bot_message event type. Ignoring.")
+                return
+            if event.get('bot_id', None) in bot_id:
+                demisto.info(f"I am - {bot_id}. The message I recieved is from {event.get('bot_id')}")
+                demisto.debug("Hearing myself. Ignoring.")
                 return
         if event.get('subtype') == 'message_changed':
             demisto.debug("Received message_changed event type. Ignoring.")
@@ -1063,8 +1091,9 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
             answer_question(action_text, entitlement_string, user.get('profile', {}).get('email'))
 
         else:
-            user = await get_user_by_id_async(ASYNC_CLIENT, user_id)  # type: ignore
-            entitlement_reply = await check_and_handle_entitlement(text, user, thread)  # type: ignore
+            if user_id != '':
+                user = await get_user_by_id_async(ASYNC_CLIENT, user_id)  # type: ignore
+                entitlement_reply = await check_and_handle_entitlement(text, user, thread)  # type: ignore
 
         if entitlement_reply:
             await send_slack_request_async(client=ASYNC_CLIENT, method='chat.postMessage',
@@ -1079,7 +1108,7 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
             await handle_dm(user, text, ASYNC_CLIENT)  # type: ignore
         else:
             channel_id = channel
-            integration_context = get_integration_context(SYNC_CONTEXT)
+
             if not integration_context or 'mirrors' not in integration_context:
                 return
 
@@ -1113,6 +1142,7 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
                                                                 OBJECTS_TO_KEYS, SYNC_CONTEXT)
 
                 investigation_id = mirror['investigation_id']
+                demisto.info(f"Payload is - {payload}")
                 await handle_text(ASYNC_CLIENT, investigation_id, text, user)  # type: ignore
         # Reset module health
         demisto.updateModuleHealth("")
@@ -2026,17 +2056,21 @@ def long_running_main():
     """
     Starts the long running thread.
     """
-    try:
-        asyncio.run(start_listening(), debug=True)
-    except Exception as e:
-        demisto.error(f"The Loop has failed to run {str(e)}")
-    finally:
-        loop = asyncio.get_running_loop()
+    if LONG_RUNNING_ENABLED:
         try:
-            loop.stop()
-            loop.close()
-        except Exception as e_:
-            demisto.error(f'Failed to gracefully close the loop - {e_}')
+            asyncio.run(start_listening(), debug=True)
+        except Exception as e:
+            demisto.error(f"The Loop has failed to run {str(e)}")
+        finally:
+            loop = asyncio.get_running_loop()
+            try:
+                loop.stop()
+                loop.close()
+            except Exception as e_:
+                demisto.error(f'Failed to gracefully close the loop - {e_}')
+    else:
+        while True:
+            time.sleep(600)
 
 
 def init_globals(command_name: str = ''):
@@ -2046,7 +2080,7 @@ def init_globals(command_name: str = ''):
     global BOT_TOKEN, PROXY_URL, PROXIES, DEDICATED_CHANNEL, CLIENT
     global SEVERITY_THRESHOLD, ALLOW_INCIDENTS, INCIDENT_TYPE, VERIFY_CERT, ENABLE_DM
     global BOT_NAME, BOT_ICON_URL, MAX_LIMIT_TIME, PAGINATED_COUNT, SSL_CONTEXT, APP_TOKEN, ASYNC_CLIENT
-    global PERMITTED_NOTIFICATION_TYPES
+    global PERMITTED_NOTIFICATION_TYPES, LONG_RUNNING_ENABLED
 
     VERIFY_CERT = not demisto.params().get('unsecure', False)
     if not VERIFY_CERT:
@@ -2079,6 +2113,7 @@ def init_globals(command_name: str = ''):
     PAGINATED_COUNT = int(demisto.params().get('paginated_count', '200'))
     ENABLE_DM = demisto.params().get('enable_dm', True)
     PERMITTED_NOTIFICATION_TYPES = demisto.params().get('permitted_notifications', [])
+    LONG_RUNNING_ENABLED = demisto.params().get('enable_long_running', True)
 
 
 def print_thread_dump():
