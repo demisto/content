@@ -552,7 +552,7 @@ def fetch_incidents(limit: int):
     last_seen_time = last_run.get('time')
     last_fetches = last_run.get('last_fetches', [])
     if not last_seen_time:  # first time fetch
-        last_seen_time = date_to_timestamp(dateparser.parse(demisto.params().get('fetch_time', '3 days').strip()))
+        last_seen_time = date_to_timestamp(dateparser.parse(demisto.params().get('fetch_time', '24 hours').strip()))
 
     payload = {
         'timeRange': {

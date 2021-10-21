@@ -36,14 +36,14 @@ configuration:
   name: policySeverity
   required: false
   type: 0
-- defaultvalue: 7 days
+- defaultvalue: 24 hours
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
     months, 1 year)
   name: fetch_time
   required: false
   type: 0
 - defaultvalue: 50
-  display: Limit result in a single page
+  display: Maximum number of incidents to pull per fetch
   name: limit
   required: false
   type: 0
