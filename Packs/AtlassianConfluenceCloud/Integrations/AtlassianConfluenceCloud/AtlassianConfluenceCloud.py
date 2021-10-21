@@ -301,7 +301,7 @@ def validate_permissions(args: Dict[str, Any]) -> List:
     return space_permission
 
 
-def validate_list_command_args(args: Dict[str, str]) -> dict:
+def validate_list_command_args(args: Dict[str, str]) -> Tuple[Optional[int], Optional[int]]:
     """
     Validate arguments for all list commands, raise ValueError on invalid arguments.
 
@@ -309,48 +309,45 @@ def validate_list_command_args(args: Dict[str, str]) -> dict:
     :param args: The command arguments provided by the user.
 
     :return: Parameters to send in request
-    :rtype: ``dict``
+    :rtype: ``Tuple``
     """
 
-    params: Dict[str, Any] = {}
-
     limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
-    if limit is not None:
-        if limit < 0 or limit > 2147483647:
-            raise ValueError(MESSAGES["LIMIT"].format(limit))
-    else:
-        limit = int(DEFAULT_LIMIT)
-    params["limit"] = limit
+    if limit < 0 or limit > 2147483647:  # type:ignore
+        raise ValueError(MESSAGES["LIMIT"].format(limit))
 
     offset = arg_to_number(args.get('offset', DEFAULT_START))
-    if offset is not None:
-        if offset < 0 or offset > 2147483647:
-            raise ValueError(MESSAGES["START"].format(offset))
-    else:
-        offset = int(DEFAULT_START)
-    params["start"] = offset
+    if offset < 0 or offset > 2147483647:  # type:ignore
+        raise ValueError(MESSAGES["START"].format(offset))
 
-    return params
+    return limit, offset
 
 
-def validate_list_group_args(args: Dict[str, str]) -> Dict[str, Any]:
+def validate_list_group_args(args: Dict[str, str]):
     """
     Validate arguments for confluence-cloud-group-list command, raise ValueError on invalid arguments.
 
     :type args: ``Dict[str, str]``
     :param args: The command arguments provided by the user.
-
-    :return: Parameters to send in request
-    :rtype: ``Dict[str, Any]``
     """
-    params = validate_list_command_args(args)
+
     access_type = args.get("access_type", "").lower()
     if access_type and access_type not in LEGAL_ACCESS_TYPES:
         raise ValueError(MESSAGES["INVALID_ACCESS_TYPE"])
 
-    params['accessType'] = access_type
+    return access_type
 
-    return assign_params(**params)
+
+def prepare_group_args(args: Dict[str, str]) -> Dict[str, str]:
+    """
+    Prepare params for list group command
+
+    :type args: ``Dict[str, str]``
+    :param args: The command arguments provided by the user.
+    """
+    limit, offset = validate_list_command_args(args)
+    access_type = validate_list_group_args(args)
+    return assign_params(limit=limit, start=offset, accessType=access_type)
 
 
 def prepare_hr_for_groups(groups: List[Dict[str, Any]]) -> str:
@@ -376,7 +373,41 @@ def prepare_hr_for_groups(groups: List[Dict[str, Any]]) -> str:
                            removeNull=True)
 
 
-def validate_create_content_args(args: Dict[str, str], is_update: bool = False) -> Dict[str, Any]:
+def prepare_content_create_params(args) -> Dict[str, Any]:
+    """
+    Prepare json object for content create command
+
+    :type args: ``Dict[str, str]``
+    :param args: The command arguments provided by the user.
+
+    :return: Body parameters to send in request
+    :rtype: ``Dict[str, Any]``
+    """
+    body_representation = args.get('body_representation', '')
+    params = {
+        "title": args['title'],
+        "type": args['type'].lower(),
+        "space": {
+            "key": args.get('space_key', '')
+        },
+        "status": args.get('status', 'current'),
+        "body": {
+            body_representation: {
+                "value": args.get('body_value', ''),
+                "representation": body_representation
+            }
+        },
+        "ancestors": [
+            {
+                "id": args.get('ancestor_id', '')
+            }
+        ]
+    }
+
+    return remove_empty_elements_for_context(params)
+
+
+def validate_create_content_args(args: Dict[str, str], is_update: bool = False):
     """
     Validate arguments for confluence-cloud-content-create command, raise ValueError on invalid arguments.
 
@@ -386,8 +417,8 @@ def validate_create_content_args(args: Dict[str, str], is_update: bool = False) 
      :type is_update: ``bool``
     :param is_update: Whether command is update content or not.
 
-    :return: Parameters to send in request
-    :rtype: ``Dict[str, Any]``
+    :return: None
+    :rtype: ``None``
     """
 
     title = args['title']
@@ -401,11 +432,12 @@ def validate_create_content_args(args: Dict[str, str], is_update: bool = False) 
         raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("type"))
     if not is_update and content_type not in LEGAL_CONTENT_TYPES:
         raise ValueError(MESSAGES["INVALID_CONTENT_TYPE"])
+    if is_update and content_type not in LEGAL_CONTENT_TYPE_UPDATE_COMMAND:
+        raise ValueError(MESSAGES["INVALID_CONTENT_TYPE_UPDATE_CONTENT"])
 
     space_key = args.get('space_key', '')
     if not is_update and not space_key:
         raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("space_key"))
-    status = args.get('status', 'current')
 
     body_value = args.get('body_value', '')
     body_representation = args.get('body_representation', '')
@@ -415,29 +447,6 @@ def validate_create_content_args(args: Dict[str, str], is_update: bool = False) 
                 raise ValueError(MESSAGES["INVALID_BODY_REPRESENTATION"])
         else:
             raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("'body_value' and 'body_representation'"))
-
-    ancestor_id = args.get('ancestor_id', '')
-    json_data = {
-        "title": title,
-        "type": content_type,
-        "space": {
-            "key": space_key
-        },
-        "status": status,
-        "body": {
-            body_representation: {
-                "value": body_value,
-                "representation": body_representation
-            }
-        },
-        "ancestors": [
-            {
-                "id": ancestor_id
-            }
-        ]
-    }
-    params = remove_empty_elements_for_context(json_data)
-    return params
 
 
 def prepare_hr_for_content_create(content: Dict[str, Any], content_type: str) -> str:
@@ -506,88 +515,84 @@ def prepare_hr_for_content_search(contents: list, url_prefix: str) -> str:
     return hr
 
 
-def validate_delete_content_args(args: Dict[str, str]) -> Tuple[Union[str, Any], Dict[str, Any]]:
+def validate_delete_content_args(args: Dict[str, str]):
     """
     Validate arguments for confluence-cloud-content-delete command, raise ValueError on invalid arguments.
 
     :type args: ``Dict[str, str]``
     :param args: The command arguments provided by the user.
 
-    :return: Parameters to send in request
-    :rtype: ``Dict[str, Any]``
+    :return: None
     """
     content_id = args["content_id"]
-    if not args.get("content_id"):
+    if not content_id:
         raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("content_id"))
 
-    params: Dict[str, Any] = {}
     status = args.get("deletion_type", "").lower()
     if status:
         if status not in LEGAL_DELETION_TYPES.keys():
             raise ValueError(MESSAGES["INVALID_DELETION_TYPE"])
-        params["status"] = LEGAL_DELETION_TYPES[status]
-
-    return content_id, params
 
 
-def prepare_comment_create_params(status, container_id, container_type, body_representation, body_value, ancestor_id):
-    json_data = {
+def prepare_comment_create_params(args) -> Dict[str, Any]:
+    """
+    Prepare json object for comment create command
+
+    :type args: ``Dict[str, str]``
+    :param args: The command arguments provided by the user.
+
+    :return: Body parameters to send in request
+    :rtype: ``Dict[str, Any]``
+    """
+    body_representation = args['body_representation']
+    container_type = args.get('container_type', '')
+    params = {
         "type": "comment",
-        "status": status,
+        "status": args.get('status', 'current'),
         "container": {
-            "id": container_id,
+            "id": args['container_id'],
             "type": container_type
         },
         "body": {
             body_representation: {
-                "value": body_value,
+                "value": args['body_value'],
                 "representation": body_representation
             }
         },
         "ancestors": [
             {
-                "id": ancestor_id
+                "id": args.get('ancestor_id', '')
             }
         ]
     }
-    params = remove_empty_elements_for_context(json_data)
+    params = remove_empty_elements_for_context(params)
     params["container"]["type"] = container_type
     return params
 
 
-def validate_and_prepare_comment_args(args: Dict[str, str]) -> Dict[str, Any]:
+def validate_comment_args(args: Dict[str, str]):
     """
     Validate arguments for confluence-cloud-comment-create command, raise ValueError on invalid arguments.
 
     :type args: ``Dict[str, str]``
     :param args: The command arguments provided by the user.
 
-    :return: Parameters to send in request
-    :rtype: ``Dict[str, Any]``
+    :return: None
     """
 
-    status = args.get('status', 'current')
-
-    body_value = args.get('body_value')
+    body_value = args['body_value']
     if not body_value:
         raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("Comment body_value"))
 
-    body_representation = args.get('body_representation')
+    body_representation = args['body_representation']
     if not body_representation:
         raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("body_representation"))
     if body_representation not in LEGAL_BODY_REPRESENTATION:
         raise ValueError(MESSAGES["INVALID_BODY_REPRESENTATION"])
 
-    ancestor_id = args.get('ancestor_id', '')
-
-    container_id = args.get('container_id')
+    container_id = args['container_id']
     if not container_id:
         raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("container_id"))
-
-    container_type = args.get('container_type', '')
-    params = prepare_comment_create_params(status, container_id, container_type, body_representation, body_value,
-                                           ancestor_id)
-    return params
 
 
 def prepare_hr_for_users(users: List[Dict[str, Any]]) -> str:
@@ -641,9 +646,23 @@ def prepare_expand_argument(expand: str, default_fields: str) -> str:
     return default_fields + expand_fields
 
 
-def validate_search_content_argument(args: Dict[str, str]) -> Dict[str, Any]:
+def validate_query_argument(args: Dict[str, str]):
     """
-    Validate arguments for confluence-cloud-content-search command, raise ValueError on invalid arguments.
+    Validate query argument of content search command
+
+    :param args: ``Dict[str, str]``
+    :param args: The command arguments provided by the user.
+
+    :return: None
+    """
+    query = args['query']
+    if not query:
+        raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("query"))
+
+
+def prepare_search_content_argument(args: Dict[str, str]) -> Dict[str, Any]:
+    """
+    Prepare params for confluence-cloud-content-search command.
 
     :type args: ``Dict[str, str]``
     :param args: The command arguments provided by the user.
@@ -651,16 +670,15 @@ def validate_search_content_argument(args: Dict[str, str]) -> Dict[str, Any]:
     :return: Parameters to send in request
     :rtype: ``Dict[str, Any]``
     """
-    params = validate_list_command_args(args)
+    limit, offset = validate_list_command_args(args)
+    validate_query_argument(args)
 
-    query = args['query']
-    if not query:
-        raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("query"))
-    params['cql'] = query
+    params = {'cql': args['query'],
+              'cursor': args.get('next_page_token'),
+              'expand': DEFAULT_EXPANDED_FIELD_CONTENT,
+              'limit': limit
+              }
 
-    params['cursor'] = args.get('next_page_token')
-
-    params['expand'] = DEFAULT_EXPANDED_FIELD_CONTENT
     expand = args.get('expand', '')
     if expand:
         params['expand'] = prepare_expand_argument(expand, DEFAULT_EXPANDED_FIELD_CONTENT)
@@ -691,30 +709,32 @@ def prepare_cursor_for_content(response_json: Dict[str, str]) -> str:
     return next_cursor
 
 
-def validate_sort_key_and_order(sort_order: str, sort_key: str) -> Any:
-    """
-    Validates sort_order and sort_key arguments
-
-    :type sort_order: ``str``
-    :param sort_order: sort order provided by user
-
-    :type sort_key: ``str``
-    :param sort_key: sort key provided by user
-
-    :rtype: ``str``
-    :return: Returns string or raises ValueError
-    """
-    if sort_order and sort_key:
-        return f'{sort_key} {sort_order}'
-    elif sort_key:
-        return f'{sort_key}'
-    elif sort_order and not sort_key:
-        raise ValueError(MESSAGES['REQUIRED_SORT_KEY'])
-
-
-def validate_list_content_argument(args: Dict[str, str]) -> Dict[str, Any]:
+def validate_list_content_args(args):
     """
     Validate arguments for confluence_cloud_content_list command, raise ValueError on invalid arguments.
+    :type args: ``Dict[str, str]``
+    :param args: The command arguments provided by the user.
+
+    :return: None
+    """
+    sort_order = args.get('sort_order', '').lower()
+    sort_key = args.get('sort_key', '')
+
+    if sort_order and not sort_key:
+        raise ValueError(MESSAGES['REQUIRED_SORT_KEY'])
+    content_type = args.get('type', 'page').lower()
+
+    if content_type not in LEGAL_CONTENT_TYPES:
+        raise ValueError(MESSAGES['INVALID_CONTENT_TYPE'])
+
+    status = args.get('status', '').lower()
+    if status and status not in LEGAL_CONTENT_STATUS:
+        raise ValueError(MESSAGES['INVALID_STATUS_SEARCH'])
+
+
+def prepare_list_content_argument(args: Dict[str, str]) -> Dict[str, Any]:
+    """
+    Prepare params for confluence_cloud_content_list command.
 
     :type args: ``Dict[str, str]``
     :param args: The command arguments provided by the user.
@@ -722,28 +742,27 @@ def validate_list_content_argument(args: Dict[str, str]) -> Dict[str, Any]:
     :return: Parameters to send in request
     :rtype: ``Dict[str, Any]``
     """
-    params = validate_list_command_args(args)
-
-    params['spaceKey'] = args.get('space_key', '')
-
-    content_type = args.get('type', 'page').lower()
-    if content_type not in LEGAL_CONTENT_TYPES:
-        raise ValueError(MESSAGES['INVALID_CONTENT_TYPE'])
-    params['type'] = content_type
+    validate_list_content_args(args)
+    limit, offset = validate_list_command_args(args)
+    params = {'limit': limit,
+              'start': offset,
+              'spaceKey': args.get('space_key', ''),
+              'type': args.get('type', 'page').lower()
+              }
 
     sort_order = args.get('sort_order', '').lower()
     sort_key = args.get('sort_key', '')
 
-    params['orderby'] = validate_sort_key_and_order(sort_order, sort_key)
+    if sort_order and sort_key:
+        params['orderby'] = f'{sort_key} {sort_order}'
+    elif sort_key:
+        params['orderby'] = f'{sort_key}'
 
     content_creation_date = arg_to_datetime(args.get('date'))
     if content_creation_date:
         params['postingDay'] = content_creation_date.date()  # type: ignore
 
-    status = args.get('status', '').lower()
-    if status and status not in LEGAL_CONTENT_STATUS:
-        raise ValueError(MESSAGES['INVALID_STATUS_SEARCH'])
-    params['status'] = status
+    params['status'] = args.get('status', '').lower()
 
     params['expand'] = DEFAULT_EXPANDED_FIELD_CONTENT
     expand = args.get('expand', '')
@@ -753,17 +772,15 @@ def validate_list_content_argument(args: Dict[str, str]) -> Dict[str, Any]:
     return assign_params(**params)
 
 
-def validate_create_space_args(args: Dict[str, str]) -> Tuple[dict, Union[bool, str]]:
+def validate_create_space_args(args: Dict[str, str]):
     """
     Validate arguments for confluence-cloud-space-create command, raise ValueError on invalid arguments.
 
     :type args: ``Dict[str, str]``
     :param args: The command arguments provided by the user.
 
-    :return: Parameters to send in request
-    :rtype: ``Dict[str, Any]``
+    :return: None
     """
-
     unique_key = args.get('unique_key')
     if not unique_key:
         raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("unique_key"))
@@ -776,28 +793,42 @@ def validate_create_space_args(args: Dict[str, str]) -> Tuple[dict, Union[bool, 
     if len(name) > 200:
         raise ValueError(MESSAGES["INVALID_SPACE_NAME_LENGTH"])
 
-    description = args.get('description', '')
-
     is_private_space = argToBoolean(args.get('is_private_space', False))
-
     if is_private_space:
         if args.get('advanced_permissions') or args.get('permission_operations'):
             raise ValueError(MESSAGES["PRIVATE_SPACE_PERMISSION"])
 
     if args.get('advanced_permissions'):
         try:
-            permissions = json.loads(args['advanced_permissions'])
+            json.loads(args['advanced_permissions'])
         except (json.JSONDecodeError, json.decoder.JSONDecodeError, AttributeError):
             raise ValueError(MESSAGES["ADVANCE_PERMISSION_FORMAT"])
+
+
+def prepare_create_space_args(args: Dict[str, str]) -> Tuple[dict, Union[bool, str]]:
+    """
+    Prepare json object for confluence-cloud-space-create command.
+
+    :type args: ``Dict[str, str]``
+    :param args: The command arguments provided by the user.
+
+    :return: Parameters to send in request
+    :rtype: ``Dict[str, Any]``
+    """
+
+    is_private_space = argToBoolean(args.get('is_private_space', False))
+
+    if args.get('advanced_permissions'):
+        permissions = json.loads(args['advanced_permissions'])
     else:
         permissions = validate_permissions(args)
 
     params = {
-        "key": unique_key,
-        "name": name,
+        "key": args['unique_key'],
+        "name": args['name'],
         "description": {
             "plain": {
-                "value": description,
+                "value": args.get('description', ''),
                 "representation": "plain"
             }
         },
@@ -831,9 +862,22 @@ def prepare_hr_for_space_create(space: Dict[str, Any]) -> str:
                            removeNull=True)
 
 
-def validate_list_space_args(args: Dict[str, str]) -> Dict[str, Any]:
+def validate_status_argument(args: Dict[str, str]):
     """
-    Validate arguments for confluence-cloud-space-list command, raise ValueError on invalid arguments.
+    Validates the status argument of confluence-cloud-space-list command, raise ValueError on invalid arguments.
+    :type args: ``Dict[str, str]``
+    :param args: The command arguments provided by the user.
+
+    :return: None
+    """
+    status = args.get('status')
+    if status and status.lower() not in LEGAL_SPACE_STATUS:
+        raise ValueError(MESSAGES["INVALID_SPACE_STATUS"])
+
+
+def prepare_list_space_args(args: Dict[str, str]) -> Dict[str, Any]:
+    """
+    Prepare params for confluence-cloud-space-list command.
 
     :type args: ``Dict[str, str]``
     :param args: The command arguments provided by the user.
@@ -841,16 +885,14 @@ def validate_list_space_args(args: Dict[str, str]) -> Dict[str, Any]:
     :return: Parameters to send in request
     :rtype: ``Dict[str, Any]``
     """
-    params = validate_list_command_args(args)
-
-    params['spaceKey'] = argToList(args.get('space_key'))
-    params['spaceId'] = argToList(args.get('space_id'))
-    params['type'] = args.get('type')
-
-    status = args.get('status')
-    if status and status.lower() not in LEGAL_SPACE_STATUS:
-        raise ValueError(MESSAGES["INVALID_SPACE_STATUS"])
-    params['status'] = status
+    validate_status_argument(args)
+    limit, offset = validate_list_command_args(args)
+    params = {'limit': limit, 'start': offset,
+              'spaceKey': argToList(args.get('space_key')),
+              'spaceId': argToList(args.get('space_id')),
+              'type': args.get('type'),
+              'status': args.get('status')
+              }
 
     favourite = args.get('favourite', '')
     if favourite:
@@ -896,17 +938,16 @@ def prepare_hr_for_space_list(spaces: List[Dict[str, Any]], url_prefix: str) -> 
     return hr
 
 
-def validate_update_content_args(args: Dict[str, str]) -> Tuple[str, Dict[str, Any]]:
+def validate_update_content_args(args: Dict[str, str]):
     """
     Validate arguments for confluence-cloud-content-update command, raise ValueError on invalid arguments.
 
     :type args: ``Dict[str, str]``
     :param args: The command arguments provided by the user.
 
-    :return: Parameters to send in request
-    :rtype: ``Dict[str, Any]``
+    :return: None
     """
-    params = validate_create_content_args(args, is_update=True)
+    validate_create_content_args(args, is_update=True)
 
     content_id = args["content_id"]
     if not content_id:
@@ -915,15 +956,6 @@ def validate_update_content_args(args: Dict[str, str]) -> Tuple[str, Dict[str, A
     version = args["version"]
     if not version:
         raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("version"))
-    params["version"] = {
-        "number": version
-    }
-
-    content_type = params['type']
-    if content_type not in LEGAL_CONTENT_TYPE_UPDATE_COMMAND:
-        raise ValueError(MESSAGES["INVALID_CONTENT_TYPE_UPDATE_CONTENT"])
-
-    return content_id, params
 
 
 ''' COMMAND FUNCTIONS '''
@@ -963,8 +995,8 @@ def confluence_cloud_user_list_command(client: Client, args: Dict[str, str]) -> 
     :return: Standard command result or no records found message.
     :rtype: ``CommandResults``
     """
-    params = validate_list_command_args(args)
-
+    limit, offset = validate_list_command_args(args)
+    params = assign_params(limit=limit, start=offset)
     response = client.http_request(method="GET", url_suffix=URL_SUFFIX["USER"], params=params)
 
     response_json = response.json()
@@ -1001,7 +1033,7 @@ def confluence_cloud_content_search_command(client: Client, args: Dict[str, str]
     :return: Standard command result or no records found message.
     :rtype: ``CommandResults``
     """
-    params = validate_search_content_argument(args)
+    params = prepare_search_content_argument(args)
 
     response = client.http_request(method="GET", url_suffix=URL_SUFFIX["CONTENT_SEARCH"], params=params)
     response_json = response.json()
@@ -1048,8 +1080,13 @@ def confluence_cloud_content_update_command(client: Client, args: Dict[str, str]
     :return: Standard command result or no records found message.
     :rtype: ``CommandResults``
     """
-    content_id, params = validate_update_content_args(args)
+    validate_update_content_args(args)
 
+    content_id = args["content_id"]
+    params = prepare_content_create_params(args)
+    params["version"] = {
+        "number": args["version"]
+    }
     request_url = URL_SUFFIX["CONTENT"] + "/{}".format(content_id)
 
     response = client.http_request(method="PUT", url_suffix=request_url, json_data=params)
@@ -1080,7 +1117,12 @@ def confluence_cloud_content_delete_command(client: Client, args: Dict[str, str]
     :return: Standard command result or no records found message.
     :rtype: ``CommandResults``
     """
-    content_id, params = validate_delete_content_args(args)
+
+    validate_delete_content_args(args)
+
+    content_id = args["content_id"]
+    status = args.get("deletion_type", "").lower()
+    params = assign_params(status=LEGAL_DELETION_TYPES.get(status))
 
     request_url = URL_SUFFIX["CONTENT"] + "/{}".format(content_id)
 
@@ -1102,7 +1144,7 @@ def confluence_cloud_content_list_command(client: Client, args: Dict[str, str]) 
         :return: Standard command result or no records found message.
         :rtype: ``CommandResults``
     """
-    params = validate_list_content_argument(args)
+    params = prepare_list_content_argument(args)
 
     response = client.http_request(method="GET", url_suffix=URL_SUFFIX["CONTENT"], params=params)
 
@@ -1138,7 +1180,7 @@ def confluence_cloud_space_list_command(client: Client, args: Dict[str, str]) ->
       :return: Standard command result or no records found message.
       :rtype: ``CommandResults``
     """
-    params = validate_list_space_args(args)
+    params = prepare_list_space_args(args)
 
     response = client.http_request(method="GET", url_suffix=URL_SUFFIX["SPACE"], params=params)
 
@@ -1163,18 +1205,19 @@ def confluence_cloud_space_list_command(client: Client, args: Dict[str, str]) ->
 
 def confluence_cloud_comment_create_command(client: Client, args: Dict[str, str]) -> CommandResults:
     """
-           Creates a comment for a given content.
+       Creates a comment for a given content.
 
-           :type client: ``Client``
-           :param client: Client object to be used.
+       :type client: ``Client``
+       :param client: Client object to be used.
 
-           :type args: ``Dict[str, str]``
-           :param args: The command arguments provided by the user.
+       :type args: ``Dict[str, str]``
+       :param args: The command arguments provided by the user.
 
-           :return: Standard command result or no records found message.
-           :rtype: ``CommandResults``
-        """
-    params = validate_and_prepare_comment_args(args)
+       :return: Standard command result or no records found message.
+       :rtype: ``CommandResults``
+    """
+    validate_comment_args(args)
+    params = prepare_comment_create_params(args)
     response = client.http_request(method="POST", url_suffix=URL_SUFFIX["CONTENT"], json_data=params)
     response_json = response.json()
     context = remove_empty_elements_for_context(response_json)
@@ -1200,7 +1243,8 @@ def confluence_cloud_content_create_command(client: Client, args: Dict[str, str]
        :return: Standard command result or no records found message.
        :rtype: ``CommandResults``
     """
-    params = validate_create_content_args(args)
+    validate_create_content_args(args)
+    params = prepare_content_create_params(args)
     response = client.http_request(method="POST", url_suffix=URL_SUFFIX["CONTENT"], json_data=params)
     response_json = response.json()
     context = remove_empty_elements_for_context(response_json)
@@ -1215,19 +1259,19 @@ def confluence_cloud_content_create_command(client: Client, args: Dict[str, str]
 
 def confluence_cloud_space_create_command(client: Client, args: Dict[str, str]) -> CommandResults:
     """
-           Creates a new space in confluence cloud.
+       Creates a new space in confluence cloud.
 
-           :type client: ``Client``
-           :param client: Client object to be used.
+       :type client: ``Client``
+       :param client: Client object to be used.
 
-           :type args: ``Dict[str, str]``
-           :param args: The command arguments provided by the user.
+       :type args: ``Dict[str, str]``
+       :param args: The command arguments provided by the user.
 
-           :return: Standard command result or no records found message.
-           :rtype: ``CommandResults``
+       :return: Standard command result or no records found message.
+       :rtype: ``CommandResults``
     """
-
-    params, is_private_space = validate_create_space_args(args)
+    validate_create_space_args(args)
+    params, is_private_space = prepare_create_space_args(args)
 
     url_suffix = URL_SUFFIX["SPACE"]
 
@@ -1269,7 +1313,7 @@ def confluence_cloud_group_list_command(client: Client, args: Dict[str, str]) ->
        :return: Standard command result or no records found message.
        :rtype: ``CommandResults``
        """
-    params = validate_list_group_args(args)
+    params = prepare_group_args(args)
 
     response = client.http_request(method="GET", url_suffix=URL_SUFFIX["GROUP"], params=params)
 

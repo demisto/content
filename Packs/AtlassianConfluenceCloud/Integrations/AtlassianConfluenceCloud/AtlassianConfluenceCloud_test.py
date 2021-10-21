@@ -126,9 +126,9 @@ def test_confluence_cloud_group_list_command_when_invalid_args_are_provided(args
     Then:
         - Returns the response message of invalid input arguments
     """
-    from AtlassianConfluenceCloud import validate_list_group_args
+    from AtlassianConfluenceCloud import confluence_cloud_group_list_command
     with pytest.raises(ValueError) as de:
-        validate_list_group_args(args)
+        confluence_cloud_group_list_command(client, args)
     assert str(de.value) == err_msg
 
 
