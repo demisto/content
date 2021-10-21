@@ -1206,12 +1206,17 @@ def fetch_indicators_command(client):
                 'shortdescription': item.get('short_description'),
                 'stixindicatordescription': item.get('ttp_description'),
                 'stixttptitle': item.get('stix_ttp_title'),
-                'stixmalwaretypes': item.get('malware_type').lower().replace(' ', '-')
             }
+
+            if item.get('type') == 'Malware':
+                indicator_obj['score'] = ThreatIntel.ObjectsScore.MALWARE
+                indicator_obj['stixmalwaretypes'] = item.get('malware_type', '').lower().replace(' ', '-')
+            else:
+                indicator_obj['score'] = ThreatIntel.ObjectsScore.ATTACK_PATTERN
 
             ttp_fields: Dict[str, str] = {}
             for key, value in indicator_obj.items():
-                if key in client.tags:
+                if key in client.tags and value:
                     ttp_fields[key] = value
             indicator_obj['fields'] = ttp_fields
 

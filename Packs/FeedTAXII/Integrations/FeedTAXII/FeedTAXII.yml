@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: TAXIIFeed
+  id: TAXIIFeed dev
   version: -1
 configuration:
 - defaultvalue: 'true'
@@ -128,8 +128,8 @@ configuration:
   required: false
   type: 8
 description: Ingests indicator feeds from TAXII 1.x servers.
-display: TAXII Feed
-name: TAXIIFeed
+display: TAXII Feed dev
+name: TAXIIFeed dev
 script:
   commands:
   - arguments:
@@ -179,6 +179,9 @@ script:
       type: String
     - contextPath: TAXII.Indicator.confidence
       description: The indicator confidence.
+      type: String
+    - contextPath: TAXII.Indicator.score
+      description: The indicator DBot score.
       type: String
     - contextPath: TAXII.Indicator.fields
       description: The indicator value.
