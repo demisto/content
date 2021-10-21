@@ -24,7 +24,7 @@ This integration was integrated and tested with version 3976 of Picus
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### Picus_getAccessToken
+### picus-get-access-token
 ***
 Generates an access token for API usage. This function used for other functions inner authentication mechanism. Looks for X-Refresh-Token on the header or refresh-token cookie.
 
@@ -33,7 +33,7 @@ Generates an access token for API usage. This function used for other functions 
 
 #### Base Command
 
-`Picus_getAccessToken`
+`picus-get-access-token`
 #### Input
 
 There are no input arguments for this command.
@@ -44,14 +44,14 @@ There is no context output for this command.
 
 
 
-### Picus_getVectorList
+### picus-get-vector-list
 ***
 Returns the vector list from PICUS. These vectors can be used for automation processes.
 
 
 #### Base Command
 
-`Picus_getVectorList`
+`picus-get-vector-list`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -66,7 +66,7 @@ Returns the vector list from PICUS. These vectors can be used for automation pro
 There is no context output for this command.
 
 #### Command Example
-```!Picus_getVectorList```
+```!picus-get-vector-list```
 
 #### Human Readable Output
 
@@ -77,7 +77,7 @@ There is no context output for this command.
 
 
 
-### Picus_getPeerList
+### picus-get-peer-list
 ***
 Returns the peer list with current statuses. These peers also can be seen on the **PICUS Panel ->Settings-> Peers**.
 
@@ -86,7 +86,7 @@ Returns the peer list with current statuses. These peers also can be seen on the
 
 #### Base Command
 
-`Picus_getPeerList`
+`picus-get-peer-list`
 #### Input
 
 There are no input arguments for this command.
@@ -96,7 +96,7 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
-```!Picus_getPeerList```
+```!picus-get-peer-list```
 
 #### Human Readable Output
 
@@ -108,14 +108,14 @@ There is no context output for this command.
 
 
 
-### Picus_getAttackResults
+### picus-get-attack-results
 ***
 In the Picus, all attacks are carried out with the logic of the attacker and the victim. This command returns the list of the attack results on specified peers. Time range and result status can be given.
 
 
 #### Base Command
 
-`Picus_getAttackResults`
+`picus-get-attack-results`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -131,7 +131,7 @@ In the Picus, all attacks are carried out with the logic of the attacker and the
 There is no context output for this command.
 
 #### Command Example
-```!Picus_getAttackResults attacker_peer="Picus_Attacker_1" victim_peer="net1-det1" days=1 result="insecure"```
+```!picus-get-attack-results attacker_peer="Picus_Attacker_1" victim_peer="net1-det1" days=1 result="insecure"```
 
 #### Human Readable Output
 
@@ -142,14 +142,14 @@ There is no context output for this command.
 
 
 
-### Picus_runAttacks
+### picus-run-attacks
 ***
 In the Picus, all attacks are carried out with the logic of the attacker and the victim. This command schedules a single attack on the requested vector.
 
 
 #### Base Command
 
-`Picus_runAttacks`
+`picus-run-attacks`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -157,7 +157,7 @@ In the Picus, all attacks are carried out with the logic of the attacker and the
 | threat_ids | Threat ID list ("111,222,333,...") or single threat ID can be given. | Required | 
 | attacker_peer | Untrusted peer name. | Required | 
 | victim_peer | Trusted peer name. | Required | 
-| variant | Example variant=HTTP. | Required | 
+| variant | This parameter can be HTTP or HTTPS. Example variant=HTTP | Required | 
 
 
 #### Context Output
@@ -165,7 +165,7 @@ In the Picus, all attacks are carried out with the logic of the attacker and the
 There is no context output for this command.
 
 #### Command Example
-```!Picus_runAttacks attacker_peer="Picus_Attacker_1" victim_peer="net1-det1" threat_ids="881728,879812,798283" variant="HTTP"```
+```!picus-run-attacks attacker_peer="Picus_Attacker_1" victim_peer="net1-det1" threat_ids="881728,879812,798283" variant="HTTP"```
 
 #### Human Readable Output
 
@@ -177,14 +177,14 @@ There is no context output for this command.
 
 
 
-### Picus_getThreatResults
+### picus-get-threat-results
 ***
 Returns the list of the attack results of a single threat have optional parameters for filtration.
 
 
 #### Base Command
 
-`Picus_getThreatResults`
+`picus-get-threat-results`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -192,7 +192,7 @@ Returns the list of the attack results of a single threat have optional paramete
 | threat_ids | Threat ID list ("111,222,333,...") or single threat ID can be given. | Required | 
 | attacker_peer | Untrusted peer name. | Required | 
 | victim_peer | Trusted peer name. | Required | 
-| variant | Example variant=HTTP. | Required | 
+| variant | This parameter can be HTTP or HTTPS. Example variant=HTTP | Required | 
 
 
 #### Context Output
@@ -200,7 +200,7 @@ Returns the list of the attack results of a single threat have optional paramete
 There is no context output for this command.
 
 #### Command Example
-```!Picus_getThreatResults attacker_peer="Picus_Attacker_1" victim_peer="net1-det1" variant="HTTP" threat_ids="562172"```
+```!picus-get-threat-results attacker_peer="Picus_Attacker_1" victim_peer="net1-det1" variant="HTTP" threat_ids="562172"```
 
 #### Human Readable Output
 
@@ -210,21 +210,21 @@ There is no context output for this command.
 
 
 
-### Picus_setParamPB
+### picus-set-paramPB
 ***
 Set parameter on the playbook. (This command is only used on playbook)
 
 
 #### Base Command
 
-`Picus_setParamPB`
+`picus-set-paramPB`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | attacker_peer | Untrusted peer name. | Required | 
 | victim_peer | Trusted peer name. | Required | 
-| variant | Example variant=HTTP. | Required | 
+| variant | This parameter can be HTTP or HTTPS. Example variant=HTTP | Required | 
 | mitigation_product | Products info of the mitigation. This parameter can be Check Point NGFW, ForcepointNGFW, McAfee IPS, PaloAlto IPS, SourceFire IPS, TippingPoint, F5 BIG-IP, Fortigate WAF, FortiWeb, Fortigate IPS, Snort, CitrixWAF, and ModSecurity. | Required | 
 | days | Set days parameter. Default is 3. | Optional |
 
@@ -246,14 +246,14 @@ Filter insecure attacks on the playbook. (This command is only used on playbook)
 
 
 
-### Picus_getMitigationList
+### picus-get-mitigation-list
 ***
 Returns the list of the mitigations of threats have optional parameters for filtration, this route may not be used associated with your license.
 
 
 #### Base Command
 
-`Picus_getMitigationList`
+`picus-get-mitigation-list`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -267,7 +267,7 @@ Returns the list of the mitigations of threats have optional parameters for filt
 There is no context output for this command.
 
 #### Command Example
-```!Picus_getMitigationList threat_ids="103847" product="Snort"```
+```!picus-get-mitigation-list threat_ids="103847" product="Snort"```
 
 #### Human Readable Output
 
@@ -278,14 +278,14 @@ There is no context output for this command.
 
 
 
-### Picus_getVectorCompare
+### picus-get-vector-compare
 ***
 Makes a comparison of the given vector's results.
 
 
 #### Base Command
 
-`Picus_getVectorCompare`
+`picus-get-vector-compare`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -300,7 +300,7 @@ Makes a comparison of the given vector's results.
 There is no context output for this command.
 
 #### Command Example
-```!Picus_getVectorCompare attacker_peer="Picus_Attacker_1" victim_peer="net1-det1"```
+```!picus-get-vector-compare attacker_peer="Picus_Attacker_1" victim_peer="net1-det1"```
 
 #### Human Readable Output
 
@@ -310,3 +310,57 @@ There is no context output for this command.
 | insecure | null | null |
 | secure_to_insecures | null | null |
 | insecure_to_secures | null | null |
+
+
+
+### picus-version
+***
+Returns the current Picus version and the update time config.
+
+
+#### Base Command
+
+`picus-version`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!picus-version```
+
+#### Human Readable Output
+
+|version|update_time|last_update_date|
+|---|---|---|
+| 4025 | 0 | 20.10.2021 |
+
+
+
+### picus-trigger-update
+***
+Triggers the Picus product update mechanism manually.
+
+
+#### Base Command
+
+`picus-trigger-update`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!picus-trigger-update```
+
+#### Human Readable Output
+
+|data|success|
+|---|---|
+| true | true |

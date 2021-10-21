@@ -322,7 +322,8 @@ def getMitigationList():
     picus_req_url, picus_headers = generateEndpointURL(getAccessToken(), picus_endpoint)
     picus_mitigation_results : Dict[str,Any] = {"results": []}
     threat_ids = demisto.args().get('threat_ids')
-    product = [demisto.args().get('product')]
+    product = demisto.args().get('product')
+    product = list(product.split(","))
     threat_ids = list(threat_ids.split(","))
 
     for threat_id in threat_ids:
@@ -334,14 +335,14 @@ def getMitigationList():
             picus_mitigation_count = json.loads(picus_mitigation_response.text)["data"]["total_count"]
             if picus_mitigation_count!=0:
                 for threat_mitigation in picus_mitigation_result:
-                    mitigation_data = {"threat_id":threat_mitigation["threat"]["id"],"signature_id":threat_mitigation["signature"]["id"],"signature_name":threat_mitigation["signature"]["name"]}
+                    mitigation_data = {"threat_id":threat_mitigation["threat"]["id"],"signature_id":threat_mitigation["signature"]["id"],"signature_name":threat_mitigation["signature"]["name"],"vendor":threat_mitigation["product"]}
                     picus_mitigation_results["results"].append(mitigation_data)
         except Exception as e:
             continue
 
     picus_mitigation_results = picus_mitigation_results["results"]
     table_name = "Picus Mitigation List"
-    table_headers = ['threat_id','signature_id','signature_name']
+    table_headers = ['threat_id','signature_id','signature_name','vendor']
     md_table = tableToMarkdown(table_name, picus_mitigation_results, headers=table_headers, removeNull=True)
     results = CommandResults(readable_output=md_table,outputs_prefix="Picus.mitigationresults",outputs=picus_mitigation_results)
 
@@ -423,6 +424,35 @@ def setParamPB():
 
     return results
 
+def getPicusVersion():
+    picus_endpoint = "/user-api/v1/settings/version"
+    picus_req_url, picus_headers = generateEndpointURL(getAccessToken(),picus_endpoint)
+
+    picus_endpoint_response = requests.post(picus_req_url,headers=picus_headers,verify=verify_certificate)
+    picus_version_results = json.loads(picus_endpoint_response.text)["data"]
+    picus_version_info = {"version":picus_version_results["version"],"update_time":picus_version_results["update_time"],"last_update_date":picus_version_results["last_update_date"]}
+
+    table_name = "Picus Version"
+    table_headers = ['version','update_time','last_update_date']
+    md_table = tableToMarkdown(table_name,picus_version_info,headers=table_headers,removeNull=True)
+    results = CommandResults(readable_output=md_table,outputs=picus_version_info,outputs_prefix="Picus.versioninfo")
+
+    return results
+
+def triggerUpdate():
+    picus_endpoint = "/user-api/v1/settings/trigger-update"
+    picus_req_url, picus_headers = generateEndpointURL(getAccessToken(),picus_endpoint)
+
+    picus_endpoint_response = requests.post(picus_req_url,headers=picus_headers,verify=verify_certificate)
+    picus_update_results = json.loads(picus_endpoint_response.text)
+
+    table_name = "Picus Trigger Update"
+    table_headers = ['data','success']
+    md_table = tableToMarkdown(table_name,picus_update_results,headers=table_headers,removeNull=True)
+    results = CommandResults(readable_output=md_table)
+
+    return results
+
 def generateEndpointURL(picus_accessToken,picus_endpoint):
     picus_server = str(demisto.params().get("picus_server"))
     endpointURL = picus_server + picus_endpoint
@@ -449,35 +479,41 @@ def main() -> None:
             # This is the call made when pressing the integration Test button.
             result = test_module()
             return_results(result)
-        elif demisto.command()=='Picus_getAccessToken':
+        elif demisto.command()=='picus-get-access-token':
             result = getAccessToken()
             return_results(result)
-        elif demisto.command()=='Picus_getVectorList':
+        elif demisto.command()=='picus-get-vector-list':
             result = getVectorList()
             return_results(result)
-        elif demisto.command()=='Picus_getPeerList':
+        elif demisto.command()=='picus-get-peer-list':
             result = getPeerList()
             return_results(result)
-        elif demisto.command()=='Picus_getAttackResults':
+        elif demisto.command()=='picus-get-attack-results':
             result = getAttackResults()
             return_results(result)
-        elif demisto.command()=='Picus_runAttacks':
+        elif demisto.command()=='picus-run-attacks':
             result = runAttacks()
             return_results(result)
-        elif demisto.command()=='Picus_getThreatResults':
+        elif demisto.command()=='picus-get-threat-results':
             result = getThreatResults()
             return_results(result)
-        elif demisto.command()=='Picus_setParamPB':
+        elif demisto.command()=='picus-set-paramPB':
             result = setParamPB()
             return_results(result)
         elif demisto.command()=='filter-insecure-attacks':
             result = filterInsecureAttacks()
             return_results(result)
-        elif demisto.command()=='Picus_getMitigationList':
+        elif demisto.command()=='picus-get-mitigation-list':
             result = getMitigationList()
             return_results(result)
-        elif demisto.command() == 'Picus_getVectorCompare':
+        elif demisto.command() == 'picus-get-vector-compare':
             result = getVectorCompare()
+            return_results(result)
+        elif demisto.command() == 'picus-version':
+            result = getPicusVersion()
+            return_results(result)
+        elif demisto.command() == 'picus-trigger-update':
+            result = triggerUpdate()
             return_results(result)
 
     # Log exceptions and return errors

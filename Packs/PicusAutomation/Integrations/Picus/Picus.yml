@@ -25,11 +25,6 @@ display: Picus Security
 name: Picus
 script:
   commands:
-  - deprecated: false
-    description: Generates an access token for api usage. Looks for X-Refresh-Token
-      on header or refresh-token cookie.
-    execution: false
-    name: Picus_getAccessToken
   - arguments:
     - default: false
       description: Add vectors' assigned user details to the response.
@@ -53,11 +48,11 @@ script:
     description: Returns the list of the vectors all disabled and enabled ones have
       optional parameters for pagination.
     execution: false
-    name: Picus_getVectorList
+    name: picus-get-vector-list
   - deprecated: false
     description: Returns the peer list with current statuses.
     execution: false
-    name: Picus_getPeerList
+    name: picus-get-peer-list
   - arguments:
     - default: false
       description: Untrusted peer name.
@@ -89,6 +84,237 @@ script:
     description: Returns the list of the attack results have optional parameters for
       filtration.
     execution: false
+    name: picus-get-attack-results
+  - arguments:
+    - default: false
+      description: Threat ID list ("111,222,333,...") or single threat ID can be given.
+      isArray: false
+      name: threat_ids
+      required: true
+      secret: false
+    - default: false
+      description: Untrusted peer name.
+      isArray: false
+      name: attacker_peer
+      required: true
+      secret: false
+    - default: false
+      description: Trusted peer name.
+      isArray: false
+      name: victim_peer
+      required: true
+      secret: false
+    - default: false
+      description: This parameter can be HTTP or HTTPS. Example variant=HTTP
+      isArray: false
+      name: variant
+      required: true
+      secret: false
+    deprecated: false
+    description: Schedules a single attack on requested vector.
+    execution: false
+    name: picus-run-attacks
+  - arguments:
+    - default: false
+      description: Threat ID list ("111,222,333,...") or single threat ID can be given.
+      isArray: false
+      name: threat_ids
+      required: true
+      secret: false
+    - default: false
+      description: Untrusted peer name.
+      isArray: false
+      name: attacker_peer
+      required: true
+      secret: false
+    - default: false
+      description: Trusted peer name.
+      isArray: false
+      name: victim_peer
+      required: true
+      secret: false
+    - default: false
+      description: This parameter can be HTTP or HTTPS. Example variant=HTTP
+      isArray: false
+      name: variant
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the list of the attack results of a single threat have optional
+      parameters for filtration.
+    execution: false
+    name: picus-get-threat-results
+  - arguments:
+    - default: false
+      description: Untrusted peer name.
+      isArray: false
+      name: attacker_peer
+      required: true
+      secret: false
+    - default: false
+      description: Trusted peer name.
+      isArray: false
+      name: victim_peer
+      required: true
+      secret: false
+    - default: false
+      description: This parameter can be HTTP or HTTPS. Example variant=HTTP
+      isArray: false
+      name: variant
+      required: true
+      secret: false
+    - default: false
+      description: Products info of the mitigation. This parameter can be Check Point
+        NGFW, ForcepointNGFW, McAfee IPS, PaloAlto IPS, SourceFire IPS, TippingPoint,
+        F5 BIG-IP, Fortigate WAF, FortiWeb, Fortigate IPS, Snort, CitrixWAF, and ModSecurity.
+      isArray: false
+      name: mitigation_product
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '3'
+      description: Set days parameter.
+      isArray: false
+      name: days
+      required: false
+      secret: false
+    deprecated: false
+    description: Set parameter on playbook. (This command is only used on playbook)
+    execution: false
+    name: picus-set-paramPB
+  - arguments:
+    - default: false
+      description: Threat id and result combine. Used for playbook.
+      isArray: false
+      name: threatinfo
+      required: true
+      secret: false
+    deprecated: false
+    description: Filter insecure attacks on playbook. (This command is only used on
+      playbook)
+    execution: false
+    name: filter-insecure-attacks
+  - arguments:
+    - default: false
+      description: Threat ID list ("111,222,333,...") or single threat ID can be given.
+      isArray: false
+      name: threat_ids
+      required: true
+      secret: false
+    - default: false
+      description: Products info of the mitigation. This parameter can be Check Point
+        NGFW, ForcepointNGFW, McAfee IPS, PaloAlto IPS, SourceFire IPS, TippingPoint,
+        F5 BIG-IP, Fortigate WAF, FortiWeb, Fortigate IPS, Snort, CitrixWAF, and ModSecurity.
+      isArray: false
+      name: product
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the list of the mitigations of threats have optional parameters
+      for filtration, this route may not be used associated with your license.
+    execution: false
+    name: picus-get-mitigation-list
+  - arguments:
+    - default: false
+      description: Untrusted peer name.
+      isArray: false
+      name: attacker_peer
+      required: true
+      secret: false
+    - default: false
+      description: Trusted peer name.
+      isArray: false
+      name: victim_peer
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '3'
+      description: Set days parameter.
+      isArray: false
+      name: days
+      required: false
+      secret: false
+    deprecated: false
+    description: Makes a comparison of the given vector's results.
+    execution: false
+    name: picus-get-vector-compare
+  - deprecated: false
+    description: Returns the current Picus version and the update time config.
+    execution: false
+    name: picus-version
+  - deprecated: false
+    description: Triggers the Picus product update mechanism manually.
+    execution: false
+    name: picus-trigger-update
+  - deprecated: false
+    description: Generates an access token for api usage. Looks for X-Refresh-Token
+      on header or refresh-token cookie.
+    execution: false
+    name: picus-get-access-token
+  - deprecated: true
+    description: Generates an access token for api usage. Looks for X-Refresh-Token
+      on header or refresh-token cookie.
+    execution: false
+    name: Picus_getAccessToken
+  - arguments:
+    - default: false
+      description: Add vectors' assigned user details to the response.
+      isArray: false
+      name: add_user_details
+      required: false
+      secret: false
+    - default: false
+      description: Requested page number.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: Requested data size.
+      isArray: false
+      name: size
+      required: false
+      secret: false
+    deprecated: true
+    description: Returns the list of the vectors all disabled and enabled ones have
+      optional parameters for pagination.
+    execution: false
+    name: Picus_getVectorList
+  - deprecated: true
+    description: Returns the peer list with current statuses.
+    execution: false
+    name: Picus_getPeerList
+  - arguments:
+    - default: false
+      description: Untrusted peer name.
+      isArray: false
+      name: attacker_peer
+      required: true
+      secret: false
+    - default: false
+      description: Trusted peer name.
+      isArray: false
+      name: victim_peer
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '3'
+      description: Set days parameter.
+      isArray: false
+      name: days
+      required: false
+      secret: false
+    - default: false
+      defaultValue: all
+      description: This setting can only be insecure,secure and all.
+      isArray: false
+      name: result
+      required: false
+      secret: false
+    deprecated: true
+    description: Returns the list of the attack results have optional parameters for
+      filtration.
+    execution: false
     name: Picus_getAttackResults
   - arguments:
     - default: false
@@ -115,7 +341,7 @@ script:
       name: variant
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Schedules a single attack on requested vector.
     execution: false
     name: Picus_runAttacks
@@ -144,7 +370,7 @@ script:
       name: variant
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Returns the list of the attack results of a single threat have optional
       parameters for filtration.
     execution: false
@@ -183,22 +409,10 @@ script:
       name: days
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Set parameter on playbook. (This command is only used on playbook)
     execution: false
     name: Picus_setParamPB
-  - arguments:
-    - default: false
-      description: Threat id and result combine. Used for playbook.
-      isArray: false
-      name: threatinfo
-      required: true
-      secret: false
-    deprecated: false
-    description: Filter insecure attacks on playbook. (This command is only used on
-      playbook)
-    execution: false
-    name: filter-insecure-attacks
   - arguments:
     - default: false
       description: Threat ID list ("111,222,333,...") or single threat ID can be given.
@@ -214,7 +428,7 @@ script:
       name: product
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Returns the list of the mitigations of threats have optional parameters
       for filtration, this route may not be used associated with your license.
     execution: false
@@ -239,7 +453,7 @@ script:
       name: days
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Makes a comparison of the given vector's results.
     execution: false
     name: Picus_getVectorCompare
