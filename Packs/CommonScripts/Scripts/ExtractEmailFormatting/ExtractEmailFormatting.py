@@ -17,7 +17,7 @@ Third Group - [a-z]{2,} :
 
 The pattern will be: <First Group>@<Second Group>.<Third Group>
 """
-VALID_ADDRESS_FORMAT = r"[a-z0-9.!#$%&'*+-/=?^_`{|}~]{,64}(\[@\]|@)[a-z0-9.-]{,255}\.[a-z]{2,}"
+VALID_ADDRESS_FORMAT = r"[a-z0-9.!#$%&'*+-/=?^_`{|}~]{1,64}(\[@\]|@)[a-z0-9.-]{1,255}\.[a-z]{2,}"
 VALID_ADDRESS_REGEX = VALID_EXTENSION + VALID_ADDRESS_FORMAT
 
 
