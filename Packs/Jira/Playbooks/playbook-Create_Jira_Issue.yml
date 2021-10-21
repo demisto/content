@@ -449,12 +449,12 @@ inputs:
 - key: Summary
   value: {}
   required: true
-  description: Set a short description of the ticket.
+  description: Set the summary of the ticket.
   playbookInputQuery:
 - key: Description
   value: {}
   required: false
-  description: Set the impact for the new ticket. Leave empty for Jira default impact.
+  description: Set the description of the ticket.
   playbookInputQuery:
 - key: ProjectKey
   value: {}
