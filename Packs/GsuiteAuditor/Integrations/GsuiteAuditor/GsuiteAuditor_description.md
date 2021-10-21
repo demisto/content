@@ -3,8 +3,7 @@
 In order to get the sufficient permissions for the integration to run properly, follow these steps:
 
 1. **Configure a Service Account and retrieve its key in JSON format.** 
-  Perform the steps mentioned [here](https://developers.google.com/identity/protocols/oauth2/service-account#creatinganaccount)
-   or in the integration README. 
+  Perform the steps mentioned [here](https://developers.google.com/identity/protocols/oauth2/service-account#creatinganaccount).
 
 
 2. **Allow access to the relevant scopes.**
