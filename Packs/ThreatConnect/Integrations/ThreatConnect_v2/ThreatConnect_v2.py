@@ -1184,7 +1184,8 @@ def tc_update_indicator(indicator, rating=None, confidence=None, size=None, dns_
     indicators = tc.indicators()
     filter1 = indicators.add_filter()
     filter1.add_indicator(indicator)
-    filter1.add_owner(owner)
+    if owner:
+        filter1.add_owner(owner)
 
     raw_indicators = []
     for ind in indicators.retrieve():
