@@ -1,15 +1,16 @@
-import demistomock as demisto
 from CommonServerPython import *
-from IAMApiModule import *
 import traceback
 import urllib3
+
 # Disable insecure warnings
 urllib3.disable_warnings()
-
 
 ERROR_CODES_TO_SKIP = [
     404
 ]
+
+''' GLOBAL VARIABLES '''
+URI_PREFIX = '/services/data/v51.0/'
 
 '''CLIENT CLASS'''
 
@@ -17,45 +18,113 @@ ERROR_CODES_TO_SKIP = [
 class Client(BaseClient):
     """ A client class that implements logic to authenticate with the application. """
 
+    def __init__(self, base_url, verify=True, proxy=False, ok_codes=(), headers=None, auth=None, client_id=None,
+                 username=None, password=None, client_secret=None, manager_email=None):
+        super().__init__(base_url, verify, proxy, ok_codes, headers, auth)
+        self.manager_id = self.get_manager_id(manager_email)
+        self.client_id = client_id
+        self.client_secret = client_secret
+        self.username = username
+        self.password = password
+        self.headers = headers if headers else {}
+        self.headers['Authorization'] = f'Bearer {self.create_login()}'
+
+    def get_manager_id(self, manager_email: Optional[str]) -> str:
+        """ Gets the user's manager ID from manager email.
+        :type manager_email: ``str``
+        :param manager_email: user's manager email
+        :return: The user's manager ID
+        :rtype: ``str``
+        """
+
+        # Get manager ID.
+        manager_id = ''
+        if manager_email:
+            res = self.get_user(manager_email)
+            if res is not None:
+                manager_id = res.id
+        return manager_id
+
+    def create_login(self):
+        uri = '/services/oauth2/token'
+        params = {
+            "client_id": self.client_id,
+            "client_secret": self.client_secret,
+            "username": self.username,
+            "password": self.password,
+            "grant_type": "password",
+        }
+
+        res = self._http_request(
+            method='POST',
+            url_suffix=uri,
+            params=params,
+        )
+
+        return res.get('access_token')
+
     def test(self):
         """ Tests connectivity with the application. """
 
-        uri = '/test'                                 # TODO: replace to a valid test API endpoint
-        self._http_request(method='GET', url_suffix=uri)
+        uri = URI_PREFIX + 'sobjects/User/testid'
+        self._http_request(method='GET', url_suffix=uri, ok_codes=(200, 404))
 
-    def get_user(self, filter_name: str, filter_value: str) -> Optional[IAMUserAppData]:
-        """ Queries the user in the application using REST API by its email, and returns an IAMUserAppData object
+    def get_user_by_id(self, user_id: str) -> Optional['IAMUserAppData']:
+        """ Queries the user in the application using REST API by its ID, and returns an IAMUserAppData object
         that holds the user_id, username, is_active and app_data attributes given in the query response.
 
-        :type filter_name: ``str``
-        :param filter_name: Filter name to filter the needed user by. E.g, 'email', 'username'.
-
-        :type filter_value: ``str``
-        :param filter_value: Value of the filter.
+        :type user_id: ``str``
+        :param user_id: ID of the user in the application.
 
         :return: An IAMUserAppData object if user exists, None otherwise.
         :rtype: ``Optional[IAMUserAppData]``
         """
-        uri = '/users'                                          # TODO: replace to the correct GET User API endpoint
-        query_params = {filter_name: filter_value}              # TODO: make sure you pass the correct query parameters
+        uri = f'{URI_PREFIX}sobjects/FF__Key_Contact__c/{user_id}'
 
         res = self._http_request(
             method='GET',
             url_suffix=uri,
-            params=query_params
         )
 
-        if res and len(res.get('result', [])) == 1:  # TODO: make sure you verify a single result was retrieved
-            user_app_data = res.get('result')[0]     # TODO: get the user_id, username, is_active and user_app_data
+        if res:
+            username = res.get('Work_Email__c')
+            is_active = True
 
-            user_id = user_app_data.get('user_id')
-            is_active = user_app_data.get('active')
-            username = user_app_data.get('user_name')
-
-            return IAMUserAppData(user_id, username, is_active, user_app_data)
+            return IAMUserAppData(user_id, username, is_active, res)
         return None
 
-    def create_user(self, user_data: Dict[str, Any]) -> IAMUserAppData:
+    def get_user(self, email: str) -> Optional['IAMUserAppData']:
+        """ Queries the user in the application using REST API by its email, and returns an IAMUserAppData object
+        that holds the user_id, username, is_active and app_data attributes given in the query response.
+
+        :type email: ``str``
+        :param email: Email address of the user
+
+        :return: An IAMUserAppData object if user exists, None otherwise.
+        :rtype: ``Optional[IAMUserAppData]``
+        """
+        uri = f'{URI_PREFIX}parameterizedSearch'
+        params = {
+            "q": email,
+            "sobject": "FF__Key_Contact__c",
+            "FF__Key_Contact__c.where": f"Work_Email__c='{email}'",
+            "FF__Key_Contact__c.fields": "Id, FF__First_Name__c, FF__Last_Name__c, Work_Email__c, Name",
+        }
+
+        res = self._http_request(
+            method='GET',
+            url_suffix=uri,
+            params=params,
+        )
+
+        user_app_data = res.get('searchRecords', [])
+
+        if user_app_data:
+            user_id = user_app_data[0].get('Id')
+            return self.get_user_by_id(user_id)
+        return None
+
+    def create_user(self, user_data: Dict[str, Any]) -> 'IAMUserAppData':
         """ Creates a user in the application using REST API.
 
         :type user_data: ``Dict[str, Any]``
@@ -64,20 +133,23 @@ class Client(BaseClient):
         :return: An IAMUserAppData object that contains the data of the created user in the application.
         :rtype: ``IAMUserAppData``
         """
-        uri = '/users'                              # TODO: replace to the correct CREATE User API endpoint
+        uri = f'{URI_PREFIX}sobjects/FF__Key_Contact__c'
+        if self.manager_id:
+            user_data['manager_id'] = self.manager_id
+
         res = self._http_request(
             method='POST',
             url_suffix=uri,
-            json_data=user_data
+            json_data=user_data,
         )
-        user_app_data = res.get('result')           # TODO: get the user_id, username, is_active and user_app_data
-        user_id = user_app_data.get('user_id')
-        is_active = user_app_data.get('active')
-        username = user_app_data.get('user_name')
 
-        return IAMUserAppData(user_id, username, is_active, user_app_data)
+        user_id = res.get('id')
+        username = res.get('userName')
+        is_active = True
 
-    def update_user(self, user_id: str, user_data: Dict[str, Any]) -> IAMUserAppData:
+        return IAMUserAppData(user_id, username, is_active, res)
+
+    def update_user(self, user_id: str, user_data: Dict[str, Any]):
         """ Updates a user in the application using REST API.
 
         :type user_id: ``str``
@@ -89,22 +161,23 @@ class Client(BaseClient):
         :return: An IAMUserAppData object that contains the data of the updated user in the application.
         :rtype: ``IAMUserAppData``
         """
-        uri = f'/users/{user_id}'                   # TODO: replace to the correct UPDATE User API endpoint
-        res = self._http_request(
-            method='PATCH',
+        uri = f'{URI_PREFIX}sobjects/FF__Key_Contact__c/{user_id}'
+        if self.manager_id:
+            user_data['manager_id'] = self.manager_id
+        params = {"_HttpMethod": "PATCH"}
+
+        self._http_request(
+            method='POST',
             url_suffix=uri,
-            json_data=user_data
+            params=params,
+            json_data=user_data,
         )
 
-        user_app_data = res.get('result')
-        user_id = user_app_data.get('user_id')
-        is_active = user_app_data.get('active')
-        username = user_app_data.get('user_name')
+        return self.get_user_by_id(user_id)
 
-        return IAMUserAppData(user_id, username, is_active, user_app_data)
-
-    def enable_user(self, user_id: str) -> IAMUserAppData:
+    def enable_user(self, user_id: str):
         """ Enables a user in the application using REST API.
+        There is no action on the user for Salesforce Fusion instance needs to be taken.
 
         :type user_id: ``str``
         :param user_id: ID of the user in the application
@@ -112,15 +185,11 @@ class Client(BaseClient):
         :return: An IAMUserAppData object that contains the data of the user in the application.
         :rtype: ``IAMUserAppData``
         """
-        # Note: ENABLE user API endpoints might vary between different APIs.
-        # In this example, we use the same endpoint as in update_user() method,
-        # But other APIs might have a unique endpoint for this request.
 
-        user_data = {'active': True}                # TODO: make sure you pass the correct query parameters
-        return self.update_user(user_id, user_data)
+        return self.get_user_by_id(user_id)
 
-    def disable_user(self, user_id: str) -> IAMUserAppData:
-        """ Disables a user in the application using REST API.
+    def disable_user(self, user_id: str) -> 'IAMUserAppData':
+        """ Removes a user in the application using REST API.
 
         :type user_id: ``str``
         :param user_id: ID of the user in the application
@@ -128,12 +197,15 @@ class Client(BaseClient):
         :return: An IAMUserAppData object that contains the data of the user in the application.
         :rtype: ``IAMUserAppData``
         """
-        # Note: DISABLE user API endpoints might vary between different APIs.
-        # In this example, we use the same endpoint as in update_user() method,
-        # But other APIs might have a unique endpoint for this request.
 
-        user_data = {'active': False}               # TODO: make sure you pass the correct query parameters
-        return self.update_user(user_id, user_data)
+        uri = f'{URI_PREFIX}sobjects/FF__Key_Contact__c/{user_id}'
+
+        self._http_request(
+            method='DELETE',
+            url_suffix=uri,
+        )
+
+        return IAMUserAppData(user_id, "", False, {})
 
     def get_app_fields(self) -> Dict[str, Any]:
         """ Gets a dictionary of the user schema fields in the application and their description.
@@ -142,19 +214,17 @@ class Client(BaseClient):
         :rtype: ``Dict[str, str]``
         """
 
-        uri = '/schema'                             # TODO: replace to the correct GET Schema API endpoint
+        uri = f'{URI_PREFIX}sobjects/FF__Key_Contact__c/describe/'
         res = self._http_request(
             method='GET',
-            url_suffix=uri
+            url_suffix=uri,
         )
 
         fields = res.get('result', [])
-        return {field.get('name'): field.get('description') for field in fields}
+        return {field.get('name'): field.get('label') for field in fields}
 
     @staticmethod
-    def handle_exception(user_profile: IAMUserProfile,
-                         e: Union[DemistoException, Exception],
-                         action: IAMActions):
+    def handle_exception(user_profile, e, action):
         """ Handles failed responses from the application API by setting the User Profile object with the result.
             The result entity should contain the following data:
             1. action        (``IAMActions``)       The failed action                       Required
@@ -215,8 +285,8 @@ def get_error_details(res: Dict[str, Any]) -> str:
     :return: The parsed error details.
     :rtype: ``str``
     """
-    message = res.get('error', {}).get('message')   # TODO: make sure you parse the error details correctly
-    details = res.get('error', {}).get('detail')
+    message = res.get('message')
+    details = res.get('detail')
     return f'{message}: {details}'
 
 
@@ -248,15 +318,19 @@ def get_mapping_fields(client: Client) -> GetMappingFieldsResponse:
 def main():
     user_profile = None
     params = demisto.params()
-    base_url = urljoin(params['url'].strip('/'), '/api/now/')
+    base_url = urljoin(params['url'].strip('/'))
+    client_id = params.get('client_id')
+    client_secret = params.get('client_secret')
     username = params.get('credentials', {}).get('identifier')
     password = params.get('credentials', {}).get('password')
+    secret_token = params.get('secret_token')
     mapper_in = params.get('mapper_in')
     mapper_out = params.get('mapper_out')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     command = demisto.command()
     args = demisto.args()
+    manager_email = args.get('user-profile', {}).get('manageremailaddress')
 
     is_create_enabled = params.get("create_user_enabled")
     is_enable_enabled = params.get("enable_user_enabled")
@@ -265,12 +339,11 @@ def main():
     create_if_not_exists = params.get("create_if_not_exists")
 
     iam_command = IAMCommand(is_create_enabled, is_enable_enabled, is_disable_enabled, is_update_enabled,
-                             create_if_not_exists, mapper_in, mapper_out,
-                             get_user_iam_attrs=['id', 'username', 'email'])
+                             create_if_not_exists, mapper_in, mapper_out)
 
     headers = {
         'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        'Accept': 'application/json',
     }
 
     client = Client(
@@ -279,7 +352,11 @@ def main():
         proxy=proxy,
         headers=headers,
         ok_codes=(200, 201),
-        auth=(username, password)
+        client_id=client_id,
+        client_secret=client_secret,
+        username=username,
+        password=password + secret_token if password and secret_token else None,
+        manager_email=manager_email,
     )
 
     demisto.debug(f'Command being called is {command}')
@@ -310,10 +387,13 @@ def main():
         elif command == 'get-mapping-fields':
             return_results(get_mapping_fields(client))
 
-    except Exception:
+    except Exception as exc:
         # For any other integration command exception, return an error
-        return_error(f'Failed to execute {command} command. Traceback: {traceback.format_exc()}')
+        return_error(f'Failed to execute the {command} command.\nError: {exc}',
+                     error=f'Traceback: {traceback.format_exc()}')
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+from IAMApiModule import *  # noqa E402
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
     main()
