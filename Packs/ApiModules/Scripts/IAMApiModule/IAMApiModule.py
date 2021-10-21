@@ -466,7 +466,7 @@ class IAMCommand:
         :return: (IAMUserProfile) The user profile object.
         """
         user_profile = IAMUserProfile(user_profile=args.get('user-profile'), mapper=self.mapper_out)
-        allow_enable = args.get('allow-enable') == 'true'
+        allow_enable = args.get('allow-enable') == 'true' and self.is_enable_enabled
         if not self.is_update_enabled:
             user_profile.set_result(action=IAMActions.UPDATE_USER,
                                     skip=True,
@@ -479,10 +479,14 @@ class IAMCommand:
                 if user_app_data:
                     app_profile = user_profile.map_object(self.mapper_out, IAMUserProfile.UPDATE_INCIDENT_TYPE)
 
-                    if allow_enable and self.is_enable_enabled and not user_app_data.is_active:
+                    if allow_enable and not user_app_data.is_active:
                         client.enable_user(user_app_data.id)
 
                     updated_user = client.update_user(user_app_data.id, app_profile)
+
+                    if updated_user.is_active is None:
+                        updated_user.is_active = True if allow_enable else False
+
                     user_profile.set_result(
                         action=IAMActions.UPDATE_USER,
                         active=updated_user.is_active,
