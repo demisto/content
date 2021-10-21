@@ -2,7 +2,7 @@
     "name": "Azure Active Directory Identity and Access",
     "description": "Use Microsoft Graph to query information from Azure Active Directory",
     "support": "xsoar",
-    "currentVersion": "1.1.3",
+    "currentVersion": "1.1.4",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
