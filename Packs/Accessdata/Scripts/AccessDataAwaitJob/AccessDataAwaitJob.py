@@ -3,7 +3,7 @@
 from time import sleep
 from traceback import format_exc
 
-from CommonServerPython import return_error
+from CommonServerPython import *
 import demistomock as demisto
 
 """ Main Definition """
