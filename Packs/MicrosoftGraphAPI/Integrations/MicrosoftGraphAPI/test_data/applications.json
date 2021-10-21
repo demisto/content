@@ -4,7 +4,7 @@
         {
             "appId": "00000000-0000-0000-0000-000000000000",
             "identifierUris": [
-                "http://contoso/"
+                "http://demisto/"
             ],
             "displayName": "My app",
             "publisherDomain": "contoso.com",

@@ -109,12 +109,12 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      defaultValue: false
+      defaultValue: 'false'
       description: Set to true if the API returns "No Content" in the response.
       name: no_content
       predefined:
-      - true
-      - false
+      - 'true'
+      - 'false'
     deprecated: false
     description: Run a Microsoft Graph API query.
     execution: false
