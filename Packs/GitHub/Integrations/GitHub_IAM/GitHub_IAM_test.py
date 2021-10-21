@@ -56,7 +56,7 @@ def test_create_user_command(mocker):
     client = mock_client()
 
     mocker.patch.object(client, 'create_user', return_value=GITHUB_CREATE_USER_OUTPUT)
-    mocker.patch.object(client, 'get_user', return_value='')
+    mocker.patch.object(client, 'get_user', return_value={'totalResults': 0})
 
     iam_user_profile = create_user_command(client, args, 'mapper_out', True, True)
     outputs = get_outputs_from_user_profile(iam_user_profile)
@@ -70,7 +70,7 @@ def test_create_user_command(mocker):
 
 def test_get_user_command__existing_user(mocker):
     client = mock_client()
-    args = {"user-profile": {"email": "mock@mock.com"}}
+    args = {"user-profile": {"emails": "mock@mock.com"}}
 
     mocker.patch.object(client, 'get_user', return_value=GITHUB_UPDATE_USER_OUTPUT)
     mocker.patch.object(IAMUserProfile, 'update_with_app_data', return_value={})
@@ -169,7 +169,7 @@ def test_create_user_command__user_already_exists(mocker):
     client = mock_client()
     args = {"user-profile": {"emails": "mock@mock.com"}}
 
-    mocker.patch.object(client, 'get_user', return_value="mock@mock.com")
+    mocker.patch.object(client, 'get_user', return_value=GITHUB_UPDATE_USER_OUTPUT)
     mocker.patch.object(client, 'update_user', return_value=GITHUB_UPDATE_USER_OUTPUT)
 
     iam_user_profile = create_user_command(client, args, 'mapper_out', True, True)
@@ -183,7 +183,7 @@ def test_update_user_command__non_existing_user(mocker):
     client = mock_client()
     args = {"user-profile": {"emails": "mock@mock.com"}}
 
-    mocker.patch.object(client, 'get_user', return_value='')
+    mocker.patch.object(client, 'get_user', return_value={'totalResults': 0})
     mocker.patch.object(client, 'create_user', return_value=GITHUB_CREATE_USER_OUTPUT)
 
     iam_user_profile = update_user_command(client, args, 'mapper_out', is_update_enabled=True,
@@ -201,7 +201,7 @@ def test_update_user_command__command_is_disabled(mocker):
     client = mock_client()
     args = {"user-profile": {"emails": "mock@mock.com"}}
 
-    mocker.patch.object(client, 'get_user', return_value='')
+    mocker.patch.object(client, 'get_user', return_value={'totalResults': 0})
     mocker.patch.object(client, 'update_user', return_value=GITHUB_UPDATE_USER_OUTPUT)
 
     user_profile = update_user_command(client, args, 'mapper_out', is_update_enabled=False,
