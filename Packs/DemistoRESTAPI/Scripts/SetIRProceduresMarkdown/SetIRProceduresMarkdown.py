@@ -11,7 +11,6 @@ Linting: https://xsoar.pan.dev/docs/integrations/linting
 
 from CommonServerPython import *
 
-from typing import Dict, Any
 import traceback
 
 SECTIONS_TO_KEEY = {'Mitigation', 'Remediation', 'Eradication', 'Threat Hunting'}
@@ -19,13 +18,41 @@ SECTIONS_TO_KEEY = {'Mitigation', 'Remediation', 'Eradication', 'Threat Hunting'
 ''' COMMAND FUNCTION '''
 
 
-def add_url_to_tasks(tasks, workplan_url):
+def add_url_to_tasks(tasks: Dict, workplan_url: str):
     tasks = tasks.copy()
     for task in tasks:
         task_id = task.get('id')
         task_url = os.path.join(workplan_url, task_id)
         task['id'] = f"[{task_id}]({task_url})"
     return tasks
+
+
+def set_incident_with_count(all_tasks: List[Dict[str, str]]):
+    completed_tasks = list(filter(lambda x: x['state'] == 'Completed', all_tasks))
+    hunting_completed_tasks = list(filter(lambda x: 'hunting' in x['section'].lower(), completed_tasks))
+    mitigation_completed_tasks = list(filter(lambda x: 'mitigation' in x['section'].lower(), completed_tasks))
+    remediation_completed_tasks = list(filter(lambda x: 'remediation' in x['section'].lower(), completed_tasks))
+    eradication_completed_tasks = list(filter(lambda x: 'eradication' in x['section'].lower(), completed_tasks))
+
+    number_of_total_tasks = len(all_tasks)
+    number_of_completed_tasks = len(completed_tasks)
+    number_of_remaining_tasks = number_of_total_tasks - number_of_completed_tasks
+    number_of_completed_hunting_tasks = len(hunting_completed_tasks)
+    number_of_completed_mitigation_tasks = len(mitigation_completed_tasks)
+    number_of_completed_remediation_tasks = len(remediation_completed_tasks)
+    number_of_completed_eradication_tasks = len(eradication_completed_tasks)
+
+    incident = demisto.incident()
+    incident['CustomFields']['totaltaskcount'] = number_of_total_tasks
+    incident['CustomFields']['completedtaskcount'] = number_of_completed_tasks
+    incident['CustomFields']['remainingtaskcount'] = number_of_remaining_tasks
+
+    incident['CustomFields']['eradicationtaskcount'] = number_of_completed_eradication_tasks
+    incident['CustomFields']['huntingtaskcount'] = number_of_completed_hunting_tasks
+    incident['CustomFields']['mitigationtaskcount'] = number_of_completed_mitigation_tasks
+    incident['CustomFields']['remediationtaskcount'] = number_of_completed_remediation_tasks
+
+    demisto.executeCommand('setIncident', incident)
 
 
 def create_markdown_tasks() -> CommandResults:
@@ -55,28 +82,7 @@ def create_markdown_tasks() -> CommandResults:
                 tasks = add_url_to_tasks(tasks, workplan_url)
                 md_lst.append(tableToMarkdown(k2, tasks, headers=headers))
 
-    completed_tasks = list(filter(lambda x: x.get('state') == 'Completed', all_tasks))
-    hunting_completed_tasks = list(filter(lambda x: 'hunting' in x.get('section').lower(), completed_tasks))
-    mitigation_completed_tasks = list(filter(lambda x: 'mitigation' in x.get('section').lower(), completed_tasks))
-    remediation_completed_tasks = list(filter(lambda x: 'remediation' in x.get('section').lower(), completed_tasks))
-    eradication_completed_tasks = list(filter(lambda x: 'eradication' in x.get('section').lower(), completed_tasks))
-
-    number_of_total_tasks = len(all_tasks)
-    number_of_completed_tasks = len(completed_tasks)
-    number_of_remaining_tasks = number_of_total_tasks - number_of_completed_tasks
-    number_of_completed_hunting_tasks = len(hunting_completed_tasks)
-    number_of_completed_mitigation_tasks = len(mitigation_completed_tasks)
-    number_of_completed_remediation_tasks = len(remediation_completed_tasks)
-    number_of_completed_eradication_tasks = len(eradication_completed_tasks)
-    table = assign_params(number_of_total_tasks=number_of_total_tasks,
-                          number_of_completed_tasks=number_of_completed_tasks,
-                          number_of_remaining_tasks=number_of_remaining_tasks,
-                          number_of_completed_hunting_tasks=number_of_completed_hunting_tasks,
-                          number_of_completed_mitigation_tasks=number_of_completed_mitigation_tasks,
-                          number_of_completed_remediation_tasks=number_of_completed_remediation_tasks,
-                          number_of_completed_eradication_tasks=number_of_completed_eradication_tasks)
-
-    md_lst.insert(0, tableToMarkdown('Task Overview', table, headerTransform=string_to_table_header)[2:])
+    set_incident_with_count(all_tasks)
 
     md = '\n'.join(md_lst)
     return CommandResults(readable_output=md)

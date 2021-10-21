@@ -10,6 +10,7 @@ tags:
 - dynamic-section
 timeout: '0'
 type: python
+runas: DBotRole
 subtype: python3
 dockerimage: demisto/python3:3.9.7.24076
 fromversion: 5.5.0
