@@ -2899,7 +2899,7 @@ In the *tanium-tr-get-alert-by-id* command:
 * *alert-id* - this argument was replaced by *alert_id*.
 
 In the *tanium-tr-alert-update-state* command:
-* *alert-id* - this argument was replaced by *alert_id*.
+* *alert-id* - this argument was replaced by *alert_ids*.
 
 In the *tanium-tr-create-snapshot* command:
 * *connection-name* - this argument was replaced by *connection_id*.
@@ -2962,7 +2962,7 @@ In the *tanium-tr-create-evidence* command:
 * *connection-name* - this argument was replaced by *connection_id*.
 
 In the *tanium-tr-delete-evidence* command:
-* *evidence-id* - this argument was replaced by *evidence_id*.
+* *evidence-id* - this argument was replaced by *evidence_ids*.
 
 In the *tanium-tr-request-file-download* command:
 * *connection-name* - this argument was replaced by *connection_id*.
@@ -3058,12 +3058,12 @@ In the *tanium-tr-list-events-by-connection* command:
 * *TaniumEvent.Signed* - this output was replaced by *TaniumEvent.signed*.
 * *TaniumEvent.EventID* - this output was replaced by *TaniumEvent.eventId*.
 * *TaniumEvent.EventOpcode* - this output was replaced by *TaniumEvent.eventOpcode*.
-* *TaniumEvent.EventRecordID* - this output was replaced by *TaniumEvent.eventRecordID*.
-* *TaniumEvent.EventTaskID* - this output was replaced by *TaniumEvent.eventTaskID*.
+* *TaniumEvent.EventRecordID* - this output was replaced by *TaniumEvent.eventRecordId*.
+* *TaniumEvent.EventTaskID* - this output was replaced by *TaniumEvent.eventTaskId*.
 * *TaniumEvent.Query* - this output was replaced by *TaniumEvent.query*.
 * *TaniumEvent.Response* - this output was replaced by *TaniumEvent.response*.
 * *TaniumEvent.ImagePath* - this output was replaced by *TaniumEvent.imagePath*.
-* *TaniumEvent.CreationTime* - this output was replaced by *TaniumEvent.creationTime*.
+* *TaniumEvent.CreationTime* - this output was replaced by *TaniumEvent.createTime*.
 * *TaniumEvent.EndTime* - this output was replaced by *TaniumEvent.endTime*.
 * *TaniumEvent.EventTaskName* - this output was replaced by *TaniumEvent.eventTaskName*.
 * *TaniumEvent.Property.Name* - this output was removed.
@@ -3170,4 +3170,3 @@ In the *tanium-tr-get-file-info* command:
 * *Tanium.File.Path* - this output was replaced by *Tanium.File.path*.
 * *Tanium.File.ConnectionName* - this output was replaced by *Tanium.File.connectionId*.
 * *Tanium.File.Deleted* - this output was removed.
-
