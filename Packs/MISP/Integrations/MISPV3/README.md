@@ -48,6 +48,7 @@ Search for events in MISP. This search command will return only information abou
 | uuid | The event UUID to be returned by the search. For example, 59523300-4be8-4fa6-8867-0037ac110002. | Optional | 
 | page | If a limit is set, sets the page to be returned. For example, page 3, limit 100 will return records 201-&gt;300. Default is 1. | Optional | 
 | limit | Limit the number of events returned. Default is 50. | Optional | 
+| include_feed_correlations | Whether to return the event related feeds. Possible values: "true" and "false". Possible values are: true, false. | Optional | 
 
 
 #### Context Output
@@ -93,7 +94,7 @@ Search for events in MISP. This search command will return only information abou
 | MISP.Event.Feed.Provider | String | Feed provider. | 
 | MISP.Event.Feed.SourceFormat | String | Feed source format \(MISP for example\). | 
 | MISP.Event.Feed.URL | String | Feed url. | 
-| MISP.Event.Feed.EventUUIDS | Unknown | List of event uusids include the feed. | 
+| MISP.Event.Feed.EventUUIDS | Unknown | List of event uuids include the feed. | 
 
 
 #### Command Example

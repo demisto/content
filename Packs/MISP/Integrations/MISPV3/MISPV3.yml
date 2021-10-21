@@ -280,7 +280,7 @@ script:
       description: Feed url.
       type: String
     - contextPath: MISP.Event.Feed.EventUUIDS
-      description: List of event uusids include the feed.
+      description: List of event uuids include the feed.
       type: Unknown
   - arguments:
     - default: true
