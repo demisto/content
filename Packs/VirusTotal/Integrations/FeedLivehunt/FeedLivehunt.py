@@ -8,6 +8,18 @@ urllib3.disable_warnings()
 
 
 class Client(BaseClient):
+    def get_detections_str(self, last_analysis_stats: dict):
+        if not last_analysis_stats: return '0/0'
+
+        malicious = last_analysis_stats['malicious']
+        total = last_analysis_stats['harmless'] + \
+                last_analysis_stats['suspicious'] + \
+                last_analysis_stats['undetected'] + \
+                last_analysis_stats['malicious']
+
+        return f'{malicious}/{total}'
+
+
     def build_iterator(self) -> List:
         """Retrieves all entries from the feed.
         Returns:
@@ -76,6 +88,8 @@ def fetch_indicators(client: Client,
     for item in iterator:
         value_ = item.get('data')
         type_ = FeedIndicatorType.File
+        attributes = value_.get('attributes', {})
+        context_attributes = value_.get('context_attributes', {})
         raw_data = {
             'value': value_,
             'type': type_,
@@ -85,7 +99,7 @@ def fetch_indicators(client: Client,
         # The object consists of a dictionary with required and optional keys and values, as described blow.
         indicator_obj = {
             # The indicator value.
-            'value': value_,
+            'value': attributes['sha256'],
             # The indicator type as defined in Cortex XSOAR.
             # One can use the FeedIndicatorType class under CommonServerPython to populate this field.
             'type': type_,
@@ -94,11 +108,20 @@ def fetch_indicators(client: Client,
             # A dictionary that maps values to existing indicator fields defined in Cortex XSOAR.
             # One can use this section in order to map custom indicator fields previously defined
             # in Cortex XSOAR to their values.
-            'fields': {},
+            'fields': {
+                'md5': attributes['md5'],
+                'sha1': attributes['sha1'],
+                'sha256': attributes['sha256'],
+                'ssdeep': attributes['ssdeep'],
+            },
             # A dictionary of the raw data returned from the feed source about the indicator.
             'rawJSON': raw_data,
-            'sha256': value_['id'],
-            'fileType': value_.get('attributes', {}).get('type_description')
+            'sha256': attributes['sha256'],
+            'detections': client.get_detections_str(attributes.get('last_analysis_stats')),
+            'fileType': attributes.get('type_description'),
+            'rulesetName': context_attributes.get('ruleset_name'),
+            'ruleName': context_attributes.get('rule_name'),
+
         }
 
         if feed_tags:
@@ -132,7 +155,12 @@ def get_indicators_command(client: Client,
 
     human_readable = tableToMarkdown('Indicators from VirusTotal Livehunt Feed:',
                                      indicators,
-                                     headers=['sha256', 'fileType'],
+                                     headers=[
+                                        'sha256',
+                                        'detections',
+                                        'fileType',
+                                        'rulesetName',
+                                        'ruleName'],
                                      headerTransform=string_to_table_header,
                                      removeNull=True)
 
