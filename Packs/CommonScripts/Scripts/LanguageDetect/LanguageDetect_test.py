@@ -46,4 +46,3 @@ def test_language_detect_hebrew(mocker):
     results = demisto.results.call_args
     # Didn't test probability cause it changes every run.
     assert results[0][0]['Contents'][0].get('lang') == 'he'
-

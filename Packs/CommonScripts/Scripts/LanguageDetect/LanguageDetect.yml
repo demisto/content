@@ -22,3 +22,5 @@ outputs:
 scripttarget: 0
 dockerimage: demisto/langdetect:1.0.0.24247
 fromversion: 5.0.0
+tests:
+  - LanguageDetect-Test

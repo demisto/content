@@ -17,3 +17,5 @@ args:
 scripttarget: 0
 dockerimage: demisto/docxpy:1.0.0.24033
 fromversion: 5.0.0
+tests:
+  - No tests
