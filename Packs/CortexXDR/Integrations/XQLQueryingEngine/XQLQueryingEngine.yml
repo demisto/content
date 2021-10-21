@@ -78,7 +78,7 @@ script:
     - default: false
       description: If set to 'true', if a query returns more than 1000 results, it will be extracted as JSON data to the context,
         instead of being returned as a .gz file. If set to 'false' and the query results are greater than 1000,
-        it will return the .gz file without extracting the results to context (default is false).
+        it will return the .gz file without extracting the results to context.
       isArray: false
       name: parse_result_file_to_context
       auto: PREDEFINED
@@ -239,7 +239,7 @@ script:
     - default: false
       description: If set to 'true', if a query returns more than 1000 results, it will be extracted as JSON data to the context,
         instead of being returned as a .gz file. If set to 'false' and the query results are greater than 1000,
-        it will return the .gz file without extracting the results to context (default is false).
+        it will return the .gz file without extracting the results to context.
       isArray: false
       name: parse_result_file_to_context
       auto: PREDEFINED
@@ -425,7 +425,7 @@ script:
     - default: false
       description: If set to 'true', if a query returns more than 1000 results, it will be extracted as JSON data to the context,
         instead of being returned as a .gz file. If set to 'false' and the query results are greater than 1000,
-        it will return the .gz file without extracting the results to context (default is false).
+        it will return the .gz file without extracting the results to context.
       isArray: false
       name: parse_result_file_to_context
       auto: PREDEFINED
@@ -554,7 +554,7 @@ script:
     - default: false
       description: If set to 'true', if a query returns more than 1000 results, it will be extracted as JSON data to the context,
         instead of being returned as a .gz file. If set to 'false' and the query results are greater than 1000,
-        it will return the .gz file without extracting the results to context (default is false).
+        it will return the .gz file without extracting the results to context.
       isArray: false
       name: parse_result_file_to_context
       auto: PREDEFINED
@@ -710,7 +710,7 @@ script:
     - default: false
       description: If set to 'true', if a query returns more than 1000 results, it will be extracted as JSON data to the context,
         instead of being returned as a .gz file. If set to 'false' and the query results are greater than 1000,
-        it will return the .gz file without extracting the results to context (default is false).
+        it will return the .gz file without extracting the results to context.
       isArray: false
       name: parse_result_file_to_context
       auto: PREDEFINED
@@ -875,7 +875,7 @@ script:
     - default: false
       description: If set to 'true', if a query returns more than 1000 results, it will be extracted as JSON data to the context,
         instead of being returned as a .gz file. If set to 'false' and the query results are greater than 1000,
-        it will return the .gz file without extracting the results to context (default is false).
+        it will return the .gz file without extracting the results to context.
       isArray: false
       name: parse_result_file_to_context
       auto: PREDEFINED
@@ -1033,7 +1033,7 @@ script:
     - default: false
       description: If set to 'true', if a query returns more than 1000 results, it will be extracted as JSON data to the context,
         instead of being returned as a .gz file. If set to 'false' and the query results are greater than 1000,
-        it will return the .gz file without extracting the results to context (default is false).
+        it will return the .gz file without extracting the results to context.
       isArray: false
       name: parse_result_file_to_context
       auto: PREDEFINED
@@ -1182,7 +1182,7 @@ script:
     - default: false
       description: If set to 'true', if a query returns more than 1000 results, it will be extracted as JSON data to the context,
         instead of being returned as a .gz file. If set to 'false' and the query results are greater than 1000,
-        it will return the .gz file without extracting the results to context (default is false).
+        it will return the .gz file without extracting the results to context.
       isArray: false
       name: parse_result_file_to_context
       auto: PREDEFINED
@@ -1329,7 +1329,7 @@ script:
     - default: false
       description: If set to 'true', if a query returns more than 1000 results, it will be extracted as JSON data to the context,
         instead of being returned as a .gz file. If set to 'false' and the query results are greater than 1000,
-        it will return the .gz file without extracting the results to context (default is false).
+        it will return the .gz file without extracting the results to context.
       isArray: false
       name: parse_result_file_to_context
       auto: PREDEFINED
@@ -1503,7 +1503,7 @@ script:
     - default: false
       description: If set to 'true', if a query returns more than 1000 results, it will be extracted as JSON data to the context,
         instead of being returned as a .gz file. If set to 'false' and the query results are greater than 1000,
-        it will return the .gz file without extracting the results to context (default is false).
+        it will return the .gz file without extracting the results to context.
       isArray: false
       name: parse_result_file_to_context
       auto: PREDEFINED
@@ -1675,7 +1675,7 @@ script:
     - default: false
       description: If set to 'true', if a query returns more than 1000 results, it will be extracted as JSON data to the context,
         instead of being returned as a .gz file. If set to 'false' and the query results are greater than 1000,
-        it will return the .gz file without extracting the results to context (default is false).
+        it will return the .gz file without extracting the results to context.
       isArray: false
       name: parse_result_file_to_context
       auto: PREDEFINED
@@ -1850,7 +1850,7 @@ script:
     - default: false
       description: If set to 'true', if a query returns more than 1000 results, it will be extracted as JSON data to the context,
         instead of being returned as a .gz file. If set to 'false' and the query results are greater than 1000,
-        it will return the .gz file without extracting the results to context (default is false).
+        it will return the .gz file without extracting the results to context.
       isArray: false
       name: parse_result_file_to_context
       auto: PREDEFINED
