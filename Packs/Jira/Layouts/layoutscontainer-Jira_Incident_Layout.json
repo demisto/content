@@ -316,10 +316,19 @@
                             },
                             {
                                 "endCol": 2,
+                                "fieldId": "jiraissuekey",
+                                "height": 22,
+                                "id": "4515ab80-2bf6-11ec-a27d-7950ba87d817",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
                                 "fieldId": "jiratransitions",
                                 "height": 22,
                                 "id": "d83fbd70-7c3c-11eb-9b0a-25e7cc4d953d",
-                                "index": 6,
+                                "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
