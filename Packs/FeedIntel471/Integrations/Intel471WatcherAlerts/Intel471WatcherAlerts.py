@@ -40,7 +40,7 @@ class Client(BaseClient):
     def search_alerts(self, watcher_group_uids: Optional[str],
                       max_results: Optional[int],
                       start_time: Optional[int],
-                      last_alert_uid: Optional[str]) -> List[Dict[str, Any]]:
+                      last_alert_uid: Optional[str]) -> Dict:
         """Searches for Intel 471 Watcher Alerts using the '/get_alerts' API endpoint
 
         All the parameters are passed directly to the API as HTTP POST parameters in the request
@@ -57,8 +57,8 @@ class Client(BaseClient):
         :type last_alert_uid: ``Optional[str]``
         : param last_alert_uid: uid of the most recent alert already acquired
 
-        :return: list containing the found Intel 471 Watcher alerts as dicts
-        :rtype: ``List[Dict[str, Any]]``
+        :return: Dict containing the found Intel 471 Watcher alerts
+        :rtype: ``Dict``
         """
 
         request_params: Dict[str, Any] = {}
@@ -438,9 +438,9 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
 
     # Get the last fetch time, if exists
     # last_run is a dict with a single key, called last_fetch
-    last_fetch: int = last_run.get('last_fetch', None)
+    last_fetch: int = last_run.get('last_fetch', 0)
     # Handle first fetch time
-    if last_fetch is None:
+    if last_fetch == 0:
         # if missing, use what provided via first_fetch_time
         last_fetch = first_fetch_time * 1000
     else:
@@ -469,9 +469,9 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
     if alerts_wrapper.get('alerts'):
         watcher_groups: List = []
         if alerts_wrapper.get('watcherGroups'):
-            watcher_groups = alerts_wrapper.get('watcherGroups')
+            watcher_groups = alerts_wrapper.get('watcherGroups', [])
 
-        alerts: List = alerts_wrapper.get('alerts')
+        alerts: List = alerts_wrapper.get('alerts', [])
         for alert in alerts:
             # If no created_time set is as epoch (0). We use time in ms so we must
             # convert it from the Titan API response
