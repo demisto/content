@@ -122,8 +122,8 @@ def remove_tags(html: str) -> str:
     return TAG_RE.sub('', html)
 
 
-def deep_get(dictionary, path, default: str) -> str:
-    result: str = ''
+def deep_get(dictionary, path, default: Any) -> str:
+    result: Any
 
     keys = path.split('.')
     value = reduce(lambda d, key: d[int(key)] if isinstance(d, list) else d.get(key) if d else default, keys, dictionary)
@@ -215,16 +215,16 @@ def compose_titan_url(alert: Dict) -> str:
     elif alert.get('indicator', None):
         titan_url = TITAN_PORTAL_URL + 'malware/indicator/' + deep_get(alert, 'indicator.data.uid', '')
     elif alert.get('instantMessage', None):
-        thread_uid: str = deep_get(alert, 'instantMessage.data.channel.uid', '')
+        thread_uid_instant_message: str = deep_get(alert, 'instantMessage.data.channel.uid', '')
         message_uid: str = deep_get(alert, 'instantMessage.data.message.uid', '')
-        titan_url = TITAN_PORTAL_URL + 'ims_thread/' + thread_uid + '?message_uid=' + message_uid
+        titan_url = TITAN_PORTAL_URL + 'ims_thread/' + thread_uid_instant_message + '?message_uid=' + message_uid
     elif alert.get('ioc', None):
         titan_url = TITAN_PORTAL_URL + 'search/IOC%7C*:' + deep_get(alert, 'ioc.value', '') + \
                                        '?ordering=latest&period_of_time=all'
     elif alert.get('post', None):
-        thread_uid: str = deep_get(alert, 'post.links.thread.uid', '')
+        thread_uid_post: str = deep_get(alert, 'post.links.thread.uid', '')
         post_uid: str = deep_get(alert, 'post.uid', '')
-        titan_url = TITAN_PORTAL_URL + 'post_thread/' + thread_uid + '?post_uid=' + post_uid
+        titan_url = TITAN_PORTAL_URL + 'post_thread/' + thread_uid_post + '?post_uid=' + post_uid
     elif alert.get('report', None):
         titan_url = deep_get(alert, 'report.portalReportUrl', '')
     elif alert.get('spotReport', None):
@@ -243,10 +243,10 @@ def compose_incident_watcher_details(alert: Dict, watcher_groups: List) -> tuple
         watcher_group_description = watcher_group.get('name', '')
 
     watcher_description: str = ''
-    watcher_uid: str = alert.get('watcherUid')
+    watcher_uid: str = alert.get('watcherUid', '')
     watchers: List = []
     if watcher_group.get('watchers', None):
-        watchers = watcher_group.get('watchers')
+        watchers = watcher_group.get('watchers', [])
         watcher: Dict = [w for w in watchers if w['uid'] == watcher_uid][0]
         if watcher:
             watcher_description = watcher.get('description', '')
@@ -260,7 +260,7 @@ def compose_incident_details(alert: Dict, watcher_groups: List) -> str:
     if alert.get('actor', None):
         details += 'Source Object: ACTOR'
         details += '\n\n' + 'Actor Details:'
-        actor_details: Dict = deep_get(alert, 'actor.links', '')
+        actor_details: Dict = deep_get(alert, 'actor.links', {})
         actor_details_str: str = json.dumps(actor_details, indent=2, sort_keys=False)
         details += '\n' + actor_details_str
     elif alert.get('breachAlert', None):
@@ -270,7 +270,7 @@ def compose_incident_details(alert: Dict, watcher_groups: List) -> str:
                           ' (' + deep_get(alert, 'breachAlert.data.breach_alert.confidence.description', '') + ')'
         details += '\n' + 'Actor/Group: ' + deep_get(alert, 'breachAlert.data.breach_alert.actor_or_group', '')
         details += '\n\n' + 'Victim Details:'
-        victim_details: Dict = deep_get(alert, 'breachAlert.data.breach_alert.victim', '')
+        victim_details: Dict = deep_get(alert, 'breachAlert.data.breach_alert.victim', {})
         victim_details_str: str = json.dumps(victim_details, indent=2, sort_keys=False)
         details += '/n' + victim_details_str
     elif alert.get('credential', None):
@@ -278,18 +278,18 @@ def compose_incident_details(alert: Dict, watcher_groups: List) -> str:
         details += '\n' + 'Credential Login: ' + deep_get(alert, 'credential.data.credential_login', '')
         details += '\n' + 'Detection Domain: ' + deep_get(alert, 'credential.data.detection_domain', '')
         details += '\n' + 'Password Strength: ' + deep_get(alert, 'credential.data.password.strength', '')
-        affiliations_list: List = alert.get('credential', {}).get('data', {}).get('affiliations', [])
-        affiliations: str = ','.join(affiliations_list)
-        details += '\n' + 'Affiliations: ' + affiliations
+        affiliations_list_credential: List = alert.get('credential', {}).get('data', {}).get('affiliations', [])
+        affiliations_credential: str = ','.join(affiliations_list_credential)
+        details += '\n' + 'Affiliations: ' + affiliations_credential
     elif alert.get('credential_occurrence', None):
         details += 'Source Object: CREDENTIAL OCCURRENCE'
         details += '\n' + 'Credential Login: ' + deep_get(alert, 'credential_occurrence.data.credential.credential_login', '')
         details += '\n' + 'Detection Domain: ' + deep_get(alert, 'credential_occurrence.data.credential.detection_domain', '')
         details += '\n' + 'Password Strength: ' + deep_get(alert, 'credential_occurrence.data.credential.password.strength', '')
-        affiliations_list: List = alert.get('credential_occurrence', {}).get('data', {}) \
-                                                                        .get('credential', {}).get('affiliations', [])
-        affiliations: str = ','.join(affiliations_list)
-        details += '\n' + 'Affiliations: ' + affiliations
+        affiliations_list_credential_occurrence: List = alert.get('credential_occurrence', {}).get('data', {}) \
+                                                             .get('credential', {}).get('affiliations', [])
+        affiliations_credential_occurrence: str = ','.join(affiliations_list_credential_occurrence)
+        details += '\n' + 'Affiliations: ' + affiliations_credential_occurrence
         details += '\n' + 'Credential Set: ' + deep_get(alert, 'credential_occurrence.data.credential_set.name', '')
     elif alert.get('credential_set', None):
         details += 'Source Object: CREDENTIAL SET'
@@ -432,7 +432,7 @@ def test_module(client: Client) -> str:
 
 
 def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
-                    first_fetch_time: Optional[int],
+                    first_fetch_time: int,
                     watcher_group_uids: Optional[str], severity: str, last_alert_uid: str
                     ) -> Tuple[str, Dict[str, int], List[dict]]:
 
@@ -529,7 +529,7 @@ def main() -> None:
         arg_name='First fetch time',
         required=True
     )
-    first_fetch_timestamp = int(first_fetch_time.timestamp()) if first_fetch_time else None
+    first_fetch_timestamp: int = int(first_fetch_time.timestamp()) if first_fetch_time else 0
     # Using assert as a type guard (since first_fetch_time is always an int when required=True)
     assert isinstance(first_fetch_timestamp, int)
 
