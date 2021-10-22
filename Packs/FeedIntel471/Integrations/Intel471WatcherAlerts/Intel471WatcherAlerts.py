@@ -153,7 +153,7 @@ def compose_incident_title(alert: Dict) -> str:
 
     if alert.get('actor', None):
         title = 'ACTOR:\n'
-        handles: List = alert.get('actor').get('handles', [])
+        handles: List = alert.get('actor', {}).get('handles', [])
         if handles:
             title += ','.join(handles)
     elif alert.get('breachAlert', None):
@@ -195,7 +195,7 @@ def compose_titan_url(alert: Dict) -> str:
     titan_url: str = ''
 
     if alert.get('actor', None):
-        handles: List = alert.get('actor').get('handles', [])
+        handles: List = alert.get('actor', {}).get('handles', [])
         if handles:
             titan_url = TITAN_PORTAL_URL + 'search/Actor:' + handles[0] + '/actors?ordering=latest&period_of_time=all'
     elif alert.get('breachAlert', None):
@@ -278,7 +278,7 @@ def compose_incident_details(alert: Dict, watcher_groups: List) -> str:
         details += '\n' + 'Credential Login: ' + deep_get(alert, 'credential.data.credential_login', '')
         details += '\n' + 'Detection Domain: ' + deep_get(alert, 'credential.data.detection_domain', '')
         details += '\n' + 'Password Strength: ' + deep_get(alert, 'credential.data.password.strength', '')
-        affiliations_list: List = alert.get('credential').get('data').get('affiliations', [])
+        affiliations_list: List = alert.get('credential', {}).get('data', {}).get('affiliations', [])
         affiliations: str = ','.join(affiliations_list)
         details += '\n' + 'Affiliations: ' + affiliations
     elif alert.get('credential_occurrence', None):
@@ -286,7 +286,8 @@ def compose_incident_details(alert: Dict, watcher_groups: List) -> str:
         details += '\n' + 'Credential Login: ' + deep_get(alert, 'credential_occurrence.data.credential.credential_login', '')
         details += '\n' + 'Detection Domain: ' + deep_get(alert, 'credential_occurrence.data.credential.detection_domain', '')
         details += '\n' + 'Password Strength: ' + deep_get(alert, 'credential_occurrence.data.credential.password.strength', '')
-        affiliations_list: List = alert.get('credential_occurrence').get('data').get('credential').get('affiliations', [])
+        affiliations_list: List = alert.get('credential_occurrence', {}).get('data', {}) \
+                                                                        .get('credential', {}).get('affiliations', [])
         affiliations: str = ','.join(affiliations_list)
         details += '\n' + 'Affiliations: ' + affiliations
         details += '\n' + 'Credential Set: ' + deep_get(alert, 'credential_occurrence.data.credential_set.name', '')
