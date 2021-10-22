@@ -42,7 +42,7 @@ tasks:
     task:
       id: c63fd684-428a-48c0-801d-334530c39e1a
       version: -1
-      name: Schedule Ticket State Polling  Task
+      name: Schedule Ticket State Polling Task
       description: Schedule Polling Task
       scriptName: ScheduleGenericPolling
       type: regular
@@ -258,7 +258,7 @@ inputs:
   required: false
   description: "Additional polling commands are relevant when using StatePolling,\
     \ and there is more than one Jira instance. It will specify the polling command\
-    \ to use a specific instance to run on. \nIf so, please add \"Using\" to the value.\
+    \ to use a specific instance to run on. \nWhen implemented, add \"Using\" to the value.\
     \ \nThe polling command will then take the instance name as the instance to use. "
   playbookInputQuery:
 outputs: []
