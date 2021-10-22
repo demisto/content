@@ -22,8 +22,7 @@ configuration:
   required: true
   type: 0
 - additionalinfo: "Date or relative timestamp to start fetching incidents from. \n\
-    \nFormats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd,\
-    \ yyyy-mm-ddTHH:MM:SSZ, etc"
+    \nFormats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, ISO timestamp.
   defaultvalue: 3 days
   display: First fetch time interval
   name: first_fetch
