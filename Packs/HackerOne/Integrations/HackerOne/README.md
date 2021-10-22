@@ -1,8 +1,8 @@
 HackerOne integration allows users to fetch reports by using the fetch incidents capability. It also provides commands to retrieve all the reports and programs.
 This integration was integrated and tested with API version v1 of HackerOne.
 
-## Advance Filter
-For the command hackone-report-list as well as for the configuration parameter advanced_filter is provided to filter the response by attribute values.
+## Advanced Filter
+The`advanced_filter` parameter used both in the `hackerone-report-list` command and in the integration configuration, is used to filter results based on attribute values.
 The general filtering syntax is as follows:
 
 ```{\"attribute\": \"value1, value2\"}```
