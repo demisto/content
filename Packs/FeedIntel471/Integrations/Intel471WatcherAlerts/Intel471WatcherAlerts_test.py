@@ -16,12 +16,12 @@ GET_REPORT_TYPE_DATA = [
     (
         'https://titan.intel471.com/report/spotrep/3ff4ef482649a94e792f8476edc84381',  # input
         'SPOT REPORT:\n'  # expected
-        
+
     )
 ]
 
 
-@pytest.mark.parametrize("input,expected_results", GET_REPORT_TYPE_DATA)
+@pytest.mark.parametrize('input,expected_results', GET_REPORT_TYPE_DATA)
 def test_get_report_type(mocker, input, expected_results):
     """
     Given:
@@ -34,5 +34,5 @@ def test_get_report_type(mocker, input, expected_results):
         - Returns a report type.
 
     """
-    report_type: str = feed.get_report_type(**input)
+    report_type: str = feed.get_report_type(input)
     assert report_type == expected_results
