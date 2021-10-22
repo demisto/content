@@ -169,11 +169,14 @@ def compose_incident_title(alert: Dict) -> str:
     elif alert.get('entity', None):
         title = 'ENTITY:\n' + deep_get(alert, 'entity.value', '')
     elif alert.get('event', None):
-        title = 'MALWARE EVENT:\n' + deep_get(alert, 'event.data.threat.data.family', '') + ' - ' + deep_get(alert, 'event.data.event_type', '')
+        title = 'MALWARE EVENT:\n' + deep_get(alert, 'event.data.threat.data.family', '') + ' - ' + \
+                deep_get(alert, 'event.data.event_type', '')
     elif alert.get('indicator', None):
-        title = 'MALWARE INDICATOR:\n' + deep_get(alert, 'indicator.data.threat.data.family', '') + ' - ' + deep_get(alert, 'indicator.data.context.description', '')
+        title = 'MALWARE INDICATOR:\n' + deep_get(alert, 'indicator.data.threat.data.family', '') + \
+                ' - ' + deep_get(alert, 'indicator.data.context.description', '')
     elif alert.get('instantMessage', None):
-        title = 'INSTANT MESSAGE:\n' + html.unescape(' '.join(remove_tags(deep_get(alert, 'instantMessage.data.message.text', '')).strip().split())[:100])
+        title = 'INSTANT MESSAGE:\n' + html.unescape(' '.join(remove_tags(deep_get(alert, \
+                'instantMessage.data.message.text', '')).strip().split())[:100])
     elif alert.get('ioc', None):
         title = 'IOC:\n' + deep_get(alert, 'ioc.value', '')
     elif alert.get('post', None):
@@ -216,7 +219,8 @@ def compose_titan_url(alert: Dict) -> str:
         message_uid: str = deep_get(alert, 'instantMessage.data.message.uid', '')
         titan_url = TITAN_PORTAL_URL + 'ims_thread/' + thread_uid + '?message_uid=' + message_uid
     elif alert.get('ioc', None):
-        titan_url = TITAN_PORTAL_URL + 'search/IOC%7C*:' + deep_get(alert, 'ioc.value', '') + '?ordering=latest&period_of_time=all'
+        titan_url = TITAN_PORTAL_URL + 'search/IOC%7C*:' + deep_get(alert, 'ioc.value', '') + \
+                '?ordering=latest&period_of_time=all'
     elif alert.get('post', None):
         thread_uid: str = deep_get(alert, 'post.links.thread.uid', '')
         post_uid: str = deep_get(alert, 'post.uid', '')
@@ -262,7 +266,8 @@ def compose_incident_details(alert: Dict, watcher_groups: List) -> str:
     elif alert.get('breachAlert', None):
         details += 'Source Object: BREACH ALERT'
         details += '\n' + 'Title: ' + deep_get(alert, 'breachAlert.data.breach_alert.title', '')
-        details += '\n' + 'Confidence: ' + deep_get(alert, 'breachAlert.data.breach_alert.confidence.lovel', '') + ' (' + deep_get(alert, 'breachAlert.data.breach_alert.confidence.description', '') + ')'
+        details += '\n' + 'Confidence: ' + deep_get(alert, 'breachAlert.data.breach_alert.confidence.lovel', '') + \
+                    ' (' + deep_get(alert, 'breachAlert.data.breach_alert.confidence.description', '') + ')'
         details += '\n' + 'Actor/Group: ' + deep_get(alert, 'breachAlert.data.breach_alert.actor_or_group', '')
         details += '\n\n' + 'Victim Details:'
         victim_details: Dict = deep_get(alert, 'breachAlert.data.breach_alert.victim', '')
@@ -295,9 +300,12 @@ def compose_incident_details(alert: Dict, watcher_groups: List) -> str:
         details += '\n' + 'Risk Level: ' + deep_get(alert, 'cveReport.data.cve_report.risk_level', '')
         details += '\n' + 'Vendor: ' + deep_get(alert, 'cveReport.data.cve_report.vendor_name', '')
         details += '\n' + 'Product: ' + deep_get(alert, 'cveReport.data.cve_report.product_name', '')
-        details += '\n' + 'Exploit Available: ' + str(deep_get(alert, 'cveReport.data.cve_report.exploit_status.available', 'False'))
-        details += '\n' + 'Exploit Weaponized: ' + str(deep_get(alert, 'cveReport.data.cve_report.exploit_status.weaponized', 'False'))
-        details += '\n' + 'Exploit Productized: ' + str(deep_get(alert, 'cveReport.data.cve_report.exploit_status.productized', 'False'))
+        details += '\n' + 'Exploit Available: ' + str(deep_get(alert, 'cveReport.data.cve_report.exploit_status.available',
+                    'False'))
+        details += '\n' + 'Exploit Weaponized: ' + str(deep_get(alert, 'cveReport.data.cve_report.exploit_status.weaponized',
+                    'False'))
+        details += '\n' + 'Exploit Productized: ' + str(deep_get(alert, 'cveReport.data.cve_report.exploit_status.productized',
+                    'False'))
         details += '\n' + 'Patch Status: ' + str(deep_get(alert, 'cveReport.data.cve_report.patch_status', ''))
         details += '\n' + 'Countermeasures: ' + str(deep_get(alert, 'cveReport.data.cve_report.counter_measures', ''))
         details += '\n\n' + 'Summary: ' + deep_get(alert, 'cveReport.data.cve_report.summary', '')
@@ -332,7 +340,8 @@ def compose_incident_details(alert: Dict, watcher_groups: List) -> str:
         details += '\n' + 'Service: ' + deep_get(alert, 'instantMessage.data.server.service_type', '')
         details += '\n' + 'Channel: ' + deep_get(alert, 'instantMessage.data.channel.name', '')
         details += '\n' + 'Actor: ' + deep_get(alert, 'instantMessage.data.actor.handle', '')
-        details += '\n\n' + html.unescape(' '.join(remove_tags(deep_get(alert, 'instantMessage.data.message.text', '')).strip().split()))
+        details += '\n\n' + html.unescape(' '.join(remove_tags(deep_get(alert, 'instantMessage.data.message.text',
+                    '')).strip().split()))
     elif alert.get('ioc', None):
         details += 'Source Object: IOC'
         details += '\n' + 'Type: ' + deep_get(alert, 'ioc.type', '')
@@ -469,8 +478,8 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
 
             # to prevent duplicates, we are only adding incidents with creation_time > last fetched incident
             # if last_fetch:
-                # if incident_created_time <= last_fetch:
-                    # continue
+            #     if incident_created_time <= last_fetch:
+            #         continue
 
             incident_name: str = compose_incident_title(alert)
             titan_url: str = compose_titan_url(alert)
