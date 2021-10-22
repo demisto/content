@@ -1,7 +1,3 @@
-## HackerOne Integration Help
-
-- HackerOne allows users to fetch reports by using the fetch incidents capability. It also provides commands to retrieve all the reports and programs.
-
 #### Steps to get an API token
 
 - Please make sure that the user is registered. If not, register at [HackerOne](https://hackerone.com/sign_up).
