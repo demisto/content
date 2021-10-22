@@ -218,7 +218,7 @@ inputs:
 - key: MirrorDirection
   value: {}
   required: false
-  description: "Set the mirror direction, should be one of the following: \n1. In\n\
+  description: "Set the mirror direction to one of the following values: \n1. In\n\
     2. Out\n3. Both"
   playbookInputQuery:
 - key: MirrorTags
