@@ -122,7 +122,7 @@ def remove_tags(html: str) -> str:
     return TAG_RE.sub('', html)
 
 
-def deep_get(dictionary, path, default: Any) -> str:
+def deep_get(dictionary, path, default: Any) -> Any:
     result: Any
 
     keys = path.split('.')
@@ -455,7 +455,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
     incidents: List[Dict[str, Any]] = []
 
     # Get the CSV list of severities from severity
-    severity = ','.join(INTEL471_SEVERITIES[INTEL471_SEVERITIES.index(severity):])
+    # severity = ','.join(INTEL471_SEVERITIES[INTEL471_SEVERITIES.index(severity):])
 
     alerts_wrapper: Dict = client.search_alerts(
         watcher_group_uids=watcher_group_uids,
