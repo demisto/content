@@ -14,5 +14,6 @@
         "Threat Intelligence", "Relationship"
     ],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "itemPrefix": ["Titan"]
 }
