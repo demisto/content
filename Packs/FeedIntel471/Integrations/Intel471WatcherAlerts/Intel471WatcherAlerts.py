@@ -235,7 +235,7 @@ def compose_titan_url(alert: Dict) -> str:
     return titan_url
 
 
-def compose_incident_watcher_details(alert: Dict, watcher_groups: List) -> tuple[str, str]:
+def compose_incident_watcher_details(alert: Dict, watcher_groups: List) -> Tuple[str, str]:
     watcher_group_description: str = ''
     watcher_group_uid: str = alert.get('watcherGroupUid', None)
     watcher_group: Dict = [wg for wg in watcher_groups if wg['uid'] == watcher_group_uid][0]
