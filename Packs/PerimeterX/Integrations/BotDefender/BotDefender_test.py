@@ -9,14 +9,14 @@ def test_ip_high_score(requests_mock):
         'maxRiskScore': 100
     }
 
-    requests_mock.post('https://k986g.mocklab.io/api/v0/investigate', json=mock_response)
+    requests_mock.get('https://api.perimeterx.com/v1/bot-defender/investigate/mock?search=ip:1.1.1.1&tops=path', json=mock_response)
 
     headers = {
         'Authorization': 'Bearer ebfb7ff0-b2f6-41c8-bef3-4fba17be410c',
         'Content-Type': 'application/json'
     }
 
-    client = Client(base_url='https://k986g.mocklab.io/api/v0', verify=False, headers=headers)
+    client = Client(base_url='https://api.perimeterx.com/v1/bot-defender/investigate/mock', verify=False, headers=headers)
 
     args = {
         'ip': ip_address
@@ -45,14 +45,14 @@ def test_ip_suspicious_score(requests_mock):
         'maxRiskScore': 60
     }
 
-    requests_mock.post('https://k986g.mocklab.io/api/v0/investigate', json=mock_response)
+    requests_mock.get('https://api.perimeterx.com/v1/bot-defender/investigate/mock?search=ip:1.1.1.1&tops=path', json=mock_response)
 
     headers = {
         'Authorization': 'Bearer ebfb7ff0-b2f6-41c8-bef3-4fba17be410c',
         'Content-Type': 'application/json'
     }
 
-    client = Client(base_url='https://k986g.mocklab.io/api/v0', verify=False, headers=headers)
+    client = Client(base_url='https://api.perimeterx.com/v1/bot-defender/investigate/mock', verify=False, headers=headers)
 
     args = {
         'ip': ip_address
@@ -81,14 +81,14 @@ def test_ip_good_score(requests_mock):
         'maxRiskScore': 10
     }
 
-    requests_mock.post('https://k986g.mocklab.io/api/v0/investigate', json=mock_response)
+    requests_mock.get('https://api.perimeterx.com/v1/bot-defender/investigate/mock?search=ip:1.1.1.1&tops=path', json=mock_response)
 
     headers = {
         'Authorization': 'Bearer ebfb7ff0-b2f6-41c8-bef3-4fba17be410c',
         'Content-Type': 'application/json'
     }
 
-    client = Client(base_url='https://k986g.mocklab.io/api/v0', verify=False, headers=headers)
+    client = Client(base_url='https://api.perimeterx.com/v1/bot-defender/investigate/mock', verify=False, headers=headers)
 
     args = {
         'ip': ip_address
@@ -117,14 +117,14 @@ def test_ip_unknown_score(requests_mock):
         'maxRiskScore': 1
     }
 
-    requests_mock.post('https://k986g.mocklab.io/api/v0/investigate', json=mock_response)
+    requests_mock.get('https://api.perimeterx.com/v1/bot-defender/investigate/mock?search=ip:1.1.1.1&tops=path', json=mock_response)
 
     headers = {
         'Authorization': 'Bearer ebfb7ff0-b2f6-41c8-bef3-4fba17be410c',
         'Content-Type': 'application/json'
     }
 
-    client = Client(base_url='https://k986g.mocklab.io/api/v0', verify=False, headers=headers)
+    client = Client(base_url='https://api.perimeterx.com/v1/bot-defender/investigate/mock', verify=False, headers=headers)
 
     args = {
         'ip': ip_address
@@ -196,14 +196,14 @@ def test_perimeterx_get_investigate_details_by_socket_ip(requests_mock):
         ]
     }
 
-    requests_mock.post('https://k986g.mocklab.io/api/v0/investigate', json=mock_response)
+    requests_mock.get('https://api.perimeterx.com/v1/bot-defender/investigate/mock?search=ip:1.1.1.1&tops=path', json=mock_response)
 
     headers = {
         'Authorization': 'Bearer ebfb7ff0-b2f6-41c8-bef3-4fba17be410c',
         'Content-Type': 'application/json'
     }
 
-    client = Client(base_url='https://k986g.mocklab.io/api/v0', verify=False, headers=headers)
+    client = Client(base_url='https://api.perimeterx.com/v1/bot-defender/investigate/mock', verify=False, headers=headers)
 
     args = {
         'search_type': 'socket_ip',
@@ -321,14 +321,14 @@ def test_perimeterx_get_investigate_details_by_true_ip(requests_mock):
         ]
     }
 
-    requests_mock.post('https://k986g.mocklab.io/api/v0/investigate', json=mock_response)
+    requests_mock.get('https://api.perimeterx.com/v1/bot-defender/investigate/mock?search=ip:1.1.1.1&tops=path', json=mock_response)
 
     headers = {
         'Authorization': 'Bearer ebfb7ff0-b2f6-41c8-bef3-4fba17be410c',
         'Content-Type': 'application/json'
     }
 
-    client = Client(base_url='https://k986g.mocklab.io/api/v0', verify=False, headers=headers)
+    client = Client(base_url='https://api.perimeterx.com/v1/bot-defender/investigate/mock', verify=False, headers=headers)
 
     args = {
         'search_type': 'true_ip',
