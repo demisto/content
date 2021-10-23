@@ -1,0 +1,217 @@
+id: Symantec block Email
+version: -1
+name: Symantec block Email
+description: This playbook will block email address at your email gateway.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7b8687ab-feda-41dd-8278-57eb915dc305
+    type: start
+    task:
+      id: 7b8687ab-feda-41dd-8278-57eb915dc305
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": -350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 1e1d8837-f6b9-4e13-8764-7a6e3437f11a
+    type: condition
+    task:
+      id: 1e1d8837-f6b9-4e13-8764-7a6e3437f11a
+      version: -1
+      name: Is Symantec available
+      description: Returns 'yes' if the integration brand is available. Otherwise returns
+        'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "3"
+      "yes":
+      - "2"
+    scriptarguments:
+      brandname:
+        simple: Symantec Messaging Gateway
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 2602fbe3-e11c-46f6-8d21-87a973c25b81
+    type: regular
+    task:
+      id: 2602fbe3-e11c-46f6-8d21-87a973c25b81
+      version: -1
+      name: Block email
+      description: Adds email address to the Local Bad Sender domains.
+      script: '|||smg-block-email'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      email:
+        simple: ${inputs.EmailToBlock}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: ec96196e-14ac-4d19-826f-b68e4fc5fc86
+    type: title
+    task:
+      id: ec96196e-14ac-4d19-826f-b68e4fc5fc86
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: b8c6256c-f6d0-41e6-8dca-c1a2096ccef7
+    type: condition
+    task:
+      id: b8c6256c-f6d0-41e6-8dca-c1a2096ccef7
+      version: -1
+      name: 'Is there email to block? '
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.EmailToBlock
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": -170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 281ad972-56f1-41e6-8e7d-00d400b079e4
+    type: title
+    task:
+      id: 281ad972-56f1-41e6-8e7d-00d400b079e4
+      version: -1
+      name: Symantec
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": 45
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "4_3_#default#": 0.49
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1165,
+        "width": 720,
+        "x": 440,
+        "y": -350
+      }
+    }
+  }
+inputs:
+- key: EmailToBlock
+  value: {}
+  required: false
+  description: The email address that will be blocked.
+  playbookInputQuery:
+outputs: []
+tests:
+- Symantec Messaging Gateway Test
+fromversion: 5.0.0

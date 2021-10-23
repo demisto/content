@@ -1,0 +1,21 @@
+{
+  "success": true,
+  "data": [
+    {
+      "_id": "12345",
+      "name": "Cymulate Best Practice"
+    },
+    {
+      "_id": "6789",
+      "name": "Cloud Services"
+    },
+    {
+      "_id": "9876",
+      "name": "Network Protocols"
+    },
+    {
+      "_id": "54321",
+      "name": "Physical"
+    }
+  ]
+}

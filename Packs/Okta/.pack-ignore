@@ -1,2 +1,14 @@
 [file:IAM_-_Test_Playbook.yml]
 ignore=auto-test
+
+[file:Okta_IAM.yml]
+ignore=IN135,BA108,BA109
+
+[file:Okta_v2.yml]
+ignore=BA108,BA109
+
+[file:README.md]
+ignore=RM104,RM106
+
+[file:playbook-Allow_IP_-_Okta_Zone.yml]
+ignore=PB114

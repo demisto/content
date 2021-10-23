@@ -1,0 +1,47 @@
+{
+    "name": "Cortex 911",
+    "description": "Palo alto Networks Cortex is the industry’s most comprehensive product suite for security operations empowering enterprises with the best-in-class detection, investigation, automation and response capabilities. Cortex 911 program empowers selected partners to respond to breaches immediately with Palo Alto Networks products and services.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Palo Alto Networks Sales",
+    "url": "",
+    "email": "",
+    "created": "2021-02-22T09:20:53Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "kondor117"
+    ],
+    "dependencies": {
+        "CortexXDR": {
+            "mandatory": false,
+            "display_name": "Palo Alto Networks Cortex XDR - Investigation and Response"
+        },
+        "CortexDataLake": {
+            "mandatory": false,
+            "display_name": "Cortex Data Lake"
+        },
+        "AutoFocus": {
+            "mandatory": false,
+            "display_name": "AutoFocus"
+        },
+        "TIM_SIEM": {
+            "mandatory": false,
+            "display_name": "TIM - SIEM Integration"
+        },
+        "TIM_Processing": {
+            "mandatory": false,
+            "display_name": "TIM - Indicator Auto-Processing"
+        },
+        "ExpanseV2": {
+            "mandatory": false,
+            "display_name": "Expanse v2"
+        },
+        "MajorBreachesInvestigationandResponse": {
+            "mandatory": false,
+            "display_name": "Rapid Breach Response"
+        }
+    }
+}

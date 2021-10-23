@@ -17,13 +17,9 @@
                 "name": {
                     "complex": {
                         "accessor": "",
-                        "filters": [
-
-                        ],
+                        "filters": [],
                         "root": "employeeId",
-                        "transformers": [
-
-                        ]
+                        "transformers": []
                     },
                     "simple": ""
                 }
@@ -33,13 +29,9 @@
     "transformer": {
         "complex": {
             "accessor": "",
-            "filters": [
-
-            ],
+            "filters": [],
             "root": "incidentType",
-            "transformers": [
-
-            ]
+            "transformers": []
         },
         "simple": ""
     },

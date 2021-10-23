@@ -1,10 +1,6 @@
 {
-    "associatedToAll": false,
-    "associatedTypes": [
-        "STIX Attack Pattern",
-        "STIX Malware",
-        "STIX Tool"
-    ],
+    "associatedTypes": null,
+    "associatedToAll": true,
     "breachScript": "",
     "caseInsensitive": true,
     "cliName": "stixkillchainphases",

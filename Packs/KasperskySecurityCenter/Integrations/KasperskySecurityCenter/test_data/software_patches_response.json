@@ -1,0 +1,44 @@
+{
+	"PxgRetVal": {
+		"GNRL_EA_PARAM_1": [
+			{
+				"type": "params",
+				"value": {
+					"Classification": "",
+					"Comments": "",
+					"DisplayName": "Service Pack 2 for SQL Server 2014 (KB3171021) (64-bit)",
+					"DisplayVersion": "12.2.5000.0",
+					"HelpLink": "http://support.microsoft.com/?kbid=3171021",
+					"HelpTelephone": "",
+					"InstallDate": "",
+					"MoreInfoURL": "",
+					"ParentID": "",
+					"PatchID": "63EC6F65A3D1E99FB87FB0B206EED9D1",
+					"Publisher": "Microsoft Corporation",
+					"QuietUninstallString": "",
+					"UninstallString": "",
+					"bIsMsi": false
+				}
+			},
+			{
+				"type": "params",
+				"value": {
+					"Classification": "Update",
+					"Comments": "",
+					"DisplayName": "Update (KB3176936)",
+					"DisplayVersion": "",
+					"HelpLink": "http://support.microsoft.com/?kbid=3176936",
+					"HelpTelephone": "",
+					"InstallDate": "",
+					"MoreInfoURL": "",
+					"ParentID": "",
+					"PatchID": "KB3176936",
+					"Publisher": "Microsoft Windows",
+					"QuietUninstallString": "",
+					"UninstallString": "",
+					"bIsMsi": false
+				}
+			}
+		]
+	}
+}

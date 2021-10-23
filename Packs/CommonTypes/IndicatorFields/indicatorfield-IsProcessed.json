@@ -1,0 +1,30 @@
+{
+    "id": "indicator_isprocessed",
+    "version": -1,
+    "modified": "2021-06-09T07:38:56.390162193Z",
+    "name": "Is Processed",
+    "ownerOnly": false,
+    "cliName": "isprocessed",
+    "type": "boolean",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": true,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 2,
+    "hidden": false,
+    "associatedTypes": [
+        "User Profile"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.5.0"
+}

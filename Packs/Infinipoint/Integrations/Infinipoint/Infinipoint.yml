@@ -992,13 +992,13 @@ script:
       required: true
     outputs:
     - contextPath: Infinipoint.Compliance.Device.response.compliance
-      description: compliance statius - 0 - errot | 1 - compliance | 2 - non-compliance
+      description: compliance statius - 0 - error | 1 - compliance | 2 - non-compliance
       type: Number
     - contextPath: Infinipoint.Compliance.Device.success
       description: success
       type: Number
 
-  dockerimage: demisto/pyjwt3:1.0.0.13142
+  dockerimage: demisto/pyjwt3:1.0.0.23674
   isfetch: true
   runonce: false
   script: '-'

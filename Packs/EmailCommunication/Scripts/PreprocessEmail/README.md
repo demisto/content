@@ -1,5 +1,4 @@
-Preprocessing script for Email Communication layout.
-This script checks incoming emails from the incident type. If those emails contain an Incident Unique ID in the email subject, then the preprocessing will not open a new incident for this email. Instead, it will add the email response to the existing incident war room with the  "email-thread" tag.
+This script checks incoming emails from the incident type. If the emails contain an 8-digit hash in the email subject, the script will add the email response to the existing incident in the War Room with the "email-thread" tag. If there is no 8-digit hash in the email subject, the preprocessing will open a new incident for this email.
 
 **Note:** In order to avoid performance issues, incoming emails will be added to an existing incident as "email-thread" only if the incident was **modified** in the last 60 days.
 If you wish to extend this period, navigate to Settings->Advanced->Lists and add a new list with the name `XSOAR - Email Communication Days To Query`. In the `Data` field fill in a single number representing the number of days to query back, for example: 90.
@@ -15,7 +14,7 @@ For more information about the preprocessing rules, please refer to https://xsoa
 | --- | --- |
 | Script Type | python3 |
 | Tags | preProcessing, email |
-| Demisto Version | 0.0.0 |
+| Cortex XSOAR Version | 0.0.0 |
 
 ## Inputs
 ---

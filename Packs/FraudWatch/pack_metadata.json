@@ -1,0 +1,25 @@
+{
+    "name": "FraudWatch PhishPortal",
+    "description": "FraudWatch International provides anti-phishing and online brand protection solutions.",
+    "support": "xsoar",
+    "currentVersion": "1.0.4",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2021-01-26T08:01:49Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "dependencies": {
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        }
+    },
+    "displayedImages": [
+        "CommonTypes"
+    ]
+}

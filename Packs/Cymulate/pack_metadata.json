@@ -1,8 +1,8 @@
 {
     "name": "Cymulate",
-    "description": "Multi-Vector Cyber Attack, Breach and Attack Simulation",
+    "description": "You can now verify your security posture on-demand using the Cymulate integration, which allows you to launch simulations of cyberattacks, breach, and attacks against yourself",
     "support": "partner",
-    "currentVersion": "1.0.7",
+    "currentVersion": "2.0.6",
     "author": "Cymulate",
     "url": "",
     "email": "support@cymulate.com",
@@ -13,8 +13,6 @@
     "tags": [],
     "useCases": [],
     "keywords": [],
-    "githubUser": [
-        "maor-b"
-    ],
+    "githubUser": [],
     "certification": "certified"
 }

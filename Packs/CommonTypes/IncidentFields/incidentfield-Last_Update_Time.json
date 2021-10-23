@@ -1,7 +1,12 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Qradar Generic"
+        "Qradar Generic",
+        "Carbon Black Endpoint Standard",
+        "Guardicore Incident",
+        "Azure Active Directory Identity and Access",
+        "Saas Security Incident",
+        "Tanium TR Incident"
     ],
     "breachScript": "",
     "caseInsensitive": true,

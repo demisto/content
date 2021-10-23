@@ -13,10 +13,31 @@ configuration:
   required: false
   type: 4
 - defaultvalue: '2'
-  display: Indicator Threshold. The minimum number of pulses to consider the indicator as malicious.
+  display: Indicator Threshold. The minimum number of pulses to consider the indicator
+    as malicious.
   name: default_threshold
   required: false
   type: 0
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: C - Fairly reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- defaultvalue: 'true'
+  additionalinfo: Create relationships between indicators as part of Enrichment.
+  display: Create relationships
+  name: create_relationships
+  required: false
+  type: 8
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -33,12 +54,14 @@ script:
   - arguments:
     - default: true
       description: The IP address to query.
-      isArray: false
+      isArray: true
       name: ip
       required: true
       secret: false
     - default: false
-      description: If the number of pulses is bigger than the threshold, the IP address is considered as malicious. If the threshold is not specified, the default indicator threshold is used, which is configured in the instance settings.
+      description: If the number of pulses is bigger than the threshold, the IP address
+        is considered as malicious. If the threshold is not specified, the default
+        indicator threshold is used, which is configured in the instance settings.
       isArray: false
       name: threshold
       required: false
@@ -58,7 +81,8 @@ script:
       description: The country where the IP address is located.
       type: String
     - contextPath: IP.Geo.Location
-      description: 'The geolocation where the IP address is located, in the format: latitude:longitude.'
+      description: 'The geolocation where the IP address is located, in the format:
+        latitude:longitude.'
       type: String
     - contextPath: AlienVaultOTX.IP.Reputation
       description: The reputation of the IP address.
@@ -78,6 +102,21 @@ script:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: String
+    - contextPath: IP.Relationships.EntityA
+      description: The source of the relationship.
+      type: string
+    - contextPath: IP.Relationships.EntityB
+      description: The destination of the relationship.
+      type: string
+    - contextPath: IP.Relationships.Relationship
+      description: The name of the relationship.
+      type: string
+    - contextPath: IP.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: string
+    - contextPath: IP.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: string
   - arguments:
     - default: true
       description: The domain to query.
@@ -86,7 +125,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: If the number of pulses is bigger than the threshold, the domain is considered as malicious. If the threshold is not specified, the default indicator threshold is used, which is configured in the instance settings.
+      description: If the number of pulses is bigger than the threshold, the domain
+        is considered as malicious. If the threshold is not specified, the default
+        indicator threshold is used, which is configured in the instance settings.
       isArray: false
       name: threshold
       required: false
@@ -117,6 +158,21 @@ script:
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
       type: String
+    - contextPath: Domain.Relationships.EntityA
+      description: The source of the relationship.
+      type: string
+    - contextPath: Domain.Relationships.EntityB
+      description: The destination of the relationship.
+      type: string
+    - contextPath: Domain.Relationships.Relationship
+      description: The name of the relationship.
+      type: string
+    - contextPath: Domain.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: string
+    - contextPath: Domain.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: string
   - arguments:
     - default: true
       description: The IP address to query.
@@ -125,7 +181,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: If the number of pulses is bigger than the threshold, the IP address is considered as malicious. If the threshold is not specified, the default indicator threshold is used, which is configured in the instance settings.
+      description: If the number of pulses is bigger than the threshold, the IP address
+        is considered as malicious. If the threshold is not specified, the default
+        indicator threshold is used, which is configured in the instance settings.
       isArray: false
       name: threshold
       required: false
@@ -164,7 +222,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: If the number of pulses is bigger than the threshold, the host name is considered as malicious. If the threshold is not specified, the default indicator threshold is used, which is configured in the instance settings.
+      description: If the number of pulses is bigger than the threshold, the host
+        name is considered as malicious. If the threshold is not specified, the default
+        indicator threshold is used, which is configured in the instance settings.
       isArray: false
       name: threshold
       required: false
@@ -206,7 +266,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: If the number of pulses is bigger than the threshold, the file is considered as malicious. If the threshold is not specified, the default indicator threshold is used, which is configured in the instance settings.
+      description: If the number of pulses is bigger than the threshold, the file
+        is considered as malicious. If the threshold is not specified, the default
+        indicator threshold is used, which is configured in the instance settings.
       isArray: false
       name: threshold
       required: false
@@ -229,7 +291,8 @@ script:
       description: IDs of pulses which are marked as malicious.
       type: String
     - contextPath: File.Type
-      description: The file type, as determined by libmagic (same as displayed in file entries).
+      description: The file type, as determined by libmagic (same as displayed in
+        file entries).
       type: String
     - contextPath: File.Size
       description: The size of the file in bytes.
@@ -237,6 +300,21 @@ script:
     - contextPath: File.SSDeep
       description: The SSDeep hash of the file (same as displayed in file entries).
       type: String
+    - contextPath: File.Relationships.EntityA
+      description: The source of the relationship.
+      type: string
+    - contextPath: File.Relationships.EntityB
+      description: The destination of the relationship.
+      type: string
+    - contextPath: File.Relationships.Relationship
+      description: The name of the relationship.
+      type: string
+    - contextPath: File.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: string
+    - contextPath: File.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: string
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: String
@@ -257,7 +335,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: If the number of pulses is bigger than the threshold, the CVE is considered as malicious. If the threshold is not specified, the default indicator threshold is used, which is configured in the instance settings.
+      description: If the number of pulses is bigger than the threshold, the CVE is
+        considered as malicious. If the threshold is not specified, the default indicator
+        threshold is used, which is configured in the instance settings.
       isArray: false
       name: threshold
       required: false
@@ -297,7 +377,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'The indicator type. Can be: "IPv4", "IPv6", "domain", "hostname", or "url".'
+      description: 'The indicator type. Can be: "IPv4", "IPv6", "domain", "hostname",
+        or "url".'
       isArray: false
       name: indicator_type
       predefined:
@@ -474,7 +555,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: If the number of pulses is bigger than the threshold, the URL is considered as malicious. If threshold is not specified, the default indicator threshold is used, which is configured in the instance settings.
+      description: If the number of pulses is bigger than the threshold, the URL is
+        considered as malicious. If threshold is not specified, the default indicator
+        threshold is used, which is configured in the instance settings.
       isArray: false
       name: threshold
       required: false
@@ -514,7 +597,22 @@ script:
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
       type: String
-  dockerimage: demisto/python3:3.8.5.10845
+    - contextPath: URL.Relationships.EntityA
+      description: The source of the relationship.
+      type: string
+    - contextPath: URL.Relationships.EntityB
+      description: The destination of the relationship.
+      type: string
+    - contextPath: URL.Relationships.Relationship
+      description: The name of the relationship.
+      type: string
+    - contextPath: URL.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: string
+    - contextPath: URL.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: string
+  dockerimage: demisto/python3:3.9.7.24076
   isfetch: false
   longRunning: false
   longRunningPort: false

@@ -1,0 +1,1255 @@
+id: Add Unknown Indicators To Inventory - RiskIQ Digital Footprint
+version: -1
+name: Add Unknown Indicators To Inventory - RiskIQ Digital Footprint
+description: |-
+  Adds the unknown indicators or updates/removes the indicators identified as a known asset in the RiskIQ Digital Footprint inventory according to the user inputs for each asset. To select the indicators you want to add, go to playbook inputs, choose "from indicators" and set your query. For example reputation:None etc. The purpose of the playbook is to check if the indicators with the unknown reputation are known assets. The default playbook query is "reputation:None". In case indicators with different reputations are to be added to the inventory, the query must be edited accordingly. This playbook cannot be run in quiet mode. This playbook needs to be used with caution as it might use up the integration’s API license when running for large amounts of indicators.
+  Supported integration:
+  - RiskIQ Digital Footprint
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ae569bfc-b5a1-44ed-81b8-dd98fed4b6f6
+    type: start
+    task:
+      id: ae569bfc-b5a1-44ed-81b8-dd98fed4b6f6
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: cf8c012a-2bc2-4dbe-836f-9f9c1b296688
+    type: condition
+    task:
+      id: cf8c012a-2bc2-4dbe-836f-9f9c1b296688
+      version: -1
+      name: Is RiskIQ Digital Footprint integration enabled?
+      description: Checks whether there is an active instance of the RiskIQ Digital
+        Footprint integration enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: RiskIQDigitalFootprint
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": -310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: ee58b559-033f-41ba-8749-5909b6cc1f6a
+    type: title
+    task:
+      id: ee58b559-033f-41ba-8749-5909b6cc1f6a
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: f4d2960c-2e32-4897-85fe-4960ca259244
+    type: condition
+    task:
+      id: f4d2960c-2e32-4897-85fe-4960ca259244
+      version: -1
+      name: Is there a query result and RiskIQAsset Type?
+      description: Checks if there is any query result for the query applied in the
+        previous step and if the queried indicators consist of RiskIQAsset Type.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                accessor: value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: playbookQuery.CustomFields.riskiqassettype
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 38431a8c-2acb-4126-819a-46fea578cd96
+    type: regular
+    task:
+      id: 38431a8c-2acb-4126-819a-46fea578cd96
+      version: -1
+      name: Create a CSV file for the unknown asset(s)
+      description: Exports the list of asset information of the unknown asset(s) in
+        the form of a CSV file.
+      scriptName: ExportToCSV
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      csvArray:
+        complex:
+          root: UnknownAssets
+      fileName:
+        simple: AssetstoAdd.csv
+      headers: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: ca4beb1f-ea64-4aa1-8692-a5fdd1ed4958
+    type: regular
+    task:
+      id: ca4beb1f-ea64-4aa1-8692-a5fdd1ed4958
+      version: -1
+      name: Send the created file of the unknown asset(s) through an email
+      description: Sends the created file of the unknown asset(s) through an email.
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      additionalHeader: {}
+      attachCIDs: {}
+      attachIDs:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: AssetstoAdd.csv
+              ignorecase: true
+          accessor: EntryID
+      attachNames: {}
+      bcc: {}
+      body:
+        simple: |-
+          Hello,
+
+          Please follow the following steps and upload the modified CSV file to the XSOAR incident: ${ServerURL.URL}/#/Custom/caseinfoid/${incident.id} to proceed further.
+
+          - Download the CSV file attached to this email.
+          - Modify the value of the column "Should the asset be added?" to "Yes" if you want to add that asset.
+          - If you do not want to add any asset, please submit the form for entering EntryID of the file with an empty value.
+      cc: {}
+      from: {}
+      htmlBody: {}
+      raw_message: {}
+      replyTo: {}
+      subject:
+        simple: 'RiskIQ Digital Footprint XSOAR: Adding the assets to the inventory'
+      templateParams: {}
+      to:
+        complex:
+          root: inputs.support_contact
+      transientFile: {}
+      transientFileCID: {}
+      transientFileContent: {}
+    reputationcalc: 1
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -120,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 46fb71eb-93a1-425f-854b-d01f259cd171
+    type: regular
+    task:
+      id: 46fb71eb-93a1-425f-854b-d01f259cd171
+      version: -1
+      name: Create a CSV file for the known asset(s)
+      description: Exports the list of asset information of the known asset(s) in
+        the form of a CSV file.
+      scriptName: ExportToCSV
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      csvArray:
+        complex:
+          root: KnownAssets
+      fileName:
+        simple: AssetstoUpdateorRemove.csv
+      headers: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: eab90bcf-82aa-4e8b-838e-84a62869eba0
+    type: condition
+    task:
+      id: eab90bcf-82aa-4e8b-838e-84a62869eba0
+      version: -1
+      name: Is there an unknown asset?
+      description: Checks whether there is an unknown asset.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: UnknownAssets
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 79b14f85-d14a-422f-8450-112d52ae035f
+    type: condition
+    task:
+      id: 79b14f85-d14a-422f-8450-112d52ae035f
+      version: -1
+      name: Is there a known asset?
+      description: Checks whether there is a known asset.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: KnownAssets
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 61975c6a-071e-4ecb-8aba-64fca4f74bac
+    type: regular
+    task:
+      id: 61975c6a-071e-4ecb-8aba-64fca4f74bac
+      version: -1
+      name: Send the created file of the known asset(s) through an email
+      description: Sends the created file of the known asset(s) through an email.
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      additionalHeader: {}
+      attachCIDs: {}
+      attachIDs:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: AssetstoUpdateorRemove.csv
+              ignorecase: true
+          accessor: EntryID
+      attachNames: {}
+      bcc: {}
+      body:
+        simple: |-
+          Hello,
+
+          Please follow the following steps and upload the modified CSV file to the XSOAR incident: ${ServerURL.URL}/#/Custom/caseinfoid/${incident.id} to proceed further.
+
+          - Download the CSV file attached to this email.
+          - Modify the value of the column "Operation to be performed on the asset" to "Update" or "Remove" in order to update or remove the asset(s) accordingly.
+          - If you want to update the asset(s), modify the values in the columns that contain asset properties to the values you want to update the asset(s) with.
+          - If you do not want to update or remove any asset, please submit the form for entering EntryID of the file with an empty value.
+      cc: {}
+      from: {}
+      htmlBody: {}
+      raw_message: {}
+      replyTo: {}
+      subject:
+        simple: 'RiskIQ Digital Footprint XSOAR: Updating or Removing the assets from
+          the inventory'
+      templateParams: {}
+      to:
+        complex:
+          root: inputs.support_contact
+      transientFile: {}
+      transientFileCID: {}
+      transientFileContent: {}
+    reputationcalc: 1
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1020,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 399f20dc-02a2-4e77-84d8-42a5f14a3c7a
+    type: condition
+    task:
+      id: 399f20dc-02a2-4e77-84d8-42a5f14a3c7a
+      version: -1
+      name: Is there a contact email address provided?
+      description: Checks whether there is a contact email address associated with
+        the asset(s) provided.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: riskiqsupportcontact
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 45e8b2e1-54e3-4b6f-8b89-bc9f949da504
+    type: condition
+    task:
+      id: 45e8b2e1-54e3-4b6f-8b89-bc9f949da504
+      version: -1
+      name: Is there a contact email address provided?
+      description: Checks whether there is a contact email address associated with
+        the asset(s) provided.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "27"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: riskiqsupportcontact
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": 850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 5fe0a5b4-348b-47a0-83f4-f3969888c06c
+    type: collection
+    task:
+      id: 5fe0a5b4-348b-47a0-83f4-f3969888c06c
+      version: -1
+      name: Get the modified CSV file for the asset(s) to be updated or removed
+      description: Gets the EntryID of the modified CSV file for the asset(s) to be
+        updated or removed.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        complex:
+          root: inputs.support_contact
+      subject:
+        simple: 'RiskIQ Digital Footprint XSOAR: Decide about the update or removal
+          of the assets'
+      body:
+        simple: Please redirect to the following link in order to upload the modified
+          CSV file and proceed further.
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - "Yes"
+      - "No"
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: EntryID of the modified file for the assets to be updated or removed
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: eg. 50@1
+        tooltip: Please enter the EntryID of the modified file for the assets to be
+          updated or removed.
+        readonly: false
+      title: Modified CSV File for the assets to be updated or removed
+      description: Please download the CSV file from the email sent to you or from
+        the war room, modify the value in column "Operation to be performed on the
+        asset" to "Update or Remove or None" for the assets that should be updated
+        or removed, and upload that file here. After uploading the file, please enter
+        the EntryID corresponding to it here.
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 04b0cf4f-b646-4adb-8127-7419ce1b167b
+    type: regular
+    task:
+      id: 04b0cf4f-b646-4adb-8127-7419ce1b167b
+      version: -1
+      name: Parse the modified CSV for the assets to be added
+      description: Parses the modified CSV for the assets to be added.
+      scriptName: ParseCSV
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      codec: {}
+      domains: {}
+      entryID:
+        complex:
+          root: Modified CSV File for the assets to be added.Answers
+          accessor: "0"
+      file: {}
+      hashes: {}
+      ips: {}
+      parseAll:
+        simple: "yes"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": 1510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: ee8312dd-82f5-4075-8bc4-2ac94cc2f650
+    type: regular
+    task:
+      id: ee8312dd-82f5-4075-8bc4-2ac94cc2f650
+      version: -1
+      name: Parse the modified CSV for the assets to be updated or removed
+      description: Parses the modified CSV for the assets to be updated or removed.
+      scriptName: ParseCSV
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      codec: {}
+      domains: {}
+      entryID:
+        complex:
+          root: Modified CSV File for the assets to be updated or removed.Answers
+          accessor: "0"
+      file: {}
+      hashes: {}
+      ips: {}
+      parseAll:
+        simple: "yes"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 1510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: eaaf7fd9-243f-47b1-8f14-82262bf9d4fc
+    type: playbook
+    task:
+      id: eaaf7fd9-243f-47b1-8f14-82262bf9d4fc
+      version: -1
+      name: Check Indicators For Unknown Assets - RiskIQ Digital Footprint
+      description: |-
+        This playbook receives indicators from its parent playbook and adds the unknown indicator or updates/removes the indicators identified as a known asset in the RiskIQ Digital Footprint inventory according to the user inputs. This playbook cannot be run in quiet mode. This playbook needs to be used with caution as it might use up the integration’s API license when running for large amounts of indicators.
+        Supported integration:
+        - RiskIQ Digital Footprint
+      playbookName: Check Indicators For Unknown Assets - RiskIQ Digital Footprint
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+      - "29"
+    scriptarguments:
+      asset_name:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: playbookQuery.CustomFields.riskiqassettype
+                iscontext: true
+          accessor: value
+      asset_type:
+        complex:
+          root: playbookQuery.CustomFields.riskiqassettype
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: playbookQuery.CustomFields.riskiqassettype
+                iscontext: true
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": 260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 2830cbbe-a017-4a6b-8ad2-626a9bcb5efc
+    type: regular
+    task:
+      id: 2830cbbe-a017-4a6b-8ad2-626a9bcb5efc
+      version: -1
+      name: Clean "ServerURL" key from the context
+      description: Delete "ServerURL" field from the context.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: ServerURL
+      keysToKeep: {}
+      subplaybook:
+        simple: auto
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": -160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: bc57720a-07d6-4654-8c61-a4ed2c388d48
+    type: regular
+    task:
+      id: bc57720a-07d6-4654-8c61-a4ed2c388d48
+      version: -1
+      name: Get XSOAR Server URL
+      description: Get the Server URL.
+      scriptName: GetServerURL
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": 110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 4b248640-9889-4dcb-82f1-398f49759605
+    type: playbook
+    task:
+      id: 4b248640-9889-4dcb-82f1-398f49759605
+      version: -1
+      name: Auto Add Assets - RiskIQ Digital Footprint
+      description: |-
+        This playbook automatically adds the provided asset(s) to the RiskIQ Digital Footprint inventory according to the values provided. Use this playbook as a sub playbook and loop over each asset in the asset list in order to add multiple assets.
+        Supported integration:
+        - RiskIQ Digital Footprint
+      playbookName: Auto Add Assets - RiskIQ Digital Footprint
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      assets_to_add:
+        complex:
+          root: ParseCSV.ParsedCSV
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ParseCSV.ParsedCSV.Should the asset be added? Yes or No
+                iscontext: true
+      server_url:
+        complex:
+          root: ServerURL
+          accessor: URL
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": 1660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: c8846c2c-bf0c-48cd-8e06-4366661bef9c
+    type: title
+    task:
+      id: c8846c2c-bf0c-48cd-8e06-4366661bef9c
+      version: -1
+      name: Get XSOAR server URL to attach the current incident link
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 1a22feb4-680d-499e-89a9-33d377e55b0d
+    type: playbook
+    task:
+      id: 1a22feb4-680d-499e-89a9-33d377e55b0d
+      version: -1
+      name: Auto Update Or Remove Assets - RiskIQ Digital Footprint
+      description: |-
+        This playbook automatically updates or removes the provided asset(s) from the RiskIQ Digital Footprint inventory according to the values provided. Use this playbook as a sub playbook and loop over each asset in the asset list in order to update or remove multiple assets.
+        Supported integration:
+        - RiskIQ Digital Footprint
+      playbookName: Auto Update Or Remove Assets - RiskIQ Digital Footprint
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      assets_to_update:
+        complex:
+          root: ParseCSV.ParsedCSV
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: 'ParseCSV.ParsedCSV.Operation to be performed on the asset:
+                    Update or Remove or None'
+                iscontext: true
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 1660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 3287ac4c-7ce7-48a8-8541-e203b2e88a58
+    type: condition
+    task:
+      id: 3287ac4c-7ce7-48a8-8541-e203b2e88a58
+      version: -1
+      name: Is the user willing to add the asset(s) and the entered EntryID valid?
+      description: Checks whether the user is willing to add the asset(s) and if the
+        entered EntryID is valid.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Modified CSV File for the assets to be added.Answers.0
+                filters:
+                - - operator: match
+                    left:
+                      value:
+                        simple: Modified CSV File for the assets to be added.Answers.0
+                      iscontext: true
+                    right:
+                      value:
+                        simple: \b[0-9]+@[0-9]+\b
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": 1350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: e32a6eed-8118-4b08-8154-a7eb3101be26
+    type: condition
+    task:
+      id: e32a6eed-8118-4b08-8154-a7eb3101be26
+      version: -1
+      name: Is the user willing to update or remove the asset(s) and the entered EntryID
+        valid?
+      description: Checks whether the user is willing to update or remove the asset(s)
+        and if the entered EntryID is valid.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Modified CSV File for the assets to be updated or removed.Answers.0
+                filters:
+                - - operator: match
+                    left:
+                      value:
+                        simple: Modified CSV File for the assets to be updated or
+                          removed.Answers.0
+                      iscontext: true
+                    right:
+                      value:
+                        simple: \b[0-9]+@[0-9]+\b
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 1340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 794ce922-b243-4704-822c-df74e35d5f12
+    type: collection
+    task:
+      id: 794ce922-b243-4704-822c-df74e35d5f12
+      version: -1
+      name: Get the modified CSV file for the asset(s) to be added
+      description: Gets the EntryID of the modified CSV file for the asset(s) to be
+        added.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": 1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        complex:
+          root: inputs.support_contact
+      subject:
+        simple: 'RiskIQ Digital Footprint XSOAR: Decide about the addition of the
+          assets'
+      body:
+        simple: Please redirect to the following link in order to upload the modified
+          CSV file and proceed further.
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - "Yes"
+      - "No"
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: EntryID of the modified file for the assets to be added
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: eg. 50@1
+        tooltip: Please enter the EntryID of the modified file for the assets to be
+          added.
+        readonly: false
+      title: Modified CSV File for the assets to be added
+      description: Please download the CSV file from the email sent to you or from
+        the war room, modify the value in column "Should the asset be added?" to "Yes"
+        for the assets that should be added, and upload that file here. After uploading
+        the file, please enter the EntryID corresponding to it here.
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: fc212a1d-566c-48e5-8ff2-80ef04c59d1d
+    type: title
+    task:
+      id: fc212a1d-566c-48e5-8ff2-80ef04c59d1d
+      version: -1
+      name: Add the unknown asset(s)
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 2691dbe4-0b85-427a-820f-ff7e07e9fded
+    type: title
+    task:
+      id: 2691dbe4-0b85-427a-820f-ff7e07e9fded
+      version: -1
+      name: Update or Remove the known asset(s)
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_3_#default#": 0.2,
+      "12_15_#default#": 0.36,
+      "1_3_#default#": 0.11,
+      "25_3_#default#": 0.41,
+      "26_17_yes": 0.53,
+      "26_3_#default#": 0.39,
+      "4_3_#default#": 0.1,
+      "9_3_#default#": 0.2
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2495,
+        "width": 1520,
+        "x": -120,
+        "y": -600
+      }
+    }
+  }
+inputs:
+- key: ""
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery:
+    query: reputation:None
+    queryEntity: indicators
+    results:
+    daterange:
+      fromdate: 0001-01-01T00:00:00Z
+      todate: 0001-01-01T00:00:00Z
+      period:
+        by: ""
+        byto: ""
+        byfrom: ""
+        tovalue:
+        fromvalue:
+        field: ""
+      fromdatelicenseval: 0001-01-01T00:00:00Z
+    runFromLastJobTime: true
+- key: support_contact
+  value:
+    complex:
+      root: incident
+      accessor: riskiqsupportcontact
+  required: false
+  description: The contact email address of the support team from which manual inputs
+    should be fetched.
+  playbookInputQuery:
+outputs: []
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

@@ -1,0 +1,17 @@
+[file:layoutscontainer-Qualys_FIM_Layout.json]
+ignore=BA101
+
+[file:README.md]
+ignore=RM104
+
+[file:classifier-QualysFIM_Mapper.json]
+ignore=BA101
+
+[file:incidentfield-Qualys_FIM_Alert_ID.json]
+ignore=IF100
+
+[file:incidentfield-Qualys_FIM_Alert_Name.json]
+ignore=IF100
+
+[file:incidentfield-Qualys_FIM_Event_Type.json]
+ignore=IF100

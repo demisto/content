@@ -33,7 +33,8 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
+    fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -73,7 +74,8 @@ configuration:
   name: auto_detect_type
   required: false
   type: 8
-- additionalinfo: Type of the indicator in the feed. If auto-detect is checked then the value set as Indicator Type will be ignored.
+- additionalinfo: Type of the indicator in the feed. If auto-detect is checked then
+    the value set as Indicator Type will be ignored.
   display: Indicator Type
   name: indicator_type
   required: false
@@ -94,6 +96,25 @@ configuration:
   name: indicator
   required: false
   type: 0
+- additionalinfo: "Send specified data in a POST request. When specified, by default\
+    \ will add the header: 'Content-Type: application/x-www-form-urlencoded'. To specify\
+    \ a different Content-Type (for example: application/json) use the Headers config\
+    \ param."
+  display: POST Data
+  name: data
+  required: false
+  type: 0
+- additionalinfo: "Headers to add to the http request. Specify each header on a single\
+    \ line in the format: 'Name: Value'. For example: 'User-Agent: XSOAR Feed'"
+  display: Headers
+  name: headers
+  required: false
+  type: 12
+- additionalinfo: "When using a custom classifier and mapper with this feed, use this option to include the indicator type in the raw json used for classification and mapping."
+  display: Include indicator type for mapping
+  name: rawjson_include_indicator_type
+  required: false
+  type: 8
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -132,7 +153,7 @@ script:
     description: Gets the feed indicators.
     execution: false
     name: json-get-indicators
-  dockerimage: demisto/jmespath:1.0.0.12410
+  dockerimage: demisto/jmespath:1.0.0.23980
   feed: true
   isfetch: false
   longRunning: false

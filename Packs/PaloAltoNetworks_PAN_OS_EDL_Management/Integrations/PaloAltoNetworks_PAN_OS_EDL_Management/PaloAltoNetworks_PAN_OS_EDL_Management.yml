@@ -1,4 +1,5 @@
 category: Utilities
+deprecated: true
 commonfields:
   id: palo_alto_networks_pan_os_edl_management
   version: -1
@@ -7,7 +8,7 @@ configuration:
   name: hostname
   required: true
   type: 0
-- display: server port
+- display: Server port
   name: port
   required: false
   type: 0
@@ -27,8 +28,8 @@ configuration:
   name: document_root
   required: false
   type: 0
-description: This integration enables you to manage and edit files located on a remote web server via SSH using integration context as Single Source of Truth.
-display: Palo Alto Networks PAN-OS EDL Management
+description: Deprecated. Use the Palo Alto Networks PAN-OS EDL Service integration instead. This integration is still supported however, for customers with over 1000 Firewalls.
+display: Palo Alto Networks PAN-OS EDL Management (Deprecated)
 name: palo_alto_networks_pan_os_edl_management
 script:
   commands:
@@ -38,6 +39,13 @@ script:
       isArray: false
       name: file_path
       required: true
+      secret: false
+    - default: false
+      defaultValue: '5'
+      description: Number of retries.
+      isArray: false
+      name: retries
+      required: false
       secret: false
     deprecated: false
     description: Displays the contents of the specified remote file located in the War Room.
@@ -140,6 +148,13 @@ script:
       - 'false'
       required: false
       secret: false
+    - default: false
+      defaultValue: '5'
+      description: Number of retries.
+      isArray: false
+      name: retries
+      required: false
+      secret: false
     deprecated: false
     description: Updates internal list data with the contents of a remote file.
     execution: true
@@ -228,6 +243,13 @@ script:
       isArray: false
       name: file_path
       required: true
+      secret: false
+    - default: false
+      defaultValue: '5'
+      description: Number of retries.
+      isArray: false
+      name: retries
+      required: false
       secret: false
     deprecated: false
     description: Compares internal list and external file contents.
@@ -324,7 +346,7 @@ script:
     description: Updates a remote file with the contents of an internal list.
     execution: false
     name: pan-os-edl-update-external-file
-  dockerimage: demisto/openssh:1.0.0.305
+  dockerimage: demisto/openssh:1.0.0.12410
   isfetch: false
   longRunning: false
   longRunningPort: false

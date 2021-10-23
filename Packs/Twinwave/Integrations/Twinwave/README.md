@@ -1,4 +1,5 @@
-Stealth mode cybersecurity startup
+TwinWave’s threat analysis platform analyzes both URLs and files to detect credential phishing and malware threats. Our platform automatically navigates complex attack chains that attackers put in front of threats in order to evade analysis. In addition to detecting threats, the TwinWave platform generates actionable intelligence for threat hunting and other activities.
+
 Supported Cortex XSOAR versions: 6.0.0 and later.
 
 ## Configure Twinwave on Cortex XSOAR

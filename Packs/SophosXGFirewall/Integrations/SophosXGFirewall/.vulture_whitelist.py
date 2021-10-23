@@ -1,0 +1,13 @@
+source_networks  # unused variable (SophosXGFirewall.py:996)
+source_zones  # unused variable (SophosXGFirewall.py:996)
+destination_networks  # unused variable (SophosXGFirewall.py:997)
+destination_zones  # unused variable (SophosXGFirewall.py:997)
+members  # unused variable (SophosXGFirewall.py:998)
+services  # unused variable (SophosXGFirewall.py:998)
+destination_zones  # unused variable (SophosXGFirewall.py:1147)
+source_zones  # unused variable (SophosXGFirewall.py:1147)
+rules  # unused variable (SophosXGFirewall.py:1148)
+host_group  # unused variable (SophosXGFirewall.py:1188)
+urls  # unused variable (SophosXGFirewall.py:1259)
+hosts  # unused variable (SophosXGFirewall.py:1291)
+

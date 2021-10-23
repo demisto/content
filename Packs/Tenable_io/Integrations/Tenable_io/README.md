@@ -4,7 +4,7 @@
 <p>Use the Tenable.io integration to manage scans and asset vulnerabilities.</p>
 <p>This integration was integrated and tested with the November 2018 release of Tenable.io.</p>
 <p> </p>
-<h2>Configure Tenable.io on Demisto</h2>
+<h2>Configure Tenable.io on Cortex XSOAR</h2>
 <hr>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
@@ -24,7 +24,7 @@
 </ol>
 <h2>Commands</h2>
 <hr>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.<br>After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.<br>After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_48852000951542101617984">Get a list of scans: tenable-io-list-scans</a></li>
 <li><a href="#h_666906711891542101622823">Launch a scan: tenable-io-launch-scan</a></li>
@@ -32,6 +32,9 @@
 <li><a href="#h_8236768922581542101631669">Get information for a vulnerability: tenable-io-get-vulnerability-details</a></li>
 <li><a href="#h_4110535863371542101635494">Get a list of vulnerabilities for an asset: tenable-io-get-vulnerabilities-by-asset</a></li>
 <li><a href="#h_3361940724151542101639987">Check the status of a scan: tenable-io-get-scan-status</a></li>
+<li><a href="#h_3361940724151542101639988">Pause a scan: tenable-io-pause-scan</a></li>
+<li><a href="#h_3361940724151542101639989">Resume a scan: tenable-io-resume-scan</a></li>
+
 </ol>
 <h3 id="h_48852000951542101617984">1. Get a list of scans</h3>
 <hr>
@@ -50,12 +53,12 @@
 <tbody>
 <tr>
 <td style="width: 149px;">folderId</td>
-<td style="width: 488px;">The ID of the folder whose scans should be listed. Scans are stored in specific folders on Tenable, e.g., : folderId=8</td>
+<td style="width: 488px;">The ID of the folder whose scans should be listed. Scans are stored in specific folders on Tenable, e.g.: folderId=8.</td>
 <td style="width: 71px;">Optional</td>
 </tr>
 <tr>
 <td style="width: 149px;">lastModificationDate</td>
-<td style="width: 488px;">Limit the results to those that have only changed since this time (YYYY-MM-DD)</td>
+<td style="width: 488px;">Limit the results to those that have only changed since this time. Format: YYYY-MM-DD</td>
 <td style="width: 71px;">Optional</td>
 </tr>
 </tbody>
@@ -74,42 +77,42 @@
 <tr>
 <td style="width: 257px;">TenableIO.Scan.Id</td>
 <td style="width: 60px;">number</td>
-<td style="width: 391px;">The unique ID of the scan</td>
+<td style="width: 391px;">The unique ID of the scan.</td>
 </tr>
 <tr>
 <td style="width: 257px;">TenableIO.Scan.Name</td>
 <td style="width: 60px;">string</td>
-<td style="width: 391px;">The name of the scan</td>
+<td style="width: 391px;">The name of the scan.</td>
 </tr>
 <tr>
 <td style="width: 257px;">TenableIO.Scan.Target</td>
 <td style="width: 60px;">string</td>
-<td style="width: 391px;">The targets to scann</td>
+<td style="width: 391px;">The targets to scan.</td>
 </tr>
 <tr>
 <td style="width: 257px;">TenableIO.Scan.Status</td>
 <td style="width: 60px;">string</td>
-<td style="width: 391px;">The status of the scan ("completed", "aborted", "imported", "pending", "running", "resuming", "canceling", "cancelled", "pausing", "paused", "stopping", "stopped)"</td>
+<td style="width: 391px;">The status of the scan ("completed", "aborted", "imported", "pending", "running", "resuming", "canceling", "cancelled", "pausing", "paused", "stopping", "stopped)".</td>
 </tr>
 <tr>
 <td style="width: 257px;">TenableIO.Scan.StartTime</td>
 <td style="width: 60px;">date</td>
-<td style="width: 391px;">The scheduled start time for the scan</td>
+<td style="width: 391px;">The scheduled start time for the scan.</td>
 </tr>
 <tr>
 <td style="width: 257px;">TenableIO.Scan.EndTime</td>
 <td style="width: 60px;">date</td>
-<td style="width: 391px;">The scheduled end time for the scan</td>
+<td style="width: 391px;">The scheduled end time for the scan.</td>
 </tr>
 <tr>
 <td style="width: 257px;">TenableIO.Scan.Enabled</td>
 <td style="width: 60px;">boolean</td>
-<td style="width: 391px;">If true, the schedule for the scan is enabled</td>
+<td style="width: 391px;">If true, the schedule for the scan is enabled.</td>
 </tr>
 <tr>
 <td style="width: 257px;">TenableIO.Scan.Type</td>
 <td style="width: 60px;">string</td>
-<td style="width: 391px;">The type of scan ("local", "remote", or "agent")</td>
+<td style="width: 391px;">The type of scan ("local", "remote", or "agent").</td>
 </tr>
 <tr>
 <td style="width: 257px;">TenableIO.Scan.Owner</td>
@@ -119,22 +122,27 @@
 <tr>
 <td style="width: 257px;">TenableIO.Scan.Scanner</td>
 <td style="width: 60px;">string</td>
-<td style="width: 391px;">The scanner assigned for the scan</td>
+<td style="width: 391px;">The scanner assigned for the scan.</td>
 </tr>
 <tr>
 <td style="width: 257px;">TenableIO.Scan.Policy</td>
 <td style="width: 60px;">string</td>
-<td style="width: 391px;">The policy assigned for the scan</td>
+<td style="width: 391px;">The policy assigned for the scan.</td>
 </tr>
 <tr>
 <td style="width: 257px;">TenableIO.Scan.CreationDate</td>
 <td style="width: 60px;">date</td>
-<td style="width: 391px;">The creation date for the scan (in Unix time)</td>
+<td style="width: 391px;">The creation date for the scan in Unix time.</td>
 </tr>
 <tr>
 <td style="width: 257px;">TenableIO.Scan.LastModificationDate</td>
 <td style="width: 60px;">date</td>
-<td style="width: 391px;">The last modification date for the scan (in Unix time)</td>
+<td style="width: 391px;">The last modification date for the scan in Unix time.</td>
+</tr>
+<tr>
+<td style="width: 257px;">TenableIO.Scan.FolderId</td>
+<td style="width: 60px;">number</td>
+<td style="width: 391px;">The unique ID of the folder where the scan has been stored.</td>
 </tr>
 </tbody>
 </table>
@@ -292,12 +300,12 @@
 <tbody>
 <tr>
 <td style="width: 142px;">scanId</td>
-<td style="width: 495px;">The ID of the scan to launch</td>
+<td style="width: 495px;">The ID of the scan to launch.</td>
 <td style="width: 71px;">Required</td>
 </tr>
 <tr>
 <td style="width: 142px;">scanTargets</td>
-<td style="width: 495px;">If specified, these targets will be scanned instead of the default. Value can be an array where each index is a target, or an array with a single index of comma separated targets.</td>
+<td style="width: 495px;">If specified, targets to be scanned instead of the default. This value can be an array where each index is a target, or an array with a single index of comma-separated targets.</td>
 <td style="width: 71px;">Optional</td>
 </tr>
 </tbody>
@@ -316,17 +324,17 @@
 <tr>
 <td style="width: 164px;">TenableIO.Scan.Id</td>
 <td style="width: 57px;">number</td>
-<td style="width: 487px;">The unique ID of the scan</td>
+<td style="width: 487px;">The unique ID of the scan.</td>
 </tr>
 <tr>
 <td style="width: 164px;">TenableIO.Scan.Targets</td>
 <td style="width: 57px;">string</td>
-<td style="width: 487px;">The targets to scan</td>
+<td style="width: 487px;">The targets to scan.</td>
 </tr>
 <tr>
 <td style="width: 164px;">TenableIO.Scan.Status</td>
 <td style="width: 57px;">string</td>
-<td style="width: 487px;">The status of the scan ("completed", "aborted", "imported", "pending", "running", "resuming", "canceling", "cancelled", "pausing", "paused", "stopping", "stopped")</td>
+<td style="width: 487px;">The status of the scan ("completed", "aborted", "imported", "pending", "running", "resuming", "canceling", "cancelled", "pausing", "paused", "stopping", "stopped").</td>
 </tr>
 </tbody>
 </table>
@@ -369,17 +377,17 @@
 <tbody>
 <tr>
 <td style="width: 140px;">scanId</td>
-<td style="width: 497px;">The ID of the scan to retrieve</td>
+<td style="width: 497px;">The ID of the scan to retrieve.</td>
 <td style="width: 71px;">Required</td>
 </tr>
 <tr>
 <td style="width: 140px;">detailed</td>
-<td style="width: 497px;">If true, the report will also contain remediation and host information for the specified scan. Otherwise, the report will only contain vulnerabilities.</td>
+<td style="width: 497px;">If true, the report will contain remediation and host information for the specified scan. Otherwise, the report will only contain vulnerabilities.</td>
 <td style="width: 71px;">Optional</td>
 </tr>
 <tr>
 <td style="width: 140px;">info</td>
-<td style="width: 497px;">Return the basic details of the specified scan</td>
+<td style="width: 497px;">Whether to return the basic details of the specified scan.</td>
 <td style="width: 71px;">Optional</td>
 </tr>
 </tbody>
@@ -398,137 +406,137 @@
 <tr>
 <td style="width: 345px;">TenableIO.Scan.Id</td>
 <td style="width: 59px;">number</td>
-<td style="width: 304px;">The unique ID of the scan</td>
+<td style="width: 304px;">The unique ID of the scan.</td>
 </tr>
 <tr>
 <td style="width: 345px;">TenableIO.Scan.Name</td>
 <td style="width: 59px;">string</td>
-<td style="width: 304px;">The name of the scan</td>
+<td style="width: 304px;">The name of the scan.</td>
 </tr>
 <tr>
 <td style="width: 345px;">TenableIO.Scan.Targets</td>
 <td style="width: 59px;">string</td>
-<td style="width: 304px;">The targets to scan</td>
+<td style="width: 304px;">The targets to scan.</td>
 </tr>
 <tr>
 <td style="width: 345px;">TenableIO.Scan.Status</td>
 <td style="width: 59px;">string</td>
-<td style="width: 304px;">The status of the scan ("completed", "aborted", "imported", "pending", "running", "resuming", "canceling", "cancelled", "pausing", "paused", "stopping", "stopped"</td>
+<td style="width: 304px;">The status of the scan ("completed", "aborted", "imported", "pending", "running", "resuming", "canceling", "cancelled", "pausing", "paused", "stopping", "stopped").</td>
 </tr>
 <tr>
 <td style="width: 345px;">TenableIO.Scan.StartTime</td>
 <td style="width: 59px;">string</td>
-<td style="width: 304px;">The scheduled start time for the scan</td>
+<td style="width: 304px;">The scheduled start time for the scan.</td>
 </tr>
 <tr>
 <td style="width: 345px;">TenableIO.Scan.EndTime</td>
 <td style="width: 59px;">string</td>
-<td style="width: 304px;">The scheduled end time for the scan</td>
+<td style="width: 304px;">The scheduled end time for the scan.</td>
 </tr>
 <tr>
 <td style="width: 345px;">TenableIO.Scan.Scanner</td>
 <td style="width: 59px;">string</td>
-<td style="width: 304px;">The scanner assigned to the scan</td>
+<td style="width: 304px;">The scanner assigned to the scan.</td>
 </tr>
 <tr>
 <td style="width: 345px;">TenableIO.Scan.Policy</td>
 <td style="width: 59px;">string</td>
-<td style="width: 304px;">The policy assigned to the scan</td>
+<td style="width: 304px;">The policy assigned to the scan.</td>
 </tr>
 <tr>
 <td style="width: 345px;">TenableIO.Vulnerabilities.Id</td>
 <td style="width: 59px;">string</td>
-<td style="width: 304px;">The unique ID of the vulnerability</td>
+<td style="width: 304px;">The unique ID of the vulnerability.</td>
 </tr>
 <tr>
 <td style="width: 345px;">TenableIO.Vulnerabilities.Name</td>
 <td style="width: 59px;">string</td>
-<td style="width: 304px;">The name of the vulnerability</td>
+<td style="width: 304px;">The name of the vulnerability.</td>
 </tr>
 <tr>
 <td style="width: 345px;">TenableIO.Vulnerabilities.Severity</td>
 <td style="width: 59px;">number</td>
-<td style="width: 304px;">The severity level of the vulnerability</td>
+<td style="width: 304px;">The severity level of the vulnerability.</td>
 </tr>
 <tr>
 <td style="width: 345px;">TenableIO.Vulnerabilities.Description</td>
 <td style="width: 59px;">string</td>
-<td style="width: 304px;">The description of the vulnerability</td>
+<td style="width: 304px;">The description of the vulnerability.</td>
 </tr>
 <tr>
 <td style="width: 345px;">TenableIO.Vulnerabilities.Synopsis</td>
 <td style="width: 59px;">string</td>
-<td style="width: 304px;">A brief summary of the vulnerability</td>
+<td style="width: 304px;">A brief summary of the vulnerability.</td>
 </tr>
 <tr>
 <td style="width: 345px;">TenableIO.Vulnerabilities.Solution</td>
 <td style="width: 59px;">string</td>
-<td style="width: 304px;">Information on how to fix the vulnerability</td>
+<td style="width: 304px;">Information on how to fix the vulnerability.</td>
 </tr>
 <tr>
 <td style="width: 345px;">TenableIO.Vulnerabilities.FirstSeen</td>
 <td style="width: 59px;">date</td>
-<td style="width: 304px;">When the vulnerability was first seen</td>
+<td style="width: 304px;">When the vulnerability was first seen.</td>
 </tr>
 <tr>
 <td style="width: 345px;">TenableIO.Vulnerabilities.LastSeen</td>
 <td style="width: 59px;">date</td>
-<td style="width: 304px;">When the vulnerability was last seen</td>
+<td style="width: 304px;">When the vulnerability was last seen.</td>
 </tr>
 <tr>
 <td style="width: 345px;">TenableIO.Vulnerabilities.VulnerabilityOccurences</td>
 <td style="width: 59px;">number</td>
-<td style="width: 304px;">A count of the vulnerability occurrences</td>
+<td style="width: 304px;">A count of the vulnerability occurrences.</td>
 </tr>
 <tr>
 <td style="width: 345px;">TenableIO.Assets.Hostname</td>
 <td style="width: 59px;">string</td>
-<td style="width: 304px;">The name of the host</td>
+<td style="width: 304px;">The name of the host.</td>
 </tr>
 <tr>
 <td style="width: 345px;">TenableIO.Assets.Score</td>
 <td style="width: 59px;">number</td>
-<td style="width: 304px;">The overall score for the host</td>
+<td style="width: 304px;">The overall score for the host.</td>
 </tr>
 <tr>
 <td style="width: 345px;">TenableIO.Assets.Critical</td>
 <td style="width: 59px;">number</td>
-<td style="width: 304px;">The percentage of critical findings on the host</td>
+<td style="width: 304px;">The percentage of critical findings on the host.</td>
 </tr>
 <tr>
 <td style="width: 345px;">TenableIO.Assets.High</td>
 <td style="width: 59px;">number</td>
-<td style="width: 304px;">The number of high findings on the host</td>
+<td style="width: 304px;">The number of high findings on the host.</td>
 </tr>
 <tr>
 <td style="width: 345px;">TenableIO.Assets.Medium</td>
 <td style="width: 59px;">number</td>
-<td style="width: 304px;">The number of medium findings on the host</td>
+<td style="width: 304px;">The number of medium findings on the host.</td>
 </tr>
 <tr>
 <td style="width: 345px;">TenableIO.Assets.Low</td>
 <td style="width: 59px;">number</td>
-<td style="width: 304px;">The number of low findings on the host</td>
+<td style="width: 304px;">The number of low findings on the host.</td>
 </tr>
 <tr>
 <td style="width: 345px;">TenableIO.Remediations.Id</td>
 <td style="width: 59px;">string</td>
-<td style="width: 304px;">The unique ID of the remediation</td>
+<td style="width: 304px;">The unique ID of the remediation.</td>
 </tr>
 <tr>
 <td style="width: 345px;">TenableIO.Remediations.Description</td>
 <td style="width: 59px;">string</td>
-<td style="width: 304px;">Specific information related to the vulnerability and steps to remediate</td>
+<td style="width: 304px;">Specific information related to the vulnerability and steps to remediate.</td>
 </tr>
 <tr>
 <td style="width: 345px;">TenableIO.Remediations.AffectedHosts</td>
 <td style="width: 59px;">number</td>
-<td style="width: 304px;">The number of hosts affected</td>
+<td style="width: 304px;">The number of hosts affected.</td>
 </tr>
 <tr>
 <td style="width: 345px;">TenableIO.Remediations.AssociatedVulnerabilities</td>
 <td style="width: 59px;">number</td>
-<td style="width: 304px;">The number of vulnerabilities associated with the remedy</td>
+<td style="width: 304px;">The number of vulnerabilities associated with the remedy.</td>
 </tr>
 </tbody>
 </table>
@@ -607,7 +615,7 @@
 <td>No Credentials Provided</td>
 <td>None</td>
 <td>Nessus was unable to execute credentialed checks because no credentials were provided.</td>
-<td>Nessus was able to find common ports used for local checks, however, no credentails were provided in the scan policy.</td>
+<td>Nessus was able to find common ports used for local checks, however, no credentials were provided in the scan policy.</td>
 <td> </td>
 <td>2018-07-03T22:08:05.242Z</td>
 <td>2018-11-12T12:34:11.622Z</td>
@@ -996,7 +1004,7 @@
 <tbody>
 <tr>
 <td style="width: 204px;">vulnerabilityId</td>
-<td style="width: 385px;">The unique ID of the vulnerability</td>
+<td style="width: 385px;">The unique ID of the vulnerability.</td>
 <td style="width: 119px;">Required</td>
 </tr>
 </tbody>
@@ -1015,17 +1023,17 @@
 <tr>
 <td style="width: 339px;">TenableIO.Vulnerabilities.Name</td>
 <td style="width: 63px;">string</td>
-<td style="width: 306px;">The name of the vulnerability</td>
+<td style="width: 306px;">The name of the vulnerability.</td>
 </tr>
 <tr>
 <td style="width: 339px;">TenableIO.Vulnerabilities.Severity</td>
 <td style="width: 63px;">number</td>
-<td style="width: 306px;">Integer [0-4] indicating how severe the vulnerability is, where 0 is info only</td>
+<td style="width: 306px;">Integer [0-4] indicating how severe the vulnerability is, where 0 is info only.</td>
 </tr>
 <tr>
 <td style="width: 339px;">TenableIO.Vulnerabilities.Type</td>
 <td style="width: 63px;">string</td>
-<td style="width: 306px;">The type of the vulnerability</td>
+<td style="width: 306px;">The type of the vulnerability.</td>
 </tr>
 <tr>
 <td style="width: 339px;">TenableIO.Vulnerabilities.Family</td>
@@ -1035,62 +1043,62 @@
 <tr>
 <td style="width: 339px;">TenableIO.Vulnerabilities.Description</td>
 <td style="width: 63px;">string</td>
-<td style="width: 306px;">The description of the vulnerability</td>
+<td style="width: 306px;">The description of the vulnerability.</td>
 </tr>
 <tr>
 <td style="width: 339px;">TenableIO.Vulnerabilities.Synopsis</td>
 <td style="width: 63px;">string</td>
-<td style="width: 306px;">A brief summary of the vulnerability</td>
+<td style="width: 306px;">A brief summary of the vulnerability.</td>
 </tr>
 <tr>
 <td style="width: 339px;">TenableIO.Vulnerabilities.Solution</td>
 <td style="width: 63px;">string</td>
-<td style="width: 306px;">Information on how to fix the vulnerability</td>
+<td style="width: 306px;">Information on how to fix the vulnerability.</td>
 </tr>
 <tr>
 <td style="width: 339px;">TenableIO.Vulnerabilities.FirstSeen</td>
 <td style="width: 63px;">date</td>
-<td style="width: 306px;">When the vulnerability was first seen</td>
+<td style="width: 306px;">When the vulnerability was first seen.</td>
 </tr>
 <tr>
 <td style="width: 339px;">TenableIO.Vulnerabilities.LastSeen</td>
 <td style="width: 63px;">date</td>
-<td style="width: 306px;">When the vulnerability was last seen</td>
+<td style="width: 306px;">When the vulnerability was last seen.</td>
 </tr>
 <tr>
 <td style="width: 339px;">TenableIO.Vulnerabilities.PublicationDate</td>
 <td style="width: 63px;">date</td>
-<td style="width: 306px;">The publication date of the vulnerability</td>
+<td style="width: 306px;">The publication date of the vulnerability.</td>
 </tr>
 <tr>
 <td style="width: 339px;">TenableIO.Vulnerabilities.ModificationDate</td>
 <td style="width: 63px;">date</td>
-<td style="width: 306px;">The last modification date for the vulnerability (in Unix time)</td>
+<td style="width: 306px;">The last modification date for the vulnerability in Unix time.</td>
 </tr>
 <tr>
 <td style="width: 339px;">TenableIO.Vulnerabilities.VulnerabilityOccurences</td>
 <td style="width: 63px;">number</td>
-<td style="width: 306px;">A count of the vulnerability occurrences</td>
+<td style="width: 306px;">A count of the vulnerability occurrences.</td>
 </tr>
 <tr>
 <td style="width: 339px;">TenableIO.Vulnerabilities.CvssVector</td>
 <td style="width: 63px;">string</td>
-<td style="width: 306px;">The Common Vulnerability Scoring System vector</td>
+<td style="width: 306px;">The Common Vulnerability Scoring System vector.</td>
 </tr>
 <tr>
 <td style="width: 339px;">TenableIO.Vulnerabilities.CvssBaseScore</td>
 <td style="width: 63px;">string</td>
-<td style="width: 306px;">The Common Vulnerability Scoring System allotted base score</td>
+<td style="width: 306px;">The Common Vulnerability Scoring System allotted base score.</td>
 </tr>
 <tr>
 <td style="width: 339px;">TenableIO.Vulnerabilities.Cvss3Vector</td>
 <td style="width: 63px;">string</td>
-<td style="width: 306px;">The Common Vulnerability Scoring System version 3 vector</td>
+<td style="width: 306px;">The Common Vulnerability Scoring System version 3 vector.</td>
 </tr>
 <tr>
 <td style="width: 339px;">TenableIO.Vulnerabilities.Cvss3BaseScore</td>
 <td style="width: 63px;">string</td>
-<td style="width: 306px;">The Common Vulnerability Scoring System version 3 allotted base score</td>
+<td style="width: 306px;">The Common Vulnerability Scoring System version 3 allotted base score.</td>
 </tr>
 </tbody>
 </table>
@@ -1134,7 +1142,7 @@
 <h3> </h3>
 <h3 id="h_4110535863371542101635494">5. Get a list of vulnerabilities for an asset</h3>
 <hr>
-<p>Returns a list of the vulnerabilities recorded for a given asset. Maximum number of returned vulnerabilities is 5,000.</p>
+<p>Gets a list of up to 5000 the vulnerabilities recorded for a specified asset.</p>
 <h5>Base Command</h5>
 <pre><code>tenable-io-get-vulnerabilities-by-asset</code></pre>
 <h5>Input</h5>
@@ -1149,17 +1157,17 @@
 <tbody>
 <tr>
 <td style="width: 143px;">hostname</td>
-<td style="width: 494px;">Hostname of the asset</td>
+<td style="width: 494px;">Hostname of the asset.</td>
 <td style="width: 71px;">Optional</td>
 </tr>
 <tr>
 <td style="width: 143px;">ip</td>
-<td style="width: 494px;">IP of the asset</td>
+<td style="width: 494px;">IP of the asset.</td>
 <td style="width: 71px;">Optional</td>
 </tr>
 <tr>
 <td style="width: 143px;">dateRange</td>
-<td style="width: 494px;">The number of days of data prior to and including today that should be returned</td>
+<td style="width: 494px;">The number of days of data prior to and including today that should be returned.</td>
 <td style="width: 71px;">Optional</td>
 </tr>
 </tbody>
@@ -1178,22 +1186,22 @@
 <tr>
 <td style="width: 343px;">TenableIO.Assets.Hostname</td>
 <td style="width: 59px;">number</td>
-<td style="width: 306px;">Hostname of the asset</td>
+<td style="width: 306px;">Hostname of the asset.</td>
 </tr>
 <tr>
 <td style="width: 343px;">TenableIO.Assets.Vulnerabilities</td>
 <td style="width: 59px;">number</td>
-<td style="width: 306px;">A list of all the vulnerability IDs associated with the asset</td>
+<td style="width: 306px;">A list of all the vulnerability IDs associated with the asset.</td>
 </tr>
 <tr>
 <td style="width: 343px;">TenableIO.Vulnerabilities.Id</td>
 <td style="width: 59px;">number</td>
-<td style="width: 306px;">The vulnerability unique ID</td>
+<td style="width: 306px;">The vulnerability unique ID.</td>
 </tr>
 <tr>
 <td style="width: 343px;">TenableIO.Vulnerabilities.Name</td>
 <td style="width: 59px;">string</td>
-<td style="width: 306px;">The name of the vulnerability</td>
+<td style="width: 306px;">The name of the vulnerability.</td>
 </tr>
 <tr>
 <td style="width: 343px;">TenableIO.Vulnerabilities.Severity</td>
@@ -1203,17 +1211,17 @@
 <tr>
 <td style="width: 343px;">TenableIO.Vulnerabilities.Family</td>
 <td style="width: 59px;">string</td>
-<td style="width: 306px;">The vulnerability family</td>
+<td style="width: 306px;">The vulnerability family.</td>
 </tr>
 <tr>
 <td style="width: 343px;">TenableIO.Vulnerabilities.VulnerabilityOccurences</td>
 <td style="width: 59px;">number</td>
-<td style="width: 306px;">The number of times the vulnerability was found</td>
+<td style="width: 306px;">The number of times the vulnerability was found.</td>
 </tr>
 <tr>
 <td style="width: 343px;">TenableIO.Vulnerabilities.VulnerabilityState</td>
 <td style="width: 59px;">string</td>
-<td style="width: 306px;">The current state of the reported vulnerability ("Active", "Fixed", "New", etc.)</td>
+<td style="width: 306px;">The current state of the reported vulnerability ("Active", "Fixed", "New", etc.).</td>
 </tr>
 </tbody>
 </table>
@@ -1413,7 +1421,7 @@
 <tbody>
 <tr>
 <td style="width: 230px;">scanId</td>
-<td style="width: 344px;">The unique ID of the scan</td>
+<td style="width: 344px;">The unique ID of the scan.</td>
 <td style="width: 134px;">Required</td>
 </tr>
 </tbody>
@@ -1432,12 +1440,12 @@
 <tr>
 <td style="width: 241px;">TenableIO.Scan.Id</td>
 <td style="width: 75px;">string</td>
-<td style="width: 392px;">The unique ID of the scan</td>
+<td style="width: 392px;">The unique ID of the scan.</td>
 </tr>
 <tr>
 <td style="width: 241px;">TenableIO.Scan.Status</td>
 <td style="width: 75px;">string</td>
-<td style="width: 392px;">The status of the scan</td>
+<td style="width: 392px;">The status of the scan.</td>
 </tr>
 </tbody>
 </table>
@@ -1456,6 +1464,135 @@
 <tbody>
 <tr>
 <td>completed</td>
+<td>10</td>
+</tr>
+</tbody>
+</table>
+<h3 id="h_3361940724151542101639988">7. Pause a scan</h3>
+<hr>
+<p>Pauses all scans inputted as an array. Will pause scans whose status is 'Running'.
+</p>
+<h5>Base Command</h5>
+<pre><code>tenable-io-pause-scan</code></pre>
+<h5>Input</h5>
+<table style="width: 748px;" border="2" cellpadding="6">
+<thead>
+<tr>
+<th style="width: 230px;"><strong>Argument Name</strong></th>
+<th style="width: 344px;"><strong>Description</strong></th>
+<th style="width: 134px;"><strong>Required</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 230px;">scanId</td>
+<td style="width: 344px;">Comma-separated list of scan IDs.</td>
+<td style="width: 134px;">Required</td>
+</tr>
+</tbody>
+</table>
+<h5> </h5>
+<h5>Context Output</h5>
+<table style="width: 748px;" border="2" cellpadding="6">
+<thead>
+<tr>
+<th style="width: 241px;"><strong>Path</strong></th>
+<th style="width: 75px;"><strong>Type</strong></th>
+<th style="width: 392px;"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 241px;">TenableIO.Scan.Id</td>
+<td style="width: 75px;">string</td>
+<td style="width: 392px;">The unique ID of the scan.</td>
+</tr>
+<tr>
+<td style="width: 241px;">TenableIO.Scan.Status</td>
+<td style="width: 75px;">string</td>
+<td style="width: 392px;">The status of the scan.</td>
+</tr>
+</tbody>
+</table>
+<h5> </h5>
+<h5>Command Example</h5>
+<pre><code>!tenable-io-pause-scan scan-id=10</code></pre>
+<h5>Human Readable Output</h5>
+<h3>The requested scan was paused successfully</h3>
+<table border="2">
+<thead>
+<tr>
+<th>Status</th>
+<th>Id</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pausing</td>
+<td>10</td>
+</tr>
+</tbody>
+</table>
+<h3 id="h_3361940724151542101639989">8. Resume a scan</h3>
+<hr>
+<p>Resumes all scans inputted as an array. Will work resume scans whose status is 'Paused'.</p>
+<h5>Base Command</h5>
+<pre><code>tenable-io-resume-scan</code></pre>
+<h5>Input</h5>
+<table style="width: 748px;" border="2" cellpadding="6">
+<thead>
+<tr>
+<th style="width: 230px;"><strong>Argument Name</strong></th>
+<th style="width: 344px;"><strong>Description</strong></th>
+<th style="width: 134px;"><strong>Required</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 230px;">scanId</td>
+<td style="width: 344px;">Comma-separated list of scan IDs.</td>
+<td style="width: 134px;">Required</td>
+</tr>
+</tbody>
+</table>
+<h5> </h5>
+<h5>Context Output</h5>
+<table style="width: 748px;" border="2" cellpadding="6">
+<thead>
+<tr>
+<th style="width: 241px;"><strong>Path</strong></th>
+<th style="width: 75px;"><strong>Type</strong></th>
+<th style="width: 392px;"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 241px;">TenableIO.Scan.Id</td>
+<td style="width: 75px;">string</td>
+<td style="width: 392px;">The unique ID of the scan.</td>
+</tr>
+<tr>
+<td style="width: 241px;">TenableIO.Scan.Status</td>
+<td style="width: 75px;">string</td>
+<td style="width: 392px;">The status of the scan.</td>
+</tr>
+</tbody>
+</table>
+<h5> </h5>
+<h5>Command Example</h5>
+<pre><code>!tenable-io-resume-scan scan-id=10</code></pre>
+<h5>Human Readable Output</h5>
+<h3>The requested scan was resumed successfully</h3>
+<table border="2">
+<thead>
+<tr>
+<th>Status</th>
+<th>Id</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Resuming</td>
 <td>10</td>
 </tr>
 </tbody>

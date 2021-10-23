@@ -187,6 +187,8 @@ tasks:
       target-mailbox:
         complex:
           root: inputs.Mailbox
+      selected-fields:
+        simple: in_reply_to
     reputationcalc: 2
     separatecontext: false
     view: |-

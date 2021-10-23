@@ -3,17 +3,21 @@ import pathlib
 import os
 
 from CommonServerPython import (
-    FeedIndicatorType, DemistoException, Common
+    FeedIndicatorType, DemistoException, Common,
+    set_integration_context, get_integration_context
 )
-import demistomock as demisto
 
 from CyrenThreatInDepth import (
     Client, fetch_indicators_command, get_indicators_command,
-    test_module_command as _test_module_command
+    test_module_command as _test_module_command, BASE_URL,
+    reset_offset_command, get_offset_command
 )
 
 
 pytestmark = pytest.mark.usefixtures("clean_integration_context")
+
+API_TOKEN = "12345"
+VERSION = "1.5.0"
 
 
 def _load_file(file_name):
@@ -49,17 +53,30 @@ def fixture_response_429():
 
 @pytest.fixture(name="clean_integration_context", scope="function")
 def fixture_clean_integration_context():
-    demisto.setIntegrationContext({})
+    set_integration_context({})
     yield
-    demisto.setIntegrationContext({})
+    set_integration_context({})
+
+
+def _create_client(feed):
+    return Client(feed_name=feed, api_token=API_TOKEN, base_url=BASE_URL, verify=False, proxy=False)
+
+
+def _expected_headers():
+    return {
+        "Authorization": f"Bearer {API_TOKEN}",
+        "Cyren-Client-Name": "Palo Alto Cortex XSOAR",
+        "Cyren-Client-Version": VERSION,
+    }
 
 
 def _create_instance(requests_mock, feed, feed_data, offset_data, offset=0, count=2):
-    base_url = "https://cyren.feed/"
-    requests_mock.get(base_url + "data?format=jsonl&feedId={}&offset={}&count={}".format(feed, offset, count),
-                      text=feed_data)
-    requests_mock.get(base_url + "info?format=jsonl&feedId={}".format(feed), json=offset_data)
-    client = Client(feed_name=feed, base_url=base_url, verify=False, proxy=False)
+    expected_headers = _expected_headers()
+    requests_mock.get(BASE_URL + "/data?format=jsonl&feedId={}_v2&offset={}&count={}".format(feed, offset, count),
+                      text=feed_data, request_headers=expected_headers)
+    requests_mock.get(BASE_URL + "/info?format=jsonl&feedId={}_v2".format(feed),
+                      json=offset_data, request_headers=expected_headers)
+    client = _create_client(feed)
 
     def fetch_command(initial_count=0, max_indicators=2, update_context=False):
         return fetch_indicators_command(client, initial_count, max_indicators, update_context)
@@ -179,12 +196,12 @@ def test_fetch_indicators_offsets(requests_mock, ip_reputation, context_data, of
 
     """
 
-    demisto.setIntegrationContext(context_data)
+    set_integration_context(context_data)
     fetch, _ = _create_instance(requests_mock, "ip_reputation", ip_reputation, offsets, expected_offset, expected_count)
     created = fetch(initial_count, max_indicators, True)
 
-    assert len(created) == 5
-    assert demisto.getIntegrationContext() == dict(offset=50005)
+    assert len(created) == 8
+    assert get_integration_context() == dict(offset=50007)
 
 
 def test_fetch_indicators_parsing_errors(requests_mock, ip_reputation):
@@ -205,7 +222,7 @@ def test_fetch_indicators_parsing_errors(requests_mock, ip_reputation):
     fetch, _ = _create_instance(requests_mock, "ip_reputation", ip_reputation_with_errors, dict(startOffset=0, endOffset=0))
     created = fetch()
 
-    assert len(created) == 5
+    assert len(created) == 8
 
 
 def test_fetch_indicators_rate_limiting(requests_mock, response_429):
@@ -222,11 +239,12 @@ def test_fetch_indicators_rate_limiting(requests_mock, response_429):
 
     """
 
-    base_url = "https://cyren.feed/"
-    requests_mock.get(base_url + "data?format=jsonl&feedId=ip_reputation&offset=0&count=10",
+    requests_mock.get(BASE_URL + "/data?format=jsonl&feedId=ip_reputation_v2&offset=0&count=10",
+                      request_headers=_expected_headers(),
                       text=response_429, status_code=429)
-    requests_mock.get(base_url + "info?format=jsonl&feedId=ip_reputation", json=dict(startOffset=0, endOffset=0))
-    client = Client(feed_name="ip_reputation", base_url=base_url, verify=False, proxy=False)
+    requests_mock.get(BASE_URL + "/info?format=jsonl&feedId=ip_reputation_v2", json=dict(startOffset=0, endOffset=0),
+                      request_headers=_expected_headers())
+    client = _create_client("ip_reputation")
 
     with pytest.raises(DemistoException, match=f".*{response_429}.*"):
         fetch_indicators_command(client, 0, 10, False)
@@ -255,11 +273,11 @@ def test_fetch_indicators_output_ip_reputation(requests_mock, ip_reputation):
     fetch, _ = _create_instance(requests_mock, "ip_reputation", ip_reputation, dict(startOffset=0, endOffset=0))
     created = fetch()
 
-    assert len(created) == 5
+    assert len(created) == 8
 
     assert created[0]["fields"] == dict(updateddate="2020-10-29T05:15:29.062Z",
                                         indicatoridentification="45.193.212.54")
-    assert created[0]["score"] == Common.DBotScore.BAD
+    assert created[0]["score"] == Common.DBotScore.SUSPICIOUS
     assert created[0]["rawJSON"]["tags"] == ["spam", "Botnet detection"]
     assert created[0]["rawJSON"]["source_tag"] == "primary"
     assert created[0]["type"] == FeedIndicatorType.IP
@@ -297,6 +315,32 @@ def test_fetch_indicators_output_ip_reputation(requests_mock, ip_reputation):
     assert created[4]["rawJSON"]["source_tag"] == "primary"
     assert created[4]["type"] == FeedIndicatorType.IP
     assert created[4]["value"] == "45.193.216.185"
+
+    assert created[5]["fields"] == dict(updateddate="2020-10-29T05:15:29.062Z",
+                                        published="2020-10-29T05:15:29.062Z",
+                                        indicatoridentification="45.193.212.55")
+    assert created[5]["score"] == Common.DBotScore.SUSPICIOUS
+    assert created[5]["rawJSON"]["tags"] == ["spam", "Botnet detection"]
+    assert created[5]["rawJSON"]["source_tag"] == "primary"
+    assert created[5]["type"] == FeedIndicatorType.IP
+    assert created[5]["value"] == "45.193.212.55"
+
+    assert created[6]["fields"] == dict(updateddate="2020-10-29T05:15:29.062Z",
+                                        indicatoridentification="45.193.212.56")
+    assert created[6]["score"] == Common.DBotScore.BAD
+    assert created[6]["rawJSON"]["tags"] == ["spam", "Botnet detection"]
+    assert created[6]["rawJSON"]["source_tag"] == "primary"
+    assert created[6]["type"] == FeedIndicatorType.IP
+    assert created[6]["value"] == "45.193.212.56"
+
+    assert created[7]["fields"] == dict(updateddate="2020-10-29T05:15:29.062Z",
+                                        published="2020-10-29T05:15:29.062Z",
+                                        indicatoridentification="45.193.212.57")
+    assert created[7]["score"] == Common.DBotScore.BAD
+    assert created[7]["rawJSON"]["tags"] == ["spam", "Botnet detection"]
+    assert created[7]["rawJSON"]["source_tag"] == "primary"
+    assert created[7]["type"] == FeedIndicatorType.IP
+    assert created[7]["value"] == "45.193.212.57"
 
 
 def test_fetch_indicators_output_malware_files(requests_mock, malware_files):
@@ -750,12 +794,12 @@ def test_get_indicators(requests_mock, phishing_urls, context_data, offsets,
 
     """
 
-    demisto.setIntegrationContext(context_data)
+    set_integration_context(context_data)
     _, get = _create_instance(requests_mock, "phishing_urls", phishing_urls, offsets, expected_offset, expected_count)
     result = get(max_indicators)
 
     assert len(result.raw_response) == 8
-    assert demisto.getIntegrationContext() == context_data
+    assert get_integration_context() == context_data
 
 
 def test_test_module_server_error(requests_mock):
@@ -771,9 +815,9 @@ def test_test_module_server_error(requests_mock):
 
     """
 
-    base_url = "https://cyren.feed/"
-    requests_mock.get(base_url + "data?format=jsonl&feedId=ip_reputation&offset=0&count=10", status_code=500)
-    client = Client(feed_name="ip_reputation", base_url=base_url, verify=False, proxy=False)
+    requests_mock.get(BASE_URL + "/data?format=jsonl&feedId=ip_reputation_v2&offset=0&count=10", status_code=500,
+                      request_headers=_expected_headers())
+    client = _create_client("ip_reputation")
 
     assert "Test failed because of: Error in API call [500] - None" in _test_module_command(client)
 
@@ -791,11 +835,11 @@ def test_test_module_invalid_token(requests_mock):
 
     """
 
-    base_url = "https://cyren.feed/"
-    requests_mock.get(base_url + "data?format=jsonl&feedId=ip_reputation&offset=0&count=10", status_code=400,
+    requests_mock.get(BASE_URL + "/data?format=jsonl&feedId=ip_reputation_v2&offset=0&count=10", status_code=400,
+                      request_headers=_expected_headers(),
                       json=dict(statusCode=400,
                                 error="unable to parse claims from token: ..."))
-    client = Client(feed_name="ip_reputation", base_url=base_url, verify=False, proxy=False)
+    client = _create_client("ip_reputation")
 
     assert "Test failed because of an invalid API token!" in _test_module_command(client)
 
@@ -813,9 +857,9 @@ def test_test_module_other_400(requests_mock):
 
     """
 
-    base_url = "https://cyren.feed/"
-    requests_mock.get(base_url + "data?format=jsonl&feedId=ip_reputation&offset=0&count=10", status_code=400)
-    client = Client(feed_name="ip_reputation", base_url=base_url, verify=False, proxy=False)
+    requests_mock.get(BASE_URL + "/data?format=jsonl&feedId=ip_reputation_v2&offset=0&count=10", status_code=400,
+                      request_headers=_expected_headers())
+    client = _create_client("ip_reputation")
 
     assert "Test failed because of: 400 Client Error:" in _test_module_command(client)
 
@@ -833,9 +877,9 @@ def test_test_module_404(requests_mock):
 
     """
 
-    base_url = "https://cyren.feed/"
-    requests_mock.get(base_url + "data?format=jsonl&feedId=ip_reputation&offset=0&count=10", status_code=404)
-    client = Client(feed_name="ip_reputation", base_url=base_url, verify=False, proxy=False)
+    requests_mock.get(BASE_URL + "/data?format=jsonl&feedId=ip_reputation_v2&offset=0&count=10", status_code=404,
+                      request_headers=_expected_headers())
+    client = _create_client("ip_reputation")
 
     assert "Test failed because of an invalid API URL!" in _test_module_command(client)
 
@@ -853,9 +897,9 @@ def test_test_module_no_entries(requests_mock):
 
     """
 
-    base_url = "https://cyren.feed/"
-    requests_mock.get(base_url + "data?format=jsonl&feedId=ip_reputation&offset=0&count=10", text="")
-    client = Client(feed_name="ip_reputation", base_url=base_url, verify=False, proxy=False)
+    requests_mock.get(BASE_URL + "/data?format=jsonl&feedId=ip_reputation_v2&offset=0&count=10", text="",
+                      request_headers=_expected_headers())
+    client = _create_client("ip_reputation")
 
     assert "Test failed because no indicators could be fetched!" in _test_module_command(client)
 
@@ -873,8 +917,132 @@ def test_test_module_ok(requests_mock, ip_reputation):
 
     """
 
-    base_url = "https://cyren.feed/"
-    requests_mock.get(base_url + "data?format=jsonl&feedId=ip_reputation&offset=0&count=10", text=ip_reputation)
-    client = Client(feed_name="ip_reputation", base_url=base_url, verify=False, proxy=False)
+    requests_mock.get(BASE_URL + "/data?format=jsonl&feedId=ip_reputation_v2&offset=0&count=10", text=ip_reputation,
+                      request_headers=_expected_headers())
+    client = _create_client("ip_reputation")
 
     assert "ok" == _test_module_command(client)
+
+
+@pytest.mark.parametrize("offset_data, context_data, offset, expected_text, expected_offset", [
+    (
+        dict(startOffset=1, endOffset=1000), dict(), None,
+        (
+            "Reset Cyren Threat InDepth ip_reputation feed client offset to 1000 "
+            "(API provided max offset of 1000, was not set before)."
+        ),
+        1000
+    ),
+    (
+        dict(startOffset=1, endOffset=1000), dict(), 900,
+        (
+            "Reset Cyren Threat InDepth ip_reputation feed client offset to 900 "
+            "(API provided max offset of 1000, was not set before)."
+        ),
+        900
+    ),
+    (
+        dict(startOffset=1, endOffset=1000), dict(), 1000,
+        (
+            "Reset Cyren Threat InDepth ip_reputation feed client offset to 1000 "
+            "(API provided max offset of 1000, was not set before)."
+        ),
+        1000
+    ),
+    (
+        dict(startOffset=1, endOffset=1000), dict(), 1001,
+        (
+            "Reset Cyren Threat InDepth ip_reputation feed client offset to 1000 "
+            "(API provided max offset of 1000, was not set before)."
+        ),
+        1000
+    ),
+    (
+        dict(startOffset=1, endOffset=1000), dict(offset=500), None,
+        "Reset Cyren Threat InDepth ip_reputation feed client offset to 1000 (API provided max offset of 1000, was 500).",
+        1000
+    ),
+    (
+        dict(startOffset=1, endOffset=1000), dict(offset=500), 900,
+        "Reset Cyren Threat InDepth ip_reputation feed client offset to 900 (API provided max offset of 1000, was 500).",
+        900
+    ),
+    (
+        dict(startOffset=1, endOffset=1000), dict(offset=500), 1000,
+        "Reset Cyren Threat InDepth ip_reputation feed client offset to 1000 (API provided max offset of 1000, was 500).",
+        1000
+    ),
+    (
+        dict(startOffset=1, endOffset=1000), dict(offset=500), 1001,
+        "Reset Cyren Threat InDepth ip_reputation feed client offset to 1000 (API provided max offset of 1000, was 500).",
+        1000
+    ),
+])
+def test_reset_offset_command(requests_mock, offset_data, context_data, offset, expected_text, expected_offset):
+    """
+    Given:
+        - different stored offset configurations and desired offset parameters
+
+    When:
+        - running the reset offset command
+
+    Then:
+        - I am told what happened in a human-readable form
+        - the new context has been stored in the integration context
+
+    """
+
+    set_integration_context(context_data)
+    feed = "ip_reputation"
+    requests_mock.get(BASE_URL + "/info?format=jsonl&feedId={}_v2".format(feed),
+                      json=offset_data, request_headers=_expected_headers())
+    client = _create_client(feed)
+
+    args = dict()
+    if offset is not None:
+        args["offset"] = offset
+
+    result = reset_offset_command(client, args)
+
+    assert result.readable_output == expected_text
+    assert get_integration_context() == dict(offset=expected_offset)
+
+
+@pytest.mark.parametrize("offset_data, context_data, expected_text", [
+    (
+        dict(startOffset=1, endOffset=1000), dict(),
+        (
+            "Cyren Threat InDepth ip_reputation feed client offset has not been set yet "
+            "(API provided max offset of 1000)."
+        )
+    ),
+    (
+        dict(startOffset=1, endOffset=1000), dict(offset=500),
+        (
+            "Cyren Threat InDepth ip_reputation feed client offset is 500 "
+            "(API provided max offset of 1000)."
+        )
+    ),
+])
+def test_get_offset_command(requests_mock, offset_data, context_data, expected_text):
+    """
+    Given:
+        - different stored offset configurations
+
+    When:
+        - running the get offset command
+
+    Then:
+        - I am told what the offset is
+
+    """
+
+    set_integration_context(context_data)
+    feed = "ip_reputation"
+    requests_mock.get(BASE_URL + "/info?format=jsonl&feedId={}_v2".format(feed),
+                      json=offset_data, request_headers=_expected_headers())
+    client = _create_client(feed)
+
+    result = get_offset_command(client, dict())
+
+    assert result.readable_output == expected_text

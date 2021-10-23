@@ -9,7 +9,7 @@ This integration was integrated and tested with Orca
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | apikey | API Key | True |
-    | first_fetch | First fetch timestamp \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., 12 hours, 7 days\) | False |
+    | first_fetch | First fetch timestamp \(`<number>` `<time unit>`, e.g., 12 hours, 7 days\) | False |
     | incidentType | Incident type | False |
     | isFetch | Fetch incidents | False |
     | max_fetch | Max fetch | False |

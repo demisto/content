@@ -1,50 +1,45 @@
 This integration supports both Palo Alto Networks Panorama and Palo Alto Networks Firewall. You can create separate instances of each integration, and they are not necessarily related or dependent on one another.
-Manage Palo Alto Networks Firewall and Panorama. For more information see Panorama documentation.
-This integration was integrated and tested with version 8.1.0 and 9.0.1 of Palo Alto Firewall, Palo Alto Panorama
 
-## Panorama Playbook
-* **PanoramaCommitConfiguration** : Based on the playbook input, the Playbook will commit the configuration to Palo Alto Firewall, or push the configuration from Panorama to predefined device groups of firewalls. The integration is available from Demisto v3.0, but playbook uses the GenericPooling sub-playbook, which is only available from Demisto v4.0.
-* **Panorama Query Logs** : Wraps several commands (listed below) with genericPolling to enable a complete flow to query the following log types: traffic, threat, URL, data-filtering, and Wildfire.
-   * [panorama-query-logs](#panorama-query-logs)
-   * [panorama-check-logs-status](#panorama-check-logs-status)
-   * [panorama-get-logs](#panorama-get-logs)
-* PAN-OS DAG Configuration
-* PAN-OS EDL Setup
+This integration enables you to manage the Palo Alto Networks Firewall and Panorama. For more information see the [PAN-OS documentation](https://docs.paloaltonetworks.com/pan-os.html).
+This integration was integrated and tested with version 8.1.0 and 9.0.1 of Palo Alto Firewall, Palo Alto Panorama.
+
 
 ## Use Cases
 * Create custom security rules in Palo Alto Networks PAN-OS.
-* Creating and updating address objects, address-groups, custom URL categories, URL filtering objects.
+* Create and update address objects, address-groups, custom URL categories, and URL filtering objects.
 * Use the URL Filtering category information from Palo Alto Networks to enrich URLs by checking the *use_url_filtering* parameter. A valid license for the Firewall is required.
-* Get URL Filtering category information from Palo Alto - Request Change is a known Palo Alto limitation.
+* Get URL Filtering category information from Palo Alto. Request Change is a known Palo Alto limitation.
 * Add URL filtering objects including overrides to Palo Alto Panorama and Firewall.
-* Committing configuration to Palo Alto FW and to Panorama, and pushing configuration from Panorama to Pre-Defined Device-Groups of Firewalls.
+* Commit a configuration to Palo Alto Firewall and to Panorama, and push a configuration from Panorama to Pre-Defined Device-Groups of Firewalls.
 * Block IP addresses using registered IP tags from PAN-OS without committing the PAN-OS instance. First you have to create a registered IP tag, DAG, and security rule, and commit the instance. You can then register additional IP addresses to the tag without committing the instance.
 
-   i. Create a registered IP tag and add the necessary IP addresses by running the [panorama-register-ip-tag](#panorama-register-ip-tag) command.
+     1. Create a registered IP tag and add the necessary IP addresses by running the [panorama-register-ip-tag](#panorama-register-ip-tag) command.
    
-   ii. Create a dynamic address group (DAG), by running the [panorama-create-address-group](#panorama-create-address-group) command. Specify values for the following arguments: type="dynamic", match={ tagname }.
+     2. Create a dynamic address group (DAG), by running the [panorama-create-address-group](#panorama-create-address-group) command. Specify values for the following arguments: type="dynamic", match={ tagname }.
    
-   iii. Create a security rule using the DAG created in the previous step, by running the [panorama-create-rule](#panorama-create-rule) command.
+     3. Create a security rule using the DAG created in the previous step, by running the [panorama-create-rule](#panorama-create-rule) command.
    
-   iv. Commit the PAN-OS instance by running the PanoramaCommitConfiguration playbook.
+     4. Commit the PAN-OS instance by running the PanoramaCommitConfiguration playbook.
    
-   v. You can now register IP addresses to, or unregister IP addresses from, the IP tag by running the [panorama-register-ip-tag](#panorama-register-ip-tag) command, or [panorama-unregister-ip-tag command](#panorama-unregister-ip-tag), respectively, without committing the PAN-OS instance.
+     5. You can now register IP addresses to, or unregister IP addresses from the IP tag by running the [panorama-register-ip-tag](#panorama-register-ip-tag) command, or [panorama-unregister-ip-tag](#panorama-unregister-ip-tag) command, respectively, without committing the PAN-OS instance.
 
 * Create a predefined security profiles with the best practices by Palo Alto Networks.
-* Get security profiles best practices as defined by Palo Alto Networks. For more inforamtion about Palo Alto Networks best practices, visit [Palo Alto Networks best practices](https://docs.paloaltonetworks.com/best-practices/9-0/internet-gateway-best-practices/best-practice-internet-gateway-security-policy/create-best-practice-security-profiles).
+* Get security profiles best practices as defined by Palo Alto Networks. For more information about Palo Alto Networks best practices, visit [Palo Alto Networks best practices](https://docs.paloaltonetworks.com/best-practices/9-0/internet-gateway-best-practices/best-practice-internet-gateway-security-policy/create-best-practice-security-profiles).
 * Apply security profiles to specific rule.
 * Set default categories to block in the URL filtering profile.
 * Enforce WildFire best practice.
    
-   i. Set file upload to the maximum size.
-   ii. WildFire Update Schedule is set to download and install updates every minute.
-   iii. All file types are forwarded.
+   1. Set file upload to the maximum size.
+   
+   2. Set WildFire Update Schedule to download and install updates every minute.
+   
+   3. All file types are forwarded.
 
 ## Known Limitations
 * Maximum commit queue length is 3. Running numerous Panorama commands simultaneously might cause errors.
-* After you run `panorama-create-` commands and the object is not committed, then the `panorama-edit` commands or `panorama-get` commands might not run correctly.
+* After you run `panorama-create-` commands and the object is not committed, the `panorama-edit` commands or `panorama-get` commands might not run correctly.
 * URL Filtering `request change` of a URL is not available via the API. Instead, you need to use the https://urlfiltering.paloaltonetworks.com website.
-* If you do not specify a vsys (Firewall instances) or a device group (Panorama instances), you will only be able to execute certain commands.
+* If you do not specify a vsys (Firewall instances) or a device group (Panorama instances), you will only be able to execute the following commands.
    * [panorama-get-url-category](#panorama-get-url-category)
    * [panorama-commit](#panorama-commit)
    * [panorama-push-to-device-group](#panorama-push-to-device-group)
@@ -78,7 +73,7 @@ This integration was integrated and tested with version 8.1.0 and 9.0.1 of Palo 
    
 
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 1. [Run any command supported in the Panorama API: panorama](#panorama)
@@ -179,6 +174,9 @@ After you successfully execute a command, a DBot message appears in the War Room
 96. [Creates a URL filtering best practice profile: panorama-create-url-filtering-best-practice-profile](#panorama-create-url-filtering-best-practice-profile)
 97. [Creates a file blocking best practice profile: panorama-create-file-blocking-best-practice-profile](#panorama-create-file-blocking-best-practice-profile)
 98. [Creates a WildFire analysis best practice profile: panorama-create-wildfire-best-practice-profile](#panorama-create-wildfire-best-practice-profile)
+99. [Shows the user ID interface configuration.](#panorama-show-user-id-interfaces-config)
+100. [Shows the zones configuration.](#panorama-show-zones-config)
+101. [Retrieves list of user-ID agents configured in the system.](#panorama-list-configured-user-id-agents)
 
 
 ### panorama
@@ -268,7 +266,9 @@ Commits a configuration to Palo Alto Firewall or Panorama, but does not validate
 `panorama-commit`
 #### Input
 
-There are no input arguments for this command.
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| description | Commit description. | Optional | 
 
 #### Context Output
 
@@ -303,7 +303,7 @@ There are no input arguments for this command.
 
 ### panorama-push-to-device-group
 ***
-Pushes rules from PAN-OS to the configured device group.
+Pushes rules from PAN-OS to the configured device group. In order to push the configuration to Prisma Access managed tenants (single or multi tenancy), use the device group argument with the device group which is associated with the tenant ID.  
 
 
 #### Base Command
@@ -313,7 +313,10 @@ Pushes rules from PAN-OS to the configured device group.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device-group | The device group for which to return addresses (Panorama instances). | Optional | 
+| device-group | The device group for which to return addresses (Panorama instances). | Optional |
+| validate-only | Pre policy validation. | Optional. |
+| include-template | Whether to include template changes. | Optional. |
+| description | Push description. | Optional |
 
 
 #### Context Output
@@ -1394,7 +1397,7 @@ Adds or removes sites to and from a custom URL category.
 
 ### panorama-get-url-category
 ***
-Gets a URL category from URL Filtering.
+Gets a URL category from URL Filtering. This command is only available on Firewall devices.
 
 
 #### Base Command
@@ -1458,7 +1461,7 @@ Gets a URL category from URL Filtering.
 
 ### url
 ***
-Gets a URL category from URL Filtering.
+Gets a URL category from URL Filtering. This command is only available on Firewall devices.
 
 
 #### Base Command
@@ -1487,7 +1490,7 @@ Gets a URL category from URL Filtering.
 
 ### panorama-get-url-category-from-cloud
 ***
-Returns a URL category from URL filtering.
+Returns a URL category from URL filtering. This command is only available on Firewall devices.
 
 
 #### Base Command
@@ -1663,7 +1666,7 @@ Edit a URL filtering rule.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | Name of the URL filter to edit. | Required | 
-| element_to_change | Element to change. Can be "override_allow_list", or "override_block_list" | Required | 
+| element_to_change | Element to change. | Required | 
 | element_value | Element value. Limited to one value. | Required | 
 | add_remove_element | Add or remove an element from the Allow List or Block List fields. Default is to 'add' the element_value to the list. | Optional | 
 
@@ -2047,9 +2050,9 @@ Creates a policy rule.
 | destination_zone | A comma-separated list of destination zones. | Optional | 
 | negate_source | Whether to negate the source (address, address group). Can be "Yes" or "No". | Optional | 
 | negate_destination | Whether to negate the destination (address, address group). Can be "Yes" or "No". | Optional | 
-| service | Service object names for the rule (service object) to create. | Optional | 
+| service | A comma-separated list of service object names for the rule. | Optional | 
 | disable | Whether to disable the rule. Can be "Yes" or "No" (default is "No"). | Optional | 
-| application | A comma-separated list of application object namesfor the rule to create. | Optional | 
+| application | A comma-separated list of application object names for the rule. | Optional | 
 | source_user | Source user for the rule to create. | Optional | 
 | pre_post | Pre rule or Post rule (Panorama instances). | Optional | 
 | target | Specifies a target firewall for the rule (Panorama instances). | Optional | 
@@ -2058,7 +2061,8 @@ Creates a policy rule.
 | tags | Rule tags to create. | Optional | 
 | category | A comma-separated list of URL categories. | Optional |
 | profile_setting | A profile setting group. | Optional | 
-
+| where | Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "top" or "bottom", you need to supply the "dst" argument. | Optional | 
+| dst | Destination rule relative to the rule that you are moving. This field is only relevant if you specify "top" or "bottom" in the "where" argument. | Optional |
 
 #### Context Output
 
@@ -2125,7 +2129,8 @@ Creates a custom block policy rule.
 | log_forwarding | Log forwarding profile. | Optional | 
 | device-group | The device group for which to return addresses for the rule (Panorama instances). | Optional | 
 | tags | Tags for which to use for the custom block policy rule. | Optional | 
-
+| where | Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "top" or "bottom", you need to supply the "dst" argument. | Optional | 
+| dst | Destination rule relative to the rule that you are moving. This field is only relevant if you specify "top" or "bottom" in the "where" argument. | Optional |
 
 #### Context Output
 
@@ -2425,7 +2430,8 @@ Returns information for a Panorama PCAP file. The recommended maximum file size 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| pcapType | Type of Packet Capture. | Required | 
+| pcapType | Type of Packet Capture. | Required |
+| serialNumber | The serial number of the firewall to download the PCAP from. | Optional |
 | from | The file name for the PCAP type ('dlp-pcap', 'filters-pcap', or 'application-pcap'). | Optional | 
 | localName | The new name for the PCAP file after downloading. If this argument is not specified, the file name is the PCAP file name set in the firewall. | Optional | 
 | serialNo | Serial number for the request. For further information, see the Panorama XML API Documentation. | Optional | 
@@ -2444,7 +2450,7 @@ Returns information for a Panorama PCAP file. The recommended maximum file size 
 | File.Name | string | File name. | 
 | File.Type | string | File type. | 
 | File.Info | string | File info. | 
-| File.Extenstion | string | File extension. | 
+| File.Extension | string | File extension. | 
 | File.EntryID | string | FIle entryID. | 
 | File.MD5 | string | MD5 hash of the file. | 
 | File.SHA1 | string | SHA1 hash of the file. | 
@@ -2459,8 +2465,7 @@ Returns information for a Panorama PCAP file. The recommended maximum file size 
 
 ### panorama-list-pcaps
 ***
-Returns a list of all PCAP files by PCAP type.
-
+Returns a list of all PCAP files by PCAP type. Not available for threat PCAPs.
 
 #### Base Command
 
@@ -2469,7 +2474,8 @@ Returns a list of all PCAP files by PCAP type.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| pcapType | Type of Packet Capture. | Required | 
+| pcapType | Type of Packet Capture. | Required |
+| serialNumber | The serial number of the firewall to download the PCAP from. | Optional |
 | password | Password for Panorama. Relevant for the 'dlp-pcap' PCAP type. | Optional | 
 
 
@@ -3032,7 +3038,8 @@ Checks whether a session matches a specified security policy. This command is on
 | to | The to zone. | Optional | 
 | protocol | The IP protocol value. | Required | 
 | source | The source IP address. | Required | 
-| source-user | The source user. | Optional | 
+| source-user | The source user. | Optional |
+| target | Target number of the firewall. Use only on a Panorama instance. | Optional | 
 
 
 #### Context Output
@@ -3117,12 +3124,12 @@ Lists the static routes of a virtual router.
 | --- | --- | --- |
 | Panorama.StaticRoutes.Name | String | The name of the static route. | 
 | Panorama.StaticRoutes.BFDProfile | String | The BFD profile of the static route. | 
-|  Panorama.StaticRoutes.Destination | String | The destination of the static route. | 
-|  Panorama.StaticRoutes.Metric | Number | The metric \(port\) of the static route. | 
-|  Panorama.StaticRoutes.NextHop | String | The next hop of the static route. Can be an IP address, FQDN, or a virtual router. | 
-|  Panorama.StaticRoutes.RouteTable | String | The route table of a static route. | 
+| Panorama.StaticRoutes.Destination | String | The destination of the static route. | 
+| Panorama.StaticRoutes.Metric | Number | The metric \(port\) of the static route. | 
+| Panorama.StaticRoutes.NextHop | String | The next hop of the static route. Can be an IP address, FQDN, or a virtual router. | 
+| Panorama.StaticRoutes.RouteTable | String | The route table of a static route. | 
 | Panorama.StaticRoutes.VirtualRouter | String | The virtual router to which the static router belongs. | 
-|  Panorama.StaticRoutes.Template | String | The template in which the static route is defined \(Panorama instances only\). | 
+| Panorama.StaticRoutes.Template | String | The template in which the static route is defined \(Panorama instances only\). | 
 | Panorama.StaticRoutes.Uncommitted | Boolean | Whether the static route is committed. | 
 
 
@@ -3187,12 +3194,12 @@ Returns the specified static route of a virtual router.
 | --- | --- | --- |
 | Panorama.StaticRoutes.Name | String | The name of the static route. | 
 | Panorama.StaticRoutes.BFDProfile | String | The BFD profile of the static route. | 
-|  Panorama.StaticRoutes.Destination | String | The destination of the static route. | 
-|  Panorama.StaticRoutes.Metric | Number | The metric \(port\) of the static route. | 
-|  Panorama.StaticRoutes.NextHop | String | The next hop of the static route. Can be an IP address, FQDN, or a virtual router. | 
-|  Panorama.StaticRoutes.RouteTable | String | The route table of the static route. | 
+| Panorama.StaticRoutes.Destination | String | The destination of the static route. | 
+| Panorama.StaticRoutes.Metric | Number | The metric \(port\) of the static route. | 
+| Panorama.StaticRoutes.NextHop | String | The next hop of the static route. Can be an IP address, FQDN, or a virtual router. | 
+| Panorama.StaticRoutes.RouteTable | String | The route table of the static route. | 
 | Panorama.StaticRoutes.VirtualRouter | String | The virtual router to which the static router belongs. | 
-|  Panorama.StaticRoutes.Template | String | The template in which the static route is defined \(Panorama instances only\). | 
+| Panorama.StaticRoutes.Template | String | The template in which the static route is defined \(Panorama instances only\). | 
 
 
 #### Command Example
@@ -3251,12 +3258,12 @@ Adds a static route.
 | --- | --- | --- |
 | Panorama.StaticRoutes.Name | String | The name of the static route. | 
 | Panorama.StaticRoutes.BFDProfile | String | The BFD profile of the static route. | 
-|  Panorama.StaticRoutes.Destination | String | The destination of the static route. | 
-|  Panorama.StaticRoutes.Metric | Number | The metric \(port\) of the static route. | 
-|  Panorama.StaticRoutes.NextHop | String | The next hop of the static route. Can be an IP address, FQDN, or a virtual router. | 
-|  Panorama.StaticRoutes.RouteTable | String | The route table of the static route. | 
+| Panorama.StaticRoutes.Destination | String | The destination of the static route. | 
+| Panorama.StaticRoutes.Metric | Number | The metric \(port\) of the static route. | 
+| Panorama.StaticRoutes.NextHop | String | The next hop of the static route. Can be an IP address, FQDN, or a virtual router. | 
+| Panorama.StaticRoutes.RouteTable | String | The route table of the static route. | 
 | Panorama.StaticRoutes.VirtualRouter | String | The virtual router to which the static router belongs. | 
-|  Panorama.StaticRoutes.Template | String | The template in which the static route is defined \(Panorama instances only\). | 
+| Panorama.StaticRoutes.Template | String | The template in which the static route is defined \(Panorama instances only\). | 
 
 
 #### Command Example
@@ -3302,12 +3309,12 @@ Deletes a static route.
 | --- | --- | --- |
 | Panorama.StaticRoutes.Name | String | The name of the static route. | 
 | Panorama.StaticRoutes.BFDProfile | String | The BFD profile of the static route. | 
-|  Panorama.StaticRoutes.Destination | String | The destination of the static route. | 
-|  Panorama.StaticRoutes.Metric | Number | The metric \(port\) of the static route. | 
-|  Panorama.StaticRoutes.NextHop | String | The next hop of the static route. Can be an IP address, FQDN, or a virtual router. | 
-|  Panorama.StaticRoutes.RouteTable | String | The route table of the static route. | 
+| Panorama.StaticRoutes.Destination | String | The destination of the static route. | 
+| Panorama.StaticRoutes.Metric | Number | The metric \(port\) of the static route. | 
+| Panorama.StaticRoutes.NextHop | String | The next hop of the static route. Can be an IP address, FQDN, or a virtual router. | 
+| Panorama.StaticRoutes.RouteTable | String | The route table of the static route. | 
 | Panorama.StaticRoutes.VirtualRouter | String | The virtual router to which the static router belongs. | 
-|  Panorama.StaticRoutes.Template | String | The template in which the static route is defined \(Panorama instances only\). | 
+| Panorama.StaticRoutes.Template | String | The template in which the static route is defined \(Panorama instances only\). | 
 | Panorama.StaticRoutes.Deleted | Boolean | Whether the static route was deleted. | 
 
 
@@ -3831,7 +3838,7 @@ Gets information for the specified security profile.
 | Panorama.Vulnerability.Rules.Packet-capture | String | Whether packet capture is enabled. | 
 | Panorama.Vulnerability.Rules.Host | String | The rule host. | 
 | Panorama.Vulnerability.Rules.Name | String | The rule name. | 
-| Panorama.Vulnerability.Rules.Cateogry | String | The category for which to apply the rule. | 
+| Panorama.Vulnerability.Rules.Category | String | The category for which to apply the rule. | 
 | Panorama.Vulnerability.Rules.CVE | String | The CVE for which to apply the rule. | 
 | Panorama.Vulnerability.Rules.Action | String | The rule action. | 
 | Panorama.Vulnerability.Rules.Severity | String | The rule severity. | 
@@ -4025,7 +4032,7 @@ There are no input arguments for this command.
 | Panorama.Spyware.BotentDomain.Packet-capture | String | Whether packet capture is enabled. | 
 | Panorama.Spyware.BotentDomain.Sinkhole.ipv4-address | String | The botnet domain IPv4 address. | 
 | Panorama.Spyware.BotentDomain.Sinkhole.ipv6-address | String | The Botnet domain IPv6 address. | 
-| Panorama.Spyware.Rule.Cateogry | String | The rule category. | 
+| Panorama.Spyware.Rule.Category | String | The rule category. | 
 | Panorama.Spyware.Rule.Action | String | The rule action. | 
 | Panorama.Spyware.Rule.Name | String | The rule name. | 
 | Panorama.Spyware.Rule.Severity | String | The rule severity. | 
@@ -4134,7 +4141,7 @@ There are no input arguments for this command.
 | --- | --- | --- |
 | Panorama.Vulnerability.Rule.Action | String | The rule action. | 
 | Panorama.Vulnerability.Rule.CVE | String | The rule CVE. | 
-| Panorama.Vulnerability.Rule.Cateogry | String | The rule category. | 
+| Panorama.Vulnerability.Rule.Category | String | The rule category. | 
 | Panorama.Vulnerability.Rule.Host | String | The rule host. | 
 | Panorama.Vulnerability.Rule.Name | String | The rule name. | 
 | Panorama.Vulnerability.Rule.Severity | String | The rule severity. | 
@@ -4430,3 +4437,261 @@ There is no context output for this command.
 #### Human Readable Output
 
 >The profile test was created successfully.
+
+### panorama-show-user-id-interfaces-config
+***
+Shows the user ID interface configuration.
+
+
+#### Base Command
+
+`panorama-show-user-id-interfaces-config`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| template | The template to use when running the command. Overrides the template parameter (Panorama instances). If not given, will use the integration parameter. | Optional | 
+| template_stack | The template stack to use when running the command. | Optional | 
+| vsys | The name of the virtual system to be configured. Will use the configured VSYS parameter if exists. If given a value, will override the VSYS parameter. If neither the VSYS parameter and this argument are entered, will default to 'vsys1'. . | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.UserInterfaces.Name | String | The name of the user interface. | 
+| Panorama.UserInterfaces.Zone | String | The zone to which the interface is connected | 
+| Panorama.UserInterfaces.EnableUserIdentification | String | Whether user identification is enabled. | 
+
+
+#### Command Example
+```!panorama-show-user-id-interfaces-config```
+
+#### Context Example
+```json
+{
+    "Panorama": {
+        "UserInterfaces": {
+            "EnableUserIdentification": "no",
+            "Name": "ethernet1/1",
+            "Zone": "test_zone"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### User Interface Configuration:
+>|Name|Zone|EnableUserIdentification|
+>|---|---|---|
+>| ethernet1/1 | test_zone | no |
+
+
+### panorama-show-zones-config
+***
+Shows the zones configuration.
+
+
+#### Base Command
+
+`panorama-show-zones-config`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| template | The template to use when running the command. Overrides the template parameter (Panorama instances). If not given, will use the integration parameter. | Optional | 
+| template_stack | The template stack to use when running the command. | Optional | 
+| vsys | The name of the virtual system to be configured. Will use the configured VSYS parameter if exists. If given a value, will override the VSYS parameter. If neither the VSYS parameter and this argument are entered, will default to 'vsys1'. . | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.Zone.Name | String | The name of the zone. | 
+| Panorama.Zone.Network | String | The network to which the zone connected | 
+| Panorama.Zone.EnableUserIdentification | String | Whether user identification is enabled. | 
+| Panorama.Zone.ZoneProtectionProfile | String | The zone protection profile. | 
+| Panorama.Zone.LogSetting | String | The log setting for the zone | 
+
+
+#### Command Example
+```!panorama-show-zones-config```
+
+#### Context Example
+```json
+{
+    "Panorama": {
+        "Zone": {
+            "EnableUserIdentification": "no",
+            "LogSetting": null,
+            "Name": "test_zone",
+            "Network": {
+                "tap": {
+                    "member": "ethernet1/1"
+                }
+            },
+            "ZoneProtectionProfile": null
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Zone Configuration:
+>|Name|Network|EnableUserIdentification|
+>|---|---|---|
+>| test_zone | tap: {"member": "ethernet1/1"} | no |
+
+
+### panorama-list-configured-user-id-agents
+***
+Retrieves list of user-ID agents configured in the system.
+
+
+#### Base Command
+
+`panorama-list-configured-user-id-agents`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| template | The template to use when running the command. Overrides the template parameter (Panorama instances). If not given, will use the integration parameter. | Optional | 
+| template_stack | The template stack to use when running the command. | Optional | 
+| vsys | The name of the virtual system to be configured. Will use the configured VSYS parameter if exists. If given a value, will override the VSYS parameter. If neither the VSYS parameter and this argument are entered, will default to 'vsys1'. . | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.UserIDAgents.Name | String | The user-ID Agent name. | 
+| Panorama.UserIDAgents.Host | String | The user-ID Agent host. | 
+| Panorama.UserIDAgents.Port | Number | The user-ID Agent port. | 
+| Panorama.UserIDAgents.LdapProxy | String | Whether LDAP proxy is used in the user-ID agent. | 
+| Panorama.UserIDAgents.NtlmAuth | String | Whether NLTM authentication is used in the user-ID agent. | 
+| Panorama.UserIDAgents.EnableHipCollection | String | Whether HIP collection is enabled in the user-ID agent. | 
+| Panorama.UserIDAgents.IpUserMapping | String | Whether IP user mapping is enabled in the user-ID agent. | 
+| Panorama.UserIDAgents.SerialNumber | Unknown | The serial number associated with the user-ID agent. | 
+| Panorama.UserIDAgents.CollectorName | String | The user-ID agent collector name. | 
+| Panorama.UserIDAgents.Secret | String | The user-ID agent secret. | 
+| Panorama.UserIDAgents.Disabled | String | Whether the user-ID agent is disbaled. | 
+
+
+#### Command Example
+```!panorama-list-configured-user-id-agents```
+
+#### Context Example
+```json
+{
+    "Panorama": {
+        "UserIDAgents": [
+            {
+                "CollectorName": "demisto",
+                "Disabled": "yes",
+                "EnableHipCollection": null,
+                "Host": "mine",
+                "IpUserMapping": null,
+                "LdapProxy": "yes",
+                "Name": "testing",
+                "NtlmAuth": "yes",
+                "Port": "12",
+                "Secret": "secret",
+                "SerialNumber": null
+            },
+            {
+                "CollectorName": null,
+                "Disabled": null,
+                "EnableHipCollection": null,
+                "Host": null,
+                "IpUserMapping": null,
+                "LdapProxy": null,
+                "Name": "withSerial",
+                "NtlmAuth": null,
+                "Port": null,
+                "Secret": null,
+                "SerialNumber": "panorama"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### User ID Agents:
+>|Name|SerialNumber|Host|Port|CollectorName|LdapProxy|NtlmAuth|
+>|---|---|---|---|---|---|---|
+>| testing |  | mine | 12 | demisto | yes | yes |
+>| withSerial | panorama |  |  |  |  |  |
+
+
+### panorama-upload-content-update-file
+***
+Uploads a content file to Panorama.
+
+
+#### Base Command
+
+`panorama-upload-content-update-file`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| entryID | Entry ID of the file to upload. | Required | 
+| category | The category of the content. Possible values are: wildfire, anti-virus, content. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.Content.Upload.Status | string | Content upload status. | 
+| Panorama.Content.Upload.Message | string | Content upload message. | 
+
+
+#### Command Example
+```panorama-upload-content-update-file entryID="32@14183" category="content" ```
+
+#### Human Readable Output
+>### Results
+>|Status|Message|
+>|---|---|
+>| Success | line: <file_name> saved |
+
+
+### panorama-install-file-content-update
+***
+Installs specific content update file.
+
+
+#### Base Command
+
+`panorama-install-file-content-update`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| version_name | Update file name to be installed on PAN-OS. | Required | 
+| category | The category of the content. Possible values are: wildfire, anti-virus, content. | Required | 
+| skip_validity_check | Skips file validity check with PAN-OS update server. Use this option for air-gapped networks and only if you trust the content file. Possible values are: yes, no. Default is no. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.Content.Install.JobID | string | JobID of the installation. | 
+| Panorama.Content.Install.Status | string | Installation status. | 
+
+
+#### Command Example
+```panorama-install-file-content-update version_name="panupv2-all-contents-8322-6317" category="content" skip_validity_check="yes" ```
+
+#### Human Readable Output
+>### Results
+>|JobID|Status|
+>|---|---|
+>| 30 | Pending |

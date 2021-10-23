@@ -1,0 +1,56 @@
+{
+    "urn:ietf:params:scim:schemas:sailpoint:1.0:User": {
+        "regionOwner": {
+            "displayName": "The Administrator",
+            "value": "7f000001705911b4817059d1ed0600e3",
+            "$ref": "http://localhost:8088/iiq/scim/v2/Users/7f000001705911b4817059d1ed0600e3"
+        },
+        "administrator": {},
+        "capabilities": [],
+        "lastRefresh": "2020-08-31T08:50:25.859-05:00",
+        "locationOwner": {
+            "displayName": "The Administrator",
+            "value": "7f000001705911b4817059d1ed0600e3",
+            "$ref": "http://localhost:8088/iiq/scim/v2/Users/7f000001705911b4817059d1ed0600e3"
+        },
+        "isManager": false,
+        "accounts": [
+            {
+                "displayName": "Ms. Barbara J Jensen, III",
+                "value": "7f00000174441779817444c8842c0018",
+                "$ref": "http://localhost:8088/iiq/scim/v2/Accounts/7f00000174441779817444c8842c0018"
+            }
+        ],
+        "costcenter": []
+    },
+    "emails": [
+        {
+            "type": "work",
+            "primary": true
+        }
+    ],
+    "displayName": "Barbara Jensen",
+    "meta": {
+        "created": "2020-08-31T08:50:25.836-05:00",
+        "location": "http://localhost:8088/iiq/scim/v2/Users/7f00000174441779817444c8842b0017",
+        "lastModified": "2020-08-31T08:50:25.860-05:00",
+        "version": "W/\"1598881825860\"",
+        "resourceType": "User"
+    },
+    "schemas": [
+        "urn:ietf:params:scim:schemas:sailpoint:1.0:User",
+        "urn:ietf:params:scim:schemas:core:2.0:User",
+        "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User"
+    ],
+    "name": {
+        "formatted": "Barbara Jensen",
+        "familyName": "Jensen",
+        "givenName": "Barbara"
+    },
+    "active": true,
+    "id": "7f00000174441779817444c8842b0017",
+    "userName": "Ms. Barbara J Jensen, III",
+    "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User": {
+        "manager": {}
+    }
+}

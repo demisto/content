@@ -1,4 +1,5 @@
-from HTTPFeedApiModule import get_indicators_command, Client, datestring_to_millisecond_timestamp, feed_main
+from HTTPFeedApiModule import get_indicators_command, Client, datestring_to_server_format, feed_main,\
+    fetch_indicators_command, get_no_update_value
 import requests_mock
 import demistomock as demisto
 
@@ -127,17 +128,29 @@ def test_custom_fields_creator():
     assert "old_filed2" not in custom_fields.keys()
 
 
-def test_datestring_to_millisecond_timestamp():
-    datesting1 = "2020-02-10 13:39:14"
-    datesting2 = "2020-02-10T13:39:14"
-    datesting3 = "2020-02-10 13:39:14.123"
-    datesting4 = "2020-02-10T13:39:14.123"
-    datesting5 = "2020-02-10T13:39:14Z"
-    assert 1581341954000 == datestring_to_millisecond_timestamp(datesting1)
-    assert 1581341954000 == datestring_to_millisecond_timestamp(datesting2)
-    assert 1581341954000 == datestring_to_millisecond_timestamp(datesting5)
-    assert 1581341954123 == datestring_to_millisecond_timestamp(datesting3)
-    assert 1581341954123 == datestring_to_millisecond_timestamp(datesting4)
+def test_datestring_to_server_format():
+    """
+    Given
+    - A string represting a date.
+
+    When
+    - running datestring_to_server_format on the date.
+
+    Then
+    - Ensure the datestring is converted to the ISO-8601 format.
+    """
+    datestring1 = "2020-02-10 13:39:14"
+    datestring2 = "2020-02-10T13:39:14"
+    datestring3 = "2020-02-10 13:39:14.123"
+    datestring4 = "2020-02-10T13:39:14.123"
+    datestring5 = "2020-02-10T13:39:14Z"
+    datestring6 = "2020-11-01T04:16:13-04:00"
+    assert '2020-02-10T13:39:14Z' == datestring_to_server_format(datestring1)
+    assert '2020-02-10T13:39:14Z' == datestring_to_server_format(datestring2)
+    assert '2020-02-10T13:39:14Z' == datestring_to_server_format(datestring3)
+    assert '2020-02-10T13:39:14Z' == datestring_to_server_format(datestring4)
+    assert '2020-02-10T13:39:14Z' == datestring_to_server_format(datestring5)
+    assert '2020-11-01T08:16:13Z' == datestring_to_server_format(datestring6)
 
 
 def test_get_feed_config():
@@ -228,7 +241,8 @@ def test_feed_main_fetch_indicators(mocker, requests_mock):
             'value': 'AS397539'
         },
         'type': indicator_type,
-        'value': 'AS397539'
+        'value': 'AS397539',
+        'fields': {'tags': ['tag1', 'tag2'], 'trafficlightprotocol': 'AMBER'}
     } in indicators
 
 
@@ -292,3 +306,178 @@ def test_feed_main_test_module(mocker, requests_mock):
     assert demisto.results.call_count == 1
     results = demisto.results.call_args[0][0]
     assert results['HumanReadable'] == 'ok'
+
+
+def test_get_indicators_with_relations():
+    """
+    Given:
+    - feed url config including relations values
+    When:
+    - Fetching indicators
+    - create_relationships param is set to True
+    Then:
+    - Validate the returned list of indicators return relationships.
+    """
+
+    feed_url_to_config = {
+        'https://www.spamhaus.org/drop/asndrop.txt': {
+            "indicator_type": 'IP',
+            "indicator": {
+                "regex": r"^.+,\"?(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\"?",
+                "transform": "\\1"
+            },
+            'relationship_name': 'indicator-of',
+            'relationship_entity_b_type': 'STIX Malware',
+            "fields": [{
+                'firstseenbysource': {
+                    "regex": r"^(\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2})",
+                    "transform": "\\1"
+                },
+                "port": {
+                    "regex": r"^.+,.+,(\d{1,5}),",
+                    "transform": "\\1"
+                },
+                "updatedate": {
+                    "regex": r"^.+,.+,.+,(\d{4}-\d{2}-\d{2})",
+                    "transform": "\\1"
+                },
+                "malwarefamily": {
+                    "regex": r"^.+,.+,.+,.+,(.+)",
+                    "transform": "\\1"
+                },
+                "relationship_entity_b": {
+                    "regex": r"^.+,.+,.+,.+,\"(.+)\"",
+                    "transform": "\\1"
+                }
+            }],
+        }
+    }
+    expected_res = [{'value': '127.0.0.1', 'type': 'IP',
+                     'rawJSON': {'malwarefamily': '"Test"', 'relationship_entity_b': 'Test', 'value': '127.0.0.1',
+                                 'type': 'IP', 'tags': []},
+                     'relationships': [
+                         {'name': 'indicator-of', 'reverseName': 'indicated-by', 'type': 'IndicatorToIndicator',
+                          'entityA': '127.0.0.1', 'entityAFamily': 'Indicator', 'entityAType': 'IP',
+                          'entityB': 'Test',
+                          'entityBFamily': 'Indicator', 'entityBType': 'STIX Malware', 'fields': {}}],
+                     'fields': {'tags': []}}]
+
+    asn_ranges = '"2021-01-17 07:44:49","127.0.0.1","3889","online","2021-04-22","Test"'
+    with requests_mock.Mocker() as m:
+        m.get('https://www.spamhaus.org/drop/asndrop.txt', content=asn_ranges.encode('utf-8'))
+        client = Client(
+            url="https://www.spamhaus.org/drop/asndrop.txt",
+            source_name='spamhaus',
+            ignore_regex='^;.*',
+            feed_url_to_config=feed_url_to_config,
+            indicator_type='ASN'
+        )
+        indicators, _ = fetch_indicators_command(client, feed_tags=[], tlp_color=[], itype='IP', auto_detect=False,
+                                                 create_relationships=True)
+
+        assert indicators == expected_res
+
+
+def test_get_indicators_without_relations():
+    """
+    Given:
+    - feed url config including relations values
+    When:
+    - Fetching indicators
+    - create_relationships param is set to False
+    Then:
+    - Validate the returned list of indicators dont return relationships.
+    """
+
+    feed_url_to_config = {
+        'https://www.spamhaus.org/drop/asndrop.txt': {
+            "indicator_type": 'IP',
+            "indicator": {
+                "regex": r"^.+,\"?(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\"?",
+                "transform": "\\1"
+            },
+            'relationship_name': 'indicator-of',
+            'relationship_entity_b_type': 'STIX Malware',
+            "fields": [{
+                'firstseenbysource': {
+                    "regex": r"^(\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2})",
+                    "transform": "\\1"
+                },
+                "port": {
+                    "regex": r"^.+,.+,(\d{1,5}),",
+                    "transform": "\\1"
+                },
+                "updatedate": {
+                    "regex": r"^.+,.+,.+,(\d{4}-\d{2}-\d{2})",
+                    "transform": "\\1"
+                },
+                "malwarefamily": {
+                    "regex": r"^.+,.+,.+,.+,(.+)",
+                    "transform": "\\1"
+                },
+                "relationship_entity_b": {
+                    "regex": r"^.+,.+,.+,.+,\"(.+)\"",
+                    "transform": "\\1"
+                }
+            }],
+        }
+    }
+    expected_res = [{'value': '127.0.0.1', 'type': 'IP',
+                     'rawJSON': {'malwarefamily': '"Test"', 'relationship_entity_b': 'Test', 'value': '127.0.0.1',
+                                 'type': 'IP', 'tags': []},
+                     'fields': {'tags': []}}]
+
+    asn_ranges = '"2021-01-17 07:44:49","127.0.0.1","3889","online","2021-04-22","Test"'
+    with requests_mock.Mocker() as m:
+        m.get('https://www.spamhaus.org/drop/asndrop.txt', content=asn_ranges.encode('utf-8'))
+        client = Client(
+            url="https://www.spamhaus.org/drop/asndrop.txt",
+            source_name='spamhaus',
+            ignore_regex='^;.*',
+            feed_url_to_config=feed_url_to_config,
+            indicator_type='ASN'
+        )
+        indicators, _ = fetch_indicators_command(client, feed_tags=[], tlp_color=[], itype='IP', auto_detect=False,
+                                                 create_relationships=False)
+
+        assert indicators == expected_res
+
+
+def test_get_no_update_value_empty_context():
+    """
+    Given
+    - response with last_modified and etag headers.
+
+    When
+    - Running get_no_update_value method with empty integration context.
+
+    Then
+    - Ensure that the response is True.
+    """
+    class MockResponse:
+        headers = {'last_modified': 'Fri, 30 Jul 2021 00:24:13 GMT',  # guardrails-disable-line
+                   'etag': 'd309ab6e51ed310cf869dab0dfd0d34b'}  # guardrails-disable-line
+    no_update = get_no_update_value(MockResponse())
+    assert no_update
+
+
+def test_get_no_update_value(mocker):
+    """
+    Given
+    - response with last_modified and etag headers with the same values like in the integration context.
+
+    When
+    - Running get_no_update_value method.
+
+    Then
+    - Ensure that the response is False
+    """
+    mocker.patch.object(demisto, 'getIntegrationContext',
+                        return_value={'last_modified': 'Fri, 30 Jul 2021 00:24:13 GMT',  # guardrails-disable-line
+                                      'etag': 'd309ab6e51ed310cf869dab0dfd0d34b'})  # guardrails-disable-line
+
+    class MockResponse:
+        headers = {'last_modified': 'Fri, 30 Jul 2021 00:24:13 GMT',  # guardrails-disable-line
+                   'etag': 'd309ab6e51ed310cf869dab0dfd0d34b'}  # guardrails-disable-line
+    no_update = get_no_update_value(MockResponse())
+    assert not no_update

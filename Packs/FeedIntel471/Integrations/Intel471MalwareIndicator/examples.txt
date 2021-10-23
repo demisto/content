@@ -1,0 +1,1 @@
+intel471-indicators-get-indicators limit=5

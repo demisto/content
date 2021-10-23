@@ -1,63 +1,65 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-
-'''IMPORTS'''
-
-import tempfile
-import subprocess
 import shutil
-import os
-import traceback
-from typing import List
+import subprocess
+import tempfile
 from urllib.parse import urlparse, urlunparse
+
+from CommonServerPython import *
 
 ''' GLOBALS '''
 
+HOSTNAME = ''
+USERNAME = ''
+PORT = ''
+SSH_EXTRA_PARAMS = ''
+SCP_EXTRA_PARAMS = ''
+DOCUMENT_ROOT = ''
+CERTIFICATE_FILE = tempfile.NamedTemporaryFile(delete=False, mode='w')
+INTEGRATION_COMMAND_NAME = 'pan-os-edl'
 
-def create_certificate_file(authentication: dict):
+
+def initialize_instance(params: Dict[str, str]) -> None:
+    global HOSTNAME, USERNAME, PORT, SSH_EXTRA_PARAMS, SCP_EXTRA_PARAMS, DOCUMENT_ROOT, CERTIFICATE_FILE
+
+    authentication = params.get('Authentication', {})  # type: ignore
+
+    HOSTNAME = str(params.get('hostname', ''))  # type: ignore
+    USERNAME = str(authentication.get('identifier', ''))  # type: ignore
+    PORT = str(params.get('port')) if params.get('port', '') and len(params.get('port')) > 0 else ''  # type: ignore
+
+    SSH_EXTRA_PARAMS = params.get('ssh_extra_params').split() if params.get(  # type: ignore
+        'ssh_extra_params') else None
+    SCP_EXTRA_PARAMS = params.get('scp_extra_params').split() if params.get(  # type: ignore
+        'scp_extra_params') else None
+    DOCUMENT_ROOT = f'/{params.get("document_root")}' if params.get('document_root') else ''
+
+    create_certificate_file(authentication)
+
+
+def create_certificate_file(authentication) -> None:
     password = authentication.get('password', None)
     certificate = None
     if 'credentials' in authentication and 'sshkey' in authentication['credentials'] and len(
             authentication['credentials']['sshkey']) > 0:
         certificate = authentication.get('credentials', None).get('sshkey')
 
-    cert_file = tempfile.NamedTemporaryFile(delete=False, mode='w')
     if certificate:
-        cert_file.write(certificate)
-        cert_file.flush()
-        os.chmod(cert_file.name, 0o400)
+        CERTIFICATE_FILE.write(certificate)
+        CERTIFICATE_FILE.flush()
+        os.chmod(CERTIFICATE_FILE.name, 0o400)
     elif password:
         # check that password field holds a certificate and not a password
         if password.find('-----') == -1:
-            return_error('Password parameter must contain a certificate.')
+            raise DemistoException('Password parameter must contain a certificate.')
         # split certificate by dashes
         password_list = password.split('-----')
         # replace spaces with newline characters
         password_fixed = '-----'.join(password_list[:2] + [password_list[2].replace(' ', '\n')] + password_list[3:])
-        cert_file.write(password_fixed)
-        cert_file.flush()
-        os.chmod(cert_file.name, 0o400)
+        CERTIFICATE_FILE.write(password_fixed)
+        CERTIFICATE_FILE.flush()
+        os.chmod(CERTIFICATE_FILE.name, 0o400)
     else:
-        return_error('To connect to the remote server, provide a certificate.')
+        raise DemistoException('To connect to the remote server, provide a certificate.')
 
-    return cert_file
-
-
-AUTHENTICATION = demisto.params().get('Authentication', {})
-
-HOSTNAME = demisto.params().get('hostname')
-USERNAME = AUTHENTICATION.get('identifier')
-PORT = str(demisto.params().get('port')) if demisto.params().get('port', None) and len(
-    demisto.params().get('port')) > 0 else None
-
-SSH_EXTRA_PARAMS = demisto.params().get('ssh_extra_params').split() if demisto.params().get('ssh_extra_params',
-                                                                                            None) else None
-SCP_EXTRA_PARAMS = demisto.params().get('scp_extra_params').split() if demisto.params().get('scp_extra_params',
-                                                                                            None) else None
-DOCUMENT_ROOT = '/' + demisto.params().get('document_root') if demisto.params().get('document_root', None) else None
-
-CERTIFICATE_FILE = create_certificate_file(AUTHENTICATION)
 
 ''' UTILS '''
 
@@ -65,15 +67,15 @@ CERTIFICATE_FILE = create_certificate_file(AUTHENTICATION)
 def ssh_execute(command: str):
     if PORT and SSH_EXTRA_PARAMS:
         param_list = ['ssh', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name, '-p',
-                      PORT] + SSH_EXTRA_PARAMS + [USERNAME + '@' + HOSTNAME, command]
+                      PORT] + SSH_EXTRA_PARAMS + [USERNAME + '@' + HOSTNAME, command]  # type: ignore
         result = subprocess.run(param_list, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     elif PORT:
         result = subprocess.run(
             ['ssh', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name, '-p', PORT,
              USERNAME + '@' + HOSTNAME, command], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     elif SSH_EXTRA_PARAMS:
-        param_list = ['ssh', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name] + SSH_EXTRA_PARAMS + [
-            USERNAME + '@' + HOSTNAME, command]
+        param_list = ['ssh', '-o', 'StrictHostKeyChecking=no', '-i',
+                      CERTIFICATE_FILE.name] + SSH_EXTRA_PARAMS + [USERNAME + '@' + HOSTNAME, command]  # type: ignore
         result = subprocess.run(param_list, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     else:
         result = subprocess.run(
@@ -85,10 +87,10 @@ def ssh_execute(command: str):
             if result.stderr.find("Warning: Permanently added") != -1:
                 return result.stdout  # ignore addition of new hosts warnings
             elif result.stderr.find("Permission denied") != -1:
-                return_error(
+                raise DemistoException(
                     'Permission denied, check your username and certificate.\n' + 'Got error: ' + result.stderr)
             else:
-                return_error(result.stderr)
+                raise DemistoException(result.stderr)
         elif command.find('grep') != -1 and result.returncode == 1:
             #  a search command that did not find any value
             demisto.results({
@@ -98,20 +100,20 @@ def ssh_execute(command: str):
             })
             sys.exit(0)
         else:
-            return_error('Command failed with exit status: ' + str(result.returncode))
+            raise DemistoException(f'Command failed with exit status:{str(result.returncode)}')
 
     return result.stdout
 
 
 def scp_execute(file_name: str, file_path: str):
-
     if SCP_EXTRA_PARAMS:
-        param_list = ['scp', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name] + SCP_EXTRA_PARAMS + [
-            file_name, USERNAME + '@' + HOSTNAME + ':' + f'\'{file_path}\'']
+        param_list = ['scp', '-o', 'StrictHostKeyChecking=no',
+                      '-i', CERTIFICATE_FILE.name] + SCP_EXTRA_PARAMS + [file_name,  # type: ignore
+                                                                         f'{USERNAME}@{HOSTNAME}:\'{file_path}\'']
         result = subprocess.run(param_list, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     else:
         param_list = ['scp', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name, file_name,
-                      USERNAME + '@' + HOSTNAME + ':' + f'\'{file_path}\'']
+                      f'{USERNAME}@{HOSTNAME}:\'{file_path}\'']
         result = subprocess.run(param_list, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
     if result.returncode != 0:
@@ -119,9 +121,9 @@ def scp_execute(file_name: str, file_path: str):
             if result.stderr.find("Warning: Permanently added") != -1:
                 return True  # ignore addition of new hosts warnings
             else:
-                return_error(result.stderr)
+                raise DemistoException(result.stderr)
         else:
-            return_error('Command failed with exit status: ' + str(result.returncode))
+            raise DemistoException(f'Command failed with exit status:{str(result.returncode)}')
     else:
         return True
 
@@ -168,23 +170,38 @@ def parse_items(items: str) -> List[str]:
 ''' COMMANDS '''
 
 
-def edl_get_external_file(file_path: str):
+def edl_get_external_file(file_path: str, retries: int = 1) -> str:
     command = f'cat \'{file_path}\''
-    result = ssh_execute(command)
-    return result
+    while retries > 0:
+        result = ssh_execute(command)
+        # counting newlines as in some edge cases the external web server returns the file content intermittently
+        # with newline as every other char
+        num_lines = float(result.count('\n'))
+        if num_lines > len(result) / 3:
+            demisto.info(f'The number of newlines chars in the file is too big. Try number {retries} before failure.')
+            retries -= 1
+        else:
+            return result
+
+    # if we get here, we failed as the file contains too many newlines to be valid
+    raise DemistoException('The file contains too many newlines to be valid. '
+                           'Please check the file contents on the external web server manually.')
 
 
-def edl_get_external_file_command():
+def edl_get_external_file_command(args: dict):
     """
-    Get external file from web-server and prints to Warroom
+    Get external file from web-server and prints to the war room
     """
-    file_path = demisto.args().get('file_path')
+    file_path = str(args.get('file_path', ''))
+    retries = int(args.get('retries', '1'))
+
     if DOCUMENT_ROOT:
         file_path = os.path.join(DOCUMENT_ROOT, file_path)
 
-    result = edl_get_external_file(file_path)
+    result = edl_get_external_file(file_path, retries)
+    sorted_list = sorted(result.split('\n'))
 
-    md = tableToMarkdown('File Content:', result, headers=['List'])
+    md = tableToMarkdown('File Content:', sorted_list, headers=['List'])
     demisto.results({
         'ContentsFormat': formats['markdown'],
         'Type': entryTypes['note'],
@@ -196,18 +213,19 @@ def edl_search_external_file(file_path: str, search_string: str):
     return ssh_execute(f'grep \'{search_string}\' \'{file_path}\'')
 
 
-def edl_search_external_file_command():
+def edl_search_external_file_command(args: dict):
     """
     Search the external file and return all matching entries to Warroom
     """
-    file_path = demisto.args().get('file_path')
+    file_path: str = str(args.get('file_path', ''))
     if DOCUMENT_ROOT:
         file_path = os.path.join(DOCUMENT_ROOT, file_path)
-    search_string = demisto.args().get('search_string')
+    search_string: str = str(args.get('search_string', ''))
 
     result = edl_search_external_file(file_path, search_string)
+    sorted_list = sorted(result.split('\n'))
 
-    md = tableToMarkdown('Search Results', result, headers=['Result'])
+    md = tableToMarkdown(f'Search Results for {search_string}:', sorted_list, headers=['Result'])
 
     demisto.results({
         'ContentsFormat': formats['markdown'],
@@ -218,7 +236,7 @@ def edl_search_external_file_command():
 
 def edl_update_external_file(file_path: str, list_name: str, verbose: bool):
     dict_of_lists = demisto.getIntegrationContext()
-    list_data = dict_of_lists.get(list_name)
+    list_data = sorted(dict_of_lists.get(list_name))
 
     file_name = file_path.rsplit('/', 1)[-1]
     if not file_name.endswith('.txt'):
@@ -232,7 +250,7 @@ def edl_update_external_file(file_path: str, list_name: str, verbose: bool):
         shutil.rmtree(file_name, ignore_errors=True)
 
     if not success:
-        return_error('External file was not updated successfully.')
+        raise DemistoException('External file was not updated successfully.')
     else:
         if verbose:
             external_file_items = ssh_execute(f'cat \'{file_path}\'')
@@ -250,22 +268,24 @@ def edl_update_external_file(file_path: str, list_name: str, verbose: bool):
         })
 
 
-def edl_update_external_file_command():
+def edl_update_external_file_command(args: dict):
     """
     Overrides external file path with internal list
     """
-    file_path = demisto.args().get('file_path')
+    file_path: str = str(args.get('file_path', ''))
     if DOCUMENT_ROOT:
         file_path = os.path.join(DOCUMENT_ROOT, file_path)
-    list_name = demisto.args().get('list_name')
-    verbose = demisto.args().get('verbose') == 'true'
+    list_name: str = str(args.get('list_name', ''))
+    verbose = args.get('verbose') == 'true'
 
     edl_update_external_file(file_path, list_name, verbose)
 
 
-def edl_update_internal_list(list_name: str, list_items, add, verbose: bool):
+def edl_update_internal_list(list_name: str, list_items: list, add: bool, verbose: bool):
     dict_of_lists = demisto.getIntegrationContext()
+
     if not dict_of_lists:
+        demisto.debug('PAN-OS EDL Management integration context is empty.')
         dict_of_lists = {list_name: list_items}
         if verbose:
             md = tableToMarkdown('List items:', list_items, headers=[list_name])
@@ -273,7 +293,8 @@ def edl_update_internal_list(list_name: str, list_items, add, verbose: bool):
             md = 'Instance context updated successfully.'
     else:
         if not dict_of_lists.get(list_name, None) and not add:
-            return_error('Cannot remove items from an empty list.')
+            raise Exception(f'Cannot remove items from an empty list: {list_name}.')
+
         if dict_of_lists.get(list_name, None):
             if add:
                 chosen_list = dict_of_lists.get(list_name)
@@ -281,19 +302,27 @@ def edl_update_internal_list(list_name: str, list_items, add, verbose: bool):
                     chosen_list = [chosen_list]
 
                 list_items = list(set(chosen_list + list_items))
-            else:
+            else:  # remove
                 list_items = [item for item in dict_of_lists.get(list_name) if item not in list_items]
 
-        if len(list_items) == 0:  # delete list from instance context
+        if not add and len(list_items) == 0:
+            # delete list from instance context, can happen only upon remove of objects
+            demisto.debug(f'PAN-OS EDL Management deleting {list_name} from the integration context.')
             dict_of_lists.pop(list_name, None)
             md = 'List is empty, deleted from instance context.'
         else:
-            dict_of_lists.update({list_name: list_items})
+            # update list in instance context, can happen upon removal or addition of objects
+            sorted_list = sorted(list_items)
+            dict_of_lists.update({list_name: sorted_list})
             if verbose:
-                md = tableToMarkdown('List items:', list_items, headers=[list_name])
+                md = tableToMarkdown('List items:', sorted_list, headers=[list_name])
             else:
                 md = 'Instance context updated successfully.'
 
+    if not dict_of_lists:  # to be removed, debugging purposes only
+        demisto.debug('PAN-OS EDL Management updating an empty object to the integration context.')
+
+    demisto.debug(f'PAN-OS EDL Management updating {list_name} with {len(list_items)} in the integration context.')
     demisto.setIntegrationContext(dict_of_lists)
 
     demisto.results({
@@ -303,36 +332,36 @@ def edl_update_internal_list(list_name: str, list_items, add, verbose: bool):
     })
 
 
-def edl_update_internal_list_command():
+def edl_update_internal_list_command(args: dict):
     """
         Updates the instance context with the list name and items given
     """
-    list_name = demisto.args().get('list_name')
-    list_items = argToList(demisto.args().get('list_items'))
-    if demisto.args().get('add_or_remove') not in ['add', 'remove']:
-        return_error('add_or_remove argument is not \'add\' neither \'remove\'.')
-    add = demisto.args().get('add_or_remove') == 'add'
-    verbose = demisto.args().get('verbose') == 'true'
+    list_name: str = str(args.get('list_name', ''))
+    list_items: list = argToList(str(args.get('list_items', '')))
+    if args.get('add_or_remove') not in ['add', 'remove']:
+        raise Exception('add_or_remove argument is not \'add\' neither \'remove\'.')
+    add = args.get('add_or_remove') == 'add'
+    verbose = args.get('verbose') == 'true'
 
     edl_update_internal_list(list_name, list_items, add, verbose)
 
 
-def edl_update():
+def edl_update(args: dict):
     """
     Updates the instance context with the list name and items given
     Overrides external file path with internal list
     """
-    file_path = demisto.args().get('file_path')
+    file_path: str = str(args.get('file_path', ''))
     if DOCUMENT_ROOT:
         file_path = os.path.join(DOCUMENT_ROOT, file_path)
 
     # Parse list items
-    list_name = demisto.args().get('list_name')
-    list_items = parse_items(items=demisto.args().get('list_items'))
-    if demisto.args().get('add_or_remove') not in ['add', 'remove']:
-        return_error('add_or_remove argument is neither \'add\' nor \'remove\'.')
-    add = demisto.args().get('add_or_remove') == 'add'
-    verbose = demisto.args().get('verbose') == 'true'
+    list_name: str = str(args.get('list_name', ''))
+    list_items = parse_items(items=str(args.get('list_items', '')))
+    if args.get('add_or_remove') not in ['add', 'remove']:
+        raise DemistoException('add_or_remove argument is neither \'add\' nor \'remove\'.')
+    add = args.get('add_or_remove') == 'add'
+    verbose = args.get('verbose') == 'true'
 
     # update internal list
     edl_update_internal_list(list_name, list_items, add, verbose)
@@ -341,41 +370,44 @@ def edl_update():
     edl_update_external_file(file_path, list_name, verbose)
 
 
-def edl_update_from_external_file(list_name: str, file_path: str, type_: str):
+def edl_update_from_external_file(list_name: str, file_path: str, type_: str, retries: int):
     dict_of_lists = demisto.getIntegrationContext()
     list_data = dict_of_lists.get(list_name, None)
-    file_data = edl_get_external_file(file_path)
+    file_data = edl_get_external_file(file_path, retries)
+    sorted_file_data = sorted(file_data.split('\n'))
 
     if list_data:
         set_internal = set(list_data)
-        set_external = set(file_data.split('\n'))
+        set_external = set(sorted_file_data)
         set_external.discard('')
         if type_ == 'merge':
             unified = set_internal.union(set_external)
             list_data_new = list(unified)
         else:  # type_ == 'override'
             list_data_new = list(set_external)
-        dict_of_lists.update({list_name: list_data_new})
+        sorted_list_data_new = sorted(list_data_new)
+        dict_of_lists.update({list_name: sorted_list_data_new})
         demisto.setIntegrationContext(dict_of_lists)
-        return list_data_new
+        return sorted_list_data_new
     else:
-        dict_of_lists.update({list_name: file_data})
+        dict_of_lists.update({list_name: sorted_file_data})
         demisto.setIntegrationContext(dict_of_lists)
-        return file_data
+        return sorted_file_data
 
 
-def edl_update_from_external_file_command():
+def edl_update_from_external_file_command(args: dict):
     """
     Updates internal list data with external file contents
     """
-    file_path = demisto.args().get('file_path')
+    file_path: str = str(args.get('file_path', ''))
     if DOCUMENT_ROOT:
         file_path = os.path.join(DOCUMENT_ROOT, file_path)
-    list_name = demisto.args().get('list_name')
-    type_ = demisto.args().get('type')
-    verbose = demisto.args().get('verbose') == 'true'
+    list_name: str = str(args.get('list_name', ''))
+    type_: str = args.get('type', 'false')
+    verbose: bool = args.get('verbose') == 'true'
+    retries: int = int(args.get('retries', '1'))
 
-    list_data_new = edl_update_from_external_file(list_name, file_path, type_)
+    list_data_new = edl_update_from_external_file(list_name, file_path, type_, retries)
 
     if verbose:
         md = tableToMarkdown('List items:', list_data_new, headers=[list_name])
@@ -389,16 +421,16 @@ def edl_update_from_external_file_command():
     })
 
 
-def edl_delete_external_file(file_path: str):
+def edl_delete_external_file(file_path: str) -> str:
     ssh_execute(f'rm -f \'{file_path}\'')
     return 'File deleted successfully'
 
 
-def edl_delete_external_file_command():
+def edl_delete_external_file_command(args: dict):
     """
     Delete external file
     """
-    file_path = demisto.args().get('file_path')
+    file_path = str(args.get('file_path', ''))
     if DOCUMENT_ROOT:
         file_path = os.path.join(DOCUMENT_ROOT, file_path)
     result = edl_delete_external_file(file_path)
@@ -415,7 +447,7 @@ def edl_list_internal_lists_command():
     List all instance context lists
     """
     dict_of_lists = demisto.getIntegrationContext()
-    list_names = list(dict_of_lists.keys())
+    list_names = sorted(list(dict_of_lists.keys()))
 
     md = tableToMarkdown('Instance context Lists:', list_names, headers=['List names'])
 
@@ -426,12 +458,12 @@ def edl_list_internal_lists_command():
     })
 
 
-def edl_search_internal_list_command():
+def edl_search_internal_list_command(args: dict):
     """
     Search a string on internal list
     """
-    list_name = demisto.args().get('list_name')
-    search_string = demisto.args().get('search_string')
+    list_name = args.get('list_name')
+    search_string = args.get('search_string')
 
     dict_of_lists = demisto.getIntegrationContext()
     list_data = dict_of_lists.get(list_name, None)
@@ -439,30 +471,30 @@ def edl_search_internal_list_command():
     if not list_data:
         demisto.results({
             'Type': 11,
-            'Contents': 'List was not found in instance context.',
+            'Contents': f'List {list_name} was not found in the instance context.',
             'ContentsFormat': formats['text']
         })
     elif search_string in list_data:
         demisto.results({
             'Type': entryTypes['note'],
-            'Contents': 'Search string is in internal list.',
+            'Contents': f'Search string {search_string} is in the internal list {list_name}.',
             'ContentsFormat': formats['text']
         })
     else:
         demisto.results({
             'Type': 11,
-            'Contents': 'Search string was not found in instance context list.',
+            'Contents': f'Search string {search_string} was not found in the instance context list {list_name}.',
             'ContentsFormat': formats['text']
         })
 
 
-def edl_print_internal_list_command():
+def edl_print_internal_list_command(args: dict):
     """
-    Print to warroom instance context list
+    Print to the war room instance context list
     """
-    list_name = demisto.args().get('list_name')
+    list_name = str(args.get('list_name', ''))
     dict_of_lists = demisto.getIntegrationContext()
-    list_data = dict_of_lists.get(list_name, None)
+    list_data = sorted(dict_of_lists.get(list_name, None))
 
     if not list_data:
         demisto.results({
@@ -479,15 +511,15 @@ def edl_print_internal_list_command():
         })
 
 
-def edl_dump_internal_list_command():
+def edl_dump_internal_list_command(args: dict):
     """
     Dumps an instance context list to either a file or incident context
     """
-    destination = demisto.args().get('destination')
-    list_name = demisto.args().get('list_name')
+    destination = args.get('destination')
+    list_name = str(args.get('list_name', ''))
 
     dict_of_lists = demisto.getIntegrationContext()
-    list_data = dict_of_lists.get(list_name, None)
+    list_data = sorted(dict_of_lists.get(list_name, []))
     if not list_data:
         demisto.results({
             'Type': 11,
@@ -525,9 +557,11 @@ def edl_dump_internal_list_command():
         })
 
 
-def edl_compare_command():
-    list_name = demisto.args().get('list_name')
-    file_path = demisto.args().get('file_path')
+def edl_compare_command(args: dict):
+    list_name = str(args.get('list_name', ''))
+    file_path = str(args.get('file_path', ''))
+    retries = int(args.get('retries', '1'))
+
     if DOCUMENT_ROOT:
         file_path = os.path.join(DOCUMENT_ROOT, file_path)
 
@@ -541,7 +575,7 @@ def edl_compare_command():
         })
         sys.exit(0)
 
-    file_data = edl_get_external_file(file_path)
+    file_data = edl_get_external_file(file_path, retries)
     if not file_data:
         demisto.results({
             'Type': 11,
@@ -577,8 +611,8 @@ def edl_compare_command():
     })
 
 
-def edl_get_external_file_metadata_command():
-    file_path = demisto.args().get('file_path')
+def edl_get_external_file_metadata_command(args: dict):
+    file_path = str(args.get('file_path', ''))
     if DOCUMENT_ROOT:
         file_path = os.path.join(DOCUMENT_ROOT, file_path)
 
@@ -614,65 +648,50 @@ def edl_get_external_file_metadata_command():
 ''' EXECUTION '''
 
 
-def main():
-    LOG('command is %s' % (demisto.command(),))
+def main() -> None:
+    command = demisto.command()
+    args = demisto.args()
+    params = demisto.params()
+    LOG(f'command is {command}')
+    commands = {
+        f'{INTEGRATION_COMMAND_NAME}-get-external-file': edl_get_external_file_command,
+        f'{INTEGRATION_COMMAND_NAME}-search-external-file': edl_search_external_file_command,
+        f'{INTEGRATION_COMMAND_NAME}-update-internal-list': edl_update_internal_list_command,
+        f'{INTEGRATION_COMMAND_NAME}-update-external-file': edl_update_external_file_command,
+        f'{INTEGRATION_COMMAND_NAME}-update': edl_update,
+        f'{INTEGRATION_COMMAND_NAME}-update-from-external-file': edl_update_from_external_file_command,
+        f'{INTEGRATION_COMMAND_NAME}-delete-external-file': edl_delete_external_file_command,
+        f'{INTEGRATION_COMMAND_NAME}-search-internal-list': edl_search_internal_list_command,
+        f'{INTEGRATION_COMMAND_NAME}-print-internal-list': edl_print_internal_list_command,
+        f'{INTEGRATION_COMMAND_NAME}-dump-internal-list': edl_dump_internal_list_command,
+        f'{INTEGRATION_COMMAND_NAME}-compare': edl_compare_command,
+        f'{INTEGRATION_COMMAND_NAME}-get-external-file-metadata': edl_get_external_file_metadata_command,
+    }
     try:
-        if demisto.command() == 'test-module':
+        initialize_instance(params=params)
+        if command == 'test-module':
             ssh_execute('echo 1')
-            demisto.results('ok')
+            return_results('ok')
 
-        elif demisto.command() == 'pan-os-edl-get-external-file':
-            edl_get_external_file_command()
-
-        elif demisto.command() == 'pan-os-edl-search-external-file':
-            edl_search_external_file_command()
-
-        elif demisto.command() == 'pan-os-edl-update-internal-list':
-            edl_update_internal_list_command()
-
-        elif demisto.command() == 'pan-os-edl-update-external-file':
-            edl_update_external_file_command()
-
-        elif demisto.command() == 'pan-os-edl-update':
-            edl_update()
-
-        elif demisto.command() == 'pan-os-edl-update-from-external-file':
-            edl_update_from_external_file_command()
-
-        elif demisto.command() == 'pan-os-edl-delete-external-file':
-            edl_delete_external_file_command()
-
-        elif demisto.command() == 'pan-os-edl-list-internal-lists':
+        elif command == 'pan-os-edl-list-internal-lists':
             edl_list_internal_lists_command()
 
-        elif demisto.command() == 'pan-os-edl-search-internal-list':
-            edl_search_internal_list_command()
-
-        elif demisto.command() == 'pan-os-edl-print-internal-list':
-            edl_print_internal_list_command()
-
-        elif demisto.command() == 'pan-os-edl-dump-internal-list':
-            edl_dump_internal_list_command()
-
-        elif demisto.command() == 'pan-os-edl-compare':
-            edl_compare_command()
-
-        elif demisto.command() == 'pan-os-edl-get-external-file-metadata':
-            edl_get_external_file_metadata_command()
-
+        elif command in commands:
+            commands[command](args)
         else:
-            return_error('Unrecognized command: ' + demisto.command())
+            raise NotImplementedError(f'Command "{command}" is not implemented in {INTEGRATION_COMMAND_NAME}.')
 
-    except Exception as ex:
-        if str(ex).find('warning') != -1:
-            LOG(str(ex))
+    except Exception as err:
+        if str(err).find('warning') != -1:
+            LOG(str(err))
         else:
-            return_error(f'Error: {str(ex)}\nTrace:\n{traceback.format_exc()}')
+            demisto.error(traceback.format_exc())  # print the traceback
+            return_error(str(err), err)
 
     finally:
         shutil.rmtree(CERTIFICATE_FILE.name, ignore_errors=True)
         LOG.print_log()
 
 
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

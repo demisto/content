@@ -1,0 +1,20 @@
+{
+    "defaultIncidentType": "Qualys-Fim",
+    "description": "",
+    "feed": false,
+    "id": "b8da1d77-e4d7-47e0-8365-169af522dd3f",
+    "keyTypeMap": {
+        "DEFAULT": "Qualys-Fim"
+    },
+    "name": "QualysFim Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "complex": null,
+        "simple": "type"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

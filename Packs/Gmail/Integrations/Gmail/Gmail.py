@@ -16,6 +16,7 @@ from htmlentitydefs import name2codepoint
 from email.mime.audio import MIMEAudio
 from email.mime.base import MIMEBase
 from email.mime.image import MIMEImage
+from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.header import Header
@@ -1124,7 +1125,13 @@ def search(user_id, subject='', _from='', to='', before='', after='', filename='
         'v1',
         ['https://www.googleapis.com/auth/gmail.readonly'],
         command_args['userId'])
-    result = service.users().messages().list(**command_args).execute()
+    try:
+        result = service.users().messages().list(**command_args).execute()
+    except Exception as e:
+        if "Mail service not enabled" in str(e):
+            result = {}
+        else:
+            raise
 
     return [get_mail(user_id, mail['id'], 'full') for mail in result.get('messages', [])], q
 
@@ -1650,7 +1657,7 @@ def collect_attachments(entry_ids, file_names):
             else:
                 file_name = file['name']
 
-            content_type, encoding = mimetypes.guess_type(file_path)
+            content_type, encoding = mimetypes.guess_type(file_name)
             if content_type is None or encoding is not None:
                 content_type = 'application/octet-stream'
 
@@ -1705,6 +1712,15 @@ def attachment_handler(message, attachments):
             else:
                 msg_aud.add_header('Content-Disposition', 'attachment', filename=att['name'])
             message.attach(msg_aud)
+
+        elif att['maintype'] == 'application':
+            msg_app = MIMEApplication(att['data'], att['subtype'])
+            if att['cid'] is not None:
+                msg_app.add_header('Content-Disposition', 'inline', filename=att['name'])
+                msg_app.add_header('Content-ID', '<' + att['name'] + '>')
+            else:
+                msg_app.add_header('Content-Disposition', 'attachment', filename=att['name'])
+            message.attach(msg_app)
 
         else:
             msg_base = MIMEBase(att['maintype'], att['subtype'])

@@ -7,7 +7,7 @@
   "commitMessage": "",
   "shouldPublish": false,
   "shouldCommit": false,
-  "regex": "(?i)(?:(?:https?|ftp|hxxps?):(\\/?\\/?\\\\?\\\\?)|www\\[?\\.\\]?|ftp\\[?\\.\\]?)(?:[-\\d\\p{L}]+\\[?\\.\\]?)+[-\\d\\p{L}]+(?::\\d+)?(?:((\\/)|(\\*)|(\\?)|(\\#))+[-\\d\\p{L}+&@#\\/%=~_$?!\\-:,.\\(\\);\\\\*–—―|]*)?",
+  "regex": "(?i)((?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\\[\\.\\]|\\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])/|(?:(?:https?|ftp|hxxps?):(\\/?\\/?\\\\?\\\\?)|www\\[?\\.\\]?|ftp\\[?\\.\\]?))(?:[-_\\d\\p{L}]+\\[?\\.\\]?)+[-_\\d\\p{L}]+(?::\\d+)?(?:(?:((\\/)|(\\*)|(\\#)|(\\?)))+(?:[-\\d\\p{L}+&@'#\\/%=~_$!\\-:,.;\\\\*–—―|]*|\\([-\\d\\p{L}\\+&@#\\/%=~_\\$\\?!\\-:,\\.;\\\\\\*–—―\\|]*\\))*)*",
   "details": "URL",
   "prevDetails": "URL",
   "reputationScriptName": "",
@@ -159,6 +159,101 @@
           "args": {}
         }]
       }
+    },
+    "feedrelatedindicators": {
+        "simple": "",
+        "complex": {
+            "root": "URL",
+            "filters": [],
+            "accessor": "FeedRelatedIndicators",
+            "transformers": [
+                {
+                    "operator": "uniq",
+                    "args": {}
+                }
+            ]
+        }
+    },
+    "malwarefamily": {
+        "simple": "",
+        "complex": {
+            "root": "URL",
+            "filters": [],
+            "accessor": "MalwareFamily",
+            "transformers": [
+                {
+                    "operator": "uniq",
+                    "args": {}
+                }
+            ]
+        }
+    },
+    "asn": {
+        "simple": "",
+        "complex": {
+            "root": "URL",
+            "filters": [],
+            "accessor": "ASN",
+            "transformers": [
+                {
+                    "operator": "uniq",
+                    "args": {}
+                }
+            ]        }
+    },
+    "asowner": {
+        "simple": "",
+        "complex": {
+            "root": "URL",
+            "filters": [],
+            "accessor": "ASOwner",
+            "transformers": [
+                {
+                    "operator": "uniq",
+                    "args": {}
+                }
+            ]        }
+    },
+    "geocountry": {
+        "simple": "",
+        "complex": {
+            "root": "URL.Geo",
+            "filters": [],
+            "accessor": "Country",
+            "transformers": [
+                {
+                    "operator": "uniq",
+                    "args": {}
+                }
+            ]        }
+    },
+    "communitynotes": {
+        "simple": "",
+        "complex": {
+            "root": "URL",
+            "filters": [],
+            "accessor": "CommunityNotes",
+            "transformers": [
+                {
+                    "operator": "uniq",
+                    "args": {}
+                }
+            ]
+        }
+    },
+    "publications": {
+        "simple": "",
+        "complex": {
+            "root": "URL",
+            "filters": [],
+            "accessor": "Publications",
+            "transformers": [
+                {
+                    "operator": "uniq",
+                    "args": {}
+                }
+            ]
+        }
     },
     "tags": {
       "simple": "",

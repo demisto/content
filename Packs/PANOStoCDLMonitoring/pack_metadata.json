@@ -1,0 +1,29 @@
+{
+    "name": "PAN-OS to Cortex Data Lake Monitoring",
+    "description": "Monitor the PAN-OS FW log upload to the Cortex Data Lake in a reoccurring job. The key pre-requisite is the configuration of the Cortex Data Lake integration.",
+    "support": "community",
+    "currentVersion": "1.0.8",
+    "fromversion": "6.0.0",
+    "author": "Brice RENAUD",
+    "url": "",
+    "email": "brenaud@paloaltonetworks.com",
+    "categories": [
+        "Network Security"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "zoinx"
+    ],
+    "dependencies": {
+        "PAN-OS": {
+            "mandatory": true,
+            "display_name": "PAN-OS"
+        },
+        "Cortex Data Lake": {
+            "mandatory": true,
+            "display_name": "Cortex Data Lake"
+        }
+    }
+}

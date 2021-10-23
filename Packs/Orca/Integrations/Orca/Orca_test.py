@@ -435,7 +435,7 @@ def test_fetch_incidents_first_run_should_succeed(mocker, requests_mock, orca_cl
     }
     mocker.patch.object(demisto, 'getLastRun', return_value={'lastRun': None})
     requests_mock.get(f"{ORCA_API_DNS_NAME}/query/alerts", json=mock_response)
-    fetched_incidents = fetch_incidents(orca_client, max_fetch=20, pull_existing_alerts=True)
+    fetched_incidents = fetch_incidents(orca_client, max_fetch=20, pull_existing_alerts=True, first_fetch_time=None)
     assert fetched_incidents[0]['name'] == 'orca-59'
     loaded_raw_alert = json.loads(fetched_incidents[0]['rawJSON'])
     assert loaded_raw_alert['demisto_score'] == 4
@@ -449,7 +449,7 @@ def test_fetch_incidents_not_first_run_return_empty(mocker, orca_client: OrcaCli
     mocker.patch.object(demisto, 'getLastRun',
                         return_value={'lastRun': datetime.now().strftime(DEMISTO_OCCURRED_FORMAT),
                                       "incidents_for_next_run": []})
-    fetched_incidents = fetch_incidents(orca_client, max_fetch=20, pull_existing_alerts=True)
+    fetched_incidents = fetch_incidents(orca_client, max_fetch=20, pull_existing_alerts=True, first_fetch_time=None)
     assert fetched_incidents == []
 
 

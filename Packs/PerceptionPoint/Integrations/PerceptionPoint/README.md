@@ -8,7 +8,7 @@
 <li>View and manage your incidents list. This list will be updated automatically in the Incidents dashboard.</li>
 <li>Release emails from quarantine and resend them to their recipients, by passing the scan ID as an argument.</li>
 </ul>
-<h2>Configure PerceptionPoint on Demisto</h2>
+<h2>Configure PerceptionPoint on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to<span> </span><strong>Settings</strong><span> </span>&gt;<span> </span><strong>Integrations</strong><span> </span>&gt;<span> </span><strong>Servers &amp; Services</strong>.</li>
 <li>Search for Perception Point.</li>
@@ -31,7 +31,7 @@
 </ol>
 <h2> </h2>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.<br> After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.<br> After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_86b37f8f-af11-4764-9053-224f65e33a4e" target="_self">Resend a falsely quarantined email: pp-release-email</a></li>
 </ol>

@@ -46,7 +46,7 @@ def test_list_logs_command(requests_mock, mocker):
     assert outputs
     assert len(outputs) == 5
     assert outputs[0].get('EventID')  # check that the cef parse was successful
-    assert 'Trend Micro Apex - Web Violation Logs' in response.readable_output
+    assert 'Trend Micro Apex One - Web Violation Logs' in response.readable_output
     assert response.outputs_prefix == 'TrendMicroApex.Log'
 
 

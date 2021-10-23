@@ -1,7 +1,7 @@
 Detonates one or more files using the Wildfire integration. This playbook
 returns relevant reports to the War Room and file reputations to the context data.
 
-The detonation supports the following file types: APK, JAR, DOC, DOCX, RTF, XLS, XLSX, PPT, PPTX, OOXML, PE32, PDF, DMG, PKG, RAR, 7Z.
+The detonation supports the following file types: APK, JAR, DOC, DOCX, RTF, XLS, XLSX, PPT, PPTX, OOXML, PE32, PDF, DMG, PKG, RAR, 7Z, JS, ELF, HTA, LNK, VBS, PS1, PERL, PYTHON, SHELL.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -25,8 +25,8 @@ This playbook does not use any integrations.
 | **Name** | **Description** | **Default Value** | **Source** | **Required** |
 | --- | --- | --- | --- | --- |
 | File | The file object of the file to detonate. The file is taken from the context. | None | File | Optional |
-| Interval | The duration for executing the pooling (in minutes). | 1 | - | Optional |
-| Timeout | The duration after which to stop pooling and to resume the playbook (in minutes). | 15 | - | Optional |
+| Interval | The duration for executing the polling (in minutes). | 1 | - | Optional |
+| Timeout | The duration after which to stop polling and to resume the playbook (in minutes). | 15 | - | Optional |
 | ReportFileType | The resource type to download. The default is "pdf". XML is also possible. | - | - | Optional |
 
 ## Playbook Outputs

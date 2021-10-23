@@ -12,11 +12,11 @@ For more information, please refer to the [Identity Lifecycle Management article
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | url | GitHub URL https://&lt;domain&gt;.github.com/ | True |
-| token | token | True |
+| token | Token | True |
 | insecure | Trust any certificate \(not secure\) | False |
-| create-user-enabled | Create User Command Enabled | False |
-| update-user-enabled | Update User Command Enabled | False |
-| disable-user-enabled | Disable User Commands Enabled | False |
+| create-user-enabled | Allow creating users | False |
+| update-user-enabled | Allow updating users | False |
+| disable-user-enabled | Allow disabling users | False |
 | mapper-in | Incoming Mapper | True |
 | mapper-out | Outgoing Mapper | True |
 

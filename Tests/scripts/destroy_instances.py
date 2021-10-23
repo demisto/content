@@ -7,7 +7,6 @@ import sys
 import Tests.scripts.awsinstancetool.aws_functions as aws_functions
 
 from Tests.scripts.utils.log_util import install_logging
-from demisto_sdk.commands.test_content.tools import is_redhat_instance
 
 
 def main():
@@ -48,26 +47,19 @@ def main():
         except subprocess.CalledProcessError:
             logging.exception(f'Failed downloading server logs from server {env["InstanceDNS"]}')
 
-        try:
-            container_engine_type = 'podman' if is_redhat_instance(env["InstanceDNS"]) else 'docker'
-            logging.debug(f'logging out of {container_engine_type} on server for server {env["InstanceDNS"]}')
-            subprocess.check_output(
-                f'ssh -o StrictHostKeyChecking=no {env["SSHuser"]}@{env["InstanceDNS"]} '
-                f'cd /home/demisto && sudo -u demisto {container_engine_type} logout'.split())
-        except Exception:
-            logging.exception(f'Could not log out of {container_engine_type} on {env["InstanceDNS"]}')
-
         if time_to_live:
             logging.info(f'Skipping - Time to live was set to {time_to_live} minutes')
             continue
-        if os.path.isfile("./Tests/is_build_passed_{}.txt".format(env["Role"].replace(' ', ''))):
+        if os.path.isfile("./Tests/is_build_passed_{}.txt".format(env["Role"].replace(' ', ''))) and \
+                os.path.isfile("./Tests/is_post_update_passed_{}.txt".format(env["Role"].replace(' ', ''))):
             logging.info(f'Destroying instance with role - {env.get("Role", "Unknown role")} and IP - '
                          f'{env["InstanceDNS"]}')
             rminstance = aws_functions.destroy_instance(env["Region"], env["InstanceID"])
             if aws_functions.isError(rminstance):
                 logging.error(rminstance['Message'])
         else:
-            logging.warning(f'Tests failed on {env.get("Role", "Unknown role")}, keeping instance alive')
+            logging.warning(f'Tests for some integration failed on {env.get("Role", "Unknown role")}'
+                            f', keeping instance alive')
 
 
 if __name__ == "__main__":

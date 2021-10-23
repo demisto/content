@@ -1,0 +1,16 @@
+[file:layoutscontainer-Expanse_Certificate_Layout.json]
+ignore=BA101
+
+[file:layoutscontainer-Expanse_Issue_Layout.json]
+ignore=BA101
+
+[file:ExpanseGenerateIssueMapWidgetScript.yml]
+ignore=BA110
+
+[file:classifier-ExpanseV2_-_Incoming_Mapper.json]
+ignore=BA101
+[file:incidentfield-Expanse_Issue_ID.json]
+ignore=IF100
+
+[file:incidentfield-Expanse_Issue_Type.json]
+ignore=IF100

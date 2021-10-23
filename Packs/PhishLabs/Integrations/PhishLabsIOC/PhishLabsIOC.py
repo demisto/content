@@ -17,87 +17,88 @@ Response = requests.models.Response
 
 ''' GLOBALS/PARAMS '''
 
-USERNAME: str = demisto.params().get('credentials', {}).get('identifier')
-PASSWORD: str = demisto.params().get('credentials', {}).get('password')
-SERVER: str = (demisto.params().get('url')[:-1]
-               if (demisto.params().get('url') and demisto.params().get('url').endswith('/'))
-               else demisto.params().get('url'))
-USE_SSL: bool = not demisto.params().get('insecure', False)
-BASE_URL: str = str(SERVER) + '/api/v1/'
 HEADERS: dict = {
     'Content-Type': 'application/json',
     'Accept': 'application/json'
 }
 NONE_DATE: str = '0001-01-01T00:00:00Z'
 
-FETCH_TIME: str = demisto.params().get('fetch_time', '').strip()
-FETCH_LIMIT: str = demisto.params().get('fetch_limit', '10')
 RAISE_EXCEPTION_ON_ERROR: bool = False
 SEC_IN_DAY: int = 86400
 
 
-''' HELPER FUNCTIONS '''
+class Client:
 
+    def __init__(self, base_url: str, user_name: str, password: str, use_ssl: bool,
+                 reliability: str = DBotScoreReliability.B):
+        self.base_url = base_url
+        self.user_name = user_name
+        self.password = password
+        self.use_ssl = use_ssl
+        self.reliability = reliability
 
-@logger
-def http_request(method: str, path: str, params: dict = None, data: dict = None) -> dict:
-    """
-    Sends an HTTP request using the provided arguments
-    :param method: HTTP method
-    :param path: URL path
-    :param params: URL query params
-    :param data: Request body
-    :return: JSON response
-    """
-    params: dict = params if params is not None else {}
-    data: dict = data if data is not None else {}
+    @logger
+    def http_request(self, method: str, path: str, params: dict = None, data: dict = None) -> dict:
+        """
+        Sends an HTTP request using the provided arguments
+        :param method: HTTP method
+        :param path: URL path
+        :param params: URL query params
+        :param data: Request body
+        :return: JSON response
+        """
+        params: dict = params if params is not None else {}
+        data: dict = data if data is not None else {}
 
-    try:
-        res: Response = requests.request(
-            method,
-            BASE_URL + path,
-            auth=(USERNAME, PASSWORD),
-            verify=USE_SSL,
-            params=params,
-            data=json.dumps(data),
-            headers=HEADERS)
-    except requests.exceptions.SSLError:
-        ssl_error = 'Could not connect to PhishLabs IOC Feed: Could not verify certificate.'
-        if RAISE_EXCEPTION_ON_ERROR:
-            raise Exception(ssl_error)
-        return return_error(ssl_error)
-    except (requests.exceptions.ConnectionError, requests.exceptions.Timeout,
-            requests.exceptions.TooManyRedirects, requests.exceptions.RequestException) as e:
-        connection_error = 'Could not connect to PhishLabs IOC Feed: {}'.format(str(e))
-        if RAISE_EXCEPTION_ON_ERROR:
-            raise Exception(connection_error)
-        return return_error(connection_error)
-
-    if res.status_code < 200 or res.status_code > 300:
-        status: int = res.status_code
-        message: str = res.reason
         try:
-            error_json: dict = res.json()
-            message = error_json.get('error', '')
+            res: Response = requests.request(
+                method,
+                self.base_url + path,
+                auth=(self.user_name, self.password),
+                verify=self.use_ssl,
+                params=params,
+                data=json.dumps(data),
+                headers=HEADERS)
+        except requests.exceptions.SSLError:
+            ssl_error = 'Could not connect to PhishLabs IOC Feed: Could not verify certificate.'
+            if RAISE_EXCEPTION_ON_ERROR:
+                raise Exception(ssl_error)
+            return return_error(ssl_error)
+        except (requests.exceptions.ConnectionError, requests.exceptions.Timeout,
+                requests.exceptions.TooManyRedirects, requests.exceptions.RequestException) as e:
+            connection_error = 'Could not connect to PhishLabs IOC Feed: {}'.format(str(e))
+            if RAISE_EXCEPTION_ON_ERROR:
+                raise Exception(connection_error)
+            return return_error(connection_error)
+
+        if res.status_code < 200 or res.status_code > 300:
+            status: int = res.status_code
+            message: str = res.reason
+            try:
+                error_json: dict = res.json()
+                message = error_json.get('error', '')
+            except Exception:
+                pass
+            error_message: str = ('Error in API call to PhishLabs IOC API, status code: {}'.format(status))
+            if status == 401:
+                error_message = 'Could not connect to PhishLabs IOC Feed: Wrong credentials'
+            if message:
+                error_message += ', reason:' + message
+            if RAISE_EXCEPTION_ON_ERROR:
+                raise Exception(error_message)
+            else:
+                return return_error(error_message)
+        try:
+            return res.json()
         except Exception:
-            pass
-        error_message: str = ('Error in API call to PhishLabs IOC API, status code: {}'.format(status))
-        if status == 401:
-            error_message = 'Could not connect to PhishLabs IOC Feed: Wrong credentials'
-        if message:
-            error_message += ', reason:' + message
-        if RAISE_EXCEPTION_ON_ERROR:
-            raise Exception(error_message)
-        else:
-            return return_error(error_message)
-    try:
-        return res.json()
-    except Exception:
-        error_message = 'Failed parsing the response from PhishLabs IOC API: {!r}'.format(res.content)
-        if RAISE_EXCEPTION_ON_ERROR:
-            raise Exception(error_message)
-        else:
-            return return_error(error_message)
+            error_message = 'Failed parsing the response from PhishLabs IOC API: {!r}'.format(res.content)
+            if RAISE_EXCEPTION_ON_ERROR:
+                raise Exception(error_message)
+            else:
+                return return_error(error_message)
+
+
+''' HELPER FUNCTIONS '''
 
 
 @logger
@@ -338,15 +339,15 @@ def create_indicator_content(indicator: dict) -> dict:
 ''' COMMANDS'''
 
 
-def test_module():
+def test_module(client: Client):
     """
     Performs basic get request to get item samples
     """
-    get_global_feed_request(limit='1')
+    get_global_feed_request(client, limit='1')
     demisto.results('ok')
 
 
-def get_global_feed_command():
+def get_global_feed_command(client: Client):
     """
     Gets the global feed data using the provided arguments
     """
@@ -365,7 +366,7 @@ def get_global_feed_command():
     remove_query: str = demisto.args().get('remove_query')
     false_positive: str = demisto.args().get('false_positive')
 
-    feed: dict = get_global_feed_request(since, limit, indicator, remove_protocol, remove_query, false_positive)
+    feed: dict = get_global_feed_request(client, since, limit, indicator, remove_protocol, remove_query, false_positive)
     results: list = feed.get('data', []) if feed else []
 
     if results:
@@ -380,7 +381,8 @@ def get_global_feed_command():
             dbot_score: dict = {
                 'Indicator': result.get('value'),
                 'Vendor': 'PhishLabs',
-                'Score': 3 if not indicator_false_positive else 1
+                'Score': 3 if not indicator_false_positive else 1,
+                'Reliability': client.reliability
             }
 
             if indicator_type == 'URL':
@@ -423,10 +425,11 @@ def get_global_feed_command():
 
 
 @logger
-def get_global_feed_request(since: str = None, limit: str = None, indicator: list = None,
+def get_global_feed_request(client: Client, since: str = None, limit: str = None, indicator: list = None,
                             remove_protocol: str = None, remove_query: str = None, false_positive: str = None) -> dict:
     """
     Sends a request to PhishLabs global feed with the provided arguments
+    :param client: The client with the http request
     :param since: Data updated within this duration of time from now
     :param limit: Limit the number of rows to return
     :param indicator: Indicator type filter
@@ -451,12 +454,12 @@ def get_global_feed_request(since: str = None, limit: str = None, indicator: lis
     if false_positive:
         params['false_positive'] = false_positive
 
-    response = http_request('GET', path, params)
+    response = client.http_request('GET', path, params)
 
     return response
 
 
-def get_incident_indicators_command():
+def get_incident_indicators_command(client: Client):
     """
     Gets the indicators for the specified incident
     """
@@ -479,7 +482,7 @@ def get_incident_indicators_command():
 
     human_readable: str = '## Indicators for incident ' + incident_id + '\n'
 
-    feed: dict = get_feed_request(since, indicator=indicator, remove_protocol=remove_protocol, remove_query=remove_query)
+    feed: dict = get_feed_request(client, since, indicator=indicator, remove_protocol=remove_protocol, remove_query=remove_query)
     results: list = feed.get('data', []) if feed else []
 
     if results:
@@ -508,7 +511,8 @@ def get_incident_indicators_command():
                 dbot_score: dict = {
                     'Indicator': result.get('value'),
                     'Vendor': 'PhishLabs',
-                    'Score': 3 if classification == 'Malicious' else 2
+                    'Score': 3 if classification == 'Malicious' else 2,
+                    'Reliability': client.reliability
                 }
 
                 if indicator_type == 'URL':
@@ -570,11 +574,12 @@ def get_incident_indicators_command():
 
 
 @logger
-def get_feed_request(since: str = None, limit: str = None, indicator: list = None,
+def get_feed_request(client: Client, since: str = None, limit: str = None, indicator: list = None,
                      remove_protocol: str = None, remove_query: str = None,
                      offset: str = None, sort: bool = False) -> dict:
     """
     Sends a request to PhishLabs user feed with the provided arguments
+    :param client: The client with the http request
     :param since: Data updated within this duration of time from now
     :param limit: Limit the number of rows to return
     :param indicator: Indicator type filter
@@ -604,7 +609,7 @@ def get_feed_request(since: str = None, limit: str = None, indicator: list = Non
         params['sort'] = 'created_at'
         params['direction'] = 'asc'
 
-    response = http_request('GET', path, params)
+    response = client.http_request('GET', path, params)
 
     return response
 
@@ -626,7 +631,7 @@ def get_sec_time_delta(last_fetch_time):
     return str(fetch_delta_in_sec) + "s"
 
 
-def fetch_incidents():
+def fetch_incidents(client: Client, fetch_time, fetch_limit):
     """
     Fetches incidents from the PhishLabs user feed.
     :return: Demisto incidents
@@ -638,12 +643,12 @@ def fetch_incidents():
 
     incidents: list = []
     count: int = 1
-    limit = int(FETCH_LIMIT)
+    limit = int(fetch_limit)
     if not last_fetch:
-        feed: dict = get_feed_request(since=FETCH_TIME)
+        feed: dict = get_feed_request(client, since=fetch_time)
 
     else:
-        feed = get_feed_request(since=get_sec_time_delta(last_fetch_time))
+        feed = get_feed_request(client, since=get_sec_time_delta(last_fetch_time))
 
     max_time: datetime = last_fetch_time
     results: list = feed.get('data', []) if feed else []
@@ -681,6 +686,29 @@ def main():
     """
     Main function
     """
+
+    params = demisto.params()
+
+    server: str = (params.get('url')[:-1]
+                   if (params.get('url') and params.get('url').endswith('/'))
+                   else params.get('url'))
+
+    reliability = demisto.params().get('integrationReliability')
+    reliability = reliability if reliability else DBotScoreReliability.B
+
+    if DBotScoreReliability.is_valid_type(reliability):
+        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+    else:
+        raise Exception("Please provide a valid value for the Source Reliability parameter.")
+
+    client = Client(
+        base_url=f'{str(server)}/api/v1/',
+        user_name=params.get('credentials', {}).get('identifier'),
+        password=params.get('credentials', {}).get('password'),
+        use_ssl=not params.get('insecure', False),
+        reliability=reliability
+    )
+
     global RAISE_EXCEPTION_ON_ERROR
     LOG('Command being called is {}'.format(demisto.command()))
     handle_proxy()
@@ -691,10 +719,12 @@ def main():
         'phishlabs-get-incident-indicators': get_incident_indicators_command
     }
     try:
-        command_func: Callable = command_dict[demisto.command()]
+        command_func: Callable = command_dict[demisto.command()]  # type:ignore[assignment]
         if demisto.command() == 'fetch-incidents':
             RAISE_EXCEPTION_ON_ERROR = True
-        command_func()
+            command_func(client, params.get('fetch_time', '').strip(), params.get('fetch_limit', '10'))
+        else:
+            command_func(client)
 
     except Exception as e:
         if RAISE_EXCEPTION_ON_ERROR:

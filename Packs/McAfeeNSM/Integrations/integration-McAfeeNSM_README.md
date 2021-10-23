@@ -1,10 +1,10 @@
 <!-- HTML_DOC -->
 <h2>Overview</h2>
 <hr>
-<p>Use the McAfee NSM integration in Demisto to retrieve information about sensors, domains, policies, alerts, and attacks in McAfee NSM.</p>
+<p>Use the McAfee NSM integration in Cortex XSOAR to retrieve information about sensors, domains, policies, alerts, and attacks in McAfee NSM.</p>
 <p>This integration was integrated and tested with McAfee v9.1.</p>
 <p> </p>
-<h2>Configure McAfee NSM on Demisto</h2>
+<h2>Configure McAfee NSM on Cortex XSOAR</h2>
 <hr>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
@@ -23,7 +23,7 @@
 </ol>
 <h2>Commands</h2>
 <hr>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_76556011641539684830822">Get a list of sensors for a domain: nsm-get-sensors</a></li>
 <li><a href="#h_104113752811539684881373">Get all domains: nsm-get-domains</a></li>

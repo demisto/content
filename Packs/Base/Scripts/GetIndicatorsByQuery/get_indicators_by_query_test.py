@@ -56,7 +56,7 @@ def get_args_with_unpopulate():
     return args
 
 
-def search_indicators(query, page, size):
+def search_indicators(query=None, page=None, size=None, fromDate=None, toDate=None, value=None):
     return {'iocs': [ioc1, ioc2]}
 
 
@@ -95,7 +95,6 @@ def test_main_populate(mocker):
 def test_main_unpopulate(mocker):
     mocker.patch.object(demisto, 'args', side_effect=get_args_with_unpopulate)
     mocker.patch.object(demisto, 'searchIndicators', side_effect=search_indicators)
-
     entry = main()
     indicators = entry['Contents']
     assert len(indicators) == 2

@@ -2,7 +2,9 @@ args:
 - auto: PREDEFINED
   default: true
   defaultValue: 'false'
-  description: Whether to retrieve all users, including users who are out of the office. If "true" will retrieve all users. If "false", will only retrieve users who are not out of office. Default is "false".
+  description: Whether to retrieve all users, including users who are out of the office.
+    If "true" will retrieve all users. If "false", will only retrieve users who are
+    not out of office. Default is "false".
   isArray: false
   name: include_OOO_users
   predefined:
@@ -31,5 +33,5 @@ tags:
 - widget
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.9.1.14969
+dockerimage: demisto/python3:3.9.7.24076
 fromversion: 5.5.0

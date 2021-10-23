@@ -1,0 +1,10 @@
+!nexpose-create-sites-report sites=1 name="XSOAR Report"
+!nexpose-create-sites-report sites=1 name="XSOAR Test Report" download_immediately=false
+!nexpose-get-report-status instance_id=1974 report_id=1981
+!nexpose-download-report instance_id=1974 report_id=1981
+!nexpose-get-asset id=2
+!nexpose-get-assets
+!nexpose-search-assets ipAddressIs=192.168.1.144
+!nexpose-get-sites
+!nexpose-get-report-templates
+!nexpose-get-scans active=false

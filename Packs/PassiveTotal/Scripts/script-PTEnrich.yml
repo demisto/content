@@ -21,7 +21,7 @@ tags:
 - passive-total
 - server
 - threat-intel
-comment: Deprecated. Enrich the given IP or domain with metadata, malware, osint
+comment: Deprecated. No available replacement. Enrich the given IP or domain with metadata, malware, osint.
 system: true
 args:
 - name: query

@@ -1,0 +1,282 @@
+commonfields:
+  id: AWS - SQS
+  version: -1
+name: AWS - SQS
+display: AWS - SQS
+category: IT Services
+description: Amazon Web Services Simple Queuing Service (SQS)
+configuration:
+- display: AWS Default Region
+  name: defaultRegion
+  defaultvalue: ""
+  type: 0
+  required: false
+- additionalinfo: When using Access Key and Secret Key, there is no need to use Role Arn
+  display: Role Arn
+  name: roleArn
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Role Session Name
+  name: roleSessionName
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Access Key
+  name: access_key
+  required: false
+  type: 0
+- display: Secret Key
+  name: secret_key
+  required: false
+  type: 4
+- display: Role Session Duration
+  name: sessionDuration
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: QueueURL
+  name: queueUrl
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Timeout
+  name: timeout
+  additionalinfo: The time in seconds till a timeout exception is reached. You can
+    specify just the read timeout (for example 60) or also the connect timeout followed
+    after a comma (for example 60,10). If a connect timeout is not specified, a default
+    of 10 second will be used.
+  defaultvalue: 60,10
+  required: false
+  type: 0
+- display: Retries
+  name: retries
+  defaultvalue: 5
+  additionalinfo: "The maximum number of retry attempts when connection or throttling errors
+  are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10.
+  Note: Increasing the number of retries will increase the execution time."
+  required: false
+  type: 0
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- defaultvalue: '50'
+  display: 'Maximum incidents for one fetch'
+  name: max_fetch
+  required: false
+  type: 0
+- defaultvalue: 7 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
+  required: false
+  type: 0
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+script:
+  script: ''
+  type: python
+  subtype: python2
+  commands:
+  - name: aws-sqs-get-queue-url
+    arguments:
+    - name: queueName
+      required: true
+      description: The name of the queue.
+    - name: queueOwnerAWSAccountId
+      description: The AWS account ID of the account that created the queue.
+    - name: region
+      description: The AWS Region, if not specified the default region will be used.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    outputs:
+    - contextPath: AWS.SQS.Queues.QueueUrl
+      description: The URL of the queue.
+      type: string
+    description: Returns the URL of an existing queue. To access a queue that belongs
+      to another AWS account, use the queueOwnerAWSAccountId parameter to specify
+      the account ID of the queues owner. The queues owner must grant you permission
+      to access the queue.
+  - name: aws-sqs-list-queues
+    arguments:
+    - name: queueNamePrefix
+      description: A string to use for filtering the list results. Only those queues
+        whose name begins with the specified string are returned.  Queue names are
+        case-sensitive.
+    - name: region
+      description: The AWS Region, if not specified the default region will be used.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    outputs:
+    - contextPath: AWS.SQS.Queues.QueueUrl
+      description: The URL of the queue.
+      type: string
+    description: Returns a list of your queues. The maximum number of queues that
+      can be returned is 1,000. If you specify a value for the optional QueueNamePrefix
+      parameter, only queues with a name that begins with the specified value are
+      returned.
+  - name: aws-sqs-send-message
+    arguments:
+    - name: queueUrl
+      required: true
+      description: The URL of the Amazon SQS queue to which a message is sent.
+    - name: messageBody
+      required: true
+      description: The message to send. The maximum string size is 256 KB.
+    - name: delaySeconds
+      description: The length of time, in seconds, for which to delay a specific message.
+        Valid values 0 to 900. Maximum 15 minutes.
+    - name: messageGroupId
+      description: This parameter applies only to FIFO queues. The tag that specifies
+        that a message belongs to a specific message group.
+    - name: region
+      description: The AWS Region, if not specified the default region will be used.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    outputs:
+    - contextPath: AWS.SQS.Queues.SentMessages.MD5OfMessageBody
+      description: An MD5 digest of the non-URL-encoded message attribute string.
+      type: string
+    - contextPath: AWS.SQS.Queues.SentMessages.MD5OfMessageAttributes
+      description: An MD5 digest of the non-URL-encoded message attribute string.
+      type: string
+    - contextPath: AWS.SQS.Queues.SentMessages.MessageId
+      description: An attribute containing the MessageId of the message sent to the
+        queue.
+      type: string
+    - contextPath: AWS.SQS.Queues.SentMessages.SequenceNumber
+      description: This parameter applies only to FIFO (first-in-first-out) queues.
+        The large, non-consecutive number that Amazon SQS assigns to each message.
+      type: string
+    description: Delivers a message to the specified queue.
+  - name: aws-sqs-create-queue
+    arguments:
+    - name: queueName
+      required: true
+      description: The name of the new queue.
+    - name: delaySeconds
+      description: The length of time, in seconds, for which the delivery of all messages
+        in the queue is delayed. Valid values An integer from 0 to 900 seconds (15
+        minutes). The default is 0 (zero).
+    - name: maximumMessageSize
+      description: The limit of how many bytes a message can contain before Amazon
+        SQS rejects it. Valid values An integer from 1,024 bytes (1 KiB) to 262,144
+        bytes (256 KiB). The default is 262,144 (256 KiB).
+    - name: messageRetentionPeriod
+      description: The length of time, in seconds, for which Amazon SQS retains a
+        message. Valid values An integer from 60 seconds (1 minute) to 1,209,600 seconds
+        (14 days). The default is 345,600 (4 days).
+    - name: receiveMessageWaitTimeSeconds
+      description: The length of time, in seconds, for which a ReceiveMessage  action
+        waits for a message to arrive. Valid values An integer from 0 to 20 (seconds).
+        The default is 0 (zero).
+    - name: visibilityTimeout
+      description: The visibility timeout for the queue. Valid values An integer from
+        0 to 43,200 (12 hours). The default is 30.
+    - name: kmsDataKeyReusePeriodSeconds
+      description: The length of time, in seconds, for which Amazon SQS can reuse
+        a data key to encrypt or decrypt messages before calling AWS KMS again. An
+        integer representing seconds, between 60 seconds (1 minute) and 86,400 seconds
+        (24 hours). The default is 300 (5 minutes). A shorter time period provides
+        better security but results in more calls to KMS which might incur charges
+        after Free Tier.
+    - name: kmsMasterKeyId
+      description: The ID of an AWS-managed customer master key (CMK) for Amazon SQS
+        or a custom CMK.
+    - name: policy
+      description: The queues policy. A valid AWS policy.
+    - name: fifoQueue
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Designates a queue as FIFO.
+    - name: contentBasedDeduplication
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Enables content-based deduplication.
+    - name: region
+      description: The AWS Region, if not specified the default region will be used.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    outputs:
+    - contextPath: AWS.SQS.Queues.QueueUrl
+      description: The URL of the created Amazon SQS queue.
+    description: Creates a new standard or FIFO queue. You can pass one or more attributes
+      in the request.
+  - name: aws-sqs-delete-queue
+    arguments:
+    - name: queueUrl
+      required: true
+      description: The URL of the Amazon SQS queue to delete.
+    - name: region
+      description: The AWS Region, if not specified the default region will be used.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    description: Deletes the queue specified by the QueueUrl , regardless of the queue's
+      contents. If the specified queue doesn't exist, Amazon SQS returns a successful
+      response.
+  - name: aws-sqs-purge-queue
+    arguments:
+    - name: queueUrl
+      required: true
+      description: The URL of the queue from which the PurgeQueue action deletes messages.
+    - name: region
+      description: The AWS Region, if not specified the default region will be used.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    description: Deletes the messages in a queue specified by the QueueURL parameter.
+  dockerimage: demisto/boto3:2.0.0.24033
+  isfetch: true
+  runonce: false
+tests:
+- AWS - SQS Test Playbook
+fromversion: 5.0.0

@@ -12,6 +12,20 @@ configuration:
   name: apikey
   required: true
   type: 4
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: C - Fairly reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
 - defaultvalue: '80'
   display: Minimum score threshold
   name: threshold
@@ -34,7 +48,9 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Central repository to report and identify IP addresses that have been associated with malicious activity online. Check the Detailed Information section for more information on how to configure the integration.
+description: Central repository to report and identify IP addresses that have been
+  associated with malicious activity online. Check the Detailed Information section
+  for more information on how to configure the integration.
 display: AbuseIPDB
 name: AbuseIPDB
 script:
@@ -45,35 +61,22 @@ script:
       isArray: true
       name: ip
       required: false
-      secret: false
-    - default: false
-      defaultValue: '30'
+    - defaultValue: '30'
       description: The time range to return reports (in days). Default is 30.
-      isArray: false
       name: days
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'true'
-      description: The length of the report. "true" returns the full report, "false" does not return reported categories. Default is "true".
-      isArray: false
+      description: The length of the report. "true" returns the full report, "false"
+        does not return reported categories. Default is "true".
       name: verbose
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '80'
-      description: The minimum score from AbuseIPDB to consider whether the IP address is malicious (must be greater than 20). Default is 80.
-      isArray: false
+    - defaultValue: '80'
+      description: The minimum score from AbuseIPDB to consider whether the IP address
+        is malicious (must be greater than 20). Default is 80.
       name: threshold
-      required: false
-      secret: false
-    deprecated: false
     description: Checks the specified IP address against the AbuseIP database.
-    execution: false
     name: ip
     outputs:
     - contextPath: IP.Address
@@ -127,37 +130,30 @@ script:
     - contextPath: AbuseIPDB.IP.Malicious.Description
       description: A description explaining why the IP address was reported as malicious.
       type: String
+    - contextPath: AbuseIPDB.IP.ISP
+      description: The internet service provider of the IP.
+      type: String
+    - contextPath: AbuseIPDB.IP.UsageType
+      description: Usage type of the IP.
+      type: String
+    - contextPath: AbuseIPDB.IP.Domain
+      description: Domain of the IP.
+      type: String
   - arguments:
-    - default: false
-      description: IPv4 Address Block in CIDR notation.
-      isArray: false
+    - description: IPv4 Address Block in CIDR notation.
       name: network
       required: true
-      secret: false
-    - default: false
-      defaultValue: '30'
+    - defaultValue: '30'
       description: The time range to return reports (in days). Default is 30.
-      isArray: false
       name: days
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '40'
+    - defaultValue: '40'
       description: The maximum number of IPs to check. Default is 40.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '80'
-      description: The minimum score from AbuseIPDB to consider whether the IP address is malicious (must be greater than 20). Default is 80.
-      isArray: false
+    - defaultValue: '80'
+      description: The minimum score from AbuseIPDB to consider whether the IP address
+        is malicious (must be greater than 20). Default is 80.
       name: threshold
-      required: false
-      secret: false
-    deprecated: false
     description: Queries a block of IP addresses to check against the database.
-    execution: false
     name: abuseipdb-check-cidr-block
     outputs:
     - contextPath: IP.Address
@@ -171,6 +167,9 @@ script:
       type: String
     - contextPath: IP.Malicious.Detections
       description: The Detections that led to the verdict.
+      type: String
+    - contextPath: IP.Malicious.Description
+      description: A description explaining why the IP address was reported as malicious.
       type: String
     - contextPath: AbuseIPDB.IP.Address
       description: The IP address fetched from AbuseIPDB.
@@ -205,75 +204,60 @@ script:
     - contextPath: AbuseIPDB.IP.Malicious.Detections
       description: The Detections that led to the verdict.
       type: String
-    - contextPath: IP.Malicious.Description
-      description: A description explaining why the IP address was reported as malicious.
+    - contextPath: AbuseIPDB.IP.ISP
+      description: The internet service provider of the IP.
+      type: String
+    - contextPath: AbuseIPDB.IP.UsageType
+      description: Usage type of the IP.
+      type: String
+    - contextPath: AbuseIPDB.IP.Domain
+      description: Domain of the IP.
       type: String
   - arguments:
-    - default: false
-      description: The IP address to report.
-      isArray: false
+    - description: The IP address to report.
       name: ip
       required: true
-      secret: false
-    - default: false
-      description: A CSV list of category IDs. For more information, see https://www.abuseipdb.com/categories.
-      isArray: false
+    - description: A CSV list of category IDs. For more information, see https://www.abuseipdb.com/categories.
       name: categories
       required: true
-      secret: false
-    deprecated: false
     description: Reports an IP address to AbuseIPDB.
-    execution: false
     name: abuseipdb-report-ip
   - arguments:
-    - default: false
-      defaultValue: '30'
+    - defaultValue: '30'
       description: The time range to return reports (in days). Default is 30.
-      isArray: false
       name: days
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: 'The maximum number of IPs to retrieve. Default is 50. '
-      isArray: false
       name: limit
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
-      description: Whether to save a list of blacklisted IPs in the Context Data in Demisto. Default is false.
-      isArray: false
+      description: Whether to save a list of blacklisted IPs in the Context Data in
+        Demisto. Default is false.
       name: saveToContext
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
+    - defaultValue: '100'
+      description: The Minimum confidence required for the retrieved IPs.
+      name: confidence
     description: Returns a list of the most reported IP addresses.
-    execution: false
     name: abuseipdb-get-blacklist
     outputs:
     - contextPath: AbuseIPDB.Blacklist
       description: A list of blacklisted IP addresses.
       type: Unknown
-  - deprecated: false
+  - arguments: []
     description: Returns a list of report categories from AbuseIPDB.
-    execution: false
     name: abuseipdb-get-categories
     outputs:
     - contextPath: AbuseIPDB.Categories
       description: The list of AbuseIPDB categories.
       type: string
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
-  script: '-'
+  script: ''
   subtype: python2
   type: python
+  dockerimage: demisto/python:2.7.18.24066
+fromversion: 5.0.0
 tests:
 - AbuseIPDB Test
-fromversion: 5.0.0

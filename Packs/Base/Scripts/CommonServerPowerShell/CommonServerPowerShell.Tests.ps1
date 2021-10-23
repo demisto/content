@@ -84,6 +84,44 @@ Describe 'Check-UtilityFunctions' {
         $r.Contents | Should -Be $msg
         $r.EntryContext | Should -BeNullOrEmpty
     }
+
+    Context "FileResult checks" {
+        
+        BeforeAll {    
+            # move into a temp directory which we later on delete from the files created in the  tests         
+            $temp_parent = [System.IO.Path]::GetTempPath()
+            [string] $temp_dir = [System.Guid]::NewGuid()
+            $temp_path = Join-Path $temp_parent $temp_dir
+            New-Item -ItemType Directory -Path $temp_path
+            Set-Location $temp_path -PassThru
+        }
+
+        It "FileResult default" {
+            $data = "this is a test"
+            $r = FileResult "test.txt" $data
+            $r.Type | Should -Be 3
+            $r.File | Should -Be "test.txt"
+            $inv_id = $demisto.Investigation().id
+            Get-Content -Path "${inv_id}_$($r.FileID)" | Should -Be $data
+        }
+
+        It "FileResult info" {
+            $data = "this is a test"
+            # pass $true to indicate that this is a file info entry
+            $r = FileResult "test.txt" $data $true
+            $r.Type | Should -Be 9
+            $r.File | Should -Be "test.txt"
+            $inv_id = $demisto.Investigation().id
+            Get-Content -Path "${inv_id}_$($r.FileID)" | Should -Be $data
+        }
+
+        AfterAll {
+            Set-Location -Path - -PassThru
+            Remove-Item $temp_path -Recurse
+        }
+    }
+    
+
     Context "Check log function" {
         BeforeAll {
             Mock DemistoServerLog {}
@@ -167,11 +205,18 @@ Describe 'Check-UtilityFunctions' {
         It "Check with False boolean that is not $null" {
             @{test=$false} | TableToMarkdown | Should -Be "| test`n| ---`n| False`n"
         }
-        It "Check with PSObject that nested list" {
+        It "Check with PSObject that nested list"{
             $OneElementObject += New-Object PSObject -Property @{Index=1;Name=@('test1';'test2')}
             $OneElementObject | TableToMarkdown | Should -Be "| Index | Name`n| --- | ---`n| 0 | First element`n| 1 | \[`"test1`",`"test2`"\]`n"
         }
-        
+        It "ArrayList object"{
+            $ArrLst = [System.Collections.ArrayList]::new()
+            $ArrLst.Add("a string")
+            $ArrLst.Add("another string")
+            $tbl = @{"arraylist" = $ArrLst} | TableToMarkdown
+            $tbl | Should -Match "a string"
+            $tbl | Should -Match "another string"
+        }
     }
     Context "Test stringEscapeMD" {
         It "Escaping special chars"{
@@ -179,3 +224,36 @@ Describe 'Check-UtilityFunctions' {
         }
     }
 }
+Describe "Test ParseDateRange"{
+        It "Naive Tests" -Tag naive{
+            $m_date = Get-Date "2020-11-30T23:30:00.0000000"
+            $three_mins = $m_date.AddMinutes(-3)
+            $three_hours = $m_date.AddHours(-3)
+            $three_days = $m_date.AddDays(-3)
+            $three_weeks = $m_date.AddDays(-7 * 3)
+            $three_months = $m_date.AddMonths(-3)
+            $three_years = $m_date.AddYears(-3)
+            Mock -CommandName Get-Date -MockWith {$m_date}
+            ParseDateRange("3 minutes") | Should -Be @($three_mins, $m_date)
+            ParseDateRange("3 minute") | Should -Be @($three_mins, $m_date)
+            ParseDateRange("3 hours") | Should -Be @($three_hours, $m_date)
+            ParseDateRange("3 hour") | Should -Be @($three_hours, $m_date)
+            ParseDateRange("3 days") | Should -Be @($three_days, $m_date)
+            ParseDateRange("3 day") | Should -Be @($three_days, $m_date)
+            ParseDateRange("3 week") | Should -Be @($three_weeks, $m_date)
+            ParseDateRange("3 weeks") | Should -Be @($three_weeks, $m_date)
+            ParseDateRange("3 month") | Should -Be @($three_months, $m_date)
+            ParseDateRange("3 months") | Should -Be @($three_months, $m_date)
+            ParseDateRange("3 year") | Should -Be @($three_years, $m_date)
+            ParseDateRange("3 years") | Should -Be @($three_years, $m_date)
+        }
+        It "Too many arguments"{
+            { ParseDateRange("3 days long") } | Should -Throw
+        }
+        It "Not a number"{
+            { ParseDateRange("lol days") } | Should -Throw
+        }
+        It "Wrong time unit" {
+            { ParseDateRange("3 planets") } | Should -Throw
+        }
+    }

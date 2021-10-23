@@ -23,8 +23,6 @@ from Tests.test_content import SettingsTester, DataKeeperTester, \
     SERVER_URL
 
 # Disable insecure warnings
-from demisto_sdk.commands.test_content.Docker import Docker
-
 urllib3.disable_warnings()
 
 
@@ -183,9 +181,7 @@ def run_private_test_scenario(tests_settings: SettingsTester, t: dict, default_t
     test_message = 'playbook: ' + playbook_id
 
     test_options = {
-        'timeout': t.get('timeout', default_test_timeout),
-        'memory_threshold': t.get('memory_threshold', Docker.DEFAULT_CONTAINER_MEMORY_USAGE),
-        'pid_threshold': t.get('pid_threshold', Docker.DEFAULT_CONTAINER_PIDS_USAGE)
+        'timeout': t.get('timeout', default_test_timeout)
     }
 
     if not isinstance(integrations_conf, list):
@@ -380,6 +376,8 @@ def manage_tests(tests_settings: SettingsTester):
 def main():
     install_logging('Run_Tests.log')
     tests_settings = options_handler()
+    logging.info(f"Build Name: {tests_settings.buildName}")
+    logging.info(f" Build Number: {tests_settings.buildNumber}")
     manage_tests(tests_settings)
 
 

@@ -1,2 +1,42 @@
+# Marketplace Related
 /Tests/Marketplace/approved_tags.json @demisto/content-leaders @michalgold
 /Tests/Marketplace/approved_usecases.json @demisto/content-leaders @michalgold
+/Tests/Marketplace/landingPage_sections.json @demisto/content-leaders @michalgold
+
+# Marketplace & Upload-Flow
+/Tests/Marketplace/upload_git_snapshot.py @Noy-Maimon
+/Tests/Marketplace/install_packs.sh @Noy-Maimon
+/Tests/Marketplace/configure_and_install_packs.py @Noy-Maimon
+/Tests/Marketplace/copy_and_upload_packs.py @Noy-Maimon
+/Tests/Marketplace/marketplace_services.py @Noy-Maimon
+/Tests/Marketplace/marketplace_statistics.py @Noy-Maimon
+/Tests/Marketplace/marketplace_constants.py @Noy-Maimon
+/Tests/Marketplace/zip_packs.py @Noy-Maimon
+/Tests/Marketplace/upload_packs.py @Noy-Maimon
+/Tests/Marketplace/packs_dependencies.py @Noy-Maimon
+/Tests/Marketplace/search_and_install_packs.py @Noy-Maimon
+/Tests/scripts/prepare_content_packs_for_testing.sh @Noy-Maimon
+/Utils/trigger_test_upload_flow.sh @Noy-Maimon
+/Utils/trigger_upload_packs_to_production.sh @Noy-Maimon
+
+# Important Integrations
+/Packs/Jira/Integrations/JiraV2/* @demisto/content-leaders
+/Packs/ServiceNow/Integrations/ServiceNowv2/* @demisto/content-leaders
+/Packs/EWS/Integrations/EWSv2/* @demisto/content-leaders
+/Packs/ArcSightESM/Integrations/ArcSightESMv2/* @demisto/content-leaders
+/Packs/QRadar/Integrations/QRadar_v2/* @demisto/content-leaders
+/Packs/Slack/Integrations/Slack/* @demisto/content-leaders
+/Packs/SplunkPy/Integrations/SplunkPy/* @demisto/content-leaders
+/Packs/Active_Directory_Query/Integrations/Active_Directory_Query/* @demisto/content-leaders
+/Packs/VirusTotal/Integrations/integration-VirusTotal_5.5.yml @demisto/content-leaders
+/Packs/VirusTotal/* @jochman
+
+# Important Scripts
+/Packs/CommonScripts/Scripts/SetGridField/* @yaakovi @David-BMS
+/Packs/CommonScripts/Scripts/SearchIncidentsV2/* @demisto/content-leaders
+
+# Build related
+.circleci/config.yml @avidan-H @DinaMeylakh
+.gitlab/ci/* @avidan-H @DinaMeylakh
+.gitlab/* @avidan-H @DinaMeylakh
+.gitlab-ci.yml @avidan-H @DinaMeylakh

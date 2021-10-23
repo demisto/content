@@ -1,43 +1,33 @@
-import demistomock as demisto
-from CommonServerPython import *
-
-from email import message_from_string
-from email.header import decode_header
-import base64
-from base64 import b64decode
-
-import email.utils
-from email.parser import HeaderParser
-import traceback
-import tempfile
-import sys
-
-# -*- coding: utf-8 -*-
-# !/usr/bin/env python
-# Based on MS-OXMSG protocol specification
-# ref:https://blogs.msdn.microsoft.com/openspecification/2010/06/20/msg-file-format-rights-managed-email-message-part-2/
-# ref:https://msdn.microsoft.com/en-us/library/cc463912(v=EXCHG.80).aspx
-import email
-import re
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python2
+# coding=utf-8
+# PEP0263  https://www.python.org/dev/peps/pep-0263/
+"""Based on MS-OXMSG protocol specification
+ref:https://blogs.msdn.microsoft.com/openspecification/2010/06/20/msg-file-format-rights-managed-email-message-part-2/
+ref:https://msdn.microsoft.com/en-us/library/cc463912(v=EXCHG.80).aspx
+"""
 import codecs
-import os
+import email
+import email.utils
+import quopri
+import tempfile
 import unicodedata
-from email import encoders
-from email.header import Header
+from base64 import b64decode
+from email import encoders, message_from_string
+from email.header import Header, decode_header
 from email.mime.audio import MIMEAudio
 from email.mime.base import MIMEBase
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.parser import HeaderParser
 from email.utils import getaddresses
+from struct import unpack
 
+import chardet
 from olefile import OleFileIO, isOleFile
 
-# coding=utf-8
-from datetime import datetime, timedelta
-from struct import unpack
-import chardet
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 reload(sys)
 sys.setdefaultencoding('utf8')  # pylint: disable=no-member
@@ -191,11 +181,35 @@ class DataModel(object):
     def PtypString(data_value):
         if data_value:
             try:
+                if USER_ENCODING:
+                    demisto.debug('Using argument user_encoding: {} to decode parsed message.'.format(USER_ENCODING))
+                    return data_value.decode(USER_ENCODING, errors="ignore")
                 res = chardet.detect(data_value)
                 enc = res['encoding'] or 'ascii'  # in rare cases chardet fails to detect and return None as encoding
-                data_value = data_value.decode(enc, errors='ignore').replace('\x00', '')
+                if enc != 'ascii':
+                    if enc.lower() == 'windows-1252' and res['confidence'] < 0.9:
+
+                        enc = DEFAULT_ENCODING if DEFAULT_ENCODING else 'windows-1250'
+                        demisto.debug('Encoding detection confidence below threshold {}, '
+                                      'switching encoding to "{}"'.format(res, enc))
+
+                    temp = data_value
+                    data_value = temp.decode(enc, errors='ignore')
+                    if '\x00' in data_value:
+                        demisto.debug('None bytes found on encoded string, will try use utf-16-le '
+                                      'encoding instead')
+                        data_value = temp.decode("utf-16-le", errors="ignore")
+
+                elif b'\x00' not in data_value:
+                    data_value = data_value.decode("ascii", errors="ignore")
+                else:
+                    data_value = data_value.decode("utf-16-le", errors="ignore")
+
             except UnicodeDecodeError:
-                data_value = data_value.decode("utf-16-le", errors="ignore").replace('\x00', '')
+                data_value = data_value.decode("utf-16-le", errors="ignore")
+
+        if isinstance(data_value, (bytes, bytearray)):
+            data_value = data_value.decode('utf-8')
 
         return data_value
 
@@ -2658,6 +2672,9 @@ RECIPIENT_HEADER_SIZE = 8
 ATTACHMENT_HEADER_SIZE = 8
 EMBEDDED_MSG_HEADER_SIZE = 24
 CONTROL_CHARS = re.compile(r'[\n\r\t]')
+MIME_ENCODED_WORD = re.compile(r'(.*)=\?(.+)\?([B|Q])\?(.+)\?=(.*)')  # guardrails-disable-line
+USER_ENCODING = demisto.args().get('forced_encoding', '')
+DEFAULT_ENCODING = demisto.args().get('default_encoding', '')
 
 
 class Message(object):
@@ -2923,12 +2940,18 @@ class Message(object):
         property_name = property_details.get("name")
         property_type = property_details.get("data_type")
         if not property_type:
+            demisto.info('could not parse property type, skipping property "{}"'.format(property_details))
             return None
 
         try:
             raw_content = ole_file.openstream(stream_name).read()
         except IOError:
-            raw_content = None
+            raw_content = ''
+        if not raw_content:
+            demisto.debug('Could not read raw content from stream "{}", '
+                          'skipping property "{}"'.format(stream_name, property_details))
+            return None
+
         property_value = self._data_model.get_value(raw_content, data_type=property_type)
         if property_value:
             property_detail = {property_name: property_value}
@@ -3264,6 +3287,16 @@ def get_email_address(eml, entry):
     if addresses:
         res = [item[1] for item in addresses]
         res = ', '.join(res)
+        if entry == 'from' and "\r\n" in gel_all_values_from_email_by_entry[0] and \
+                    (not re.search(REGEX_EMAIL, res) or len(addresses) > 1):
+            # this condition refers only to ['from'] header that does not have a valid email or have more then 1
+            # fixed an issue where email['From'] had '\r\n'.
+            # in order to solve, used replace_header() on email object,
+            # and did again get_all() on the new format of ['from']
+            original_value = eml['from']
+            eml.replace_header('from', ' '.join(eml["from"].splitlines()))
+            res = get_email_address(eml, entry)
+            eml.replace_header('from', original_value)  # replace again to the original header (keep on BC)
         return res
     return ''
 
@@ -3280,21 +3313,14 @@ def extract_address_eml(eml, entry):
     """
     email_address = get_email_address(eml, entry)
     if email_address:
-        if entry == 'from' and not re.search(REGEX_EMAIL, email_address):
-            # this condition refers only to ['from'] header that does not have a valid email
-            # fixed an issue where email['From'] had '\r\n'.
-            # in order to solve, used replace_header() on email object,
-            # and did again get_all() on the new format of ['from']
-            original_value = eml['from']
-            eml.replace_header('from', ' '.join(eml["from"].splitlines()))
-            email_address = get_email_address(eml, entry)
-            eml.replace_header('from', original_value)  # replace again to the original header (keep on BC)
         return email_address
     else:
         return ''
 
 
 def data_to_md(email_data, email_file_name=None, parent_email_file=None, print_only_headers=False):
+    if email_data is None:
+        return 'No data extracted from email'
     email_data = recursive_convert_to_unicode(email_data)
     email_file_name = recursive_convert_to_unicode(email_file_name)
     parent_email_file = recursive_convert_to_unicode(parent_email_file)
@@ -3378,13 +3404,39 @@ def get_utf_string(text, field):
     return utf_string
 
 
-def convert_to_unicode(s):
+def mime_decode(word_mime_encoded):
+    prefix, charset, encoding, encoded_text, suffix = word_mime_encoded.groups()
+    if encoding.lower() == 'b':
+        byte_string = base64.b64decode(encoded_text)
+    elif encoding.lower() == 'q':
+        byte_string = quopri.decodestring(encoded_text, header=True)
+    return prefix + byte_string.decode(charset) + suffix
+
+
+def convert_to_unicode(s, is_msg_header=True):
     global ENCODINGS_TYPES
     try:
         res = ''  # utf encoded result
+        if is_msg_header:  # Mime encoded words used on message headers only
+            try:
+                word_mime_encoded = s and MIME_ENCODED_WORD.search(s)
+                if word_mime_encoded:
+                    word_mime_decoded = mime_decode(word_mime_encoded)
+                    if word_mime_decoded and not MIME_ENCODED_WORD.search(word_mime_decoded):
+                        # ensure decoding was successful
+                        return word_mime_decoded
+            except Exception as e:
+                # in case we failed to mine-decode, we continue and try to decode
+                demisto.debug('Failed decoding mime-encoded string: {}. Will try regular decoding.'.format(str(e)))
         for decoded_s, encoding in decode_header(s):  # return a list of pairs(decoded, charset)
             if encoding:
-                res += decoded_s.decode(encoding).encode('utf-8')
+                try:
+                    res += decoded_s.decode(encoding).encode('utf-8')
+                except UnicodeDecodeError:
+                    demisto.debug('Failed to decode encoded_string')
+                    replace_decoded = decoded_s.decode(encoding, errors='replace').encode('utf-8')
+                    demisto.debug('Decoded string with replace usage {}'.format(replace_decoded))
+                    res += replace_decoded
                 ENCODINGS_TYPES.add(encoding)
             else:
                 res += decoded_s
@@ -3451,6 +3503,18 @@ def unfold(s):
     :rtype: string
     """
     return re.sub(r'[ \t]*[\r\n][ \t\r\n]*', ' ', s).strip(' ')
+
+
+def decode_attachment_payload(message):
+    """Decodes a message from Base64, if fails will outputs its str(message)
+    """
+    msg = message.get_payload()
+    try:
+        # In some cases the body content is empty and cannot be decoded.
+        msg_info = base64.b64decode(msg)
+    except TypeError:
+        msg_info = str(msg)
+    return msg_info
 
 
 def decode_content(mime):
@@ -3558,7 +3622,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                             attachment_name = part.get_payload()[0].get('Subject', "no_name_mail_attachment")
                             attachment_file_name = convert_to_unicode(attachment_name) + '.eml'
 
-                        file_content = part.get_payload()[0].as_string()
+                        file_content = part.get_payload()[0].as_string().strip()
                         if base64_encoded:
                             try:
                                 file_content = b64decode(file_content)
@@ -3566,7 +3630,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                             except TypeError:
                                 pass  # In case the file is a string, decode=True for get_payload is not working
 
-                    elif isinstance(part.get_payload(), basestring) and base64_encoded:
+                    elif isinstance(part.get_payload(), basestring):
                         file_content = part.get_payload(decode=True)
                     else:
                         demisto.debug("found eml attachment with Content-Type=message/rfc822 but has no payload")
@@ -3587,7 +3651,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                             attached_emails.extend(inner_attached_emails)
                             # if we are outter email is a singed attachment it is a wrapper and we don't return the output of
                             # this inner email as it will be returned as part of the main result
-                            if 'multipart/signed' not in eml.get_content_type():
+                            if 'multipart/signed' not in eml.get_content_type() and inner_eml:
                                 return_outputs(readable_output=data_to_md(inner_eml, attachment_file_name, file_name),
                                                outputs=None)
                         finally:
@@ -3598,21 +3662,17 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                     if part.is_multipart() and max_depth - 1 > 0:
                         # email is DSN
                         msgs = part.get_payload()  # human-readable section
-                        i = 0
-                        for indiv_msg in msgs:
-                            msg = indiv_msg.get_payload()
-                            attachment_file_name = indiv_msg.get_filename()
-                            try:
-                                # In some cases the body content is empty and cannot be decoded.
-                                msg_info = base64.b64decode(msg).decode('utf-8')
-                            except TypeError:
-                                msg_info = str(msg)
+                        for i, individual_message in enumerate(msgs):
+
+                            msg_info = decode_attachment_payload(individual_message)
                             attached_emails.append(msg_info)
+
+                            attachment_file_name = individual_message.get_filename()
                             if attachment_file_name is None:
                                 attachment_file_name = "unknown_file_name{}".format(i)
+
                             demisto.results(fileResult(attachment_file_name, msg_info))
                             attachment_names.append(attachment_file_name)
-                            i += 1
 
                     else:
                         file_content = part.get_payload(decode=True)
@@ -3654,14 +3714,15 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
         # 1. it is 'multipart/signed' so it is probably a wrapper and we can ignore the outer "email"
         # 2. if it is 'multipart/signed' but has 'to' address so it is actually a real mail.
         if 'multipart/signed' not in eml.get_content_type() \
-                or ('multipart/signed' in eml.get_content_type() and extract_address_eml(eml, 'to')):
+                or ('multipart/signed' in eml.get_content_type()
+                    and (extract_address_eml(eml, 'to') or extract_address_eml(eml, 'from') or eml.get('subject'))):
             email_data = {
                 'To': extract_address_eml(eml, 'to'),
                 'CC': extract_address_eml(eml, 'cc'),
                 'From': extract_address_eml(eml, 'from'),
                 'Subject': convert_to_unicode(eml['Subject']),
-                'HTML': convert_to_unicode(html),
-                'Text': convert_to_unicode(text),
+                'HTML': convert_to_unicode(html, is_msg_header=False),
+                'Text': convert_to_unicode(text, is_msg_header=False),
                 'Headers': header_list,
                 'HeadersMap': headers_map,
                 'Attachments': ','.join(attachment_names) if attachment_names else '',
@@ -3740,7 +3801,9 @@ def main():
             output = create_email_output(email_data, attached_emails)
 
         elif any(eml_candidate in file_type_lower for eml_candidate in
-                 ['rfc 822 mail', 'smtp mail', 'multipart/signed', 'message/rfc822', 'application/pkcs7-mime']):
+                 ['rfc 822 mail', 'smtp mail', 'multipart/signed', 'multipart/alternative', 'multipart/mixed',
+                  'message/rfc822',
+                  'application/pkcs7-mime', 'multipart/related']):
             if 'unicode (with bom) text' in file_type_lower:
                 email_data, attached_emails = handle_eml(
                     file_path, False, file_name, parse_only_headers, max_depth, bom=True

@@ -5,7 +5,7 @@ Use the Palo Alto Networks NGFW API to automatically generate a Security Lifecyc
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Utilities__.
-2. Search for "Palo Alto Networks Automatic SLR (Community).
+2. Search for "Palo Alto Networks Automatic SLR.
 3. Click __Add instance__ to create and configure a new integration instance.
 
     | Parameter | Description |
@@ -91,7 +91,7 @@ How-to Generate the API Key: https://docs.paloaltonetworks.com/vm-series/10-0/vm
 
 ## Commands
 ---
-You can execute these commands from the Demisto CLI or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### Dump Integration Parameters

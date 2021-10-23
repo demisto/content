@@ -6,6 +6,7 @@ import string
 from bs4 import BeautifulSoup
 import math
 import pandas as pd
+import cProfile
 
 
 def test_find_label_fields_candidates():
@@ -365,12 +366,15 @@ def mock_read_func(file_path, mode='r'):
     return open(docker_path_to_test_path[file_path], mode=mode)
 
 
+def signal_alarm_patch(x):
+    return
+
+
 def test_whole_preprocessing(mocker):
-    import cProfile
+    mocker.patch('signal.alarm', side_effect=signal_alarm_patch)
     debug = False
     mocker.patch('DBotMLFetchData.open', mock_read_func)
-
-    data_file_path = 'test_data/100_incidents.p'
+    data_file_path = 'test_data/30_incidents.p'
     with open(data_file_path, 'rb') as file:
         incidents = pickle.load(file)
     prof = cProfile.Profile()
@@ -380,55 +384,90 @@ def test_whole_preprocessing(mocker):
             json.dump(data, fp=file, indent=4)
         prof.print_stats(sort='cumtime')
     assert len(data['log']['exceptions']) == 0
-    assert len(data['X']) == 100
+    assert len(data['X']) == len(incidents)
 
 
 def test_whole_preprocessing_short_incident(mocker):
-    import cProfile
     debug = False
     mocker.patch('DBotMLFetchData.open', mock_read_func)
+    mocker.patch('signal.alarm', side_effect=signal_alarm_patch)
 
-    data_file_path = 'test_data/100_incidents.p'
+    data_file_path = 'test_data/30_incidents.p'
     with open(data_file_path, 'rb') as file:
         incidents = pickle.load(file)
     short_text_incident = {'closeReason': 'shortText', 'emailbody': 'short text',
                            'created': '2020-05-10T18:39:04+03:00',
                            'attachment': []}
-    short_text_incident_index = 50
-    incidents = incidents[:short_text_incident_index] + [short_text_incident] + incidents[short_text_incident_index:]
+    short_text_index = 17
+    merged_incidents = incidents[:short_text_index] + [short_text_incident] + incidents[short_text_index:]
     prof = cProfile.Profile()
-    data = prof.runcall(extract_data_from_incidents, incidents=incidents)
+    data = prof.runcall(extract_data_from_incidents, incidents=merged_incidents)
     if debug:
         with open('output.txt', 'w') as file:
             json.dump(data, fp=file, indent=4)
         prof.print_stats(sort='cumtime')
     assert len(data['log']['exceptions']) == 0
-    assert len(data['X']) == 100
+    assert len(data['X']) == len(incidents)
     # check labels order kept as original excluding the short label
-    assert Counter(x['closeReason'] for x in data['X']) == Counter(
-        [inc['closeReason'] for i, inc in enumerate(incidents) if i != short_text_incident_index])
+    assert Counter(x['closeReason'] for x in data['X']) == Counter([inc['closeReason'] for inc in incidents])
 
 
 def test_whole_preprocessing_incdient_without_label(mocker):
-    import cProfile
     debug = False
+    mocker.patch('signal.alarm', side_effect=signal_alarm_patch)
     mocker.patch('DBotMLFetchData.open', mock_read_func)
-
-    data_file_path = 'test_data/100_incidents.p'
+    data_file_path = 'test_data/30_incidents.p'
     with open(data_file_path, 'rb') as file:
         incidents = pickle.load(file)
     incident_without_label = {'closeReason': '', 'emailbody': 'short text',
                               'created': '2020-05-10T18:39:04+03:00', 'attachment': []}
-    no_label_idx = 50
-    incidents = incidents[:no_label_idx] + [incident_without_label] + incidents[no_label_idx:]
+    no_label_idx = 17
+    merged_incidents = incidents[:no_label_idx] + [incident_without_label] + incidents[no_label_idx:]
     prof = cProfile.Profile()
-    data = prof.runcall(extract_data_from_incidents, incidents=incidents)
+    data = prof.runcall(extract_data_from_incidents, incidents=merged_incidents)
     if debug:
         with open('output.txt', 'w') as file:
             json.dump(data, fp=file, indent=4)
         prof.print_stats(sort='cumtime')
     assert len(data['log']['exceptions']) == 0
-    assert len(data['X']) == 100
+    assert len(data['X']) == len(incidents)
     # check labels order kept as original excluding the short label
-    assert Counter(x['closeReason'] for x in data['X']) == Counter(
-        [inc['closeReason'] for i, inc in enumerate(incidents) if i != no_label_idx])
+    assert Counter(x['closeReason'] for x in data['X']) == Counter([inc['closeReason'] for inc in incidents])
+
+
+def test_find_forwarded_features():
+    assert find_forwarded_features('RE- Are you free to discuss?', '')['response']
+    assert not find_forwarded_features('Are you free to discuss?', '')['response']
+    assert not find_forwarded_features('reminder', '')['response']
+    assert find_forwarded_features('FW - money transfer', '')['forwarded']
+    assert not find_forwarded_features('money transfer', '')['forwarded']
+    assert find_forwarded_features('FWD - money transfer', '')['forwarded']
+    assert not find_forwarded_features('FYI', '')['forwarded']
+    assert not find_forwarded_features('FWD1', '')['forwarded']
+    assert find_forwarded_features('', '---------- Forwarded message ---------')['forwarded']
+
+
+def test_clean_email_subject():
+    res = clean_email_subject('[POTENTIAL PHISH] [External] someone sent you a file')
+    assert res == 'someone sent you a file'
+    res = clean_email_subject('[POTENTIAL PHISH] [External] someone sent you a file [End]')
+    assert res == 'someone sent you a file'
+
+
+def test_bert_features(mocker):
+    mocker.patch('DBotMLFetchData.open', mock_read_func)
+    load_external_resources()
+    text = 'The rapid growth of submissions and the increasing popularity of preprints have caused several problems ' \
+           'to the current ACL reviewing system. To address these problems, the ACL Committee on Reviewing has been ' \
+           'working on two proposals for reforming the reviewing system of ACL-related conferences: short-term and ' \
+           'long-term. The following document presents the short-term proposals: ' \
+           'https://www.aclweb.org/adminwiki/index.php?title=Short-Term_Reform_Propo... It consists of four ' \
+           'complementary actions that can be realistically implemented to improve the ACL review process in the near ' \
+           'future (while the committee continues to investigate changes that require a longer lead time). These ' \
+           'actions address several of the problems identified in the proposal. The ACL Executive Committee has ' \
+           'adopted these proposals. We hope that their implementation will have a quick positive impact on reviewing ' \
+           'at ACL conferences. '
+    res = get_bert_features_for_text(text)
+    expected_res_first_ten = [-3.7959e-01, -4.7554e-02, -5.6070e-03, -1.3525e-01, -1.5419e-01,
+                              -2.7613e-01, 2.5755e-02, 2.5090e-02, -2.2422e-01, -2.5844e-01]
+    np.testing.assert_allclose(res[:10], expected_res_first_ten, rtol=1e-03, atol=1e-05)

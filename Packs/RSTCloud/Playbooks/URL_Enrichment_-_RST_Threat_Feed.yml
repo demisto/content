@@ -1,0 +1,607 @@
+id: URL Enrichment - RST Threat Feed
+version: -1
+fromversion: 6.0.0
+contentitemexportablefields:
+  contentitemfields: {}
+name: URL Enrichment - RST Threat Feed
+description: |-
+  Enrich URLs using one or more integrations.
+
+  URL enrichment includes:
+  * SSL verification for URLs
+  * Threat information
+  * Providing of URL screenshots
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8ec1d86f-9108-44d5-8c64-49fa9294f043
+    type: start
+    task:
+      id: 8ec1d86f-9108-44d5-8c64-49fa9294f043
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": -39
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 7bc8f493-84d1-4d5e-8bfc-64db0cab685c
+    type: condition
+    task:
+      id: 7bc8f493-84d1-4d5e-8bfc-64db0cab685c
+      version: -1
+      name: Are there URLs?
+      description: Determine whtether the playbook's input contains at least one URL.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "37"
+      "yes":
+      - "29"
+      - "31"
+      - "34"
+    scriptarguments:
+      value:
+        simple: inputs.url
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.URL
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 125
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 86cea036-b5bf-40d7-86f9-278a0e1d5557
+    type: title
+    task:
+      id: 86cea036-b5bf-40d7-86f9-278a0e1d5557
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1125
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: b5ea6e49-a7eb-49d7-8398-3087829d7aee
+    type: condition
+    task:
+      id: b5ea6e49-a7eb-49d7-8398-3087829d7aee
+      version: -1
+      name: 'Is Rasterize integration enabled? '
+      description: Checks if there is an active instance of the Rasterize integration
+        enabled.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "26"
+    scriptarguments:
+      value:
+        complex:
+          root: modules
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: brand
+                iscontext: true
+              right:
+                value:
+                  simple: Rasterize
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: state
+                iscontext: true
+              right:
+                value:
+                  simple: active
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 0eb62106-7a26-485e-857f-c59252e9c10b
+    type: regular
+    task:
+      id: 0eb62106-7a26-485e-857f-c59252e9c10b
+      version: -1
+      name: Get URL screenshot
+      description: Gets a screenshot of the URL page.
+      tags:
+      - url_screenshots
+      script: Rasterize|||rasterize
+      type: regular
+      iscommand: true
+      brand: Rasterize
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      height: {}
+      type: {}
+      url:
+        complex:
+          root: inputs.URL
+          transformers:
+          - operator: uniq
+      wait_time: {}
+      width: {}
+    reputationcalc: 1
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: f4894996-e946-44e3-8405-95efb847e7cb
+    type: condition
+    task:
+      id: f4894996-e946-44e3-8405-95efb847e7cb
+      version: -1
+      name: Capture screenshots of the URL?
+      description: Checks if the playbook's Rasterize input is set to "True", which
+        determines whether screenshots of the URLs are created.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.Rasterize
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: bf3d5a2f-6be9-4625-80df-e679e2e3e8ef
+    type: title
+    task:
+      id: bf3d5a2f-6be9-4625-80df-e679e2e3e8ef
+      version: -1
+      name: URL Screenshots
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: 35491163-4370-45fb-87d1-5de849f33eb0
+    type: title
+    task:
+      id: 35491163-4370-45fb-87d1-5de849f33eb0
+      version: -1
+      name: URL Verification
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "33"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 489.5,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: c1f28ba3-01a8-49c1-8526-f019649a5400
+    type: regular
+    task:
+      id: c1f28ba3-01a8-49c1-8526-f019649a5400
+      version: -1
+      name: Verify SSL for URLs
+      description: Verify URL SSL certificate
+      scriptName: URLSSLVerification
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      url:
+        complex:
+          root: inputs.URL
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: f2ea80eb-2dc7-4939-8962-bbbbf052af6a
+    type: condition
+    task:
+      id: f2ea80eb-2dc7-4939-8962-bbbbf052af6a
+      version: -1
+      name: Verify URLs?
+      description: Checks if the playbook's VerifyURL input is set to "True", to determine
+        whether to perform SSL verification on the URLs.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.VerifyURL
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: 3eac92f2-8ba8-4f3a-8878-ec480f9b5d38
+    type: title
+    task:
+      id: 3eac92f2-8ba8-4f3a-8878-ec480f9b5d38
+      version: -1
+      name: RST Threat Feed API Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "35"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1030,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: 96fd0734-188b-4f25-86b7-55e29c8dcbfa
+    type: condition
+    task:
+      id: 96fd0734-188b-4f25-86b7-55e29c8dcbfa
+      version: -1
+      name: Is RST Threat Feed API enabled?
+      description: |
+        Checks if there is an active instance of the RST Threat Feed API integration enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: RST Cloud - Threat Feed API
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1030,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: 198d0923-b2b1-44d0-8a47-b4b3a89227f8
+    type: regular
+    task:
+      id: 198d0923-b2b1-44d0-8a47-b4b3a89227f8
+      version: -1
+      name: Get URL report from RST Threat Feed API
+      description: Returns URL information and reputation.
+      script: 'RST Cloud - Threat Feed API|||url'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      threshold:
+        simple: inputs.threshold
+      url:
+        complex:
+          root: inputs.URL
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1030,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: 1515fb6b-457d-4bcd-8da5-47cec04bde81
+    type: title
+    task:
+      id: 1515fb6b-457d-4bcd-8da5-47cec04bde81
+      version: -1
+      name: No URLs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -510,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "25_24_#default#": 0.53,
+      "25_26_yes": 0.47,
+      "27_25_yes": 0.5,
+      "33_24_#default#": 0.13,
+      "33_32_yes": 0.67,
+      "35_24_#default#": 0.76
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1229,
+        "width": 1920,
+        "x": -510,
+        "y": -39
+      }
+    }
+  }
+inputs:
+- key: URL
+  value:
+    complex:
+      root: URL
+      accessor: Data
+      transformers:
+      - operator: uniq
+  required: false
+  description: URLs to enrich.
+  playbookInputQuery:
+- key: Rasterize
+  value:
+    simple: "True"
+  required: false
+  description: Should the system take safe screenshots of input URLs?
+  playbookInputQuery:
+- key: VerifyURL
+  value:
+    simple: "False"
+  required: false
+  description: Should the system perform SSL certificate verification on the URLs?
+  playbookInputQuery:
+- key: threshold
+  value:
+    simple: inputs.threshold
+  required: false
+  description: Defines the minimum score to set indicators as malicious
+  playbookInputQuery:
+outputs:
+- contextPath: URL
+  description: The URL object.
+  type: uknown
+- contextPath: URL.Data
+  description: The enriched URL.
+  type: string
+- contextPath: DBotScore
+  description: The DBotScore object.
+  type: unknown
+- contextPath: URL.Malicious
+  description: Whether the detected URL was malicious.
+  type: unknown
+- contextPath: URL.Vendor
+  description: Vendor that labeled the URL as malicious.
+  type: string
+- contextPath: URL.Description
+  description: Additional information for the URL.
+  type: string
+tests:
+- No tests (auto formatted)

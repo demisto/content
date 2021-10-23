@@ -45,6 +45,11 @@ configuration:
   name: incidentType
   required: false
   type: 13
+- defaultvalue: 10 minutes
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: fetch_time
+  required: false
+  type: 0
 - defaultvalue: '50'
   display: Max incidents per fetch (up to 50)
   name: max_fetch
@@ -1156,7 +1161,7 @@ script:
     description: Sends an email.
     execution: false
     name: send-mail
-  dockerimage: demisto/py3ews:1.0.0.12717
+  dockerimage: demisto/py3ews:1.0.0.23229
   feed: false
   isfetch: true
   longRunning: false

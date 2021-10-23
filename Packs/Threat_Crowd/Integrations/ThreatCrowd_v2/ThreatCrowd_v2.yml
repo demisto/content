@@ -1,0 +1,325 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: ThreatCrowd_v2
+  version: -1
+configuration:
+- defaultvalue: https://www.threatcrowd.org/searchApi/v2/
+  display: Server
+  name: server_url
+  required: true
+  type: 0
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: C - Fairly reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- additionalinfo: How many results per indicator to fetch. For full data use -1.
+  defaultvalue: '50'
+  display: Max number of results per indicator
+  name: entry_limit
+  required: true
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Query Threat Crowd for reports.
+display: Threat Crowd v2
+name: ThreatCrowd_v2
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: An IP address for which to retrieve a report.
+      isArray: true
+      name: ip
+      required: true
+      secret: false
+    - default: false
+      description: Maximum number of results per indicator to fetch.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Get a report of an IP address.
+    execution: false
+    name: ip
+    outputs:
+    - contextPath: IP.Address
+      description: IP address.
+      type: String
+    - contextPath: IP.Malicious.Vendor
+      description: The vendor reporting the IP address as malicious.
+      type: String
+    - contextPath: IP.Malicious.Description
+      description: A description explaining why the IP address was reported as malicious.
+      type: String
+    - contextPath: ThreatCrowd.IP.hashes
+      description: Hashes related to the ip.
+      type: String
+    - contextPath: ThreatCrowd.IP.permalink
+      description: The link to ip in the product.
+      type: String
+    - contextPath: ThreatCrowd.IP.references
+      description: References related to the ip.
+      type: String
+    - contextPath: ThreatCrowd.IP.resolutions
+      description: Resolutions related to the ip.
+      type: String
+    - contextPath: ThreatCrowd.IP.value
+      description: The ip value.
+      type: String
+    - contextPath: ThreatCrowd.IP.votes
+      description: The votes given to ip.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+  - arguments:
+    - default: true
+      description: The domain for which to retrieve a report.
+      isArray: true
+      name: domain
+      required: true
+      secret: false
+    - default: false
+      description: Maximum number of results per indicator to fetch.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Get a report of a domain.
+    execution: false
+    name: domain
+    outputs:
+    - contextPath: Domain.Name
+      description: 'The domain name, for example: "google.com".'
+      type: String
+    - contextPath: Domain.Malicious.Vendor
+      description: The vendor reporting the domain as malicious.
+      type: String
+    - contextPath: Domain.Malicious.Description
+      description: A description explaining why the domain was reported as malicious.
+      type: String
+    - contextPath: ThreatCrowd.Domain.hashes
+      description: Hashes related to the domain.
+      type: String
+    - contextPath: ThreatCrowd.Domain.permalink
+      description: A link to domain search in the product.
+      type: String
+    - contextPath: ThreatCrowd.Domain.emails
+      description: Emails related to the domain.
+      type: String
+    - contextPath: ThreatCrowd.Domain.references
+      description: References related to the domain.
+      type: String
+    - contextPath: ThreatCrowd.Domain.resolutions
+      description: Resolutions related to the domain.
+      type: String
+    - contextPath: ThreatCrowd.Domain.subdomains
+      description: The subdomains related to the domain.
+      type: String
+    - contextPath: ThreatCrowd.Domain.value
+      description: The name of the domain.
+      type: String
+    - contextPath: ThreatCrowd.Domain.votes
+      description: The votes given to the domain.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+  - arguments:
+    - default: true
+      description: The email address for which to retrieve a report.
+      isArray: true
+      name: email
+      required: true
+      secret: false
+    - default: false
+      description: Maximum number of results per indicator to fetch.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Get a report of an email address.
+    execution: false
+    name: email
+    outputs:
+    - contextPath: ThreatCrowd.Account.value
+      description: The email address.
+      type: String
+    - contextPath: ThreatCrowd.Account.domains
+      description: The domains related to the email address.
+      type: String
+    - contextPath: ThreatCrowd.Account.permalink
+      description: The Link to the email address in the product.
+      type: String
+    - contextPath: ThreatCrowd.Account.references
+      description: The refernces related to the email address.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+  - arguments:
+    - default: false
+      description: The antivirus for which to retrieve a report.
+      isArray: true
+      name: antivirus
+      required: true
+      secret: false
+    - default: false
+      description: Maximum number of results per indicator to fetch.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Get a report of an antivirus.
+    execution: false
+    name: threat-crowd-antivirus
+    outputs:
+    - contextPath: ThreatCrowd.AntiVirus.hashes
+      description: The hashes related to the antivirus.
+      type: String
+    - contextPath: ThreatCrowd.AntiVirus.permalink
+      description: The link to the antivitrus in the product.
+      type: String
+    - contextPath: ThreatCrowd.AntiVirus.references
+      description: The references of the antivirus.
+      type: Unknown
+    - contextPath: ThreatCrowd.AntiVirus.value
+      description: The name of the antivirus.
+      type: String
+  - arguments:
+    - default: true
+      description: The hash for which to retrieve a report.
+      isArray: true
+      name: file
+      required: true
+      secret: false
+    - default: false
+      description: Maximum number of results per indicator to fetch.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Get a report of a hash.
+    execution: false
+    name: file
+    outputs:
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.Malicious.Vendor
+      description: The vendor that reported the file as malicious.
+      type: String
+    - contextPath: File.Malicious.Description
+      description: A description explaining why the file was determined to be malicious.
+      type: String
+    - contextPath: ThreatCrowd.File.sha1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: ThreatCrowd.File.references
+      description: The refernces related to the file.
+      type: String
+    - contextPath: ThreatCrowd.File.permalink
+      description: The link to the file in the product.
+      type: String
+    - contextPath: ThreatCrowd.File.ips
+      description: The ips related to the file.
+      type: String
+    - contextPath: ThreatCrowd.File.domains
+      description: The domains related to the file.
+      type: String
+    - contextPath: ThreatCrowd.File.value
+      description: The file identifier.
+      type: String
+    - contextPath: ThreatCrowd.File.scans
+      description: The scans related to thefile.
+      type: String
+    - contextPath: ThreatCrowd.File.md5
+      description: The MD5 of the file.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+  dockerimage: demisto/python3:3.9.7.24076
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+fromversion: 5.0.0

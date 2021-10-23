@@ -1,0 +1,30 @@
+{
+ "id": "incident_topdeskcallerbranchname",
+ "version": -1,
+ "modified": "2021-02-10T13:35:41.597334+02:00",
+ "name": "TOPdesk Caller Branch Name",
+ "ownerOnly": false,
+ "cliName": "topdeskcallerbranchname",
+ "type": "shortText",
+ "closeForm": false,
+ "editForm": true,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 0,
+ "hidden": false,
+ "associatedTypes": [
+  "TOPdesk Incident"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "sla": 0,
+ "threshold": 72,
+ "fromVersion": "5.0.0"
+}

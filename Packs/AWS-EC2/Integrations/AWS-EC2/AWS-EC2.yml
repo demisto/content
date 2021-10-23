@@ -22,6 +22,8 @@ configuration:
   - sa-east-1
   - eu-north-1
   - eu-west-3
+  - us-gov-east-1
+  - us-gov-west-1
   required: false
   type: 15
 - display: Role Arn
@@ -44,6 +46,23 @@ configuration:
   name: secret_key
   required: false
   type: 4
+- display: Timeout
+  name: timeout
+  additionalinfo: The time in seconds till a timeout exception is reached. You can
+    specify just the read timeout (for example 60) or also the connect timeout followed
+    after a comma (for example 60,10). If a connect timeout is not specified, a default
+    of 10 second will be used.
+  defaultvalue: 60,10
+  required: false
+  type: 0
+- display: Retries
+  name: retries
+  defaultvalue: 5
+  additionalinfo: "The maximum number of retry attempts when connection or throttling errors
+    are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10.
+    Note: Increasing the number of retries will increase the execution time."
+  required: false
+  type: 0
 - display: Use system proxy settings
   name: proxy
   required: false
@@ -2624,6 +2643,12 @@ script:
       name: roleSessionDuration
       required: false
       secret: false
+    - default: false
+      description: The dedicated Host ID.
+      isArray: false
+      name: host_id
+      required: false
+      secret: false
     deprecated: false
     description: Launches the specified number of instances using an AMI for which
       you have permissions. You can create a launch template , which is a resource
@@ -4637,7 +4662,7 @@ script:
       secret: false
     - default: false
       description: The IPv6 network range to allow or deny, in CIDR notation (for
-        example 2001:db8:1234:1a00::/64 ).                                                                           # disable-secrets-detection
+        example 2001:db8:1234:1a00::/64 ).
       isArray: false
       name: Ipv6CidrBlock
       required: false
@@ -4786,17 +4811,6 @@ script:
       default: false
       description: Indicates that the fleet uses a single instance type to launch
         all Spot Instances in the fleet.
-      isArray: false
-      name: SpotSingleInstanceType
-      predefined:
-      - 'True'
-      - 'False'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Indicates that the fleet launches all Spot Instances into a single
-        Availability Zone.
       isArray: false
       name: SpotSingleInstanceType
       predefined:
@@ -6474,14 +6488,312 @@ script:
       description: Unique, case-sensitive identifier that you provide to ensure the
         idempotency of the request.
       type: String
-  dockerimage: demisto/boto3:2.0.0.13188
+  - arguments:
+    - default: false
+      description: The ID of the security group.
+      isArray: false
+      name: groupId
+      required: true
+      secret: false
+    - default: false
+      description: The start of port range for the TCP and UDP protocols, or an ICMP/ICMPv6
+        type number. A value of -1 indicates all ICMP/ICMPv6 types. If you specify
+        all ICMP/ICMPv6 types, you must specify all codes.
+      isArray: false
+      name: IpPermissionsfromPort
+      required: false
+      secret: false
+    - default: false
+      description: The end of port range for the TCP and UDP protocols, or an ICMP/ICMPv6
+        code. A value of -1 indicates all ICMP/ICMPv6 codes. If you specify all ICMP/ICMPv6
+        types, you must specify all codes.
+      isArray: false
+      name: IpPermissionsToPort
+      required: false
+      secret: false
+    - default: false
+      description: The IP protocol name (tcp, udp, icmp, icmpv6) or number.
+      isArray: false
+      name: IpPermissionsIpProtocol
+      required: false
+      secret: false
+    - default: false
+      description: The IPv4 CIDR range. You can either specify a CIDR range or a source
+        security group, not both. To specify a single IPv4 address, use the /32 prefix
+        length.
+      isArray: false
+      name: IpRangesCidrIp
+      required: false
+      secret: false
+    - default: false
+      description: 'A description for the security group rule that references this
+        IPv4 address range.Constraints: Up to 255 characters in length. Allowed characters
+        are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*'
+      isArray: false
+      name: IpRangesDescription
+      required: false
+      secret: false
+    - default: false
+      description: The IPv6 CIDR range. You can either specify a CIDR range or a source
+        security group, not both. To specify a single IPv6 address, use the /128 prefix
+        length.
+      isArray: false
+      name: Ipv6RangesCidrIp
+      required: false
+      secret: false
+    - default: false
+      description: 'A description for the security group rule that references this
+        IPv6 address range. Constraints: Up to 255 characters in length. Allowed characters
+        are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=&;{}!$*'
+      isArray: false
+      name: Ipv6RangesDescription
+      required: false
+      secret: false
+    - default: false
+      description: The ID of the prefix.
+      isArray: false
+      name: PrefixListId
+      required: false
+      secret: false
+    - default: false
+      description: 'A description for the security group rule that references this
+        prefix list ID. Constraints: Up to 255 characters in length. Allowed characters
+        are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*'
+      isArray: false
+      name: PrefixListIdDescription
+      required: false
+      secret: false
+    - default: false
+      description: 'A description for the security group rule that references this
+        user ID group pair. Constraints: Up to 255 characters in length. Allowed characters
+        are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*'
+      isArray: false
+      name: UserIdGroupPairsDescription
+      required: false
+      secret: false
+    - default: false
+      description: The ID of the security group.
+      isArray: false
+      name: UserIdGroupPairsGroupId
+      required: false
+      secret: false
+    - default: false
+      description: The name of the security group. In a request, use this parameter
+        for a security group in EC2-Classic or a default VPC only. For a security
+        group in a nondefault VPC, use the security group ID. For a referenced security
+        group in another VPC, this value is not returned if the referenced security
+        group is deleted.
+      isArray: false
+      name: UserIdGroupPairsGroupName
+      required: false
+      secret: false
+    - default: false
+      description: The status of a VPC peering connection, if applicable.
+      isArray: false
+      name: UserIdGroupPairsPeeringStatus
+      required: false
+      secret: false
+    - default: false
+      description: The ID of an AWS account. For a referenced security group in another
+        VPC, the account ID of the referenced security group is returned in the response.
+        If the referenced security group is deleted, this value is not returned. [EC2-Classic]
+        Required when adding or removing rules that reference a security group in
+        another AWS account.
+      isArray: false
+      name: UserIdGroupPairsUserId
+      required: false
+      secret: false
+    - default: false
+      description: The ID of the VPC for the referenced security group, if applicable.
+      isArray: false
+      name: UserIdGroupPairsVpcId
+      required: false
+      secret: false
+    - default: false
+      description: The ID of the VPC peering connection, if applicable.
+      isArray: false
+      name: UserIdGroupPairsVpcPeeringConnectionId
+      required: false
+      secret: false
+    - default: false
+      description: The AWS Region, if not specified the default region will be used.
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
+      description: The Amazon Resource Name (ARN) of the role to assume.
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
+      description: An identifier for the assumed role session.
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
+    description: Removes egress rule from a security group. To remove a rule, the
+      values that you specify (for example, ports) must match the existing rule's
+      values exactly.
+    execution: true
+    name: aws-ec2-revoke-security-group-egress-rule
+  - arguments:
+    - default: false
+      description: The Availability Zone in which to allocate the Dedicated Host.
+      isArray: false
+      name: availability_zone
+      required: true
+      secret: false
+    - default: false
+      description: The number of Dedicated Hosts to allocate to your account with
+        these parameters.
+      isArray: false
+      name: quantity
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Indicates whether the host accepts any untargeted instance launches
+        that match its instance type configuration, or if it only accepts Host tenancy
+        instance launches that specify its unique host ID. The default is "on".
+      isArray: false
+      name: auto_placement
+      predefined:
+      - 'on'
+      - 'off'
+      required: false
+      secret: false
+    - default: false
+      description: Unique, case-sensitive identifier that you provide to ensure the
+        idempotency of the request.
+      isArray: false
+      name: client_token
+      required: false
+      secret: false
+    - default: false
+      description: Specifies the instance type to be supported by the Dedicated Hosts.
+        If you specify an instance type, the Dedicated Hosts support instances of
+        the specified instance type only. If you want the Dedicated Hosts to support
+        multiple instance types in a specific instance family, omit this parameter
+        and specify InstanceFamily instead. You cannot specify InstanceType and InstanceFamily
+        in the same request.
+      isArray: false
+      name: instance_type
+      required: false
+      secret: false
+    - default: false
+      description: Specifies the instance family to be supported by the Dedicated
+        Hosts. If you specify an instance family, the Dedicated Hosts support multiple
+        instance types within that instance family. If you want the Dedicated Hosts
+        to support a specific instance type only, omit this parameter and specify
+        InstanceType instead. You cannot specify InstanceFamily and InstanceType in
+        the same request
+      isArray: false
+      name: instance_family
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Indicates whether to enable or disable host recovery for the Dedicated
+        Host. Host recovery is disabled by default.
+      isArray: false
+      name: host_recovery
+      predefined:
+      - 'on'
+      - 'off'
+      required: false
+      secret: false
+    - default: false
+      description: The AWS Region, if not specified the default region will be used.
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
+      description: The Amazon Resource Name (ARN) of the role to assume.
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
+      description: An identifier for the assumed role session.
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
+    description: Allocates a Dedicated Host to your account.
+    execution: false
+    name: aws-ec2-allocate-hosts
+    outputs:
+    - contextPath: AWS.EC2.Host.HostId
+      description: The ID of the allocated Dedicated Host. This is used to launch
+        an instance onto a specific host.
+      type: String
+  - arguments:
+    - default: false
+      description: A comma-separated list of IDs of the Dedicated Hosts to release.
+      isArray: true
+      name: host_id
+      required: true
+      secret: false
+    - default: false
+      description: The AWS Region, if not specified the default region will be used.
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
+      description: The Amazon Resource Name (ARN) of the role to assume.
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
+      description: An identifier for the assumed role session.
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
+    description: Release on demand dedicated host.
+    execution: false
+    name: aws-ec2-release-hosts
+  dockerimage: demisto/boto3:2.0.0.24033
+  feed: false
   isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python2
+  type: python
 tests:
 - AWS - EC2 Test Playbook
 fromversion: 5.0.0

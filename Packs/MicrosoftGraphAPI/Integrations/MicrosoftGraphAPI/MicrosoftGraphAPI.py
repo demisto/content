@@ -15,7 +15,8 @@ class MsGraphClient:
                  app_secret: str,
                  tenant_id: str,
                  verify: bool,
-                 proxy: bool):
+                 proxy: bool,
+                 azure_ad_endpoint: str = 'https://login.microsoftonline.com'):
         client_args = {
             'base_url': 'https://graph.microsoft.com',
             'auth_id': app_id,
@@ -27,10 +28,11 @@ class MsGraphClient:
             'self_deployed': True,
             'grant_type': CLIENT_CREDENTIALS,
             'ok_codes': (200, 201, 204),
+            'azure_ad_endpoint': azure_ad_endpoint
         }
         if not (app_secret and tenant_id):
             client_args['grant_type'] = DEVICE_CODE
-            client_args['token_retrieval_url'] = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
+            client_args['token_retrieval_url'] = f'{azure_ad_endpoint}/organizations/oauth2/v2.0/token'
             client_args['scope'] = scope
         self.ms_client = MicrosoftClient(**client_args)  # type: ignore[arg-type]
 
@@ -54,11 +56,8 @@ class MsGraphClient:
 
 
 def start_auth(client: MsGraphClient) -> CommandResults:
-    user_code = client.ms_client.device_auth_request()
-    return CommandResults(readable_output=f"""### Authorization instructions
-1. To sign in, use a web browser to open the page [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin)
- and enter the code **{user_code}** to authenticate.
-2. Run the **!msgraph-auth-complete** command in the War Room.""")
+    result = client.ms_client.start_auth('!msgraph-api-auth-complete')
+    return CommandResults(readable_output=result)
 
 
 def complete_auth(client: MsGraphClient):
@@ -122,6 +121,8 @@ def main() -> None:
             tenant_id=params.get('tenant_id'),
             verify=not params.get('insecure', False),
             proxy=params.get('proxy', False),
+            azure_ad_endpoint=params.get('azure_ad_endpoint',
+                                         'https://login.microsoftonline.com') or 'https://login.microsoftonline.com'
         )
 
         if command == 'test-module':

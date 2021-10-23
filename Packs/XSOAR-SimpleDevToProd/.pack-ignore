@@ -1,0 +1,14 @@
+[file:playbook-JOB_-_XSOAR_-_Simple_Dev_to_Prod.yml]
+ignore=PB106
+
+[file:playbook-JOB_-_XSOAR_-_Export_Selected_Custom_Content.yml]
+ignore=PB106
+
+[file:playbook-JOB_-_XSOAR_-_Simple_Dev_to_Prod_README.md]
+ignore=RM106
+
+[file:playbook-JOB_-_XSOAR_-_Export_Selected_Custom_Content_README.md]
+ignore=RM106
+
+[file:README.md]
+ignore=RM106

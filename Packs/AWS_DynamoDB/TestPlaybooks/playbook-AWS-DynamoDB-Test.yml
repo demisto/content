@@ -5,40 +5,45 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: df621aac-5610-4023-8a9e-7b04f7e3c1b6
+    taskid: f6686eab-b015-41b4-8918-9dd85edb8c6a
     type: start
     task:
-      id: df621aac-5610-4023-8a9e-7b04f7e3c1b6
+      id: f6686eab-b015-41b4-8918-9dd85edb8c6a
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "15"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 480,
           "y": 50
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: 312d8b2f-625e-4412-8e58-c7ffe2ed0d30
+    taskid: 4e4decb4-71f4-41b8-8017-079c0368019f
     type: regular
     task:
-      id: 312d8b2f-625e-4412-8e58-c7ffe2ed0d30
+      id: 4e4decb4-71f4-41b8-8017-079c0368019f
       version: -1
       name: aws-dynamodb-list-tables
-      description: Returns an array of table names associated with the current account and endpoint. The output from ListTables is paginated, with each page returning a maximum of 100 table names.
-      script: Amazon DynamoDB|||aws-dynamodb-list-tables
+      description: Returns an array of table names associated with the current account
+        and endpoint. The output from ListTables is paginated, with each page returning
+        a maximum of 100 table names.
+      script: '|||aws-dynamodb-list-tables'
       type: regular
       iscommand: true
-      brand: Amazon DynamoDB
+      brand: ""
     nexttasks:
       '#none#':
       - "3"
@@ -53,25 +58,34 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 190
+          "x": 480,
+          "y": 370
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
-    taskid: ec760111-8213-424d-8baa-a18b8ec36e39
+    taskid: f0380550-6f2c-48e3-886e-ea4a47c675d5
     type: regular
     task:
-      id: ec760111-8213-424d-8baa-a18b8ec36e39
+      id: f0380550-6f2c-48e3-886e-ea4a47c675d5
       version: -1
       name: aws-dynamodb-list-backups
-      description: List backups associated with an AWS account. To list backups for a given table, specify TableName. ListBackups returns a paginated list of results with at most 1 MB worth of items in a page. You can also specify a limit for the maximum number of entries to be returned in a page.  In the request, start time is inclusive, but end time is exclusive. Note that these limits are for the time at which the original backup was requested. You can call ListBackups a maximum of five times per second.
-      script: Amazon DynamoDB|||aws-dynamodb-list-backups
+      description: List backups associated with an AWS account. To list backups for
+        a given table, specify TableName. ListBackups returns a paginated list of
+        results with at most 1 MB worth of items in a page. You can also specify a
+        limit for the maximum number of entries to be returned in a page.  In the
+        request, start time is inclusive, but end time is exclusive. Note that these
+        limits are for the time at which the original backup was requested. You can
+        call ListBackups a maximum of five times per second.
+      script: '|||aws-dynamodb-list-backups'
       type: regular
       iscommand: true
-      brand: Amazon DynamoDB
+      brand: ""
     nexttasks:
       '#none#':
       - "4"
@@ -88,25 +102,34 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 540
+          "x": 480,
+          "y": 720
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
-    taskid: 4ca59cf9-71ef-4a05-8536-ce236c028fe4
+    taskid: da60b1c9-b3ad-4819-8800-5c734eeeabb5
     type: regular
     task:
-      id: 4ca59cf9-71ef-4a05-8536-ce236c028fe4
+      id: da60b1c9-b3ad-4819-8800-5c734eeeabb5
       version: -1
       name: aws-dynamodb-describe-table
-      description: 'Returns information about the table, including the current status of the table, when it was created, the primary key schema, and any indexes on the table.  If you issue a DescribeTable request immediately after a CreateTable request, DynamoDB might return a ResourceNotFoundException. This is because DescribeTable uses an eventually consistent query, and the metadata for your table might not be available at that moment. Wait for a few seconds, and then try the DescribeTable request again. '
-      script: Amazon DynamoDB|||aws-dynamodb-describe-table
+      description: 'Returns information about the table, including the current status
+        of the table, when it was created, the primary key schema, and any indexes
+        on the table.  If you issue a DescribeTable request immediately after a CreateTable
+        request, DynamoDB might return a ResourceNotFoundException. This is because
+        DescribeTable uses an eventually consistent query, and the metadata for your
+        table might not be available at that moment. Wait for a few seconds, and then
+        try the DescribeTable request again. '
+      script: '|||aws-dynamodb-describe-table'
       type: regular
       iscommand: true
-      brand: Amazon DynamoDB
+      brand: ""
     nexttasks:
       '#none#':
       - "2"
@@ -117,33 +140,40 @@ tasks:
       roleSessionDuration: {}
       roleSessionName: {}
       table_name:
-        simple: Demisto_Test_Table
+        simple: Music
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 360
+          "x": 480,
+          "y": 545
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
-    taskid: 53802168-8f40-48d2-8c98-22b9d599087a
+    taskid: 9b83cc41-11cf-4852-88c3-d603a51b6f5f
     type: regular
     task:
-      id: 53802168-8f40-48d2-8c98-22b9d599087a
+      id: 9b83cc41-11cf-4852-88c3-d603a51b6f5f
       version: -1
       name: aws-dynamodb-describe-backup
-      description: Describes an existing backup of a table. You can call DescribeBackup at a maximum rate of 10 times per second.
-      script: Amazon DynamoDB|||aws-dynamodb-describe-backup
+      description: Describes an existing backup of a table. You can call DescribeBackup
+        at a maximum rate of 10 times per second.
+      script: '|||aws-dynamodb-describe-backup'
       type: regular
       iscommand: true
-      brand: Amazon DynamoDB
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
     scriptarguments:
       backup_arn:
-        simple: arn:aws:dynamodb:eu-west-1:120785635586:table/Demisto_Test_Table/backup/01578237730981-ad83af36  # disable-secrets-detection
+        simple: arn:aws:dynamodb:eu-central-1:120785635586:table/Music/backup/01618149183237-23ebc580
       raw_json: {}
       region: {}
       roleArn: {}
@@ -153,20 +183,645 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 730
+          "x": 480,
+          "y": 895
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: f8905f9f-d4ce-4fc5-8c80-184cc66e9163
+    type: regular
+    task:
+      id: f8905f9f-d4ce-4fc5-8c80-184cc66e9163
+      version: -1
+      name: aws-dynamodb-get-item
+      description: The GetItem operation returns a set of attributes for the item
+        with the given primary key. If there is no matching item, GetItem does not
+        return any data and there will be no Item element in the response.  GetItem
+        provides an eventually consistent read by default. If your application requires
+        a strongly consistent read, set ConsistentRead to true. Although a strongly
+        consistent read might take more time than an eventually consistent read, it
+        always returns the last updated value.
+      script: '|||aws-dynamodb-get-item'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      attributes_to_get:
+        simple: '"Artist = :Acme Band"'
+      consistent_read: {}
+      expression_attribute_names: {}
+      key:
+        simple: '{"Artist": {"S":"No One You Know"},"SongTitle": {"S":"Call Me Today"}}'
+      projection_expression: {}
+      raw_json: {}
+      region: {}
+      return_consumed_capacity: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      table_name:
+        simple: Music
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 563731b3-be30-4841-8f76-4921ade883ec
+    type: regular
+    task:
+      id: 563731b3-be30-4841-8f76-4921ade883ec
+      version: -1
+      name: aws-dynamodb-scan
+      description: The Scan operation returns one or more items and item attributes
+        by accessing every item in a table or a secondary index. To have DynamoDB
+        return fewer items, you can provide a FilterExpression operation. If the total
+        number of scanned items exceeds the maximum dataset size limit of 1 MB, the
+        scan stops and results are returned to the user as a LastEvaluatedKey value
+        to continue the scan in a subsequent operation. The results also include the
+        number of items exceeding the limit. A scan can result in no table data meeting
+        the filter criteria.  A single Scan operation reads up to the maximum number
+        of items set (if using the Limit parameter) or a maximum of 1 MB of data and
+        then apply any filtering to the results using FilterExpression. If LastEvaluatedKey
+        is present in the response, you need to paginate the result set. For more
+        information, see Paginating the Results in the *Amazon DynamoDB Developer
+        Guide*.   Scan operations proceed sequentially; however, for faster performance
+        on a large table or secondary index, applications can request a parallel Scan
+        operation by providing the Segment and TotalSegments parameters. For more
+        information, see Parallel Scan in the *Amazon DynamoDB Developer Guide*.  Scan
+        uses eventually consistent reads when accessing the data in a table; therefore,
+        the result set might not include the changes to data in the table immediately
+        before the operation began. If you need a consistent copy of the data, as
+        of the time that the Scan begins, you can set the ConsistentRead parameter
+        to true.
+      script: '|||aws-dynamodb-scan'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      attributes_to_get: {}
+      conditional_operator: {}
+      consistent_read: {}
+      exclusive_start_key: {}
+      expression_attribute_names: {}
+      expression_attribute_values: {}
+      filter_expression: {}
+      index_name: {}
+      projection_expression: {}
+      raw_json: {}
+      region: {}
+      return_consumed_capacity: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      scan_filter: {}
+      select: {}
+      table_name:
+        simple: Music
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 50928a8c-d13c-428e-8d96-1b3db52c2e88
+    type: regular
+    task:
+      id: 50928a8c-d13c-428e-8d96-1b3db52c2e88
+      version: -1
+      name: aws-dynamodb-query
+      description: The Query operation finds items based on primary key values. You
+        can query any table or secondary index that has a composite primary key (a
+        partition key and a sort key).  Use the KeyConditionExpression parameter to
+        provide a specific value for the partition key. The Query operation will return
+        all of the items from the table or index with that partition key value. You
+        can optionally narrow the scope of the Query operation by specifying a sort
+        key value and a comparison operator in KeyConditionExpression. To further
+        refine the Query results, you can optionally provide a FilterExpression. A
+        FilterExpression determines which items within the results should be returned
+        to you. All of the other results are discarded.   A Query operation always
+        returns a result set. If no matching items are found, the result set will
+        be empty. Queries that do not return results consume the minimum number of
+        read capacity units for that type of read operation.    DynamoDB calculates
+        the number of read capacity units consumed based on item size, not on the
+        amount of data that is returned to an application. The number of capacity
+        units consumed will be the same whether you request all of the attributes
+        (the default behavior) or just some of them (using a projection expression).
+        The number will also be the same whether or not you use a FilterExpression.    Query
+        results are always sorted by the sort key value. If the data type of the sort
+        key is Number, the results are returned in numeric order; otherwise, the results
+        are returned in order of UTF-8 bytes. By default, the sort order is ascending.
+        To reverse the order, set the ScanIndexForward parameter to false.   A single
+        Query operation will read up to the maximum number of items set (if using
+        the Limit parameter) or a maximum of 1 MB of data and then apply any filtering
+        to the results using FilterExpression. If LastEvaluatedKey is present in the
+        response, you will need to paginate the result set. For more information,
+        see Paginating the Results in the *Amazon DynamoDB Developer Guide*.   FilterExpression
+        is applied after a Query finishes, but before the results are returned. A
+        FilterExpression cannot contain partition key or sort key attributes. You
+        need to specify those attributes in the KeyConditionExpression.    A Query
+        operation can return an empty result set and a LastEvaluatedKey if all the
+        items read for the page of results are filtered out.   You can query a table,
+        a local secondary index, or a global secondary index. For a query on a table
+        or on a local secondary index, you can set the ConsistentRead parameter to
+        true and obtain a strongly consistent result. Global secondary indexes support
+        eventually consistent reads only, so do not specify ConsistentRead when querying
+        a global secondary index.
+      script: '|||aws-dynamodb-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      attributes_to_get:
+        simple: '"{\":name\":{\"S\":\"Acme Band\"}}"'
+      conditional_operator: {}
+      consistent_read: {}
+      exclusive_start_key: {}
+      expression_attribute_names: {}
+      expression_attribute_values: {}
+      filter_expression: {}
+      index_name: {}
+      key_condition_expression: {}
+      key_conditions:
+        simple: |-
+          {
+                  "Artist":{
+                      "ComparisonOperator":"EQ",
+                      "AttributeValueList": [ {"S": "No One You Know"} ]
+                  },
+                  "SongTitle":{
+                      "ComparisonOperator":"BETWEEN",
+                      "AttributeValueList": [ {"S": "A"}, {"S": "M"} ]
+                  }}
+      projection_expression: {}
+      query_filter: {}
+      raw_json: {}
+      region: {}
+      return_consumed_capacity: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      scan_index_forward: {}
+      select: {}
+      table_name:
+        simple: Music
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 610f4e8c-9d8f-4313-8588-541fc3f6e0d6
+    type: regular
+    task:
+      id: 610f4e8c-9d8f-4313-8588-541fc3f6e0d6
+      version: -1
+      name: aws-dynamodb-tag-resource
+      description: Associate a set of tags with an Amazon DynamoDB resource. You can
+        then activate these user-defined tags so that they appear on the Billing and
+        Cost Management console for cost allocation tracking. You can call TagResource
+        up to five times per second, per account.  For an overview on tagging DynamoDB
+        resources, see Tagging for DynamoDB in the *Amazon DynamoDB Developer Guide*.
+      script: '|||aws-dynamodb-tag-resource'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      raw_json: {}
+      region: {}
+      resource_arn:
+        simple: arn:aws:dynamodb:eu-central-1:120785635586:table/Music
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      tag_key:
+        simple: test
+      tag_value:
+        simple: test
+      tags: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: f12f94a7-d991-436d-8794-c89e2e988311
+    type: regular
+    task:
+      id: f12f94a7-d991-436d-8794-c89e2e988311
+      version: -1
+      name: aws-dynamodb-untag-resource
+      description: Removes the association of tags from an Amazon DynamoDB resource.
+        You can call UntagResource up to five times per second, per account.  For
+        an overview on tagging DynamoDB resources, see Tagging for DynamoDB in the
+        *Amazon DynamoDB Developer Guide*.
+      script: '|||aws-dynamodb-untag-resource'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      raw_json: {}
+      region: {}
+      resource_arn:
+        simple: arn:aws:dynamodb:eu-central-1:120785635586:table/Music
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      tag_keys:
+        simple: test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 0766003b-e850-41ca-8e5d-ea3ef96fdf7d
+    type: regular
+    task:
+      id: 0766003b-e850-41ca-8e5d-ea3ef96fdf7d
+      version: -1
+      name: aws-dynamodb-list-tags-of-resource
+      description: List all tags on an Amazon DynamoDB resource. You can call ListTagsOfResource
+        up to 10 times per second, per account. For an overview on tagging DynamoDB
+        resources, see Tagging for DynamoDB in the *Amazon DynamoDB Developer Guide*.
+      script: '|||aws-dynamodb-list-tags-of-resource'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      next_token: {}
+      raw_json: {}
+      region: {}
+      resource_arn:
+        simple: arn:aws:dynamodb:eu-central-1:120785635586:table/Music
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: cbe957f1-c788-41b2-8154-4dd0d3b7d1a1
+    type: condition
+    task:
+      id: cbe957f1-c788-41b2-8154-4dd0d3b7d1a1
+      version: -1
+      name: 'Check if the tag was added to resource '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: AWS-DynamoDB.Tags
+                accessor: Key
+            iscontext: true
+          right:
+            value:
+              simple: test
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: b8b69cc9-06a7-4709-898b-10ecc530cfcc
+    type: condition
+    task:
+      id: b8b69cc9-06a7-4709-898b-10ecc530cfcc
+      version: -1
+      name: 'Check if the tag was removed from the resource '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "19"
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              complex:
+                root: AWS-DynamoDB
+                accessor: Tags
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 5dd217e1-3380-466f-81e2-2b9c5a98f41a
+    type: regular
+    task:
+      id: 5dd217e1-3380-466f-81e2-2b9c5a98f41a
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 8df899d8-a64f-44fb-8f04-94c840dc0249
+    type: regular
+    task:
+      id: 8df899d8-a64f-44fb-8f04-94c840dc0249
+      version: -1
+      name: aws-dynamodb-list-tags-of-resource
+      description: List all tags on an Amazon DynamoDB resource. You can call ListTagsOfResource
+        up to 10 times per second, per account. For an overview on tagging DynamoDB
+        resources, see Tagging for DynamoDB in the *Amazon DynamoDB Developer Guide*.
+      script: '|||aws-dynamodb-list-tags-of-resource'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      next_token: {}
+      raw_json: {}
+      region: {}
+      resource_arn:
+        simple: arn:aws:dynamodb:eu-central-1:120785635586:table/Music
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: b5f2c9a1-e1dd-40c8-8b8a-b250672ce22a
+    type: regular
+    task:
+      id: b5f2c9a1-e1dd-40c8-8b8a-b250672ce22a
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: efe07c84-764c-4d48-80dc-e8493edd06ab
+    type: title
+    task:
+      id: efe07c84-764c-4d48-80dc-e8493edd06ab
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2835
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 0b27898e-e11d-4a71-84df-37917e1c9052
+    type: regular
+    task:
+      id: 0b27898e-e11d-4a71-84df-37917e1c9052
+      version: -1
+      name: Print Error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: The tag was not removed from the resource
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: af8ac6e0-2b32-4385-8205-60309b25603c
+    type: regular
+    task:
+      id: af8ac6e0-2b32-4385-8205-60309b25603c
+      version: -1
+      name: Print Error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: The tag was not added to the resource
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 775,
-        "width": 380,
-        "x": 450,
+        "height": 2865,
+        "width": 1025,
+        "x": 50,
         "y": 50
       }
     }

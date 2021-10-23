@@ -1,0 +1,33 @@
+{
+    "size": 0,
+    "dataType": "metrics",
+    "params": {
+        "groupBy": [],
+        "keys": [
+            "sum|executionCount"
+        ],
+        "tableColumns": []
+    },
+    "query": "type:integration",
+    "modified": "2021-05-03T14:18:36.23324452Z",
+    "name": "Commands executed",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "toDate": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byTo": "",
+            "byFrom": "days",
+            "toValue": null,
+            "fromValue": 7,
+            "field": ""
+        },
+        "fromDateLicense": "0001-01-01T00:00:00Z"
+    },
+    "isPredefined": true,
+    "version": -1,
+    "id": "number-of-used-commands",
+    "description": "Commands executed",
+    "widgetType": "number",
+    "fromVersion": "6.2.0"
+}

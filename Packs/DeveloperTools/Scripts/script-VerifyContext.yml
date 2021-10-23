@@ -52,7 +52,7 @@ type: javascript
 tags:
 - context
 - Utility
-comment: Deprecated. use playbook filters instead. Verifies path in context - - Verifies path existence - If matching object is an array -  verify fields exists in each of the objects in the array - If matching object is not an array -  verify fields exists in matching object - if 'expectedValue' is given -  ensure that the given value is equal to the context path
+comment: Deprecated. Use playbook filters instead. Verifies path in context - Verifies path existence - If matching object is an array -  verify fields exists in each of the objects in the array - If matching object is not an array -  verify fields exists in matching object - if 'expectedValue' is given -  ensure that the given value is equal to the context path
 enabled: true
 args:
 - name: path

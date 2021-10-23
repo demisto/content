@@ -1,0 +1,19 @@
+{
+  "GoogleChronicleBackstory.Rules(val.ruleId == obj.ruleId)": [
+    {
+      "ruleId": "ru_42f02f52-544c-4b6e-933c-df17648d5831",
+      "versionId": "ru_42f02f52-544c-4b6e-933c-df17648d5831@v_1617202960_558863000",
+      "ruleName": "email_execution",
+      "metadata": {
+        "severity": "High",
+        "author": "test",
+        "description": "Check whether a user opened/executed a malicious file or not."
+      },
+      "ruleText": "rule email_execution {\n  meta:\n    author = \"test\"\n    description = \"Check whether a user opened/executed a malicious file or not.\"\n    severity = \"High\"\n\n  events:\n    $email_event.metadata.event_type = \"EMAIL_TRANSACTION\"\n    $email_event.about.file.mime_type = /^(com|exe|bat|cmd|cpl|jar|js|msi|rar|reg|der|fxp|gadget|hpj|inf|ins|isp|its|jse|ksh|lnk|mad|maf|mag|mam|maq|mar|mas|mat|mau|mav|maw|mda|mdb|mde|mdt|mdw|mdz|msc|msh|msh1|msh2|mshxml|msh1xml|msh2xml|msp|mst|ops|osd|pcd|plg|prf|prg|shs|ps1xml|ps2|ps2xml|psc1|psc2|tmp|url|vb|vbe|vbp|vsmacros|vsw|ws|wsc|wsh|xnk|ade|cla|class|grp|mcf|ocx|pl|xbap|pst|scf|sct|shb)$/\n    $email_event.about.file.sha256 = $sha256\n\n    // re.regex($edr_event.target.process.file.full_path, `^(C:\\\\Users\\\\.*)|(.*\\\\Local\\\\Temp\\\\.*)$`)\n    $edr_event.target.process.file.sha256 = $sha256\n\n  match:\n    $sha256 over 48h\n\n  condition:\n    $email_event and $edr_event\n}\n",
+      "alertingEnabled": true,
+      "liveRuleEnabled": true,
+      "versionCreateTime": "2021-03-31T15:02:40.558863Z",
+      "compilationState": "SUCCEEDED"
+    }
+  ]
+}

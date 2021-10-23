@@ -1,1051 +1,793 @@
-<!-- HTML_DOC -->
-<p>Use the PagerDuty integration to manage schedules and on-call users. This integration was integrated and tested with PagerDuty API v2.</p>
-<p> </p>
-<h2>Configure PagerDuty on Demisto</h2>
-<ol>
-<li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
-<li>Search for PagerDuty.</li>
-<li>Click <strong>Add instance</strong> to create and configure a new integration instance.<br>
-<ul>
-<li>
-<strong>Name</strong>: a textual name for the integration instance.</li>
-<li><strong>API Key</strong></li>
-<li><strong>Service Key (for triggering events only)</strong></li>
-</ul>
-</li>
-<li>Click <strong>Test</strong> to validate the URLs, token, and connection.</li>
-</ol>
-<p> </p>
-<h2>Fetched Incidents Data</h2>
-<p>By default, the integration will import PagerDuty incidents data as Demisto incidents. All incidents created in the minute prior to the configuration of Fetch Incidents and up to current time will be imported.</p>
-<p> </p>
-<h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
-<ol>
-<li><a href="#h_73841401041542871564295">Get all schedules: PagerDuty-get-all-schedules</a></li>
-<li><a href="#h_626992915791542871568883">Get information for on-call users by time or schedule: PagerDuty-get-users-on-call</a></li>
-<li><a href="#h_4809571811531542871574076">Get information for current on-call users: PagerDuty-get-users-on-call-now</a></li>
-<li><a href="#h_4580568372261542871578413">Get incidents: PagerDuty-incidents</a></li>
-<li><a href="#h_4808113662991542871583078">Create a new event/incident: PagerDuty-submit-event</a></li>
-<li><a href="#h_5162125903701542871587221">Get the contact methods of a user: PagerDuty-get-contact-methods</a></li>
-<li><a href="#h_9489540204401542871592653">Get a user's notification rules: PagerDuty-get-users-notification</a></li>
-<li><a href="#h_956187916621543922011652">Resolve an event: PagerDuty-resolve-event</a></li>
-<li><a href="#h_63914822271543922018179">Acknowledge an event: PagerDuty-acknowledge-event</a></li>
-<li><a href="#pagerduty-get-incident-data" target="_self">Get incident information: PagerDuty-get-incident-data</a></li>
-<li><a href="#pagerduty-get-service-keys" target="_self">Get service keys for each configured service: PagerDuty-get-service-keys</a></li>
-</ol>
-<h3 id="h_73841401041542871564295">1. Get all schedules</h3>
-<hr>
-<p>Retrieves all schedules from PagerDuty.</p>
-<h5>Base Command</h5>
-<p><code>PagerDuty-get-all-schedules</code></p>
-<h5>Input</h5>
-<table style="width: 744px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 138px;"><strong>Argument Name</strong></th>
-<th style="width: 499px;"><strong>Description</strong></th>
-<th style="width: 71px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 138px;">query</td>
-<td style="width: 499px;">Returns schedules that match the query.</td>
-<td style="width: 71px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 138px;">limit</td>
-<td style="width: 499px;">The maximum number of schedules to retrieve. Default = 25, Maximum = 100.</td>
-<td style="width: 71px;">Optional</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 381px;"><strong>Path</strong></th>
-<th style="width: 101px;"><strong>Type</strong></th>
-<th style="width: 226px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 381px;">PagerDuty.Schedules.id</td>
-<td style="width: 101px;">string</td>
-<td style="width: 226px;">The Schedule ID.</td>
-</tr>
-<tr>
-<td style="width: 381px;">PagerDuty.Schedules.name</td>
-<td style="width: 101px;">string</td>
-<td style="width: 226px;">The name of the schedule.</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>!PagerDuty-get-all-schedules</pre>
-<h5>Context Example</h5>
-<p><a href="https://user-images.githubusercontent.com/37589583/44710670-582dd000-aab5-11e8-8636-e23eb9863878.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/37589583/44710670-582dd000-aab5-11e8-8636-e23eb9863878.png" alt="image"></a></p>
-<h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/37589583/44710683-60860b00-aab5-11e8-885c-fc1c0b161e54.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/37589583/44710683-60860b00-aab5-11e8-885c-fc1c0b161e54.png" alt="image" width="750" height="196"></a></p>
-<h3 id="h_626992915791542871568883">2. Get information for on-call users by time or schedule</h3>
-<hr>
-<p>Returns the names and details of on-call users at a certain time or according to a specific schedule.</p>
-<h5>Base Command</h5>
-<p><code>PagerDuty-get-users-on-call</code></p>
-<h5>Input</h5>
-<table style="width: 746px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 132px;"><strong>Argument Name</strong></th>
-<th style="width: 505px;"><strong>Description</strong></th>
-<th style="width: 71px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 132px;">scheduleID</td>
-<td style="width: 505px;">The unique identifier of the schedule (default).</td>
-<td style="width: 71px;">Required</td>
-</tr>
-<tr>
-<td style="width: 132px;">since</td>
-<td style="width: 505px;">Start date and time in ISO 8601 format (2011-05-06T17:00Z).</td>
-<td style="width: 71px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 132px;">until</td>
-<td style="width: 505px;">End date and time in ISO 8601 format (2011-07-06T17:00Z).</td>
-<td style="width: 71px;">Optional</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 304px;"><strong>Path</strong></th>
-<th style="width: 74px;"><strong>Type</strong></th>
-<th style="width: 330px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 304px;">PagerDutyUser.id</td>
-<td style="width: 74px;">string</td>
-<td style="width: 330px;">The ID of the user.</td>
-</tr>
-<tr>
-<td style="width: 304px;">PagerDutyUser.Emails</td>
-<td style="width: 74px;">string</td>
-<td style="width: 330px;">The email address of the user.</td>
-</tr>
-<tr>
-<td style="width: 304px;">PagerDutyUser.Username</td>
-<td style="width: 74px;">string</td>
-<td style="width: 330px;">The user's username.</td>
-</tr>
-<tr>
-<td style="width: 304px;">PagerDutyUser.DisplayName</td>
-<td style="width: 74px;">string</td>
-<td style="width: 330px;">The display name of the user.</td>
-</tr>
-<tr>
-<td style="width: 304px;">PagerDutyUser.Role</td>
-<td style="width: 74px;">string</td>
-<td style="width: 330px;">The display role of the user.</td>
-</tr>
-<tr>
-<td style="width: 304px;">PagerDutyUser.TimeZone</td>
-<td style="width: 74px;">string</td>
-<td style="width: 330px;">The time zone of the user.</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>!PagerDuty-get-users-on-call scheduleID=PFE1I5O</pre>
-<h5>Context Example</h5>
-<p><img src="https://user-images.githubusercontent.com/37589583/46350080-75c5fa80-c65c-11e8-957c-864440474a2c.png" alt="image"></p>
-<h5>Human Readable Output</h5>
-<p><img src="https://user-images.githubusercontent.com/37589583/46350104-8b3b2480-c65c-11e8-9bb9-a4ebc36a589d.png" alt="image" width="753" height="183"></p>
-<h3 id="h_4809571811531542871574076">3. Get information for current on-call users</h3>
-<hr>
-<p>Returns the names and details of all personnel currently on-call.</p>
-<h5>Base Command</h5>
-<p><code>PagerDuty-get-users-on-call-now</code></p>
-<h5>Input</h5>
-<table style="width: 746px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 161px;"><strong>Argument Name</strong></th>
-<th style="width: 475px;"><strong>Description</strong></th>
-<th style="width: 71px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 161px;">limit</td>
-<td style="width: 475px;">The maximum number of users to retrieve. Default = 25, Maximum = 100.</td>
-<td style="width: 71px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 161px;">escalation_policy_ids</td>
-<td style="width: 475px;">Filters results by the specified escalation policy. If the value is null, permanent on-call users are included due to direct user escalation policy targets.</td>
-<td style="width: 71px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 161px;">schedule_ids</td>
-<td style="width: 475px;">Filters the results by on-call users for the specified schedule IDs. If the value is null, permanent on-call users are included due to direct user escalation policy targets.</td>
-<td style="width: 71px;"> </td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 304px;"><strong>Path</strong></th>
-<th style="width: 74px;"><strong>Type</strong></th>
-<th style="width: 330px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 304px;">PagerDutyUser.ID</td>
-<td style="width: 74px;">string</td>
-<td style="width: 330px;">The ID of the user.</td>
-</tr>
-<tr>
-<td style="width: 304px;">PagerDutyUser.Email</td>
-<td style="width: 74px;">string</td>
-<td style="width: 330px;">The email address of the user.</td>
-</tr>
-<tr>
-<td style="width: 304px;">PagerDutyUser.Username</td>
-<td style="width: 74px;">string</td>
-<td style="width: 330px;">The user's username.</td>
-</tr>
-<tr>
-<td style="width: 304px;">PagerDutyUser.DisplayName</td>
-<td style="width: 74px;">string</td>
-<td style="width: 330px;">The display name of the user.</td>
-</tr>
-<tr>
-<td style="width: 304px;">PagerDutyUser.Role</td>
-<td style="width: 74px;">string</td>
-<td style="width: 330px;">The display role of the user.</td>
-</tr>
-<tr>
-<td style="width: 304px;">PagerDutyUser.TimeZone</td>
-<td style="width: 74px;">string</td>
-<td style="width: 330px;">The time zone of the user.</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>!PagerDuty-get-users-on-call-now</pre>
-<h5>Context Example</h5>
-<p><img src="https://user-images.githubusercontent.com/37589583/46350175-b7ef3c00-c65c-11e8-8a94-27fc99984e56.png" alt="image"></p>
-<h5>Human Readable Output</h5>
-<p><img src="https://user-images.githubusercontent.com/37589583/46350152-a9a12000-c65c-11e8-855e-b4076e91b3d3.png" alt="image" width="754" height="160"></p>
-<h3 id="h_4580568372261542871578413">4. Get incidents</h3>
-<hr>
-<p>Shows incidents in PagerDuty.</p>
-<h5>Base Command</h5>
-<p><code>PagerDuty-incidents</code></p>
-<h5>Input</h5>
-<table style="width: 712px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 289px;"><strong>Argument Name</strong></th>
-<th style="width: 751px;"><strong>Description</strong></th>
-<th style="width: 71px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 289px;">status</td>
-<td style="width: 751px;">Returns only the incidents currently in the passed status(es). Valid status options are <em>triggered</em>, <em>acknowledged</em>, and <em>resolved</em>.</td>
-<td style="width: 71px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 289px;">since</td>
-<td style="width: 751px;">Start date and time in ISO 8601 format (2011-05-06T17:00Z)</td>
-<td style="width: 71px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 289px;">sortBy</td>
-<td style="width: 751px;">Used to specify both the field you want to sort the results by, and the direction of the results (ascending/descending). See the <a href="https://developer.pagerduty.com/documentation/rest/incidents/list">PagerDuty documentation</a>.</td>
-<td style="width: 71px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 289px;">until</td>
-<td style="width: 751px;">End date and time in ISO 8601 format (2011-05-06T17:00Z).</td>
-<td style="width: 71px;">Optional</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 372px;"><strong>Path</strong></th>
-<th style="width: 59px;"><strong>Type</strong></th>
-<th style="width: 277px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 372px;">PagerDuty.Incidents.ID</td>
-<td style="width: 59px;">string</td>
-<td style="width: 277px;">The ID of the Incident.</td>
-</tr>
-<tr>
-<td style="width: 372px;">PagerDuty.Incidents.Title</td>
-<td style="width: 59px;">string</td>
-<td style="width: 277px;">The title of the incident.</td>
-</tr>
-<tr>
-<td style="width: 372px;">PagerDuty.Incidents.Status</td>
-<td style="width: 59px;">string</td>
-<td style="width: 277px;">The status of the incident.</td>
-</tr>
-<tr>
-<td style="width: 372px;">PagerDuty.Incidents.created_at</td>
-<td style="width: 59px;">date</td>
-<td style="width: 277px;">The time the incident was created.</td>
-</tr>
-<tr>
-<td style="width: 372px;">PagerDuty.Incidents.urgency</td>
-<td style="width: 59px;">string</td>
-<td style="width: 277px;">The incident urgency.</td>
-</tr>
-<tr>
-<td style="width: 372px;">PagerDuty.Incidents.assignee</td>
-<td style="width: 59px;">string</td>
-<td style="width: 277px;">The user assigned to the incident.</td>
-</tr>
-<tr>
-<td style="width: 372px;">PagerDuty.Incidents.service_id</td>
-<td style="width: 59px;">string</td>
-<td style="width: 277px;">The ID of the impacted service.</td>
-</tr>
-<tr>
-<td style="width: 372px;">PagerDuty.Incidents.service_name</td>
-<td style="width: 59px;">string</td>
-<td style="width: 277px;">The name of the impacted service.</td>
-</tr>
-<tr>
-<td style="width: 372px;">PagerDuty.Incidents.escalation_policy</td>
-<td style="width: 59px;">string</td>
-<td style="width: 277px;">The escalation policy.</td>
-</tr>
-<tr>
-<td style="width: 372px;">PagerDuty.Incidents.last_status_change_at</td>
-<td style="width: 59px;">date</td>
-<td style="width: 277px;">The time of the last status change.</td>
-</tr>
-<tr>
-<td style="width: 372px;">PagerDuty.Incidents.last_status_change_by</td>
-<td style="width: 59px;">string</td>
-<td style="width: 277px;">The Name of the user who performed the last status change</td>
-</tr>
-<tr>
-<td style="width: 372px;">PagerDuty.Incidents.number_of_escalations</td>
-<td style="width: 59px;">number</td>
-<td style="width: 277px;">Number of escalations that took place</td>
-</tr>
-<tr>
-<td style="width: 372px;">PagerDuty.Incidents.resolved_by</td>
-<td style="width: 59px;">string</td>
-<td style="width: 277px;">Name of the user who resolved the incident</td>
-</tr>
-<tr>
-<td style="width: 372px;">PagerDuty.Incidents.resolve_reason</td>
-<td style="width: 59px;">string</td>
-<td style="width: 277px;">The reason the issue was resolved.</td>
-</tr>
-<tr>
-<td style="width: 372px;">PagerDuty.Incidents.Description</td>
-<td style="width: 59px;">string</td>
-<td style="width: 277px;">The description of the incident.</td>
-</tr>
-<tr>
-<td style="width: 372px;">PagerDuty.Incidents.teams.ID</td>
-<td style="width: 59px;">string</td>
-<td style="width: 277px;">The ID of the team assigned to the incident.</td>
-</tr>
-<tr>
-<td style="width: 372px;">PagerDuty.Incidents.teams.ID</td>
-<td style="width: 59px;">string</td>
-<td style="width: 277px;">Name of the team assigned to the incident.</td>
-</tr>
-<tr>
-<td style="width: 372px;">PagerDuty.Incidents.assignment.time</td>
-<td style="width: 59px;">date</td>
-<td style="width: 277px;">Time of the assignment to the incident.</td>
-</tr>
-<tr>
-<td style="width: 372px;">PagerDuty.Incidents.assignment.assignee</td>
-<td style="width: 59px;">string</td>
-<td style="width: 277px;">Name of the user assigned to the incident.</td>
-</tr>
-<tr>
-<td style="width: 372px;">PagerDuty.Incidents.acknowledgement.time</td>
-<td style="width: 59px;">date</td>
-<td style="width: 277px;">The time the incident was  acknowledged.</td>
-</tr>
-<tr>
-<td style="width: 372px;">PagerDuty.Incidents.acknowledgement.acknowledger</td>
-<td style="width: 59px;">string</td>
-<td style="width: 277px;">The name of the user that acknowledged the incident.</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>!PagerDuty-incidents</pre>
-<h5>Context Example</h5>
-<p><a href="https://user-images.githubusercontent.com/37589583/48852863-f8df1380-edb6-11e8-9395-c01ed6612507.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/37589583/48852863-f8df1380-edb6-11e8-9395-c01ed6612507.png" alt="image"></a></p>
-<h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/37589583/48852914-0c8a7a00-edb7-11e8-8ff0-eb37b2fd5d1a.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/37589583/48852914-0c8a7a00-edb7-11e8-8ff0-eb37b2fd5d1a.png" alt="image" width="751" height="196"></a></p>
-<p> </p>
-<h3 id="h_4808113662991542871583078">5. Create an event/incident</h3>
-<hr>
-<p>Creates a new event or incident in PagerDuty.</p>
-<h5>Base Command</h5>
-<p><code>PagerDuty-submit-event</code></p>
-<h5>Input</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 148px;"><strong>Argument Name</strong></th>
-<th style="width: 489px;"><strong>Description</strong></th>
-<th style="width: 71px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 148px;">source</td>
-<td style="width: 489px;">Specific human-readable unique identifier, such as a hostname, for the system with the problem.</td>
-<td style="width: 71px;">Required</td>
-</tr>
-<tr>
-<td style="width: 148px;">summary</td>
-<td style="width: 489px;">A high-level, text summary message of the event. Will be used to construct an alert's description.</td>
-<td style="width: 71px;">Required</td>
-</tr>
-<tr>
-<td style="width: 148px;">severity</td>
-<td style="width: 489px;">The severity of the event</td>
-<td style="width: 71px;">Required</td>
-</tr>
-<tr>
-<td style="width: 148px;">action</td>
-<td style="width: 489px;">The action to be executed</td>
-<td style="width: 71px;">Required</td>
-</tr>
-<tr>
-<td style="width: 148px;">description</td>
-<td style="width: 489px;">A short description of the problem</td>
-<td style="width: 71px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 148px;">group</td>
-<td style="width: 489px;">A cluster or grouping of sources. For example, sources “prod-datapipe-02” and “prod-datapipe-03” might both be part of “prod-datapipe”. Example: "prod-datapipe" "www"</td>
-<td style="width: 71px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 148px;">event_class</td>
-<td style="width: 489px;">The class/type of the event. Example: "High CPU" "Latency"</td>
-<td style="width: 71px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 148px;">component</td>
-<td style="width: 489px;">The part or component of the affected system that is broken. Example: "keepalive" "webping"</td>
-<td style="width: 71px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 148px;">incident_key</td>
-<td style="width: 489px;">Incident key, used to acknowledge/resolve specific event</td>
-<td style="width: 71px;">Optional</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 303px;"><strong>Path</strong></th>
-<th style="width: 66px;"><strong>Type</strong></th>
-<th style="width: 339px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 303px;">PagerDuty.Event.Status</td>
-<td style="width: 66px;">string</td>
-<td style="width: 339px;">Status of the action on the event</td>
-</tr>
-<tr>
-<td style="width: 303px;">PagerDuty.Event.incident_key</td>
-<td style="width: 66px;">string</td>
-<td style="width: 339px;">Incident key</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>!PagerDuty-submit-event action=resolve severity=info source=rony summary=testing incident_key=1de3b86c5fd8484ca011839c4cf33923</pre>
-<h5>Context Example</h5>
-<p><a href="https://user-images.githubusercontent.com/37589583/46350496-96db1b00-c65d-11e8-83f5-b4f7d8309c68.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/37589583/46350496-96db1b00-c65d-11e8-83f5-b4f7d8309c68.png" alt="image"></a></p>
-<h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/37589583/46350460-8460e180-c65d-11e8-83c7-131302e26fc2.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/37589583/46350460-8460e180-c65d-11e8-83c7-131302e26fc2.png" alt="image" width="755" height="137"></a></p>
-<h3 id="h_5162125903701542871587221">6. Get the contact methods of a user</h3>
-<hr>
-<p>Gets the contact methods of the specified user.</p>
-<h5>Base Command</h5>
-<p><code>PagerDuty-get-contact-methods</code></p>
-<h5>Input</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 295.667px;"><strong>Argument Name</strong></th>
-<th style="width: 237.333px;"><strong>Description</strong></th>
-<th style="width: 174px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 295.667px;">UserID</td>
-<td style="width: 237.333px;">ID of the user</td>
-<td style="width: 174px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 358.667px;"><strong>Path</strong></th>
-<th style="width: 63.3333px;"><strong>Type</strong></th>
-<th style="width: 286px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 358.667px;">PagerDuty.Contact_methods.address</td>
-<td style="width: 63.3333px;">string</td>
-<td style="width: 286px;">The address of the user</td>
-</tr>
-<tr>
-<td style="width: 358.667px;">PagerDuty.Contact_methods.id</td>
-<td style="width: 63.3333px;">string</td>
-<td style="width: 286px;">ID of the contact method</td>
-</tr>
-<tr>
-<td style="width: 358.667px;">PagerDuty.Contact_methods.type</td>
-<td style="width: 63.3333px;">string</td>
-<td style="width: 286px;">Current contact method type</td>
-</tr>
-<tr>
-<td style="width: 358.667px;">PagerDuty.Contact_methods.email</td>
-<td style="width: 63.3333px;">string</td>
-<td style="width: 286px;">User email</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>!PagerDuty-get-contact-methods UserID=PKVY389</pre>
-<h5>Context Example</h5>
-<p><img src="https://user-images.githubusercontent.com/37589583/46350747-3d272080-c65e-11e8-9d31-eac4289f1d85.png" alt="image"></p>
-<h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/37589583/44711476-21f15000-aab7-11e8-9331-d20cedc0f118.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/37589583/44711476-21f15000-aab7-11e8-9331-d20cedc0f118.png" alt="image" width="748" height="199"></a></p>
-<h3 id="h_9489540204401542871592653">7. Get a user's notification rules</h3>
-<hr>
-<p>Get the users notification rules</p>
-<h5>Base Command</h5>
-<p><code>PagerDuty-get-users-notification</code></p>
-<h5>Input</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 296.667px;"><strong>Argument Name</strong></th>
-<th style="width: 236.333px;"><strong>Description</strong></th>
-<th style="width: 174px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 296.667px;">UserID</td>
-<td style="width: 236.333px;">ID of the user</td>
-<td style="width: 174px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 387.333px;"><strong>Path</strong></th>
-<th style="width: 46.6667px;"><strong>Type</strong></th>
-<th style="width: 274px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 387.333px;">PagerDuty.Notification_rules.start_delay_in_minutes</td>
-<td style="width: 46.6667px;">string</td>
-<td style="width: 274px;">The delay time for notifying the user</td>
-</tr>
-<tr>
-<td style="width: 387.333px;">PagerDuty.Notification_rules.urgency</td>
-<td style="width: 46.6667px;">string</td>
-<td style="width: 274px;">The urgency of the notification</td>
-</tr>
-<tr>
-<td style="width: 387.333px;">PagerDuty.Notification_rules.id</td>
-<td style="width: 46.6667px;">string</td>
-<td style="width: 274px;">Notification rule ID</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>!PagerDuty-get-users-notification UserID="PKVY389"</pre>
-<h5>Context Example</h5>
-<p><a href="https://user-images.githubusercontent.com/37589583/44710594-24eb4100-aab5-11e8-8deb-2477c74aeeaf.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/37589583/44710594-24eb4100-aab5-11e8-8deb-2477c74aeeaf.png" alt="image"></a></p>
-<h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/37589583/44710615-2ddc1280-aab5-11e8-9d86-eecdae83671b.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/37589583/44710615-2ddc1280-aab5-11e8-9d86-eecdae83671b.png" alt="image" width="750" height="233"></a></p>
-<h3 id="h_956187916621543922011652">8. Resolve an event</h3>
-<hr>
-<p>Resolves an existing event in PagerDuty.</p>
-<h5>Base Command</h5>
-<p><code>PagerDuty-resolve-event</code></p>
-<h5>Input</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 216px;"><strong>Argument Name</strong></th>
-<th style="width: 366px;"><strong>Description</strong></th>
-<th style="width: 126px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 216px;">incident_key</td>
-<td style="width: 366px;">Incident key</td>
-<td style="width: 126px;">Required</td>
-</tr>
-<tr>
-<td style="width: 216px;">serviceKey</td>
-<td style="width: 366px;">Service key for the integration</td>
-<td style="width: 126px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 301px;"><strong>Path</strong></th>
-<th style="width: 68px;"><strong>Type</strong></th>
-<th style="width: 339px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 301px;">PagerDuty.Event.Status</td>
-<td style="width: 68px;">string</td>
-<td style="width: 339px;">Status of the action on the event</td>
-</tr>
-<tr>
-<td style="width: 301px;">PagerDuty.Event.incident_key</td>
-<td style="width: 68px;">string</td>
-<td style="width: 339px;">Incident key</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>!PagerDuty-resolve-event incident_key=84d6f9baaca346658f5d85d12b4156e6 serviceKey=XXXXXXXXXXXXXX</pre>
-<h5>Context Example</h5>
-<p><a href="https://user-images.githubusercontent.com/37589583/49224215-7cb58300-f3e9-11e8-8622-688d448585cb.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/37589583/49224215-7cb58300-f3e9-11e8-8622-688d448585cb.png" alt="image"></a></p>
-<h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/37589583/49224233-8b039f00-f3e9-11e8-86f5-5898eeab6798.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/37589583/49224233-8b039f00-f3e9-11e8-86f5-5898eeab6798.png" alt="image"></a></p>
-<h3 id="h_63914822271543922018179">9. Acknowledge an event</h3>
-<hr>
-<p>Acknowledges an existing event in PagerDuty.</p>
-<h5>Base Command</h5>
-<p><code>PagerDuty-acknowledge-event</code></p>
-<h5>Input</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 217px;"><strong>Argument Name</strong></th>
-<th style="width: 365px;"><strong>Description</strong></th>
-<th style="width: 126px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 217px;">incident_key</td>
-<td style="width: 365px;">The incident key.</td>
-<td style="width: 126px;">Required</td>
-</tr>
-<tr>
-<td style="width: 217px;">serviceKey</td>
-<td style="width: 365px;">The service key for the integration.</td>
-<td style="width: 126px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 301px;"><strong>Path</strong></th>
-<th style="width: 68px;"><strong>Type</strong></th>
-<th style="width: 339px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 301px;">PagerDuty.Event.Status</td>
-<td style="width: 68px;">string</td>
-<td style="width: 339px;">Status of the action on the event</td>
-</tr>
-<tr>
-<td style="width: 301px;">PagerDuty.Event.incident_key</td>
-<td style="width: 68px;">string</td>
-<td style="width: 339px;">Incident key</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>!PagerDuty-acknowledge-event incident_key=84d6f9baaca346658f5d85d12b4156e6 serviceKey=XXXXXXXXXXXXXX</pre>
-<h5>Context Example</h5>
-<p><a href="https://user-images.githubusercontent.com/37589583/49224215-7cb58300-f3e9-11e8-8622-688d448585cb.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/37589583/49224215-7cb58300-f3e9-11e8-8622-688d448585cb.png" alt="image"></a></p>
-<h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/37589583/49224261-a1a9f600-f3e9-11e8-9153-b3f1a73a3da8.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/37589583/49224261-a1a9f600-f3e9-11e8-9153-b3f1a73a3da8.png" alt="image"></a></p>
-<div class="cl-preview-section">
-<h3 id="pagerduty-get-incident-data">10. Get incident data</h3>
-</div>
-<div class="cl-preview-section"><hr></div>
-<div class="cl-preview-section">
-<p>Gets data from PagerDuty about an incident.</p>
-</div>
-<div class="cl-preview-section">
-<h5 id="base-command">Base Command</h5>
-</div>
-<div class="cl-preview-section">
-<p><code>PagerDuty-get-incident-data</code></p>
-</div>
-<div class="cl-preview-section">
-<h5 id="input">Input</h5>
-</div>
-<div class="cl-preview-section">
-<div class="table-wrapper">
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 187px;"><strong>Argument Name</strong></th>
-<th style="width: 453px;"><strong>Description</strong></th>
-<th style="width: 100px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 187px;">incident_id</td>
-<td style="width: 453px;">ID of the incident for which to get information.</td>
-<td style="width: 100px;">Required</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p> </p>
-<div class="cl-preview-section">
-<h5 id="context-output">Context Output</h5>
-</div>
-<div class="cl-preview-section">
-<div class="table-wrapper">
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 383px;"><strong>Path</strong></th>
-<th style="width: 50px;"><strong>Type</strong></th>
-<th style="width: 307px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 383px;">PagerDuty.Incidents.ID</td>
-<td style="width: 50px;">string</td>
-<td style="width: 307px;">Incident ID</td>
-</tr>
-<tr>
-<td style="width: 383px;">PagerDuty.Incidents.Title</td>
-<td style="width: 50px;">string</td>
-<td style="width: 307px;">The incident title.</td>
-</tr>
-<tr>
-<td style="width: 383px;">PagerDuty.Incidents.Status</td>
-<td style="width: 50px;">string</td>
-<td style="width: 307px;">The incident status.</td>
-</tr>
-<tr>
-<td style="width: 383px;">PagerDuty.Incidents.created_at</td>
-<td style="width: 50px;">date</td>
-<td style="width: 307px;">Time that the incident was created.</td>
-</tr>
-<tr>
-<td style="width: 383px;">PagerDuty.Incidents.urgency</td>
-<td style="width: 50px;">string</td>
-<td style="width: 307px;">The incident urgency.</td>
-</tr>
-<tr>
-<td style="width: 383px;">PagerDuty.Incidents.assignee</td>
-<td style="width: 50px;">string</td>
-<td style="width: 307px;">The incident assignee.</td>
-</tr>
-<tr>
-<td style="width: 383px;">PagerDuty.Incidents.service_id</td>
-<td style="width: 50px;">string</td>
-<td style="width: 307px;">The ID of the impacted service.</td>
-</tr>
-<tr>
-<td style="width: 383px;">PagerDuty.Incidents.service_name</td>
-<td style="width: 50px;">string</td>
-<td style="width: 307px;">The name of the impacted service.</td>
-</tr>
-<tr>
-<td style="width: 383px;">PagerDuty.Incidents.escalation_policy</td>
-<td style="width: 50px;">string</td>
-<td style="width: 307px;">The escalation policy.</td>
-</tr>
-<tr>
-<td style="width: 383px;">PagerDuty.Incidents.last_status_change_at</td>
-<td style="width: 50px;">date</td>
-<td style="width: 307px;">Time when the last status change occurred.</td>
-</tr>
-<tr>
-<td style="width: 383px;">PagerDuty.Incidents.last_status_change_by</td>
-<td style="width: 50px;">string</td>
-<td style="width: 307px;">Name of the user who preformed the last status change.</td>
-</tr>
-<tr>
-<td style="width: 383px;">PagerDuty.Incidents.number_of_escalations</td>
-<td style="width: 50px;">number</td>
-<td style="width: 307px;">Number of escalations that occurred.</td>
-</tr>
-<tr>
-<td style="width: 383px;">PagerDuty.Incidents.resolved_by</td>
-<td style="width: 50px;">string</td>
-<td style="width: 307px;">Name of the user who resolved the incident.</td>
-</tr>
-<tr>
-<td style="width: 383px;">PagerDuty.Incidents.resolve_reason</td>
-<td style="width: 50px;">string</td>
-<td style="width: 307px;">The reason for resolving the issue.</td>
-</tr>
-<tr>
-<td style="width: 383px;">PagerDuty.Incidents.Description</td>
-<td style="width: 50px;">string</td>
-<td style="width: 307px;">The description of the incident.</td>
-</tr>
-<tr>
-<td style="width: 383px;">PagerDuty.Incidents.teams.ID</td>
-<td style="width: 50px;">string</td>
-<td style="width: 307px;">The ID of the team assigned to the incident.</td>
-</tr>
-<tr>
-<td style="width: 383px;">PagerDuty.Incidents.teams.ID</td>
-<td style="width: 50px;">string</td>
-<td style="width: 307px;">The name of the team assigned to the incident.</td>
-</tr>
-<tr>
-<td style="width: 383px;">PagerDuty.Incidents.assignment.time</td>
-<td style="width: 50px;">date</td>
-<td style="width: 307px;">The time that the incident was assigned.</td>
-</tr>
-<tr>
-<td style="width: 383px;">PagerDuty.Incidents.assignment.assignee</td>
-<td style="width: 50px;">string</td>
-<td style="width: 307px;">The name of the incident assignee.</td>
-</tr>
-<tr>
-<td style="width: 383px;">PagerDuty.Incidents.acknowledgement.time</td>
-<td style="width: 50px;">date</td>
-<td style="width: 307px;">The time the incident was acknowledged.</td>
-</tr>
-<tr>
-<td style="width: 383px;">PagerDuty.Incidents.acknowledgement.acknowledger</td>
-<td style="width: 50px;">string</td>
-<td style="width: 307px;">The name of the incident acknowledger.</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p> </p>
-<div class="cl-preview-section">
-<h5 id="command-example">Command Example</h5>
-</div>
-<div class="cl-preview-section">
-<pre>!PagerDuty-get-incident-data incident_id=PW159UV</pre>
-</div>
-<div class="cl-preview-section">
-<h5 id="context-example">Context Example</h5>
-</div>
-<div class="cl-preview-section">
-<pre>{
-  "PagerDuty.Incidents": [
-    {
-      "Description": "",
-      "ID": "PW159UV",
-      "Status": "resolved",
-      "Title": "[#98] test",
-      "acknowledgement": {},
-      "assignee": "-",
-      "assignment": {},
-      "created_at": "2019-03-30T00:07:37Z",
-      "escalation_policy": "Default",
-      "last_status_change_at": "2019-03-30T04:07:37Z",
-      "last_status_change_by": "API Service",
-      "number_of_escalations": null,
-      "resolve_reason": null,
-      "resolved_by": "-",
-      "service_id": "P6UX4CI",
-      "service_name": "API Service",
-      "teams": [],
-      "urgency": "high"
+Use the PagerDuty integration to manage schedules and on-call users. 
+This integration was integrated and tested with PagerDuty API v2.
+## Configure PagerDuty v2 on Cortex XSOAR
+
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for PagerDuty v2.
+3. Click **Add instance** to create and configure a new integration instance.
+
+    | **Parameter** | **Required** |
+    | --- | --- |
+    | API Key | True |
+    | Service Key (for triggering events only) | False |
+    | Trust any certificate (not secure) | False |
+    | Use system proxy settings | False |
+    | Fetch incidents | False |
+    | Incident type | False |
+    | Initial Fetch Interval (In minutes, used only for the first fetch or after Reset last run) | False |
+
+4. Click **Test** to validate the URLs, token, and connection.
+
+## Fetched Incidents Data
+By default, the integration will import PagerDuty incidents data as Cortex XSOAR incidents. All incidents created in the minute prior to the configuration of Fetch Incidents and up to current time will be imported.
+
+## Commands
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+1. [Get all schedules: PagerDuty-get-all-schedules](#pagerduty-get-all-schedules)
+2. [Get information for on-call users by time or schedule: PagerDuty-get-users-on-call](#pagerduty-get-users-on-call)
+3. [Get information for current on-call users: PagerDuty-get-users-on-call-now](#pagerduty-get-users-on-call-now)
+4. [Get incidents: PagerDuty-incidents](#pagerduty-incidents)
+5. [Create a new event/incident: PagerDuty-submit-event](#pagerduty-submit-event)
+6. [Get the contact methods of a user: PagerDuty-get-contact-methods](#pagerduty-get-contact-methods)
+7. [Get a user's notification rules: PagerDuty-get-users-notification](#pagerduty-get-users-notification)
+8. [Resolve an event: PagerDuty-resolve-event](#pagerduty-resolve-event)
+9. [Acknowledge an event: PagerDuty-acknowledge-event](#pagerduty-acknowledge-event)
+10. [Get incident information: PagerDuty-get-incident-data](#pagerduty-get-incident-data)
+11. [Get service keys for each configured service: PagerDuty-get-service-keys](#pagerduty-get-service-keys)
+
+### PagerDuty-get-all-schedules
+***
+Receive all schedules from PagerDuty
+
+
+#### Base Command
+
+`PagerDuty-get-all-schedules`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query | Show only the schedules whose name matches the query. | Optional | 
+| limit | The limit for the amount of schedules to receive(Default is 25, max value is 100). | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PagerDuty.Schedules.id | string | The ID of the schedule | 
+| PagerDuty.Schedules.name | string | The name of the schedule | 
+
+
+#### Command Example
+```!PagerDuty-get-all-schedules```
+
+#### Context Example
+```json
+{
+    "PagerDuty": {
+        "Schedules": [
+            {
+                "escalation_policies": [
+                    {
+                        "id": "someid",
+                        "name": "Default"
+                    }
+                ],
+                "id": "scheduleid",
+                "name": "New Schedule #1",
+                "time_zone": "America/Los_Angeles",
+                "today": "2021-03-10"
+            },
+            {
+                "escalation_policies": [
+                    {
+                        "id": "anotherid",
+                        "name": "test policy"
+                    }
+                ],
+                "id": "anotherscheduleid",
+                "name": "New Schedule #2",
+                "time_zone": "Europe/Athens",
+                "today": "2021-03-10"
+            }
+        ]
     }
-  ]
 }
-</pre>
-</div>
-<div class="cl-preview-section">
-<h5 id="human-readable-output">Human Readable Output</h5>
-</div>
-<div class="cl-preview-section">
-<p><img src="https://user-images.githubusercontent.com/37589583/56862805-81419000-69b7-11e9-9acd-478027d6e83f.png" alt="image"></p>
-</div>
-<div class="cl-preview-section">
-<h3 id="pagerduty-get-service-keys">11. Get service keys for each configured service</h3>
-</div>
-<div class="cl-preview-section"><hr></div>
-<div class="cl-preview-section">
-<p>Gets service keys for each of the services configured in the PagerDuty instance.</p>
-</div>
-<div class="cl-preview-section">
-<h5 id="base-command-1">Base Command</h5>
-</div>
-<div class="cl-preview-section">
-<p><code>PagerDuty-get-service-keys</code></p>
-</div>
-<div class="cl-preview-section">
-<h5 id="input-1">Input</h5>
-</div>
-<div class="cl-preview-section">
-<p>There are no input arguments for this command.</p>
-</div>
-<div class="cl-preview-section">
-<h5 id="context-output-1">Context Output</h5>
-</div>
-<div class="cl-preview-section">
-<div class="table-wrapper">
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 252px;"><strong>Path</strong></th>
-<th style="width: 49px;"><strong>Type</strong></th>
-<th style="width: 439px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 252px;">PagerDuty.Service.ID</td>
-<td style="width: 49px;">string</td>
-<td style="width: 439px;">The ID of the service connected to PagerDuty.</td>
-</tr>
-<tr>
-<td style="width: 252px;">PagerDuty.Service.Name</td>
-<td style="width: 49px;">string</td>
-<td style="width: 439px;">The name of the service connected to PagerDuty.</td>
-</tr>
-<tr>
-<td style="width: 252px;">PagerDuty.Service.Status</td>
-<td style="width: 49px;">string</td>
-<td style="width: 439px;">The status of the service connected to PagerDuty.</td>
-</tr>
-<tr>
-<td style="width: 252px;">PagerDuty.Service.CreatedAt</td>
-<td style="width: 49px;">date</td>
-<td style="width: 439px;">The date when the service connected to PagerDuty was created.</td>
-</tr>
-<tr>
-<td style="width: 252px;">PagerDuty.Service.Integration.Name</td>
-<td style="width: 49px;">string</td>
-<td style="width: 439px;">The name of the integration used with the service.</td>
-</tr>
-<tr>
-<td style="width: 252px;">PagerDuty.Service.Integration.Key</td>
-<td style="width: 49px;">string</td>
-<td style="width: 439px;">The key used to control events with the integration.</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p> </p>
-<div class="cl-preview-section">
-<h5 id="command-example-1">Command Example</h5>
-</div>
-<div class="cl-preview-section">
-<pre>!PagerDuty-get-service-keys</pre>
-</div>
-<div class="cl-preview-section">
-<h5 id="context-example-1">Context Example</h5>
-</div>
-<div class="cl-preview-section">
-<pre>{
-  "PagerDuty.Service": [
-    {
-      "CreatedAt": "2016-03-20T14:00:55+02:00",
-      "ID": "P6UX4CI",
-      "Integration": [
+```
+
+#### Human Readable Output
+
+>### All Schedules
+>|ID|Name|Today|Time Zone|Escalation Policy|Escalation Policy ID|
+>|---|---|---|---|---|---|
+>| scheduleid | New Schedule #1 | 2021-03-10 | America/Los_Angeles | Default | someid |
+>| anotherscheduleid | New Schedule #2 | 2021-03-10 | Europe/Athens | test policy | anotherid |
+
+
+### PagerDuty-get-users-on-call
+***
+Returns the names and details of on call users at a certain time or by specific schedule
+
+
+#### Base Command
+
+`PagerDuty-get-users-on-call`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| scheduleID | (default and mandatory) The unique identifier of the schedule. | Required | 
+| since | The start of the date range Using ISO 8601 Representation. E.g. !PagerDutyGetUsersOnCall since=2011-05-06T17:00Z. | Optional | 
+| until | The end of the date range. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PagerDutyUser.id | string | User's ID | 
+| PagerDutyUser.Emails | string | Email of user | 
+| PagerDutyUser.Username | string | Username of person | 
+| PagerDutyUser.DisplayName | string | Display name of person | 
+| PagerDutyUser.Role | string | Display role of person | 
+| PagerDutyUser.TimeZone | string | The time zone of the user | 
+
+
+#### Command Example
+```!PagerDuty-get-users-on-call scheduleID=scheduleid```
+
+#### Context Example
+```json
+{
+    "PagerDutyUser": [
         {
-          "Key": "e18b825980164e03a85964679dcb4b2c",
-          "Name": "API Service",
-          "Vendor": "Missing Vendor information"
+            "DisplayName": "Demisto User",
+            "Email": "demisto@demisto.com",
+            "ID": "someid",
+            "Role": "owner",
+            "TimeZone": "Europe/Athens",
+            "Username": "Demisto User"
+        },
+        {
+            "DisplayName": "Another User",
+            "Email": "demisto@gmail.com",
+            "ID": "anotherid",
+            "Role": "user",
+            "TimeZone": "Europe/Athens",
+            "Username": "Another User"
         }
-      ],
-      "Name": "API Service",
-      "Status": "active"
-    }
-  ]
+    ]
 }
-</pre>
-</div>
-<div class="cl-preview-section">
-<h5 id="human-readable-output-1">Human Readable Output</h5>
-</div>
-<div class="cl-preview-section">
-<p><img src="https://user-images.githubusercontent.com/37589583/56862849-f01ee900-69b7-11e9-933a-c59d0929d733.png" alt="image"></p>
-</div>
+```
+
+#### Human Readable Output
+
+>### Users On Call
+>|ID|Email|Name|Role|User Url|Time Zone|
+>|---|---|---|---|---|---|
+>| someid | demisto@demisto.com | Demisto User | owner | https://demisto.pagerduty.com/users/someid | Europe/Athens |
+>| anotherid | demisto@mail.com | Another User | user | https://demisto.pagerduty.com/users/anotherid | Europe/Athens |
+
+
+### PagerDuty-get-users-on-call-now
+***
+Returns the names and details of current on call personnel
+
+
+#### Base Command
+
+`PagerDuty-get-users-on-call-now`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | The limit for the amount of users to receive(Default is 25, max value is 100). | Optional | 
+| escalation_policy_ids | Filters the results, showing only on-call users for the specified escalation policy IDs. | Optional | 
+| schedule_ids | Filters the results, showing only on-call users for the specified schedule IDs. If the value is null, permanent on-call user are included due to direct user escalation policy targets. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PagerDutyUser.ID | string | User's ID | 
+| PagerDutyUser.Email | string | Email of user | 
+| PagerDutyUser.Username | string | Username of person | 
+| PagerDutyUser.DisplayName | string | Display name of person | 
+| PagerDutyUser.Role | string | Role of person | 
+| PagerDutyUser.TimeZone | string | The time zone of the user | 
+
+
+#### Command Example
+```!PagerDuty-get-users-on-call-now```
+
+#### Context Example
+```json
+{
+    "PagerDutyUser": [
+        {
+            "DisplayName": "Demisto User",
+            "Email": "demisto@demisto.com",
+            "ID": "someid",
+            "Role": "owner",
+            "TimeZone": "Europe/Athens",
+            "Username": "Demisto User"
+        }
+    ]
+}
+```
+
+#### Human Readable Output
+
+>### Users On Call Now
+>|ID|Email|Name|Role|User Url|Time Zone|
+>|---|---|---|---|---|---|
+>| someid | demisto@demisto.com | Demisto User | owner | https://demisto.pagerduty.com/users/someid | Europe/Athens |
+
+### PagerDuty-incidents
+***
+Shows incidents in PagerDuty. Default status parameters are triggered,acknowledged
+
+
+#### Base Command
+
+`PagerDuty-incidents`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| status | Returns only the incidents currently in the passed status(es). Valid status options are triggered,acknowledged, and resolved. (Default values are triggered,acknowledged). Possible values are: triggered, acknowledged, resolved. | Optional | 
+| since | Beginning date and time. Using ISO 8601 Representation. E.g. PagerDutyIncidents since=2011-05-06T17:00Z (must be used with until argument). | Optional | 
+| sortBy | Used to specify both the field you wish to sort the results on, as well as the direction (ascending/descending) of the results.See more https://v2.developer.pagerduty.com/v2/page/api-reference#!/Incidents/get_incidents. | Optional | 
+| until | Last date and time.  Using ISO 8601 Representation. E.g. PagerDutyIncidents until=2016-05-06T13:00Z. | Optional | 
+| incident_key | Incident de-duplication key,. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PagerDuty.Incidents.ID | string | Incident ID | 
+| PagerDuty.Incidents.Title | string | The title of the incident | 
+| PagerDuty.Incidents.Status | string | Incident Status | 
+| PagerDuty.Incidents.created_at | date | Time in which the incident was created | 
+| PagerDuty.Incidents.urgency | string | Incident Urgency | 
+| PagerDuty.Incidents.assignee | string | The assignee of the incident  | 
+| PagerDuty.Incidents.service_id | string | The id of the impacted service | 
+| PagerDuty.Incidents.service_name | string | The name of the impacted service | 
+| PagerDuty.Incidents.escalation_policy | string | The escalation policy | 
+| PagerDuty.Incidents.last_status_change_at | date | Time in which the last status change occurred | 
+| PagerDuty.Incidents.last_status_change_by | string | Name of the user who done the last status change | 
+| PagerDuty.Incidents.number_of_escalations | number | Number of escalations that took place | 
+| PagerDuty.Incidents.resolved_by | string | Name of the User who resolved the incident | 
+| PagerDuty.Incidents.resolve_reason | string | The reason for resolving the issue | 
+| PagerDuty.Incidents.Description | string | The Description of the incident | 
+| PagerDuty.Incidents.teams.ID | string | The ID of the team assigned for the incident. | 
+| PagerDuty.Incidents.teams.ID | string | The name of the team assigned for the incident. | 
+| PagerDuty.Incidents.assignment.time | date | The time of the assignment to the incident | 
+| PagerDuty.Incidents.assignment.assignee | string | The name of the assignee to the incident | 
+| PagerDuty.Incidents.assignment.assigneeId | string | The ID of the assignee to the incident | 
+| PagerDuty.Incidents.acknowledgement.time | date | The time of the acknowledgement to the incident | 
+| PagerDuty.Incidents.acknowledgement.acknowledger | string | The name of the acknowledger to the incident | 
+| PagerDuty.Incidents.acknowledgement.acknowledgerId | string | The ID of the acknowledger to the incident | 
+| PagerDuty.Incidents.incident_key | String | The incident's de-duplication key | 
+
+
+#### Command Example
+```!PagerDuty-incidents```
+
+#### Context Example
+```json
+{
+    "PagerDuty": {
+        "Incidents": [
+            {
+                "Description": {
+                    "description": "No description"
+                },
+                "ID": "someid",
+                "Status": "acknowledged",
+                "Title": "[#264] Ticket 01439490",
+                "acknowledgement": {
+                    "acknowledger": "someone",
+                    "acknowledgerId": "ABC123",
+                    "time": "2021-03-04T08:53:04Z"
+                },
+                "assignee": "someone",
+                "assignment": {
+                    "assignee": "someone",
+                    "assigneeId": "ABC123",
+                    "time": "2021-03-04T08:53:04Z"
+                },
+                "created_at": "2021-03-04T08:52:56Z",
+                "escalation_policy": "Default",
+                "incident_key": null,
+                "last_status_change_at": "2021-03-04T08:53:04Z",
+                "last_status_change_by": "someone",
+                "number_of_escalations": null,
+                "resolve_reason": "",
+                "resolved_by": "someone",
+                "service_id": "P5CX6RZ",
+                "service_name": "PD SF",
+                "teams": [],
+                "urgency": "high"
+            },
+            {
+                "Description": {
+                    "description": "No description"
+                },
+                "ID": "anotherid",
+                "Status": "triggered",
+                "Title": "[#278] my event",
+                "acknowledgement": {},
+                "assignee": "someone-else",
+                "assignment": {
+                    "assignee": "someone-else",
+                    "assigneeId": "ABC123",
+                    "time": "2021-03-10T08:37:17Z"
+                },
+                "created_at": "2021-03-10T07:57:16Z",
+                "escalation_policy": "Default",
+                "incident_key": "somekey",
+                "last_status_change_at": "2021-03-10T08:37:17Z",
+                "last_status_change_by": "API Service",
+                "number_of_escalations": null,
+                "resolve_reason": "",
+                "resolved_by": "someone-else",
+                "service_id": "someid",
+                "service_name": "API Service",
+                "teams": [],
+                "urgency": "high"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PagerDuty Incidents
+>|ID|Title|Description|Status|Created On|Urgency|Html Url|Incident key|Assigned To User|Service ID|Service Name|Escalation Policy|Last Status Change On|Last Status Change By|Resolved By User|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| someid | [#264] Ticket 01439490 | description: No description | acknowledged | 2021-03-04T08:52:56Z | high | https://demisto.pagerduty.com/incidents/someid |  | someone | P5CX6RZ | PD SF | Default | 2021-03-04T08:53:04Z | someone | - |
+>| anotherid | [#278] my event | description: No description | triggered | 2021-03-10T07:57:16Z | high | https://demisto.pagerduty.com/incidents/anotherid | somekey | someone-else | someid | API Service | Default | 2021-03-10T08:37:17Z | API Service | - |
+
+### PagerDuty-submit-event
+***
+Creates a new event/incident in PagerDuty(In order to use this command you have to enter the Service Key in the integration settings)
+
+
+#### Base Command
+
+`PagerDuty-submit-event`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| source | Specific human-readable unique identifier, such as a hostname, for the system having the problem. | Required | 
+| summary | 	 A high-level, text summary message of the event. Will be used to construct an alert's description. | Required | 
+| severity | The severity of the event. Possible values are: critical, error, warning, info. | Required | 
+| action | The action to be executed. Possible values are: trigger, acknowledge, resolve. | Required | 
+| description | A short description of the problem. | Optional | 
+| group | A cluster or grouping of sources. For example, sources “prod-datapipe-02” and “prod-datapipe-03” might both be part of “prod-datapipe”. Example: "prod-datapipe" "www". | Optional | 
+| event_class | The class/type of the event. Example: "High CPU" "Latency". | Optional | 
+| component | The part or component of the affected system that is broken. Example: "keepalive" "webping". | Optional | 
+| incident_key | Incident key, used to acknowledge/resolve specific event. | Optional | 
+| serviceKey | Service key for the integration. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PagerDuty.Event.Status | string | Status of the action on the event | 
+| PagerDuty.Event.incident_key | string | Incident key | 
+
+
+#### Command Example
+```!PagerDuty-submit-event action=trigger severity=info source=demisto summary="my new event"```
+
+#### Human Readable Output
+>|Incident key|Message|Status|
+>|---|---|---|
+>| somekey | Event processed | success |
+
+
+### PagerDuty-get-contact-methods
+***
+Get the contact methods of a given user
+
+
+#### Base Command
+
+`PagerDuty-get-contact-methods`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| UserID | ID of the wanted user . | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PagerDuty.Contact_methods.phone | string | The phone number of the user | 
+| PagerDuty.Contact_methods.id | string | ID of the contact method | 
+| PagerDuty.Contact_methods.type | string | The type of the current contact method | 
+| PagerDuty.Contact_methods.email | string | The email of the user | 
+
+
+#### Command Example
+```!PagerDuty-get-contact-methods UserID=someid```
+
+#### Context Example
+```json
+{
+    "PagerDuty": {
+        "Contact_methods": [
+            {
+                "email": "demisto@demisto.com",
+                "html_url": null,
+                "id": "someotherid",
+                "label": "Default",
+                "self": "https://api.pagerduty.com/users/someid/contact_methods/someotherid",
+                "send_html_email": false,
+                "send_short_email": false,
+                "summary": "Default",
+                "type": "email_contact_method"
+            },
+            {
+                "blacklisted": false,
+                "html_url": null,
+                "id": "someid",
+                "label": "Mobile",
+                "phone": "000000",
+                "self": "https://api.pagerduty.com/users/someid/contact_methods/someid",
+                "summary": "Mobile",
+                "type": "phone_contact_method"
+            },
+            {
+                "blacklisted": false,
+                "enabled": true,
+                "html_url": null,
+                "id": "onemoreid",
+                "label": "Mobile",
+                "phone": "0000000",
+                "self": "https://api.pagerduty.com/users/someid/contact_methods/onemoreid",
+                "summary": "Mobile",
+                "type": "sms_contact_method"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Contact Methods
+>|ID|Type|Details|
+>|---|---|---|
+>| someotherid | Email | demisto@demisto.com |
+>| someid | Phone | 0000000 |
+>| onemoreid | SMS | 000000 |
+
+
+### PagerDuty-get-users-notification
+***
+Get the users notification rules
+
+
+#### Base Command
+
+`PagerDuty-get-users-notification`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| UserID | ID of the wanted user. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PagerDuty.Notification_rules.start_delay_in_minutes | string | The delay time for notifying the user | 
+| PagerDuty.Notification_rules.urgency | string | The urgency of the notification | 
+| PagerDuty.Notification_rules.id | string | The id of the notification rule | 
+
+
+#### Command Example
+```!PagerDuty-get-users-notification UserID=someid```
+
+#### Context Example
+```json
+{
+    "PagerDuty": {
+        "Notification_rules": {
+            "contact_method": {
+                "address": "demisto@demisto.com",
+                "html_url": null,
+                "id": "someotherid",
+                "label": "Default",
+                "self": "https://api.pagerduty.com/users/someid/contact_methods/someotherid",
+                "send_html_email": false,
+                "send_short_email": false,
+                "summary": "Default",
+                "type": "email_contact_method"
+            },
+            "html_url": null,
+            "id": "someid",
+            "self": "https://api.pagerduty.com/users/someid/notification_rules/someid",
+            "start_delay_in_minutes": 0,
+            "summary": "0 minutes: channel someotherid",
+            "type": "assignment_notification_rule",
+            "urgency": "high"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### User notification rules
+>|ID|Type|Urgency|Notification timeout(minutes)|
+>|---|---|---|---|
+>| someid | assignment_notification_rule | high | 0 |
+
+
+### PagerDuty-resolve-event
+***
+Resolves an existing event in PagerDuty
+
+
+#### Base Command
+
+`PagerDuty-resolve-event`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_key | Incident key. | Required | 
+| serviceKey | Service key for the integration. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PagerDuty.Event.Status | string | Status of the action on the event | 
+| PagerDuty.Event.incident_key | string | Incident key | 
+
+
+#### Command Example
+```!PagerDuty-resolve-event incident_key=somekey serviceKey=servicekey```
+
+#### Context Example
+```json
+{
+    "Event": {
+        "ID": "somekey"
+    },
+    "PagerDuty": {
+        "Event": {
+            "Message": "Event processed",
+            "Status": "success",
+            "incident_key": "somekey"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Resolve Event
+>|Incident key|Message|Status|
+>|---|---|---|
+>| somekey | Event processed | success |
+
+
+### PagerDuty-acknowledge-event
+***
+Acknowledges an existing event in PagerDuty
+
+
+#### Base Command
+
+`PagerDuty-acknowledge-event`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_key | Incident key. | Required | 
+| serviceKey | Service key for the integration. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PagerDuty.Event.Status | string | Status of the action on the event | 
+| PagerDuty.Event.incident_key | string | Incident key | 
+
+
+#### Command Example
+```!PagerDuty-acknowledge-event incident_key=somekey serviceKey=servicekey```
+
+#### Context Example
+```json
+{
+    "Event": {
+        "ID": "8e42eeb6391a4a2abeda5d12e09bddec"
+    },
+    "PagerDuty": {
+        "Event": {
+            "Message": "Event processed",
+            "Status": "success",
+            "incident_key": "somekey"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Acknowledge Event
+>|Incident key|Message|Status|
+>|---|---|---|
+>| somekey | Event processed | success |
+
+
+### PagerDuty-get-incident-data
+***
+Get data about a incident from PagerDuty
+
+
+#### Base Command
+
+`PagerDuty-get-incident-data`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | ID of the incident to get information for. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PagerDuty.Incidents.ID | string | Incident ID | 
+| PagerDuty.Incidents.Title | string | The title of the incident | 
+| PagerDuty.Incidents.Status | string | Incident Status | 
+| PagerDuty.Incidents.created_at | date | Time in which the incident was created | 
+| PagerDuty.Incidents.urgency | string | Incident Urgency | 
+| PagerDuty.Incidents.assignee | string | The assignee of the incident  | 
+| PagerDuty.Incidents.service_id | string | The id of the impacted service | 
+| PagerDuty.Incidents.service_name | string | The name of the impacted service | 
+| PagerDuty.Incidents.escalation_policy | string | The escalation policy | 
+| PagerDuty.Incidents.last_status_change_at | date | Time in which the last status change occurred | 
+| PagerDuty.Incidents.last_status_change_by | string | Name of the user who done the last status change | 
+| PagerDuty.Incidents.number_of_escalations | number | Number of escalations that took place | 
+| PagerDuty.Incidents.resolved_by | string | Name of the User who resolved the incident | 
+| PagerDuty.Incidents.resolve_reason | string | The reason for resolving the issue | 
+| PagerDuty.Incidents.Description | string | The Description of the incident | 
+| PagerDuty.Incidents.teams.ID | string | The ID of the team assigned for the incident. | 
+| PagerDuty.Incidents.teams.ID | string | The name of the team assigned for the incident. | 
+| PagerDuty.Incidents.assignment.time | date | The time of the assignment to the incident | 
+| PagerDuty.Incidents.assignment.assignee | string | The name of the assignee to the incident | 
+| PagerDuty.Incidents.assignment.assigneeId | string | The ID of the assignee to the incident | 
+| PagerDuty.Incidents.acknowledgement.time | date | The time of the acknowledgement to the incident | 
+| PagerDuty.Incidents.acknowledgement.acknowledger | string | The name of the acknowledger to the incident | 
+| PagerDuty.Incidents.acknowledgement.acknowledgerId     | string | The ID of the acknowledger to the incident |
+| PagerDuty.Incidents.incident_key | String | The incident's de-duplication key | 
+
+
+#### Command Example
+```!PagerDuty-get-incident-data incident_id=someid```
+
+#### Context Example
+```json
+{
+    "PagerDuty": {
+        "Incidents": {
+            "Description": "",
+            "ID": "someid",
+            "Status": "acknowledged",
+            "Title": "[#281] my new event",
+            "acknowledgement": {
+                "acknowledgerId": "ABC123",
+                "acknowledger": "someone",
+                "time": "2021-03-10T09:31:48Z"
+            },
+            "assignee": null,
+            "assignment": {
+                "assignee": "someone",
+                "assigneeId": "ABC123",
+                "time": "2021-03-10T09:31:48Z"
+            },
+            "created_at": "2021-03-10T09:31:48Z",
+            "escalation_policy": "Default",
+            "incident_key": "somekey",
+            "last_status_change_at": "2021-03-10T10:00:50Z",
+            "last_status_change_by": "API Service",
+            "number_of_escalations": null,
+            "resolve_reason": "",
+            "resolved_by": null,
+            "service_id": "someid",
+            "service_name": "API Service",
+            "teams": [],
+            "urgency": "high"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PagerDuty Incident
+>|ID|Title|Status|Created On|Urgency|Html Url|Incident key|Service ID|Service Name|Escalation Policy|Last Status Change On|Last Status Change By|Resolved By User|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| someid | [#281] my new event | acknowledged | 2021-03-10T09:31:48Z | high | https://demisto.pagerduty.com/incidents/someid | 8e42eeb6391a4a2abeda5d12e09bddec | someid | API Service | Default | 2021-03-10T10:00:50Z | API Service | - |
+
+
+### PagerDuty-get-service-keys
+***
+Get Service keys for each of the services configured in the PagerDuty instance
+
+
+#### Base Command
+
+`PagerDuty-get-service-keys`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PagerDuty.Service.ID | string | The ID of the service connected to PagerDuty | 
+| PagerDuty.Service.Name | string | The name of the service connected to PagerDuty | 
+| PagerDuty.Service.Status | string | The status of the service connected to PagerDuty | 
+| PagerDuty.Service.CreatedAt | date | The date in which the service connected to PagerDuty was created | 
+| PagerDuty.Service.Integration.Name | string | The name of the integration used with the service | 
+| PagerDuty.Service.Integration.Vendor | string | The name of the vendor for the integration used with the service.\(A value of 'Missing Vendor information' will appear once no information could be found\) | 
+| PagerDuty.Service.Integration.Key | string | The key used to control events with the integration | 
+
+
+#### Command Example
+```!PagerDuty-get-service-keys```
+
+#### Context Example
+```json
+{
+    "PagerDuty": {
+        "Service": [
+            {
+                "CreatedAt": "2016-03-20T14:00:55+02:00",
+                "ID": "someid",
+                "Integration": [
+                    {
+                        "Key": "somekey",
+                        "Name": "API Service",
+                        "Vendor": "Missing Vendor information"
+                    }
+                ],
+                "Name": "API Service",
+                "Status": "critical"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Service List
+>|ID|Name|Status|Created At|Integration|
+>|---|---|---|---|---|
+>| someid | API Service | critical | 2016-03-20T14:00:55+02:00 | Name: API Service, Vendor: Missing Vendor information, Key: somekey<br/> |

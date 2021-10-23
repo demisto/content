@@ -1,0 +1,26 @@
+{
+    "id": "es-active-shards",
+    "version": -1,
+    "fromVersion": "6.1.0",
+    "modified": "2021-01-12T07:58:09.265012Z",
+    "name": "Elasticsearch Active Shards",
+    "dataType": "system",
+    "widgetType": "number",
+    "query": "es-shard.used",
+    "isPredefined": true,
+    "description": "Elasticsearch total shards (including replicas) currently active",
+    "params": {
+        "colors": {
+            "isEnabled": true,
+            "items": {
+                "#00CD33": {
+                    "value": 2
+                },
+                "#FF1B15": {
+                    "value": -1
+                }
+            },
+            "type": "above"
+        }
+    }
+}

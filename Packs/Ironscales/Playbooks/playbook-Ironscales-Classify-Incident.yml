@@ -1,0 +1,153 @@
+id: Ironscales-Classify-Incident
+inputs: []
+name: Ironscales-Classify-Incident
+description: "Classify an Ironscales incident"
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: dfc568c0-54ac-4c3a-8fdc-f63f98867fc8
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: dfc568c0-54ac-4c3a-8fdc-f63f98867fc8
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": -160
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      classification:
+        simple: ${incident.ironscaleschooseclassification}
+      email:
+        simple: ${incident.ironscalesresolveremailaddress}
+      incident_id:
+        simple: ${incident.ironscalesincidentid}
+      prev_classification:
+        simple: ${incident.ironscalesclassification}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Ironscales
+      description: Classify incident by ID.
+      id: 7003cfbc-90c9-41c1-8541-475de9df77d1
+      iscommand: true
+      name: ironscales-classify-incident
+      script: '|||ironscales-classify-incident'
+      type: regular
+      version: -1
+    taskid: 7003cfbc-90c9-41c1-8541-475de9df77d1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 200
+        }
+      }
+  "2":
+    fieldMapping:
+    - incidentfield: Classification
+      output:
+        simple: ${Ironscales.Incident.classification}
+    - incidentfield: Ironscales-Classification
+      output:
+        simple: ${Ironscales.Incident.classification}
+    id: "2"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      company_id: {}
+      incident_id:
+        simple: ${incident.ironscalesid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Ironscales
+      description: Get incident data by ID.
+      id: 81ab81d6-400c-4ac8-8e56-e32c1c8fb612
+      iscommand: true
+      name: ironscales-get-incident
+      script: '|||ironscales-get-incident'
+      type: regular
+      version: -1
+    taskid: 81ab81d6-400c-4ac8-8e56-e32c1c8fb612
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 380
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: ""
+      id: 73cfac8a-92d8-46bf-8a5d-c37612040628
+      iscommand: false
+      name: classify incident
+      type: regular
+      version: -1
+    taskid: 73cfac8a-92d8-46bf-8a5d-c37612040628
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 10
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 635,
+        "width": 380,
+        "x": 480,
+        "y": -160
+      }
+    }
+  }
+fromversion: 6.0.0
+tests:
+- No tests

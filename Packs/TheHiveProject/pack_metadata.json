@@ -1,0 +1,18 @@
+{
+    "name": "TheHive Project",
+    "description": "Provides an integration, incident type and layout for use with TheHive Project.",
+    "support": "xsoar",
+    "currentVersion": "1.1.3",
+    "author": "aburt-demisto",
+    "url": "",
+    "email": "",
+    "created": "2020-08-26T09:03:28Z",
+    "categories": [],
+    "tags": [
+        "Threat Intelligence"
+    ],
+    "useCases": [
+        "Case Management"
+    ],
+    "keywords": []
+}

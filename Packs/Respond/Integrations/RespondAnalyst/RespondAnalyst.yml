@@ -1,0 +1,259 @@
+category: Analytics & SIEM
+commonfields:
+  id: Respond_Analyst
+  version: -1
+configuration:
+- defaultvalue: None
+  display: Incident Mirroring Direction
+  name: mirror_direction
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Both
+  required: false
+  type: 15
+- additionalinfo: https://<Respond Analyst Server> (either hostname or IP address)
+  display: Base Url
+  name: base_url
+  required: true
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- additionalinfo: steps to generate an API token here -> https://knowledge-base.respond-software.com/knowledge/api-token
+  display: API Token
+  name: token
+  required: true
+  type: 4
+- defaultvalue: "500"
+  display: Max Fetch
+  name: max_fetch
+  required: false
+  type: 0
+- defaultvalue: 7 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
+  required: false
+  type: 0
+- defaultvalue: "1"
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+description: Use the Mandiant Automated Defense integration to fetch and update incidents
+  from Mandiant Automated Defense. Mandiant Automated Defense fetches open incidents
+  and updates them every minute. Changes made within XSOAR are reflected in Mandiant
+  Automated Defense platform with bi-directional mirroring capabilities enabled.
+display: Mandiant Automated Defense (Formerly Respond Software)
+name: Respond_Analyst
+script:
+  commands:
+  - arguments:
+    - description: ID of the Tenant in which the incident resides in Respond
+      name: tenant_id
+    - description: Respond incident ID of the incident to retrieve
+      name: incident_id
+      required: true
+    description: pull data for a specific incident from MAD. This command will only
+      return an output of the incident data. it does not create a new incident
+    name: mad-get-incident
+    outputs:
+    - contextPath: Mandiant.AutomatedDefense.Incident.incidentId
+      description: ID of incident
+      type: String
+    - contextPath: Mandiant.AutomatedDefense.Incident.timeGenerated
+      description: time incident was created
+      type: Date
+    - contextPath: Mandiant.AutomatedDefense.Incident.eventCount
+      description: number of events associated with incident
+      type: Number
+    - contextPath: Mandiant.AutomatedDefense.Incident.firstEventTime
+      description: time first event associated with incident occurred
+      type: Date
+    - contextPath: Mandiant.AutomatedDefense.Incident.lastEventTime
+      description: time most recent event associated with incident occurred
+      type: Date
+    - contextPath: Mandiant.AutomatedDefense.Incident.URL
+      description: URL to incident in Mandiant Advantage platform
+      type: String
+    - contextPath: Mandiant.AutomatedDefense.Incident.closeURL
+      description: URL to incident close page in Mandiant Advantage platform
+      type: String
+    - contextPath: Mandiant.AutomatedDefense.Incident.title
+      description: incident title
+      type: String
+    - contextPath: Mandiant.AutomatedDefense.Incident.description
+      description: incident description
+      type: String
+    - contextPath: Mandiant.AutomatedDefense.Incident.status
+      description: incident status
+      type: String
+    - contextPath: Mandiant.AutomatedDefense.Incident.severity
+      description: incident severity
+      type: String
+    - contextPath: Mandiant.AutomatedDefense.Incident.probability
+      description: incident probability
+      type: String
+    - contextPath: Mandiant.AutomatedDefense.Incident.attackStage
+      description: incident attack stage
+      type: String
+    - contextPath: Mandiant.AutomatedDefense.Incident.attackTactic
+      description: incident attack tactic
+      type: Unknown
+    - contextPath: Mandiant.AutomatedDefense.Incident.assetCriticality
+      description: incident asset criticiality
+      type: String
+    - contextPath: Mandiant.AutomatedDefense.Incident.assetCount
+      description: incident asset count
+      type: Number
+    - contextPath: Mandiant.AutomatedDefense.Incident.assets.hostname
+      description: asset hostname
+      type: String
+    - contextPath: Mandiant.AutomatedDefense.Incident.assets.ipaddress
+      description: asset ip address
+      type: String
+    - contextPath: Mandiant.AutomatedDefense.Incident.assets.isinternal
+      description: asset is internal
+      type: Boolean
+    - contextPath: Mandiant.AutomatedDefense.Incident.externalsystems.hostname
+      description: system hostname
+      type: String
+    - contextPath: Mandiant.AutomatedDefense.Incident.externalsystems.ipaddress
+      description: system ip address
+      type: String
+    - contextPath: Mandiant.AutomatedDefense.Incident.externalsystems.isinternal
+      description: system is internal
+      type: Boolean
+    - contextPath: Mandiant.AutomatedDefense.Incident.accounts.domain
+      description: account domain
+      type: Unknown
+    - contextPath: Mandiant.AutomatedDefense.Incident.accounts.name
+      description: account name
+      type: String
+    - contextPath: Mandiant.AutomatedDefense.Incident.hashes.hash
+      description: hash
+      type: String
+    - contextPath: Mandiant.AutomatedDefense.Incident.malware.name
+      description: malware name
+      type: String
+    - contextPath: Mandiant.AutomatedDefense.Incident.malware.type
+      description: malware type
+      type: String
+    - contextPath: Mandiant.AutomatedDefense.Incident.malware.vendor
+      description: malware vendor
+      type: String
+    - contextPath: Mandiant.AutomatedDefense.Incident.escalationreasons.label
+      description: escalation reason
+      type: String
+    - contextPath: Mandiant.AutomatedDefense.Incident.assignedUsers
+      description: assigned users
+      type: String
+    - contextPath: Mandiant.AutomatedDefense.Incident.tenantIdRespond
+      description: tenant id in mandiant
+      type: String
+    - contextPath: Mandiant.AutomatedDefense.Incident.tenantId
+      description: tenant id external
+      type: String
+    - contextPath: Mandiant.AutomatedDefense.Incident.respondRemoteId
+      description: remote id
+      type: String
+    - contextPath: Mandiant.AutomatedDefense.Incident.dbotMirrorDirection
+      description: mirror direction
+      type: String
+    - contextPath: Mandiant.AutomatedDefense.Incident.dbotMirrorInstance
+      description: mirror instance
+      type: String
+    - contextPath: Mandiant.AutomatedDefense.Incident.owner
+      description: owner
+      type: String
+    - contextPath: Mandiant.AutomatedDefense.Incident.feedback.timeUpdated
+      description: time feedback updated
+      type: Date
+    - contextPath: Mandiant.AutomatedDefense.Incident.feedback.userId
+      description: user id
+      type: String
+    - contextPath: Mandiant.AutomatedDefense.Incident.feedback.outcome
+      description: feedback outcome
+      type: String
+    - contextPath: Mandiant.AutomatedDefense.Incident.feedback.comments
+      description: feedback comments
+      type: String
+  - arguments:
+    - description: ID of the Tenant in which the incident resides in Respond
+      name: tenant_id
+    - description: Respond incident ID of the incident to retrieve
+      name: incident_id
+      required: true
+    - auto: PREDEFINED
+      description: Outcome of the incident. Confirmed, Non-Actionable, or Inconclusive.
+        This outcome is determined by the analyst who closes the incident
+      name: incident_feedback
+      predefined:
+      - ConfirmedIncident
+      - NonActionable
+      - Inconclusive
+    - description: additional feedback information added by analysts. Any specific
+        notes or observations
+      name: feedback_optional_text
+    description: close an incident in Respond and provide feedback on that incident.
+      If the incident is already closed, feedback can still be updated. Additional
+      comments and an updated closure code are viable options for updates on an incident
+      that has already been closed (and on incidents that have not been closed yet
+      as well)
+    name: mad-close-incident
+  - arguments:
+    - description: respond incident id
+      name: incident_id
+      required: true
+    - description: tenant id
+      name: tenant_id
+    - description: email
+      name: username
+      required: true
+    description: assign a user to a Respond incident
+    name: mad-assign-user
+  - arguments:
+    - description: incident id
+      name: incident_id
+      required: true
+    - description: tenant id
+      name: tenant_id
+    - description: email
+      name: username
+      required: true
+    description: unassign a user from a Respond incident
+    name: mad-remove-user
+  - arguments:
+    - description: incident_id
+      name: incident_id
+      required: true
+    - description: tenant id
+      name: tenant_id
+    description: Get escalation data associated with incident. In Respond, an 'escalation'
+      is a specific event derived from a cybersecurity telemetry. Escalations are
+      compiled together to form Incidents in Respond.
+    name: mad-get-escalations
+  dockerimage: demisto/python3:3.9.7.24076
+  isfetch: true
+  ismappable: false
+  isremotesyncin: true
+  isremotesyncout: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
+defaultclassifier: Mandiant Automated Defense Classifier
+defaultmapperin: Mandiant Automated Defense Incoming Mapper

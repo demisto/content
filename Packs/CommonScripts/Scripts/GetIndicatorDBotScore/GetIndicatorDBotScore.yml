@@ -1,11 +1,11 @@
 args:
-- default: false
-  description: The indicator to get the reputation of
-  isArray: false
+- default: true
+  description: The indicator to get the reputation of. Only system indicator types are supported.
+  isArray: true
   name: indicator
   required: true
   secret: false
-comment: Add into the incident's context the system internal DBot score for the input indicator
+comment: Add into the incident's context the system internal DBot score for the input indicator.
 commonfields:
   id: GetIndicatorDBotScore
   version: -1
@@ -13,16 +13,16 @@ enabled: false
 name: GetIndicatorDBotScore
 outputs:
 - contextPath: DBotScore.Indicator
-  description: The Indicator
+  description: The indicator.
   type: string
 - contextPath: DBotScore.Type
-  description: The Indicator Type
+  description: The indicator type.
   type: string
 - contextPath: DBotScore.Vendor
-  description: The DBot score vendor
+  description: The DBot score vendor.
   type: string
 - contextPath: DBotScore.Score
-  description: The DBot score
+  description: The DBot score.
   type: number
 script: '-'
 system: true
@@ -31,8 +31,9 @@ tags:
 - Enrichment
 timeout: '0'
 type: python
-subtype: python2
+subtype: python3
 runonce: false
 fromversion: 5.0.0
 tests:
 - GetIndicatorDBotScore Test
+dockerimage: demisto/python3:3.9.7.24076

@@ -78,6 +78,14 @@ configuration:
   name: issue_type
   required: false
   type: 0
+- display: Fetch Expanse issues with Cloud Management Status
+  name: cloud_management_status
+  options:
+  - NotApplicable
+  - ManagedCloud
+  - UnmanagedCloud
+  required: false
+  type: 16
 - defaultvalue: None
   display: Incident Mirroring Direction
   hidden: false
@@ -118,6 +126,839 @@ display: Expanse v2
 name: ExpanseV2
 script:
   commands:
+  - name: expanse-get-service
+    description: Retrieve Expanse service by service ID.
+    deprecated: false
+    execution: false
+    arguments:
+    - default: false
+      description: ID of the Expanse service to retrieve.
+      isArray: false
+      name: service_id
+      required: true
+      secret: false
+    outputs:
+    - contextPath: Expanse.Service.activityStatus
+      description: 'Activity status of service, whether the service is active or inactive'
+      type: String
+    - contextPath: Expanse.Service.annotations.tags.id
+      description: 'The Internal Expanse tag id of the customer added tag'
+      type: String
+    - contextPath: Expanse.Service.annotations.tags.name
+      description: 'The tag name of the customer added tag'
+      type: String
+    - contextPath: Expanse.Service.assets.assetKey
+      description: 'Key used to access the asset in the respective Expanse asset API'
+      type: String
+    - contextPath: Expanse.Service.assets.assetType
+      description: 'The type of asset the issue primarily relates to'
+      type: String
+    - contextPath: Expanse.Service.assets.displayName
+      description: 'A friendly name for the asset'
+      type: String
+    - contextPath: Expanse.Service.assets.id
+      description: 'Internal Expanse ID the asset'
+      type: String
+    - contextPath: Expanse.Service.assets.referenceReason.id
+      description: 'ID for asset reference type'
+      type: String
+    - contextPath: Expanse.Service.assets.referenceReason.name
+      description: 'Description for asset reference reason'
+      type: String
+    - contextPath: Expanse.Service.businessUnits.id
+      description: 'The internal Expanse ID for the business unit the affected asset
+        belongs to'
+      type: String
+    - contextPath: Expanse.Service.businessUnits.name
+      description: 'The name of the business unit the affected asset belongs to'
+      type: String
+    - contextPath: Expanse.Service.certificates.assetId
+      description: 'Internal Asset ID of certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.firstObserved
+      description: 'First observation of certificate'
+      type: Date
+    - contextPath: Expanse.Service.certificates.lastObserved
+      description: 'Most recent observation of certificate'
+      type: Date
+    - contextPath: Expanse.Service.certificates.certificate.formattedIssuerOrg
+      description: 'The formatted issuer org in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.id
+      description: 'The Internal Expanse certificate ID'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.issuer
+      description: 'The issuer in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.issuerAlternativeNames
+      description: 'The issuer alternative names in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.issuerCountry
+      description: 'The issuer country in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.issuerEmail
+      description: 'The issuer email in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.issuerLocality
+      description: 'The issuer locality in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.issuerName
+      description: 'The issuer name in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.issuerOrg
+      description: 'The issuer org in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.issuerOrgUnit
+      description: 'The issuer org unit in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.issuerState
+      description: 'The issuer state in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.md5Hash
+      description: 'The md5hash in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.pemSha1
+      description: 'The pemSha1 in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.pemSha256
+      description: 'The pemSha256 in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.publicKey
+      description: 'The public key in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.publicKeyAlgorithm
+      description: 'The public key algorithm in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.publicKeyBits
+      description: 'The public key bits in the certificate'
+      type: Number
+    - contextPath: Expanse.Service.certificates.certificate.publicKeyModulus
+      description: 'The public key modulus in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.publicKeyRsaExponent
+      description: 'The public key RSA exponent in the certificate'
+      type: Number
+    - contextPath: Expanse.Service.certificates.certificate.publicKeySpki
+      description: 'The public key Spki in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.serialNumber
+      description: 'The serial number in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.signatureAlgorithm
+      description: 'The signature algorithm in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.subject
+      description: 'The subject in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.subjectAlternativeNames
+      description: 'The subject alternative names in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.subjectCountry
+      description: 'The subject country in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.subjectEmail
+      description: 'The subject email in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.subjectLocality
+      description: 'The subject locality in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.subjectName
+      description: 'The subject name in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.subjectOrg
+      description: 'The subject org in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.subjectOrgUnit
+      description: 'The subject org unit in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.subjectState
+      description: 'The subject state in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.validNotAfter
+      description: 'The valid not after date in the certificate'
+      type: Date
+    - contextPath: Expanse.Service.certificates.certificate.validNotBefore
+      description: 'The valid not before date in the certificate'
+      type: Date
+    - contextPath: Expanse.Service.certificates.certificate.version
+      description: 'The version in the certificate'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.firstObserved
+      description: 'When the service instance was first observed'
+      type: Date
+    - contextPath: Expanse.Service.classifications.details.lastObserved
+      description: 'When the service instance was last observed'
+      type: Date
+    - contextPath: Expanse.Service.classifications.details.value.applicationServerSoftware
+      description: 'Application Server Software value of the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.bgpOpenResponse
+      description: 'BGP Open value of the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.bgpNotificationResponse.data
+      description: 'BGP Notification Data value of the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.bgpNotificationResponse.errorCode
+      description: 'BGP Notification Error Code value of the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.bgpNotificationResponse.errorSubCode
+      description: 'BGP Notification Sub-Error Code value of the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.bindVersions
+      description: 'Bind version value of the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.certificateId
+      description: 'Certificate Id value of the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.connectResponse.statusCode
+      description: 'Connect Response Status Code value of the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.connectResponse.responseLines
+      description: 'Connect Response Response value of the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.credSspProtocol
+      description: 'Cred SSP Protocol of the service classification'
+      type: Boolean
+    - contextPath: Expanse.Service.classifications.details.value.exchanges.request.arguments
+      description: 'Exchange Request Arguments value of the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.exchanges.request.command
+      description: 'Exchange Request Command value of the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.exchanges.response.statusCode
+      description: 'Connect Response Status Code value of the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.exchanges.response.responseLines
+      description: 'Connect Response Response value of the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.extraInfo
+      description: 'Extra Info about the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.htmlPasswordAction
+      description: 'HTML Password Action value of the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.htmlPasswordField
+      description: 'HTML Password Field value of the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.htmlPasswordAction
+      description: 'HTML Password Action value of the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.httpAuthenticationMethods
+      description: 'HTTP Authentication Methods value of the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.httpAuthenticationRealm
+      description: 'HTTP Authentication Realm value of the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.httpHeaders.name
+      description: 'HTTP Header name included in the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.httpHeaders.value
+      description: 'HTTP Header value included in the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.httpStatusCode
+      description: 'HTTP Status code of the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.isEncrypted
+      description: 'Is Encrypted service classification'
+      type: Boolean
+    - contextPath: Expanse.Service.classifications.details.value.isImplicit
+      description: 'Is Implicit service classification'
+      type: Boolean
+    - contextPath: Expanse.Service.classifications.details.value.loadBalancer
+      description: 'Load Balancer value of the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.loadBalancerPool
+      description: 'Load Balancer Pool value of the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.nativeRdpAlgorithms
+      description: 'Native RDP Algorithms of the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.nativeRdpProtocol
+      description: 'Native RDP Algorithms of the service classification'
+      type: Boolean
+    - contextPath: Expanse.Service.classifications.details.value.serverSoftware
+      description: 'Detected Server Software the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.serverVersion
+      description: 'Server Version details for the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.sslProtocol
+      description: 'SSL Protocol for the service classification'
+      type: Boolean
+    - contextPath: Expanse.Service.classifications.details.value.validWhenScanned
+      description: 'Whether a certificate on the service was valid at scan time'
+      type: Boolean
+    - contextPath: Expanse.Service.classifications.details.value.version
+      description: 'Version details for the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.firstObserved
+      description: 'First observation of the service classification'
+      type: Date
+    - contextPath: Expanse.Service.classifications.id
+      description: 'Service classification ID'
+      type: String
+    - contextPath: Expanse.Service.classifications.lastObserved
+      description: 'Last observation of the service classification'
+      type: Date
+    - contextPath: Expanse.Service.classifications.name
+      description: 'Service classification name'
+      type: String
+    - contextPath: Expanse.Service.cloudManagementStatus.id
+      description: 'The Internal ID of the cloud management status'
+      type: String
+    - contextPath: Expanse.Service.cloudManagementStatus.name
+      description: 'Name of the cloud management status'
+      type: String
+    - contextPath: Expanse.Service.domain.assetId
+      description: 'The Internal Asset ID of the domain related to the service'
+      type: String
+    - contextPath: Expanse.Service.domain.domain
+      description: 'The domain name related to the service'
+      type: String
+    - contextPath: Expanse.Service.domain.firstObserved
+      description: 'The first observation of a domain related to the service'
+      type: Date
+    - contextPath: Expanse.Service.domain.lastObserved
+      description: 'The last observation of a domain related to the service'
+      type: Date
+    - contextPath: Expanse.Service.discoveryInfo.type
+      description: 'Whether the service was directly discovered or colocated'
+      type: String
+    - contextPath: Expanse.Service.firstObserved
+      description: 'First observation of the service'
+      type: Date
+    - contextPath: Expanse.Service.id
+      description: 'The internal Expanse ID of the service'
+      type: String
+    - contextPath: Expanse.Service.ips.assetId
+      description: 'The Internal Asset ID of the ip related to the service'
+      type: String
+    - contextPath: Expanse.Service.ips.firstObserved
+      description: 'First observation of the ip related to the service'
+      type: Date
+    - contextPath: Expanse.Service.ips.geolocation.city
+      description: 'Geolocation city of the ip related to the service'
+      type: String
+    - contextPath: Expanse.Service.ips.geolocation.countryCode
+      description: 'Geolocation country of the ip related to the service'
+      type: String
+    - contextPath: Expanse.Service.ips.geolocation.latitude
+      description: 'Geolocation latitude of the ip related to the service'
+      type: Number
+    - contextPath: Expanse.Service.ips.geolocation.longitude
+      description: 'Geolocation longitude of the ip related to the service'
+      type: Number
+    - contextPath: Expanse.Service.ips.geolocation.regionCode
+      description: 'Geolocation region of the ip related to the service'
+      type: String
+    - contextPath: Expanse.Service.ips.geolocation.timeZone
+      description: 'Geolocation timeZone of the ip related to the service'
+      type: String
+    - contextPath: Expanse.Service.ips.ip
+      description: 'IPv4 Address of the ip related to the service'
+      type: String
+    - contextPath: Expanse.Service.ips.lastObserved
+      description: 'Last observation of the ip related to the service'
+      type: Date
+    - contextPath: Expanse.Service.ips.provider.id
+      description: 'Provider ID of the ip related to the service'
+      type: String
+    - contextPath: Expanse.Service.ips.provider.name
+      description: 'provider name of the ip related to the service'
+      type: String
+    - contextPath: Expanse.Service.ips.transportProtocol
+      description: 'Transport protocol of the ip related to the service'
+      type: String
+    - contextPath: Expanse.Service.lastObserved
+      description: 'Last observation of the service'
+      type: Date
+    - contextPath: Expanse.Service.name
+      description: 'Summary of the service observation'
+      type: String
+    - contextPath: Expanse.Service.portNumber
+      description: 'Summary of the service observation'
+      type: Number
+    - contextPath: Expanse.Service.tlsVersions.cipherSuite
+      description: 'Cipher suite of the TLS version observed on the service'
+      type: String
+    - contextPath: Expanse.Service.tlsVersions.firstObserved
+      description: 'First observation of the TLS version observed on the service'
+      type: Date
+    - contextPath: Expanse.Service.tlsVersions.lastObserved
+      description: 'Last observation of the TLS version observed on the service'
+      type: Date
+    - contextPath: Expanse.Service.tlsVersions.tlsVersion
+      description: 'TLS version observed on the service'
+      type: String
+  - name: expanse-get-services
+    description: Retrieve all Expanse services matching the supplied parameters.
+    deprecated: false
+    execution: false
+    arguments:
+    - default: false
+      description: Maximum number of services to retrieve.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Returns only results whose contents match the given query. Query can be any generic
+        string (ex. telnet).
+      isArray: false
+      name: content_search
+      required: false
+      secret: false
+    - default: false
+      description: Returns only results that were found on the given providers (comma
+        separated string).
+      isArray: true
+      name: provider
+      required: false
+      secret: false
+    - default: false
+      description: Returns only results with a business unit whose name falls in the
+        provided list (comma separated string).
+      isArray: true
+      name: business_unit
+      required: false
+      secret: false
+    - default: false
+      description: Returns only results whose service type name (or classification ID) matches one of the given
+        types (comma separated string).
+      isArray: true
+      name: service_type
+      required: false
+      secret: false
+    - default: false
+      description: Returns results whose identifier includes an IP matching the query.
+        Search for results in a given IP/CIDR block using a single IP (d.d.d.d), a
+        dashed IP range (d.d.d.d-d.d.d.d), a CIDR block (d.d.d.d/m), a partial CIDR
+        (d.d.), or a wildcard (d.d.*.d).
+      isArray: false
+      name: inet_search
+      required: false
+      secret: false
+    - default: false
+      description: Returns results whose identifier includes a domain matching the
+        query.
+      isArray: false
+      name: domain_search
+      required: false
+      secret: false
+    - default: false
+      description: Returns only results whose identifier includes one of the given
+        port numbers (comma separated list).
+      isArray: true
+      name: port_number
+      required: false
+      secret: false
+    - default: false
+      description: Returns only results whose discovery type matches one of the given values
+        (comma separated string, options are 'ColocatedOnIp', 'DirectlyDiscovered').
+      isArray: true
+      name: discovery_type
+      required: false
+      secret: false
+    - default: false
+      description: Returns only results whose country code matches one of the given ISO-3166 two character
+        country codes (comma separated list).
+      isArray: true
+      name: country_code
+      required: false
+      secret: false
+    - default: false
+      description: Returns only results whose activity status matches one of the given
+        values. (comma separated string, options are 'Active', 'Inactive').
+      isArray: true
+      name: activity_status
+      required: false
+      secret: false
+    - default: false
+      description: Returns only results that are associated with the provided tag
+        names (comma separated string).
+      isArray: true
+      name: tag
+      required: false
+      secret: false
+    - default: false
+      description: Returns only results whose cloud management status is the following:(comma-separated string, options are 'NotApplicable', 'ManagedCloud', 'UnmanagedCloud').
+      isArray: true
+      name: cloud_management_status
+      required: false
+      secret: false
+      auto: PREDEFINED
+      predefined:
+        - NotApplicable
+        - ManagedCloud
+        - UnmanagedCloud
+    - default: false
+      description: Sort by specified properties.
+      isArray: false
+      auto: PREDEFINED
+      name: sort
+      required: false
+      secret: false
+      defaultValue: firstObserved
+      predefined:
+      - firstObserved
+      - -firstObserved
+      - lastObserved
+      - -lastObserved
+      - name
+      - -name
+    outputs:
+    - contextPath: Expanse.Service.activityStatus
+      description: 'Activity status of service, whether the service is active or inactive'
+      type: String
+    - contextPath: Expanse.Service.annotations.tags.id
+      description: 'The Internal Expanse tag id of the customer added tag'
+      type: String
+    - contextPath: Expanse.Service.annotations.tags.name
+      description: 'The tag name of the customer added tag'
+      type: String
+    - contextPath: Expanse.Service.assets.assetKey
+      description: 'Key used to access the asset in the respective Expanse asset API'
+      type: String
+    - contextPath: Expanse.Service.assets.assetType
+      description: 'The type of asset the issue primarily relates to'
+      type: String
+    - contextPath: Expanse.Service.assets.displayName
+      description: 'A friendly name for the asset'
+      type: String
+    - contextPath: Expanse.Service.assets.id
+      description: 'Internal Expanse ID the asset'
+      type: String
+    - contextPath: Expanse.Service.assets.referenceReason.id
+      description: 'ID for asset reference type'
+      type: String
+    - contextPath: Expanse.Service.assets.referenceReason.name
+      description: 'Description for asset reference reason'
+      type: String
+    - contextPath: Expanse.Service.businessUnits.id
+      description: 'The internal Expanse ID for the business unit the affected asset
+        belongs to'
+      type: String
+    - contextPath: Expanse.Service.businessUnits.name
+      description: 'The name of the business unit the affected asset belongs to'
+      type: String
+    - contextPath: Expanse.Service.certificates.assetId
+      description: 'Internal Asset ID of certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.firstObserved
+      description: 'First observation of certificate'
+      type: Date
+    - contextPath: Expanse.Service.certificates.lastObserved
+      description: 'Most recent observation of certificate'
+      type: Date
+    - contextPath: Expanse.Service.certificates.certificate.formattedIssuerOrg
+      description: 'The formatted issuer org in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.id
+      description: 'The Internal Expanse certificate ID'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.issuer
+      description: 'The issuer in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.issuerAlternativeNames
+      description: 'The issuer alternative names in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.issuerCountry
+      description: 'The issuer country in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.issuerEmail
+      description: 'The issuer email in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.issuerLocality
+      description: 'The issuer locality in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.issuerName
+      description: 'The issuer name in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.issuerOrg
+      description: 'The issuer org in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.issuerOrgUnit
+      description: 'The issuer org unit in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.issuerState
+      description: 'The issuer state in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.md5Hash
+      description: 'The md5hash in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.pemSha1
+      description: 'The pemSha1 in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.pemSha256
+      description: 'The pemSha256 in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.publicKey
+      description: 'The public key in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.publicKeyAlgorithm
+      description: 'The public key algorithm in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.publicKeyBits
+      description: 'The public key bits in the certificate'
+      type: Number
+    - contextPath: Expanse.Service.certificates.certificate.publicKeyModulus
+      description: 'The public key modulus in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.publicKeyRsaExponent
+      description: 'The public key RSA exponent in the certificate'
+      type: Number
+    - contextPath: Expanse.Service.certificates.certificate.publicKeySpki
+      description: 'The public key Spki in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.serialNumber
+      description: 'The serial number in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.signatureAlgorithm
+      description: 'The signature algorithm in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.subject
+      description: 'The subject in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.subjectAlternativeNames
+      description: 'The subject alternative names in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.subjectCountry
+      description: 'The subject country in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.subjectEmail
+      description: 'The subject email in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.subjectLocality
+      description: 'The subject locality in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.subjectName
+      description: 'The subject name in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.subjectOrg
+      description: 'The subject org in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.subjectOrgUnit
+      description: 'The subject org unit in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.subjectState
+      description: 'The subject state in the certificate'
+      type: String
+    - contextPath: Expanse.Service.certificates.certificate.validNotAfter
+      description: 'The valid not after date in the certificate'
+      type: Date
+    - contextPath: Expanse.Service.certificates.certificate.validNotBefore
+      description: 'The valid not before date in the certificate'
+      type: Date
+    - contextPath: Expanse.Service.certificates.certificate.version
+      description: 'The version in the certificate'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.firstObserved
+      description: 'When the service instance was first observed'
+      type: Date
+    - contextPath: Expanse.Service.classifications.details.lastObserved
+      description: 'When the service instance was last observed'
+      type: Date
+    - contextPath: Expanse.Service.classifications.details.value.applicationServerSoftware
+      description: 'Application Server Software value of the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.bgpOpenResponse
+      description: 'BGP Open value of the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.bgpNotificationResponse.data
+      description: 'BGP Notification Data value of the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.bgpNotificationResponse.errorCode
+      description: 'BGP Notification Error Code value of the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.bgpNotificationResponse.errorSubCode
+      description: 'BGP Notification Sub-Error Code value of the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.bindVersions
+      description: 'Bind version value of the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.certificateId
+      description: 'Certificate Id value of the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.connectResponse.statusCode
+      description: 'Connect Response Status Code value of the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.connectResponse.responseLines
+      description: 'Connect Response Response value of the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.credSspProtocol
+      description: 'Cred SSP Protocol of the service classification'
+      type: Boolean
+    - contextPath: Expanse.Service.classifications.details.value.exchanges.request.arguments
+      description: 'Exchange Request Arguments value of the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.exchanges.request.command
+      description: 'Exchange Request Command value of the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.exchanges.response.statusCode
+      description: 'Connect Response Status Code value of the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.exchanges.response.responseLines
+      description: 'Connect Response Response value of the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.extraInfo
+      description: 'Extra Info about the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.htmlPasswordAction
+      description: 'HTML Password Action value of the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.htmlPasswordField
+      description: 'HTML Password Field value of the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.htmlPasswordAction
+      description: 'HTML Password Action value of the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.httpAuthenticationMethods
+      description: 'HTTP Authentication Methods value of the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.httpAuthenticationRealm
+      description: 'HTTP Authentication Realm value of the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.httpHeaders.name
+      description: 'HTTP Header name included in the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.httpHeaders.value
+      description: 'HTTP Header value included in the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.httpStatusCode
+      description: 'HTTP Status code of the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.isEncrypted
+      description: 'Is Encrypted service classification'
+      type: Boolean
+    - contextPath: Expanse.Service.classifications.details.value.isImplicit
+      description: 'Is Implicit service classification'
+      type: Boolean
+    - contextPath: Expanse.Service.classifications.details.value.loadBalancer
+      description: 'Load Balancer value of the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.loadBalancerPool
+      description: 'Load Balancer Pool value of the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.nativeRdpAlgorithms
+      description: 'Native RDP Algorithms of the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.nativeRdpProtocol
+      description: 'Native RDP Algorithms of the service classification'
+      type: Boolean
+    - contextPath: Expanse.Service.classifications.details.value.serverSoftware
+      description: 'Detected Server Software the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.serverVersion
+      description: 'Server Version details for the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.details.value.sslProtocol
+      description: 'SSL Protocol for the service classification'
+      type: Boolean
+    - contextPath: Expanse.Service.classifications.details.value.validWhenScanned
+      description: 'Whether a certificate on the service was valid at scan time'
+      type: Boolean
+    - contextPath: Expanse.Service.classifications.details.value.version
+      description: 'Version details for the service classification'
+      type: String
+    - contextPath: Expanse.Service.classifications.firstObserved
+      description: 'First observation of the service classification'
+      type: Date
+    - contextPath: Expanse.Service.classifications.id
+      description: 'Service classification ID'
+      type: String
+    - contextPath: Expanse.Service.classifications.lastObserved
+      description: 'Last observation of the service classification'
+      type: Date
+    - contextPath: Expanse.Service.classifications.name
+      description: 'Service classification name'
+      type: String
+    - contextPath: Expanse.Service.cloudManagementStatus.id
+      description: 'The Internal ID of the cloud management status'
+      type: String
+    - contextPath: Expanse.Service.cloudManagementStatus.name
+      description: 'Name of the cloud management status'
+      type: String
+    - contextPath: Expanse.Service.domain.assetId
+      description: 'The Internal Asset ID of the domain related to the service'
+      type: String
+    - contextPath: Expanse.Service.domain.domain
+      description: 'The domain name related to the service'
+      type: String
+    - contextPath: Expanse.Service.domain.firstObserved
+      description: 'The first observation of a domain related to the service'
+      type: Date
+    - contextPath: Expanse.Service.domain.lastObserved
+      description: 'The last observation of a domain related to the service'
+      type: Date
+    - contextPath: Expanse.Service.discoveryInfo.type
+      description: 'Whether the service was directly discovered or colocated'
+      type: String
+    - contextPath: Expanse.Service.firstObserved
+      description: 'First observation of the service'
+      type: Date
+    - contextPath: Expanse.Service.id
+      description: 'The internal Expanse ID of the service'
+      type: String
+    - contextPath: Expanse.Service.ips.assetId
+      description: 'The Internal Asset ID of the ip related to the service'
+      type: String
+    - contextPath: Expanse.Service.ips.firstObserved
+      description: 'First observation of the ip related to the service'
+      type: Date
+    - contextPath: Expanse.Service.ips.geolocation.city
+      description: 'Geolocation city of the ip related to the service'
+      type: String
+    - contextPath: Expanse.Service.ips.geolocation.countryCode
+      description: 'Geolocation country of the ip related to the service'
+      type: String
+    - contextPath: Expanse.Service.ips.geolocation.latitude
+      description: 'Geolocation latitude of the ip related to the service'
+      type: Number
+    - contextPath: Expanse.Service.ips.geolocation.longitude
+      description: 'Geolocation longitude of the ip related to the service'
+      type: Number
+    - contextPath: Expanse.Service.ips.geolocation.regionCode
+      description: 'Geolocation region of the ip related to the service'
+      type: String
+    - contextPath: Expanse.Service.ips.geolocation.timeZone
+      description: 'Geolocation timeZone of the ip related to the service'
+      type: String
+    - contextPath: Expanse.Service.ips.ip
+      description: 'IPv4 Address of the ip related to the service'
+      type: String
+    - contextPath: Expanse.Service.ips.lastObserved
+      description: 'Last observation of the ip related to the service'
+      type: Date
+    - contextPath: Expanse.Service.ips.provider.id
+      description: 'Provider ID of the ip related to the service'
+      type: String
+    - contextPath: Expanse.Service.ips.provider.name
+      description: 'provider name of the ip related to the service'
+      type: String
+    - contextPath: Expanse.Service.ips.transportProtocol
+      description: 'Transport protocol of the ip related to the service'
+      type: String
+    - contextPath: Expanse.Service.lastObserved
+      description: 'Last observation of the service'
+      type: Date
+    - contextPath: Expanse.Service.name
+      description: 'Summary of the service observation'
+      type: String
+    - contextPath: Expanse.Service.portNumber
+      description: 'Summary of the service observation'
+      type: Number
+    - contextPath: Expanse.Service.tlsVersions.cipherSuite
+      description: 'Cipher suite of the TLS version observed on the service'
+      type: String
+    - contextPath: Expanse.Service.tlsVersions.firstObserved
+      description: 'First observation of the TLS version observed on the service'
+      type: Date
+    - contextPath: Expanse.Service.tlsVersions.lastObserved
+      description: 'Last observation of the TLS version observed on the service'
+      type: Date
+    - contextPath: Expanse.Service.tlsVersions.tlsVersion
+      description: 'TLS version observed on the service'
+      type: String
   - name: expanse-get-issues
     description: Retrieve issues
     deprecated: false
@@ -249,8 +1090,20 @@ script:
       required: false
       secret: false
     - default: false
+      description: Returns only results whose cloud management status is the following.
+        (comma separated string, options are 'NotApplicable', 'ManagedCloud', 'UnmanagedCloud').
+      isArray: true
+      name: cloud_management_status
+      required: false
+      secret: false
+      auto: PREDEFINED
+      predefined:
+        - NotApplicable
+        - ManagedCloud
+        - UnmanagedCloud
+    - default: false
       description: Sort by specified properties.
-      isArray: false
+      isArray: true
       auto: PREDEFINED
       name: sort
       required: false
@@ -407,6 +1260,12 @@ script:
       type: Date
     - contextPath: Expanse.Issue.certificate.version
       description: 'The version in the certificate'
+      type: String
+    - contextPath: Expanse.Issue.cloudManagementStatus.id
+      description: 'The id of the cloud management status'
+      type: String
+    - contextPath: Expanse.Issue.cloudManagementStatus.name
+      description: 'The name of the cloud management status'
       type: String
     - contextPath: Expanse.Issue.created
       description: 'When the issue instance was created'
@@ -1093,6 +1952,12 @@ script:
     - contextPath: Expanse.Issue.certificate.version
       description: 'The version in the certificate'
       type: String
+    - contextPath: Expanse.Issue.cloudManagementStatus.id
+      description: 'The ID of the cloud management status'
+      type: String
+    - contextPath: Expanse.Issue.cloudManagementStatus.name
+      description: 'The name of the cloud management status'
+      type: String
     - contextPath: Expanse.Issue.created
       description: 'When the issue instance was created'
       type: Date
@@ -1518,6 +2383,350 @@ script:
     - contextPath: Expanse.Provider.name
       description: 'Provider name'
       type: String
+  - name: expanse-list-pocs
+    description: List available Point of Contacts from Expanse.
+    deprecated: false
+    execution: false
+    arguments:
+      - default: false
+        description: Maximum number of results to retrieve
+        isArray: false
+        name: limit
+        required: false
+        secret: false
+    outputs:
+      - contextPath: 'Expanse.PointOfContact.created'
+        description: 'The date in which the Point of Contact was first created'
+        type: Date
+      - contextPath: 'Expanse.PointOfContact.email'
+        description: 'Email address of Point of Contact'
+        type: String
+      - contextPath: 'Expanse.PointOfContact.firstName'
+        description: 'First Name of Point of Contact'
+        type: String
+      - contextPath: 'Expanse.PointOfContact.id'
+        description: 'Internal ID of Point of Contact'
+        type: String
+      - contextPath: 'Expanse.PointOfContact.lastName'
+        description: 'Last Name of Point of Contact'
+        type: String
+      - contextPath: 'Expanse.PointOfContact.modified'
+        description: 'The date in which the Point of Contact was last modified'
+        type: Date
+      - contextPath: 'Expanse.PointOfContact.phone'
+        description: 'Phone number of Point of Contact'
+        type: String
+      - contextPath: 'Expanse.PointOfContact.role'
+        description: 'Role of Point of Contact'
+        type: String
+  - name: expanse-create-poc
+    description: Create a new Point of Contact in Expanse.
+    deprecated: false
+    execution: false
+    arguments:
+    - default: false
+      description: Email for Point of Contact.
+      isArray: false
+      name: email
+      required: true
+      secret: false
+    - default: false
+      description: First name of Point of Contact. Should be less than 64 characters.
+      isArray: false
+      name: first_name
+      required: false
+      secret: false
+    - default: false
+      description: Last name of Point of Contact. Should be less than 64 characters.
+      isArray: false
+      name: last_name
+      required: false
+      secret: false
+    - default: false
+      description: Phone number of Point of Contact. Should be a numeric string (ex. 15551234567)
+      isArray: false
+      name: phone
+      required: false
+      secret: false
+    - default: false
+      description: Role of Point of Contact. Should be less than 64 characters.
+      isArray: false
+      name: role
+      required: false
+      secret: false
+    outputs:
+      - contextPath: 'Expanse.PointOfContact.created'
+        description: 'The date in which the Point of Contact was first created'
+        type: Date
+      - contextPath: 'Expanse.PointOfContact.email'
+        description: 'Email address of Point of Contact'
+        type: String
+      - contextPath: 'Expanse.PointOfContact.firstName'
+        description: 'First Name of Point of Contact'
+        type: String
+      - contextPath: 'Expanse.PointOfContact.id'
+        description: 'Internal ID of Point of Contact'
+        type: String
+      - contextPath: 'Expanse.PointOfContact.lastName'
+        description: 'Last Name of Point of Contact'
+        type: String
+      - contextPath: 'Expanse.PointOfContact.modified'
+        description: 'The date in which the Point of Contact was last modified'
+        type: Date
+      - contextPath: 'Expanse.PointOfContact.phone'
+        description: 'Phone number of Point of Contact'
+        type: String
+      - contextPath: 'Expanse.PointOfContact.role'
+        description: 'Role of Point of Contact'
+        type: String
+  - name: expanse-assign-pocs-to-asset
+    description: Assign Point of Contacts to an Expanse asset.
+    deprecated: false
+    execution: false
+    arguments:
+    - default: false
+      description: Type of Expanse asset to assign the poc to.
+      isArray: false
+      name: asset_type
+      required: true
+      secret: false
+      auto: PREDEFINED
+      predefined:
+      - 'IpRange'
+      - 'Certificate'
+      - 'Domain'
+      - 'CloudResource'
+    - default: false
+      description: ID of the asset to assign the poc to.
+      isArray: false
+      name: asset_id
+      required: true
+      secret: false
+    - default: false
+      description: IDs of the pocs to assign to the asset (comma separated string).
+        If used in combination with 'poc_emails' the lists of pocs are merged.
+        At least one poc ID or poc email must be provided.
+      isArray: true
+      name: pocs
+      required: false
+      secret: false
+    - default: false
+      description: Email Addresses of the pocs to assign to the asset (comma separated string).
+        If used in combination with 'pocs' the lists of pocs are merged.
+        At least one poc ID or poc email must be provided.
+      isArray: true
+      name: poc_emails
+      required: false
+      secret: false
+    outputs: []
+  - name: expanse-unassign-pocs-from-asset
+    description: Unassign Point of Contacts from an Expanse Asset.
+    deprecated: false
+    execution: false
+    arguments:
+    - default: false
+      description: Type of Expanse asset to unassign the pocs from.
+      isArray: false
+      name: asset_type
+      required: true
+      secret: false
+      auto: PREDEFINED
+      predefined:
+      - 'IpRange'
+      - 'Certificate'
+      - 'Domain'
+      - 'CloudResource'
+    - default: false
+      description: ID of the asset to unassign the pocs from.
+      isArray: false
+      name: asset_id
+      required: true
+      secret: false
+    - default: false
+      description: IDs of the pocs to unassign from the asset (comma separated string).
+        If used in combination with 'poc_emails' the lists of pocs are merged.
+        At least one poc ID or poc email must be provided.
+      isArray: true
+      name: pocs
+      required: false
+      secret: false
+    - default: false
+      description: Names of the pocs to unassign from the asset (comma separated string).
+        If used in combination with 'pocs' the lists of pocs are merged.
+        At least one poc ID or poc email must be provided.
+      isArray: true
+      name: poc_emails
+      required: false
+      secret: false
+    outputs: []
+  - name: expanse-assign-pocs-to-iprange
+    description: Assign Point of Contacts to an Expanse IP range.
+    deprecated: false
+    execution: false
+    arguments:
+    - default: false
+      description: ID of the IP range to assign pocs to.
+      isArray: false
+      name: asset_id
+      required: true
+      secret: false
+    - default: false
+      description: IDs of the pocs to assign to the IP range (comma separated string).
+        If used in combination with 'poc_emails' the lists of pocs are merged.
+        At least one poc ID or poc email must be provided.
+      isArray: true
+      name: pocs
+      required: false
+      secret: false
+    - default: false
+      description: Emails of the pocs to assign to the IP range (comma separated string).
+        If used in combination with 'pocs' the lists of pocs are merged.
+        At least one poc ID or poc email must be provided.
+      isArray: true
+      name: poc_emails
+      required: false
+      secret: false
+    outputs: []
+  - name: expanse-unassign-pocs-from-iprange
+    description: Unassign Point of Contacts from an Expanse IP range.
+    deprecated: false
+    execution: false
+    arguments:
+    - default: false
+      description: ID of the IP range to unassign pocs from.
+      isArray: false
+      name: asset_id
+      required: true
+      secret: false
+    - default: false
+      description: IDs of the pocs to unassign from the IP range (comma separated
+        string). If used in combination with 'poc_emails' the lists of pocs are merged.
+        At least one poc ID or poc email must be provided.
+      isArray: true
+      name: pocs
+      required: false
+      secret: false
+    - default: false
+      description: Names of the pocs to unassign from the IP range (comma separated
+        string). If used in combination with 'pocs' the lists of pocs are merged.
+        At least one poc ID or poc email must be provided.
+      isArray: true
+      name: poc_emails
+      required: false
+      secret: false
+    outputs: []
+  - name: expanse-assign-pocs-to-certificate
+    description: Assign pocs to an Expanse certificate.
+    deprecated: false
+    execution: false
+    arguments:
+    - default: false
+      description: ID of the certificate to assign pocs to.
+      isArray: false
+      name: asset_id
+      required: true
+      secret: false
+    - default: false
+      description: IDs of the pocs to assign to the certificate (comma separated string).
+        If used in combination with 'poc_emails' the lists of pocs are merged.
+        At least one poc ID or poc email must be provided.
+      isArray: true
+      name: pocs
+      required: false
+      secret: false
+    - default: false
+      description: Emails of the pocs to assign to the certificate (comma separated
+        string). If used in combination with 'pocs' the lists of pocs are merged.
+        At least one poc ID or poc email must be provided.
+      isArray: true
+      name: poc_emails
+      required: false
+      secret: false
+    outputs: []
+  - name: expanse-unassign-pocs-from-certificate
+    description: Unassign pocs from an Expanse certificate.
+    deprecated: false
+    execution: false
+    arguments:
+    - default: false
+      description: ID of the certificate to assign pocs to.
+      isArray: false
+      name: asset_id
+      required: true
+      secret: false
+    - default: false
+      description: IDs of the pocs to unassign from the certificate (comma separated
+        string). If used in combination with 'poc_emails' the lists of pocs are merged.
+        At least one poc ID or poc email must be provided.
+      isArray: true
+      name: pocs
+      required: false
+      secret: false
+    - default: false
+      description: Emails of the pocs to unassign from the certificate (comma separated
+        string). If used in combination with 'pocs' the lists of pocs are merged.
+        At least one poc ID or poc email must be provided.
+      isArray: true
+      name: poc_emails
+      required: false
+      secret: false
+    outputs: []
+  - name: expanse-assign-pocs-to-domain
+    description: Assign pocs to an Expanse domain.
+    deprecated: false
+    execution: false
+    arguments:
+    - default: false
+      description: ID of the domain to assign pocs to.
+      isArray: false
+      name: asset_id
+      required: true
+      secret: false
+    - default: false
+      description: IDs of the pocs to assign to the domain (comma separated string).
+        If used in combination with 'poc_emails' the lists of pocs are merged.
+        At least one poc ID or poc email must be provided.
+      isArray: true
+      name: pocs
+      required: false
+      secret: false
+    - default: false
+      description: Emails of the pocs to assign to the domain (comma separated string).
+        If used in combination with 'pocs' the lists of pocs are merged.
+        At least one poc ID or poc email must be provided.
+      isArray: true
+      name: poc_emails
+      required: false
+      secret: false
+    outputs: []
+  - name: expanse-unassign-pocs-from-domain
+    description: Unassign pocs from an Expanse domain.
+    deprecated: false
+    execution: false
+    arguments:
+    - default: false
+      description: ID of the domain to unassign pocs from.
+      isArray: false
+      name: asset_id
+      required: true
+      secret: false
+    - default: false
+      description: IDs of the pocs to unassign from the domain (comma separated string).
+        If used in combination with 'poc_emails' the lists of pocs are merged.
+        At least one poc ID or poc email must be provided.
+      isArray: true
+      name: pocs
+      required: false
+      secret: false
+    - default: false
+      description: Emails of the pocs to unassign from the domain (comma separated
+        string). If used in combination with 'pocs' the lists of pocs are merged.
+        At least one poc ID or poc email must be provided.
+      isArray: true
+      name: poc_emails
+      required: false
+      secret: false
+    outputs: []
   - name: expanse-list-tags
     description: List available tags from Expanse.
     deprecated: false
@@ -1567,6 +2776,7 @@ script:
       - 'IpRange'
       - 'Certificate'
       - 'Domain'
+      - 'CloudResource'
     - default: false
       description: ID of the asset to assign the tags to.
       isArray: false
@@ -1604,6 +2814,7 @@ script:
       - 'IpRange'
       - 'Certificate'
       - 'Domain'
+      - 'CloudResource'
     - default: false
       description: ID of the asset to unassign the tags from.
       isArray: false
@@ -1856,12 +3067,6 @@ script:
       required: false
       secret: false
     - default: false
-      description: Maximum number of entries to retrieve.
-      isArray: false
-      name: limit
-      required: false
-      secret: false
-    - default: false
       description: Returns only results whose Tag ID falls in the provided list. (comma
         separated string). Cannot be used with the 'tag_names' argument.
       isArray: true
@@ -1882,6 +3087,13 @@ script:
         (comma separated) - annotations, severityCounts, attributionReasons, relatedRegistrationInformation,
         locationInformation
       defaultValue: none
+      auto: PREDEFINED
+      predefined:
+        - "annotations"
+        - "severityCounts"
+        - "attributionReasons"
+        - "relatedRegistrationInformation"
+        - "locationInformation"
       required: false
       secret: false
     - default: false
@@ -3818,6 +5030,276 @@ script:
     - contextPath: DBotScore.Type
       description: The indicator type.
       type: String
+  - name: expanse-get-cloud-resources
+    description: Retrieve cloud resources from Expanse.
+    deprecated: false
+    execution: false
+    arguments:
+    - default: false
+      description: Maximum number of cloud resources to retrieve.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Last date the cloud resource was observed by Expanse (Format is YYYY-MM-DD).
+      isArray: false
+      name: last_observed_date
+      required: false
+      secret: false
+    - default: false
+      description: A domain search string to find related cloud resources.
+      isArray: false
+      name: domain
+      required: false
+      secret: false
+    - default: false
+      description: An IP search string to find related cloud resources.
+      isArray: false
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      description: A search string of provider IDs to find cloud resources hosted by specific providers.
+      isArray: true
+      name: providers
+      required: false
+      secret: false
+    - default: false
+      description: A search string of provider names to find cloud resources hosted by specific providers.
+      isArray: true
+      name: provider_names
+      required: false
+      secret: false
+    - default: false
+      description: A search string of business unit IDs to find cloud resources belonging to a specific business unit.
+      isArray: true
+      name: business_units
+      required: false
+      secret: false
+    - default: false
+      description: A search string of business unit names to find cloud resources belonging to a specific business unit.
+      isArray: true
+      name: business_unit_names
+      required: false
+      secret: false
+    - default: false
+      description: A search string of tag IDs to find cloud resources that have been assigned a specific tag.
+      isArray: true
+      name: tags
+      required: false
+      secret: false
+    - default: false
+      description: A search string of tag names to find cloud resources that have been assigned a specific tag.
+      isArray: true
+      name: tag_names
+      required: false
+      secret: false
+    - default: false
+      description: A search string of asset types to find cloud resources of a specific type.
+      isArray: true
+      name: types
+      required: false
+      secret: false
+    - default: false
+      description: A search string of regions to find cloud resources that are hosted in a specific region.
+      isArray: true
+      name: regions
+      required: false
+      secret: false
+    outputs:
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: Expanse.CloudResource.accountIntegration.id
+      description: The ID of the cloud resource account integration.
+      type: String
+    - contextPath: Expanse.CloudResource.accountIntegration.name
+      description: The name of the cloud resource account integration.
+      type: String
+    - contextPath: Expanse.CloudResource.annotations.note
+      description: Note metadata on the cloud resource.
+      type: String
+    - contextPath: Expanse.CloudResource.businessUnits.id
+      description: The internal ID of the business unit that the cloud resource belongs to.
+      type: String
+    - contextPath: Expanse.CloudResource.businessUnits.name
+      description: The name of the business unit that the cloud resource belongs to.
+      type: String
+    - contextPath: Expanse.CloudResource.businessUnits.tenantId
+      description: The internal tenant ID of the business unit that the cloud resource belongs to.
+      type: String
+    - contextPath: Expanse.CloudResource.dateAdded
+      description: The date that the cloud resource was added.
+      type: Date
+    - contextPath: Expanse.CloudResource.details
+      description: Details about the cloud resource.
+      type: String
+    - contextPath: Expanse.CloudResource.domain
+      description: Domain name associated with the cloud resource.
+      type: String
+    - contextPath: Expanse.CloudResource.firstObserved
+      description: The date that the cloud resource was first observed.
+      type: Date
+    - contextPath: Expanse.CloudResource.id
+      description: The internal ID for the cloud resource.
+      type: String
+    - contextPath: Expanse.CloudResource.instanceId
+      description: The instance ID of the cloud resource.
+      type: String
+    - contextPath: Expanse.CloudResource.ips
+      description: IPs associated with the cloud resource.
+      type: String
+    - contextPath: Expanse.CloudResource.lastObserved
+      description: The date that the cloud resource was most recently observed.
+      type: Date
+    - contextPath: Expanse.CloudResource.name
+      description: The friendly name of the cloud resource.
+      type: String
+    - contextPath: Expanse.CloudResource.provider.id
+      description: The ID of the provider where the cloud resource is hosted.
+      type: String
+    - contextPath: Expanse.CloudResource.provider.name
+      description: The name of the provider where the cloud resource is hosted.
+      type: String
+    - contextPath: Expanse.CloudResource.region
+      description: The region where the cloud resouce is hosted.
+      type: String
+    - contextPath: Expanse.CloudResource.serviceStatus
+      description: Whether the cloud resource has any known associated services.
+      type: String
+    - contextPath: Expanse.CloudResource.sourceDetails
+      description: The integration source of the cloud resource.
+      type: String
+    - contextPath: Expanse.CloudResource.tenant.id
+      description: The internal tenant ID of the cloud resource.
+      type: String
+    - contextPath: Expanse.CloudResource.tenant.name
+      description: The tenant name of the cloud resouce
+      type: String
+    - contextPath: Expanse.CloudResource.tenant.tenantId
+      description: The internal tenant ID of the cloud resource.
+      type: String
+    - contextPath: Expanse.CloudResource.type
+      description: The type of cloud resource.
+      type: String
+    - contextPath: Expanse.CloudResource.vpc.id
+      description: Any associated VPC ID.
+      type: String
+    - contextPath: Expanse.CloudResource.vpc.name
+      description: Any associated VPC names.
+      type: String
+  - name: expanse-get-cloud-resource
+    description: Retrieve a specified cloud resource from Expanse.
+    deprecated: false
+    execution: false
+    arguments:
+      - default: false
+        description: The ID of the cloud resource.
+        isArray: false
+        name: id
+        required: true
+        secret: false
+    outputs:
+      - contextPath: DBotScore.Score
+        description: The actual score.
+        type: Number
+      - contextPath: DBotScore.Vendor
+        description: The vendor used to calculate the score.
+        type: String
+      - contextPath: DBotScore.Indicator
+        description: The indicator that was tested.
+        type: String
+      - contextPath: DBotScore.Type
+        description: The indicator type.
+        type: String
+      - contextPath: Expanse.CloudResource.accountIntegration.id
+        description: The ID of the cloud resource account integration.
+        type: String
+      - contextPath: Expanse.CloudResource.accountIntegration.name
+        description: The name of the cloud resource account integration.
+        type: String
+      - contextPath: Expanse.CloudResource.annotations.note
+        description: Note metadata on the cloud resource.
+        type: String
+      - contextPath: Expanse.CloudResource.businessUnits.id
+        description: The internal ID of the business unit that the cloud resource belongs to.
+        type: String
+      - contextPath: Expanse.CloudResource.businessUnits.name
+        description: The name of the business unit that the cloud resource belongs to.
+        type: String
+      - contextPath: Expanse.CloudResource.businessUnits.tenantId
+        description: The internal tenant ID of the business unit that the cloud resource belongs to.
+        type: String
+      - contextPath: Expanse.CloudResource.dateAdded
+        description: The date that the cloud resource was added.
+        type: Date
+      - contextPath: Expanse.CloudResource.details
+        description: Details about the cloud resource.
+        type: String
+      - contextPath: Expanse.CloudResource.domain
+        description: Domain name associated with the cloud resource.
+        type: String
+      - contextPath: Expanse.CloudResource.firstObserved
+        description: The date that the cloud resource was first observed.
+        type: Date
+      - contextPath: Expanse.CloudResource.id
+        description: The internal ID for the cloud resource.
+        type: String
+      - contextPath: Expanse.CloudResource.instanceId
+        description: The instance ID of the cloud resource.
+        type: String
+      - contextPath: Expanse.CloudResource.ips
+        description: IPs associated with the cloud resource.
+        type: String
+      - contextPath: Expanse.CloudResource.lastObserved
+        description: The date that the cloud resource was most recently observed.
+        type: Date
+      - contextPath: Expanse.CloudResource.name
+        description: The friendly name of the cloud resource.
+        type: String
+      - contextPath: Expanse.CloudResource.provider.id
+        description: The ID of the provider where the cloud resource is hosted.
+        type: String
+      - contextPath: Expanse.CloudResource.provider.name
+        description: The name of the provider where the cloud resource is hosted.
+        type: String
+      - contextPath: Expanse.CloudResource.region
+        description: The region where the cloud resouce is hosted.
+        type: String
+      - contextPath: Expanse.CloudResource.serviceStatus
+        description: Whether the cloud resource has any known associated services.
+        type: String
+      - contextPath: Expanse.CloudResource.sourceDetails
+        description: The integration source of the cloud resource.
+        type: String
+      - contextPath: Expanse.CloudResource.tenant.id
+        description: The internal tenant ID of the cloud resource.
+        type: String
+      - contextPath: Expanse.CloudResource.tenant.name
+        description: The tenant name of the cloud resouce
+        type: String
+      - contextPath: Expanse.CloudResource.tenant.tenantId
+        description: The internal tenant ID of the cloud resource.
+        type: String
+      - contextPath: Expanse.CloudResource.type
+        description: The type of cloud resource.
+        type: String
+      - contextPath: Expanse.CloudResource.vpc.id
+        description: Any associated VPC ID.
+        type: String
+      - contextPath: Expanse.CloudResource.vpc.name
+        description: Any associated VPC names.
+        type: String
   - name: expanse-get-risky-flows
     description: Retrieve risky flows detected by Expanse Behavior.
     deprecated: false
@@ -4864,6 +6346,32 @@ script:
     - contextPath: DBotScore.Type
       description: The indicator type.
       type: String
+  - arguments:
+    - default: true
+      description: The certificate common name. Fuzzy matching is done on this name,
+        however query times can grow quite large when searching for short strings.
+        Ex. "*.myhost.com" is a better search term than "host"
+      isArray: false
+      name: common_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns all domains which have been seen with the specified certificate.
+    execution: false
+    name: expanse-get-domains-for-certificate
+    outputs:
+    - contextPath: Expanse.IPDomains.SearchTerm
+      description: The common name that was searched.
+      type: String
+    - contextPath: Expanse.IPDomains.TotalDomainCount
+      description: The number of domains found matching the specified certificate.
+      type: Number
+    - contextPath: Expanse.IPDomains.FlatDomainList
+      description: An array of all domain names found. This is truncated at 50.
+      type: Unknown
+    - contextPath: Expanse.IPDomains.DomainList
+      description: An array of domain objects. This is truncated at 50.
+      type: Unknown
   isfetch: true
   feed: false
   runonce: false
@@ -4873,7 +6381,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.9.1.14969
+  dockerimage: demisto/python3:3.9.7.24076
 defaultclassifier: ExpanseV2
 defaultmapperin: ExpanseV2-mapper
 fromversion: 6.0.0

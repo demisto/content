@@ -1,0 +1,1122 @@
+id: LGTM-test-playbook
+name: LGTM-test-playbook
+version: -1
+fromversion: 6.0.0
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 'ae71dbb7-4dce-4ef8-93f7-b70edc92ccd4'
+    type: start
+    task:
+      id: 'ae71dbb7-4dce-4ef8-93f7-b70edc92ccd4'
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 50}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: 1
+    taskid: 'b222d4bb-7cad-41a0-9eac-e1b18be9ff04'
+    type: regular
+    task:
+      id: 'b222d4bb-7cad-41a0-9eac-e1b18be9ff04'
+      version: -1
+      name: DeleteContext
+      description: ''
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '2':
+    id: 2
+    taskid: '28f5676c-6ae4-4ede-bfda-6aee1c1ddac4'
+    type: regular
+    task:
+      id: '28f5676c-6ae4-4ede-bfda-6aee1c1ddac4'
+      version: -1
+      name: lgtm-add-project
+      description: ''
+      script: '|||lgtm-add-project'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '3':
+    id: 3
+    taskid: 'aa12ffa1-8c8f-4f70-b6ac-27e8693923af'
+    type: regular
+    task:
+      id: 'aa12ffa1-8c8f-4f70-b6ac-27e8693923af'
+      version: -1
+      name: lgtm-get-alerts
+      description: ''
+      script: '|||lgtm-get-alerts'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '4':
+    id: '4'
+    taskid: '0e2b8e09-9fba-446c-92d4-9ec3b1a0d9e9'
+    type: condition
+    task:
+      id: '0e2b8e09-9fba-446c-92d4-9ec3b1a0d9e9'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '5'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.alerts.runs.results.ruleId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.alerts.runs.results.partialFingerprints.primaryLocationLineHash
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '5':
+    id: 5
+    taskid: 'abafb980-c66f-4505-92ef-6a172e1f84e5'
+    type: regular
+    task:
+      id: 'abafb980-c66f-4505-92ef-6a172e1f84e5'
+      version: -1
+      name: lgtm-get-analysis
+      description: ''
+      script: '|||lgtm-get-analysis'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '6'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '6':
+    id: '6'
+    taskid: '91beb7cd-48b6-4162-bd98-c4b9e3b600d2'
+    type: condition
+    task:
+      id: '91beb7cd-48b6-4162-bd98-c4b9e3b600d2'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '7'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.analysis_summary.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.analysis_summary.commit-id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.analysis_summary.languages.language
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.analysis_summary.languages.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.analysis_summary.languages.alerts
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.analysis_summary.languages.lines
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.analysis_summary.languages.commit-id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.analysis_summary.languages.commit-date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.analysis_summary.languages.analysis-date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.analysis_summary.log-url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.analysis_summary.results-url
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '7':
+    id: 7
+    taskid: 'cd302772-f129-4e9c-af9b-989a71a59827'
+    type: regular
+    task:
+      id: 'cd302772-f129-4e9c-af9b-989a71a59827'
+      version: -1
+      name: lgtm-get-analysis-for-commit
+      description: ''
+      script: '|||lgtm-get-analysis-for-commit'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '8'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '8':
+    id: '8'
+    taskid: '8fba826c-d7d5-48bc-b6cd-b940a5b80a24'
+    type: condition
+    task:
+      id: '8fba826c-d7d5-48bc-b6cd-b940a5b80a24'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '9'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.analysis_summary.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.analysis_summary.commit-id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.analysis_summary.languages.language
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.analysis_summary.languages.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.analysis_summary.languages.alerts
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.analysis_summary.languages.lines
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.analysis_summary.languages.commit-id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.analysis_summary.languages.commit-date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.analysis_summary.languages.analysis-date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.analysis_summary.log-url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.analysis_summary.results-url
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '9':
+    id: 9
+    taskid: 'f58f2b8e-6896-4c59-93f8-787c898125bd'
+    type: regular
+    task:
+      id: 'f58f2b8e-6896-4c59-93f8-787c898125bd'
+      version: -1
+      name: lgtm-get-code-review
+      description: ''
+      script: '|||lgtm-get-code-review'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '10'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '10':
+    id: '10'
+    taskid: '4cbcd66e-fbd1-43c3-8d6b-7548b106080d'
+    type: condition
+    task:
+      id: '4cbcd66e-fbd1-43c3-8d6b-7548b106080d'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '11'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.code_review_result.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.code_review_result.results-url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.code_review_result.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.code_review_result.status-message
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.code_review_result.languages.language
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.code_review_result.languages.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.code_review_result.languages.status-message
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.code_review_result.languages.new
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.code_review_result.languages.fixed
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.code_review_result.languages.alerts.new
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.code_review_result.languages.alerts.fixed
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.code_review_result.languages.alerts.query.properties.id
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 2000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '11':
+    id: 11
+    taskid: '64a9f011-894d-476c-bdd4-84961a6d69bd'
+    type: regular
+    task:
+      id: '64a9f011-894d-476c-bdd4-84961a6d69bd'
+      version: -1
+      name: lgtm-get-project
+      description: ''
+      script: '|||lgtm-get-project'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '12'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '12':
+    id: '12'
+    taskid: 'bc7e0e99-fe71-4830-9b90-429d32c17bec'
+    type: condition
+    task:
+      id: 'bc7e0e99-fe71-4830-9b90-429d32c17bec'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '13'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.project_details.languages.grade
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.project_details.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.project_details.name
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 2400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '13':
+    id: 13
+    taskid: 'be38e283-5740-4b89-8cef-b496352bdb38'
+    type: regular
+    task:
+      id: 'be38e283-5740-4b89-8cef-b496352bdb38'
+      version: -1
+      name: lgtm-get-project-by-url-identifier
+      description: ''
+      script: '|||lgtm-get-project-by-url-identifier'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '14'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '14':
+    id: '14'
+    taskid: 'f3af246a-f467-440f-a399-83771c2dfc4b'
+    type: condition
+    task:
+      id: 'f3af246a-f467-440f-a399-83771c2dfc4b'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '15'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.project_details.languages.grade
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.project_details.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.project_details.name
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 2800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '15':
+    id: 15
+    taskid: 'c08d2b53-f22c-4939-a528-7ecdc0256128'
+    type: regular
+    task:
+      id: 'c08d2b53-f22c-4939-a528-7ecdc0256128'
+      version: -1
+      name: lgtm-get-project-config
+      description: ''
+      script: '|||lgtm-get-project-config'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '16'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 3000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '16':
+    id: 16
+    taskid: '1907738b-5d23-4f8c-859b-544b2afee07b'
+    type: regular
+    task:
+      id: '1907738b-5d23-4f8c-859b-544b2afee07b'
+      version: -1
+      name: lgtm-get-projects
+      description: ''
+      script: '|||lgtm-get-projects'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '17'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 3200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '17':
+    id: '17'
+    taskid: '758c4825-fffd-4928-b170-16838a842f80'
+    type: condition
+    task:
+      id: '758c4825-fffd-4928-b170-16838a842f80'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '18'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.project-list.data.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.project-list.data.url-identifier
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.project-list.data.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.project-list.data.url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.project-list.nextPageUrl
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 3400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '18':
+    id: 18
+    taskid: '67e43e80-004c-41d9-a6d8-8ce1e65c3d37'
+    type: regular
+    task:
+      id: '67e43e80-004c-41d9-a6d8-8ce1e65c3d37'
+      version: -1
+      name: lgtm-get-version
+      description: ''
+      script: '|||lgtm-get-version'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '19'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 3600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '19':
+    id: '19'
+    taskid: 'c3edcf10-9dfc-458e-be71-a58104c1b223'
+    type: condition
+    task:
+      id: 'c3edcf10-9dfc-458e-be71-a58104c1b223'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '20'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.version.apiVersion
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 3800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '20':
+    id: 20
+    taskid: '359f107b-e0b1-4021-a05b-c4cdb98c9bc2'
+    type: regular
+    task:
+      id: '359f107b-e0b1-4021-a05b-c4cdb98c9bc2'
+      version: -1
+      name: lgtm-request-analysis
+      description: ''
+      script: '|||lgtm-request-analysis'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '21'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 4000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '21':
+    id: '21'
+    taskid: '97846a59-48df-400c-9501-925bdbb4f3f6'
+    type: condition
+    task:
+      id: '97846a59-48df-400c-9501-925bdbb4f3f6'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '22'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.analysis.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.analysis.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.analysis_request.task-result.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.analysis_request.task-result.commit-id
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 4200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '22':
+    id: 22
+    taskid: '0eba7d5d-b64d-49e5-8e51-f87ae781687b'
+    type: regular
+    task:
+      id: '0eba7d5d-b64d-49e5-8e51-f87ae781687b'
+      version: -1
+      name: lgtm-request-review
+      description: ''
+      script: '|||lgtm-request-review'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '23'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 4400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '23':
+    id: '23'
+    taskid: '3cfa8082-60bb-46bd-87d4-e6335382dfd3'
+    type: condition
+    task:
+      id: '3cfa8082-60bb-46bd-87d4-e6335382dfd3'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '24'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.code_review_request.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.code_review_request.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.code_review_request.task-result.id
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 4600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '24':
+    id: 24
+    taskid: 'd5fe6a9b-3d15-4669-a173-7eecb7b20052'
+    type: regular
+    task:
+      id: 'd5fe6a9b-3d15-4669-a173-7eecb7b20052'
+      version: -1
+      name: lgtm-create-query-job
+      description: ''
+      script: '|||lgtm-create-query-job'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '25'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 4800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '25':
+    id: '25'
+    taskid: '3ea1be7c-622e-4aad-ae8e-2eedd52f4052'
+    type: condition
+    task:
+      id: '3ea1be7c-622e-4aad-ae8e-2eedd52f4052'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '26'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.Queries.task-result.id
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 5000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '26':
+    id: 26
+    taskid: '1d25c4f3-a595-4096-849c-447e881799ae'
+    type: regular
+    task:
+      id: '1d25c4f3-a595-4096-849c-447e881799ae'
+      version: -1
+      name: lgtm-get-query-job
+      description: ''
+      script: '|||lgtm-get-query-job'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '27'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 5200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '27':
+    id: '27'
+    taskid: '856ae90c-3a11-4f71-a34f-c3c1afe94c31'
+    type: condition
+    task:
+      id: '856ae90c-3a11-4f71-a34f-c3c1afe94c31'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '28'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.queryjob.id
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 5400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '28':
+    id: 28
+    taskid: '03fd9689-41bc-49c9-8357-2432ccb135c7'
+    type: regular
+    task:
+      id: '03fd9689-41bc-49c9-8357-2432ccb135c7'
+      version: -1
+      name: lgtm-get-query-job-results-for-project
+      description: ''
+      script: '|||lgtm-get-query-job-results-for-project'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '29'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 5600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '29':
+    id: '29'
+    taskid: '541339ae-ce26-4d74-b7a1-d428028fc6e4'
+    type: condition
+    task:
+      id: '541339ae-ce26-4d74-b7a1-d428028fc6e4'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '30'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.queryjob-project-results.data.line
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.queryjob-project-results.data.file
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.queryjob-project-results.data.value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.queryjob-project-results.data.url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.queryjob-project-results.next
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.queryjob_project_results.project.id
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 5800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '30':
+    id: 30
+    taskid: '80cc991c-66d3-40e5-8d01-a0432b9a6d8b'
+    type: regular
+    task:
+      id: '80cc991c-66d3-40e5-8d01-a0432b9a6d8b'
+      version: -1
+      name: lgtm-get-query-job-results-overview
+      description: ''
+      script: '|||lgtm-get-query-job-results-overview'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '31'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 6000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '31':
+    id: '31'
+    taskid: 'd2408739-8cde-4aca-a633-b26bb38663db'
+    type: condition
+    task:
+      id: 'd2408739-8cde-4aca-a633-b26bb38663db'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '32'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.queryjob-results-overview.data.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.queryjob-results-overview.data.total
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.queryjob-results-overview.data.internal
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.queryjob-results-overview.data.external
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.queryjob-results-overview.data.error
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.queryjob-results-overview.next
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 6200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '32':
+    id: '32'
+    taskid: '94888873-9c20-4dc2-92b1-eba46addb3b2'
+    type: title
+    task:
+      id: '94888873-9c20-4dc2-92b1-eba46addb3b2'
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 6400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width":
+  380, "x": 50, "y": 50}}}'
+inputs: []
+outputs: []
+description: An LGTM Integration Testing Playbook

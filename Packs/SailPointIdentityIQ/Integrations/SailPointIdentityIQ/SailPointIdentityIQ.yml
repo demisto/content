@@ -1,0 +1,483 @@
+category: Identity and Access Management
+commonfields:
+  id: SailPointIdentityIQ
+  version: -1
+configuration:
+- additionalinfo: The FQDN/IP of the IdentityIQ server to connect
+  display: IdentityIQ Server URL (e.g. https://identityiq-server.com/identityiq)
+  name: identityiq_url
+  required: true
+  type: 12
+- additionalinfo: Client Id for OAuth 2.0
+  display: Client Id (for OAuth 2.0)
+  name: client_id
+  required: true
+  type: 4
+- additionalinfo: Client Secret for OAuth 2.0
+  display: Client Secret (for OAuth 2.0)
+  name: client_secret
+  required: true
+  type: 4
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: '50'
+  display: Maximum number of incidents per fetch
+  name: max_fetch
+  required: false
+  type: 0
+- defaultvalue: 3 days
+  display: First fetch time
+  name: first_fetch
+  required: false
+  type: 0
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+description: SailPoint IdentityIQ context pack enables XSOAR customers to utilize
+  the deep, enriched contextual data in the SailPoint predictive identity platform
+  to better drive identity-aware security practices.
+display: SailPoint IdentityIQ
+name: SailPointIdentityIQ
+script:
+  commands:
+  - arguments:
+    - description: Internal id of the identity being requested.
+      name: id
+    - description: Email address of the identity being requested.
+      name: email
+    - defaultValue: 'true'
+      description: Determines whether search will return only active identities.
+      name: active
+    - description: Numeric value of baseline risk score, users above this will be
+        returned.
+      name: risk
+    description: Search identities by search/filter parameters (id, email, risk &
+      active) using IdentityIQ SCIM API's.
+    name: identityiq-search-identities
+    outputs:
+    - contextPath: IdentityIQ.Identity.userName
+      description: The IdentityIQ username (primary id).
+      type: String
+    - contextPath: IdentityIQ.Identity.id
+      description: The IdentityIQ internal id (uuid).
+      type: String
+    - contextPath: IdentityIQ.Identity.name.formatted
+      description: The display name of the identity.
+      type: String
+    - contextPath: IdentityIQ.Identity.name.familyName
+      description: The last name of the identity.
+      type: String
+    - contextPath: IdentityIQ.Identity.name.givenName
+      description: The first name of the identity.
+      type: String
+    - contextPath: IdentityIQ.Identity.active
+      description: Indicates whether the id is active or inactive in IdentityIQ.
+      type: Boolean
+    - contextPath: IdentityIQ.Identity.manager.userName
+      description: The IdentityIQ username (primary id) of the identities manager.
+      type: String
+    - contextPath: IdentityIQ.Identity.lastModified
+      description: Timestamp of when the identity was last modified.
+      type: Date
+    - contextPath: IdentityIQ.Identity.displayName
+      description: The display name of the identity.
+      type: String
+    - contextPath: IdentityIQ.Identity.emails
+      description: Array of email objects.
+      type: Unknown
+    - contextPath: IdentityIQ.Identity.emails.type
+      description: Type of the email being returned.
+      type: String
+    - contextPath: IdentityIQ.Identity.emails.value
+      description: The email address of the identity.
+      type: String
+    - contextPath: IdentityIQ.Identity.emails.primary
+      description: Indicates if this email address is the identities primary email.
+      type: Boolean
+    - contextPath: IdentityIQ.Identity.entitlements
+      description: Array of entitlements objects that the identity has.
+      type: Unknown
+    - contextPath: IdentityIQ.Identity.roles
+      description: Array of role objects that the identity has.
+      type: Unknown
+    - contextPath: IdentityIQ.Identity.capabilities
+      description: Array of string representations of the IdentityIQ capabilities
+        assigned to this identity.
+      type: Unknown
+  - arguments:
+    - description: Internal id of the policy violation being requested.
+      name: id
+    description: Fetch policy violation by id or all policy violations using IdentityIQ
+      SCIM API's.
+    name: identityiq-get-policyviolations
+    outputs:
+    - contextPath: IdentityIQ.PolicyViolation.policyName
+      description: Name of the policy that was violated.
+      type: String
+    - contextPath: IdentityIQ.PolicyViolation.constraintName
+      description: Name of the constraint being violated.
+      type: String
+    - contextPath: IdentityIQ.PolicyViolation.status
+      description: Status of the violation (open/closed).
+      type: String
+    - contextPath: IdentityIQ.PolicyViolation.description
+      description: Description of the policy/conflict.
+      type: String
+    - contextPath: IdentityIQ.PolicyViolation.identity.value
+      description: Internal id of the IdentityIQ identity in violation.
+      type: Unknown
+    - contextPath: IdentityIQ.PolicyViolation.identity.displayName
+      description: Display name of the IdentityIQ identity in violation.
+      type: String
+    - contextPath: IdentityIQ.PolicyViolation.id
+      description: Internal id of the task result.
+      type: String
+  - arguments:
+    - description: Internal id of the task result being requested.
+      name: id
+    description: Fetch task result by id or all task results using IdentityIQ SCIM
+      API's.
+    name: identityiq-get-taskresults
+    outputs:
+    - contextPath: IdentityIQ.TaskResult.id
+      description: Internal id of the task result.
+      type: String
+    - contextPath: IdentityIQ.TaskResult.progress
+      description: String representation of the status of the task.
+      type: String
+    - contextPath: IdentityIQ.TaskResult.launched
+      description: Date representation of when the task was launched in IdentityIQ.
+      type: Date
+    - contextPath: IdentityIQ.TaskResult.taskDefinition
+      description: Name of the task template that this task result is an instantiation
+        of.
+      type: String
+    - contextPath: IdentityIQ.TaskResult.host
+      description: Host name of the IdentityIQ application server that is executing
+        this task.
+      type: String
+    - contextPath: IdentityIQ.TaskResult.type
+      description: Type of the task being executed.
+      type: String
+    - contextPath: IdentityIQ.TaskResult.pendingSignoffs
+      description: Number of signoffs on the task result that have not been done.
+      type: Number
+    - contextPath: IdentityIQ.TaskResult.completionStatus
+      description: Status of task 'success', 'termianted', 'failure', etc.
+      type: String
+    - contextPath: IdentityIQ.TaskResult.launcher
+      description: Name of the IdentityIQ identity who launched the task.
+      type: String
+    - contextPath: IdentityIQ.TaskResult.name
+      description: Unique name of the task that was launched.
+      type: String
+    - contextPath: IdentityIQ.TaskResult.completed
+      description: Timestamp of when the task was completed (if not currently executed).
+      type: Date
+  - arguments:
+    - description: Internal id of the account to be returned.
+      name: id
+    - description: displayName of the account to be returned.
+      name: display_name
+    - description: |-
+        Timestamp of the last time the account(s) were refreshed from the target system.
+        [format : yyyy-MM-dd'T'HH:mm:ss or yyyy-MM-dd]
+      name: last_refresh
+    - description: Unique identifier of the account on the target system.
+      name: native_identity
+    - description: |-
+        Timestamp of the last targeted aggregation of the account from the target system.
+        [format : yyyy-MM-dd'T'HH:mm:ss or yyyy-MM-dd]
+      name: last_target_agg
+    - description: Unique name of the identity for which all accounts will be returned.
+      name: identity_name
+    - description: Unique name of the application for which all accounts will be returned.
+      name: application_name
+    description: Fetch accounts by search/filter parameters (id, display_name, last_refresh,
+      native_identity, last_target_agg, identity_name & application_name) using IdentityIQ
+      SCIM API's.
+    name: identityiq-get-accounts
+    outputs:
+    - contextPath: IdentityIQ.Account.id
+      description: Internal id of the account.
+      type: String
+    - contextPath: IdentityIQ.Account.identity.value
+      description: Internal id of the identity that this account belongs to.
+      type: String
+    - contextPath: IdentityIQ.Account.identity.displayName
+      description: Display name of the identity that this account belongs to.
+      type: String
+    - contextPath: IdentityIQ.Account.hasEntitlements
+      description: True if the account has access entitlements assigned to it, else
+        false.
+      type: Boolean
+    - contextPath: IdentityIQ.Account.application.value
+      description: Internal id of the application that this account is on.
+      type: Unknown
+    - contextPath: IdentityIQ.Account.application.displayName
+      description: Display name of the application that this account is on.
+      type: String
+    - contextPath: IdentityIQ.Account.nativeIdentity
+      description: The name of the account as it exists on the application.
+      type: String
+    - contextPath: IdentityIQ.Account.lastRefreshed
+      description: Timestamp of when this account was last refreshed in IdentityIQ.
+      type: Date
+  - arguments:
+    - description: Internal id of the specific account to be disabled.
+      name: id
+      required: true
+    description: Disable account's active status by id using IdentityIQ SCIM API's.
+    name: identityiq-disable-account
+    outputs:
+    - contextPath: IdentityIQ.AccountDisable.active
+      description: Indicates the status of account (should be false after request
+        is successfully completed).
+      type: Boolean
+  - arguments:
+    - description: Internal id of the specific account to be enabled.
+      name: id
+      required: true
+    description: Enable account's active status by id using IdentityIQ SCIM API's.
+    name: identityiq-enable-account
+    outputs:
+    - contextPath: IdentityIQ.AccountDisable.active
+      description: Indicates the status of account (should be true after request is
+        successfully completed).
+      type: Boolean
+  - arguments:
+    - description: Internal id of the specific account to be deleted.
+      name: id
+      required: true
+    description: Delete account by id using IdentityIQ SCIM API's.
+    execution: true
+    name: identityiq-delete-account
+  - arguments:
+    - description: Internal id of the specific launched workflow being requested.
+      name: id
+    description: Fetch launched workflow by id or all launched workflows using IdentityIQ
+      SCIM API's.
+    name: identitytiq-get-launched-workflows
+    outputs:
+    - contextPath: IdentityIQ.Workflow.workflowName
+      description: Name of the workflow that was launched.
+      type: String
+    - contextPath: IdentityIQ.Workflow.identityRequestId
+      description: Unique id of the identity request that launched this workflow (if
+        exists).
+      type: String
+    - contextPath: IdentityIQ.Workflow.workflowCaseId
+      description: Internal id of the workflowcase for this workflow.
+      type: String
+    - contextPath: IdentityIQ.Workflow.launched
+      description: Timestamp of when this workflow was launched.
+      type: Date
+    - contextPath: IdentityIQ.Workflow.targetClass
+      description: Type of object targeted by the workflow, usually identity.
+      type: String
+    - contextPath: IdentityIQ.Workflow.targetName
+      description: Unique name of the object (username in the case of identity).
+      type: String
+    - contextPath: IdentityIQ.Workflow.type
+      description: The type of workflow.
+      type: String
+    - contextPath: IdentityIQ.Workflow.id
+      description: Internal id of the workflow.
+      type: String
+    - contextPath: IdentityIQ.Workflow.completionStatus
+      description: Status of workflow – 'success', 'failure', 'pending' etc.
+      type: String
+    - contextPath: IdentityIQ.Workflow.launcher
+      description: Name of the identity that launched the workflow.
+      type: String
+    - contextPath: IdentityIQ.Workflow.terminated
+      description: Indicates whether this workflow was terminated due to error or
+        intentionally stopped.
+      type: Boolean
+    - contextPath: IdentityIQ.Workflow.name
+      description: Name of the workflow that was launched.
+      type: String
+    - contextPath: IdentityIQ.Workflow.attributes
+      description: Array of key/value pairs that are the inputs and their values to
+        the workflow.
+      type: Unknown
+    - contextPath: IdentityIQ.Workflow.output
+      description: Array of key/type/value objects that list the output of the workflow.
+      type: Unknown
+  - arguments:
+    - description: Internal id of the specific role being requested.
+      name: id
+    description: Fetch role by id or all roles using IdentityIQ SCIM API's.
+    name: identityiq-get-roles
+    outputs:
+    - contextPath: IdentityIQ.Role.name
+      description: Unique name of the role object in IdentityIQ.
+      type: String
+    - contextPath: IdentityIQ.Role.owner.value
+      description: Internal id of the role owner identity.
+      type: String
+    - contextPath: IdentityIQ.Role.owner.displayName
+      description: Displayname of the owner of the role.
+      type: String
+    - contextPath: IdentityIQ.Role.active
+      description: Indicates whether the role is active in IdentityIQ.
+      type: Boolean
+    - contextPath: IdentityIQ.Role.displayableName
+      description: Display name of the role in IdentityIQ.
+      type: String
+    - contextPath: IdentityIQ.Role.permits
+      description: Array of roles that this role permits in IdentityIQ.
+      type: Unknown
+    - contextPath: IdentityIQ.Role.type.name
+      description: Template role on which this role is based.
+      type: String
+    - contextPath: IdentityIQ.Role.type.autoAssignment
+      description: Indicates whether this type of role can be auto-assigned to identities.
+      type: Boolean
+    - contextPath: IdentityIQ.Role.type.displayName
+      description: Display name of the template role on which this role was based.
+      type: String
+    - contextPath: IdentityIQ.Role.type.manualAssignment
+      description: Indicates whether this role type can be manually assigned.
+      type: String
+    - contextPath: IdentityIQ.Role.descriptions.value
+      description: Description of the role shown in the UI.
+      type: String
+  - arguments:
+    - description: Internal id of the specific entitlement being requested.
+      name: id
+    description: Fetch entitlement by id or all entitlements using IdentityIQ SCIM
+      API's.
+    name: identityiq-get-entitlements
+    outputs:
+    - contextPath: IdentityIQ.Entitlement.application.value
+      description: Internal id of the application that this entitlement resides on.
+      type: String
+    - contextPath: IdentityIQ.Entitlement.application.displayName
+      description: Display name of the application that this entitlement resides on.
+      type: String
+    - contextPath: IdentityIQ.Entitlement.attribute
+      description: String representing the attribute on the application that this
+        entitlement represents.
+      type: String
+    - contextPath: IdentityIQ.Entitlement.type
+      description: String representing the type of attribute on the application that
+        this entitlement represents.
+      type: String
+    - contextPath: IdentityIQ.Entitlement.descriptions
+      description: Array of description objects that contain a locale, and a value.
+      type: Unknown
+    - contextPath: IdentityIQ.Entitlement.id
+      description: Internal id of the entitlement object in IdentityIQ.
+      type: String
+    - contextPath: IdentityIQ.Entitlement.requestable
+      description: Boolean indicates whether this entitlement is directly requestable
+        in the IdentityIQ UI.
+      type: Boolean
+    - contextPath: IdentityIQ.Entitlement.owner.value
+      description: Internal id of the owner of the entitlement in IdentityIQ.
+      type: String
+    - contextPath: IdentityIQ.Entitlement.owner.displayName
+      description: Display name of the owner of the entitlement in IdentityIQ.
+      type: String
+    - contextPath: IdentityIQ.Entitlement.aggregated
+      description: Indicates whether this entitlement was aggregated from the source
+        system or not.
+      type: String
+    - contextPath: IdentityIQ.Entitlement.created
+      description: Timestamp indicates when the entitlement was created in IdentityIQ.
+      type: Date
+  - arguments:
+    - description: Internal id of the specific alert being requested.
+      name: id
+    description: Fetch alert by id or all alerts using IdentityIQ SCIM API's.
+    name: identityiq-get-alerts
+    outputs:
+    - contextPath: IdentityIQ.Alert.id
+      description: Internal id of the Alert in IdentityIQ.
+      type: String
+    - contextPath: IdentityIQ.Alert.lastProcessed
+      description: Timestamp of when this alert was processed by IdentityIQ for match.
+      type: Date
+    - contextPath: IdentityIQ.Alert.displayName
+      description: Display name of the alert in IdentityIQ.
+      type: String
+    - contextPath: IdentityIQ.Alert.meta.created
+      description: Timestamp of when this alert was created in IdentityIQ
+      type: Date
+    - contextPath: IdentityIQ.Alert.name
+      description: Name of the alert in IdentityIQ
+      type: String
+    - contextPath: IdentityIQ.Alert.attributes
+      description: Array of attributes associated with this alert.
+      type: Unknown
+    - contextPath: IdentityIQ.Alert.actions
+      description: Array of actions taken on this alert after processing.
+      type: Unknown
+    - contextPath: IdentityIQ.Alert.application
+      description: List of applications that are related to this alert.
+      type: String
+  - arguments:
+    - description: Display name of the alert.
+      name: display_name
+      required: true
+    - description: |-
+        List of JSON objects with the following structure.
+        {
+            'key': '',
+            'value': '',
+            'type': ''
+        }
+      name: attributes
+    description: Create an alert using IdentityIQ SCIM API's.
+    name: identityiq-create-alert
+    outputs:
+    - contextPath: IdentityIQ.Alert.id
+      description: Internal id of the Alert in IdentityIQ.
+      type: String
+    - contextPath: IdentityIQ.Alert.lastProcessed
+      description: Timestamp of when this alert was processed by IdentityIQ for match.
+      type: Date
+    - contextPath: IdentityIQ.Alert.displayName
+      description: Display name of the alert in IdentityIQ.
+      type: String
+    - contextPath: IdentityIQ.Alert.meta.created
+      description: Timestamp of when this alert.
+      type: Date
+    - contextPath: IdentityIQ.Alert.name
+      description: Unique name of the alert in IdentityIQ.
+      type: String
+    - contextPath: IdentityIQ.Alert.attributes
+      description: Array of attributes associated with this alert.
+      type: Unknown
+    - contextPath: IdentityIQ.Alert.actions
+      description: Array of actions taken on this alert after processing.
+      type: Unknown
+    - contextPath: IdentityIQ.Alert.application
+      description: List of applications that are related to this alert.
+      type: String
+  dockerimage: demisto/python3:3.9.7.24076
+  isfetch: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- SailPointIdentityIQ-Test

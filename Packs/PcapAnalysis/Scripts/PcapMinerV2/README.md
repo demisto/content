@@ -9,7 +9,7 @@ b) Copy the automation and change the `default timeout` parameter to match your 
 | --- | --- |
 | Script Type | python3 |
 | Tags | pcap, mine, file, Utility |
-| Demisto Version | 5.0.0 |
+| Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
 ---

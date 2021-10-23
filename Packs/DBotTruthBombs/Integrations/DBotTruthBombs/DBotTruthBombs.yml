@@ -1,0 +1,43 @@
+category: Utilities
+commonfields:
+  id: DBot Truth Bombs
+  version: -1
+configuration:
+- defaultvalue: "false"
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: You thought you know DBot... guess again! Here are some super secrete facts about DBot we bet you didn't know.
+display: DBot Truth Bombs
+name: DBot Truth Bombs
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      description: Filter DBot truth bomb by category.
+      name: category
+      predefined:
+      - Dev
+      - Career
+      - History
+      - Money
+      - Movie
+      - Music
+      - Science
+      - Sport
+      - Travel
+    description: Returns a previously undisclosed fact about DBot.
+    name: dbot-truth-bomb
+  dockerimage: demisto/python3:3.9.7.24076
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

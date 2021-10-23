@@ -6,7 +6,7 @@ List all of the events discovered within your enterprise on a particular device 
 | --- | --- |
 | Script Type | python3 |
 | Tags | enhancement |
-| Demisto Version | 5.0.0 |
+| Cortex XSOAR Version | 5.0.0 |
 
 ## Dependencies
 ---

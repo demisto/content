@@ -1,0 +1,245 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: CrowdStrike Indicator Feed
+  version: -1
+configuration:
+- defaultvalue: 'true'
+  display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
+- display: CrowdStrike Base URL
+  name: base_url
+  required: true
+  type: 0
+  defaultvalue: "https://api.crowdstrike.com/"
+- display: CrowdStrike API Client ID
+  displaypassword: CrowdStrike API Client Secret
+  additionalinfo: 'For non 6.1 - enter your CrowdStrike API Client Secret in the password field.'
+  name: credentials
+  type: 9
+  required: true
+- additionalinfo: 'The indicator types to fetch. Out-of-the-box indicator types supported
+    in XSOAR are: "Account", "Domain", "Email", "File MD5",
+    "File SHA-256", "IP", "Registry Key", and "URL". The default is "ALL".'
+  display: Type
+  hidden: false
+  name: type
+  options:
+  - ALL
+  - Account
+  - Domain
+  - Email
+  - File MD5
+  - File SHA-256
+  - IP
+  - Registry Key
+  - URL
+  required: false
+  type: 16
+- display: First fetch time
+  name: first_fetch
+  required: false
+  type: 0
+  additionalinfo: The time range to consider for the initial data fetch. Leave empty to fetch from the first available indicator.
+- display: Max. indicators per fetch
+  defaultvalue: 5000
+  hidden: false
+  name: max_indicator_to_fetch
+  required: false
+  type: 0
+  additionalinfo: Maximum number of indicators per fetch. Value should be between 1 - 10000. A large value may result in a timeout.
+- additionalinfo: Malicious confidence level to filter by.
+  display: Malicious confidence
+  hidden: false
+  name: malicious_confidence
+  options:
+  - high
+  - medium
+  - low
+  - unverified
+  required: false
+  type: 16
+- display: Include deleted indicators
+  name: include_deleted
+  required: false
+  type: 8
+- additionalinfo: "Advanced: FQL query. For more information visit the CrowdStrike documentation."
+  display: Filter
+  hidden: false
+  name: filter
+  required: false
+  type: 0
+- display: Generic phrase match
+  additionalinfo: Generic phrase match search across all indicator fields.
+  hidden: false
+  name: generic_phrase
+  required: false
+  type: 0
+- additionalinfo: Indicators from this integration instance will be marked with this
+    reputation.
+  defaultvalue: Bad
+  display: Indicator Reputation
+  name: feedReputation
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  required: false
+  type: 18
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: A - Completely reliable
+  display: Source Reliability
+  name: feedReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
+    fetched from the feed.
+  defaultvalue: GREEN
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
+  type: 15
+- defaultvalue: indicatorType
+  name: feedExpirationPolicy
+  display: ''
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  required: false
+  type: 17
+- defaultvalue: '20160'
+  display: ''
+  name: feedExpirationInterval
+  required: false
+  type: 1
+- defaultvalue: '240'
+  display: Feed Fetch Interval
+  name: feedFetchInterval
+  required: false
+  type: 19
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  required: false
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
+  required: false
+  type: 8
+description: Retrieves indicators from the CrowdStrike Falcon Intel Feed.
+display: CrowdStrike Indicator Feed
+name: CrowdStrike Indicator Feed
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The maximum number of indicators to return. Default is 50.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: The index of the first indicator to fetch.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets indicators from the CrowdStrike Falcon Intel Feed.
+    execution: false
+    name: crowdstrike-indicators-list
+    outputs:
+    - contextPath: CrowdStrikeFalconIntel.Indicators.id
+      description: Indicator ID.
+      type: String
+    - contextPath: CrowdStrikeFalconIntel.Indicators.value
+      description: Indicator value.
+      type: String
+    - contextPath: CrowdStrikeFalconIntel.Indicators.type
+      description: Indicator type.
+      type: String
+    - contextPath: CrowdStrikeFalconIntel.Indicators.fields.reports
+      description: Indicator reports.
+      type: Unknown
+    - contextPath: CrowdStrikeFalconIntel.Indicators.fields.actors
+      description: Actors related to the indicator.
+      type: Unknown
+    - contextPath: CrowdStrikeFalconIntel.Indicators.fields.malwarefamily
+      description: Indicator malware families.
+      type: Unknown
+    - contextPath: CrowdStrikeFalconIntel.Indicators.fields.stixkillchainphases
+      description: Indicator kill chains.
+      type: Unknown
+    - contextPath: CrowdStrikeFalconIntel.Indicators.fields.maliciousconfidence
+      description: Indicator malicious confidence.
+      type: String
+    - contextPath: CrowdStrikeFalconIntel.Indicators.fields.tags
+      description: Indicator labels.
+      type: Unknown
+    - contextPath: CrowdStrikeFalconIntel.Indicators.fields.targets
+      description: Targets of the indicator.
+      type: Unknown
+    - contextPath: CrowdStrikeFalconIntel.Indicators.fields.threattypes
+      description: Indicator threat types.
+      type: Unknown
+    - contextPath: CrowdStrikeFalconIntel.Indicators.fields.vulnerabilities
+      description: Indicator vulnerabilities.
+      type: Unknown
+    - contextPath: CrowdStrikeFalconIntel.Indicators.fields.ipaddress
+      description: Indicator related IP address.
+      type: Unknown
+    - contextPath: CrowdStrikeFalconIntel.Indicators.fields.domainname
+      description: Indicator related domains.
+      type: Unknown
+    - contextPath: CrowdStrikeFalconIntel.Indicators.fields.updateddate
+      description: Indicator update date.
+      type: Date
+    - contextPath: CrowdStrikeFalconIntel.Indicators.fields.creationdate
+      description: Indicator creation date.
+      type: Unknown
+    - contextPath: CrowdStrikeFalconIntel.Indicators.rawJSON
+      description: Raw response.
+      type: Unknown
+  - deprecated: false
+    description: 'WARNING: This command will reset your fetch history.'
+    execution: false
+    name: crowdstrike-reset-fetch-indicators
+  dockerimage: demisto/python3:3.9.7.24076
+  feed: true
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests
+fromversion: 5.5.0

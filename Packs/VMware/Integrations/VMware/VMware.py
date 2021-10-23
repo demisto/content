@@ -50,16 +50,22 @@ def get_vms():
     data = []
     content = si.RetrieveContent()  # type: ignore
     container = content.rootFolder
-    viewType = [vim.VirtualMachine]
+    view_type = [vim.VirtualMachine]
     recursive = True
-    containerView = content.viewManager.CreateContainerView(container, viewType, recursive)
-    children = containerView.view
+    container_view = content.viewManager.CreateContainerView(container, view_type, recursive)
+    children = container_view.view
     for child in children:
         summary = child.summary
-        for dev in child.config.hardware.device:
-            if isinstance(dev, vim.vm.device.VirtualEthernetCard):  # type: ignore
-                macAddress = dev.macAddress
-                break
+
+        mac_address = ''
+        try:
+            for dev in child.config.hardware.device:
+                if isinstance(dev, vim.vm.device.VirtualEthernetCard):  # type: ignore
+                    mac_address = dev.macAddress
+                    break
+        except Exception:  # noqa
+            pass
+
         data.append({
             'Name': summary.config.name,
             'Template': summary.config.template,
@@ -69,7 +75,7 @@ def get_vms():
             'IP': summary.guest.ipAddress if summary.guest.ipAddress else ' ',
             'State': summary.runtime.powerState,
             'HostName': summary.guest.hostName if summary.guest.hostName else ' ',
-            'MACAddress': macAddress if macAddress else ' '
+            'MACAddress': mac_address,
         })
     ec = {
         'VMWare(val.UUID && val.UUID === obj.UUID)': data

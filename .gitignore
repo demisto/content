@@ -36,3 +36,15 @@ failed_unittests.txt
 Scripts/**/__init__.py
 Integrations/**/__init__.py
 Packs/**/__init__.py
+
+# Environment and reports
+.demisto-sdk-conf
+.hypothesis
+.demisto-sdk-report
+.env
+.envrc
+
+# coverage related
+/coverage_report
+.coverage
+.demisto-sdk-report

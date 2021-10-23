@@ -1,5 +1,8 @@
-from VerifyIPv6Indicator import is_valid_ipv6_address
 import pytest
+from hypothesis import HealthCheck, given, settings, strategies
+
+import demistomock as demisto
+from VerifyIPv6Indicator import is_valid_ipv6_address, main
 
 
 @pytest.mark.parametrize(
@@ -18,3 +21,36 @@ import pytest
 def test_set_limit(address, expected):
     ipv6_address = is_valid_ipv6_address(address)
     assert ipv6_address == expected
+
+
+def test_main(mocker):
+    """
+    Given:
+        - MAC Address as input
+    When:
+        - Running the script
+    Then:
+        - Ensure the MAC address is caught as invalid IPv6 and returns empty string
+    """
+    mocker.patch.object(demisto, 'args', return_value={'input': '00:16:45:00:46:91'})
+    mocker.patch.object(demisto, 'results')
+    main()
+    demisto.results.assert_called_with('')
+
+
+@pytest.mark.skip(reason="Flaky test, issue #41552")
+@settings(suppress_health_check=[HealthCheck.function_scoped_fixture])
+@given(strategies.ip_addresses(v=6))
+def test_valid_ip_address(mocker, ipv6):
+    """
+    Given:
+        - IPv6 address
+    When:
+        - Running the script
+    Then:
+        - Ensure the IPv6 address is returned in an array
+    """
+    mocker.patch.object(demisto, 'args', return_value={'input': str(ipv6)})
+    mocker.patch.object(demisto, 'results')
+    main()
+    demisto.results.assert_called_with([str(ipv6)])

@@ -2,8 +2,9 @@ import demisto_client
 import pytest
 import timeout_decorator
 import Tests.Marketplace.search_and_install_packs as script
-from Tests.Marketplace.marketplace_services import GCPConfig
+from Tests.Marketplace.marketplace_constants import GCPConfig
 from google.cloud.storage import Blob
+import json
 
 BASE_URL = 'http://123-fake-api.com'
 API_KEY = 'test-api-key'
@@ -61,6 +62,8 @@ MOCK_PACKS_DEPENDENCIES_RESULT = """{
         }
     ]
 }"""
+
+PACKS_PACK_META_FILE_NAME = 'pack_metadata.json'
 
 
 def mocked_generic_request_func(self, path: str, method, body=None, accept=None, _request_timeout=None):
@@ -283,8 +286,8 @@ def test_install_nightly_packs_endless_loop(mocker):
 
 
 @pytest.mark.parametrize('path, latest_version', [
-    (f'{GCPConfig.STORAGE_BASE_PATH}/TestPack/1.0.1/TestPack.zip', '1.0.1'),
-    (f'{GCPConfig.STORAGE_BASE_PATH}/Blockade.io/1.0.1/Blockade.io.zip', '1.0.1')
+    (f'{GCPConfig.CONTENT_PACKS_PATH}/TestPack/1.0.1/TestPack.zip', '1.0.1'),
+    (f'{GCPConfig.CONTENT_PACKS_PATH}/Blockade.io/1.0.1/Blockade.io.zip', '1.0.1')
 ])
 def test_pack_path_version_regex(path, latest_version):
     """
@@ -308,7 +311,29 @@ def test_get_latest_version_from_bucket(mocker):
            - Validate that the version is the one we expect for.
    """
     dummy_prod_bucket = mocker.MagicMock()
-    first_blob = Blob(f'{GCPConfig.STORAGE_BASE_PATH}/TestPack/1.0.0/TestPack.zip', dummy_prod_bucket)
-    second_blob = Blob(f'{GCPConfig.STORAGE_BASE_PATH}/TestPack/1.0.1/TestPack.zip', dummy_prod_bucket)
+    first_blob = Blob(f'{GCPConfig.CONTENT_PACKS_PATH}/TestPack/1.0.0/TestPack.zip', dummy_prod_bucket)
+    second_blob = Blob(f'{GCPConfig.CONTENT_PACKS_PATH}/TestPack/1.0.1/TestPack.zip', dummy_prod_bucket)
     dummy_prod_bucket.list_blobs.return_value = [first_blob, second_blob]
     assert script.get_latest_version_from_bucket('TestPack', dummy_prod_bucket) == '1.0.1'
+
+
+@pytest.mark.parametrize("pack_metadata_content, expected", [
+    ({'hidden': False}, False),
+    ({'hidden': True}, True),
+])
+def test_is_pack_hidden(tmp_path, pack_metadata_content, expected):
+    """
+    Given:
+        - Case A: Pack is not deprecated
+        - Case B: Pack is deprecated
+
+    When:
+        - Checking if pack is deprecated
+
+    Then:
+        - Case A: Verify pack is not deprecated, since the 'hidden' flag is set to 'false'
+        - Case B: Verify pack is deprecated, since the 'hidden' flag is set to 'true'
+    """
+    pack_metadata_file = tmp_path / PACKS_PACK_META_FILE_NAME
+    pack_metadata_file.write_text(json.dumps(pack_metadata_content))
+    assert script.is_pack_hidden(str(tmp_path)) == expected

@@ -15,6 +15,7 @@ from email.mime.base import MIMEBase
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.mime.application import MIMEApplication
 from email.header import Header
 import mimetypes
 import random
@@ -742,7 +743,7 @@ class Client:
                 else:
                     file_name = file['name']
 
-                content_type, encoding = mimetypes.guess_type(file_path)
+                content_type, encoding = mimetypes.guess_type(file_name)
                 if content_type is None or encoding is not None:
                     content_type = 'application/octet-stream'
 
@@ -797,6 +798,15 @@ class Client:
                     msg_aud.add_header('Content-Disposition', 'attachment', filename=att['name'])
                 message.attach(msg_aud)
 
+            elif att['maintype'] == 'application':
+                msg_app = MIMEApplication(att['data'], att['subtype'])
+                if att['cid'] is not None:
+                    msg_app.add_header('Content-Disposition', 'inline', filename=att['name'])
+                    msg_app.add_header('Content-ID', '<' + att['name'] + '>')
+                else:
+                    msg_app.add_header('Content-Disposition', 'attachment', filename=att['name'])
+                message.attach(msg_app)
+
             else:
                 msg_base = MIMEBase(att['maintype'], att['subtype'])
                 msg_base.set_payload(att['data'])
@@ -808,15 +818,9 @@ class Client:
                     msg_base.add_header('Content-Disposition', 'attachment', filename=att['name'])
                 message.attach(msg_base)
 
-    def send_mail(self, emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, replyTo, file_names, attach_cid,
+    def send_mail(self, emailto, emailfrom, cc, bcc, subject, body, htmlBody, entry_ids, replyTo, file_names,
+                  attach_cid, manualAttachObj,
                   transientFile, transientFileContent, transientFileCID, additional_headers, templateParams):
-        message = MIMEMultipart()
-        message['to'] = emailto
-        message['cc'] = cc
-        message['bcc'] = bcc
-        message['from'] = emailfrom
-        message['subject'] = subject
-        message['reply-to'] = replyTo
 
         templateParams = self.template_params(templateParams)
         if templateParams is not None:
@@ -826,33 +830,71 @@ class Client:
             if htmlBody is not None:
                 htmlBody = htmlBody.format(**templateParams)
 
+        attach_body_to = None
+        if htmlBody and not any([entry_ids, file_names, attach_cid, manualAttachObj, body]):
+            # if there is only htmlbody and no attachments to the mail , we would like to send it without attaching the body
+            message = MIMEText(htmlBody, 'html')  # type: ignore
+        elif body and not any([entry_ids, file_names, attach_cid, manualAttachObj, htmlBody]):
+            # if there is only body and no attachments to the mail , we would like to send it without attaching every part
+            message = MIMEText(body, 'plain', 'utf-8')  # type: ignore
+        elif htmlBody and body and any([entry_ids, file_names, attach_cid, manualAttachObj]):
+            # if all these exist - htmlBody, body and one of the attachment's items, the message object will be:
+            # a MimeMultipart object of type 'mixed' which contains
+            # a MIMEMultipart object of type `alternative` which contains
+            # the 2 MIMEText objects for each body part and the relevant Mime<type> object for the attachments.
+            message = MIMEMultipart('mixed')  # type: ignore
+            alt = MIMEMultipart('alternative')
+            message.attach(alt)
+            attach_body_to = alt
+        else:
+            message = MIMEMultipart('alternative') if body and htmlBody else MIMEMultipart()  # type: ignore
+
+        if not attach_body_to:
+            attach_body_to = message  # type: ignore
+
+        message['to'] = emailto
+        message['cc'] = cc
+        message['bcc'] = bcc
+        message['from'] = emailfrom
+        message['subject'] = subject
+        message['reply-to'] = replyTo
+
+        # # The following headers are being used for the reply-mail command.
+        # if inReplyTo:
+        #     message['In-Reply-To'] = header(' '.join(inReplyTo))
+        # if references:
+        #     message['References'] = header(' '.join(references))
+
+        # if there are any attachments to the mail or both body and htmlBody were given
+        if entry_ids or file_names or attach_cid or manualAttachObj or (body and htmlBody):
+            msg = MIMEText(body, 'plain', 'utf-8')
+            attach_body_to.attach(msg)  # type: ignore
+            htmlAttachments = []  # type: list
+            inlineAttachments = []  # type: list
+
+            if htmlBody:
+                # htmlBody, htmlAttachments = handle_html(htmlBody)
+                htmlBody, htmlAttachments = self.handle_html(htmlBody)
+                msg = MIMEText(htmlBody, 'html', 'utf-8')
+                attach_body_to.attach(msg)  # type: ignore
+                if attach_cid:
+                    inlineAttachments = self.collect_inline_attachments(attach_cid)
+
+            else:
+                # if not html body, cannot attach cids in message
+                transientFileCID = None
+
+            attachments = self.collect_attachments(entry_ids, file_names)
+            manual_attachments = self.collect_manual_attachments()
+            transientAttachments = self.transient_attachments(transientFile, transientFileContent, transientFileCID)
+
+            attachments = attachments + htmlAttachments + transientAttachments + inlineAttachments + manual_attachments
+            self.attachment_handler(message, attachments)
+
         if additional_headers is not None and len(additional_headers) > 0:
             for h in additional_headers:
-                header_name_and_value = h.split('=')
-                message[header_name_and_value[0]] = self.header(header_name_and_value[1])
-
-        msg = MIMEText(body, 'plain', 'utf-8')
-        message.attach(msg)
-        htmlAttachments = []  # type: list
-        inlineAttachments = []  # type: list
-
-        if htmlBody is not None:
-            htmlBody, htmlAttachments = self.handle_html(htmlBody)
-            msg = MIMEText(htmlBody, 'html', 'utf-8')
-            message.attach(msg)
-            if attach_cid is not None and len(attach_cid) > 0:
-                inlineAttachments = self.collect_inline_attachments(attach_cid)
-
-        else:
-            # if not html body, cannot attach cids in message
-            transientFileCID = None
-        attachments = self.collect_attachments(entry_ids, file_names)
-        manual_attachments = self.collect_manual_attachments()
-        transientAttachments = self.transient_attachments(transientFile, transientFileContent, transientFileCID)
-
-        attachments = attachments + htmlAttachments + transientAttachments + inlineAttachments + manual_attachments
-        self.attachment_handler(message, attachments)
-
+                header_name, header_value = h.split('=', 1)
+                message[header_name] = self.header(header_value)
         encoded_message = base64.urlsafe_b64encode(message.as_bytes())
         command_args = {'raw': encoded_message.decode()}
 
@@ -874,7 +916,7 @@ class Client:
         integration_context = demisto.getIntegrationContext() or {}
         integration_context['verifier'] = verifier
         demisto.setIntegrationContext(integration_context)
-        return (link, challenge)
+        return link, challenge
 
 
 def test_module(client):
@@ -893,14 +935,15 @@ def send_mail_command(client):
     replyTo = args.get('replyTo')
     file_names = argToList(args.get('attachNames'))
     attchCID = argToList(args.get('attachCIDs'))
+    manualAttachObj = argToList(args.get('manualAttachObj'))  # when send-mail called from within XSOAR (like reports)
     transientFile = argToList(args.get('transientFile'))
     transientFileContent = argToList(args.get('transientFileContent'))
     transientFileCID = argToList(args.get('transientFileCID'))
     additional_headers = argToList(args.get('additionalHeader'))
     template_param = args.get('templateParams')
 
-    result = client.send_mail(emailto, EMAIL, subject, body, entry_ids, cc, bcc, htmlBody,
-                              replyTo, file_names, attchCID, transientFile, transientFileContent,
+    result = client.send_mail(emailto, EMAIL, cc, bcc, subject, body, htmlBody, entry_ids,
+                              replyTo, file_names, attchCID, manualAttachObj, transientFile, transientFileContent,
                               transientFileCID, additional_headers, template_param)
     return client.sent_mail_to_entry('Email sent:', [result], emailto, EMAIL, cc, bcc, htmlBody, body, subject)
 

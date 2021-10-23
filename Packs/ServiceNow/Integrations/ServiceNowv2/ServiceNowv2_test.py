@@ -6,29 +6,31 @@ from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_re
     list_table_fields_command, query_computers_command, get_table_name_command, add_tag_command, query_items_command, \
     get_item_details_command, create_order_item_command, document_route_to_table, fetch_incidents, main, \
     get_mapping_fields_command, get_remote_data_command, update_remote_system_command, build_query_for_request_params, \
-    ServiceNowClient, oauth_test_module, login_command
+    ServiceNowClient, oauth_test_module, login_command, get_modified_remote_data_command
 from ServiceNowv2 import test_module as module
 from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICKET, RESPONSE_UPDATE_TICKET, \
-    RESPONSE_UPDATE_TICKET_SC_REQ, RESPONSE_CREATE_TICKET, RESPONSE_QUERY_TICKETS, RESPONSE_ADD_LINK, \
-    RESPONSE_ADD_COMMENT, RESPONSE_UPLOAD_FILE, RESPONSE_GET_TICKET_NOTES, RESPONSE_GET_RECORD, \
+    RESPONSE_UPDATE_TICKET_SC_REQ, RESPONSE_CREATE_TICKET, RESPONSE_CREATE_TICKET_WITH_OUT_JSON, RESPONSE_QUERY_TICKETS, \
+    RESPONSE_ADD_LINK, RESPONSE_ADD_COMMENT, RESPONSE_UPLOAD_FILE, RESPONSE_GET_TICKET_NOTES, RESPONSE_GET_RECORD, \
     RESPONSE_UPDATE_RECORD, RESPONSE_CREATE_RECORD, RESPONSE_QUERY_TABLE, RESPONSE_LIST_TABLE_FIELDS, \
     RESPONSE_QUERY_COMPUTERS, RESPONSE_GET_TABLE_NAME, RESPONSE_UPDATE_TICKET_ADDITIONAL, \
     RESPONSE_QUERY_TABLE_SYS_PARAMS, RESPONSE_ADD_TAG, RESPONSE_QUERY_ITEMS, RESPONSE_ITEM_DETAILS, \
     RESPONSE_CREATE_ITEM_ORDER, RESPONSE_DOCUMENT_ROUTE, RESPONSE_FETCH, RESPONSE_FETCH_ATTACHMENTS_FILE, \
-    RESPONSE_FETCH_ATTACHMENTS_TICKET, RESPONSE_TICKET_MIRROR, MIRROR_COMMENTS_RESPONSE, \
-    RESPONSE_MIRROR_FILE_ENTRY, RESPONSE_ASSIGNMENT_GROUP, RESPONSE_MIRROR_FILE_ENTRY_FROM_XSOAR, \
-    MIRROR_COMMENTS_RESPONSE_FROM_XSOAR, MIRROR_ENTRIES, RESPONSE_CLOSING_TICKET_MIRROR, RESPONSE_TICKET_ASSIGNED, \
-    OAUTH_PARAMS
+    RESPONSE_FETCH_ATTACHMENTS_TICKET, RESPONSE_TICKET_MIRROR, MIRROR_COMMENTS_RESPONSE, RESPONSE_MIRROR_FILE_ENTRY, \
+    RESPONSE_ASSIGNMENT_GROUP, RESPONSE_MIRROR_FILE_ENTRY_FROM_XSOAR, MIRROR_COMMENTS_RESPONSE_FROM_XSOAR, \
+    MIRROR_ENTRIES, RESPONSE_CLOSING_TICKET_MIRROR, RESPONSE_TICKET_ASSIGNED, OAUTH_PARAMS, \
+    RESPONSE_QUERY_TICKETS_EXCLUDE_REFERENCE_LINK, MIRROR_ENTRIES_WITH_EMPTY_USERNAME
 from test_data.result_constants import EXPECTED_TICKET_CONTEXT, EXPECTED_MULTIPLE_TICKET_CONTEXT, \
     EXPECTED_TICKET_HR, EXPECTED_MULTIPLE_TICKET_HR, EXPECTED_UPDATE_TICKET, EXPECTED_UPDATE_TICKET_SC_REQ, \
-    EXPECTED_CREATE_TICKET, EXPECTED_QUERY_TICKETS, EXPECTED_ADD_LINK_HR, EXPECTED_ADD_COMMENT_HR, \
-    EXPECTED_UPLOAD_FILE, EXPECTED_GET_TICKET_NOTES, EXPECTED_GET_RECORD, EXPECTED_UPDATE_RECORD, \
-    EXPECTED_CREATE_RECORD, EXPECTED_QUERY_TABLE, EXPECTED_LIST_TABLE_FIELDS, EXPECTED_QUERY_COMPUTERS, \
-    EXPECTED_GET_TABLE_NAME, EXPECTED_UPDATE_TICKET_ADDITIONAL, EXPECTED_QUERY_TABLE_SYS_PARAMS, EXPECTED_ADD_TAG, \
-    EXPECTED_QUERY_ITEMS, EXPECTED_ITEM_DETAILS, EXPECTED_CREATE_ITEM_ORDER, EXPECTED_DOCUMENT_ROUTE, \
-    EXPECTED_MAPPING, EXPECTED_TICKET_CONTEXT_WITH_ADDITIONAL_FIELDS
+    EXPECTED_CREATE_TICKET, EXPECTED_CREATE_TICKET_WITH_OUT_JSON, EXPECTED_QUERY_TICKETS, EXPECTED_ADD_LINK_HR, \
+    EXPECTED_ADD_COMMENT_HR, EXPECTED_UPLOAD_FILE, EXPECTED_GET_TICKET_NOTES, EXPECTED_GET_RECORD, \
+    EXPECTED_UPDATE_RECORD, EXPECTED_CREATE_RECORD, EXPECTED_QUERY_TABLE, EXPECTED_LIST_TABLE_FIELDS, \
+    EXPECTED_QUERY_COMPUTERS, EXPECTED_GET_TABLE_NAME, EXPECTED_UPDATE_TICKET_ADDITIONAL, \
+    EXPECTED_QUERY_TABLE_SYS_PARAMS, EXPECTED_ADD_TAG, EXPECTED_QUERY_ITEMS, EXPECTED_ITEM_DETAILS, \
+    EXPECTED_CREATE_ITEM_ORDER, EXPECTED_DOCUMENT_ROUTE, EXPECTED_MAPPING, \
+    EXPECTED_TICKET_CONTEXT_WITH_ADDITIONAL_FIELDS, EXPECTED_QUERY_TICKETS_EXCLUDE_REFERENCE_LINK
 
 import demistomock as demisto
+from urllib.parse import urlencode
 
 
 def test_get_server_url():
@@ -126,8 +128,14 @@ def test_split_fields_with_special_delimiter():
      RESPONSE_UPDATE_TICKET_ADDITIONAL, EXPECTED_UPDATE_TICKET_ADDITIONAL, True),
     (create_ticket_command, {'active': 'true', 'severity': "3", 'description': "creating a test ticket",
                              'sla_due': "2020-10-10 10:10:11"}, RESPONSE_CREATE_TICKET, EXPECTED_CREATE_TICKET, True),
+    (create_ticket_command, {'active': 'true', 'severity': "3", 'description': "creating a test ticket",
+                             'sla_due': "2020-10-10 10:10:11"}, RESPONSE_CREATE_TICKET_WITH_OUT_JSON,
+     EXPECTED_CREATE_TICKET_WITH_OUT_JSON, True),
     (query_tickets_command, {'limit': "3", 'query': "impact<2^short_descriptionISNOTEMPTY", 'ticket_type': "incident"},
      RESPONSE_QUERY_TICKETS, EXPECTED_QUERY_TICKETS, True),
+    (query_tickets_command,
+     {"ticket_type": "incident", "query": "number=INC0000001", "system_params": "sysparm_exclude_reference_link=true"},
+     RESPONSE_QUERY_TICKETS_EXCLUDE_REFERENCE_LINK, EXPECTED_QUERY_TICKETS_EXCLUDE_REFERENCE_LINK, True),
     (upload_file_command, {'id': "sys_id", 'file_id': "entry_id", 'file_name': 'test_file'}, RESPONSE_UPLOAD_FILE,
      EXPECTED_UPLOAD_FILE, True),
     (get_ticket_notes_command, {'id': "sys_id"}, RESPONSE_GET_TICKET_NOTES, EXPECTED_GET_TICKET_NOTES, True),
@@ -754,7 +762,8 @@ def add_comment_request(*args):
     return {'id': "1234", 'comment': "This is a comment"}
 
 
-def test_upload_entries_update_remote_system_command(mocker):
+@pytest.mark.parametrize('mirror_entries', [MIRROR_ENTRIES, MIRROR_ENTRIES_WITH_EMPTY_USERNAME])
+def test_upload_entries_update_remote_system_command(mocker, mirror_entries):
     """
     Given:
         -  ServiceNow client
@@ -769,7 +778,7 @@ def test_upload_entries_update_remote_system_command(mocker):
                     sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
                     ticket_type='incident', get_attachments=False, incident_name='description')
     params = {}
-    args = {'remoteId': '1234', 'data': {}, 'entries': MIRROR_ENTRIES, 'incidentChanged': False, 'delta': {}}
+    args = {'remoteId': '1234', 'data': {}, 'entries': mirror_entries, 'incidentChanged': False, 'delta': {}}
     mocker.patch.object(client, 'upload_file', side_effect=upload_file_request)
     mocker.patch.object(client, 'add_comment', side_effect=add_comment_request)
 
@@ -783,9 +792,10 @@ TICKET_FIELDS = {'close_notes': 'This is closed', 'closed_at': '2020-10-29T13:19
 
 
 def ticket_fields(*args, **kwargs):
+    state = '7' if kwargs.get('ticket_type') == 'incident' else '3'
     assert {'close_notes': 'This is closed', 'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3',
             'priority': '4', 'resolved_at': '2020-10-29T13:19:07.345995+02:00', 'severity': '1 - Low',
-            'short_description': 'Post parcel', 'sla_due': '0001-01-01T00:00:00Z', 'urgency': '3', 'state': '3',
+            'short_description': 'Post parcel', 'sla_due': '0001-01-01T00:00:00Z', 'urgency': '3', 'state': state,
             'work_start': '0001-01-01T00:00:00Z'} == args[0]
 
     return {'close_notes': 'This is closed', 'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3',
@@ -795,27 +805,33 @@ def ticket_fields(*args, **kwargs):
 
 
 def update_ticket(*args):
+    state = '7' if 'incident' in args else '3'
     return {'short_description': 'Post parcel', 'close_notes': 'This is closed',
             'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3', 'priority': '4',
             'resolved_at': '2020-10-29T13:19:07.345995+02:00', 'severity': '1 - High - Low',
-            'sla_due': '0001-01-01T00:00:00Z', 'state': '3', 'urgency': '3', 'work_start': '0001-01-01T00:00:00Z'}
+            'sla_due': '0001-01-01T00:00:00Z', 'state': state, 'urgency': '3', 'work_start': '0001-01-01T00:00:00Z'}
 
 
-def test_update_remote_data_sc_task(mocker):
+@pytest.mark.parametrize('ticket_type', ['sc_task', 'sc_req_item', 'incident'])
+def test_update_remote_data_sc_task_sc_req_item(mocker, ticket_type):
     """
     Given:
     -  ServiceNow client
     -  ServiceNow ticket of type sc_task
+    -  ServiceNow ticket of type sc_req_item
+    -  ServiceNow ticket of type incident
+
     When
         - running update_remote_system_command.
     Then
-        - The state is changed to 3 (closed) after update.
+        - The state is changed to 3 (closed) after update for sc_task and sc_req_item.
+        - The state is changed to 7 (closed) after update for incident.
     """
     client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url', username='username',
                     password='password', verify=False, fetch_time='fetch_time',
                     sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
-                    ticket_type='sc_task', get_attachments=False, incident_name='description')
-    params = {'ticket_type': 'sc_task', 'close_ticket': True}
+                    ticket_type=ticket_type, get_attachments=False, incident_name='description')
+    params = {'ticket_type': ticket_type, 'close_ticket': True}
     args = {'remoteId': '1234', 'data': TICKET_FIELDS, 'entries': [], 'incidentChanged': True, 'delta': {},
             'status': 2}
     mocker.patch('ServiceNowv2.get_ticket_fields', side_effect=ticket_fields)
@@ -870,3 +886,71 @@ def test_multiple_query_params(requests_mock, command, args):
     human_readable, entry_context, result, bol = command(client, args)
 
     assert result == RESPONSE_TICKET_ASSIGNED
+
+
+@pytest.mark.parametrize('api_response', [
+    ({'result': []}),
+    ({'result': [{'sys_id': 'sys_id1'}, {'sys_id': 'sys_id2'}]}),
+])
+def test_get_modified_remote_data(requests_mock, mocker, api_response):
+    """
+    Given:
+        - Case A: No updated records
+        - Case B: 2 updated records
+
+    When:
+     - Running get-modified-remote-data
+
+    Then:
+        - Case A: Ensure no record IDs returned
+        - Case B: Ensure the 2 records IDs returned
+    """
+    mocker.patch.object(demisto, 'debug')
+    url = 'https://test.service-now.com/api/now/v2/'
+    client = Client(url, 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
+                    'sysparm_query', 'sysparm_limit', 'timestamp_field', 'ticket_type', 'get_attachments',
+                    'incident_name')
+    last_update = '2020-11-18T13:16:52.005381+02:00'
+    params = {
+        'sysparm_limit': '100',
+        'sysparm_offset': '0',
+        'sysparm_query': 'sys_updated_on>2020-11-18 11:16:52',
+        'sysparm_fields': 'sys_id',
+    }
+    requests_mock.request(
+        'GET',
+        f'{url}table/ticket_type?{urlencode(params)}',
+        json=api_response
+    )
+    result = get_modified_remote_data_command(client, {'lastUpdate': last_update})
+
+    assert result.modified_incident_ids == [
+        record.get('sys_id') for record in api_response.get('result') if 'sys_id' in record
+    ]
+
+
+@pytest.mark.parametrize('sys_created_on, expected', [
+    (None, 'table_sys_id=id'),
+    ('', 'table_sys_id=id'),
+    ('2020-11-18 11:16:52', 'table_sys_id=id^sys_created_on>2020-11-18 11:16:52')
+])
+def test_get_ticket_attachments(mocker, sys_created_on, expected):
+    """
+    Given:
+        - Cases A+B: sys_created_on argument was not provided
+        - Case C: sys_created_on argument was provided
+
+    When:
+        - Getting a ticket attachments.
+
+    Then:
+        - Case A+B: Ensure that the query parameters do not include ^sys_created_on>
+        - Case C: Ensure that the query parameters include ^sys_created_on>
+    """
+    client = Client("url", 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
+                    'sysparm_query', 'sysparm_limit', 'timestamp_field', 'ticket_type', 'get_attachments',
+                    'incident_name')
+    mocker.patch.object(client, 'send_request', return_value=[])
+
+    client.get_ticket_attachments('id', sys_created_on)
+    client.send_request.assert_called_with('attachment', 'GET', params={'sysparm_query': f'{expected}'})

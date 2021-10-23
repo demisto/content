@@ -1,0 +1,36 @@
+{
+    "taskSchedule": "Check expired mitigations daily",
+    "partitioned": false,
+    "completed": "2020-12-07T00:09:53.207-06:00",
+    "type": "System",
+    "launched": "2020-12-07T00:09:53.151-06:00",
+    "pendingSignoffs": 0,
+    "meta": {
+        "created": "2020-12-07T00:09:53.180-06:00",
+        "location": "http://localhost:8088/iiq/scim/v2/TaskResults/7f00000175891f4b81763bd2181c1d5f",
+        "lastModified": "2020-12-07T00:09:53.213-06:00",
+        "version": "W/\"1607321393213\"",
+        "resourceType": "TaskResult"
+    },
+    "schemas": [
+        "urn:ietf:params:scim:schemas:sailpoint:1.0:TaskResult"
+    ],
+    "name": "Check expired mitigations daily",
+    "host": "Server13511",
+    "messages": [],
+    "attributes": [
+        {
+            "value": "0",
+            "key": "expired"
+        },
+        {
+            "value": "0",
+            "key": "identities"
+        }
+    ],
+    "id": "7f00000175891f4b81763bd2181c1d5f",
+    "completionStatus": "Success",
+    "taskDefinition": "Check Expired Mitigations",
+    "terminated": false,
+    "launcher": "System"
+}

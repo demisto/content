@@ -1,0 +1,226 @@
+id: Carbon Black Endpoint Standard Find Event Details
+version: -1
+name: Carbon Black Endpoint Standard Find Event Details
+description: Receives event IDs and returns details about the event.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 92cee982-3ea9-4205-8db5-566dfbdadb9f
+    type: start
+    task:
+      id: 92cee982-3ea9-4205-8db5-566dfbdadb9f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 3a725fba-cd3d-4a97-8011-664e41ea53b1
+    type: regular
+    task:
+      id: 3a725fba-cd3d-4a97-8011-664e41ea53b1
+      version: -1
+      name: cbd-find-events-details
+      description: Initiates a request to retrieve detail fields for enriched events.
+      script: '|||cbd-find-events-details'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      event_ids:
+        complex:
+          root: inputs.event_ids
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 9ed3f1b3-f12c-4cf6-86f0-e9dc830c0595
+    type: regular
+    task:
+      id: 9ed3f1b3-f12c-4cf6-86f0-e9dc830c0595
+      version: -1
+      name: cbd-find-events-details-results
+      description: Retrieves the status for an enriched events detail request for
+        a given job ID.
+      script: '|||cbd-find-events-details-results'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      job_id:
+        complex:
+          root: CarbonBlackDefense.EventDetails.Search
+          accessor: job_id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: e71dc4ab-6259-4daa-83ff-57fbe21ebe57
+    type: title
+    task:
+      id: e71dc4ab-6259-4daa-83ff-57fbe21ebe57
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: d672b7a5-0a81-4aa7-8c3d-34fba375e561
+    type: playbook
+    task:
+      id: d672b7a5-0a81-4aa7-8c3d-34fba375e561
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        complex:
+          root: CarbonBlackDefense.EventDetails.Search
+          accessor: job_id
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: job_id
+      PollingCommandName:
+        simple: cbd-find-events-details-results
+      Timeout:
+        simple: "10"
+      dt:
+        simple: CarbonBlackDefense.EventDetails.Results(val.completed !=  val.contacted)
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: event_ids
+  value:
+    simple:
+  required: false
+  description: |
+    A list of event ids to fetch. (comma separated)
+  playbookInputQuery:
+outputs:
+- contextPath: CarbonBlackDefense.EventsDetails.Results.approximate_unaggregated
+  description: The approximate number of unaggregated results.
+- contextPath: CarbonBlackDefense.EventsDetails.Results.completed
+  description: The number of completed results.
+- contextPath: CarbonBlackDefense.EventsDetails.Results.contacted
+  description: The number of contacted results.
+- contextPath: CarbonBlackDefense.EventsDetails.Results.num_aggregated
+  description: The number of aggregated results.
+- contextPath: CarbonBlackDefense.EventsDetails.Results.num_available
+  description: The number of event details available in this search.
+- contextPath: CarbonBlackDefense.EventsDetails.Results.num_found
+  description: The number of event details found in this search.
+- contextPath: CarbonBlackDefense.EventsDetails.Results.results
+  description: The lists that contains the data of the results for this search.
+- contextPath: CarbonBlackDefense.EventsDetails.Results.job_id
+  description: The job ID of the event details search.
+- contextPath: CarbonBlackDefense.EventsDetails.Search.job_id
+  description: The job ID of the event details search.
+tests:
+- carbonBlackEndpointStandardTestPlaybook
+fromversion: 5.5.0

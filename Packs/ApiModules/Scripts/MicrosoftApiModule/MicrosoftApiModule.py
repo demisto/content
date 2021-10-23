@@ -4,6 +4,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 import requests
+import re
 import base64
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from typing import Dict, Tuple, List, Optional
@@ -12,6 +13,8 @@ from typing import Dict, Tuple, List, Optional
 class Scopes:
     graph = 'https://graph.microsoft.com/.default'
     security_center = 'https://api.securitycenter.windows.com/.default'
+    security_center_apt_service = 'https://securitycenter.onmicrosoft.com/windowsatpservice/.default'
+    management_azure = 'https://management.azure.com/.default'
 
 
 # authorization types
@@ -23,6 +26,8 @@ CLIENT_CREDENTIALS = 'client_credentials'
 AUTHORIZATION_CODE = 'authorization_code'
 REFRESH_TOKEN = 'refresh_token'  # guardrails-disable-line
 DEVICE_CODE = 'urn:ietf:params:oauth:grant-type:device_code'
+REGEX_SEARCH_URL = r'(?P<url>https?://[^\s]+)'
+SESSION_STATE = 'session_state'
 
 
 class MicrosoftClient(BaseClient):
@@ -41,6 +46,8 @@ class MicrosoftClient(BaseClient):
                  resources: List[str] = None,
                  verify: bool = True,
                  self_deployed: bool = False,
+                 azure_ad_endpoint: str = 'https://login.microsoftonline.com',
+                 timeout: Optional[int] = None,
                  *args, **kwargs):
         """
         Microsoft Client class that implements logic to authenticate with oproxy or self deployed applications.
@@ -85,6 +92,8 @@ class MicrosoftClient(BaseClient):
 
         self.auth_type = SELF_DEPLOYED_AUTH_TYPE if self_deployed else OPROXY_AUTH_TYPE
         self.verify = verify
+        self.azure_ad_endpoint = azure_ad_endpoint
+        self.timeout = timeout
 
         self.multi_resource = multi_resource
         if self.multi_resource:
@@ -107,6 +116,8 @@ class MicrosoftClient(BaseClient):
         Returns:
             Response from api according to resp_type. The default is `json` (dict or list).
         """
+        if 'ok_codes' not in kwargs and not self._ok_codes:
+            kwargs['ok_codes'] = (200, 201, 202, 204, 206, 404)
         token = self.get_access_token(resource=resource, scope=scope)
         default_headers = {
             'Authorization': f'Bearer {token}',
@@ -116,7 +127,11 @@ class MicrosoftClient(BaseClient):
 
         if headers:
             default_headers.update(headers)
-        response = super()._http_request(   # type: ignore[misc]
+
+        if self.timeout:
+            kwargs['timeout'] = self.timeout
+
+        response = super()._http_request(  # type: ignore[misc]
             *args, resp_type="response", headers=default_headers, **kwargs)
 
         # 206 indicates Partial Content, reason will be in the warning header.
@@ -126,6 +141,14 @@ class MicrosoftClient(BaseClient):
         is_response_empty_and_successful = (response.status_code == 204)
         if is_response_empty_and_successful and return_empty_response:
             return response
+
+        # Handle 404 errors instead of raising them as exceptions:
+        if response.status_code == 404:
+            try:
+                error_message = response.json()
+            except Exception:
+                error_message = 'Not Found - 404 Response'
+            raise NotFoundError(error_message)
 
         try:
             if resp_type == 'json':
@@ -171,8 +194,7 @@ class MicrosoftClient(BaseClient):
             if self.epoch_seconds() < valid_until:
                 return access_token
 
-        auth_type = self.auth_type
-        if auth_type == OPROXY_AUTH_TYPE:
+        if self.auth_type == OPROXY_AUTH_TYPE:
             if self.multi_resource:
                 for resource_str in self.resources:
                     access_token, expires_in, refresh_token = self._oproxy_authorize(resource_str)
@@ -225,7 +247,8 @@ class MicrosoftClient(BaseClient):
                 'app_name': self.app_name,
                 'registration_id': self.auth_id,
                 'encrypted_token': self.get_encrypted(content, self.enc_key),
-                'scope': scope
+                'scope': scope,
+                'resource': resource
             },
             verify=self.verify
         )
@@ -344,6 +367,9 @@ class MicrosoftClient(BaseClient):
             data['grant_type'] = REFRESH_TOKEN
             data['refresh_token'] = refresh_token
         else:
+            if SESSION_STATE in self.auth_code:
+                raise ValueError('Malformed auth_code parameter: Please copy the auth code from the redirected uri '
+                                 'without any additional info and without the "session_state" query parameter.')
             data['grant_type'] = AUTHORIZATION_CODE
             data['code'] = self.auth_code
 
@@ -512,11 +538,11 @@ class MicrosoftClient(BaseClient):
 
         return headers
 
-    def device_auth_request(self) -> str:
+    def device_auth_request(self) -> dict:
         response_json = {}
         try:
             response = requests.post(
-                url='https://login.microsoftonline.com/organizations/oauth2/v2.0/devicecode',
+                url=f'{self.azure_ad_endpoint}/organizations/oauth2/v2.0/devicecode',
                 data={
                     'client_id': self.client_id,
                     'scope': self.scope
@@ -530,4 +556,27 @@ class MicrosoftClient(BaseClient):
         except Exception as e:
             return_error(f'Error in Microsoft authorization: {str(e)}')
         set_integration_context({'device_code': response_json.get('device_code')})
-        return response_json.get('user_code', '')
+        return response_json
+
+    def start_auth(self, complete_command: str) -> str:
+        response = self.device_auth_request()
+        message = response.get('message', '')
+        re_search = re.search(REGEX_SEARCH_URL, message)
+        url = re_search.group('url') if re_search else None
+        user_code = response.get('user_code')
+
+        return f"""### Authorization instructions
+1. To sign in, use a web browser to open the page [{url}]({url})
+and enter the code **{user_code}** to authenticate.
+2. Run the **{complete_command}** command in the War Room."""
+
+
+class NotFoundError(Exception):
+    """Exception raised for 404 - Not Found errors.
+
+    Attributes:
+        message -- explanation of the error
+    """
+
+    def __init__(self, message):
+        self.message = message

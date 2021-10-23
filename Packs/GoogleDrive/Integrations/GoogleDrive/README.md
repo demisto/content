@@ -1,88 +1,30 @@
-Google Drive allows users to store files on their servers, synchronize files across devices, and share files. This integration helps you to create a new drive, query past activity and view change logs performed by the users. 
-This integration was integrated and tested majorly with G Suite Basic and Enterprise edition.
+Google Drive allows users to store files on their servers, synchronize files across devices, and share files. This integration helps you to create a new drive, query past activity, and view change logs performed by the users.
+This integration was integrated and tested with version 1.31.0 of GoogleDrive
 
-## Configure Service Account for Google Drive
-
-1. Go to [https://console.developers.google.com](https://console.developers.google.com).
-
-2. Select or create a project:
-
-    ![Setup Account](./../../doc_files/create-project-1.png)
-
-
-3. Enable the Google Drive and Drive Activity API:
-    
-    1. Under the main menu, select APIs & Services -> 'Libary':
-        ![Setup Account](./../../doc_files/google-api-menu.png)
-    
-    2. Enable ``Google Drive API``:
-        ![Setup Account](../../doc_files/google_drive_api.png)
-    
-    3. Enable ``Drive Activity API``:
-        ![Setup Account](../../doc_files/drive_activity_api.png)
-            
-    4. Select the project and click 'OPEN':
-        ![Setup Account](./../../doc_files/enable-gke-api-enable-2.png)    
-
-4. Create a service account with correct restricted permissions:
-
-    1. Under the main menu, select IAM & Admin -> Service Accounts:
-        ![Setup Account](./../../doc_files/service-acount-menu.png)
-    
-    2. In the top bar, select ``CREATE SERVICE ACCOUNT``:
-        ![Setup Account](./../../doc_files/service-account-create-1.png)
-    
-    3. Under the main menu, select ``IAM & Admin`` -> ``Service Accounts`` and open the account you just created.
-    
-    4. Generate new credentials:
-        1. On the Service account details page, under Keys, click **ADD KEY** and select **Create new key**:
-            ![Setup Account](./../../doc_files/service-account-create-3.png)
-        
-        2. Under Key type, select **JSON**, and click **CREATE**. Save the credentials in a secure location. You will need the generated **credentials.json** file when you configure the instance in Cortex XSOAR:
-            ![Setup Account](./../../doc_files/service-account-create-4.png)   
-
-## Add Scopes in G Suite Admin
-
-1. Go to [https://admin.google.com](https://admin.google.com)
-
-2. Click Menu and select ``Security`` -> ``API Controls``:
-    ![Setup Account](./../../doc_files/add-scope-admin-1.png)
-
-3. Under ``Domain wide delegation`` tab, Click ``MANAGE DOMAIN WIDE DELEGATION``:
-    ![Setup Account](./../../doc_files/add-scope-admin-2.png)
-
-4. Click on ``Add new`` and the window will prompt, enter Client ID from your ``credentials.json`` and required scopes from integration tips.
-    ![Setup Account](./../../doc_files/add-scope-admin-3.png)           
-
-5. Click ``AUTHORIZE``.
-
-## Configure Google Drive on Cortex XSOAR
+## Configure GoogleDrive on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Google Drive.
+2. Search for GoogleDrive.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | isFetch | Fetch incidents. | False |
-    | user_service_account_json | User's Service Account JSON. | True |
-    | user_id | User ID. | False |
-    | action_detail_case_include | Action Detail Case Include. | False |
-    | drive_item_search_field | Drive Item Search Field. | False |
-    | drive_item_search_value | Drive Item Search Value. | False |
-    | max_fetch | Max Incidents. | False |
-    | first_fetch | First fetch time interval. | False |
-    | incidentType | Incident type. | False |
-    | insecure | Trust any certificate \(not secure\). | False |
-    | proxy | Use system proxy settings. | False |
+    | User's Service Account JSON |  | True |
+    | User ID | The primary email address of the user to fetch the incident\(s\). | False |
+    | Action Detail Case Include | Action types to include for fetching the incident. | False |
+    | Drive Item Search Field | itemName - Fetch activities for this drive item. The format is "items/ITEM_ID". folderName - Fetch activities for this drive folder and all children and descendants. The format is "items/ITEM_ID". | False |
+    | Drive Item Search Value | itemName or folderName for fetching the incident. | False |
+    | Fetch incidents |  | False |
+    | Incident type |  | False |
+    | Max Incidents | The maximum number of incidents to fetch each time. | False |
+    | First Fetch Time Interval | The time range to consider for the initial data fetch in the format &amp;lt;number&amp;gt; &amp;lt;unit&amp;gt; e.g., 1 hour, 2 hours, 6 hours, 12 hours, 24 hours, 48 hours. | False |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
-
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-
-
 ### google-drive-create
 ***
 Creates a new Team Drive. The name argument specifies the name of the Team Drive. The specified user will be the first organizer.
@@ -96,9 +38,9 @@ This shared drive/team drive feature is available only with G Suite Enterprise, 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | The user's primary email address. | Optional |
+| user_id | The user's primary email address. | Optional | 
 | name | The name of this shared drive. | Required | 
-| hidden | Whether the shared drive is hidden from default view. | Optional | 
+| hidden | Whether the shared drive is hidden from the default view. Possible values: "True" and "False". Possible values are: True, False. | Optional | 
 
 
 #### Context Output
@@ -106,35 +48,15 @@ This shared drive/team drive feature is available only with G Suite Enterprise, 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | GoogleDrive.Drive.kind | String | Identifies what kind of resource this is. | 
-| GoogleDrive.Drive.id | String | The ID of this shared drive which is also the ID of the top level folder of this shared drive. | 
-| GoogleDrive.Drive.name | String | The name of this shared drive. |
-| GoogleDrive.Drive.hidden | Boolean | Whether the shared drive is hidden from default view. |
+| GoogleDrive.Drive.id | String | The ID of the shared drive which is also the ID of the top level folder of the shared drive. | 
+| GoogleDrive.Drive.name | String | The name of the shared drive. | 
+| GoogleDrive.Drive.hidden | Boolean | Whether the shared drive is hidden from the default view. | 
 
 
 #### Command Example
-``` 
-!google-drive-create name=drive1
-```
-
-#### Context Example
-```
-{
- "GoogleDrive": {
-   "Drive": {
-     "kind": "drive#drive",
-     "id": "YYg1BVyzlZx",
-     "name": "drive1",
-     "hidden": true
-   }
- }
-} 
-```
+``` ```
 
 #### Human Readable Output
->### A new shared drive created.
->|Id|Name|Hidden|
->|---|---|---|
->| YYg1BVyzlZx | drive1 | true |
 
 
 
@@ -152,16 +74,16 @@ Lists the changes for a user or shared drive.
 | --- | --- | --- |
 | page_token | The token for continuing a previous list request on the next page. | Required | 
 | user_id | The user's primary email address. | Optional | 
-| drive_id | The shared drive from which changes are returned. | Optional | 
-| include_corpus_removals | Whether changes should include the file resource if the file is still accessible by the user at the time of the request, even when a file was removed from the list of changes and there will be no further change entries for this file. Default is "false". | Optional | 
-| include_items_from_all_drives | Whether both My Drive and shared drive items should be included in results. Default is "false". | Optional | 
+| drive_id | The shared drive from which changes are returned. Can be retrieved using the `google-drive-drives-list` command. | Optional | 
+| include_corpus_removals | Whether changes should include the file resource if the file is still accessible by the user at the time of the request, even when a file was removed from the list of changes and there will be no further change entries for this file. Possible values: "true" and "false". Possible values are: true, false. Default is false. | Optional | 
+| include_items_from_all_drives | Whether both My Drive and shared drive items should be included in the results. Possible values: "true" and "false". Possible values are: true, false. Default is false. | Optional | 
 | include_permissions_for_view | Specifies which additional view's permissions to include in the response. Only 'published' is supported. | Optional | 
-| include_removed | Whether to include changes indicating that items have been removed from the list of changes, for example by deletion or loss of access. Default is "true". | Optional | 
-| page_size | The maximum number of changes to return per page. Acceptable values are 1 to 1000, inclusive. Default is "100". | Optional | 
-| restrict_to_my_drive | Whether to restrict the results to changes inside the My Drive hierarchy. This omits changes to files such as those in the Application Data folder or shared files which have not been added to My Drive. Default is "false". | Optional | 
-| spaces | A comma-separated list of spaces to query within the user corpus. Supported values are 'drive', 'appDataFolder' and 'photos'. | Optional | 
-| supports_all_drives | Whether the requesting application supports both My Drives and shared drives. Default is "false". | Optional | 
-| fields | The paths of the fields you want to be included in the response. Possible values are: ""basic" (the response will include a default set of fields specific to this method) and "advance" (you can use the value * to return all the fields). Default is "basic". | Optional | 
+| include_removed | Whether to include changes indicating that items have been removed from the list of changes, for example by deletion or loss of access. Possible values: "true" and "false". Possible values are: true, false. Default is true. | Optional | 
+| page_size | The maximum number of changes to return per page. Acceptable values are 1 to 1000, inclusive. Default is 100. | Optional | 
+| restrict_to_my_drive | Whether to restrict the results to changes inside the My Drive hierarchy. This omits changes to files such as those in the Application Data folder or shared files which have not been added to My Drive. Possible values: "true" and "false". Possible values are: true, false. Default is false. | Optional | 
+| spaces | A comma-separated list of spaces to query within the user corpus. Possible values are 'drive', 'appDataFolder', and 'photos'. | Optional | 
+| supports_all_drives | Whether the requesting application supports both My Drives and shared drives. Possible values: "true" and "false". Possible values are: true, false. Default is false. | Optional | 
+| fields | The paths of the fields you want to include in the response. Possible values are: "basic" (the response will include a default set of fields specific to this method) and "advance" (you can use the value * to return all the fields). Possible values are: basic, advance. Default is basic. | Optional | 
 
 
 #### Context Output
@@ -174,7 +96,7 @@ Lists the changes for a user or shared drive.
 | GoogleDrive.PageToken.DriveChange.userId | String | The user's primary email address. | 
 | GoogleDrive.DriveChange.userId | String | The user's primary email address. | 
 | GoogleDrive.DriveChange.kind | String | Identifies what kind of resource this is. | 
-| GoogleDrive.DriveChange.changeType | String | The type of the change. Possible values are file and drive. | 
+| GoogleDrive.DriveChange.changeType | String | The type of the change. Possible values are "file" and "drive". | 
 | GoogleDrive.DriveChange.time | Date | The time of this change \(RFC 3339 date-time\). | 
 | GoogleDrive.DriveChange.removed | Boolean | Whether the file or shared drive has been removed from this list of changes, for example by deletion or loss of access. | 
 | GoogleDrive.DriveChange.fileId | String | The ID of the file which has changed. | 
@@ -197,7 +119,7 @@ Lists the changes for a user or shared drive.
 | GoogleDrive.DriveChange.file.parents | Unknown | The IDs of the parent folders which contain the file. | 
 | GoogleDrive.DriveChange.file.properties | Unknown | A collection of arbitrary key-value pairs which are visible to all apps. | 
 | GoogleDrive.DriveChange.file.appProperties | Unknown | A collection of arbitrary key-value pairs which are private to the requesting app. | 
-| GoogleDrive.DriveChange.file.spaces | Unknows | The list of spaces which contain the file. The currently supported values are 'drive', 'appDataFolder' and 'photos'. | 
+| GoogleDrive.DriveChange.file.spaces | Unknown | The list of spaces which contain the file. The currently supported values are 'drive', 'appDataFolder' and 'photos'. | 
 | GoogleDrive.DriveChange.file.version | Number | A monotonically increasing version number for the file. This reflects every change made to the file on the server, even those not visible to the user. | 
 | GoogleDrive.DriveChange.file.webContentLink | String | A link for downloading the content of the file in a browser. This is only available for files with binary content in Google Drive. | 
 | GoogleDrive.DriveChange.file.webViewLink | String | A link for opening the file in a relevant Google editor or viewer in a browser. | 
@@ -210,7 +132,7 @@ Lists the changes for a user or shared drive.
 | GoogleDrive.DriveChange.file.createdTime | Date | The time at which the file was created \(RFC 3339 date-time\). | 
 | GoogleDrive.DriveChange.file.modifiedTime | Date | The last time the file was modified by anyone \(RFC 3339 date-time\). | 
 | GoogleDrive.DriveChange.file.modifiedByMeTime | Date | The last time the file was modified by the user \(RFC 3339 date-time\). | 
-| GoogleDrive.DriveChange.file.modifiedByMe | Boolean | Whether the file has been modified by this user. | 
+| GoogleDrive.DriveChange.file.modifiedByMe | Boolean | Whether the file has been modified by the user. | 
 | GoogleDrive.DriveChange.file.sharedWithMeTime | Date | The time at which the file was shared with the user, if applicable \(RFC 3339 date-time\). | 
 | GoogleDrive.DriveChange.file.sharingUser.kind | String | Identifies what kind of resource this is. | 
 | GoogleDrive.DriveChange.file.sharingUser.displayName | String | A plain text displayable name for this user. | 
@@ -236,7 +158,7 @@ Lists the changes for a user or shared drive.
 | GoogleDrive.DriveChange.file.capabilities.canAddChildren | Boolean | Whether the current user can add children to this folder. This is always false when the item is not a folder. | 
 | GoogleDrive.DriveChange.file.capabilities.canAddFolderFromAnotherDrive | Boolean | Whether the current user can add a folder from another drive \(different shared drive or My Drive\) to this folder. | 
 | GoogleDrive.DriveChange.file.capabilities.canAddMyDriveParent | Boolean | Whether the current user can add a parent for the item without removing an existing parent in the same request. Not populated for shared drive files. | 
-| GoogleDrive.DriveChange.file.capabilities.canChangeCopyRequiresWriterPermission | Boolean | Whether the current user can change the copyRequiresWriterPermission restriction of this file. | 
+| GoogleDrive.DriveChange.file.capabilities.canChangeCopyRequiresWriterPermission | Boolean | Whether the current user can change the 'copy requires writer permission' restriction of this file. | 
 | GoogleDrive.DriveChange.file.capabilities.canComment | Boolean | Whether the current user can comment on this file. | 
 | GoogleDrive.DriveChange.file.capabilities.canCopy | Boolean | Whether the current user can copy this file. | 
 | GoogleDrive.DriveChange.file.capabilities.canDelete | Boolean | Whether the current user can delete this file. | 
@@ -341,10 +263,10 @@ Lists the changes for a user or shared drive.
 | GoogleDrive.DriveChange.drive.backgroundImageFile.width | Number | The width of the cropped image in the closed range of 0 to 1. | 
 | GoogleDrive.DriveChange.drive.backgroundImageLink | String | A short-lived link to this shared drive's background image. | 
 | GoogleDrive.DriveChange.drive.capabilities.canAddChildren | Boolean | Whether the current user can add children to folders in this shared drive. | 
-| GoogleDrive.DriveChange.drive.capabilities.canChangeCopyRequiresWriterPermissionRestriction | Boolean | Whether the current user can change the copyRequiresWriterPermission restriction of this shared drive. | 
-| GoogleDrive.DriveChange.drive.capabilities.canChangeDomainUsersOnlyRestriction | Boolean | Whether the current user can change the domainUsersOnly restriction of this shared drive. | 
+| GoogleDrive.DriveChange.drive.capabilities.canChangeCopyRequiresWriterPermissionRestriction | Boolean | Whether the current user can change the 'copy requires writer permission' restriction of this shared drive. | 
+| GoogleDrive.DriveChange.drive.capabilities.canChangeDomainUsersOnlyRestriction | Boolean | Whether the current user can change the 'domain users only' restriction of this shared drive. | 
 | GoogleDrive.DriveChange.drive.capabilities.canChangeDriveBackground | Boolean | Whether the current user can change the background of this shared drive. | 
-| GoogleDrive.DriveChange.drive.capabilities.canChangeDriveMembersOnlyRestriction | Boolean | Whether the current user can change the driveMembersOnly restriction of this shared drive. | 
+| GoogleDrive.DriveChange.drive.capabilities.canChangeDriveMembersOnlyRestriction | Boolean | Whether the current user can change the 'drive members only' restriction of this shared drive. | 
 | GoogleDrive.DriveChange.drive.capabilities.canComment | Boolean | Whether the current user can comment on files in this shared drive. | 
 | GoogleDrive.DriveChange.drive.capabilities.canCopy | Boolean | Whether the current user can copy files in this shared drive. | 
 | GoogleDrive.DriveChange.drive.capabilities.canDeleteChildren | Boolean | Whether the current user can delete children from folders in this shared drive. | 
@@ -359,7 +281,7 @@ Lists the changes for a user or shared drive.
 | GoogleDrive.DriveChange.drive.capabilities.canShare | Boolean | Whether the current user can share files or folders in this shared drive. | 
 | GoogleDrive.DriveChange.drive.capabilities.canTrashChildren | Boolean | Whether the current user can trash children from folders in this shared drive. | 
 | GoogleDrive.DriveChange.drive.createdTime | Date | The time at which the shared drive was created \(RFC 3339 date-time\). | 
-| GoogleDrive.DriveChange.drive.hidden | Boolean | Whether the shared drive is hidden from default view. | 
+| GoogleDrive.DriveChange.drive.hidden | Boolean | Whether the shared drive is hidden from the default view. | 
 | GoogleDrive.DriveChange.drive.restrictions.adminManagedRestrictions | Boolean | Whether administrative privileges on this shared drive are required to modify restrictions. | 
 | GoogleDrive.DriveChange.drive.restrictions.copyRequiresWriterPermission | Boolean | Whether the options to copy, print, or download files inside this shared drive, should be disabled for readers and commenters. | 
 | GoogleDrive.DriveChange.drive.restrictions.domainUsersOnly | Boolean | Whether access to this shared drive and items inside this shared drive is restricted to users of the domain to which this shared drive belongs. | 
@@ -367,268 +289,10 @@ Lists the changes for a user or shared drive.
 
 
 #### Command Example
-```!google-drive-changes-list page_token=485 user_id=user@domain.com fields=advance page_size=2```
-
-#### Context Example
-```
-{
-    "GoogleDrive": {
-        "DriveChange": [
-            {
-                "changeType": "file",
-                "file": {
-                    "capabilities": {
-                        "canAddChildren": false,
-                        "canAddMyDriveParent": false,
-                        "canChangeCopyRequiresWriterPermission": true,
-                        "canChangeViewersCanCopyContent": true,
-                        "canComment": true,
-                        "canCopy": true,
-                        "canDelete": true,
-                        "canDownload": true,
-                        "canEdit": true,
-                        "canListChildren": false,
-                        "canModifyContent": true,
-                        "canMoveChildrenWithinDrive": false,
-                        "canMoveItemIntoTeamDrive": true,
-                        "canMoveItemOutOfDrive": true,
-                        "canMoveItemWithinDrive": true,
-                        "canReadRevisions": true,
-                        "canRemoveChildren": false,
-                        "canRemoveMyDriveParent": true,
-                        "canRename": true,
-                        "canShare": true,
-                        "canTrash": true,
-                        "canUntrash": true
-                    },
-                    "copyRequiresWriterPermission": false,
-                    "createdTime": "2020-09-18T16:44:58.481Z",
-                    "explicitlyTrashed": false,
-                    "fileExtension": "PNG",
-                    "fullFileExtension": "PNG",
-                    "hasThumbnail": true,
-                    "headRevisionId": "0B4EoMKFUOWuTV1VRSU1xN3ZXSU5kRHZrcWVUZ0Nha0xVQ3FVPQ",
-                    "iconLink": "https://drive-thirdparty.googleusercontent.com/16/type/image/png",
-                    "id": "1i_rViDYPnCJERqClTVXxgT2BlbBozvsl",
-                    "imageMediaMetadata": {
-                        "height": 629,
-                        "rotation": 0,
-                        "width": 1745
-                    },
-                    "isAppAuthorized": false,
-                    "kind": "drive#file",
-                    "lastModifyingUser": {
-                        "displayName": "drive activity",
-                        "emailAddress": "user@domain.com",
-                        "kind": "drive#user",
-                        "me": true,
-                        "permissionId": "13917841530253496391"
-                    },
-                    "md5Checksum": "28364a0552ccfb6638d929fb31b15e18",
-                    "mimeType": "image/png",
-                    "modifiedByMe": true,
-                    "modifiedByMeTime": "2020-08-29T05:18:45.000Z",
-                    "modifiedTime": "2020-08-29T05:18:45.000Z",
-                    "name": "ACL_list.PNG",
-                    "originalFilename": "ACL_list.PNG",
-                    "ownedByMe": true,
-                    "owners": [
-                        {
-                            "displayName": "drive activity",
-                            "emailAddress": "user@domain.com",
-                            "kind": "drive#user",
-                            "me": true,
-                            "permissionId": "13917841530253496391"
-                        }
-                    ],
-                    "parents": [
-                        "1qczzfFtukqOKTDDNRxhJrfUxlP99DKBp"
-                    ],
-                    "permissionIds": [
-                        "06693729183418228120",
-                        "12910357923353950258k",
-                        "13917841530253496391"
-                    ],
-                    "permissions": [
-                        {
-                            "deleted": false,
-                            "displayName": "Deval Mehta",
-                            "emailAddress": "user1@domain.com",
-                            "id": "06693729183418228120",
-                            "kind": "drive#permission",
-                            "role": "writer",
-                            "type": "user"
-                        },
-                        {
-                            "allowFileDiscovery": false,
-                            "displayName": "Data Technologies",
-                            "domain": "domain.com",
-                            "id": "12910357923353950258k",
-                            "kind": "drive#permission",
-                            "role": "reader",
-                            "type": "domain"
-                        },
-                        {
-                            "deleted": false,
-                            "displayName": "drive activity",
-                            "emailAddress": "user@domain.com",
-                            "id": "13917841530253496391",
-                            "kind": "drive#permission",
-                            "role": "owner",
-                            "type": "user"
-                        }
-                    ],
-                    "quotaBytesUsed": "68787",
-                    "shared": true,
-                    "size": "68787",
-                    "spaces": [
-                        "drive"
-                    ],
-                    "starred": false,
-                    "thumbnailLink": "https://lh3.googleusercontent.com/DTeAOSDpqZsvunN1AnZh00Rko90=s220",
-                    "thumbnailVersion": "1",
-                    "trashed": false,
-                    "version": "2",
-                    "viewedByMe": true,
-                    "viewedByMeTime": "2020-09-18T16:44:58.481Z",
-                    "viewersCanCopyContent": true,
-                    "webContentLink": "https://drive.google.com/uc?id=123&export=download",
-                    "webViewLink": "https://drive.google.com/file/d/123/view?usp=drivesdk",
-                    "writersCanShare": true
-                },
-                "fileId": "1i_rViDYPnCJERqClTVXxgT2BlbBozvsl",
-                "kind": "drive#change",
-                "removed": false,
-                "time": "2020-09-21T14:14:21.131Z",
-                "type": "file"
-            },
-            {
-                "changeType": "file",
-                "file": {
-                    "capabilities": {
-                        "canAddChildren": true,
-                        "canAddMyDriveParent": false,
-                        "canChangeCopyRequiresWriterPermission": false,
-                        "canChangeViewersCanCopyContent": false,
-                        "canComment": true,
-                        "canCopy": false,
-                        "canDelete": true,
-                        "canDownload": true,
-                        "canEdit": true,
-                        "canListChildren": true,
-                        "canModifyContent": true,
-                        "canMoveChildrenWithinDrive": true,
-                        "canMoveItemIntoTeamDrive": true,
-                        "canMoveItemOutOfDrive": true,
-                        "canMoveItemWithinDrive": true,
-                        "canReadRevisions": false,
-                        "canRemoveChildren": true,
-                        "canRemoveMyDriveParent": true,
-                        "canRename": true,
-                        "canShare": true,
-                        "canTrash": true,
-                        "canUntrash": true
-                    },
-                    "copyRequiresWriterPermission": false,
-                    "createdTime": "2020-09-21T14:16:35.836Z",
-                    "explicitlyTrashed": false,
-                    "folderColorRgb": "#8f8f8f",
-                    "hasThumbnail": false,
-                    "iconLink": "https://drive-thirdparty.googleusercontent.com/16/type/application/vnd123",
-                    "id": "1i8dC0MGowqwg2IjGWs1CJekqZOn5X1mb",
-                    "isAppAuthorized": false,
-                    "kind": "drive#file",
-                    "lastModifyingUser": {
-                        "displayName": "drive activity",
-                        "emailAddress": "user@domain.com",
-                        "kind": "drive#user",
-                        "me": true,
-                        "permissionId": "13917841530253496391"
-                    },
-                    "mimeType": "application/vnd.google-apps.folder",
-                    "modifiedByMe": true,
-                    "modifiedByMeTime": "2020-09-21T14:16:35.836Z",
-                    "modifiedTime": "2020-09-21T14:16:35.836Z",
-                    "name": "Folder_2_move",
-                    "ownedByMe": true,
-                    "owners": [
-                        {
-                            "displayName": "drive activity",
-                            "emailAddress": "user@domain.com",
-                            "kind": "drive#user",
-                            "me": true,
-                            "permissionId": "13917841530253496391"
-                        }
-                    ],
-                    "parents": [
-                        "0AIEoMKFUOWuTUk9PVA"
-                    ],
-                    "permissionIds": [
-                        "12910357923353950258k",
-                        "13917841530253496391"
-                    ],
-                    "permissions": [
-                        {
-                            "allowFileDiscovery": false,
-                            "displayName": "Data Technologies",
-                            "domain": "domain.com",
-                            "id": "12910357923353950258k",
-                            "kind": "drive#permission",
-                            "role": "reader",
-                            "type": "domain"
-                        },
-                        {
-                            "deleted": false,
-                            "displayName": "drive activity",
-                            "emailAddress": "user@domain.com",
-                            "id": "13917841530253496391",
-                            "kind": "drive#permission",
-                            "role": "owner",
-                            "type": "user"
-                        }
-                    ],
-                    "quotaBytesUsed": "0",
-                    "shared": true,
-                    "spaces": [
-                        "drive"
-                    ],
-                    "starred": false,
-                    "thumbnailVersion": "0",
-                    "trashed": false,
-                    "version": "2",
-                    "viewedByMe": true,
-                    "viewedByMeTime": "2020-09-21T14:16:35.836Z",
-                    "viewersCanCopyContent": true,
-                    "webViewLink": "https://drive.google.com/drive/folders/123",
-                    "writersCanShare": true
-                },
-                "fileId": "1i8dC0MGowqwg2IjGWs1CJekqZOn5X1mb",
-                "kind": "drive#change",
-                "removed": false,
-                "time": "2020-09-21T14:16:36.333Z",
-                "type": "file"
-            }
-        ],
-        "PageToken": {
-            "DriveChange": {
-                "nextPageToken": "489",
-                "userId": "user@domain.com"
-            }
-        }
-    }
-}
-```
+``` ```
 
 #### Human Readable Output
 
->### Next Page Token: 489
->### Files(s)
->|Id|Name|Size ( Bytes )|Modified Time|Last Modifying User|
->|---|---|---|---|---|
->| 1i_rViDYPnCJERqClTVXxgT2BlbBozvsl | ACL_list.PNG | 68787 | 2020-08-29T05:18:45.000Z | drive activity |
->| 1i8dC0MGowqwg2IjGWs1CJekqZOn5X1mb | Folder_2_move |  | 2020-09-21T14:16:35.836Z | drive activity |
->### Drive(s)
->**No entries.**
 
 
 ### google-drive-activity-list
@@ -644,12 +308,12 @@ Query past activity in Google Drive.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user_id | The user's primary email address. | Optional | 
-| folder_name | Return activities for this Drive folder and all children and descendants. The format is "items/ITEM_ID". | Optional | 
-| item_name | Return activities for this Drive item. The format is "items/ITEM_ID". | Optional | 
-| filter | The filtering for items returned from this query request. The format of the filter string is a sequence of expressions, joined by an optional "AND", where each expression is of the form "field operator value".<br/><br/>Supported fields:<br/>time - Uses numerical operators on date values either in terms of milliseconds since Jan 1, 1970 or in RFC 3339 format.<br/>Examples:<br/>time &gt; 1452409200000 AND time &lt;= 1492812924310<br/>time &gt;= "2016-01-10T01:02:03-05:00"<br/><br/>detail.action_detail_case - Uses the "has" operator (:) and either a singular value or a list of allowed action types enclosed in parentheses.<br/>Examples:<br/>detail.action_detail_case: RENAME<br/>detail.action_detail_case:(CREATE EDIT)<br/>-detail.action_detail_case:MOVE" | Optional | 
+| folder_name | Return activities for this drive folder and all children and descendants. The format is "items/ITEM_ID". | Optional | 
+| item_name | Return activities for this drive item. The format is "items/ITEM_ID". | Optional | 
+| filter | The filtering for items returned from this query request. The format of the filter string is a sequence of expressions, joined by an optional "AND", where each expression is of the form "field operator value".<br/><br/>Supported fields:<br/>time - Uses numerical operators on date values either in terms of milliseconds since Jan 1, 1970 or in RFC 3339 format.<br/>Examples:<br/>time &gt; 1452409200000 AND time &lt;= 1492812924310<br/>time &gt;= "2016-01-10T01:02:03-05:00"<br/><br/>detail.action_detail_case - Uses the "has" operator (:) and either a singular value or a list of allowed action types enclosed in parentheses.<br/>Examples:<br/>detail.action_detail_case: RENAME<br/>detail.action_detail_case:(CREATE EDIT)<br/>-detail.action_detail_case:MOVE". | Optional | 
 | time_range | The time range to consider for getting drive activity. Use the format "&lt;number&gt; &lt;time unit&gt;". <br/>Example: 12 hours, 7 days, 3 months, 1 year. This argument will override if the filter argument is given. | Optional | 
-| action_detail_case_include | A singular value or a list of allowed action types enclosed in parentheses. Which filters based on given actions. Examples: <br/>RENAME <br/>(CREATE EDIT)<br/>This argument will override if the filter argument is given. | Optional | 
-| action_detail_case_remove | A singular value or a list of allowed action types enclosed in parentheses. Which filters based on given actions Examples:<br/>RENAME <br/>(CREATE EDIT)<br/>This argument will override if the filter argument is given. | Optional | 
+| action_detail_case_include | A singular value or a list of allowed action types enclosed in parentheses. The filters are based on given actions. For example: <br/>RENAME <br/>(CREATE EDIT)<br/>This argument will override if the filter argument is given. | Optional | 
+| action_detail_case_remove | A singular value or a list of allowed action types enclosed in parentheses. The filters are based on given actions. For example:<br/>RENAME <br/>(CREATE EDIT)<br/>This argument will override if the filter argument is given. | Optional | 
 | page_token | The token identifying which page of results to return. Set this to the nextPageToken value returned from a previous query to obtain the following page of results. If not set, the first page of results will be returned. | Optional | 
 
 
@@ -684,25 +348,25 @@ Query past activity in Google Drive.
 | GoogleDrive.DriveActivity.primaryActionDetail.delete.type | String | The type of delete action taken. | 
 | GoogleDrive.DriveActivity.primaryActionDetail.restore.type | String | The type of restore action taken. | 
 | GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.addedPermissions.role | String | Indicates the Google Drive permissions role. | 
-| GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.addedPermissions.allowDiscovery | Boolean | If true, the item can be discovered \(e.g. in the user's "Shared with me" collection\) without needing a link to the item. | 
+| GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.addedPermissions.allowDiscovery | Boolean | If true, the item can be discovered \(e.g., in the user's "Shared with me" collection\) without needing a link to the item. | 
 | GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.addedPermissions.user.knownUser.personName | String | The identifier for this user that can be used with the People API to get more information. The format is "people/ACCOUNT_ID". | 
 | GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.addedPermissions.user.knownUser.isCurrentUser | Boolean | True if this is the user making the request. | 
 | GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.addedPermissions.user.deletedUser | Boolean | If true, a user whose account has since been deleted. | 
 | GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.addedPermissions.user.unknownUser | Boolean | If true, a user about whom nothing is currently known. | 
 | GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.addedPermissions.group.email | String | The email address of the group. | 
 | GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.addedPermissions.group.title | String | The title of the group. | 
-| GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.addedPermissions.domain.name | String | The name of the domain, e.g. "google.com". | 
+| GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.addedPermissions.domain.name | String | The name of the domain, e.g., "google.com". | 
 | GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.addedPermissions.domain.legacyId | String | An opaque string used to identify this domain. | 
 | GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.addedPermissions.anyone | Boolean | If true, represents any user \(including a logged out user\). | 
 | GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.removedPermissions.role | String | Indicates the Google Drive permissions role. | 
-| GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.removedPermissions.allowDiscovery | Boolean | If true, the item can be discovered \(e.g. in the user's "Shared with me" collection\) without needing a link to the item. | 
+| GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.removedPermissions.allowDiscovery | Boolean | If true, the item can be discovered \(e.g., in the user's "Shared with me" collection\) without needing a link to the item. | 
 | GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.removedPermissions.user.knownUser.personName | String | The identifier for this user that can be used with the People API to get more information. The format is "people/ACCOUNT_ID". | 
 | GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.removedPermissions.user.knownUser.isCurrentUser | Boolean | True if this is the user making the request. | 
 | GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.removedPermissions.user.deletedUser | Boolean | If true, a user whose account has since been deleted. | 
 | GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.removedPermissions.user.unknownUser | Boolean | If true, a user about whom nothing is currently known. | 
 | GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.removedPermissions.group.email | String | The email address of the group. | 
 | GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.removedPermissions.group.title | String | The title of the group. | 
-| GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.removedPermissions.domain.name | String | The name of the domain, e.g. "google.com". | 
+| GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.removedPermissions.domain.name | String | The name of the domain, e.g., "google.com". | 
 | GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.removedPermissions.domain.legacyId | String | An opaque string used to identify this domain. | 
 | GoogleDrive.DriveActivity.primaryActionDetail.permissionChange.removedPermissions.anyone | Boolean | If true, represents any user \(including a logged out user\). | 
 | GoogleDrive.DriveActivity.primaryActionDetail.comment.mentionedUsers.knownUser.personName | String | The identifier for this user that can be used with the People API to get more information. The format is "people/ACCOUNT_ID". | 
@@ -727,8 +391,8 @@ Query past activity in Google Drive.
 | GoogleDrive.DriveActivity.actors.anonymous | Boolean | If true, the user is an anonymous user. | 
 | GoogleDrive.DriveActivity.actors.impersonation.impersonatedUser.knownUser.personName | String | The identifier for this user that can be used with the People API to get more information. The format is "people/ACCOUNT_ID". | 
 | GoogleDrive.DriveActivity.actors.impersonation.impersonatedUser.knownUser.isCurrentUser | Boolean | True if this is the user making the request. | 
-| GoogleDrive.DriveActivity.actors.impersonation.impersonatedUser.deletedUser | Boolean | If true, A user whose account has since been deleted. | 
-| GoogleDrive.DriveActivity.actors.impersonation.impersonatedUser.unknownUser | Boolean | If true, A user about whom nothing is currently known. | 
+| GoogleDrive.DriveActivity.actors.impersonation.impersonatedUser.deletedUser | Boolean | If true, a user whose account has since been deleted. | 
+| GoogleDrive.DriveActivity.actors.impersonation.impersonatedUser.unknownUser | Boolean | If true, a user about whom nothing is currently known. | 
 | GoogleDrive.DriveActivity.actors.system.type | String | The type of the system event that may triggered activity. | 
 | GoogleDrive.DriveActivity.actors.administrator | Boolean | If true, the user is an administrator. | 
 | GoogleDrive.DriveActivity.actions.detail.create.new | Boolean | If true, the object was newly created. | 
@@ -757,7 +421,7 @@ Query past activity in Google Drive.
 | GoogleDrive.DriveActivity.actions.detail.delete.type | String | The type of delete action taken. | 
 | GoogleDrive.DriveActivity.actions.detail.restore.type | String | The type of restore action taken. | 
 | GoogleDrive.DriveActivity.actions.detail.permissionChange.addedPermissions.role | String | Indicates the Google Drive permissions role. | 
-| GoogleDrive.DriveActivity.actions.detail.permissionChange.addedPermissions.allowDiscovery | Boolean | If true, the item can be discovered \(e.g. in the user's "Shared with me" collection\) without needing a link to the item. | 
+| GoogleDrive.DriveActivity.actions.detail.permissionChange.addedPermissions.allowDiscovery | Boolean | If true, the item can be discovered \(e.g., in the user's "Shared with me" collection\) without needing a link to the item. | 
 | GoogleDrive.DriveActivity.actions.detail.permissionChange.addedPermissions.user.knownUser.personName | String | The identifier for this user that can be used with the People API to get more information. The format is "people/ACCOUNT_ID". | 
 | GoogleDrive.DriveActivity.actions.detail.permissionChange.addedPermissions.user.knownUser.isCurrentUser | Boolean | True if this is the user making the request. | 
 | GoogleDrive.DriveActivity.actions.detail.permissionChange.addedPermissions.user.deletedUser | Boolean | If true, a user whose account has since been deleted. | 
@@ -775,7 +439,7 @@ Query past activity in Google Drive.
 | GoogleDrive.DriveActivity.actions.detail.permissionChange.removedPermissions.user.unknownUser | Boolean | If true, a user about whom nothing is currently known. | 
 | GoogleDrive.DriveActivity.actions.detail.permissionChange.removedPermissions.group.email | String | The email address of the group. | 
 | GoogleDrive.DriveActivity.actions.detail.permissionChange.removedPermissions.group.title | String | The title of the group. | 
-| GoogleDrive.DriveActivity.actions.detail.permissionChange.removedPermissions.domain.name | String | The name of the domain, e.g. "google.com". | 
+| GoogleDrive.DriveActivity.actions.detail.permissionChange.removedPermissions.domain.name | String | The name of the domain, e.g., "google.com". | 
 | GoogleDrive.DriveActivity.actions.detail.permissionChange.removedPermissions.domain.legacyId | String | An opaque string used to identify this domain. | 
 | GoogleDrive.DriveActivity.actions.detail.permissionChange.removedPermissions.anyone | Boolean | If true, represents any user \(including a logged out user\). | 
 | GoogleDrive.DriveActivity.actions.detail.comment.mentionedUsers.knownUser.personName | String | The identifier for this user that can be used with the People API to get more information. The format is "people/ACCOUNT_ID". | 
@@ -807,7 +471,7 @@ Query past activity in Google Drive.
 | GoogleDrive.DriveActivity.actions.target.driveItem.name | String | The target Drive item. The format is "items/ITEM_ID". | 
 | GoogleDrive.DriveActivity.actions.target.driveItem.title | String | The title of the Drive item. | 
 | GoogleDrive.DriveActivity.actions.target.driveItem.mimeType | String | The MIME type of the Drive item. | 
-| GoogleDrive.DriveActivity.actions.target.driveItem.owner.domain.name | String | The name of the domain, e.g. "google.com". | 
+| GoogleDrive.DriveActivity.actions.target.driveItem.owner.domain.name | String | The name of the domain, e.g., "google.com". | 
 | GoogleDrive.DriveActivity.actions.target.driveItem.owner.domain.legacyId | String | An opaque string used to identify this domain. | 
 | GoogleDrive.DriveActivity.actions.target.driveItem.owner.user.knownUser.personName | String | The identifier for this user that can be used with the People API to get more information. The format is "people/ACCOUNT_ID". | 
 | GoogleDrive.DriveActivity.actions.target.driveItem.owner.user.knownUser.isCurrentUser | Boolean | True if this is the user making the request. | 
@@ -901,537 +565,675 @@ Query past activity in Google Drive.
 
 
 #### Command Example
-```!google-drive-activity-list user_id=driveactivity@domain.com time_range="1 day"```
-
-#### Context Example
-```
-{
-    "GoogleDrive": {
-        "DriveActivity": [
-            {
-                "actions": [
-                    {
-                        "detail": {
-                            "delete": {
-                                "type": "TRASH"
-                            }
-                        }
-                    }
-                ],
-                "actors": [
-                    {
-                        "user": {
-                            "knownUser": {
-                                "isCurrentUser": true,
-                                "personName": "people/110760345443780932332"
-                            }
-                        }
-                    }
-                ],
-                "primaryActionDetail": {
-                    "delete": {
-                        "type": "TRASH"
-                    }
-                },
-                "targets": [
-                    {
-                        "driveItem": {
-                            "driveFolder": {
-                                "type": "STANDARD_FOLDER"
-                            },
-                            "folder": {
-                                "type": "STANDARD_FOLDER"
-                            },
-                            "mimeType": "application/vnd.google-apps.folder",
-                            "name": "items/12wYl0wQWfm05lmw9v2HMj8rOePuDlk4S",
-                            "owner": {
-                                "domain": {
-                                    "legacyId": "103399509076533013301",
-                                    "name": "domain.com"
-                                },
-                                "user": {
-                                    "knownUser": {
-                                        "isCurrentUser": true,
-                                        "personName": "people/110760345443780932332"
-                                    }
-                                }
-                            },
-                            "title": "Folder 2"
-                        }
-                    }
-                ],
-                "timestamp": "2020-09-30T20:23:58.336Z"
-            },
-            {
-                "actions": [
-                    {
-                        "detail": {
-                            "permissionChange": {
-                                "addedPermissions": [
-                                    {
-                                        "role": "EDITOR",
-                                        "user": {
-                                            "knownUser": {
-                                                "personName": "people/118105533760233960163"
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    }
-                ],
-                "actors": [
-                    {
-                        "user": {
-                            "knownUser": {
-                                "isCurrentUser": true,
-                                "personName": "people/110760345443780932332"
-                            }
-                        }
-                    }
-                ],
-                "primaryActionDetail": {
-                    "permissionChange": {
-                        "addedPermissions": [
-                            {
-                                "role": "EDITOR",
-                                "user": {
-                                    "knownUser": {
-                                        "personName": "people/118105533760233960163"
-                                    }
-                                }
-                            }
-                        ]
-                    }
-                },
-                "targets": [
-                    {
-                        "driveItem": {
-                            "driveFolder": {
-                                "type": "STANDARD_FOLDER"
-                            },
-                            "folder": {
-                                "type": "STANDARD_FOLDER"
-                            },
-                            "mimeType": "application/vnd.google-apps.folder",
-                            "name": "items/12wYl0wQWfm05lmw9v2HMj8rOePuDlk4S",
-                            "owner": {
-                                "domain": {
-                                    "legacyId": "103399509076533013301",
-                                    "name": "domain.com"
-                                },
-                                "user": {
-                                    "knownUser": {
-                                        "isCurrentUser": true,
-                                        "personName": "people/110760345443780932332"
-                                    }
-                                }
-                            },
-                            "title": "Folder 2"
-                        }
-                    }
-                ],
-                "timestamp": "2020-09-30T20:23:51.910Z"
-            },
-            {
-                "actions": [
-                    {
-                        "detail": {
-                            "create": {
-                                "new": true
-                            }
-                        }
-                    },
-                    {
-                        "detail": {
-                            "permissionChange": {
-                                "addedPermissions": [
-                                    {
-                                        "domain": {
-                                            "legacyId": "103399509076533013301",
-                                            "name": "domain.com"
-                                        },
-                                        "role": "VIEWER"
-                                    }
-                                ]
-                            }
-                        }
-                    },
-                    {
-                        "detail": {
-                            "move": {
-                                "addedParents": [
-                                    {
-                                        "driveItem": {
-                                            "driveFolder": {
-                                                "type": "MY_DRIVE_ROOT"
-                                            },
-                                            "folder": {
-                                                "type": "MY_DRIVE_ROOT"
-                                            },
-                                            "name": "items/0AIEoMKFUOWuTUk9PVA"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    }
-                ],
-                "actors": [
-                    {
-                        "user": {
-                            "knownUser": {
-                                "isCurrentUser": true,
-                                "personName": "people/110760345443780932332"
-                            }
-                        }
-                    }
-                ],
-                "primaryActionDetail": {
-                    "create": {
-                        "new": true
-                    }
-                },
-                "targets": [
-                    {
-                        "driveItem": {
-                            "driveFolder": {
-                                "type": "STANDARD_FOLDER"
-                            },
-                            "folder": {
-                                "type": "STANDARD_FOLDER"
-                            },
-                            "mimeType": "application/vnd.google-apps.folder",
-                            "name": "items/12wYl0wQWfm05lmw9v2HMj8rOePuDlk4S",
-                            "owner": {
-                                "domain": {
-                                    "legacyId": "103399509076533013301",
-                                    "name": "domain.com"
-                                },
-                                "user": {
-                                    "knownUser": {
-                                        "isCurrentUser": true,
-                                        "personName": "people/110760345443780932332"
-                                    }
-                                }
-                            },
-                            "title": "Folder 2"
-                        }
-                    }
-                ],
-                "timestamp": "2020-09-30T20:23:36.217Z"
-            },
-            {
-                "actions": [
-                    {
-                        "detail": {
-                            "move": {
-                                "addedParents": [
-                                    {
-                                        "driveItem": {
-                                            "driveFolder": {
-                                                "type": "STANDARD_FOLDER"
-                                            },
-                                            "folder": {
-                                                "type": "STANDARD_FOLDER"
-                                            },
-                                            "name": "items/1qczzfFtukqOKTDDNRxhJrfUxlP99DKBp",
-                                            "title": "teste move"
-                                        }
-                                    }
-                                ],
-                                "removedParents": [
-                                    {
-                                        "driveItem": {
-                                            "driveFolder": {
-                                                "type": "MY_DRIVE_ROOT"
-                                            },
-                                            "folder": {
-                                                "type": "MY_DRIVE_ROOT"
-                                            },
-                                            "name": "items/0AIEoMKFUOWuTUk9PVA"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    },
-                    {
-                        "detail": {
-                            "permissionChange": {
-                                "addedPermissions": [
-                                    {
-                                        "role": "EDITOR",
-                                        "user": {
-                                            "knownUser": {
-                                                "personName": "people/101124359955557659537"
-                                            }
-                                        }
-                                    },
-                                    {
-                                        "role": "EDITOR",
-                                        "user": {
-                                            "knownUser": {
-                                                "personName": "people/113493660192005193453"
-                                            }
-                                        }
-                                    },
-                                    {
-                                        "role": "EDITOR",
-                                        "user": {
-                                            "knownUser": {
-                                                "personName": "people/107198004112596790873"
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    }
-                ],
-                "actors": [
-                    {
-                        "user": {
-                            "knownUser": {
-                                "isCurrentUser": true,
-                                "personName": "people/110760345443780932332"
-                            }
-                        }
-                    }
-                ],
-                "primaryActionDetail": {
-                    "move": {
-                        "addedParents": [
-                            {
-                                "driveItem": {
-                                    "driveFolder": {
-                                        "type": "STANDARD_FOLDER"
-                                    },
-                                    "folder": {
-                                        "type": "STANDARD_FOLDER"
-                                    },
-                                    "name": "items/1qczzfFtukqOKTDDNRxhJrfUxlP99DKBp",
-                                    "title": "teste move"
-                                }
-                            }
-                        ],
-                        "removedParents": [
-                            {
-                                "driveItem": {
-                                    "driveFolder": {
-                                        "type": "MY_DRIVE_ROOT"
-                                    },
-                                    "folder": {
-                                        "type": "MY_DRIVE_ROOT"
-                                    },
-                                    "name": "items/0AIEoMKFUOWuTUk9PVA"
-                                }
-                            }
-                        ]
-                    }
-                },
-                "targets": [
-                    {
-                        "driveItem": {
-                            "driveFolder": {
-                                "type": "STANDARD_FOLDER"
-                            },
-                            "folder": {
-                                "type": "STANDARD_FOLDER"
-                            },
-                            "mimeType": "application/vnd.google-apps.folder",
-                            "name": "items/1xH9LSUYrbU1Uy-YoBLafQstE-ncuKW_4",
-                            "owner": {
-                                "domain": {
-                                    "legacyId": "103399509076533013301",
-                                    "name": "domain.com"
-                                },
-                                "user": {
-                                    "knownUser": {
-                                        "isCurrentUser": true,
-                                        "personName": "people/110760345443780932332"
-                                    }
-                                }
-                            },
-                            "title": "test"
-                        }
-                    }
-                ],
-                "timestamp": "2020-09-30T20:22:47.127Z"
-            },
-            {
-                "actions": [
-                    {
-                        "detail": {
-                            "edit": true
-                        }
-                    }
-                ],
-                "actors": [
-                    {
-                        "user": {
-                            "knownUser": {
-                                "isCurrentUser": true,
-                                "personName": "people/110760345443780932332"
-                            }
-                        }
-                    }
-                ],
-                "primaryActionDetail": {
-                    "edit": true
-                },
-                "targets": [
-                    {
-                        "driveItem": {
-                            "driveFile": true,
-                            "file": true,
-                            "mimeType": "application/vnd.google-apps.document",
-                            "name": "items/18w7gVMVew1JBArDLijAx0tXBrfFoOWzu26YTw6ZpVts",
-                            "owner": {
-                                "domain": {
-                                    "legacyId": "103399509076533013301",
-                                    "name": "domain.com"
-                                },
-                                "user": {
-                                    "knownUser": {
-                                        "isCurrentUser": true,
-                                        "personName": "people/110760345443780932332"
-                                    }
-                                }
-                            },
-                            "title": "Copy of Digital Citizenship"
-                        }
-                    }
-                ],
-                "timestamp": "2020-09-30T20:22:36.911Z"
-            },
-            {
-                "actions": [
-                    {
-                        "detail": {
-                            "edit": true
-                        }
-                    }
-                ],
-                "actors": [
-                    {
-                        "user": {
-                            "knownUser": {
-                                "isCurrentUser": true,
-                                "personName": "people/110760345443780932332"
-                            }
-                        }
-                    }
-                ],
-                "primaryActionDetail": {
-                    "edit": true
-                },
-                "targets": [
-                    {
-                        "driveItem": {
-                            "driveFile": true,
-                            "file": true,
-                            "mimeType": "application/vnd.google-apps.document",
-                            "name": "items/18w7gVMVew1JBArDLijAx0tXBrfFoOWzu26YTw6ZpVts",
-                            "owner": {
-                                "domain": {
-                                    "legacyId": "103399509076533013301",
-                                    "name": "domain.com"
-                                },
-                                "user": {
-                                    "knownUser": {
-                                        "isCurrentUser": true,
-                                        "personName": "people/110760345443780932332"
-                                    }
-                                }
-                            },
-                            "title": "Copy of Digital Citizenship"
-                        }
-                    }
-                ],
-                "timestamp": "2020-09-30T20:22:34.522Z"
-            },
-            {
-                "actions": [
-                    {
-                        "detail": {
-                            "create": {
-                                "copy": {
-                                    "originalObject": {
-                                        "driveItem": {
-                                            "name": "items/1L4Kie_45D0RVvifsvWxFYwXprXJBZUdXZuAHrzEue2c",
-                                            "title": "Digital Citizenship"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                ],
-                "actors": [
-                    {
-                        "user": {
-                            "knownUser": {
-                                "isCurrentUser": true,
-                                "personName": "people/110760345443780932332"
-                            }
-                        }
-                    }
-                ],
-                "primaryActionDetail": {
-                    "create": {
-                        "copy": {
-                            "originalObject": {
-                                "driveItem": {
-                                    "name": "items/1L4Kie_45D0RVvifsvWxFYwXprXJBZUdXZuAHrzEue2c",
-                                    "title": "Digital Citizenship"
-                                }
-                            }
-                        }
-                    }
-                },
-                "targets": [
-                    {
-                        "driveItem": {
-                            "driveFile": true,
-                            "file": true,
-                            "mimeType": "application/vnd.google-apps.document",
-                            "name": "items/18w7gVMVew1JBArDLijAx0tXBrfFoOWzu26YTw6ZpVts",
-                            "owner": {
-                                "domain": {
-                                    "legacyId": "103399509076533013301",
-                                    "name": "domain.com"
-                                },
-                                "user": {
-                                    "knownUser": {
-                                        "isCurrentUser": true,
-                                        "personName": "people/110760345443780932332"
-                                    }
-                                }
-                            },
-                            "title": "Copy of Digital Citizenship"
-                        }
-                    }
-                ],
-                "timestamp": "2020-09-30T20:22:34.175Z"
-            }
-        ]
-    }
-}
-```
+``` ```
 
 #### Human Readable Output
 
->### Total Retrieved Drive Activity(s): 7
->|Activity Time|Primary Action|Object|
->|---|---|---|
->| 2020-09-30T20:23:58.336Z | Delete | Delete Type: TRASH<br/>Target: 'Folder 2'<br/> |
->| 2020-09-30T20:23:51.910Z | PermissionChange | Target: 'Folder 2'<br/> |
->| 2020-09-30T20:23:36.217Z | Create New | Target: 'Folder 2'<br/> |
->| 2020-09-30T20:22:47.127Z | Move | Target: 'test'<br/> |
->| 2020-09-30T20:22:36.911Z | Edit | Target: 'Copy of Digital Citizenship'<br/> |
->| 2020-09-30T20:22:34.522Z | Edit | Target: 'Copy of Digital Citizenship'<br/> |
->| 2020-09-30T20:22:34.175Z | Create Copy | Target: 'Copy of Digital Citizenship'<br/> |
+
+
+### google-drive-drives-list
+***
+Lists the user's shared drives.
+
+
+#### Base Command
+
+`google-drive-drives-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| page_size | Maximum number of shared drives to return. Acceptable values are 1 to 100, inclusive. Default is 100. | Optional | 
+| page_token | Page token for shared drives. | Optional | 
+| query | Query string for searching shared drives. | Optional | 
+| use_domain_admin_access | Issue the request as a domain administrator. If set to true, all shared drives of the domain in which the requester is an administrator are returned. Default is false. | Optional | 
+| user_id | The user's primary email address. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GoogleDrive.Drive.Drive.id | String | The ID of this shared drive which is also the ID of the top level folder of this shared drive. | 
+| GoogleDrive.Drive.Drive.name | String | The name of this shared drive. | 
+| GoogleDrive.Drive.Drive.colorRgb | String | The color of this shared drive as an RGB hex string. | 
+| GoogleDrive.Drive.Drive.capabilities.canAddChildren | Boolean | Whether the current user can add children to folders in this shared drive. | 
+| GoogleDrive.Drive.Drive.capabilities.canChangeCopyRequiresWriterPermissionRestriction | Boolean | Whether the current user can change the 'copy requires writer permission' restriction of this shared drive. | 
+| GoogleDrive.Drive.Drive.capabilities.canChangeDomainUsersOnlyRestriction | Boolean | Whether the current user can change the 'domain users only' restriction of this shared drive. | 
+| GoogleDrive.Drive.Drive.capabilities.canChangeDriveBackground | Boolean | Whether the current user can change the background of this shared drive. | 
+| GoogleDrive.Drive.Drive.capabilities.canChangeDriveMembersOnlyRestriction | Boolean | Whether the current user can change the 'drive members only' restriction of this shared drive. | 
+| GoogleDrive.Drive.Drive.capabilities.canComment | Boolean | Whether the current user can comment on files in this shared drive. | 
+| GoogleDrive.Drive.Drive.capabilities.canCopy | Boolean | Whether the current user can copy files in this shared drive. | 
+| GoogleDrive.Drive.Drive.capabilities.canDeleteChildren | Boolean | Whether the current user can delete children from folders in this shared drive. | 
+| GoogleDrive.Drive.Drive.capabilities.canDeleteDrive | Boolean | Whether the current user can delete this shared drive. | 
+| GoogleDrive.Drive.Drive.capabilities.canDownload | Boolean | Whether the current user can download files in this shared drive. | 
+| GoogleDrive.Drive.Drive.capabilities.canEdit | Boolean | Whether the current user can edit files in this shared drive | 
+| GoogleDrive.Drive.Drive.capabilities.canListChildren | Boolean | Whether the current user can list the children of folders in this shared drive. | 
+| GoogleDrive.Drive.Drive.capabilities.canManageMembers | Boolean | Whether the current user can add members to this shared drive or remove them or change their role. | 
+| GoogleDrive.Drive.Drive.capabilities.canReadRevisions | Boolean | Whether the current user can read the revisions resource of files in this shared drive. | 
+| GoogleDrive.Drive.Drive.capabilities.canRename | Boolean | Whether the current user can rename files or folders in this shared drive. | 
+| GoogleDrive.Drive.Drive.capabilities.canRenameDrive | Boolean | Whether the current user can rename this shared drive. | 
+| GoogleDrive.Drive.Drive.capabilities.canShare | Boolean | Whether the current user can share files or folders in this shared drive. | 
+| GoogleDrive.Drive.Drive.capabilities.canTrashChildren | Boolean | Whether the current user can trash children from folders in this shared drive. | 
+| GoogleDrive.Drive.Drive.createdTime | Date | The time at which the shared drive was created \(RFC 3339 date-time\). | 
+| GoogleDrive.Drive.Drive.hidden | Boolean | Whether the shared drive is hidden from the default view. | 
+| GoogleDrive.Drive.Drive.restrictions.adminManagedRestrictions | Boolean | Whether administrative privileges on this shared drive are required to modify restrictions. | 
+| GoogleDrive.Drive.Drive.restrictions.copyRequiresWriterPermission | Boolean | Whether the options to copy, print, or download files inside this shared drive, should be disabled for readers and commenters. When this restriction is set to true, it will override the similarly named field to true for any file inside this shared drive. | 
+| GoogleDrive.Drive.Drive.restrictions.domainUsersOnly | Boolean | Whether access to this shared drive and items inside this shared drive is restricted to users of the domain to which this shared drive belongs. This restriction may be overridden by other sharing policies controlled outside of this shared drive. | 
+| GoogleDrive.Drive.Drive.restrictions.driveMembersOnly | Boolean | Whether access to items inside this shared drive is restricted to its members. | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+
+### google-drive-drive-get
+***
+Gets a user shared drives.
+
+
+#### Base Command
+
+`google-drive-drive-get`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| use_domain_admin_access | Issue the request as a domain administrator. If set to true, all shared drives of the domain in which the requester is an administrator are returned. Default is false. | Optional | 
+| user_id | The user's primary email address. | Optional | 
+| drive_id | ID of the shared drive. Can be retrieved using the `google-drive-drives-list` command. | Optional | 
+| fields | The fields you want included in the response. Default is kind, id, name, themeId, capabilities, createdTime, hidden, restrictions. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GoogleDrive.Drive.Drive.id | String | The ID of this shared drive which is also the ID of the top level folder of this shared drive. | 
+| GoogleDrive.Drive.Drive.name | String | The name of this shared drive. | 
+| GoogleDrive.Drive.Drive.colorRgb | String | The color of this shared drive as an RGB hex string. | 
+| GoogleDrive.Drive.Drive.capabilities.canAddChildren | Boolean | Whether the current user can add children to folders in this shared drive. | 
+| GoogleDrive.Drive.Drive.capabilities.canChangeCopyRequiresWriterPermissionRestriction | Boolean | Whether the current user can change the 'copy requires writer permission' restriction of this shared drive. | 
+| GoogleDrive.Drive.Drive.capabilities.canChangeDomainUsersOnlyRestriction | Boolean | Whether the current user can change the 'domain users only' restriction of this shared drive. | 
+| GoogleDrive.Drive.Drive.capabilities.canChangeDriveBackground | Boolean | Whether the current user can change the background of this shared drive. | 
+| GoogleDrive.Drive.Drive.capabilities.canChangeDriveMembersOnlyRestriction | Boolean | Whether the current user can change the 'drive members only' restriction of this shared drive. | 
+| GoogleDrive.Drive.Drive.capabilities.canComment | Boolean | Whether the current user can comment on files in this shared drive. | 
+| GoogleDrive.Drive.Drive.capabilities.canCopy | Boolean | Whether the current user can copy files in this shared drive. | 
+| GoogleDrive.Drive.Drive.capabilities.canDeleteChildren | Boolean | Whether the current user can delete children from folders in this shared drive. | 
+| GoogleDrive.Drive.Drive.capabilities.canDeleteDrive | Boolean | Whether the current user can delete this shared drive. | 
+| GoogleDrive.Drive.Drive.capabilities.canDownload | Boolean | Whether the current user can download files in this shared drive. | 
+| GoogleDrive.Drive.Drive.capabilities.canEdit | Boolean | Whether the current user can edit files in this shared drive. | 
+| GoogleDrive.Drive.Drive.capabilities.canListChildren | Boolean | Whether the current user can list the children of folders in this shared drive. | 
+| GoogleDrive.Drive.Drive.capabilities.canManageMembers | Boolean | Whether the current user can add members to this shared drive or remove them or change their role. | 
+| GoogleDrive.Drive.Drive.capabilities.canReadRevisions | Boolean | Whether the current user can read the revisions resource of files in this shared drive. | 
+| GoogleDrive.Drive.Drive.capabilities.canRename | Boolean | Whether the current user can rename files or folders in this shared drive. | 
+| GoogleDrive.Drive.Drive.capabilities.canRenameDrive | Boolean | Whether the current user can rename this shared drive. | 
+| GoogleDrive.Drive.Drive.capabilities.canShare | Boolean | Whether the current user can share files or folders in this shared drive. | 
+| GoogleDrive.Drive.Drive.capabilities.canTrashChildren | Boolean | Whether the current user can trash children from folders in this shared drive. | 
+| GoogleDrive.Drive.Drive.createdTime | Date | The time at which the shared drive was created \(RFC 3339 date-time\). | 
+| GoogleDrive.Drive.Drive.hidden | Boolean | Whether the shared drive is hidden from the default view. | 
+| GoogleDrive.Drive.Drive.restrictions.adminManagedRestrictions | Boolean | Whether administrative privileges on this shared drive are required to modify restrictions. | 
+| GoogleDrive.Drive.Drive.restrictions.copyRequiresWriterPermission | Boolean | Whether the options to copy, print, or download files inside this shared drive, should be disabled for readers and commenters. When this restriction is set to true, it will override the similarly named field to true for any file inside this shared drive. | 
+| GoogleDrive.Drive.Drive.restrictions.domainUsersOnly | Boolean | Whether access to this shared drive and items inside this shared drive is restricted to users of the domain to which this shared drive belongs. This restriction may be overridden by other sharing policies controlled outside of this shared drive. | 
+| GoogleDrive.Drive.Drive.restrictions.driveMembersOnly | Boolean | Whether access to items inside this shared drive is restricted to its members. | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+
+### google-drive-files-list
+***
+Lists the user's shared drives.
+
+
+#### Base Command
+
+`google-drive-files-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| page_size | Maximum number of shared drives to return. Acceptable values are 1 to 100, inclusive. Default is 100. | Optional | 
+| page_token | Page token for shared drives. | Optional | 
+| query | Query string for searching shared drives. | Optional | 
+| user_id | The user's primary email address. | Optional | 
+| fields | The fields you want included in the response. Default is kind, id, name, mimeType, description, starred, trashed, explicitlyTrashed, trashingUser, trashedTime, parents, properties, appProperties, spaces, version, webContentLink, webViewLink, iconLink, hasThumbnail, thumbnailLink, thumbnailVersion, viewedByMe, viewedByMeTime, createdTime, modifiedTime, modifiedByMeTime, modifiedByMe, sharedWithMeTime, sharingUser, owners, teamDriveId, driveId, lastModifyingUser, shared, ownedByMe, capabilities, viewersCanCopyContent, copyRequiresWriterPermission, writersCanShare, permissions, permissionIds, hasAugmentedPermissions, folderColorRgb, originalFilename, fullFileExtension, fileExtension, md5Checksum, size, quotaBytesUsed, headRevisionId, contentHints, isAppAuthorized, exportLinks, shortcutDetails, contentRestrictions, resourceKey, linkShareMetadata. | Optional | 
+| supports_all_drives | Whether the requesting application supports both My Drives and shared drives. Possible values are: True, False. Default is False. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GoogleDrive.File.File.id | String | The ID of the file. | 
+| GoogleDrive.File.File.mimeType | String | The MIME type of the file. | 
+| GoogleDrive.File.File.name | String | The name of the file. This is not necessarily unique within a folder. | 
+| GoogleDrive.File.File.resourceKey | String | A key needed to access the item via a shared link. | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+
+### google-drive-file-get
+***
+Get a single file.
+
+
+#### Base Command
+
+`google-drive-file-get`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| file_id | ID of the requested file. Can be retrieved using the `google-drive-files-list` command. | Optional | 
+| user_id | The user's primary email address. | Optional | 
+| fields | The fields you want included in the response. Default is kind, id, name, mimeType, description, starred, trashed, explicitlyTrashed, trashingUser, trashedTime, parents, properties, appProperties, spaces, version, webContentLink, webViewLink, iconLink, hasThumbnail, thumbnailLink, thumbnailVersion, viewedByMe, viewedByMeTime, createdTime, modifiedTime, modifiedByMeTime, modifiedByMe, sharedWithMeTime, sharingUser, owners, teamDriveId, driveId, lastModifyingUser, shared, ownedByMe, capabilities, viewersCanCopyContent, copyRequiresWriterPermission, writersCanShare, permissions, permissionIds, hasAugmentedPermissions, folderColorRgb, originalFilename, fullFileExtension, fileExtension, md5Checksum, size, quotaBytesUsed, headRevisionId, contentHints, isAppAuthorized, exportLinks, shortcutDetails, contentRestrictions, resourceKey, linkShareMetadata. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GoogleDrive.File.File.capabilities.canAddChildren | Boolean | Whether the current user can add children to this folder. This is always false when the item is not a folder. | 
+| GoogleDrive.File.File.capabilities.canAddMyDriveParent | Boolean | Whether the current user can add a parent for the item without removing an existing parent in the same request. Not populated for shared drive files. | 
+| GoogleDrive.File.File.capabilities.canChangeCopyRequiresWriterPermission | Boolean | Whether the current user can change the 'copy requires writer permission' restriction of this file. | 
+| GoogleDrive.File.File.capabilities.canChangeSecurityUpdateEnabled | Boolean | Whether the current user can change the 'security update enabled' field on link shared metadata. | 
+| GoogleDrive.File.File.capabilities.canComment | Boolean | Whether the current user can comment on this file. | 
+| GoogleDrive.File.File.capabilities.canCopy | Boolean | Whether the current user can copy this file. For an item in a shared drive, whether the current user can copy non-folder descendants of this item, or this item itself if it is not a folder. | 
+| GoogleDrive.File.File.capabilities.canDelete | Boolean | Whether the current user can delete this file. | 
+| GoogleDrive.File.File.capabilities.canDownload | Boolean | Whether the current user can download this file. | 
+| GoogleDrive.File.File.capabilities.canEdit | Boolean | Whether the current user can edit this file. | 
+| GoogleDrive.File.File.capabilities.canListChildren | Boolean | Whether the current user can list the children of this folder. This is always false when the item is not a folder. | 
+| GoogleDrive.File.File.capabilities.canModifyContent | Boolean | Whether the current user can modify the content of this file. | 
+| GoogleDrive.File.File.capabilities.canMoveChildrenWithinDrive | Boolean | Whether the current user can move children of this folder within this drive. This is false when the item is not a folder. | 
+| GoogleDrive.File.File.capabilities.canMoveItemOutOfDrive | Boolean | Whether the current user can move this item outside of this drive by changing its parent. | 
+| GoogleDrive.File.File.capabilities.canMoveItemWithinDrive | Boolean | Whether the current user can move this item within this drive. | 
+| GoogleDrive.File.File.capabilities.canReadRevisions | Boolean | Whether the current user can read the revisions resource of this file. For a shared drive item, whether revisions of non-folder descendants of this item, or this item itself if it is not a folder, can be read. | 
+| GoogleDrive.File.File.capabilities.canRemoveChildren | Boolean | Whether the current user can remove children from this folder. This is always false when the item is not a folder. | 
+| GoogleDrive.File.File.capabilities.canRemoveMyDriveParent | Boolean | Whether the current user can remove a parent from the item without adding another parent in the same request. Not populated for shared drive files. | 
+| GoogleDrive.File.File.capabilities.canRename | Boolean | Whether the current user can rename this file. | 
+| GoogleDrive.File.File.capabilities.canShare | Boolean | Whether the current user can modify the sharing settings for this file. | 
+| GoogleDrive.File.File.capabilities.canTrash | Boolean | Whether the current user can move this file to trash. | 
+| GoogleDrive.File.File.capabilities.canUntrash | Boolean | Whether the current user can restore this file from trash. | 
+| GoogleDrive.File.File.copyRequiresWriterPermission | Boolean | Whether the options to copy, print, or download this file, should be disabled for readers and commenters. | 
+| GoogleDrive.File.File.createdTime | Date | The time at which the file was created \(RFC 3339 date-time\). | 
+| GoogleDrive.File.File.explicitlyTrashed | Boolean | Whether the file has been explicitly trashed, as opposed to recursively trashed from a parent folder. | 
+| GoogleDrive.File.File.exportLinks | String | Links for exporting Docs Editors files to specific formats. | 
+| GoogleDrive.File.File.hasThumbnail | Boolean | Whether this file has a thumbnail. This does not indicate whether the requesting app has access to the thumbnail. To check access, look for the presence of the thumbnailLink field. | 
+| GoogleDrive.File.File.iconLink | String | A static, unauthenticated link to the file's icon. | 
+| GoogleDrive.File.File.id | String | The ID of the file. | 
+| GoogleDrive.File.File.isAppAuthorized | Boolean | Whether the file was created or opened by the requesting app. | 
+| GoogleDrive.File.File.lastModifyingUser.displayName | String | A plain text displayable name for this user. | 
+| GoogleDrive.File.File.lastModifyingUser.emailAddress | String | The email address of the user. This may not be present in certain contexts if the user has not made their email address visible to the requester. | 
+| GoogleDrive.File.File.lastModifyingUser.me | Boolean | Whether this user is the requesting user. | 
+| GoogleDrive.File.File.lastModifyingUser.permissionId | String | The user's ID as visible in Permission resources. | 
+| GoogleDrive.File.File.lastModifyingUser.photoLink | String | A link to the user's profile photo, if available. | 
+| GoogleDrive.File.File.linkShareMetadata.securityUpdateEligible | Boolean | Whether the file is eligible for a security update. | 
+| GoogleDrive.File.File.linkShareMetadata.securityUpdateEnabled | Boolean | Whether the security update is enabled for this file. | 
+| GoogleDrive.File.File.mimeType | String | The MIME type of the file. | 
+| GoogleDrive.File.File.modifiedByMe | Boolean | Whether the file has been modified by this user. | 
+| GoogleDrive.File.File.modifiedByMeTime | Date | The last time the file was modified by the user \(RFC 3339 date-time\). | 
+| GoogleDrive.File.File.modifiedTime | Date | The last time the file was modified by anyone \(RFC 3339 date-time\). | 
+| GoogleDrive.File.File.name | String | The name of the file. This is not necessarily unique within a folder. Note that for immutable items such as the top level folders of shared drives, My Drive root folder, and Application Data folder the name is constant. | 
+| GoogleDrive.File.File.ownedByMe | Boolean | Whether the user owns the file. Not populated for items in shared drives. | 
+| GoogleDrive.File.File.owners.displayName | String | A plain text displayable name for this user. | 
+| GoogleDrive.File.File.owners.emailAddress | String | The email address of the user. This may not be present in certain contexts if the user has not made their email address visible to the requester. | 
+| GoogleDrive.File.File.owners.me | Boolean | Whether this user is the requesting user. | 
+| GoogleDrive.File.File.owners.permissionId | String | The user's ID as visible in Permission resources. | 
+| GoogleDrive.File.File.owners.photoLink | String | A link to the user's profile photo, if available. | 
+| GoogleDrive.File.File.parents | String | The IDs of the parent folders which contain the file. | 
+| GoogleDrive.File.File.permissionIds | String | List of permission IDs for users with access to this file. | 
+| GoogleDrive.File.File.permissions.deleted | Boolean | Whether the permission was deleted. | 
+| GoogleDrive.File.File.permissions.displayName | String | A plain text displayable name for this user. | 
+| GoogleDrive.File.File.permissions.emailAddress | String | The email address of the user. | 
+| GoogleDrive.File.File.permissions.id | String | The ID of this permission. | 
+| GoogleDrive.File.File.permissions.role | String | The role granted by this permission. | 
+| GoogleDrive.File.File.permissions.type | String | The type of the grantee. | 
+| GoogleDrive.File.File.permissions.photoLink | String | A link to the user's profile photo, if available. | 
+| GoogleDrive.File.File.quotaBytesUsed | String | The number of storage quota bytes used by the file. This includes the head revision as well as previous revisions with keepForever enabled. | 
+| GoogleDrive.File.File.shared | Boolean | Whether the file has been shared. Not populated for items in shared drives. | 
+| GoogleDrive.File.File.spaces | String | The list of spaces which contain the file. The currently supported values are 'drive', 'appDataFolder', and 'photos'. | 
+| GoogleDrive.File.File.starred | Boolean | Whether the user has starred the file. | 
+| GoogleDrive.File.File.thumbnailLink | String | A short-lived link to the file's thumbnail, if available. Typically lasts on the order of hours. | 
+| GoogleDrive.File.File.thumbnailVersion | String | The thumbnail version for use in thumbnail cache invalidation. | 
+| GoogleDrive.File.File.trashed | Boolean | Whether the file has been trashed, either explicitly or from a trashed parent folder. | 
+| GoogleDrive.File.File.version | String | A monotonically increasing version number for the file. This reflects every change made to the file on the server, even those not visible to the user. | 
+| GoogleDrive.File.File.viewedByMe | Boolean | Whether the file has been viewed by this user. | 
+| GoogleDrive.File.File.viewedByMeTime | Date | The last time the file was viewed by the user \(RFC 3339 date-time\). | 
+| GoogleDrive.File.File.webViewLink | String | A link for opening the file in a relevant Google editor or viewer in a browser. | 
+| GoogleDrive.File.File.writersCanShare | Boolean | Whether users with only writer permission can modify the file's permissions. Not populated for items in shared drives. | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+
+### google-drive-file-upload
+***
+Creates a new file.
+
+
+#### Base Command
+
+`google-drive-file-upload`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| file_name | The name of the file to upload. | Optional | 
+| entry_id | The file's Entry ID. | Optional | 
+| parent | The ID of the parent folder which contains the file. If not specified as part of a create request, the file will be placed directly in the user's My Drive folder. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GoogleDrive.File.File.id | String | The ID of the file. | 
+| GoogleDrive.File.File.name | String | The name of the file. This is not necessarily unique within a folder. Note that for immutable items such as the top level folders of shared drives, My Drive root folder, and Application Data folder, the name is constant. | 
+| GoogleDrive.File.File.mimeType | String | The MIME type of the file. | 
+| GoogleDrive.File.File.starred | Boolean | Whether the user has starred the file. | 
+| GoogleDrive.File.File.trashed | Boolean | Whether the file has been trashed, either explicitly or from a trashed parent folder. | 
+| GoogleDrive.File.File.explicitlyTrashed | Boolean | Whether the file has been explicitly trashed, as opposed to recursively trashed from a parent folder. | 
+| GoogleDrive.File.File.parents | String | The IDs of the parent folders which contain the file. | 
+| GoogleDrive.File.File.spaces | String | The list of spaces which contain the file. The currently supported values are 'drive', 'appDataFolder', and 'photos'. | 
+| GoogleDrive.File.File.version | String | A monotonically increasing version number for the file. This reflects every change made to the file on the server, even those not visible to the user. | 
+| GoogleDrive.File.File.webContentLink | String | A link for downloading the content of the file in a browser. This is only available for files with binary content in Google Drive. | 
+| GoogleDrive.File.File.webViewLink | String | A link for opening the file in a relevant Google editor or viewer in a browser. | 
+| GoogleDrive.File.File.iconLink | String | A static, unauthenticated link to the file's icon. | 
+| GoogleDrive.File.File.hasThumbnail | Boolean | Whether this file has a thumbnail. This does not indicate whether the requesting app has access to the thumbnail. To check access, look for the presence of the thumbnailLink field. | 
+| GoogleDrive.File.File.thumbnailVersion | String | The thumbnail version for use in thumbnail cache invalidation. | 
+| GoogleDrive.File.File.viewedByMe | Boolean | Whether the file has been viewed by this user. | 
+| GoogleDrive.File.File.viewedByMeTime | Date | The last time the file was viewed by the user \(RFC 3339 date-time\). | 
+| GoogleDrive.File.File.createdTime | Date | The time at which the file was created \(RFC 3339 date-time\). | 
+| GoogleDrive.File.File.modifiedTime | Date | The last time the file was modified by anyone \(RFC 3339 date-time\). | 
+| GoogleDrive.File.File.thumbnailLink | String | A short-lived link to the file's thumbnail, if available. Typically lasts on the order of hours. | 
+| GoogleDrive.File.File.exportLinks | String | Links for exporting Docs Editors files to specific formats. | 
+| GoogleDrive.File.File.quotaBytesUsed | String | The number of storage quota bytes used by the file. This includes the head revision as well as previous revisions with keepForever enabled. | 
+| GoogleDrive.File.File.shared | Boolean | Whether the file has been shared. Not populated for items in shared drives. | 
+| GoogleDrive.File.File.writersCanShare | Boolean | Whether users with only writer permission can modify the file's permissions. Not populated for items in shared drives. | 
+| GoogleDrive.File.File.modifiedByMe | Boolean | Whether the file has been modified by this user. | 
+| GoogleDrive.File.File.modifiedByMeTime | Date | The last time the file was modified by the user \(RFC 3339 date-time\). | 
+| GoogleDrive.File.File.ownedByMe | Boolean | Whether the user owns the file. Not populated for items in shared drives. | 
+| GoogleDrive.File.File.isAppAuthorized | Boolean | Whether the file was created or opened by the requesting app. | 
+| GoogleDrive.File.File.capabilities.canAddChildren | Boolean | Whether the current user can add children to this folder. This is always false when the item is not a folder. | 
+| GoogleDrive.File.File.capabilities.canAddMyDriveParent | Boolean | Whether the current user can add a parent for the item without removing an existing parent in the same request. Not populated for shared drive files. | 
+| GoogleDrive.File.File.capabilities.canChangeCopyRequiresWriterPermission | Boolean | Whether the current user can change the 'copy requires writer permission' restriction of this file. | 
+| GoogleDrive.File.File.capabilities.canChangeSecurityUpdateEnabled | Boolean | Whether the current user can change the 'security update enabled' field on link shared metadata. | 
+| GoogleDrive.File.File.capabilities.canComment | Boolean | Whether the current user can comment on this file. | 
+| GoogleDrive.File.File.capabilities.canCopy | Boolean | Whether the current user can copy this file. For an item in a shared drive, whether the current user can copy non-folder descendants of this item, or this item itself if it is not a folder. | 
+| GoogleDrive.File.File.capabilities.canDelete | Boolean | Whether the current user can delete this file. | 
+| GoogleDrive.File.File.capabilities.canDownload | Boolean | Whether the current user can download this file. | 
+| GoogleDrive.File.File.capabilities.canEdit | Boolean | Whether the current user can edit this file. | 
+| GoogleDrive.File.File.capabilities.canListChildren | Boolean | Whether the current user can list the children of this folder. This is always false when the item is not a folder. | 
+| GoogleDrive.File.File.capabilities.canModifyContent | Boolean | Whether the current user can modify the content of this file. | 
+| GoogleDrive.File.File.capabilities.canMoveChildrenWithinDrive | Boolean | Whether the current user can move children of this folder within this drive. This is false when the item is not a folder. | 
+| GoogleDrive.File.File.capabilities.canMoveItemOutOfDrive | Boolean | Whether the current user can move this item outside of this drive by changing its parent. | 
+| GoogleDrive.File.File.capabilities.canMoveItemWithinDrive | Boolean | Whether the current user can move this item within this drive. | 
+| GoogleDrive.File.File.capabilities.canReadRevisions | Boolean | Whether the current user can read the revisions resource of this file. For a shared drive item, whether revisions of non-folder descendants of this item, or this item itself if it is not a folder, can be read. | 
+| GoogleDrive.File.File.capabilities.canRemoveChildren | Boolean | Whether the current user can remove children from this folder. This is always false when the item is not a folder. | 
+| GoogleDrive.File.File.capabilities.canRemoveMyDriveParent | Boolean | Whether the current user can remove a parent from the item without adding another parent in the same request. Not populated for shared drive files. | 
+| GoogleDrive.File.File.capabilities.canRename | Boolean | Whether the current user can rename this file. | 
+| GoogleDrive.File.File.capabilities.canShare | Boolean | Whether the current user can modify the sharing settings for this file. | 
+| GoogleDrive.File.File.capabilities.canTrash | Boolean | Whether the current user can move this file to trash. | 
+| GoogleDrive.File.File.capabilities.canUntrash | Boolean | Whether the current user can restore this file from trash. | 
+| GoogleDrive.File.File.copyRequiresWriterPermission | Boolean | Whether the options to copy, print, or download this file, should be disabled for readers and commenters. | 
+| GoogleDrive.File.File.lastModifyingUser.displayName | String | A plain text displayable name for this user. | 
+| GoogleDrive.File.File.lastModifyingUser.emailAddress | String | The email address of the user. This may not be present in certain contexts if the user has not made their email address visible to the requester. | 
+| GoogleDrive.File.File.lastModifyingUser.me | Boolean | Whether this user is the requesting user. | 
+| GoogleDrive.File.File.lastModifyingUser.permissionId | String | The user's ID as visible in Permission resources. | 
+| GoogleDrive.File.File.lastModifyingUser.photoLink | String | A link to the user's profile photo, if available. | 
+| GoogleDrive.File.File.linkShareMetadata.securityUpdateEligible | Boolean | Whether the file is eligible for security update. | 
+| GoogleDrive.File.File.linkShareMetadata.securityUpdateEnabled | Boolean | Whether the security update is enabled for this file. | 
+| GoogleDrive.File.File.owners.displayName | String | A plain text displayable name for this user. | 
+| GoogleDrive.File.File.owners.emailAddress | String | The email address of the user. This may not be present in certain contexts if the user has not made their email address visible to the requester. | 
+| GoogleDrive.File.File.owners.me | Boolean | Whether this user is the requesting user. | 
+| GoogleDrive.File.File.owners.permissionId | String | The user's ID as visible in Permission resources. | 
+| GoogleDrive.File.File.owners.photoLink | String | A link to the user's profile photo, if available. | 
+| GoogleDrive.File.File.permissionIds | String | List of permission IDs for users with access to this file. | 
+| GoogleDrive.File.File.permissions.deleted | Boolean | Whether the permission was deleted. | 
+| GoogleDrive.File.File.permissions.displayName | String | A plain text displayable name for this user. | 
+| GoogleDrive.File.File.permissions.emailAddress | String | The email address of the user. | 
+| GoogleDrive.File.File.permissions.id | String | The ID of this permission. | 
+| GoogleDrive.File.File.permissions.role | String | The role granted by this permission. | 
+| GoogleDrive.File.File.permissions.type | String | The type of the grantee. | 
+| GoogleDrive.File.File.permissions.photoLink | String | A link to the user's profile photo, if available. | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+
+### google-drive-file-download
+***
+Download a single file.
+
+
+#### Base Command
+
+`google-drive-file-download`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| file_id | ID of the requested file. Can be retrieved using the `google-drive-files-list` command. | Optional | 
+| file_name | Name of the downloaded file. Default is untitled. | Optional | 
+| user_id | The user's primary email address. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| File.Size | Number | The size of the file. | 
+| File.SHA1 | String | The SHA1 hash of the file. | 
+| File.SHA256 | String | The SHA256 hash of the file. | 
+| File.Name | String | The name of the file. | 
+| File.SSDeep | String | The SSDeep hash of the file. | 
+| File.EntryID | String | The entry ID of the file. | 
+| File.Info | String | File information. | 
+| File.Type | String | The file type. | 
+| File.MD5 | String | The MD5 hash of the file. | 
+| File.Extension | String | The file extension. | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+
+### google-drive-file-replace-existing
+***
+Updates a file's content.
+
+
+#### Base Command
+
+`google-drive-file-replace-existing`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| file_id | ID of the file to replace. Can be retrieved using the `google-drive-files-list` command. | Optional | 
+| entry_id | The file's entry ID. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GoogleDrive.File.File.id | String | The ID of the file. | 
+| GoogleDrive.File.File.name | String | The name of the file. This is not necessarily unique within a folder. Note that for immutable items such as the top level folders of shared drives, My Drive root folder, and Application Data folder, the name is constant. | 
+| GoogleDrive.File.File.mimeType | String | The MIME type of the file. | 
+| GoogleDrive.File.File.starred | Boolean | Whether the user has starred the file. | 
+| GoogleDrive.File.File.trashed | Boolean | Whether the file has been trashed, either explicitly or from a trashed parent folder. | 
+| GoogleDrive.File.File.explicitlyTrashed | Boolean | Whether the file has been explicitly trashed, as opposed to recursively trashed from a parent folder. | 
+| GoogleDrive.File.File.parents | String | The IDs of the parent folders which contain the file. | 
+| GoogleDrive.File.File.spaces | String | The list of spaces which contain the file. The currently supported values are 'drive', 'appDataFolder', and 'photos'. | 
+| GoogleDrive.File.File.version | String | A monotonically increasing version number for the file. This reflects every change made to the file on the server, even those not visible to the user. | 
+| GoogleDrive.File.File.webContentLink | String | A link for downloading the content of the file in a browser. This is only available for files with binary content in Google Drive. | 
+| GoogleDrive.File.File.webViewLink | String | A link for opening the file in a relevant Google editor or viewer in a browser. | 
+| GoogleDrive.File.File.iconLink | String | A static, unauthenticated link to the file's icon. | 
+| GoogleDrive.File.File.hasThumbnail | Boolean | Whether this file has a thumbnail. This does not indicate whether the requesting app has access to the thumbnail. To check access, look for the presence of the thumbnailLink field. | 
+| GoogleDrive.File.File.thumbnailVersion | String | The thumbnail version for use in thumbnail cache invalidation. | 
+| GoogleDrive.File.File.viewedByMe | Boolean | Whether the file has been viewed by this user. | 
+| GoogleDrive.File.File.viewedByMeTime | Date | The last time the file was viewed by the user \(RFC 3339 date-time\). | 
+| GoogleDrive.File.File.createdTime | Date | The time at which the file was created \(RFC 3339 date-time\). | 
+| GoogleDrive.File.File.modifiedTime | Date | The last time the file was modified by anyone \(RFC 3339 date-time\). | 
+| GoogleDrive.File.File.thumbnailLink | String | A short-lived link to the file's thumbnail, if available. Typically lasts on the order of hours. | 
+| GoogleDrive.File.File.exportLinks | String | Links for exporting Docs Editors files to specific formats. | 
+| GoogleDrive.File.File.quotaBytesUsed | String | The number of storage quota bytes used by the file. This includes the head revision as well as previous revisions with keepForever enabled. | 
+| GoogleDrive.File.File.shared | Boolean | Whether the file has been shared. Not populated for items in shared drives. | 
+| GoogleDrive.File.File.writersCanShare | Boolean | Whether users with only writer permission can modify the file's permissions. Not populated for items in shared drives. | 
+| GoogleDrive.File.File.modifiedByMe | Boolean | Whether the file has been modified by this user. | 
+| GoogleDrive.File.File.modifiedByMeTime | Date | The last time the file was modified by the user \(RFC 3339 date-time\). | 
+| GoogleDrive.File.File.ownedByMe | Boolean | Whether the user owns the file. Not populated for items in shared drives. | 
+| GoogleDrive.File.File.isAppAuthorized | Boolean | Whether the file was created or opened by the requesting app. | 
+| GoogleDrive.File.File.capabilities.canAddChildren | Boolean | Whether the current user can add children to this folder. This is always false when the item is not a folder. | 
+| GoogleDrive.File.File.capabilities.canAddMyDriveParent | Boolean | Whether the current user can add a parent for the item without removing an existing parent in the same request. Not populated for shared drive files. | 
+| GoogleDrive.File.File.capabilities.canChangeCopyRequiresWriterPermission | Boolean | Whether the current user can change the 'copy requires writer permission' restriction of this file. | 
+| GoogleDrive.File.File.capabilities.canChangeSecurityUpdateEnabled | Boolean | Whether the current user can change the 'security update enabled' field on link shared metadata. | 
+| GoogleDrive.File.File.capabilities.canComment | Boolean | Whether the current user can comment on this file. | 
+| GoogleDrive.File.File.capabilities.canCopy | Boolean | Whether the current user can copy this file. For an item in a shared drive, whether the current user can copy non-folder descendants of this item, or this item itself if it is not a folder. | 
+| GoogleDrive.File.File.capabilities.canDelete | Boolean | Whether the current user can delete this file. | 
+| GoogleDrive.File.File.capabilities.canDownload | Boolean | Whether the current user can download this file. | 
+| GoogleDrive.File.File.capabilities.canEdit | Boolean | Whether the current user can edit this file. | 
+| GoogleDrive.File.File.capabilities.canListChildren | Boolean | Whether the current user can list the children of this folder. This is always false when the item is not a folder. | 
+| GoogleDrive.File.File.capabilities.canModifyContent | Boolean | Whether the current user can modify the content of this file. | 
+| GoogleDrive.File.File.capabilities.canMoveChildrenWithinDrive | Boolean | Whether the current user can move children of this folder within this drive. This is false when the item is not a folder. | 
+| GoogleDrive.File.File.capabilities.canMoveItemOutOfDrive | Boolean | Whether the current user can move this item outside of this drive by changing its parent. | 
+| GoogleDrive.File.File.capabilities.canMoveItemWithinDrive | Boolean | Whether the current user can move this item within this drive. | 
+| GoogleDrive.File.File.capabilities.canReadRevisions | Boolean | Whether the current user can read the revisions resource of this file. For a shared drive item, whether revisions of non-folder descendants of this item, or this item itself if it is not a folder, can be read. | 
+| GoogleDrive.File.File.capabilities.canRemoveChildren | Boolean | Whether the current user can remove children from this folder. This is always false when the item is not a folder. | 
+| GoogleDrive.File.File.capabilities.canRemoveMyDriveParent | Boolean | Whether the current user can remove a parent from the item without adding another parent in the same request. Not populated for shared drive files. | 
+| GoogleDrive.File.File.capabilities.canRename | Boolean | Whether the current user can rename this file. | 
+| GoogleDrive.File.File.capabilities.canShare | Boolean | Whether the current user can modify the sharing settings for this file. | 
+| GoogleDrive.File.File.capabilities.canTrash | Boolean | Whether the current user can move this file to trash. | 
+| GoogleDrive.File.File.capabilities.canUntrash | Boolean | Whether the current user can restore this file from trash. | 
+| GoogleDrive.File.File.copyRequiresWriterPermission | Boolean | Whether the options to copy, print, or download this file, should be disabled for readers and commenters. | 
+| GoogleDrive.File.File.lastModifyingUser.displayName | String | A plain text displayable name for this user. | 
+| GoogleDrive.File.File.lastModifyingUser.emailAddress | String | The email address of the user. This may not be present in certain contexts if the user has not made their email address visible to the requester. | 
+| GoogleDrive.File.File.lastModifyingUser.me | Boolean | Whether this user is the requesting user. | 
+| GoogleDrive.File.File.lastModifyingUser.permissionId | String | The user's ID as visible in Permission resources. | 
+| GoogleDrive.File.File.lastModifyingUser.photoLink | String | A link to the user's profile photo, if available. | 
+| GoogleDrive.File.File.linkShareMetadata.securityUpdateEligible | Boolean | Whether the file is eligible for security update. | 
+| GoogleDrive.File.File.linkShareMetadata.securityUpdateEnabled | Boolean | Whether the security update is enabled for this file. | 
+| GoogleDrive.File.File.owners.displayName | String | A plain text displayable name for this user. | 
+| GoogleDrive.File.File.owners.emailAddress | String | The email address of the user. This may not be present in certain contexts if the user has not made their email address visible to the requester. | 
+| GoogleDrive.File.File.owners.me | Boolean | Whether this user is the requesting user. | 
+| GoogleDrive.File.File.owners.permissionId | String | The user's ID as visible in Permission resources. | 
+| GoogleDrive.File.File.owners.photoLink | String | A link to the user's profile photo, if available. | 
+| GoogleDrive.File.File.permissionIds | String | List of permission IDs for users with access to this file. | 
+| GoogleDrive.File.File.permissions.deleted | Boolean | Whether the permission was deleted. | 
+| GoogleDrive.File.File.permissions.displayName | String | A plain text displayable name for this user. | 
+| GoogleDrive.File.File.permissions.emailAddress | String | The email address of the user. | 
+| GoogleDrive.File.File.permissions.id | String | The ID of this permission. | 
+| GoogleDrive.File.File.permissions.role | String | The role granted by this permission. | 
+| GoogleDrive.File.File.permissions.type | String | The type of the grantee. | 
+| GoogleDrive.File.File.permissions.photoLink | String | A link to the user's profile photo, if available. | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+
+### google-drive-file-delete
+***
+Permanently deletes a file owned by the user without moving it to the trash. If the file belongs to a shared drive the user must be an organizer on the parent. If the target is a folder, all descendants owned by the user are also deleted.
+
+
+#### Base Command
+
+`google-drive-file-delete`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| file_id | ID of the requested file. Can be retrieved using the `google-drive-files-list` command. | Optional | 
+| user_id | The user's primary email address. | Optional | 
+| supports_all_drives | Whether the requesting application supports both My Drives and shared drives. Possible values: "true" and "false". Possible values are: true, false. Default is false. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GoogleDrive.File.File.id | String | ID of the deleted file. | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+
+### google-drive-file-permissions-list
+***
+Lists a file's or shared drive's permissions.
+
+
+#### Base Command
+
+`google-drive-file-permissions-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| file_id | ID of the requested file. Can be retrieved using the `google-drive-files-list` command. | Optional | 
+| user_id | The user's primary email address. | Optional | 
+| page_size | Maximum number of shared drives to return. Acceptable values are 1 to 100, inclusive. Default is 100. | Optional | 
+| page_token | Page token for shared drives. | Optional | 
+| supports_all_drives | Whether the requesting application supports both My Drives and shared drives. Possible values: "true" and "false". Possible values are: true, false. Default is false. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GoogleDrive.FilePermission.FilePermission.deleted | Boolean | Whether the account associated with this permission has been deleted. This field only pertains to user and group permissions. | 
+| GoogleDrive.FilePermission.FilePermission.displayName | String | The "pretty" name of the value of the permission. | 
+| GoogleDrive.FilePermission.FilePermission.emailAddress | String | The email address of the user or group to which this permission refers. | 
+| GoogleDrive.FilePermission.FilePermission.id | String | The ID of this permission. | 
+| GoogleDrive.FilePermission.FilePermission.role | String | The role granted by this permission. | 
+| GoogleDrive.FilePermission.FilePermission.type | String | The type of the grantee. | 
+| GoogleDrive.FilePermission.FilePermission.photoLink | String | A link to the user's profile photo, if available. | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+
+### google-drive-file-permission-create
+***
+Creates a permission for a file or shared drive.
+
+
+#### Base Command
+
+`google-drive-file-permission-create`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| file_id | ID of the requested file. Can be retrieved using the `google-drive-files-list` command. | Optional | 
+| user_id | The user's primary email address. | Optional | 
+| send_notification_email | Whether a confirmation email will be sent. Possible values: "true" and "false". Possible values are: true, false. Default is false. | Optional | 
+| role | The role granted by this permission. Possible values: "owner", "organizer", "fileOrganizer", "writer", "commenter", and "reader". Possible values are: owner, organizer, fileOrganizer, writer, commenter, reader. Default is reader. | Optional | 
+| type | The type of the grantee. When creating a permission, if type is user or group, you must provide an emailAddress for the user or group. When type is domain, you must provide a domain. No extra information is required for an anyone type. Possible values: "user", "group", "domain", and "anyone". Possible values are: user, group, domain, anyone. Default is anyone. | Optional | 
+| domain | The domain to which this permission refers. | Optional | 
+| email_address | The email address of the user or group to which this permission refers. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GoogleDrive.FilePermission.FilePermission.deleted | Boolean | Whether the account associated with this permission has been deleted. This field only pertains to user and group permissions. | 
+| GoogleDrive.FilePermission.FilePermission.displayName | String | The "pretty" name of the value of the permission. | 
+| GoogleDrive.FilePermission.FilePermission.emailAddress | String | The email address of the user or group to which this permission refers. | 
+| GoogleDrive.FilePermission.FilePermission.id | String | The ID of this permission. | 
+| GoogleDrive.FilePermission.FilePermission.role | String | The role granted by this permission. | 
+| GoogleDrive.FilePermission.FilePermission.type | String | The type of the grantee. | 
+| GoogleDrive.FilePermission.FilePermission.photoLink | String | A link to the user's profile photo, if available. | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+
+### google-drive-file-permission-update
+***
+Updates a permission with patch semantics.
+
+
+#### Base Command
+
+`google-drive-file-permission-update`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| file_id | ID of the requested file. Can be retrieved using the `google-drive-files-list` command. | Optional | 
+| user_id | The user's primary email address. | Optional | 
+| expiration_time | The time at which this permission will expire (RFC 3339 date-time). | Optional | 
+| permission_id | The ID of the permission. Can be retrieved using the `google-drive-file-permissions-list` command. | Optional | 
+| role | The role granted by this permission. Possible values: "owner", "organizer", "fileOrganizer", "writer", "commenter", and "reader". Possible values are: owner, organizer, fileOrganizer, writer, commenter, reader. Default is reader. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GoogleDrive.FilePermission.FilePermission.deleted | Boolean | Whether the account associated with this permission has been deleted. This field only pertains to user and group permissions. | 
+| GoogleDrive.FilePermission.FilePermission.displayName | String | The "pretty" name of the value of the permission. | 
+| GoogleDrive.FilePermission.FilePermission.emailAddress | String | The email address of the user or group to which this permission refers. | 
+| GoogleDrive.FilePermission.FilePermission.id | String | The ID of this permission. | 
+| GoogleDrive.FilePermission.FilePermission.role | String | The role granted by this permission. | 
+| GoogleDrive.FilePermission.FilePermission.type | String | The type of the grantee. | 
+| GoogleDrive.FilePermission.FilePermission.photoLink | String | A link to the user's profile photo, if available. | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+
+### google-drive-file-permission-delete
+***
+Delete a permission.
+
+
+#### Base Command
+
+`google-drive-file-permission-delete`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| file_id | ID of the requested file. Can be retrieved using the `google-drive-files-list` command. | Optional | 
+| user_id | The user's primary email address. | Optional | 
+| permission_id | The ID of the permission. Can be retrieved using the `google-drive-file-permissions-list` command. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
 
 

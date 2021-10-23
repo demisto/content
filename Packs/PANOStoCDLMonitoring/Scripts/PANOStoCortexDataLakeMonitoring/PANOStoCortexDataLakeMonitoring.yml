@@ -1,0 +1,38 @@
+commonfields:
+  id: PANOStoCortexDataLakeMonitoring
+  version: -1
+enabled: false
+name: PANOStoCortexDataLakeMonitoring
+args:
+- description: Comma separated list of FW serial numbers to monitor.
+  name: fw_serials
+- description: PAN-OS integration instance name to retrieve Firewalls serials list.
+  name: pan_os_integration_instance_name
+comment: "Verify that all firewalls successfully pushed logs to the Cortex Data Lake\
+  \ for the last 12 hours. It's an easy way to do monitoring of the FW connection\
+  \ to CDL.\nYou can use either a manual list of FW serials or a Panorama integration\
+  \ to get the list of equipment to monitor. "
+dependson:
+  must:
+  - panorama
+  - cdl-query-traffic-logs
+outputs:
+- contextPath: CDL.monitoring.FirewallsWithLogsSent
+  description: Firewall serials that sent logs to Crotex Data Lake.
+  type: String
+- contextPath: CDL.monitoring.FirewallsWithoutLogsSent
+  description: Firewall serials that sent logs to Crotex Data Lake.
+  type: String
+runas: DBotWeakRole
+runonce: false
+script: '-'
+tags:
+- CDL
+- PAN-OS
+- XDR
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.9.7.24076
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

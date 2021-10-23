@@ -1,6 +1,7 @@
 import pytest
 from collections import OrderedDict
 from FeedRecordedFuture import get_indicator_type, get_indicators_command, Client, fetch_indicators_command
+from csv import DictReader
 
 GET_INDICATOR_TYPE_INPUTS = [
     ('ip', OrderedDict([('Name', '192.168.1.1'), ('Risk', '89'), ('RiskString', '5/12'),
@@ -32,49 +33,58 @@ def test_get_indicator_type(indicator_type, csv_item, answer):
 
 
 build_iterator_answer_domain = [
-    {
+    [{
         'EvidenceDetails': '{"EvidenceDetails": []}',
         'Name': 'domaintools.com',
         'Risk': '97',
         'RiskString': '4/37'
-    }
+    }]
 ]
 
 build_iterator_answer_domain_glob = [
-    {
+    [{
         'EvidenceDetails': '{"EvidenceDetails": []}',
         'Name': '*domaintools.com',
         'Risk': '92',
         'RiskString': '4/37'
-    }
+    }]
 ]
 
 build_iterator_answer_ip = [
-    {
+    [{
         'EvidenceDetails': '{"EvidenceDetails": []}',
         'Name': '192.168.1.1',
         'Risk': '50',
         'RiskString': '4/37'
-    }
+    }]
 ]
 
 build_iterator_answer_hash = [
-    {
+    [{
         'EvidenceDetails': '{"EvidenceDetails": []}',
         'Name': '52483514f07eb14570142f6927b77deb7b4da99f',
         'Algorithm': 'SHA-1',
         'Risk': '0',
         'RiskString': '4/37'
-    }
+    }]
 ]
 
 build_iterator_answer_url = [
-    {
+    [{
         'EvidenceDetails': '{"EvidenceDetails": []}',
         'Name': 'www.securityadvisor.io',
         'Risk': '97',
         'RiskString': '4/37'
-    }
+    }]
+]
+
+build_iterator_no_evidence_details_value = [
+    [{
+        'EvidenceDetails': None,
+        'Name': '192.168.1.1',
+        'Risk': '50',
+        'RiskString': '4/37'
+    }]
 ]
 
 GET_INDICATOR_INPUTS = [
@@ -82,7 +92,8 @@ GET_INDICATOR_INPUTS = [
     ('domain', build_iterator_answer_domain, 'domaintools.com', 'Domain'),
     ('domain', build_iterator_answer_domain_glob, '*domaintools.com', 'DomainGlob'),
     ('hash', build_iterator_answer_hash, '52483514f07eb14570142f6927b77deb7b4da99f', 'File'),
-    ('url', build_iterator_answer_url, 'www.securityadvisor.io', 'URL')
+    ('url', build_iterator_answer_url, 'www.securityadvisor.io', 'URL'),
+    ('ip', build_iterator_no_evidence_details_value, '192.168.1.1', 'IP')
 ]
 
 
@@ -93,7 +104,8 @@ def test_get_indicators_command(mocker, indicator_type, build_iterator_answer, v
         'indicator_type': indicator_type,
         'limit': 1
     }
-    mocker.patch('FeedRecordedFuture.Client.build_iterator', return_value=build_iterator_answer)
+    mocker.patch('FeedRecordedFuture.Client.build_iterator')
+    mocker.patch('FeedRecordedFuture.Client.get_batches_from_file', return_value=build_iterator_answer)
     hr, _, entry_result = get_indicators_command(client, args)
     assert entry_result[0]['Value'] == value
     assert entry_result[0]['Type'] == type
@@ -128,12 +140,24 @@ def test_fetch_indicators_command(mocker):
      - Verify the fetch runs successfully.
     """
     indicator_type = 'ip'
-    client = Client(indicator_type=indicator_type, api_token='dummytoken', services='fusion')
+    client = Client(indicator_type=indicator_type, api_token='dummytoken', services=['fusion'])
+    mocker.patch('FeedRecordedFuture.Client.build_iterator')
     mocker.patch(
-        'FeedRecordedFuture.Client.build_iterator',
-        return_value=[{'Name': '192.168.1.1'}]
+        'FeedRecordedFuture.Client.get_batches_from_file',
+        return_value=DictReaderGenerator(DictReader(open('test_data/response.txt')))
     )
-    fetch_indicators_command(client, indicator_type)
+    client_outputs = []
+    for output in fetch_indicators_command(client, indicator_type):
+        client_outputs.extend(output)
+    assert {'fields': {'recordedfutureevidencedetails': [], 'tags': []},
+            'rawJSON': {'Name': '192.168.0.1',
+                        'a': '3',
+                        'type': 'IP',
+                        'value': '192.168.0.1'},
+            'score': 0,
+            'type': 'IP',
+            'value': '192.168.0.1'} == client_outputs[0]
+    assert len(client_outputs) == 1
 
 
 @pytest.mark.parametrize('tags', (['tag1', 'tag2'], []))
@@ -147,9 +171,22 @@ def test_feed_tags(mocker, tags):
     - Validate the tags supplied exists in the indicators
     """
     client = Client(indicator_type='ip', api_token='dummytoken', services='fusion', tags=tags)
-    mocker.patch(
-        'FeedRecordedFuture.Client.build_iterator',
-        return_value=[{'Name': '192.168.1.1'}]
-    )
-    indicators = fetch_indicators_command(client, 'ip')
+    mocker.patch('FeedRecordedFuture.Client.build_iterator')
+    mocker.patch('FeedRecordedFuture.Client.get_batches_from_file', return_value=[[{'Name': '192.168.1.1'}]])
+    indicators = next(fetch_indicators_command(client, 'ip'))
     assert tags == indicators[0]['fields']['tags']
+
+
+class DictReaderGenerator:
+    def __init__(self, dict_reader):
+        self.dict_reader = dict_reader
+        self.has_returned_dict_reader = False
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.has_returned_dict_reader:
+            raise StopIteration()
+        self.has_returned_dict_reader = True
+        return self.dict_reader

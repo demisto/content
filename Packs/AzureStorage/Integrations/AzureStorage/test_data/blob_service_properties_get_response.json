@@ -1,0 +1,17 @@
+{
+  "sku": {
+    "name": "Standard_GRS",
+    "tier": "Standard"
+  },
+  "id": "/subscriptions/subscription_id/resourceGroups/resource_group_name/providers/Microsoft.Storage/storageAccounts/account_name/blobServices/default",
+  "name": "default",
+  "type": "Microsoft.Storage/storageAccounts/blobServices",
+  "properties": {
+    "cors": {
+      "corsRules": []
+    },
+    "deleteRetentionPolicy": {
+      "enabled": false
+    }
+  }
+}

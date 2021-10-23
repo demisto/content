@@ -1,0 +1,35 @@
+{
+    "id": "incident_expansecloudmanagementstatus",
+    "version": -1,
+    "modified": "2021-05-11T20:02:41.23642402Z",
+    "name": "Expanse Cloud Management Status",
+    "ownerOnly": false,
+    "cliName": "expansecloudmanagementstatus",
+    "type": "tagsSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "selectValues": [
+        "UnmanagedCloud",
+        "ManagedCloud",
+        "NotApplicable"
+    ],
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Expanse Issue", "Expanse Issue - Generic"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

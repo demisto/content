@@ -19,6 +19,8 @@ from CommonServerUserPython import *
 urllib3.disable_warnings()
 
 """ ADVANCED GLOBAL PARAMETERS """
+REQUEST_TIMEOUT = 30                # number of seconds to wait for a request result
+SAMPLE_SIZE = 2                     # number of samples to store in integration context
 EVENTS_INTERVAL_SECS = 15           # interval between events polling
 EVENTS_FAILURE_LIMIT = 3            # amount of consecutive failures events fetch will tolerate
 FAILURE_SLEEP = 15           # sleep between consecutive failures events fetch
@@ -44,6 +46,7 @@ ADVANCED_PARAMETER_NAMES = [
     "RULES_ENRCH_FLG",
     "MAX_FETCH_EVENT_RETIRES",
     "SLEEP_FETCH_EVENT_RETIRES",
+    "REQUEST_TIMEOUT"
 ]
 
 """ GLOBAL VARS """
@@ -54,6 +57,7 @@ API_USERNAME = "_api_token_key"
 TERMINATING_SEARCH_STATUSES = {"CANCELED", "ERROR", "COMPLETED"}
 EVENT_TIME_FIELDS = ["starttime"]
 ASSET_TIME_FIELDS = ['created', 'last_reported', 'first_seen_scanner', 'last_seen_scanner']
+ID_QUERY_REGEX = re.compile(r'(?:\s+|^)id((\s)*)>(=?)((\s)*)((\d)+)(?:\s+|$)')
 EXECUTOR = concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS)
 
 
@@ -152,24 +156,6 @@ DEVICE_MAP = {
 }
 
 
-class LongRunningIntegrationLogger(IntegrationLogger):
-    """
-    LOG class that ignores LOG calls if long_running
-    """
-
-    def __init__(self, long_running=False):
-        super().__init__()
-        self.long_running = long_running
-
-    def __call__(self, message):
-        # ignore messages if self.long_running
-        if not self.long_running:
-            super().__call__(message)
-
-
-LOG = LongRunningIntegrationLogger(demisto.command() == "long-running-execution")
-
-
 class FetchMode:
     """Enum class for fetch mode"""
 
@@ -224,15 +210,11 @@ class QRadarClient:
         try:
             log_hdr = deepcopy(headers)
             sec_hdr = log_hdr.pop("SEC", None)
-            formatted_params = json.dumps(params, indent=4)
             # default on sec_hdr, else, try username/password
             auth = (
                 (self._username, self._password)
                 if not sec_hdr and self._username and self._password
                 else None
-            )
-            LOG(
-                f"qradar is attempting {method} to {url} with headers:\n{headers}\nparams:\n{formatted_params}"
             )
             res = requests.request(
                 method,
@@ -243,6 +225,7 @@ class QRadarClient:
                 verify=self._use_ssl,
                 data=data,
                 auth=auth,
+                timeout=REQUEST_TIMEOUT
             )
             res.raise_for_status()
         except HTTPError:
@@ -267,10 +250,7 @@ class QRadarClient:
         try:
             json_body = res.json()
         except ValueError:
-            LOG(
-                "Got unexpected response from QRadar. Raw response: {}".format(res.text)
-            )
-            raise DemistoException("Got unexpected response from QRadar")
+            raise DemistoException(f"Got unexpected response from QRadar. Raw response: {res.text}")
         return json_body
 
     def test_connection(self):
@@ -740,6 +720,9 @@ def test_module(client: QRadarClient):
     params = demisto.params()
     is_long_running = params.get("longRunning")
     if is_long_running:
+        if not params.get('events_limit'):
+            raise DemistoException('Unlimited long running instance fetch is not supported, please limit your fetch'
+                                   ' by using the "Max number of events per incident" parameter.')
         # check fetch incidents can fetch and search events
         raw_offenses = client.get_offenses(_range="0-0")
         fetch_mode = params.get("fetch_mode")
@@ -916,6 +899,31 @@ def try_create_search_with_retry(client, events_query, offense, max_retries=None
     return query_status, search_id
 
 
+def get_minimum_id_to_fetch(highest_offense_id: int, user_query: Optional[str]) -> int:
+    """
+    Receives the highest offense ID saved from last run, and user query.
+    Checks if user query has a limitation for a minimum ID.
+    If such ID exists, returns the maximum between 'highest_offense_id' and the minimum ID
+    limitation received by the user query.
+    Args:
+        highest_offense_id (int): Minimum ID to fetch offenses by from last run.
+        user_query (Optional[str]): User query for QRadar service.
+
+    Returns:
+        (int): The Minimum ID to fetch offenses by.
+    """
+    if user_query:
+        id_query = ID_QUERY_REGEX.search(user_query)
+        if id_query:
+            id_query_raw = id_query.group(0)
+            operator = '>=' if '>=' in id_query_raw else '>'
+            # safe to int parse without catch because regex checks for number
+            user_offense_id = int(id_query.group(0).split(operator)[1].strip())
+            user_lowest_offense_id = user_offense_id if operator == '>' else user_offense_id - 1
+            return max(highest_offense_id, user_lowest_offense_id)
+    return highest_offense_id
+
+
 def fetch_raw_offenses(client: QRadarClient, offense_id, user_query):
     """
     Use filter frames based on id ranges: "id>offense_id AND id<(offense_id+incidents_per_fetch)"
@@ -926,16 +934,7 @@ def fetch_raw_offenses(client: QRadarClient, offense_id, user_query):
              yes - fetch with increments until manage to fetch (or until limit is reached - dead condition)
              no  - finish fetch-incidents
     """
-    # try to adjust start_offense_id to user_query start offense id
-    try:
-        if isinstance(user_query, str) and "id>" in user_query:
-            user_offense_id = int(user_query.split("id>")[1].split(" ")[0])
-            if user_offense_id > offense_id:
-                offense_id = user_offense_id
-    except ValueError:
-        pass
-
-    # fetch offenses
+    offense_id = get_minimum_id_to_fetch(offense_id, user_query)
     raw_offenses, fetch_query = seek_fetchable_offenses(client, offense_id, user_query)
     if raw_offenses:
         print_debug_msg(f"Fetched {fetch_query}successfully.", client.lock)
@@ -951,17 +950,16 @@ def seek_fetchable_offenses(client: QRadarClient, start_offense_id, user_query):
     fetch_query = ""
     lim_id = None
     latest_offense_fnd = False
+    tries = 1
     while not latest_offense_fnd:
-        end_offense_id = int(start_offense_id) + client.offenses_per_fetch + 1
+        end_offense_id = int(start_offense_id) + (client.offenses_per_fetch * tries) + 1
         fetch_query = "id>{0} AND id<{1} {2}".format(
             start_offense_id,
             end_offense_id,
             "AND ({})".format(user_query) if user_query else "",
         )
         print_debug_msg(f"Fetching {fetch_query}.")
-        raw_offenses = client.get_offenses(
-            _range="0-{0}".format(client.offenses_per_fetch - 1), _filter=fetch_query
-        )
+        raw_offenses = client.get_offenses(_filter=fetch_query)
         if raw_offenses:
             latest_offense_fnd = True
         else:
@@ -974,10 +972,17 @@ def seek_fetchable_offenses(client: QRadarClient, start_offense_id, user_query):
                     )
                 lim_id = lim_offense[0]["id"]  # if there's no id, raise exception
             if lim_id >= end_offense_id:  # increment the search until we reach limit
-                start_offense_id += client.offenses_per_fetch
+                start_offense_id += (client.offenses_per_fetch * tries)
+                tries += 1
+                if tries % 10 == 0:
+                    last_run = get_integration_context(SYNC_CONTEXT)
+                    last_run["id"] = end_offense_id
+                    set_integration_context(last_run, SYNC_CONTEXT)
             else:
                 latest_offense_fnd = True
-    return raw_offenses, fetch_query
+    if isinstance(raw_offenses, list):
+        raw_offenses.reverse()
+    return raw_offenses[:client.offenses_per_fetch], fetch_query
 
 
 def fetch_incidents_long_running_samples():
@@ -1020,8 +1025,6 @@ def fetch_incidents_long_running_events(
 
     if len(raw_offenses) == 0:
         return
-    if isinstance(raw_offenses, list):
-        raw_offenses.reverse()
     for offense in raw_offenses:
         offense_id = max(offense_id, offense["id"])
     enriched_offenses = []
@@ -1051,7 +1054,7 @@ def fetch_incidents_long_running_events(
         print_debug_msg("Enriched offenses successfully.")
     new_incidents_samples = create_incidents(enriched_offenses, incident_type)
     incidents_batch_for_sample = (
-        new_incidents_samples if new_incidents_samples else last_run.get("samples", [])
+        new_incidents_samples[:SAMPLE_SIZE] if new_incidents_samples else last_run.get("samples", [])
     )
 
     context = {LAST_FETCH_KEY: offense_id, "samples": incidents_batch_for_sample}
@@ -1079,8 +1082,6 @@ def fetch_incidents_long_running_no_events(
     raw_offenses = fetch_raw_offenses(client, offense_id, user_query)
     if len(raw_offenses) == 0:
         return
-    if isinstance(raw_offenses, list):
-        raw_offenses.reverse()
 
     for offense in raw_offenses:
         offense_id = max(offense_id, offense["id"])
@@ -2002,9 +2003,9 @@ def get_indicators_list(indicator_query, limit, page):
     """
     indicators_values_list = []
     indicators_data_list = []
-    fetched_iocs = demisto.searchIndicators(
-        query=indicator_query, page=page, size=limit
-    ).get("iocs")
+    search_indicators = IndicatorsSearcher(page=page)
+    fetched_iocs = search_indicators.search_indicators_by_version(query=indicator_query, size=limit).get("iocs")
+
     for indicator in fetched_iocs:
         indicators_values_list.append(indicator["value"])
         indicators_data_list.append(
@@ -2024,31 +2025,39 @@ def fetch_loop_with_events(
     events_limit,
 ):
     while True:
-        is_reset_triggered(client.lock, handle_reset=True)
+        try:
+            is_reset_triggered(client.lock, handle_reset=True)
 
-        print_debug_msg("Starting fetch loop with events.")
-        fetch_incidents_long_running_events(
-            client,
-            incident_type,
-            user_query,
-            ip_enrich,
-            asset_enrich,
-            fetch_mode,
-            events_columns,
-            events_limit,
-        )
-        time.sleep(FETCH_SLEEP)
+            print_debug_msg("Starting fetch loop with events.")
+            fetch_incidents_long_running_events(
+                client,
+                incident_type,
+                user_query,
+                ip_enrich,
+                asset_enrich,
+                fetch_mode,
+                events_columns,
+                events_limit,
+            )
+        except Exception as e:
+            demisto.error(str(e))
+        finally:
+            time.sleep(FETCH_SLEEP)
 
 
 def fetch_loop_no_events(client: QRadarClient, incident_type, user_query, ip_enrich, asset_enrich):
     while True:
-        is_reset_triggered(client.lock, handle_reset=True)
+        try:
+            is_reset_triggered(client.lock, handle_reset=True)
 
-        print_debug_msg("Starting fetch loop with no events.")
-        fetch_incidents_long_running_no_events(
-            client, incident_type, user_query, ip_enrich, asset_enrich
-        )
-        time.sleep(FETCH_SLEEP)
+            print_debug_msg("Starting fetch loop with no events.")
+            fetch_incidents_long_running_no_events(
+                client, incident_type, user_query, ip_enrich, asset_enrich
+            )
+        except Exception as e:
+            demisto.error(e)
+        finally:
+            time.sleep(FETCH_SLEEP)
 
 
 def long_running_main(
@@ -2347,14 +2356,8 @@ def main():
         elif command == "get-mapping-fields":
             demisto.results(get_mapping_fields(client))
     except Exception as e:
-        error = f"Error has occurred in the QRadar Integration: {str(e)}"
-        LOG(traceback.format_exc())
-        if demisto.command() == "fetch-incidents":
-            LOG(error)
-            LOG.print_log()
-            raise Exception(error)
-        else:
-            return_error(error)
+        error = f"Error has occurred in the QRadar Integration: {str(e)}\n{traceback.format_exc()}"
+        return_error(error)
 
 
 if __name__ in ("__builtin__", "builtins", "__main__"):

@@ -58,7 +58,8 @@ args:
   description: Filter of time range in which events occured
 - name: deviceId
   required: true
-  description: '[number] Id of the device where the events stored/occurred. In order to get list of available devices/components run command nw-get-components'
+  description: '[number] Id of the device where the events stored/occurred. In order
+    to get list of available devices/components run command nw-get-components'
 - name: collectionName
   description: '[optional]'
 - name: predicateIds
@@ -87,3 +88,6 @@ dependson:
   - nw-get-events
 timeout: 0s
 fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.24066
+tests:
+- No tests (auto formatted)

@@ -1,0 +1,30 @@
+{
+ "associatedToAll": false,
+ "associatedTypes": [
+  "XSOAR Dev to Prod"
+ ],
+ "caseInsensitive": true,
+ "cliName": "xsoardevtoprodmethod",
+ "closeForm": false,
+ "content": true,
+ "description": "The method used in the XSOAR Dev to Prod playbook, (Manual or Automated)",
+ "editForm": true,
+ "group": 0,
+ "hidden": false,
+ "id": "incident_xsoardevtoprodmethod",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "XSOAR Dev to Prod Method",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "required": false,
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "shortText",
+ "unmapped": false,
+ "unsearchable": true,
+ "useAsKpi": false,
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

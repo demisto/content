@@ -1,0 +1,328 @@
+{
+  "mobile_device": {
+    "general": {
+      "id": 1,
+      "display_name": "Device 71",
+      "device_name": "Device 71",
+      "name": "Device 71",
+      "asset_tag": "",
+      "last_inventory_update": "Monday, March 29 2021 at 12:38 PM",
+      "last_inventory_update_epoch": 1617021510710,
+      "last_inventory_update_utc": "2021-03-29T12:38:30.710+0000",
+      "capacity": 12495,
+      "capacity_mb": 12495,
+      "available": 9341,
+      "available_mb": 9341,
+      "percentage_used": 25,
+      "os_type": "iOS",
+      "os_version": "8.0.2",
+      "os_build": "12A405",
+      "serial_number": "AB44F4D060A3",
+      "udid": "ab12f4c660a311e490b812df261f2c7e",
+      "initial_entry_date_epoch": 1617021510106,
+      "initial_entry_date_utc": "2021-03-29T12:38:30.106+0000",
+      "phone_number": "",
+      "ip_address": "12.13.172.130",
+      "wifi_mac_address": "A1:65:BD:4E:50:5D",
+      "bluetooth_mac_address": "A1:65:BD:4E:50:2A",
+      "modem_firmware": "",
+      "model": "iPad 3rd Generation (Wi-Fi)",
+      "model_identifier": "iPad3,1",
+      "model_number": "MD333LL",
+      "modelDisplay": "iPad 3rd Generation (Wi-Fi)",
+      "model_display": "iPad 3rd Generation (Wi-Fi)",
+      "device_ownership_level": "Institutional",
+      "enrollment_method": "",
+      "last_enrollment_epoch": 0,
+      "last_enrollment_utc": "",
+      "mdm_profile_expiration_epoch": 0,
+      "mdm_profile_expiration_utc": "",
+      "managed": true,
+      "supervised": false,
+      "exchange_activesync_device_identifier": "",
+      "shared": "No",
+      "diagnostic_submission": "Not Enabled",
+      "app_analytics": "Not Enabled",
+      "tethered": "",
+      "battery_level": 72,
+      "ble_capable": true,
+      "device_locator_service_enabled": false,
+      "do_not_disturb_enabled": false,
+      "cloud_backup_enabled": true,
+      "last_cloud_backup_date_epoch": 1412270303000,
+      "last_cloud_backup_date_utc": "2014-10-02T17:18:23.000+0000",
+      "location_services_enabled": false,
+      "itunes_store_account_is_active": true,
+      "last_backup_time_epoch": 0,
+      "last_backup_time_utc": "",
+      "site": {
+        "id": -1,
+        "name": "None"
+      }
+    },
+    "location": {
+      "username": "user28",
+      "realname": "User 28",
+      "real_name": "User 28",
+      "email_address": "User28@email.com",
+      "position": "",
+      "phone": "612-605-6625",
+      "phone_number": "612-605-6625",
+      "department": "",
+      "building": "",
+      "room": "315 Graham Ave"
+    },
+    "purchasing": {
+      "is_purchased": true,
+      "is_leased": false,
+      "po_number": "",
+      "vendor": "",
+      "applecare_id": "",
+      "purchase_price": "",
+      "purchasing_account": "",
+      "po_date": "",
+      "po_date_epoch": 0,
+      "po_date_utc": "",
+      "warranty_expires": "",
+      "warranty_expires_epoch": 0,
+      "warranty_expires_utc": "",
+      "lease_expires": "",
+      "lease_expires_epoch": 0,
+      "lease_expires_utc": "",
+      "life_expectancy": 0,
+      "purchasing_contact": "",
+      "attachments": []
+    },
+    "applications": [
+      {
+        "application_name": "1Password",
+        "application_version": "500103",
+        "application_short_version": "",
+        "identifier": "com.agilebits.onepassword-ios"
+      },
+      {
+        "application_name": "Angry Birds",
+        "application_version": "4.2.0",
+        "application_short_version": "",
+        "identifier": "com.chillingo.angrybirdsipad"
+      },
+      {
+        "application_name": "Blue Bird 2",
+        "application_version": "1.6",
+        "application_short_version": "",
+        "identifier": "com.applenapps.apple.bluebird2"
+      },
+      {
+        "application_name": "CameraBag",
+        "application_version": "2.4.00",
+        "application_short_version": "",
+        "identifier": "com.nevercenter.cbm2hd"
+      },
+      {
+        "application_name": "Candy Crush",
+        "application_version": "1.38.1",
+        "application_short_version": "",
+        "identifier": "com.midasplayer.apps.candycrushsaga"
+      },
+      {
+        "application_name": "Casper Focus",
+        "application_version": "14091201",
+        "application_short_version": "",
+        "identifier": "com.jamfsoftware.casperfocus"
+      },
+      {
+        "application_name": "ContraHD",
+        "application_version": "1.3.0",
+        "application_short_version": "",
+        "identifier": "com.punchboxstudios.hundouluojinhuageminghd"
+      },
+      {
+        "application_name": "CrickeTouch",
+        "application_version": "1.0",
+        "application_short_version": "",
+        "identifier": "com.yourcompany.CrickeTouch"
+      },
+      {
+        "application_name": "Find iPhone",
+        "application_version": "472.1",
+        "application_short_version": "",
+        "identifier": "com.apple.mobileme.fmip1"
+      },
+      {
+        "application_name": "Gone Fishing",
+        "application_version": "1.56",
+        "application_short_version": "",
+        "identifier": "com.drimmi.rmm1.dev"
+      },
+      {
+        "application_name": "iShutdown HD",
+        "application_version": "2.0",
+        "application_short_version": "",
+        "identifier": "com.ishutdownapp.ishutdownhd"
+      },
+      {
+        "application_name": "iStopMotion",
+        "application_version": "16096",
+        "application_short_version": "",
+        "identifier": "com.boinx.iStopMotion.iOS"
+      },
+      {
+        "application_name": "Notability",
+        "application_version": "3066",
+        "application_short_version": "",
+        "identifier": "com.gingerlabs.Notability"
+      },
+      {
+        "application_name": "PDF Master",
+        "application_version": "3.1",
+        "application_short_version": "",
+        "identifier": "com.btgs.pdfmaster3"
+      },
+      {
+        "application_name": "ProCam XL",
+        "application_version": "3.08",
+        "application_short_version": "",
+        "identifier": "Gemini.ProCam-XL-2"
+      },
+      {
+        "application_name": "Self Service",
+        "application_version": "14091003",
+        "application_short_version": "",
+        "identifier": "com.jamfsoftware.selfservice"
+      },
+      {
+        "application_name": "Snappy Bird",
+        "application_version": "3.2",
+        "application_short_version": "",
+        "identifier": "com.animated.pimpmykeyboardpro"
+      },
+      {
+        "application_name": "YouTube",
+        "application_version": "2.10.2.11369",
+        "application_short_version": "",
+        "identifier": "com.google.ios.youtube"
+      }
+    ],
+    "security": {
+      "data_protection": true,
+      "block_level_encryption_capable": true,
+      "file_level_encryption_capable": true,
+      "passcode_present": true,
+      "passcode_compliant": true,
+      "passcode_compliant_with_profile": true,
+      "passcode_lock_grace_period_enforced": "Not Available",
+      "hardware_encryption": 3,
+      "activation_lock_enabled": false,
+      "jailbreak_detected": "Normal",
+      "lost_mode_enabled": "Unsupervised Device",
+      "lost_mode_enforced": false,
+      "lost_mode_enable_issued_epoch": 1617021510085,
+      "lost_mode_enable_issued_utc": "2021-03-29T12:38:30.085+0000",
+      "lost_mode_message": "",
+      "lost_mode_phone": "",
+      "lost_mode_footnote": "",
+      "lost_location_epoch": 1620729939355,
+      "lost_location_utc": "2021-05-11T10:45:39.355+0000",
+      "lost_location_latitude": 0.0,
+      "lost_location_longitude": 0.0,
+      "lost_location_altitude": -1.0,
+      "lost_location_speed": -1.0,
+      "lost_location_course": -1.0,
+      "lost_location_horizontal_accuracy": -1.0,
+      "lost_location_vertical_accuracy": -1.0
+    },
+    "network": {
+      "home_carrier_network": "",
+      "cellular_technology": "None",
+      "voice_roaming_enabled": "Not Available",
+      "imei": "",
+      "iccid": "",
+      "meid": "",
+      "current_carrier_network": "",
+      "carrier_settings_version": "",
+      "current_mobile_country_code": "",
+      "current_mobile_network_code": "",
+      "home_mobile_country_code": "",
+      "home_mobile_network_code": "",
+      "data_roaming_enabled": false,
+      "roaming": false,
+      "phone_number": ""
+    },
+    "certificates": [],
+    "configuration_profiles": [],
+    "provisioning_profiles": [],
+    "mobile_device_groups": [
+      {
+        "id": 1,
+        "name": "All Managed iPads"
+      },
+      {
+        "id": 4,
+        "name": "Test"
+      },
+      {
+        "id": 5,
+        "name": "iPhones"
+      },
+      {
+        "id": 6,
+        "name": "Config Profile: Does not have Managed Device"
+      },
+      {
+        "id": 7,
+        "name": "I'm a cool test"
+      }
+    ],
+    "extension_attributes": [
+      {
+        "id": 9,
+        "name": "Asset Selector",
+        "type": "String",
+        "multi_value": false,
+        "value": ""
+      },
+      {
+        "id": 4,
+        "name": "rang",
+        "type": "String",
+        "multi_value": false,
+        "value": ""
+      },
+      {
+        "id": 6,
+        "name": "rangal",
+        "type": "String",
+        "multi_value": false,
+        "value": ""
+      },
+      {
+        "id": 1,
+        "name": "risk_test",
+        "type": "String",
+        "multi_value": false,
+        "value": ""
+      },
+      {
+        "id": 2,
+        "name": "Sample",
+        "type": "String",
+        "multi_value": false,
+        "value": ""
+      },
+      {
+        "id": 5,
+        "name": "Sample2",
+        "type": "String",
+        "multi_value": false,
+        "value": ""
+      },
+      {
+        "id": 3,
+        "name": "Sample4",
+        "type": "String",
+        "multi_value": false,
+        "value": ""
+      }
+    ]
+  }
+}

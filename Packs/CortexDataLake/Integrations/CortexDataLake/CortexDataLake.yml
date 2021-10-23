@@ -81,8 +81,8 @@ configuration:
   - sctp
   required: false
   type: 16
-- additionalinfo: Comma-separated fields that will be fetched with every incident, e.g., "pcap,session_id".
-    Enter "*" for all possible fields.
+- additionalinfo: Comma-separated fields that will be fetched with every incident,
+    e.g., "pcap,session_id". Enter "*" for all possible fields.
   defaultvalue: '*'
   display: Fetch Fields
   hidden: false
@@ -135,6 +135,18 @@ script:
       description: The maximum number of logs to return. Default is 10.
       isArray: false
       name: limit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: If set to false, query results are not mapped into the standard
+        command context. Default is "true".
+      isArray: false
+      name: transform_results
+      predefined:
+      - 'true'
+      - 'false'
       required: false
       secret: false
     deprecated: false
@@ -226,16 +238,13 @@ script:
         3 weeks).
       isArray: false
       name: time_range
-      predefined:
-      - minutes
-      - days
-      - weeks
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: If set to false, query results are not mapped into the standard command context. Default is "true".
+      description: If set to false, query results are not mapped into the standard
+        command context. Default is "true".
       isArray: false
       name: transform_results
       predefined:
@@ -420,10 +429,6 @@ script:
         3 weeks).
       isArray: false
       name: time_range
-      predefined:
-      - minutes
-      - days
-      - weeks
       required: false
       secret: false
     deprecated: false
@@ -583,10 +588,6 @@ script:
         3 weeks).
       isArray: false
       name: time_range
-      predefined:
-      - minutes
-      - days
-      - weeks
       required: false
       secret: false
     - default: false
@@ -962,10 +963,6 @@ script:
         3 weeks).
       isArray: false
       name: time_range
-      predefined:
-      - minutes
-      - days
-      - weeks
       required: false
       secret: false
     - default: false
@@ -1400,10 +1397,6 @@ script:
         3 weeks).
       isArray: false
       name: time_range
-      predefined:
-      - minutes
-      - days
-      - weeks
       required: false
       secret: false
     - default: false
@@ -1826,10 +1819,6 @@ script:
         7 days, 3 weeks).
       isArray: false
       name: time_range
-      predefined:
-      - minutes
-      - days
-      - weeks
       required: false
       secret: false
     - default: false
@@ -2311,10 +2300,6 @@ script:
         7 days, 3 weeks).
       isArray: false
       name: time_range
-      predefined:
-      - minutes
-      - days
-      - weeks
       required: false
       secret: false
     - default: false
@@ -2601,9 +2586,10 @@ script:
       type: String
   - name: cdl-reset-authentication-timeout
     deprecated: false
-    description: Use this command in case your authentication calls fail due to internal call-limit, the command will reset the limit cache.
+    description: Use this command in case your authentication calls fail due to internal
+      call-limit, the command will reset the limit cache.
     execution: false
-  dockerimage: demisto/python_pancloud_v2:1.0.0.14327
+  dockerimage: demisto/python_pancloud_v2:1.0.0.23674
   feed: false
   isfetch: true
   longRunning: false

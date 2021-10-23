@@ -14,8 +14,8 @@
 <h2>Tenable.sc Playbook</h2>
 <p>Tenable.sc - Launch scan</p>
 <p><br> <a href="https://user-images.githubusercontent.com/35098543/49026814-73d56f00-f1a7-11e8-8a19-4de81e5f6ed4.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/49026814-73d56f00-f1a7-11e8-8a19-4de81e5f6ed4.png" alt="image" width="751" height="1335"></a></p>
-<h2>Configure tenable.sc on Demisto</h2>
-<p>To use the Tenable.sc integration in Demisto, a user with administrative privileges is recommended.</p>
+<h2>Configure tenable.sc on Cortex XSOAR</h2>
+<p>To use the Tenable.sc integration in Cortex XSOAR, a user with administrative privileges is recommended.</p>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for Tenable.sc.</li>
@@ -185,7 +185,7 @@
         ]
 </pre>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_33160870171543312761635">Get a list of scans: tenable-sc-list-scans</a></li>
 <li><a href="#h_4066330872101543312766482">Initiate a scan: tenable-sc-launch-scan</a></li>
@@ -3490,4 +3490,4 @@
 <p><img src="https://user-images.githubusercontent.com/38749041/64108828-99bb2000-cd86-11e9-9f45-d8984d719241.png"></p>
 <h2>Troubleshooting</h2>
 <hr>
-<p>For errors within Tenable.sc, the cause is generally specified, e.g., <code>The currently logged in used is not an administrator</code>, <code>Unable to retrieve Asset #2412. Asset #2412 does not exist</code> or <code>Invalid login credentials</code>. However there might be connection errors, for example when the server URL provided is incorrect. If you experience issues, contact <a href="mailto:support@demisto.com">Demisto Support</a>.</p>
+<p>For errors within Tenable.sc, the cause is generally specified, e.g., <code>The currently logged in used is not an administrator</code>, <code>Unable to retrieve Asset #2412. Asset #2412 does not exist</code> or <code>Invalid login credentials</code>. However there might be connection errors, for example when the server URL provided is incorrect.</p>

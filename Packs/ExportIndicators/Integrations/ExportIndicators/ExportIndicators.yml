@@ -51,16 +51,18 @@ configuration:
   required: false
   type: 8
 - defaultvalue: 5 minutes
+  additionalinfo: How often to refresh the exported indicators (e.g., 5 minutes, 12 hours, 7 days, 3 months,
+   1 year). For performance reasons, we do not recommend setting this value to less than 1 minute.
   display: Refresh Rate
   name: cache_refresh_rate
   required: false
   type: 0
 - defaultvalue: 'true'
   display: Long Running Instance
+  hidden: true
   name: longRunning
   required: false
   type: 8
-  hidden: true
 - additionalinfo: Requires a unique port for each long-running integration instance.
     Do not use the same port for multiple instances.
   display: Listen Port
@@ -71,6 +73,18 @@ configuration:
   name: certificate
   required: false
   type: 12
+- display: Append String To EDL
+  name: append_string
+  required: false
+  type: 12
+  additionalinfo: String to add to end of published EDL, if type is Text. Supports
+    Newline characters (\n).
+- display: Prepend String To EDL
+  name: prepend_string
+  required: false
+  type: 12
+  additionalinfo: String to add to beginning of published EDL, if type is Text. Supports
+    Newline characters (\n).
 - display: Private Key (Required for HTTPS)
   name: key
   required: false
@@ -126,6 +140,21 @@ configuration:
   name: category_attribute
   required: false
   type: 0
+- additionalinfo: "NGINX global directives to be passed on the command line using the -g option. Each directive should end with `;`.
+    For example: `worker_processes 4; timer_resolution 100ms;`.
+    Advanced configuration to be used only if instructed by XSOAR Support."
+  display: NGINX Global Directives
+  hidden: false
+  name: nginx_global_directives
+  required: false
+  type: 0
+- additionalinfo: "NGINX server configuration. To be used instead of the default NGINX_SERVER_CONF used in the integration code.
+    Advanced configuration to be used only if instructed by XSOAR Support."
+  display: NGINX Server Conf
+  hidden: false
+  name: nginx_server_conf
+  required: false
+  type: 12
 description: Use the Export Indicators Service integration to provide an endpoint
   with a list of indicators as a service for the system indicators.
 display: Export Indicators Service
@@ -267,12 +296,29 @@ script:
       - 'True'
       required: false
       secret: false
+    - default: false
+      description: The field by which to sort the indicators by.
+      isArray: false
+      name: sort_field
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The direction by which to order the indicators. The options are
+        `asc` or `desc`.
+      isArray: false
+      name: sort_order
+      predefined:
+      - asc
+      - desc
+      required: false
+      secret: false
     deprecated: false
     description: Updates values stored in the Export Indicators Service (only avaialable
       On-Demand).
     execution: false
     name: eis-update
-  dockerimage: demisto/teams:1.0.0.14318
+  dockerimage: demisto/flask-nginx:1.0.0.23674
   feed: false
   isfetch: false
   longRunning: true

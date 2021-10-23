@@ -1,3679 +1,2692 @@
-<!-- HTML_DOC -->
-<p>Use the GitHub integration to manage GitHub issues directly from Demisto.</p>
-<h2>Configure GitHub on Demisto</h2>
-<ol>
-<li>Navigate to<span> </span><strong>Settings</strong><span> </span>&gt;<span> </span><strong>Integrations</strong><span> </span>&gt;<span> </span><strong>Servers &amp; Services</strong>.</li>
-<li>Search for GitHub.</li>
-<li>Click<span> </span><strong>Add instance</strong><span> </span>to create and configure a new integration instance.
-<ul>
-<li>
-<strong>Name</strong>: a textual name for the integration instance.</li>
-<li><strong>Fetch incidents</strong></li>
-<li><strong>API Token</strong></li>
-<li><strong>Credentials (for GitHub bots)</strong></li>
-<li><strong>Username of the repository owner, for example: github.com/repos/{<em>owner</em>}/{repo}/issues</strong></li>
-<li><strong>The name of the requested repository.</strong></li>
-<li><strong>First fetch timestamp, in days.</strong></li>
-<li><strong>Use system proxy settings.</strong></li>
-<li><strong>Trust any certificate (not secure).</strong></li>
-<li><strong>Incident type</strong></li>
-</ul>
-</li>
-<li>Click<span> </span><strong>Test</strong><span> </span>to validate the URLs, token, and connection.</li>
-</ol>
-*Use API token to authenticate as a user and credentials to authenticate as a bot.
-<h2>Authenticating</h2>
-The integration provides 2 methods of authentication: API token and private key. The API token method is used
-to authenticate as a GitHub user, and take actions on behalf of a certain GitHub user. On the other hand, the second 
-method uses private key to generate a JWT token to create the API token. This method is required when authenticating as
-a bot, a.k.a. GitHub apps.
+Integration to GitHub API.
 
-<h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
-<ol>
-<li><a href="#h_b3e20a76-c892-4f29-b887-0dbd313f0948" target="_self">Create an issue: GitHub-create-issue</a></li>
-<li><a href="#h_3dae91c2-1d82-4b6b-95ef-f7fbdf4813fd" target="_self">Close an issue: GitHub-close-issue</a></li>
-<li><a href="#h_3d48d1bf-c274-405c-ad1d-e3f9c1440a3d" target="_self">Update an issue: GitHub-update-issue</a></li>
-<li><a href="#h_71872e56-33da-4385-9d5f-89cfecaee19e" target="_self">List all issues: GitHub-list-all-issues</a></li>
-<li><a href="#h_ea932aae-5ed3-4b5c-a972-be5526e4bddd" target="_self">Search issues: GitHub-search-issues</a></li>
-<li><a href="#h_5dfb412d-e0e1-4344-8216-8fc769620534" target="_self">Get the download count for releases: GitHub-get-download-count</a></li>
-<li><a href="#h_a7fb6b16-7d09-419c-b043-65fc543efcc9" target="_self">Get inactive pull requests: GitHub-get-stale-prs</a></li>
-<li><a href="#h_072342db-a9b6-4412-a82c-c4d623c89831" target="_self">Get a branch: GitHub-get-branch </a></li>
-<li><a href="#h_a892d1ce-98d4-496c-b774-c294100ff6c5" target="_self">Create a new branch: GitHub-create-branch </a></li>
-<li><a href="#h_67b96cf1-2679-41ba-8a62-ce5d5bdd1715" target="_self">Get details of a team membership: GitHub-get-team-membership</a></li>
-<li><a href="#h_28d8b2e8-c6bd-4121-9bce-9dd4cff83688" target="_self">Request a review for a pull request: GitHub-request-review</a></li>
-<li><a href="#h_9b201d60-49f3-49de-84d7-9b429c37fa69" target="_self">Create a comment: GitHub-create-comment</a></li>
-<li><a href="#h_2d39779c-c70f-42bc-96ef-60a4643960dc" target="_self">List comments in an issue: GitHub-list-issue-comments </a></li>
-<li><a href="#h_ebfd8f85-0967-4272-be2b-15a29e421ab8" target="_self">List pull request files: GitHub-list-pr-files</a></li>
-<li><a href="#h_a1e18596-23a3-414a-8326-5cef5b6986c1" target="_self">List reviews on a pull request: GitHub-list-pr-reviews</a></li>
-<li><a href="#h_299bf662-bcc0-4738-960e-a5208c0958bb" target="_self">Get the contents of a commit: GitHub-get-commit</a></li>
-<li><a href="#h_20064505-4e55-4478-9e30-8a482fa3b26c" target="_self">Add a label to an issue: GitHub-add-label</a></li>
-<li><a href="#h_2dff022b-e0a0-4142-8356-22e7c0edf943" target="_self">Get a pull request: GitHub-get-pull-request</a></li>
-<li><a href="#h_55d1fc5c-e1c9-4293-9db2-3e6d1da440a0" target="_self">GitHub-list-teams: GitHub-list-teams</a></li>
-<li><a href="#h_74b1f29f-07f7-4765-ab39-8222cc3413cb" target="_self">GitHub-delete-branch: GitHub-delete-branch</a></li>
-</ol>
-<h3 id="h_b3e20a76-c892-4f29-b887-0dbd313f0948">1. Create an issue</h3>
-<hr>
-<p>Creates an issue in GitHub.</p>
-<h5>Base Command</h5>
-<p><code>GitHub-create-issue</code></p>
-<h5>Input</h5>
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 195px;"><strong>Argument Name</strong></th>
-<th style="width: 433px;"><strong>Description</strong></th>
-<th style="width: 112px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 195px;">title</td>
-<td style="width: 433px;">The title of the issue.</td>
-<td style="width: 112px;">Required</td>
-</tr>
-<tr>
-<td style="width: 195px;">body</td>
-<td style="width: 433px;">The contents of the issue.</td>
-<td style="width: 112px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 195px;">labels</td>
-<td style="width: 433px;">Labels to associate with this issue.</td>
-<td style="width: 112px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 195px;">assignees</td>
-<td style="width: 433px;">Logins for users to assign to this issue.</td>
-<td style="width: 112px;">Optional</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 249px;"><strong>Path</strong></th>
-<th style="width: 100px;"><strong>Type</strong></th>
-<th style="width: 391px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 249px;">GitHub.Issue.ID</td>
-<td style="width: 100px;">Number</td>
-<td style="width: 391px;">The ID of the created issue.</td>
-</tr>
-<tr>
-<td style="width: 249px;">GitHub.Issue.Repository</td>
-<td style="width: 100px;">String</td>
-<td style="width: 391px;">The repository of the created issue.</td>
-</tr>
-<tr>
-<td style="width: 249px;">GitHub.Issue.Title</td>
-<td style="width: 100px;">String</td>
-<td style="width: 391px;">The title of the created issue.</td>
-</tr>
-<tr>
-<td style="width: 249px;">GitHub.Issue.Body</td>
-<td style="width: 100px;">Unknown</td>
-<td style="width: 391px;">The body of the created issue.</td>
-</tr>
-<tr>
-<td style="width: 249px;">GitHub.Issue.State</td>
-<td style="width: 100px;">String</td>
-<td style="width: 391px;">The state of the created issue.</td>
-</tr>
-<tr>
-<td style="width: 249px;">GitHub.Issue.Labels</td>
-<td style="width: 100px;">String</td>
-<td style="width: 391px;">Labels applied to the issue.</td>
-</tr>
-<tr>
-<td style="width: 249px;">GitHub.Issue.Assignees</td>
-<td style="width: 100px;">String</td>
-<td style="width: 391px;">Users assigned to this issue.</td>
-</tr>
-<tr>
-<td style="width: 249px;">GitHub.Issue.Created_at</td>
-<td style="width: 100px;">Date</td>
-<td style="width: 391px;">Date when the issue was created.</td>
-</tr>
-<tr>
-<td style="width: 249px;">GitHub.Issue.Updated_at</td>
-<td style="width: 100px;">Date</td>
-<td style="width: 391px;">Date when the issue was last updated.</td>
-</tr>
-<tr>
-<td style="width: 249px;">GitHub.Issue.Closed_at</td>
-<td style="width: 100px;">Date</td>
-<td style="width: 391px;">Date when the issue was closed.</td>
-</tr>
-<tr>
-<td style="width: 249px;">GitHub.Issue.Closed_by</td>
-<td style="width: 100px;">String</td>
-<td style="width: 391px;">User who closed the issue.</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>GitHub-create-issue title=“newbug” body=“found a new bug” lable=bug,new</pre>
-<h5>Context Example</h5>
-<pre>{
-    "GitHub.Issue": {
-        "Body": "\u201cfound", 
-        "Repository": "Git-Integration", 
-        "Title": "\u201cnewbug\u201d", 
-        "Created_at": "2019-06-17T15:14:10Z", 
-        "Labels": [], 
-        "Updated_at": "2019-06-17T15:14:10Z", 
-        "ID": 138, 
-        "Assignees": [], 
-        "State": "open", 
-        "Closed_at": null, 
-        "Closed_by": null
-    }
-}
-</pre>
-<h5>Human Readable Output</h5>
-<h3>Issues:</h3>
-<table style="width: 653px;" border="2">
-<thead>
-<tr>
-<th style="width: 27px;">ID</th>
-<th style="width: 105px;">Repository</th>
-<th style="width: 68px;">Title</th>
-<th style="width: 42px;">State</th>
-<th style="width: 47px;">Body</th>
-<th style="width: 169px;">Created_at</th>
-<th style="width: 173px;">Updated_at</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 27px;">138</td>
-<td style="width: 105px;">Git-Integration</td>
-<td style="width: 68px;">“newbug”</td>
-<td style="width: 42px;">open</td>
-<td style="width: 47px;">“found</td>
-<td style="width: 169px;">2019-06-17T15:14:10Z</td>
-<td style="width: 173px;">2019-06-17T15:14:10Z</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h3 id="h_3dae91c2-1d82-4b6b-95ef-f7fbdf4813fd">2. Close an issue</h3>
-<hr>
-<p>Closes an existing issue.</p>
-<h5>Base Command</h5>
-<p><code>GitHub-close-issue</code></p>
-<h5>Input</h5>
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 224px;"><strong>Argument Name</strong></th>
-<th style="width: 394px;"><strong>Description</strong></th>
-<th style="width: 122px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 224px;">ID</td>
-<td style="width: 394px;">The number of the issue to close.</td>
-<td style="width: 122px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 265px;"><strong>Path</strong></th>
-<th style="width: 88px;"><strong>Type</strong></th>
-<th style="width: 387px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 265px;">GitHub.Issue.ID</td>
-<td style="width: 88px;">Number</td>
-<td style="width: 387px;">The ID of the closed issue.</td>
-</tr>
-<tr>
-<td style="width: 265px;">GitHub.Issue.Repository</td>
-<td style="width: 88px;">String</td>
-<td style="width: 387px;">The repository of the closed issue.</td>
-</tr>
-<tr>
-<td style="width: 265px;">GitHub.Issue.Title</td>
-<td style="width: 88px;">String</td>
-<td style="width: 387px;">The title of the closed issue</td>
-</tr>
-<tr>
-<td style="width: 265px;">GitHub.Issue.Body</td>
-<td style="width: 88px;">Unknown</td>
-<td style="width: 387px;">The body of the closed issue.</td>
-</tr>
-<tr>
-<td style="width: 265px;">GitHub.Issue.State</td>
-<td style="width: 88px;">String</td>
-<td style="width: 387px;">The state of the closed issue.</td>
-</tr>
-<tr>
-<td style="width: 265px;">GitHub.Issue.Labels</td>
-<td style="width: 88px;">String</td>
-<td style="width: 387px;">Labels spplied to the issue.</td>
-</tr>
-<tr>
-<td style="width: 265px;">GitHub.Issue.Assignees</td>
-<td style="width: 88px;">String</td>
-<td style="width: 387px;">Users assigned to the issue.</td>
-</tr>
-<tr>
-<td style="width: 265px;">GitHub.Issue.Created_at</td>
-<td style="width: 88px;">Date</td>
-<td style="width: 387px;">Date when the issue was created.</td>
-</tr>
-<tr>
-<td style="width: 265px;">GitHub.Issue.Updated_at</td>
-<td style="width: 88px;">Date</td>
-<td style="width: 387px;">Date when the issue was last updated</td>
-</tr>
-<tr>
-<td style="width: 265px;">GitHub.Issue.Closed_at</td>
-<td style="width: 88px;">Date</td>
-<td style="width: 387px;">Date when the issue was closed.</td>
-</tr>
-<tr>
-<td style="width: 265px;">GitHub.Issue.Closed_by</td>
-<td style="width: 88px;">String</td>
-<td style="width: 387px;">User who closed the issue.</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>GitHub-close-issue ID=136</pre>
-<h5>Context Example</h5>
-<pre>{
-    "GitHub.Issue": {
-        "Body": null, 
-        "Repository": "Git-Integration", 
-        "Title": "new", 
-        "Created_at": "2019-06-17T14:48:15Z", 
-        "Labels": [
-            "bug", 
-            "else", 
-            "new"
-        ], 
-        "Updated_at": "2019-06-17T15:14:12Z", 
-        "ID": 136, 
-        "Assignees": [], 
-        "State": "closed", 
-        "Closed_at": "2019-06-17T15:14:12Z", 
-        "Closed_by": "roysagi"
-    }
-}
-</pre>
-<h5>Human Readable Output</h5>
-<h3>Issues:</h3>
-<table style="width: 708px;" border="2">
-<thead>
-<tr>
-<th style="width: 27px;">ID</th>
-<th style="width: 85px;">Repository</th>
-<th style="width: 35px;">Title</th>
-<th style="width: 44px;">State</th>
-<th style="width: 115px;">Created_at</th>
-<th style="width: 116px;">Updated_at</th>
-<th style="width: 116px;">Closed_at</th>
-<th style="width: 81px;">Closed_by</th>
-<th style="width: 61px;">Labels</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 27px;">136</td>
-<td style="width: 85px;">Git-Integration</td>
-<td style="width: 35px;">new</td>
-<td style="width: 44px;">closed</td>
-<td style="width: 115px;">2019-06-17T14:48:15Z</td>
-<td style="width: 116px;">2019-06-17T15:14:12Z</td>
-<td style="width: 116px;">2019-06-17T15:14:12Z</td>
-<td style="width: 81px;">roysagi</td>
-<td style="width: 61px;">bug,<br> else,<br> new</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h3 id="h_3d48d1bf-c274-405c-ad1d-e3f9c1440a3d">3. Update an issue</h3>
-<hr>
-<p>Updates the parameters of a specified issue.</p>
-<h5>Base Command</h5>
-<p><code>GitHub-update-issue</code></p>
-<h5>Input</h5>
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 149px;"><strong>Argument Name</strong></th>
-<th style="width: 520px;"><strong>Description</strong></th>
-<th style="width: 71px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 149px;">ID</td>
-<td style="width: 520px;">The number of the issue to update.</td>
-<td style="width: 71px;">Required</td>
-</tr>
-<tr>
-<td style="width: 149px;">title</td>
-<td style="width: 520px;">The title of the issue.</td>
-<td style="width: 71px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 149px;">body</td>
-<td style="width: 520px;">The contents of the issue.</td>
-<td style="width: 71px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 149px;">state</td>
-<td style="width: 520px;">State of the issue. Either open or closed.</td>
-<td style="width: 71px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 149px;">labels</td>
-<td style="width: 520px;">Labels to apply to this issue. Pass one or more Labels to replace the set of Labels on this Issue. Send an empty array ([]) to clear all Labels from the Issue.</td>
-<td style="width: 71px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 149px;">assignees</td>
-<td style="width: 520px;">Logins for Users to assign to this issue. Pass one or more user logins to replace the set of assignees on this Issue. Send an empty array ([]) to clear all assignees from the Issue.</td>
-<td style="width: 71px;">Optional</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 262px;"><strong>Path</strong></th>
-<th style="width: 87px;"><strong>Type</strong></th>
-<th style="width: 391px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 262px;">GitHub.Issue.ID</td>
-<td style="width: 87px;">Number</td>
-<td style="width: 391px;">The ID of the updated issue.</td>
-</tr>
-<tr>
-<td style="width: 262px;">GitHub.Issue.Repository</td>
-<td style="width: 87px;">String</td>
-<td style="width: 391px;">The repository of the updated issue.</td>
-</tr>
-<tr>
-<td style="width: 262px;">GitHub.Issue.Title</td>
-<td style="width: 87px;">String</td>
-<td style="width: 391px;">The title of the updated issue.</td>
-</tr>
-<tr>
-<td style="width: 262px;">GitHub.Issue.Body</td>
-<td style="width: 87px;">Unknown</td>
-<td style="width: 391px;">The body of the updated issue.</td>
-</tr>
-<tr>
-<td style="width: 262px;">GitHub.Issue.State</td>
-<td style="width: 87px;">String</td>
-<td style="width: 391px;">The state of the updated issue.</td>
-</tr>
-<tr>
-<td style="width: 262px;">GitHub.Issue.Labels</td>
-<td style="width: 87px;">String</td>
-<td style="width: 391px;">Labels applied to the issue.</td>
-</tr>
-<tr>
-<td style="width: 262px;">GitHub.Issue.Assignees</td>
-<td style="width: 87px;">String</td>
-<td style="width: 391px;">Users assigned to the issue.</td>
-</tr>
-<tr>
-<td style="width: 262px;">GitHub.Issue.Created_at</td>
-<td style="width: 87px;">Date</td>
-<td style="width: 391px;">Date when the issue was created.</td>
-</tr>
-<tr>
-<td style="width: 262px;">GitHub.Issue.Updated_at</td>
-<td style="width: 87px;">Date</td>
-<td style="width: 391px;">Date when the issue was last updated.</td>
-</tr>
-<tr>
-<td style="width: 262px;">GitHub.Issue.Closed_at</td>
-<td style="width: 87px;">Date</td>
-<td style="width: 391px;">Date when the issue was closed.</td>
-</tr>
-<tr>
-<td style="width: 262px;">GitHub.Issue.Closed_by</td>
-<td style="width: 87px;">String</td>
-<td style="width: 391px;">User who closed the issue.</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>GitHub-update-issue ID=137 title=“new_title” body=“new info” state=open</pre>
-<h5>Context Example</h5>
-<pre>{
-    "GitHub.Issue": {
-        "Body": "\u201cnew", 
-        "Repository": "Git-Integration", 
-        "Title": "\u201cnew_title\u201d", 
-        "Created_at": "2019-06-17T15:09:50Z", 
-        "Labels": [], 
-        "Updated_at": "2019-06-17T15:14:13Z", 
-        "ID": 137, 
-        "Assignees": [], 
-        "State": "open", 
-        "Closed_at": null, 
-        "Closed_by": null
-    }
-}
-</pre>
-<h5>Human Readable Output</h5>
-<h3>Issues:</h3>
-<table style="width: 652px;" border="2">
-<thead>
-<tr>
-<th style="width: 27px;">ID</th>
-<th style="width: 105px;">Repository</th>
-<th style="width: 78px;">Title</th>
-<th style="width: 42px;">State</th>
-<th style="width: 40px;">Body</th>
-<th style="width: 173px;">Created_at</th>
-<th style="width: 165px;">Updated_at</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 27px;">137</td>
-<td style="width: 105px;">Git-Integration</td>
-<td style="width: 78px;">“new_title”</td>
-<td style="width: 42px;">open</td>
-<td style="width: 40px;">“new</td>
-<td style="width: 173px;">2019-06-17T15:09:50Z</td>
-<td style="width: 165px;">2019-06-17T15:14:13Z</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h3 id="h_71872e56-33da-4385-9d5f-89cfecaee19e">4. List all issues</h3>
-<hr>
-<p>Lists all issues that the user has access to view.</p>
-<h5>Base Command</h5>
-<p><code>GitHub-list-all-issues</code></p>
-<h5>Input</h5>
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 158px;"><strong>Argument Name</strong></th>
-<th style="width: 511px;"><strong>Description</strong></th>
-<th style="width: 71px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 158px;">state</td>
-<td style="width: 511px;">The state of the issues to return. Can be 'open', 'closed' or 'all'. Default is 'open'.</td>
-<td style="width: 71px;">Required</td>
-</tr>
-<tr>
-<td style="width: 158px;">limit</td>
-<td style="width: 511px;">The number of issues to return. Default is 50. Maximum is 200.</td>
-<td style="width: 71px;">Optional</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 260px;"><strong>Path</strong></th>
-<th style="width: 89px;"><strong>Type</strong></th>
-<th style="width: 391px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 260px;">GitHub.Issue.ID</td>
-<td style="width: 89px;">Number</td>
-<td style="width: 391px;">The ID of the issue.</td>
-</tr>
-<tr>
-<td style="width: 260px;">GitHub.Issue.Repository</td>
-<td style="width: 89px;">String</td>
-<td style="width: 391px;">The repository of the issue.</td>
-</tr>
-<tr>
-<td style="width: 260px;">GitHub.Issue.Title</td>
-<td style="width: 89px;">String</td>
-<td style="width: 391px;">The title of the issue.</td>
-</tr>
-<tr>
-<td style="width: 260px;">GitHub.Issue.Body</td>
-<td style="width: 89px;">Unknown</td>
-<td style="width: 391px;">The body of the issue.</td>
-</tr>
-<tr>
-<td style="width: 260px;">GitHub.Issue.State</td>
-<td style="width: 89px;">String</td>
-<td style="width: 391px;">The state of the issue.</td>
-</tr>
-<tr>
-<td style="width: 260px;">GitHub.Issue.Labels</td>
-<td style="width: 89px;">String</td>
-<td style="width: 391px;">Labels applied to the issue.</td>
-</tr>
-<tr>
-<td style="width: 260px;">GitHub.Issue.Assignees</td>
-<td style="width: 89px;">String</td>
-<td style="width: 391px;">Users assigned to the issue.</td>
-</tr>
-<tr>
-<td style="width: 260px;">GitHub.Issue.Created_at</td>
-<td style="width: 89px;">Date</td>
-<td style="width: 391px;">Date when the issue was created.</td>
-</tr>
-<tr>
-<td style="width: 260px;">GitHub.Issue.Updated_at</td>
-<td style="width: 89px;">Date</td>
-<td style="width: 391px;">Date when the issue was last updated.</td>
-</tr>
-<tr>
-<td style="width: 260px;">GitHub.Issue.Closed_at</td>
-<td style="width: 89px;">Date</td>
-<td style="width: 391px;">Date when the issue was closed.</td>
-</tr>
-<tr>
-<td style="width: 260px;">GitHub.Issue.Closed_by</td>
-<td style="width: 89px;">String</td>
-<td style="width: 391px;">User who closed the issue.</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>GitHub-list-all-issues state=all limit=2</pre>
-<h5>Context Example</h5>
-<pre>{
-    "GitHub.Issue": [
-        {
-            "Body": "\"new information\"", 
-            "Repository": "Git-Integration", 
-            "Title": "\"new issue\"", 
-            "Created_at": "2019-06-04T11:52:11Z", 
-            "Labels": [
-                "newbug"
-            ], 
-            "Updated_at": "2019-06-04T11:52:13Z", 
-            "ID": 109, 
-            "Assignees": [], 
-            "State": "closed", 
-            "Closed_at": "2019-06-04T11:52:13Z", 
-            "Closed_by": null
-        }, 
-        {
-            "Body": "\"new information\"", 
-            "Repository": "Git-Integration", 
-            "Title": "\"new issue\"", 
-            "Created_at": "2019-06-04T11:53:19Z", 
-            "Labels": [
-                "newbug"
-            ], 
-            "Updated_at": "2019-06-04T11:53:22Z", 
-            "ID": 110, 
-            "Assignees": [], 
-            "State": "closed", 
-            "Closed_at": "2019-06-04T11:53:22Z", 
-            "Closed_by": null
-        }
-    ]
-}
-</pre>
-<h5>Human Readable Output</h5>
-<h3>Issues:</h3>
-<table style="width: 705px;" border="2">
-<thead>
-<tr>
-<th style="width: 27px;">ID</th>
-<th style="width: 85px;">Repository</th>
-<th style="width: 49px;">Title</th>
-<th style="width: 44px;">State</th>
-<th style="width: 88px;">Body</th>
-<th style="width: 107px;">Created_at</th>
-<th style="width: 107px;">Updated_at</th>
-<th style="width: 108px;">Closed_at</th>
-<th style="width: 62px;">Labels</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 27px;">109</td>
-<td style="width: 85px;">Git-Integration</td>
-<td style="width: 49px;">"new issue"</td>
-<td style="width: 44px;">closed</td>
-<td style="width: 88px;">"new information"</td>
-<td style="width: 107px;">2019-06-04T11:52:11Z</td>
-<td style="width: 107px;">2019-06-04T11:52:13Z</td>
-<td style="width: 108px;">2019-06-04T11:52:13Z</td>
-<td style="width: 62px;">newbug</td>
-</tr>
-<tr>
-<td style="width: 27px;">110</td>
-<td style="width: 85px;">Git-Integration</td>
-<td style="width: 49px;">"new issue"</td>
-<td style="width: 44px;">closed</td>
-<td style="width: 88px;">"new information"</td>
-<td style="width: 107px;">2019-06-04T11:53:19Z</td>
-<td style="width: 107px;">2019-06-04T11:53:22Z</td>
-<td style="width: 108px;">2019-06-04T11:53:22Z</td>
-<td style="width: 62px;">newbug</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h3 id="h_ea932aae-5ed3-4b5c-a972-be5526e4bddd">5. Search issues</h3>
-<hr>
-<p>Searches for and returns issues that match a given query.</p>
-<h5>Base Command</h5>
-<p><code>GitHub-search-issues</code></p>
-<h5>Input</h5>
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 152px;"><strong>Argument Name</strong></th>
-<th style="width: 517px;"><strong>Description</strong></th>
-<th style="width: 71px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 152px;">query</td>
-<td style="width: 517px;">The query line for the search. See the<span> </span><a href="https://help.github.com/en/articles/searching-issues-and-pull-requests">GitHub documentation</a><span> </span>for more information.</td>
-<td style="width: 71px;">Required</td>
-</tr>
-<tr>
-<td style="width: 152px;">limit</td>
-<td style="width: 517px;">The number of issues to return. Default is 50. Maximum is 200.</td>
-<td style="width: 71px;">Optional</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 261px;"><strong>Path</strong></th>
-<th style="width: 88px;"><strong>Type</strong></th>
-<th style="width: 391px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 261px;">GitHub.Issue.ID</td>
-<td style="width: 88px;">Number</td>
-<td style="width: 391px;">The ID of the issue.</td>
-</tr>
-<tr>
-<td style="width: 261px;">GitHub.Issue.Repository</td>
-<td style="width: 88px;">String</td>
-<td style="width: 391px;">The repository of the issue.</td>
-</tr>
-<tr>
-<td style="width: 261px;">GitHub.Issue.Title</td>
-<td style="width: 88px;">String</td>
-<td style="width: 391px;">The title of the issue.</td>
-</tr>
-<tr>
-<td style="width: 261px;">GitHub.Issue.Body</td>
-<td style="width: 88px;">Unknown</td>
-<td style="width: 391px;">The body of the issue.</td>
-</tr>
-<tr>
-<td style="width: 261px;">GitHub.Issue.State</td>
-<td style="width: 88px;">String</td>
-<td style="width: 391px;">The state of the issue.</td>
-</tr>
-<tr>
-<td style="width: 261px;">GitHub.Issue.Labels</td>
-<td style="width: 88px;">String</td>
-<td style="width: 391px;">Labels applied to the issue.</td>
-</tr>
-<tr>
-<td style="width: 261px;">GitHub.Issue.Assignees</td>
-<td style="width: 88px;">String</td>
-<td style="width: 391px;">Users assigned to the issue.</td>
-</tr>
-<tr>
-<td style="width: 261px;">GitHub.Issue.Created_at</td>
-<td style="width: 88px;">Date</td>
-<td style="width: 391px;">Date when the issue was created.</td>
-</tr>
-<tr>
-<td style="width: 261px;">GitHub.Issue.Updated_at</td>
-<td style="width: 88px;">Date</td>
-<td style="width: 391px;">Date when the issue was last updated.</td>
-</tr>
-<tr>
-<td style="width: 261px;">GitHub.Issue.Closed_at</td>
-<td style="width: 88px;">Date</td>
-<td style="width: 391px;">Date when the issue was closed.</td>
-</tr>
-<tr>
-<td style="width: 261px;">GitHub.Issue.Closed_by</td>
-<td style="width: 88px;">String</td>
-<td style="width: 391px;">User who closed the issue.</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>GitHub-search-issues query=“label:bug state:open” limit=2</pre>
-<h5>Context Example</h5>
-<pre>{
-    "GitHub.Issue": []
-}
-</pre>
-<h5>Human Readable Output</h5>
-<h3>Issues:</h3>
-<p><strong>No entries.</strong></p>
-<h3 id="h_5dfb412d-e0e1-4344-8216-8fc769620534">6. Get the download count for releases</h3>
-<hr>
-<p>Returns the total number of downloads for all releases for the specified repository.</p>
-<h5>Base Command</h5>
-<p><code>GitHub-get-download-count</code></p>
-<h5>Input</h5>
-<p>There are no input arguments for this command.</p>
-<h5>Context Output</h5>
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 319px;"><strong>Path</strong></th>
-<th style="width: 62px;"><strong>Type</strong></th>
-<th style="width: 359px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 319px;">GitHub.Release.ID</td>
-<td style="width: 62px;">Number</td>
-<td style="width: 359px;">ID of the release.</td>
-</tr>
-<tr>
-<td style="width: 319px;">GitHub.Release.Download_count</td>
-<td style="width: 62px;">Number</td>
-<td style="width: 359px;">Download count for the release.</td>
-</tr>
-<tr>
-<td style="width: 319px;">GitHub.Release.Name</td>
-<td style="width: 62px;">String</td>
-<td style="width: 359px;">Name of the release.</td>
-</tr>
-<tr>
-<td style="width: 319px;">GitHub.Release.Body</td>
-<td style="width: 62px;">String</td>
-<td style="width: 359px;">Body of the release.</td>
-</tr>
-<tr>
-<td style="width: 319px;">GitHub.Release.Created_at</td>
-<td style="width: 62px;">Date</td>
-<td style="width: 359px;">Date when the release was created.</td>
-</tr>
-<tr>
-<td style="width: 319px;">GitHub.Release.Published_at</td>
-<td style="width: 62px;">Date</td>
-<td style="width: 359px;">Date when the release was published.</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>GitHub-get-download-count</pre>
-<h5>Context Example</h5>
-<pre>{
-    "GitHub.Release": [
-        {
-            "Body": "this is another release", 
-            "Name": "anotherone", 
-            "Created_at": "2019-05-22T15:00:51Z", 
-            "Published_at": "2019-05-22T15:06:48Z", 
-            "Download_count": 5, 
-            "ID": 17519182
-        }, 
-        {
-            "Body": "this is a test", 
-            "Name": "test", 
-            "Created_at": "2019-05-22T15:00:51Z", 
-            "Published_at": "2019-05-22T15:02:16Z", 
-            "Download_count": 1, 
-            "ID": 17519007
-        }
-    ]
-}
-</pre>
-<h5>Human Readable Output</h5>
-<h3>Releases:</h3>
-<table style="width: 709px;" border="2">
-<thead>
-<tr>
-<th style="width: 72px;">ID</th>
-<th style="width: 81px;">Name</th>
-<th style="width: 133px;">Download_count</th>
-<th style="width: 124px;">Body</th>
-<th style="width: 134px;">Created_at</th>
-<th style="width: 146px;">Published_at</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 72px;">17519182</td>
-<td style="width: 81px;">anotherone</td>
-<td style="width: 133px;">5</td>
-<td style="width: 124px;">this is another release</td>
-<td style="width: 134px;">2019-05-22T15:00:51Z</td>
-<td style="width: 146px;">2019-05-22T15:06:48Z</td>
-</tr>
-<tr>
-<td style="width: 72px;">17519007</td>
-<td style="width: 81px;">test</td>
-<td style="width: 133px;">1</td>
-<td style="width: 124px;">this is a test</td>
-<td style="width: 134px;">2019-05-22T15:00:51Z</td>
-<td style="width: 146px;">2019-05-22T15:02:16Z</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h3 id="h_a7fb6b16-7d09-419c-b043-65fc543efcc9">7. Get inactive pull requests</h3>
-<hr>
-<p>Returns inactive pull requests from GitHub.</p>
-<h5>Base Command</h5>
-<p><code>GitHub-get-stale-prs</code></p>
-<h5>Input</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 133px;"><strong>Argument Name</strong></th>
-<th style="width: 496px;"><strong>Description</strong></th>
-<th style="width: 79px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 133px;">stale_time</td>
-<td style="width: 496px;">The time of inactivity after which a pull request becomes stale.</td>
-<td style="width: 79px;">Required</td>
-</tr>
-<tr>
-<td style="width: 133px;">label</td>
-<td style="width: 496px;">The label used to identify relevant pull requests.</td>
-<td style="width: 79px;">Optional</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 241px;"><strong>Path</strong></th>
-<th style="width: 89px;"><strong>Type</strong></th>
-<th style="width: 378px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 241px;">GitHub.PR.URL</td>
-<td style="width: 89px;">String</td>
-<td style="width: 378px;">The URL of the pull request.</td>
-</tr>
-<tr>
-<td style="width: 241px;">GitHub.PR.Number</td>
-<td style="width: 89px;">Number</td>
-<td style="width: 378px;">The number of the pull request.</td>
-</tr>
-<tr>
-<td style="width: 241px;">GitHub.PR.RequestedReviewer</td>
-<td style="width: 89px;">Unknown</td>
-<td style="width: 378px;">The requested reviewer's list of pull requests.</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>  !GitHub-get-stale-prs stale_time="2 days"</pre>
-<h5>Context Example</h5>
-<pre>{
-    "GitHub.PR": [
-        {
-            "Number": 18,
-            "RequestedReviewer": [],
-            "URL": "https://github.com/example-user1/content/pull/18"
-        },
-        {
-            "Number": 16,
-            "RequestedReviewer": [],
-            "URL": "https://github.com/example-user1/content/pull/16"
-        },
-        {
-            "Number": 15,
-            "RequestedReviewer": [],
-            "URL": "https://github.com/example-user1/content/pull/15"
-        },
-        {
-            "Number": 14,
-            "RequestedReviewer": [],
-            "URL": "https://github.com/example-user1/content/pull/14"
-        }
-    ]
-}
-</pre>
-<h5>Human Readable Output</h5>
-<h3>Stale PRs</h3>
-<table style="width: 750px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th><strong>Number</strong></th>
-<th><strong>URL</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>18</td>
-<td>https://github.com/example-user1/content/pull/18</td>
-</tr>
-<tr>
-<td>16</td>
-<td>https://github.com/example-user1/content/pull/16</td>
-</tr>
-<tr>
-<td>15</td>
-<td>https://github.com/example-user1/content/pull/15</td>
-</tr>
-<tr>
-<td>14</td>
-<td>https://github.com/example-user1/content/pull/14</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h3 id="h_072342db-a9b6-4412-a82c-c4d623c89831">8.  Get a branch</h3>
-<hr>
-<p>Retrieves a branch from the repository.</p>
-<h5>Base Command</h5>
-<p><code>GitHub-get-branch</code></p>
-<h5>Input</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 196px;"><strong>Argument Name</strong></th>
-<th style="width: 396px;"><strong>Description</strong></th>
-<th style="width: 116px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 196px;">branch_name</td>
-<td style="width: 396px;">The name of the branch to retrieve.</td>
-<td style="width: 116px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 237px;"><strong>Path</strong></th>
-<th style="width: 67px;"><strong>Type</strong></th>
-<th style="width: 404px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 237px;">GitHub.Branch.Name</td>
-<td style="width: 67px;">String</td>
-<td style="width: 404px;">The name of the branch.</td>
-</tr>
-<tr>
-<td style="width: 237px;">GitHub.Branch.CommitSHA</td>
-<td style="width: 67px;">String</td>
-<td style="width: 404px;">The SHA of the commit for which the branch references.</td>
-</tr>
-<tr>
-<td style="width: 237px;">GitHub.Branch.CommitNodeID</td>
-<td style="width: 67px;">String</td>
-<td style="width: 404px;">The Node ID of the commit for which the branch references.</td>
-</tr>
-<tr>
-<td style="width: 237px;">GitHub.Branch.CommitAuthorID</td>
-<td style="width: 67px;">Number</td>
-<td style="width: 404px;">The GitHub Commit Author ID for which the branch references.</td>
-</tr>
-<tr>
-<td style="width: 237px;">GitHub.Branch.CommitAuthorLogin</td>
-<td style="width: 67px;">String</td>
-<td style="width: 404px;">The GitHub Commit Author login for which the branch references.</td>
-</tr>
-<tr>
-<td style="width: 237px;">GitHub.Branch.CommitParentSHA</td>
-<td style="width: 67px;">String</td>
-<td style="width: 404px;">The SHAs of the commit parent.</td>
-</tr>
-<tr>
-<td style="width: 237px;">GitHub.Branch.Protected</td>
-<td style="width: 67px;">Boolean</td>
-<td style="width: 404px;">Whether the branch is protected.</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>  !GitHub-get-pull-request pull_number=1
-</pre>
-<h5>Context Example</h5>
-<pre>{
-    "GitHub.PR": {
-        "ActiveLockReason": null,
-        "Additions": 4,
-        "AuthorAssociation": "FIRST_TIME_CONTRIBUTOR",
-        "Base": {
-            "Label": "example-user1:master",
-            "Ref": "master",
-            "Repo": {
-                "AllowMergeCommit": null,
-                "AllowRebaseMerge": null,
-                "AllowSquashMerge": null,
-                "Archived": false,
-                "CreatedAt": "2019-09-11T06:59:20Z",
-                "DefaultBranch": "master",
-                "Description": "This repository contains all Demisto content and from here we share content updates",
-                "Disabled": false,
-                "Fork": true,
-                "ForksCount": 0,
-                "FullName": "example-user1/content",
-                "HasDownloads": true,
-                "HasIssues": false,
-                "HasPages": false,
-                "HasProjects": true,
-                "HasWiki": false,
-                "ID": 207744685,
-                "Language": "Python",
-                "Name": "content",
-                "NodeID": "MDEwOlJlcG9zaXRvcnkyMDc3NDQ2ODU=",
-                "OpenIssuesCount": 10,
-                "Owner": {
-                    "ID": 55035720,
-                    "Login": "example-user1",
-                    "NodeID": "MDQ6VXNlcjU1MDM1NzIw",
-                    "SiteAdmin": false,
-                    "Type": "User"
-                },
-                "Private": false,
-                "PushedAt": "2019-09-18T14:05:43Z",
-                "Size": 96530,
-                "StargazersCount": 0,
-                "SucscribersCount": null,
-                "Topics": null,
-                "UpdatedAt": "2019-09-16T15:42:46Z",
-                "WatchersCount": 0
-            },
-            "SHA": "b27ea6ac9836d2e756b44eb1d66f02d3d4299362",
-            "User": {
-                "ID": 55035720,
-                "Login": "example-user1",
-                "NodeID": "MDQ6VXNlcjU1MDM1NzIw",
-                "SiteAdmin": false,
-                "Type": "User"
-            }
-        },
-        "Body": "<!-- REMINDER: THIS IS A PUBLIC REPO DO NOT POST HERE SECRETS/SENSITIVE DATA -->\r\n\r\n## Status\r\nReady/In Progress/In Hold(Reason for hold)\r\n\r\n## Related Issues\r\nfixes: link to the issue\r\n\r\n## Description\r\nA few sentences describing the overall goals of the pull request's commits.\r\n\r\n## Screenshots\r\nPaste here any images that will help the reviewer\r\n\r\n## Related PRs\r\nList related PRs against other branches:\r\n\r\nbranch | PR\r\n------ | ------\r\n\r\n\r\n## Required version of Demisto\r\nx.x.x\r\n\r\n## Does it break backward compatibility?\r\n   - Yes\r\n       - Further details:\r\n   - No\r\n\r\n## Must have\r\n- [ ] Tests\r\n- [ ] Documentation (with link to it)\r\n- [ ] Code Review\r\n\r\n## Dependencies\r\nMention the dependencies of the entity you changed as given from the precommit hooks in checkboxes, and tick after tested them.\r\n- [ ] Dependency 1\r\n- [ ] Dependency 2\r\n- [ ] Dependency 3\r\n\r\n## Additional changes\r\nDescribe additional changes done, for example adding a function to common server.\r\n",
-        "ChangedFiles": 1,
-        "ClosedAt": null,
-        "Comments": 5,
-        "Commits": 4,
-        "CreatedAt": "2019-09-11T07:06:26Z",
-        "Deletions": 0,
-        "Draft": null,
-        "Head": {
-            "Label": "example-user4:patch-1",
-            "Ref": "patch-1",
-            "Repo": {
-                "AllowMergeCommit": null,
-                "AllowRebaseMerge": null,
-                "AllowSquashMerge": null,
-                "Archived": false,
-                "CreatedAt": "2019-08-29T10:18:15Z",
-                "DefaultBranch": "master",
-                "Description": "This repository contains all Demisto content and from here we share content updates",
-                "Disabled": false,
-                "Fork": true,
-                "ForksCount": 2,
-                "FullName": "example-user4/content",
-                "HasDownloads": true,
-                "HasIssues": false,
-                "HasPages": false,
-                "HasProjects": true,
-                "HasWiki": false,
-                "ID": 205137013,
-                "Language": "Python",
-                "Name": "content",
-                "NodeID": "MDEwOlJlcG9zaXRvcnkyMDUxMzcwMTM=",
-                "OpenIssuesCount": 2,
-                "Owner": {
-                    "ID": 46294017,
-                    "Login": "example-user4",
-                    "NodeID": "MDQ6VXNlcjQ2Mjk0MDE3",
-                    "SiteAdmin": false,
-                    "Type": "User"
-                },
-                "Private": false,
-                "PushedAt": "2019-09-16T15:43:54Z",
-                "Size": 95883,
-                "StargazersCount": 0,
-                "SucscribersCount": null,
-                "Topics": null,
-                "UpdatedAt": "2019-08-29T10:18:18Z",
-                "WatchersCount": 0
-            },
-            "SHA": "c01238eea80e35bb76a5c51ac0c95eba4010d8e5",
-            "User": {
-                "ID": 46294017,
-                "Login": "example-user4",
-                "NodeID": "MDQ6VXNlcjQ2Mjk0MDE3",
-                "SiteAdmin": false,
-                "Type": "User"
-            }
-        },
-        "ID": 316303415,
-        "Label": [
+## Configure GitHub on Cortex XSOAR
+
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for GitHub.
+3. Click **Add instance** to create and configure a new integration instance.
+
+    | **Parameter** | **Required** |
+    | --- | --- |
+    | Fetch incidents | False |
+    | Select an Issue or Pull requests to Fetch | False |
+    | API Token | False |
+    | Credentials | False |
+    | Username of the repository owner, for example: github.com/repos/{_owner_}/{repo}/issues | False |
+    | The name of the requested repository | False |
+    | First fetch interval (in days) | False |
+    | Use system proxy settings | False |
+    | Trust any certificate (not secure) | False |
+    | Incident type | False |
+    | GitHub app integration ID | False |
+    | GitHub app installation ID | False |
+
+4. Click **Test** to validate the URLs, token, and connection.
+
+## Commands
+
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully
+execute a command, a DBot message appears in the War Room with the command details.
+
+### GitHub-create-issue
+
+***
+Creates an issue in GitHub.
+
+#### Base Command
+
+`GitHub-create-issue`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| title | The title of the issue. | Required | 
+| body | The contents of the issue. | Optional | 
+| labels | Labels to associate with this issue. | Optional | 
+| assignees | Logins for Users to assign to this issue. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.Issue.ID | Number | The ID of the created issue. | 
+| GitHub.Issue.Repository | String | The repository of the created issue. | 
+| GitHub.Issue.Title | String | The title of the created issue. | 
+| GitHub.Issue.Body | Unknown | The body of the created issue. | 
+| GitHub.Issue.State | String | The state of the created issue. | 
+| GitHub.Issue.Labels | String | Labels applied to the issue. | 
+| GitHub.Issue.Assignees | String | Users assigned to this issue. | 
+| GitHub.Issue.Created_at | Date | Date when the issue was created. | 
+| GitHub.Issue.Updated_at | Date | Date when the issue was last updated. | 
+| GitHub.Issue.Closed_at | Date | Date when the issue was closed. | 
+| GitHub.Issue.Closed_by | String | User who closed the issue. | 
+| GitHub.Issue.Organization | String | The repository owner. | 
+
+#### Command Example
+
+```!GitHub-create-issue title=“newbug” body=“found a new bug” lable=bug,new```
+
+#### Human Readable Output
+## Issues:
+|ID|Repository|Organization|Title|State|Body|Created_at|Updated_at|
+|---|---|---|---|---|---|---|---|
+|138|Git-Integration|demisto|“newbug”|open|“found|2019-06-17T15:14:10Z|2019-06-17T15:14:10Z|
+
+### GitHub-close-issue
+
+***
+Closes an existing issue.
+
+#### Base Command
+
+`GitHub-close-issue`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ID | The number of the issue to close. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.Issue.ID | Number | The ID of the closed issue. | 
+| GitHub.Issue.Repository | String | The repository of the closed issue. | 
+| GitHub.Issue.Title | String | The title of the closed issue | 
+| GitHub.Issue.Body | Unknown | The body of the closed issue. | 
+| GitHub.Issue.State | String | The state of the closed issue. | 
+| GitHub.Issue.Labels | String | Labels applied to the issue. | 
+| GitHub.Issue.Assignees | String | Users assigned to the issue. | 
+| GitHub.Issue.Created_at | Date | Date when the issue was created. | 
+| GitHub.Issue.Updated_at | Date | Date when the issue was last updated. | 
+| GitHub.Issue.Closed_at | Date | Date when the issue was closed. | 
+| GitHub.Issue.Closed_by | String | User who closed the issue. | 
+| GitHub.Issue.Organization | String | The repository owner. | 
+
+#### Command Example
+
+```!GitHub-close-issue ID=136```
+
+#### Human Readable Output
+## Issues:
+|ID|Repository|Organization|Title|State|Created_at|Updated_at|Closed_at|Closed_by|Labels|
+|--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |
+|136|Git-Integration|demisto|new|closed|2019-06-17T14:48:15Z|2019-06-17T15:14:12Z|2019-06-17T15:14:12Z|roysagi|bug, else, new|
+
+### GitHub-update-issue
+
+***
+Updates the parameters of a specified issue.
+
+#### Base Command
+
+`GitHub-update-issue`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ID | The number of the issue to update. | Required | 
+| title | The title of the issue. | Optional | 
+| body | The contents of the issue. | Optional | 
+| state | State of the issue. Either open or closed. | Optional | 
+| labels | Labels to apply to this issue. Pass one or more Labels to replace the set of Labels on this Issue. Send an empty array ([]) to clear all Labels from the Issue. . | Optional | 
+| assignees | Logins for Users to assign to this issue. Pass one or more user logins to replace the set of assignees on this Issue. Send an empty array ([]) to clear all assignees from the Issue. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.Issue.ID | Number | The ID of the updated issue. | 
+| GitHub.Issue.Repository | String | The repository of the updated issue. | 
+| GitHub.Issue.Title | String | The title of the updated issue. | 
+| GitHub.Issue.Body | Unknown | The body of the updated issue. | 
+| GitHub.Issue.State | String | The state of the updated issue. | 
+| GitHub.Issue.Labels | String | Labels applied to the issue. | 
+| GitHub.Issue.Assignees | String | Users assigned to the issue. | 
+| GitHub.Issue.Created_at | Date | Date when the issue was created. | 
+| GitHub.Issue.Updated_at | Date | Date when the issue was last updated. | 
+| GitHub.Issue.Closed_at | Date | Date when the issue was closed. | 
+| GitHub.Issue.Closed_by | String | User who closed the issue. | 
+| GitHub.Issue.Organization | String | The repository owner. | 
+
+#### Command Example
+
+```!GitHub-update-issue ID=137 title=“new_title” body=“new info” state=open```
+
+#### Human Readable Output
+## Issues:
+|ID|Repository|Organization|Title|State|Body|Created_at|Updated_at|
+|--- |--- |--- |--- |--- |--- |--- |--- |
+|137|Git-Integration|demisto|“new_title”|open|“new|2019-06-17T15:09:50Z|2019-06-17T15:14:13Z|
+
+
+### GitHub-list-all-issues
+
+***
+Lists all issues that the user has access to view.
+
+#### Base Command
+
+`GitHub-list-all-issues`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| state | The state of the issues to return. Can be 'open', 'closed' or 'all'. Default is 'open'. Possible values are: open, closed, all. Default is open. | Required | 
+| limit | The number of issues to return. Default is 50. Maximum is 200. Default is 50. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.Issue.ID | Number | The ID of the issue. | 
+| GitHub.Issue.Repository | String | The repository of the issue. | 
+| GitHub.Issue.Title | String | The title of the issue. | 
+| GitHub.Issue.Body | Unknown | The body of the issue. | 
+| GitHub.Issue.State | String | The state of the issue. | 
+| GitHub.Issue.Labels | String | Labels applied to the issue. | 
+| GitHub.Issue.Assignees | String | Users assigned to the issue. | 
+| GitHub.Issue.Created_at | Date | Date when the issue was created. | 
+| GitHub.Issue.Updated_at | Date | Date when the issue was last updated. | 
+| GitHub.Issue.Closed_at | Date | Date when the issue was closed. | 
+| GitHub.Issue.Closed_by | String | User who closed the issue. | 
+| GitHub.Issue.Organization | String | The repository owner. | 
+
+#### Command Example
+
+```!GitHub-list-all-issues state=all limit=2```
+
+#### Human Readable Output
+## Issues:
+|ID|Repository|Organization|Title|State|Body|Created_at|Updated_at|Closed_at|Labels|
+|--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |
+|109|Git-Integration|demisto|"new issue"|closed|"new information"|2019-06-04T11:52:11Z|2019-06-04T11:52:13Z|2019-06-04T11:52:13Z|newbug|
+|110|Git-Integration|demisto|"new issue"|closed|"new information"|2019-06-04T11:53:19Z|2019-06-04T11:53:22Z|2019-06-04T11:53:22Z|newbug|
+
+
+### GitHub-search-code
+***
+Searches for code in repositories that match a given query.
+
+
+#### Base Command
+
+`GitHub-search-code`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query | The query line for the search. For more information see the GitHub documentation at https://docs.github.com/en/github/searching-for-information-on-github/searching-code. | Required | 
+| page_number | The page number. | Optional | 
+| page_size | The size of the requested page. Maximum is 100. | Optional | 
+| limit | The number of results to return. Default is 50. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.CodeSearchResults.name | String | The file name where the code found. | 
+| GitHub.CodeSearchResults.path | String | The full file path where the code found. | 
+| GitHub.CodeSearchResults.html_url | String | The url to the file. | 
+| GitHub.CodeSearchResults.repository.full_name | String | The repository name. | 
+| GitHub.CodeSearchResults.repository.html_url | String | The url to the repository. | 
+| GitHub.CodeSearchResults.repository.description | String | Repository description. | 
+| GitHub.CodeSearchResults.repository.private | Boolean | True if repository is private. and false if public. | 
+| GitHub.CodeSearchResults.repository.id | String | The ID of the repository. | 
+| GitHub.CodeSearchResults.repository.releases_url | String | The url to the releases of the repository. | 
+| GitHub.CodeSearchResults.repository.branches_url | String | The url to the branches of the repository. | 
+| GitHub.CodeSearchResults.repository.commits_url | String | The url to the commits of the repository. | 
+
+
+#### Command Example
+```!GitHub-search-code query="create_artifacts+repo:demisto/demisto-sdk" page_size="2" limit="5"```
+
+#### Context Example
+```json
+{
+    "GitHub": {
+        "CodeSearchResults": [
             {
-                "Color": null,
-                "Default": false,
-                "Description": null,
-                "ID": 1563600288,
-                "Name": "Content",
-                "NodeID": "MDU6TGFiZWwxNTYzNjAwMjg4"
+                "html_url": "https://github.com/demisto/demisto-sdk/blob/bfd4c375f9c61d4fdd4974ecf244a4bede13b8ed/.pre-commit-config.yaml",
+                "name": ".pre-commit-config.yaml",
+                "path": ".pre-commit-config.yaml",
+                "repository": {
+                    "branches_url": "https://api.github.com/repos/demisto/demisto-sdk/branches{/branch}",
+                    "commits_url": "https://api.github.com/repos/demisto/demisto-sdk/commits{/sha}",
+                    "desrciption": "Demisto SDK - Create Demisto Content with ease and efficiency",
+                    "full_name": "demisto/demisto-sdk",
+                    "html_url": "https://github.com/demisto/demisto-sdk",
+                    "id": 219291269,
+                    "private": false,
+                    "releases_url": "https://api.github.com/repos/demisto/demisto-sdk/releases{/id}"
+                }
             },
             {
-                "Color": null,
-                "Default": false,
-                "Description": null,
-                "ID": 1549466359,
-                "Name": "Contribution",
-                "NodeID": "MDU6TGFiZWwxNTQ5NDY2MzU5"
+                "html_url": "https://github.com/demisto/demisto-sdk/blob/bfd4c375f9c61d4fdd4974ecf244a4bede13b8ed/demisto_sdk/tests/integration_tests/content_create_artifacts_integration_test.py",
+                "name": "content_create_artifacts_integration_test.py",
+                "path": "demisto_sdk/tests/integration_tests/content_create_artifacts_integration_test.py",
+                "repository": {
+                    "branches_url": "https://api.github.com/repos/demisto/demisto-sdk/branches{/branch}",
+                    "commits_url": "https://api.github.com/repos/demisto/demisto-sdk/commits{/sha}",
+                    "desrciption": "Demisto SDK - Create Demisto Content with ease and efficiency",
+                    "full_name": "demisto/demisto-sdk",
+                    "html_url": "https://github.com/demisto/demisto-sdk",
+                    "id": 219291269,
+                    "private": false,
+                    "releases_url": "https://api.github.com/repos/demisto/demisto-sdk/releases{/id}"
+                }
             },
             {
-                "Color": null,
-                "Default": true,
-                "Description": null,
-                "ID": 1549411616,
-                "Name": "bug",
-                "NodeID": "MDU6TGFiZWwxNTQ5NDExNjE2"
-            }
-        ],
-        "Locked": false,
-        "MaintainerCanModify": true,
-        "MergeCommitSHA": "5714b1359b9d7549c89c35fe9fdc266a3db3b766",
-        "Mergeable": true,
-        "MergeableState": "unstable",
-        "Merged": false,
-        "MergedAt": null,
-        "NodeID": "MDExOlB1bGxSZXF1ZXN0MzE2MzAzNDE1",
-        "Number": 1,
-        "Rebaseable": true,
-        "RequestedReviewer": [
-            {
-                "ID": 30797606,
-                "Login": "example-user3",
-                "NodeID": "MDQ6VXNlcjMwNzk3NjA2",
-                "SiteAdmin": false,
-                "Type": "User"
+                "html_url": "https://github.com/demisto/demisto-sdk/blob/bfd4c375f9c61d4fdd4974ecf244a4bede13b8ed/demisto_sdk/commands/create_artifacts/tests/content_artifacts_creator_test.py",
+                "name": "content_artifacts_creator_test.py",
+                "path": "demisto_sdk/commands/create_artifacts/tests/content_artifacts_creator_test.py",
+                "repository": {
+                    "branches_url": "https://api.github.com/repos/demisto/demisto-sdk/branches{/branch}",
+                    "commits_url": "https://api.github.com/repos/demisto/demisto-sdk/commits{/sha}",
+                    "desrciption": "Demisto SDK - Create Demisto Content with ease and efficiency",
+                    "full_name": "demisto/demisto-sdk",
+                    "html_url": "https://github.com/demisto/demisto-sdk",
+                    "id": 219291269,
+                    "private": false,
+                    "releases_url": "https://api.github.com/repos/demisto/demisto-sdk/releases{/id}"
+                }
             },
             {
-                "ID": 55035720,
-                "Login": "example-user1",
-                "NodeID": "MDQ6VXNlcjU1MDM1NzIw",
-                "SiteAdmin": false,
-                "Type": "User"
-            }
-        ],
-        "ReviewComments": 0,
-        "State": "open",
-        "UpdatedAt": "2019-09-18T14:05:51Z",
-        "User": {
-            "ID": 46294017,
-            "Login": "example-user4",
-            "NodeID": "MDQ6VXNlcjQ2Mjk0MDE3",
-            "SiteAdmin": false,
-            "Type": "User"
-        }
-    }
-}
-</pre>
-<h5>Human Readable Output</h5>
-<h3>Branch "master"</h3>
-<table style="width: 750px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th><strong>CommitAuthorID</strong></th>
-<th><strong>CommitAuthorLogin</strong></th>
-<th><strong>CommitNodeID</strong></th>
-<th><strong>CommitParentSHA</strong></th>
-<th><strong>CommitSHA</strong></th>
-<th><strong>Name</strong></th>
-<th><strong>Protected</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>55035720</td>
-<td>example-user1</td>
-<td>MDY6Q29tbWl0MjA3NzQ0Njg1OjhhNjdhMDc4MTM5NDk4ZjNlOGUxYmQyZTI2ZmZjNWEyZmVhMWI5MTg=</td>
-<td>d6bafef5a0021a6d9ab0a22e11bd0afd5801d936</td>
-<td>8a67a078139498f3e8e1bd2e26ffc5a2fea1b918</td>
-<td>master</td>
-<td>false</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h3 id="h_a892d1ce-98d4-496c-b774-c294100ff6c5">9. Create a new branch</h3>
-<hr>
-<p>Creates a new branch of the repository.</p>
-<h5>Base Command</h5>
-<p><code>GitHub-create-branch</code></p>
-<h5>Input</h5>
-<table style="width: 738px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 135px;"><strong>Argument Name</strong></th>
-<th style="width: 502px;"><strong>Description</strong></th>
-<th style="width: 71px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 135px;">branch_name</td>
-<td style="width: 502px;">The name for the new branch.</td>
-<td style="width: 71px;">Required</td>
-</tr>
-<tr>
-<td style="width: 135px;">commit_sha</td>
-<td style="width: 502px;">The SHA hash of the commit to reference. Execute the <strong>GitHub-get-branch</strong> command to find a commit SHA hash to reference.</td>
-<td style="width: 71px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>  GitHub-create-branch branch_name=new-branch-example commit_sha=8a67a078139498f3e8e1bd2e26ffc5a2fea1b918</pre>
-<h5>Human Readable Output</h5>
-<p>Branch "new-branch-example" Created Successfully</p>
-<h3 id="h_67b96cf1-2679-41ba-8a62-ce5d5bdd1715">10. Get details of a team membership</h3>
-<hr>
-<p>Retrieves details of a user's team membership.</p>
-<h5>Base Command</h5>
-<p><code>GitHub-get-team-membership</code></p>
-<h5>Input</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 78px;"><strong>Argument Name</strong></th>
-<th style="width: 559px;"><strong>Description</strong></th>
-<th style="width: 71px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 78px;">team-id</td>
-<td style="width: 559px;"><span>The ID number by which the team is identified. Execute the GitHub-list-teams command to find team IDs to reference.</span></td>
-<td style="width: 71px;">Required</td>
-</tr>
-<tr>
-<td style="width: 78px;">user_name</td>
-<td style="width: 559px;">The name of the user whose membership you want to check.</td>
-<td style="width: 71px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 283px;"><strong>Path</strong></th>
-<th style="width: 96px;"><strong>Type</strong></th>
-<th style="width: 329px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 283px;">GitHub.Team.Member.Role</td>
-<td style="width: 96px;">String</td>
-<td style="width: 329px;">The user's role in the team.</td>
-</tr>
-<tr>
-<td style="width: 283px;">GitHub.Team.Member.State</td>
-<td style="width: 96px;">String</td>
-<td style="width: 329px;">The user's state in the team.</td>
-</tr>
-<tr>
-<td style="width: 283px;">GitHub.Team.ID</td>
-<td style="width: 96px;">Number</td>
-<td style="width: 329px;">The ID number of the team.</td>
-</tr>
-<tr>
-<td style="width: 283px;">GitHub.Team.Member.Login</td>
-<td style="width: 96px;">String</td>
-<td style="width: 329px;">The login of the team member.</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>!GitHub-get-team-membership team_id=3043448 user_name=example-user2
-</pre>
-<h5>Context Example</h5>
-<pre>{
-    "GitHub.Team": {
-        "ID": 3043448,
-        "Role": "member",
-        "State": "active",
-        "Login": "example-user2"
-    }
-}
-</pre>
-<h5>Human Readable Output</h5>
-<h3>Team Membership of example-user2</h3>
-<table style="width: 750px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th><strong>ID</strong></th>
-<th><strong>Role</strong></th>
-<th><strong>State</strong></th>
-<th><strong>Login</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>3043448</td>
-<td>member</td>
-<td>active</td>
-<td>example-user2</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h3 id="h_28d8b2e8-c6bd-4121-9bce-9dd4cff83688">11. Request a review for a pull request</h3>
-<hr>
-<p>Requests reviews from GitHub users for a pull request.</p>
-<h5>Base Command</h5>
-<p><code>GitHub-request-review</code></p>
-<h5>Input</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 129px;"><strong>Argument Name</strong></th>
-<th style="width: 502px;"><strong>Description</strong></th>
-<th style="width: 77px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 129px;">pull_number</td>
-<td style="width: 502px;">The number of the pull request that you wish to request a review.</td>
-<td style="width: 77px;">Required</td>
-</tr>
-<tr>
-<td style="width: 129px;">reviewers</td>
-<td style="width: 502px;">A CSV list of GitHub users to request a review for a pull request.</td>
-<td style="width: 77px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 276px;"><strong>Path</strong></th>
-<th style="width: 71px;"><strong>Type</strong></th>
-<th style="width: 361px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 276px;">GitHub.PR.Number</td>
-<td style="width: 71px;">Number</td>
-<td style="width: 361px;">The number of the Pull Request.</td>
-</tr>
-<tr>
-<td style="width: 276px;">GitHub.PR.RequestedReviewer.Login</td>
-<td style="width: 71px;">String</td>
-<td style="width: 361px;">The login of the user requested for a review.</td>
-</tr>
-<tr>
-<td style="width: 276px;">GitHub.PR.RequestedReviewer.ID</td>
-<td style="width: 71px;">Number</td>
-<td style="width: 361px;">The ID of the user requested for a review.</td>
-</tr>
-<tr>
-<td style="width: 276px;">GitHub.PR.RequestedReviewer.NodeID</td>
-<td style="width: 71px;">String</td>
-<td style="width: 361px;">The node ID of the user requested for a review.</td>
-</tr>
-<tr>
-<td style="width: 276px;">GitHub.PR.RequestedReviewer.Type</td>
-<td style="width: 71px;">String</td>
-<td style="width: 361px;">The type of the user requested for a review.</td>
-</tr>
-<tr>
-<td style="width: 276px;">GitHub.PR.RequestedReviewer.SiteAdmin</td>
-<td style="width: 71px;">Boolean</td>
-<td style="width: 361px;">Whether the user who is requested for review is a site administrator.</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>  !GitHub-request-review pull_number=1 reviewers=example-user1
-</pre>
-<h5>Context Example</h5>
-<pre>{
-    "GitHub.PR": {
-        "Number": 1,
-        "RequestedReviewer": [
-            {
-                "ID": 30797606,
-                "Login": "example-user3",
-                "NodeID": "MDQ6VXNlcjMwNzk3NjA2",
-                "SiteAdmin": false,
-                "Type": "User"
-            },
-            {
-                "ID": 55035720,
-                "Login": "example-user1",
-                "NodeID": "MDQ6VXNlcjU1MDM1NzIw",
-                "SiteAdmin": false,
-                "Type": "User"
-            }
-        ]
-    }
-}
-</pre>
-<h5>Human Readable Output</h5>
-<h3>Requested Reviewers for #1</h3>
-<table style="width: 750px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th><strong>ID</strong></th>
-<th><strong>Login</strong></th>
-<th><strong>NodeID</strong></th>
-<th><strong>SiteAdmin</strong></th>
-<th><strong>Type</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>30797606</td>
-<td>example-user3</td>
-<td>MDQ6VXNlcjMwNzk3NjA2</td>
-<td>false</td>
-<td>User</td>
-</tr>
-<tr>
-<td>55035720</td>
-<td>example-user1</td>
-<td>MDQ6VXNlcjU1MDM1NzIw</td>
-<td>false</td>
-<td>User</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h3 id="h_9b201d60-49f3-49de-84d7-9b429c37fa69">12. Create a comment</h3>
-<p>Creates a comment in the Github issue.</p>
-<h5>Base Command</h5>
-<p><code>GitHub-create-comment</code></p>
-<h5>Input</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 131px;"><strong>Argument Name</strong></th>
-<th style="width: 497px;"><strong>Description</strong></th>
-<th style="width: 80px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 131px;">issue_number</td>
-<td style="width: 497px;">The number of the Pull Request for which to request a review.</td>
-<td style="width: 80px;">Required</td>
-</tr>
-<tr>
-<td style="width: 131px;">body</td>
-<td style="width: 497px;">The contents of the message.</td>
-<td style="width: 80px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 222px;"><strong>Path</strong></th>
-<th style="width: 73px;"><strong>Type</strong></th>
-<th style="width: 413px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 222px;">GitHub.Comment.IssueNumber</td>
-<td style="width: 73px;">Number</td>
-<td style="width: 413px;">The number of the issue in which the comment belongs.</td>
-</tr>
-<tr>
-<td style="width: 222px;">GitHub.Comment.ID</td>
-<td style="width: 73px;">Number</td>
-<td style="width: 413px;">The ID of the comment.</td>
-</tr>
-<tr>
-<td style="width: 222px;">GitHub.Comment.NodeID</td>
-<td style="width: 73px;">String</td>
-<td style="width: 413px;">The Node ID of the comment.</td>
-</tr>
-<tr>
-<td style="width: 222px;">GitHub.Comment.Body</td>
-<td style="width: 73px;">String</td>
-<td style="width: 413px;">The body content of the comment.</td>
-</tr>
-<tr>
-<td style="width: 222px;">GitHub.Comment.User.Login</td>
-<td style="width: 73px;">String</td>
-<td style="width: 413px;">The login of the user who commented.</td>
-</tr>
-<tr>
-<td style="width: 222px;">GitHub.Comment.User.ID</td>
-<td style="width: 73px;">Number</td>
-<td style="width: 413px;">The ID of the user who commented.</td>
-</tr>
-<tr>
-<td style="width: 222px;">GitHub.Comment.User.NodeID</td>
-<td style="width: 73px;">String</td>
-<td style="width: 413px;">The Node ID of the user who commented.</td>
-</tr>
-<tr>
-<td style="width: 222px;">GitHub.Comment.User.Type</td>
-<td style="width: 73px;">String</td>
-<td style="width: 413px;">The type of the user who commented.</td>
-</tr>
-<tr>
-<td style="width: 222px;">GitHub.Comment.User.SiteAdmin</td>
-<td style="width: 73px;">Boolean</td>
-<td style="width: 413px;">Whether the user who commented is a site administrator.</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>  !GitHub-create-comment issue_number=1 body="Look this comment was made using the GitHub integration"
-</pre>
-<h5>Context Example</h5>
-<pre>{
-    "GitHub.Comment": {
-        "Body": "Look this comment was made using the GitHub integration",
-        "ID": 532700206,
-        "IssueNumber": 1,
-        "NodeID": "MDEyOklzc3VlQ29tbWVudDUzMjcwMDIwNg==",
-        "User": {
-            "ID": 55035720,
-            "Login": "example-user1",
-            "NodeID": "MDQ6VXNlcjU1MDM1NzIw",
-            "SiteAdmin": false,
-            "Type": "User"
-        }
-    }
-}
-</pre>
-<h5>Human Readable Output</h5>
-<h3>Created Comment</h3>
-<table style="width: 750px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th><strong>Body</strong></th>
-<th><strong>ID</strong></th>
-<th><strong>IssueNumber</strong></th>
-<th><strong>NodeID</strong></th>
-<th><strong>User</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Look this comment was made using the GitHub integration</td>
-<td>532700206</td>
-<td>1</td>
-<td>MDEyOklzc3VlQ29tbWVudDUzMjcwMDIwNg==</td>
-<td>Login: example-user1<br> ID: 55035720<br> NodeID: MDQ6VXNlcjU1MDM1NzIw<br> Type: User<br> SiteAdmin: false</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h3 id="h_2d39779c-c70f-42bc-96ef-60a4643960dc">13. List comments in an issue</h3>
-<hr>
-<p>Lists all comments in a Github Issue.</p>
-<h5>Base Command</h5>
-<p><code>GitHub-list-issue-comments</code></p>
-<h5>Input</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 158px;"><strong>Argument Name</strong></th>
-<th style="width: 458px;"><strong>Description</strong></th>
-<th style="width: 92px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 158px;">issue_number</td>
-<td style="width: 458px;">The number of the issue in which to list comments.</td>
-<td style="width: 92px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 229px;"><strong>Path</strong></th>
-<th style="width: 66px;"><strong>Type</strong></th>
-<th style="width: 413px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 229px;">GitHub.Comment.IssueNumber</td>
-<td style="width: 66px;">Number</td>
-<td style="width: 413px;">The number of the issue in which the comment belongs.</td>
-</tr>
-<tr>
-<td style="width: 229px;">GitHub.Comment.ID</td>
-<td style="width: 66px;">Number</td>
-<td style="width: 413px;">The ID of the comment.</td>
-</tr>
-<tr>
-<td style="width: 229px;">GitHub.Comment.NodeID</td>
-<td style="width: 66px;">String</td>
-<td style="width: 413px;">The Node ID of the comment.</td>
-</tr>
-<tr>
-<td style="width: 229px;">GitHub.Comment.Body</td>
-<td style="width: 66px;">String</td>
-<td style="width: 413px;">The body content of the comment.</td>
-</tr>
-<tr>
-<td style="width: 229px;">GitHub.Comment.User.Login</td>
-<td style="width: 66px;">String</td>
-<td style="width: 413px;">The login of the user who commented.</td>
-</tr>
-<tr>
-<td style="width: 229px;">GitHub.Comment.User.ID</td>
-<td style="width: 66px;">Number</td>
-<td style="width: 413px;">The ID of the user who commented.</td>
-</tr>
-<tr>
-<td style="width: 229px;">GitHub.Comment.User.NodeID</td>
-<td style="width: 66px;">String</td>
-<td style="width: 413px;">The Node ID of the user who commented.</td>
-</tr>
-<tr>
-<td style="width: 229px;">GitHub.Comment.User.Type</td>
-<td style="width: 66px;">String</td>
-<td style="width: 413px;">The type of the user who commented.</td>
-</tr>
-<tr>
-<td style="width: 229px;">GitHub.Comment.User.SiteAdmin</td>
-<td style="width: 66px;">Boolean</td>
-<td style="width: 413px;">Whether the user who commented is a site administrator.</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<p><code>!GitHub-list-issue-comments issue_number=1</code></p>
-<h5>Context Example</h5>
-<pre>{
-    "GitHub.Comment": [
-        {
-            "Body": "Thank you for your contribution. Your generosity and caring are unrivaled! Rest assured - our content wizard @example-user3 will very shortly look over your proposed changes. ",
-            "ID": 530276333,
-            "IssueNumber": 1,
-            "NodeID": "MDEyOklzc3VlQ29tbWVudDUzMDI3NjMzMw==",
-            "User": {
-                "ID": 55035720,
-                "Login": "example-user1",
-                "NodeID": "MDQ6VXNlcjU1MDM1NzIw",
-                "SiteAdmin": false,
-                "Type": "User"
-            }
-        },
-        {
-            "Body": "what about my pr eh",
-            "ID": 530313678,
-            "IssueNumber": 1,
-            "NodeID": "MDEyOklzc3VlQ29tbWVudDUzMDMxMzY3OA==",
-            "User": {
-                "ID": 46294017,
-                "Login": "example-user4",
-                "NodeID": "MDQ6VXNlcjQ2Mjk0MDE3",
-                "SiteAdmin": false,
-                "Type": "User"
-            }
-        },
-        {
-            "Body": "@example-user4 can we close?",
-            "ID": 530774162,
-            "IssueNumber": 1,
-            "NodeID": "MDEyOklzc3VlQ29tbWVudDUzMDc3NDE2Mg==",
-            "User": {
-                "ID": 30797606,
-                "Login": "example-user3",
-                "NodeID": "MDQ6VXNlcjMwNzk3NjA2",
-                "SiteAdmin": false,
-                "Type": "User"
-            }
-        },
-        {
-            "Body": "Look this comment was made using the GitHub integration",
-            "ID": 532700206,
-            "IssueNumber": 1,
-            "NodeID": "MDEyOklzc3VlQ29tbWVudDUzMjcwMDIwNg==",
-            "User": {
-                "ID": 55035720,
-                "Login": "example-user1",
-                "NodeID": "MDQ6VXNlcjU1MDM1NzIw",
-                "SiteAdmin": false,
-                "Type": "User"
-            }
-        }
-    ]
-}
-</pre>
-<h5>Human Readable Output</h5>
-<h3>Comments for Issue #1</h3>
-<table style="width: 750px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th><strong>Body</strong></th>
-<th><strong>ID</strong></th>
-<th><strong>IssueNumber</strong></th>
-<th><strong>NodeID</strong></th>
-<th><strong>User</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Thank you for your contribution. Your generosity and caring are unrivaled! Rest assured - our content wizard @example-user3 will very shortly look over your proposed changes.</td>
-<td>530276333</td>
-<td>1</td>
-<td>MDEyOklzc3VlQ29tbWVudDUzMDI3NjMzMw==</td>
-<td>Login: example-user1<br> ID: 55035720<br> NodeID: MDQ6VXNlcjU1MDM1NzIw<br> Type: User<br> SiteAdmin: false</td>
-</tr>
-<tr>
-<td>what about my pr eh</td>
-<td>530313678</td>
-<td>1</td>
-<td>MDEyOklzc3VlQ29tbWVudDUzMDMxMzY3OA==</td>
-<td>Login: example-user4<br> ID: 46294017<br> NodeID: MDQ6VXNlcjQ2Mjk0MDE3<br> Type: User<br> SiteAdmin: false</td>
-</tr>
-<tr>
-<td>@example-user4 can we close?</td>
-<td>530774162</td>
-<td>1</td>
-<td>MDEyOklzc3VlQ29tbWVudDUzMDc3NDE2Mg==</td>
-<td>Login: example-user3<br> ID: 30797606<br> NodeID: MDQ6VXNlcjMwNzk3NjA2<br> Type: User<br> SiteAdmin: false</td>
-</tr>
-<tr>
-<td>Look this comment was made using the GitHub integration</td>
-<td>532700206</td>
-<td>1</td>
-<td>MDEyOklzc3VlQ29tbWVudDUzMjcwMDIwNg==</td>
-<td>Login: example-user1<br> ID: 55035720<br> NodeID: MDQ6VXNlcjU1MDM1NzIw<br> Type: User<br> SiteAdmin: false</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h3 id="h_ebfd8f85-0967-4272-be2b-15a29e421ab8">14. List pull request files</h3>
-<hr>
-<p>List all pull request files in Github.</p>
-<h5>Base Command</h5>
-<p><code>GitHub-list-pr-files</code></p>
-<h5>Input</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 207px;"><strong>Argument Name</strong></th>
-<th style="width: 378px;"><strong>Description</strong></th>
-<th style="width: 123px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 207px;">pull_number</td>
-<td style="width: 378px;">The number of the pull request.</td>
-<td style="width: 123px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 164px;"><strong>Path</strong></th>
-<th style="width: 71px;"><strong>Type</strong></th>
-<th style="width: 473px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 164px;">GitHub.PR.Number</td>
-<td style="width: 71px;">Number</td>
-<td style="width: 473px;">The number of the pull request.</td>
-</tr>
-<tr>
-<td style="width: 164px;">GitHub.PR.File.SHA</td>
-<td style="width: 71px;">String</td>
-<td style="width: 473px;">The SHA hash for the last commit included in the associated file.</td>
-</tr>
-<tr>
-<td style="width: 164px;">GitHub.PR.File.Name</td>
-<td style="width: 71px;">String</td>
-<td style="width: 473px;">The name of the file.</td>
-</tr>
-<tr>
-<td style="width: 164px;">GitHub.PR.File.Status</td>
-<td style="width: 71px;">String</td>
-<td style="width: 473px;">The status of the file.</td>
-</tr>
-<tr>
-<td style="width: 164px;">GitHub.PR.File.Additions</td>
-<td style="width: 71px;">Number</td>
-<td style="width: 473px;">The number of additions to the file.</td>
-</tr>
-<tr>
-<td style="width: 164px;">GitHub.PR.File.Deletions</td>
-<td style="width: 71px;">Number</td>
-<td style="width: 473px;">The number of deletions in the file.</td>
-</tr>
-<tr>
-<td style="width: 164px;">GitHub.PR.File.Changes</td>
-<td style="width: 71px;">Number</td>
-<td style="width: 473px;">The number of changes in the file.</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5> </h5>
-<h5>Command Example</h5>
-<pre>  !GitHub-list-pr-files pull_number=1
-</pre>
-<h5>Context Example</h5>
-<pre>{
-    "GitHub.PR": {
-        "File": [
-            {
-                "Additions": 4,
-                "Changes": 4,
-                "Deletions": 0,
-                "Name": "TEST.md",
-                "SHA": "4e7fd23b44ef46ebd04a9812dda55cecb487fcbe",
-                "Status": "added"
-            }
-        ],
-        "Number": "1"
-    }
-}
-</pre>
-<h5>Human Readable Output</h5>
-<h3>Pull Request Files for #1</h3>
-<table style="width: 750px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th><strong>Additions</strong></th>
-<th><strong>Changes</strong></th>
-<th><strong>Deletions</strong></th>
-<th><strong>Name</strong></th>
-<th><strong>SHA</strong></th>
-<th><strong>Status</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>4</td>
-<td>4</td>
-<td>0</td>
-<td>TEST.md</td>
-<td>4e7fd23b44ef46ebd04a9812dda55cecb487fcbe</td>
-<td>added</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h3 id="h_a1e18596-23a3-414a-8326-5cef5b6986c1">15. List reviews on a pull request</h3>
-<hr>
-<p>List review comments on a pull request.</p>
-<h5>Base Command</h5>
-<p><code>GitHub-list-pr-reviews</code></p>
-<h5>Input</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 207px;"><strong>Argument Name</strong></th>
-<th style="width: 378px;"><strong>Description</strong></th>
-<th style="width: 123px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 207px;">pull_number</td>
-<td style="width: 378px;">The number of the pull request.</td>
-<td style="width: 123px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 255px;"><strong>Path</strong></th>
-<th style="width: 87px;"><strong>Type</strong></th>
-<th style="width: 366px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 255px;">GitHub.PR.Number</td>
-<td style="width: 87px;">Number</td>
-<td style="width: 366px;">The number of the pull request.</td>
-</tr>
-<tr>
-<td style="width: 255px;">GitHub.PR.Review.ID</td>
-<td style="width: 87px;">Number</td>
-<td style="width: 366px;">The ID of the review.</td>
-</tr>
-<tr>
-<td style="width: 255px;">GitHub.PR.Review.NodeID</td>
-<td style="width: 87px;">String</td>
-<td style="width: 366px;">The Node ID of the review.</td>
-</tr>
-<tr>
-<td style="width: 255px;">GitHub.PR.Review.Body</td>
-<td style="width: 87px;">String</td>
-<td style="width: 366px;">The content of the review.</td>
-</tr>
-<tr>
-<td style="width: 255px;">GitHub.PR.Review.CommitID</td>
-<td style="width: 87px;">String</td>
-<td style="width: 366px;">The ID of the commit review.</td>
-</tr>
-<tr>
-<td style="width: 255px;">GitHub.PR.Review.State</td>
-<td style="width: 87px;">String</td>
-<td style="width: 366px;">The state of the review.</td>
-</tr>
-<tr>
-<td style="width: 255px;">GitHub.PR.Review.User.Login</td>
-<td style="width: 87px;">String</td>
-<td style="width: 366px;">The user login of the reviewer.</td>
-</tr>
-<tr>
-<td style="width: 255px;">GitHub.PR.Review.User.ID</td>
-<td style="width: 87px;">Number</td>
-<td style="width: 366px;">The user ID of the reviewer.</td>
-</tr>
-<tr>
-<td style="width: 255px;">GitHub.PR.Review.User.NodeID</td>
-<td style="width: 87px;">String</td>
-<td style="width: 366px;">The Node ID of the reviewer.</td>
-</tr>
-<tr>
-<td style="width: 255px;">GitHub.PR.Review.User.Type</td>
-<td style="width: 87px;">String</td>
-<td style="width: 366px;">The user type of the reviewer.</td>
-</tr>
-<tr>
-<td style="width: 255px;">GitHub.PR.Review.User.SiteAdmin</td>
-<td style="width: 87px;">Boolean</td>
-<td style="width: 366px;">Whether the reviewer is a site administrator.</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>  !GitHub-list-pr-reviews pull_number=1
-</pre>
-<h5>Context Example</h5>
-<pre>{
-    "GitHub.PR": {
-        "Number": "1",
-        "Review": [
-            {
-                "Body": "review comment",
-                "CommitID": "b6cf0431e2aea2b345ea1d66d18aa72be63936a9",
-                "ID": 287327154,
-                "NodeID": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3Mjg3MzI3MTU0",
-                "State": "COMMENTED",
-                "User": {
-                    "ID": 31018228,
-                    "Login": "example-user2",
-                    "NodeID": "MDQ6VXNlcjMxMDE4MjI4",
-                    "SiteAdmin": false,
-                    "Type": "User"
+                "html_url": "https://github.com/demisto/demisto-sdk/blob/bfd4c375f9c61d4fdd4974ecf244a4bede13b8ed/demisto_sdk/commands/common/content/tests/objects/pack_objects/pack_metadata/pack_metadata_test.py",
+                "name": "pack_metadata_test.py",
+                "path": "demisto_sdk/commands/common/content/tests/objects/pack_objects/pack_metadata/pack_metadata_test.py",
+                "repository": {
+                    "branches_url": "https://api.github.com/repos/demisto/demisto-sdk/branches{/branch}",
+                    "commits_url": "https://api.github.com/repos/demisto/demisto-sdk/commits{/sha}",
+                    "desrciption": "Demisto SDK - Create Demisto Content with ease and efficiency",
+                    "full_name": "demisto/demisto-sdk",
+                    "html_url": "https://github.com/demisto/demisto-sdk",
+                    "id": 219291269,
+                    "private": false,
+                    "releases_url": "https://api.github.com/repos/demisto/demisto-sdk/releases{/id}"
                 }
             }
         ]
     }
 }
-</pre>
-<h5>Human Readable Output</h5>
-<h3>Pull Request Reviews for #1</h3>
-<table style="width: 750px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th><strong>Body</strong></th>
-<th><strong>CommitID</strong></th>
-<th><strong>ID</strong></th>
-<th><strong>NodeID</strong></th>
-<th><strong>State</strong></th>
-<th><strong>User</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>review comment</td>
-<td>b6cf0431e2aea2b345ea1d66d18aa72be63936a9</td>
-<td>287327154</td>
-<td>MDE3OlB1bGxSZXF1ZXN0UmV2aWV3Mjg3MzI3MTU0</td>
-<td>COMMENTED</td>
-<td>Login: example-user2<br> ID: 31018228<br> NodeID: MDQ6VXNlcjMxMDE4MjI4<br> Type: User<br> SiteAdmin: false</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h3 id="h_299bf662-bcc0-4738-960e-a5208c0958bb">16. Get the contents of a commit</h3>
-<hr>
-<p>Retrieves the contents of a commit reference.</p>
-<h5>Base Command</h5>
-<p><code>GitHub-get-commit</code></p>
-<h5>Input</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 132px;"><strong>Argument Name</strong></th>
-<th style="width: 496px;"><strong>Description</strong></th>
-<th style="width: 80px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 132px;">commit_sha</td>
-<td style="width: 496px;">The SHA hash of the commit. Execute the 'GitHub-get-branch'<br> command to find a commit SHA hash to reference.</td>
-<td style="width: 80px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 269px;"><strong>Path</strong></th>
-<th style="width: 81px;"><strong>Type</strong></th>
-<th style="width: 358px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 269px;">GitHub.Commit.SHA</td>
-<td style="width: 81px;">String</td>
-<td style="width: 358px;">The SHA hash of the commit.</td>
-</tr>
-<tr>
-<td style="width: 269px;">GitHub.Commit.Author.Date</td>
-<td style="width: 81px;">String</td>
-<td style="width: 358px;">The date of the commit author.</td>
-</tr>
-<tr>
-<td style="width: 269px;">GitHub.Commit.Author.Name</td>
-<td style="width: 81px;">String</td>
-<td style="width: 358px;">The name of the author.</td>
-</tr>
-<tr>
-<td style="width: 269px;">GitHub.Commit.Author.Email</td>
-<td style="width: 81px;">String</td>
-<td style="width: 358px;">The email of the author.</td>
-</tr>
-<tr>
-<td style="width: 269px;">GitHub.Commit.Committer.Date</td>
-<td style="width: 81px;">String</td>
-<td style="width: 358px;">The date the commiter committed.</td>
-</tr>
-<tr>
-<td style="width: 269px;">GitHub.Commit.Committer.Name</td>
-<td style="width: 81px;">String</td>
-<td style="width: 358px;">The name of the committer.</td>
-</tr>
-<tr>
-<td style="width: 269px;">GitHub.Commit.Committer.Email</td>
-<td style="width: 81px;">String</td>
-<td style="width: 358px;">The email of the committer.</td>
-</tr>
-<tr>
-<td style="width: 269px;">GitHub.Commit.Message</td>
-<td style="width: 81px;">String</td>
-<td style="width: 358px;">The message associated with the commit.</td>
-</tr>
-<tr>
-<td style="width: 269px;">GitHub.Commit.Parent</td>
-<td style="width: 81px;">Unknown</td>
-<td style="width: 358px;">List of the parent SHA hashes.</td>
-</tr>
-<tr>
-<td style="width: 269px;">GitHub.Commit.TreeSHA</td>
-<td style="width: 81px;">String</td>
-<td style="width: 358px;">The SHA hash of the commit's tree.</td>
-</tr>
-<tr>
-<td style="width: 269px;">GitHub.Commit.Verification.Verified</td>
-<td style="width: 81px;">Boolean</td>
-<td style="width: 358px;">Whether the commit was verified.</td>
-</tr>
-<tr>
-<td style="width: 269px;">GitHub.Commit.Verification.Reason</td>
-<td style="width: 81px;">String</td>
-<td style="width: 358px;">The reason the commit was or was not verified.</td>
-</tr>
-<tr>
-<td style="width: 269px;">GitHub.Commit.Verification.Signature</td>
-<td style="width: 81px;">Unknown</td>
-<td style="width: 358px;">The verification signature of the commit.</td>
-</tr>
-<tr>
-<td style="width: 269px;">GitHub.Commit.Verification.Payload</td>
-<td style="width: 81px;">Unknown</td>
-<td style="width: 358px;">The verification payload of the commit.</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>  !GitHub-get-commit commit_sha=8a67a078139498f3e8e1bd2e26ffc5a2fea1b918
-</pre>
-<h5>Context Example</h5>
-<pre>{
-    "GitHub.Commit": {
-        "Author": {
-            "Date": "2019-09-16T15:42:43Z",
-            "Email": "55035720example.user1@users.noreply.github.com",
-            "Name": "example-user1"
-        },
-        "Committer": {
-            "Date": "2019-09-16T15:42:43Z",
-            "Email": "noreply@github.com",
-            "Name": "GitHub"
-        },
-        "Message": "Update config.yml",
-        "Parent": [
-            {
-                "SHA": "d6bafef5a0021a6d9ab0a22e11bd0afd5801d936"
-            }
-        ],
-        "SHA": "8a67a078139498f3e8e1bd2e26ffc5a2fea1b918",
-        "TreeSHA": "42fdb6c89538099a141e94fabe4bbc58098f4d90",
-        "Verification": {
-            "Payload": "tree 42fdb6c89538099a141e94fabe4bbc58098f4d90\nparent d6bafef5a0021a6d9ab0a22e11bd0afd5801d936\nauthor example-user1 &lt;55035720example.user1@users.noreply.github.com&gt; 1568648563 +0300\ncommitter GitHub &lt;noreply@github.com&gt; 1568648563 +0300\n\nUpdate config.yml",
-            "Reason": "valid",
-            "Signature": "-----BEGIN PGP SIGNATURE-----\n\nwsBcBAABCAAQBQJ****************************sIKrPT2jUSWyzfu5wnu\noWz7+2KMdaglV****************************M08HXTm\na9eO/ahlodARkgH/bWjulomeO+jDEgbZenlPUrBnX136QzPPqgl4uvxfquAOj1/a\na89YtPAFh2X1+1q7pl5dVtZfYpo6mYJoY9dwVpDRbLoVHJRa1wnqEv4kxRHrrRL9\nmGWSMHqK8I6j9zXi4niod8pQpl0k4O/2SlNh81RyeILEYb587Zs1XGuIYQEDrcAf\nu+FURxEHSuT4yaZ+oBwhhcIsmsWQMGkfABbwo1Fi2BMtEgZpzd/TScNg1KeSrVI=\n=dWrz\n-----END PGP SIGNATURE-----\n",
-            "Verified": true
-        }
-    }
-}
-</pre>
-<h5>Human Readable Output</h5>
-<h3>Commit *8a67a07813*</h3>
-<table style="width: 750px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th><strong>Author</strong></th>
-<th><strong>Committer</strong></th>
-<th><strong>Message</strong></th>
-<th><strong>Parent</strong></th>
-<th><strong>SHA</strong></th>
-<th><strong>TreeSHA</strong></th>
-<th><strong>Verification</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Date: 2019-09-16T15:42:43Z<br> Name: example-user1<br> Email: 55035720example.user1@users.noreply.github.com</td>
-<td>Date: 2019-09-16T15:42:43Z<br> Name: GitHub<br> Email: noreply@github.com</td>
-<td>Update config.yml</td>
-<td>{'SHA': 'd6bafef5a0021a6d9ab0a22e11bd0afd5801d936'}</td>
-<td>8a67a078139498f3e8e1bd2e26ffc5a2fea1b918</td>
-<td>42fdb6c89538099a141e94fabe4bbc58098f4d90</td>
-<td>Verified: true<br> Reason: valid<br> Signature: -----BEGIN PGP SIGNATURE-----<br> <br> wsBcBAABCAAQBQJ****************************sIKrPT2jUSWyzfu5wnu<br> oWz7+2KMdaglV****************************M08HXTm<br> a9eO/ahlodARkgH/bWjulomeO+jDEgbZenlPUrBnX136QzPPqgl4uvxfquAOj1/a<br> a89YtPAFh2X1+1q7pl5dVtZfYpo6mYJoY9dwVpDRbLoVHJRa1wnqEv4kxRHrrRL9<br> mGWSMHqK8I6j9zXi4niod8pQpl0k4O/2SlNh81RyeILEYb587Zs1XGuIYQEDrcAf<br> u+FURxEHSuT4yaZ+oBwhhcIsmsWQMGkfABbwo1Fi2BMtEgZpzd/TScNg1KeSrVI=<br> =dWrz<br> -----END PGP SIGNATURE-----<br> <br> Payload: tree 42fdb6c89538099a141e94fabe4bbc58098f4d90<br> parent d6bafef5a0021a6d9ab0a22e11bd0afd5801d936<br> author example-user1 &lt;55035720example.user1@users.noreply.github.com&gt; 1568648563 +0300<br> committer GitHub &lt;noreply@github.com&gt; 1568648563 +0300<br> <br> Update config.yml</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h3 id="h_20064505-4e55-4478-9e30-8a482fa3b26c">17. Add a label to an issue</h3>
-<hr>
-<p>Add labels to a Github Issue.</p>
-<h5>Base Command</h5>
-<p><code>GitHub-add-label</code></p>
-<h5>Input</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 158px;"><strong>Argument Name</strong></th>
-<th style="width: 453px;"><strong>Description</strong></th>
-<th style="width: 97px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 158px;">issue_number</td>
-<td style="width: 453px;">The number of the issue in which to add labels.</td>
-<td style="width: 97px;">Required</td>
-</tr>
-<tr>
-<td style="width: 158px;">labels</td>
-<td style="width: 453px;">A CSV list of labels to add to an issue.</td>
-<td style="width: 97px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>  !GitHub-add-label issue_number=1 labels=Content
-</pre>
-<h5>Human Readable Output</h5>
-<p>Label "Content" Successfully Added to Issue #1</p>
-<h3 id="h_2dff022b-e0a0-4142-8356-22e7c0edf943">18. Get a pull request</h3>
-<hr>
-<p>Retrieves a pull request from the Github repository.</p>
-<h5>Base Command</h5>
-<p><code>GitHub-get-pull-request</code></p>
-<h5>Input</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 171px;"><strong>Argument Name</strong></th>
-<th style="width: 433px;"><strong>Description</strong></th>
-<th style="width: 104px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 171px;">pull_number</td>
-<td style="width: 433px;">The number of the pull request to retrieve.</td>
-<td style="width: 104px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 746px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 270px;"><strong>Path</strong></th>
-<th style="width: 89px;"><strong>Type</strong></th>
-<th style="width: 349px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 270px;">GitHub.PR.ID</td>
-<td style="width: 89px;">Number</td>
-<td style="width: 349px;">The ID number of the pull request.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.NodeID</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The Node ID of the pull request.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Number</td>
-<td style="width: 89px;">Number</td>
-<td style="width: 349px;">The issue number of the pull request.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.State</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The state of the pull request.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Locked</td>
-<td style="width: 89px;">Boolean</td>
-<td style="width: 349px;">Whether the pull request is locked.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Title</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The title of the pull request.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.User.Login</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The login of the user who opened the pull request.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.User.ID</td>
-<td style="width: 89px;">Number</td>
-<td style="width: 349px;">The ID of the user who opened the pull request.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.User.NodeID</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The Node ID of the user who opened the pull request.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.User.Type</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The type of the user who opened the pull request.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.User.SiteAdmin</td>
-<td style="width: 89px;">Boolean</td>
-<td style="width: 349px;">Whether the user who opened the pull request is a site administrator.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Body</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The body content of the pull request.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Label.ID</td>
-<td style="width: 89px;">Number</td>
-<td style="width: 349px;">The ID of the label.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Label.NodeID</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The Node ID of the label.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Label.Name</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The name of the label.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Label.Description</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The description of the label.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Label.Color</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The hex color value of the label.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Label.Default</td>
-<td style="width: 89px;">Boolean</td>
-<td style="width: 349px;">Whether the label is a default.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Milestone.ID</td>
-<td style="width: 89px;">Number</td>
-<td style="width: 349px;">The ID of the milestone.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Milestone.NodeID</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The Node ID of the milestone.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Milestone.Number</td>
-<td style="width: 89px;">Number</td>
-<td style="width: 349px;">The number of the milestone.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Milestone.State</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The state of the milestone.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Milestone.Title</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The title of the milestone.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Milestone.Description</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The description of the milestone.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Milestone.Creator.Login</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The login of the milestone creator.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Milestone.Creator.ID</td>
-<td style="width: 89px;">Number</td>
-<td style="width: 349px;">The ID the milestone creator.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Milestone.Creator.NodeID</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The Node ID of the milestone creator.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Milestone.Creator.Type</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The type of the milestone creator.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Milestone.Creator.SiteAdmin</td>
-<td style="width: 89px;">Boolean</td>
-<td style="width: 349px;">Whether the milestone creator is a site administrator.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Milestone.OpenIssues</td>
-<td style="width: 89px;">Number</td>
-<td style="width: 349px;">The number of open issues with this milestone.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Milestone.ClosedIssues</td>
-<td style="width: 89px;">Number</td>
-<td style="width: 349px;">The number of closed issues with this milestone.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Milestone.CreatedAt</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The date the milestone was created.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Milestone.UpdatedAt</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The date the milestone was updated.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Milestone.ClosedAt</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The date the milestone was closed.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Milestone.DueOn</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The due date for the milestone.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.ActiveLockReason</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The reason the pull request is locked.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.CreatedAt</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The date the pull request was created.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.UpdatedAt</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The date the pull request was updated.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.ClosedAt</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The date the pull request was closed.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.MergedAt</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The date the pull request was merged.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.MergeCommitSHA</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The SHA hash of the pull request's merge commit.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Assignee.Login</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The login of the user assigned to the pull request.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Assignee.ID</td>
-<td style="width: 89px;">Number</td>
-<td style="width: 349px;">The ID of the user assigned to the pull request.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Assignee.NodeID</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The Node ID of the user assigned to the pull request.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Assignee.Type</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The type of the user assigned to the pull request.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Assignee.SiteAdmin</td>
-<td style="width: 89px;">Boolean</td>
-<td style="width: 349px;">Whether the user assigned to the pull request is a site administrator.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.RequestedReviewer.Login</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The login of the user requested for a review.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.RequestedReviewer.ID</td>
-<td style="width: 89px;">Number</td>
-<td style="width: 349px;">The ID of the user requested for a review.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.RequestedReviewer.NodeID</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The node ID of the user requested for a review.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.RequestedReviewer.Type</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The type of the user requested for a review.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.RequestedReviewer.SiteAdmin</td>
-<td style="width: 89px;">Boolean</td>
-<td style="width: 349px;">Whether the user requested for review is a site administrator.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.RequestedTeam.ID</td>
-<td style="width: 89px;">Number</td>
-<td style="width: 349px;">The ID of the team requested for a review.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.RequestedTeam.NodeID</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The node ID of the team requested for a review.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.RequestedTeam.Name</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The name of the team requested for a review.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.RequestedTeam.Slug</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The slug of the team requested for a review.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.RequestedTeam.Description</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The description of the team requested for a review.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.RequestedTeam.Privacy</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The privacy setting of the team requested for a review.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.RequestedTeam.Permission</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The permissions of the team requested for a review.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.RequestedTeam.Parent</td>
-<td style="width: 89px;">Unknown</td>
-<td style="width: 349px;">The parent of the team requested for a review.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Head.Label</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The label of the branch for which the HEAD points.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Head.Ref</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The reference of the branch for which the  HEAD points.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Head.SHA</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The SHA hash of the commit for which the  HEAD points.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Head.User.Login</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The committer login of the HEAD commit of the checked out branch.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Head.User.ID</td>
-<td style="width: 89px;">Number</td>
-<td style="width: 349px;">The committer ID of the HEAD commit of the checked out branch.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Head.User.NodeID</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The committer Node ID of the HEAD commit of the checked out branch.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Head.User.Type</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The type of the committer of the HEAD commit of the checked out branch.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Head.User.SiteAdmin</td>
-<td style="width: 89px;">Boolean</td>
-<td style="width: 349px;">Whether the committer of the HEAD commit of the checked out branch is a site administrator.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Head.Repo.ID</td>
-<td style="width: 89px;">Number</td>
-<td style="width: 349px;">The ID of the repository of the checked out branch.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Head.Repo.NodeID</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The Node ID of the repository of the checked out branch.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Head.Repo.Name</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The name of the repository of the checked out branch.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Head.Repo.FullName</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The full name of the repository of the checked out branch.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Head.Repo.Owner.Login</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The user login of the owner of the repository of the checked out branch.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Head.Repo.Owner.ID</td>
-<td style="width: 89px;">Number</td>
-<td style="width: 349px;">The user ID of the owner of the repository of the checked out branch.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Head.Repo.Owner.NodeID</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The user Node ID of the owner of the repository of the checked out branch.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Head.Repo.Owner.Type</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The user type of the owner of the repository of the checked out branch.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Head.Repo.Owner.SiteAdmin</td>
-<td style="width: 89px;">Boolean</td>
-<td style="width: 349px;">Whether the owner of the repository of the checked out branch is a site administrator.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Head.Repo.Private</td>
-<td style="width: 89px;">Boolean</td>
-<td style="width: 349px;">Whether the repository of the checked out branch is private.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Head.Repo.Description</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The description of the repository of the checked out branch.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Head.Repo.Fork</td>
-<td style="width: 89px;">Boolean</td>
-<td style="width: 349px;">Whether the repository of the checked out branch is a fork.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Head.Repo.Language</td>
-<td style="width: 89px;">Unknown</td>
-<td style="width: 349px;">The language of the repository of the checked out branch.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Head.Repo.ForksCount</td>
-<td style="width: 89px;">Number</td>
-<td style="width: 349px;">The number of forks of the repository of the checked out branch.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Head.Repo.StargazersCount</td>
-<td style="width: 89px;">Number</td>
-<td style="width: 349px;">The number of stars of the repository of the checked out branch.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Head.Repo.WatchersCount</td>
-<td style="width: 89px;">Number</td>
-<td style="width: 349px;">The number of entities watching the repository of the checked out branch.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Head.Repo.Size</td>
-<td style="width: 89px;">Number</td>
-<td style="width: 349px;">The size of the repository of the checked out branch.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Head.Repo.DefaultBranch</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The default branch of the repository of the checked out branch.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Head.Repo.OpenIssuesCount</td>
-<td style="width: 89px;">Number</td>
-<td style="width: 349px;">The open issues of the repository of the checked out branch.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Head.Repo.Topics</td>
-<td style="width: 89px;">Unknown</td>
-<td style="width: 349px;">Topics listed for the repository of the checked out branch.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Head.Repo.HasIssues</td>
-<td style="width: 89px;">Boolean</td>
-<td style="width: 349px;">Whether the repository of the checked out branch has issues.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Head.Repo.HasProjects</td>
-<td style="width: 89px;">Boolean</td>
-<td style="width: 349px;">Whether the repository of the checked out branch has projects.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Head.Repo.HasWiki</td>
-<td style="width: 89px;">Boolean</td>
-<td style="width: 349px;">Whether the repository of the checked out branch has a wiki.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Head.Repo.HasPages</td>
-<td style="width: 89px;">Boolean</td>
-<td style="width: 349px;">Whether the repository of the checked out branch has pages.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Head.Repo.HasDownloads</td>
-<td style="width: 89px;">Boolean</td>
-<td style="width: 349px;">Whether the repository of the checked out branch has downloads.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Head.Repo.Archived</td>
-<td style="width: 89px;">Boolean</td>
-<td style="width: 349px;">Whether the repository of the checked out branch has been archived.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Head.Repo.Disabled</td>
-<td style="width: 89px;">Boolean</td>
-<td style="width: 349px;">Whether the repository of the checked out branch has been disabled.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Head.Repo.PushedAt</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The date of the latest push to the repository of the checked out branch.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Head.Repo.CreatedAt</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The date of creation of the repository of the checked out branch.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Head.Repo.UpdatedAt</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The date the repository of the checked out branch was last updated.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Head.Repo.AllowRebaseMerge</td>
-<td style="width: 89px;">Boolean</td>
-<td style="width: 349px;">Whether the repository of the checked out branch permits rebase-style merges.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Head.Repo.AllowSquashMerge</td>
-<td style="width: 89px;">Boolean</td>
-<td style="width: 349px;">Whether the repository of the checked out branch permits squash merges.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Head.Repo.AllowMergeCommit</td>
-<td style="width: 89px;">Boolean</td>
-<td style="width: 349px;">Whether the repository of the checked out branch permits merge commits.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Head.Repo.SubscribersCount</td>
-<td style="width: 89px;">Number</td>
-<td style="width: 349px;">The number of entities subscribing to the repository of the checked out branch.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Base.Label</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The label of the base branch.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Base.Ref</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The reference of the base branch.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Base.SHA</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The SHA hash of the base branch.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Base.User.Login</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The login of the committer of the commit for which the base branch points.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Base.User.ID</td>
-<td style="width: 89px;">Number</td>
-<td style="width: 349px;">The committer ID of the commit for which the base branch points.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Base.User.NodeID</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The committer Node ID of the commit that the base branch points.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Base.User.Type</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The committer user type of the commit that the base branch points.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Base.User.SiteAdmin</td>
-<td style="width: 89px;">Boolean</td>
-<td style="width: 349px;">Whether the committer of the commit that the base branch points to is a site administrator.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Base.Repo.ID</td>
-<td style="width: 89px;">Number</td>
-<td style="width: 349px;">The ID of the repository for which the base branch belongs.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Base.Repo.NodeID</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The Node ID of the repository for which the base branch belongs.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Base.Repo.Name</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The name of the repository for which the base branch belongs.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Base.Repo.FullName</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The full name of the repository for which the base branch belongs.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Base.Repo.Owner.Login</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The user login of the owner of the repository for which the base branch belongs.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Base.Repo.Owner.ID</td>
-<td style="width: 89px;">Number</td>
-<td style="width: 349px;">The user ID of the owner of the repository for which the base branch belongs.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Base.Repo.Owner.NodeID</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The user node ID of the owner of the repository for which the base branch belongs.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Base.Repo.Owner.Type</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The user type of the owner of the repository for which the base branch belongs.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Base.Repo.Owner.SiteAdmin</td>
-<td style="width: 89px;">Boolean</td>
-<td style="width: 349px;">Whether the owner of the repository that the base branch belongs to is a site administrator.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Base.Repo.Private</td>
-<td style="width: 89px;">Boolean</td>
-<td style="width: 349px;">Whether the repository for which the base branch belongs to is private.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Base.Repo.Description</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The description of the repository for which the base branch belongs.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Base.Repo.Fork</td>
-<td style="width: 89px;">Boolean</td>
-<td style="width: 349px;">Whether the repository that the base branch belongs to is a fork.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Base.Repo.Language</td>
-<td style="width: 89px;">Unknown</td>
-<td style="width: 349px;">The language of the repository for which the base branch belongs.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Base.Repo.ForksCount</td>
-<td style="width: 89px;">Number</td>
-<td style="width: 349px;">The number of times that the repository for which the base branch belongs to has been forked.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Base.Repo.StargazersCount</td>
-<td style="width: 89px;">Number</td>
-<td style="width: 349px;">The number of times that the repository for which the base branch belongs has been starred.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Base.Repo.WatchersCount</td>
-<td style="width: 89px;">Number</td>
-<td style="width: 349px;">The number of entities watching the repository for which the base branch belongs.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Base.Repo.Size</td>
-<td style="width: 89px;">Number</td>
-<td style="width: 349px;">The size of the repository for which the base branch belongs.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Base.Repo.DefaultBranch</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The default branch of the repository for which the base branch belongs.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Base.Repo.OpenIssuesCount</td>
-<td style="width: 89px;">Number</td>
-<td style="width: 349px;">The number of open issues in the repository for which the base branch belongs.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Base.Repo.Topics</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">Topics listed for the repository for which the base branch belongs.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Base.Repo.HasIssues</td>
-<td style="width: 89px;">Boolean</td>
-<td style="width: 349px;">Whether the repository for which the base branch belongs has issues.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Base.Repo.HasProjects</td>
-<td style="width: 89px;">Boolean</td>
-<td style="width: 349px;">Whether the repository for which the base branch belongs to has projects.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Base.Repo.HasWiki</td>
-<td style="width: 89px;">Boolean</td>
-<td style="width: 349px;">Whether the repository for which the base branch belongs has a wiki.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Base.Repo.HasPages</td>
-<td style="width: 89px;">Boolean</td>
-<td style="width: 349px;">Whether the repository for which the base branch belongs to has pages.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Base.Repo.HasDownloads</td>
-<td style="width: 89px;">Boolean</td>
-<td style="width: 349px;">Whether the repository for which the base branch belongs has downloads.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Base.Repo.Archived</td>
-<td style="width: 89px;">Boolean</td>
-<td style="width: 349px;">Whether the repository for which the base branch belongs to is archived.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Base.Repo.Disabled</td>
-<td style="width: 89px;">Boolean</td>
-<td style="width: 349px;">Whether the repository for which the base branch belongs to is disabled.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Base.Repo.PushedAt</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The date that the repository for which the base branch belongs to was last pushed.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Base.Repo.CreatedAt</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The date of creation of the repository for which the base branch belongs.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Base.Repo.UpdatedAt</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The date that the repository for which the base branch belongs to was last updated.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Base.Repo.AllowRebaseMerge</td>
-<td style="width: 89px;">Boolean</td>
-<td style="width: 349px;">Whether the repository that the base branch belongs to allows rebase-style merges.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Base.Repo.AllowSquashMerge</td>
-<td style="width: 89px;">Boolean</td>
-<td style="width: 349px;">Whether the repository that the base branch belongs to allows squash merges.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Base.Repo.AllowMergeCommit</td>
-<td style="width: 89px;">Boolean</td>
-<td style="width: 349px;">Whether the repository for which the base branch belongs to allows merge commits.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Base.Repo.SubscribersCount</td>
-<td style="width: 89px;">Number</td>
-<td style="width: 349px;">The number of entities that subscribe to the repository for which the base branch belongs.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.AuthorAssociation</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The pull request author association.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Draft</td>
-<td style="width: 89px;">Boolean</td>
-<td style="width: 349px;">Whether the pull request is a draft.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Merged</td>
-<td style="width: 89px;">Boolean</td>
-<td style="width: 349px;">Whether the pull request is merged.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Mergeable</td>
-<td style="width: 89px;">Boolean</td>
-<td style="width: 349px;">Whether the pull request is mergeable.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Rebaseable</td>
-<td style="width: 89px;">Boolean</td>
-<td style="width: 349px;">Whether the pull request is rebaseable.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.MergeableState</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The mergeable state of the pull request.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.MergedBy.Login</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The login of the user who merged the pull request.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.MergedBy.ID</td>
-<td style="width: 89px;">Number</td>
-<td style="width: 349px;">The ID of the user who merged the pull request.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.MergedBy.NodeID</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The Node ID of the user who merged the pull request.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.MergedBy.Type</td>
-<td style="width: 89px;">String</td>
-<td style="width: 349px;">The type of the user who merged the pull request.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.MergedBy.SiteAdmin</td>
-<td style="width: 89px;">Boolean</td>
-<td style="width: 349px;">Whether the user who merged the pull request is a site administrator.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Comments</td>
-<td style="width: 89px;">Number</td>
-<td style="width: 349px;">The number of comments on the pull request.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.ReviewComments</td>
-<td style="width: 89px;">Number</td>
-<td style="width: 349px;">The number of review comments on the pull request.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.MaintainerCanModify</td>
-<td style="width: 89px;">Boolean</td>
-<td style="width: 349px;">Whether the maintainer can modify the pull request.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Commits</td>
-<td style="width: 89px;">Number</td>
-<td style="width: 349px;">The number of commits in the pull request.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Additions</td>
-<td style="width: 89px;">Number</td>
-<td style="width: 349px;">The number of additions in the pull request.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.Deletions</td>
-<td style="width: 89px;">Number</td>
-<td style="width: 349px;">The number of deletions in the pull request.</td>
-</tr>
-<tr>
-<td style="width: 270px;">GitHub.PR.ChangedFiles</td>
-<td style="width: 89px;">Number</td>
-<td style="width: 349px;">The number of changed files in the pull request.</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>  !GitHub-get-pull-request pull_number=1
-</pre>
-<h5>Context Example</h5>
-<pre>{
-    "GitHub.PR": {
-        "ActiveLockReason": null,
-        "Additions": 4,
-        "AuthorAssociation": "FIRST_TIME_CONTRIBUTOR",
-        "Base": {
-            "Label": "example-user1:master",
-            "Ref": "master",
-            "Repo": {
-                "AllowMergeCommit": null,
-                "AllowRebaseMerge": null,
-                "AllowSquashMerge": null,
-                "Archived": false,
-                "CreatedAt": "2019-09-11T06:59:20Z",
-                "DefaultBranch": "master",
-                "Description": "This repository contains all Demisto content and from here we share content updates",
-                "Disabled": false,
-                "Fork": true,
-                "ForksCount": 0,
-                "FullName": "example-user1/content",
-                "HasDownloads": true,
-                "HasIssues": false,
-                "HasPages": false,
-                "HasProjects": true,
-                "HasWiki": false,
-                "ID": 207744685,
-                "Language": "Python",
-                "Name": "content",
-                "NodeID": "MDEwOlJlcG9zaXRvcnkyMDc3NDQ2ODU=",
-                "OpenIssuesCount": 10,
-                "Owner": {
-                    "ID": 55035720,
-                    "Login": "example-user1",
-                    "NodeID": "MDQ6VXNlcjU1MDM1NzIw",
-                    "SiteAdmin": false,
-                    "Type": "User"
-                },
-                "Private": false,
-                "PushedAt": "2019-09-18T14:05:43Z",
-                "Size": 96530,
-                "StargazersCount": 0,
-                "SucscribersCount": null,
-                "Topics": null,
-                "UpdatedAt": "2019-09-16T15:42:46Z",
-                "WatchersCount": 0
-            },
-            "SHA": "b27ea6ac9836d2e756b44eb1d66f02d3d4299362",
-            "User": {
-                "ID": 55035720,
-                "Login": "example-user1",
-                "NodeID": "MDQ6VXNlcjU1MDM1NzIw",
-                "SiteAdmin": false,
-                "Type": "User"
-            }
-        },
-        "Body": "<!-- REMINDER: THIS IS A PUBLIC REPO DO NOT POST HERE SECRETS/SENSITIVE DATA -->\r\n\r\n## Status\r\nReady/In Progress/In Hold(Reason for hold)\r\n\r\n## Related Issues\r\nfixes: link to the issue\r\n\r\n## Description\r\nA few sentences describing the overall goals of the pull request's commits.\r\n\r\n## Screenshots\r\nPaste here any images that will help the reviewer\r\n\r\n## Related PRs\r\nList related PRs against other branches:\r\n\r\nbranch | PR\r\n------ | ------\r\n\r\n\r\n## Required version of Demisto\r\nx.x.x\r\n\r\n## Does it break backward compatibility?\r\n   - Yes\r\n       - Further details:\r\n   - No\r\n\r\n## Must have\r\n- [ ] Tests\r\n- [ ] Documentation (with link to it)\r\n- [ ] Code Review\r\n\r\n## Dependencies\r\nMention the dependencies of the entity you changed as given from the precommit hooks in checkboxes, and tick after tested them.\r\n- [ ] Dependency 1\r\n- [ ] Dependency 2\r\n- [ ] Dependency 3\r\n\r\n## Additional changes\r\nDescribe additional changes done, for example adding a function to common server.\r\n",
-        "ChangedFiles": 1,
-        "ClosedAt": null,
-        "Comments": 5,
-        "Commits": 4,
-        "CreatedAt": "2019-09-11T07:06:26Z",
-        "Deletions": 0,
-        "Draft": null,
-        "Head": {
-            "Label": "example-user4:patch-1",
-            "Ref": "patch-1",
-            "Repo": {
-                "AllowMergeCommit": null,
-                "AllowRebaseMerge": null,
-                "AllowSquashMerge": null,
-                "Archived": false,
-                "CreatedAt": "2019-08-29T10:18:15Z",
-                "DefaultBranch": "master",
-                "Description": "This repository contains all Demisto content and from here we share content updates",
-                "Disabled": false,
-                "Fork": true,
-                "ForksCount": 2,
-                "FullName": "example-user4/content",
-                "HasDownloads": true,
-                "HasIssues": false,
-                "HasPages": false,
-                "HasProjects": true,
-                "HasWiki": false,
-                "ID": 205137013,
-                "Language": "Python",
-                "Name": "content",
-                "NodeID": "MDEwOlJlcG9zaXRvcnkyMDUxMzcwMTM=",
-                "OpenIssuesCount": 2,
-                "Owner": {
-                    "ID": 46294017,
-                    "Login": "example-user4",
-                    "NodeID": "MDQ6VXNlcjQ2Mjk0MDE3",
-                    "SiteAdmin": false,
-                    "Type": "User"
-                },
-                "Private": false,
-                "PushedAt": "2019-09-16T15:43:54Z",
-                "Size": 95883,
-                "StargazersCount": 0,
-                "SucscribersCount": null,
-                "Topics": null,
-                "UpdatedAt": "2019-08-29T10:18:18Z",
-                "WatchersCount": 0
-            },
-            "SHA": "c01238eea80e35bb76a5c51ac0c95eba4010d8e5",
-            "User": {
-                "ID": 46294017,
-                "Login": "example-user4",
-                "NodeID": "MDQ6VXNlcjQ2Mjk0MDE3",
-                "SiteAdmin": false,
-                "Type": "User"
-            }
-        },
-        "ID": 316303415,
-        "Label": [
-            {
-                "Color": null,
-                "Default": false,
-                "Description": null,
-                "ID": 1563600288,
-                "Name": "Content",
-                "NodeID": "MDU6TGFiZWwxNTYzNjAwMjg4"
-            },
-            {
-                "Color": null,
-                "Default": false,
-                "Description": null,
-                "ID": 1549466359,
-                "Name": "Contribution",
-                "NodeID": "MDU6TGFiZWwxNTQ5NDY2MzU5"
-            },
-            {
-                "Color": null,
-                "Default": true,
-                "Description": null,
-                "ID": 1549411616,
-                "Name": "bug",
-                "NodeID": "MDU6TGFiZWwxNTQ5NDExNjE2"
-            }
-        ],
-        "Locked": false,
-        "MaintainerCanModify": true,
-        "MergeCommitSHA": "5714b1359b9d7549c89c35fe9fdc266a3db3b766",
-        "Mergeable": true,
-        "MergeableState": "unstable",
-        "Merged": false,
-        "MergedAt": null,
-        "NodeID": "MDExOlB1bGxSZXF1ZXN0MzE2MzAzNDE1",
-        "Number": 1,
-        "Rebaseable": true,
-        "RequestedReviewer": [
-            {
-                "ID": 30797606,
-                "Login": "example-user3",
-                "NodeID": "MDQ6VXNlcjMwNzk3NjA2",
-                "SiteAdmin": false,
-                "Type": "User"
-            },
-            {
-                "ID": 55035720,
-                "Login": "example-user1",
-                "NodeID": "MDQ6VXNlcjU1MDM1NzIw",
-                "SiteAdmin": false,
-                "Type": "User"
-            }
-        ],
-        "ReviewComments": 0,
-        "State": "open",
-        "UpdatedAt": "2019-09-18T14:05:51Z",
-        "User": {
-            "ID": 46294017,
-            "Login": "example-user4",
-            "NodeID": "MDQ6VXNlcjQ2Mjk0MDE3",
-            "SiteAdmin": false,
-            "Type": "User"
-        }
-    }
-}
-</pre>
-<h5>Human Readable Output</h5>
-<h3>Pull Request #1</h3>
-<table style="width: 4291px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 75px;"><strong>Additions</strong></th>
-<th style="width: 200px;"><strong>AuthorAssociation</strong></th>
-<th style="width: 347px;"><strong>Base</strong></th>
-<th style="width: 107px;"><strong>Body</strong></th>
-<th style="width: 105px;"><strong>ChangedFiles</strong></th>
-<th style="width: 84px;"><strong>Comments</strong></th>
-<th style="width: 69px;"><strong>Commits</strong></th>
-<th style="width: 103px;"><strong>CreatedAt</strong></th>
-<th style="width: 75px;"><strong>Deletions</strong></th>
-<th style="width: 345px;"><strong>Head</strong></th>
-<th style="width: 81px;"><strong>ID</strong></th>
-<th style="width: 245px;"><strong>Label</strong></th>
-<th style="width: 56px;"><strong>Locked</strong></th>
-<th style="width: 167px;"><strong>MaintainerCanModify</strong></th>
-<th style="width: 341px;"><strong>MergeCommitSHA</strong></th>
-<th style="width: 82px;"><strong>Mergeable</strong></th>
-<th style="width: 124px;"><strong>MergeableState</strong></th>
-<th style="width: 59px;"><strong>Merged</strong></th>
-<th style="width: 298px;"><strong>NodeID</strong></th>
-<th style="width: 63px;"><strong>Number</strong></th>
-<th style="width: 91px;"><strong>Rebaseable</strong></th>
-<th style="width: 199px;"><strong>RequestedReviewer</strong></th>
-<th style="width: 95px;"><strong>ReviewComments</strong></th>
-<th style="width: 88px;"><strong>State</strong></th>
-<th style="width: 103px;"><strong>UpdatedAt</strong></th>
-<th style="width: 183px;"><strong>User</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 75px;">4</td>
-<td style="width: 200px;">FIRST_TIME_CONTRIBUTOR</td>
-<td style="width: 347px;">Label: example-user1:master<br> Ref: master<br> SHA: b27ea6ac9836d2e756b44eb1d66f02d3d4299362<br> User: {"Login": "example-user1", "ID": 55035720, "NodeID": "MDQ6VXNlcjU1MDM1NzIw", "Type": "User", "SiteAdmin": false}<br> Repo: {"ID": 207744685, "NodeID": "MDEwOlJlcG9zaXRvcnkyMDc3NDQ2ODU=", "Name": "content", "FullName": "example-user1/content", "Owner": {"Login": "example-user1", "ID": 55035720, "NodeID": "MDQ6VXNlcjU1MDM1NzIw", "Type": "User", "SiteAdmin": false}, "Private": false, "Description": "This repository contains all Demisto content and from here we share content updates", "Fork": true, "Language": "Python", "ForksCount": 0, "StargazersCount": 0, "WatchersCount": 0, "Size": 96530, "DefaultBranch": "master", "OpenIssuesCount": 10, "Topics": null, "HasIssues": false, "HasProjects": true, "HasWiki": false, "HasPages": false, "HasDownloads": true, "Archived": false, "Disabled": false, "PushedAt": "2019-09-18T14:05:43Z", "CreatedAt": "2019-09-11T06:59:20Z", "UpdatedAt": "2019-09-16T15:42:46Z", "AllowRebaseMerge": null, "AllowSquashMerge": null, "AllowMergeCommit": null, "SucscribersCount": null}</td>
-<td style="width: 107px;">
-<p><!-- REMINDER: THIS IS A PUBLIC REPO DO NOT POST HERE SECRETS/SENSITIVE DATA --> <br> <br> ## Status<br> Ready/In Progress/In Hold(Reason for hold)<br> <br> ## Related Issues<br> fixes: link to the issue<br> <br> ## Description<br> A few sentences describing the overall goals of the pull request's commits.<br> <br> ## Screenshots<br> Paste here any images that will help the reviewer<br> <br> ## Related PRs<br> List related PRs against other branches:<br> <br> branch \</p>
-<p>PR<br> ------ \</p>
-<p>## Required version of Demisto<br>x.x.x</p>
-<p>## Does it break backward compatibility?<br>- Yes<br>- Further details:<br>- No</p>
-<p>## Must have<br>- [ ] Tests<br>- [ ] Documentation (with link to it)<br>- [ ] Code Review</p>
-<p>## Dependencies<br>Mention the dependencies of the entity you changed as given from the precommit hooks in checkboxes, and tick after tested them.<br>- [ ] Dependency 1<br>- [ ] Dependency 2<br>- [ ] Dependency 3</p>
-<p>## Additional changes<br>Describe additional changes done, for example adding a function to common server. </p>
-</td>
-<td style="width: 105px;">1</td>
-<td style="width: 84px;">5</td>
-<td style="width: 69px;"> 4</td>
-<td style="width: 103px;"> 2019-09-11T07:06:26Z</td>
-<td style="width: 75px;">0</td>
-<td style="width: 345px;">Label: example-user4:patch-1<br> Ref: patch-1<br> SHA: c01238eea80e35bb76a5c51ac0c95eba4010d8e5<br> User: {"Login": "example-user4", "ID": 46294017, "NodeID": "MDQ6VXNlcjQ2Mjk0MDE3", "Type": "User", "SiteAdmin": false}<br> Repo: {"ID": 205137013, "NodeID": "MDEwOlJlcG9zaXRvcnkyMDUxMzcwMTM=", "Name": "content", "FullName": "example-user4/content", "Owner": {"Login": "example-user4", "ID": 46294017, "NodeID": "MDQ6VXNlcjQ2Mjk0MDE3", "Type": "User", "SiteAdmin": false}, "Private": false, "Description": "This repository contains all Demisto content and from here we share content updates", "Fork": true, "Language": "Python", "ForksCount": 2, "StargazersCount": 0, "WatchersCount": 0, "Size": 95883, "DefaultBranch": "master", "OpenIssuesCount": 2, "Topics": null, "HasIssues": false, "HasProjects": true, "HasWiki": false, "HasPages": false, "HasDownloads": true, "Archived": false, "Disabled": false, "PushedAt": "2019-09-16T15:43:54Z", "CreatedAt": "2019-08-29T10:18:15Z", "UpdatedAt": "2019-08-29T10:18:18Z", "AllowRebaseMerge": null, "AllowSquashMerge": null, "AllowMergeCommit": null, "SucscribersCount": null}</td>
-<td style="width: 81px;">316303415</td>
-<td style="width: 245px;">'ID': 1563600288, 'NodeID': 'MDU6TGFiZWwxNTYzNjAwMjg4', 'Name': 'Content', 'Description': None, 'Color': None, 'Default': False},<br>{'ID': 1549466359, 'NodeID': 'MDU6TGFiZWwxNTQ5NDY2MzU5', 'Name': 'Contribution', 'Description': None, 'Color': None, 'Default': False},<br>{'ID': 1549411616, 'NodeID': 'MDU6TGFiZWwxNTQ5NDExNjE2', 'Name': 'bug', 'Description': None, 'Color': None, 'Default': True}</td>
-<td style="width: 56px;">false</td>
-<td style="width: 167px;">true</td>
-<td style="width: 341px;">5714b1359b9d7549c89c35fe9fdc266a3db3b766</td>
-<td style="width: 82px;">true</td>
-<td style="width: 124px;">unstable</td>
-<td style="width: 59px;">false</td>
-<td style="width: 298px;">MDExOlB1bGxSZXF1ZXN0MzE2MzAzNDE1</td>
-<td style="width: 63px;">1</td>
-<td style="width: 91px;">true</td>
-<td style="width: 199px;">{'Login': 'example-user3', 'ID': 30797606, 'NodeID': 'MDQ6VXNlcjMwNzk3NjA2', 'Type': 'User', 'SiteAdmin': False},<br> {'Login': 'example-user1', 'ID': 55035720, 'NodeID': 'MDQ6VXNlcjU1MDM1NzIw', 'Type': 'User', 'SiteAdmin': False}</td>
-<td style="width: 95px;">0</td>
-<td style="width: 88px;">open</td>
-<td style="width: 103px;">2019-09-18T14:05:51Z</td>
-<td style="width: 183px;">Login: example-user4<br> ID: 46294017<br> NodeID: MDQ6VXNlcjQ2Mjk0MDE3<br> Type: User<br> SiteAdmin: false</td>
-<td style="width: 88px;"> </td>
-<td style="width: 53px;"> </td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h3 id="h_55d1fc5c-e1c9-4293-9db2-3e6d1da440a0">19. GitHub-list-teams</h3>
-<hr>
-<p>List the teams for an organization. Note that this API call is only available to authenticated members of the organization.</p>
-<h5>Base Command</h5>
-<p><code>GitHub-list-teams</code></p>
-<h5>Input</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 212px;"><strong>Argument Name</strong></th>
-<th style="width: 368px;"><strong>Description</strong></th>
-<th style="width: 128px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 212px;">organization</td>
-<td style="width: 368px;">The name of the organization</td>
-<td style="width: 128px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Context Output</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 249px;"><strong>Path</strong></th>
-<th style="width: 117px;"><strong>Type</strong></th>
-<th style="width: 342px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 249px;">GitHub.Team.ID</td>
-<td style="width: 117px;">Number</td>
-<td style="width: 342px;">The ID of the team.</td>
-</tr>
-<tr>
-<td style="width: 249px;">GitHub.Team.NodeID</td>
-<td style="width: 117px;">String</td>
-<td style="width: 342px;">The Node ID of the team.</td>
-</tr>
-<tr>
-<td style="width: 249px;">GitHub.Team.Name</td>
-<td style="width: 117px;">String</td>
-<td style="width: 342px;">The name of the team.</td>
-</tr>
-<tr>
-<td style="width: 249px;">GitHub.Team.Slug</td>
-<td style="width: 117px;">String</td>
-<td style="width: 342px;">The slug of the team.</td>
-</tr>
-<tr>
-<td style="width: 249px;">GitHub.Team.Description</td>
-<td style="width: 117px;">String</td>
-<td style="width: 342px;">The description of the team.</td>
-</tr>
-<tr>
-<td style="width: 249px;">GitHub.Team.Privacy</td>
-<td style="width: 117px;">String</td>
-<td style="width: 342px;">The privacy setting of the team.</td>
-</tr>
-<tr>
-<td style="width: 249px;">GitHub.Team.Permission</td>
-<td style="width: 117px;">String</td>
-<td style="width: 342px;">The permissions of the team.</td>
-</tr>
-<tr>
-<td style="width: 249px;">GitHub.Team.Parent</td>
-<td style="width: 117px;">Unknown</td>
-<td style="width: 342px;">The parent of the team.</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>  !GitHub-list-teams organization=demisto
-</pre>
-<h5>Context Example</h5>
-<pre>{
-    "GitHub.Team": [
+```
+
+#### Human Readable Output
+
+>### Returned 5 out of 6 total results.
+>|Name|Path|Repository Name|Repository Description|Is Repository Private|
+>|---|---|---|---|---|
+>| [.pre-commit-config.yaml](https://github.com/demisto/demisto-sdk/blob/bfd4c375f9c61d4fdd4974ecf244a4bede13b8ed/.pre-commit-config.yaml) | .pre-commit-config.yaml | demisto/demisto-sdk | Demisto SDK - Create Demisto Content with ease and efficiency | false |
+>| [content_create_artifacts_integration_test.py](https://github.com/demisto/demisto-sdk/blob/bfd4c375f9c61d4fdd4974ecf244a4bede13b8ed/demisto_sdk/tests/integration_tests/content_create_artifacts_integration_test.py) | demisto_sdk/tests/integration_tests/content_create_artifacts_integration_test.py | demisto/demisto-sdk | Demisto SDK - Create Demisto Content with ease and efficiency | false |
+>| [content_artifacts_creator_test.py](https://github.com/demisto/demisto-sdk/blob/bfd4c375f9c61d4fdd4974ecf244a4bede13b8ed/demisto_sdk/commands/create_artifacts/tests/content_artifacts_creator_test.py) | demisto_sdk/commands/create_artifacts/tests/content_artifacts_creator_test.py | demisto/demisto-sdk | Demisto SDK - Create Demisto Content with ease and efficiency | false |
+>| [pack_metadata_test.py](https://github.com/demisto/demisto-sdk/blob/bfd4c375f9c61d4fdd4974ecf244a4bede13b8ed/demisto_sdk/commands/common/content/tests/objects/pack_objects/pack_metadata/pack_metadata_test.py) | demisto_sdk/commands/common/content/tests/objects/pack_objects/pack_metadata/pack_metadata_test.py | demisto/demisto-sdk | Demisto SDK - Create Demisto Content with ease and efficiency | false |
+>| [content_artifacts_creator_test.py](https://github.com/demisto/demisto-sdk/blob/bfd4c375f9c61d4fdd4974ecf244a4bede13b8ed/demisto_sdk/commands/create_artifacts/tests/content_artifacts_creator_test.py) | demisto_sdk/commands/create_artifacts/tests/content_artifacts_creator_test.py | demisto/demisto-sdk | Demisto SDK - Create Demisto Content with ease and efficiency | false |
+
+
+### GitHub-search-issues
+
+***
+Searches for and returns issues that match a given query.
+
+#### Base Command
+
+`GitHub-search-issues`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query | The query line for the search. For more information see the GitHub documentation at https://help.github.com/en/articles/searching-issues-and-pull-requests. | Required | 
+| limit | The number of issues to return. Default is 50. Maximum is 100. Default is 50. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.Issue.ID | Number | The ID of the issue. | 
+| GitHub.Issue.Repository | String | The repository of the issue. | 
+| GitHub.Issue.Title | String | The title of the issue. | 
+| GitHub.Issue.Body | Unknown | The body of the issue. | 
+| GitHub.Issue.State | String | The state of the issue. | 
+| GitHub.Issue.Labels | String | Labels applied to the issue. | 
+| GitHub.Issue.Assignees | String | Users assigned to the issue. | 
+| GitHub.Issue.Created_at | Date | Date when the issue was created. | 
+| GitHub.Issue.Updated_at | Date | Date when the issue was last updated. | 
+| GitHub.Issue.Closed_at | Date | Date when the issue was closed. | 
+| GitHub.Issue.Closed_by | String | User who closed the issue. | 
+| GitHub.Issue.Organization | String | The repository owner. | 
+
+#### Command Example
+
+```!GitHub-search-issues query=“label:bug state:open” limit=1```
+
+#### Human Readable Output
+## Issues:
+|ID|Repository|Organization|Title|State|Body|Created_at|Updated_at|Closed_at|Assignees|Labels|
+|--- |--- |--- |--- |--- |--- |--- |--- |--- | ---|--- |
+|109|Git-Integration|demisto|"new issue"|open|"new information"|2019-06-04T11:52:11Z|2019-06-04T11:52:13Z|2019-06-04T11:52:13Z|teizenman|newbug|
+
+### GitHub-get-download-count
+
+***
+Returns the total number of downloads for all releases for the specified repository.
+
+#### Base Command
+
+`GitHub-get-download-count`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.Release.ID | Number | ID of the release. | 
+| GitHub.Release.Download_count | Number | Download count for the release. | 
+| GitHub.Release.Name | String | Name of the release. | 
+| GitHub.Release.Body | String | Body of the release. | 
+| GitHub.Release.Created_at | Date | Date when the release was created. | 
+| GitHub.Release.Published_at | Date | Date when the release was published. | 
+
+#### Command Example
+
+```!GitHub-get-download-count```
+
+#### Human Readable Output
+## Releases:
+|ID|Name|Download_count|Body|Created_at|Published_at|
+|--- |--- |--- |--- |--- |--- |
+|17519182|anotherone|5|this is another release|2019-05-22T15:00:51Z|2019-05-22T15:06:48Z|
+|17519007|test|1|this is a test|2019-05-22T15:00:51Z|2019-05-22T15:02:16Z|
+
+
+### GitHub-get-stale-prs
+
+***
+Get inactive pull requests
+
+#### Base Command
+
+`GitHub-get-stale-prs`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| stale_time | Time of inactivity after which a PR is considered stale. Default is 3 days. | Required | 
+| label | The label used to identify PRs of interest. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.PR.URL | String | The html URL of the PR | 
+| GitHub.PR.Number | Number | The GitHub pull request number | 
+| GitHub.PR.RequestedReviewer | Unknown | A list of the PR's requested reviewers | 
+
+#### Command Example
+
+``!GitHub-get-stale-prs stale_time="2 days"``
+
+#### Human Readable Output
+## Stale PRs:
+|Number|URL|
+|--- |--- |
+|18|https://github.com/example-user1/content/pull/18|
+|16|https://github.com/example-user1/content/pull/16|
+|15|https://github.com/example-user1/content/pull/15|
+|14|https://github.com/example-user1/content/pull/14|
+
+### GitHub-get-branch
+
+***
+Get a branch
+
+#### Base Command
+
+`GitHub-get-branch`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| branch_name | The name of the branch to retrieve. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.Branch.Name | String | The name of the branch | 
+| GitHub.Branch.CommitSHA | String | The SHA of the commit the branch references | 
+| GitHub.Branch.CommitNodeID | String | The Node ID of the commit the branch references | 
+| GitHub.Branch.CommitAuthorID | Number | The GitHub ID number of the author of the commit the branch references | 
+| GitHub.Branch.CommitAuthorLogin | String | The GitHub login of the author of the commit the branch references | 
+| GitHub.Branch.CommitParentSHA | String | The SHAs of parent commits | 
+| GitHub.Branch.Protected | Boolean | Whether the branch is a protected one or not | 
+
+#### Command Example
+
+```!GitHub-get-pull-request pull_number=1```
+
+#### Human Readable Output
+## Branch "master"
+|CommitAuthorID|CommitAuthorLogin|CommitNodeID|CommitParentSHA|CommitSHA|Name|Protected|
+|--- |--- |--- |--- |--- |--- |--- |
+|55035720|example-user1|MDY6Q29tbWl0MjA3NzQ0Njg1OjhhNjdhMDc4MTM5NDk4ZjNlOGUxYmQyZTI2ZmZjNWEyZmVhMWI5MTg=|d6bafef5a0021a6d9ab0a22e11bd0afd5801d936|8a67a078139498f3e8e1bd2e26ffc5a2fea1b918|master|false|
+
+
+### GitHub-create-branch
+
+***
+Create a new branch
+
+#### Base Command
+
+`GitHub-create-branch`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| branch_name | The name for the new branch. | Required | 
+| commit_sha | The SHA hash of the commit to reference. Try executing the 'GitHub-get-branch' command to find a commit SHA hash to reference. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+
+```GitHub-create-branch branch_name=new-branch-example commit_sha=8a67a078139498f3e8e1bd2e26ffc5a2fea1b918```
+
+#### Human Readable Output
+Branch "new-branch-example" Created Successfully.
+
+### GitHub-get-team-membership
+
+***
+Retrieve a user's membership status with a team
+
+#### Base Command
+
+`GitHub-get-team-membership`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| team_id | The ID number by which the team is identified. Try executing the 'GitHub-list-teams' command to find team IDs to reference. | Required | 
+| user_name | The login of the user whose membership you wish to check. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.Team.Member.Role | String | The user's role on a team | 
+| GitHub.Team.Member.State | String | The user's state for a team | 
+| GitHub.Team.ID | Number | The ID number of the team | 
+| GitHub.Team.Member.Login | String | The login of the team member | 
+
+#### Command Example
+
+```!GitHub-get-team-membership team_id=3043448 user_name=example-user2```
+
+#### Human Readable Output
+## Team Membership of example-user2
+|ID|Role|State|Login|
+|--- |--- |--- |--- |
+|3043448|member|active|example-user2|
+
+
+### GitHub-request-review
+
+***
+Request reviews from GitHub users for a given Pull Request
+
+#### Base Command
+
+`GitHub-request-review`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| pull_number | The number of the Pull Request for which you wish to request review. | Required | 
+| reviewers | A CSV list of GitHub users to request review from for a Pull Request. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.PR.Number | Number | The number of the Pull Request | 
+| GitHub.PR.RequestedReviewer.Login | String | The login of the user requested for review | 
+| GitHub.PR.RequestedReviewer.ID | Number | The ID of the user requested for review | 
+| GitHub.PR.RequestedReviewer.NodeID | String | The node ID of the user requested for review | 
+| GitHub.PR.RequestedReviewer.Type | String | The type of the user requested for review | 
+| GitHub.PR.RequestedReviewer.SiteAdmin | Boolean | Whether the user requested for review is a site admin or not | 
+
+#### Command Example
+
+```!GitHub-request-review pull_number=1 reviewers=example-user1```
+
+#### Human Readable Output
+## Requested Reviewers for #1
+|ID|Login|NodeID|SiteAdmin|Type|
+|--- |--- |--- |--- |--- |
+|30797606|example-user3|MDQ6VXNlcjMwNzk3NjA2|false|User|
+|55035720|example-user1|MDQ6VXNlcjU1MDM1NzIw|false|User|
+
+### GitHub-create-comment
+
+***
+Create a comment for a given issue
+
+#### Base Command
+
+`GitHub-create-comment`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issue_number | The number of the issue to comment on. | Required | 
+| body | The contents of the comment. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.Comment.IssueNumber | Number | The number of the issue to which the comment belongs | 
+| GitHub.Comment.ID | Number | The ID of the comment | 
+| GitHub.Comment.NodeID | String | The node ID of the comment | 
+| GitHub.Comment.Body | String | The body content of the comment | 
+| GitHub.Comment.User.Login | String | The login of the user who commented | 
+| GitHub.Comment.User.ID | Number | The ID of the user who commented | 
+| GitHub.Comment.User.NodeID | String | The node ID of the user who commented | 
+| GitHub.Comment.User.Type | String | The type of the user who commented | 
+| GitHub.Comment.User.SiteAdmin | Boolean | Whether the user who commented is a site admin or not | 
+
+#### Command Example
+
+```!GitHub-create-comment issue_number=1 body="Look this comment was made using the GitHub integration"```
+
+#### Human Readable Output
+## Created Comment
+|Body|ID|IssueNumber|NodeID|User|
+|--- |--- |--- |--- |--- |
+|Look this comment was made using the GitHub integration|532700206|1|MDEyOklzc3VlQ29tbWVudDUzMjcwMDIwNg==|Login: example-user1 ID: 55035720 NodeID: MDQ6VXNlcjU1MDM1NzIw Type: User SiteAdmin: false|
+
+
+### GitHub-list-issue-comments
+
+***
+List comments on an issue
+
+#### Base Command
+
+`GitHub-list-issue-comments`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issue_number | The number of the issue to list comments for. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.Comment.IssueNumber | Number | The number of the issue to which the comment belongs | 
+| GitHub.Comment.ID | Number | The ID of the comment | 
+| GitHub.Comment.NodeID | String | The node ID of the comment | 
+| GitHub.Comment.Body | String | The body content of the comment | 
+| GitHub.Comment.User.Login | String | The login of the user who commented | 
+| GitHub.Comment.User.ID | Number | The ID of the user who commented | 
+| GitHub.Comment.User.NodeID | String | The node ID of the user who commented | 
+| GitHub.Comment.User.Type | String | The type of the user who commented | 
+| GitHub.Comment.User.SiteAdmin | Boolean | Whether the user who commented is a site admin or not | 
+
+#### Command Example
+
+```!GitHub-list-issue-comments issue_number=1```
+
+#### Human Readable Output
+## Comments for Issue #1
+|Body|ID|IssueNumber|NodeID|User|
+|--- |--- |--- |--- |--- |
+|Thank you for your contribution. Your generosity and caring are unrivaled! Rest assured - our content wizard @example-user3 will very shortly look over your proposed changes.|530276333|1|MDEyOklzc3VlQ29tbWVudDUzMDI3NjMzMw==|Login: example-user1 ID: 55035720 NodeID: MDQ6VXNlcjU1MDM1NzIw Type: User SiteAdmin: false|
+|what about my pr eh|530313678|1|MDEyOklzc3VlQ29tbWVudDUzMDMxMzY3OA==|Login: example-user4 ID: 46294017 NodeID: MDQ6VXNlcjQ2Mjk0MDE3 Type: User SiteAdmin: false|
+|@example-user4 can we close?|530774162|1|MDEyOklzc3VlQ29tbWVudDUzMDc3NDE2Mg==|Login: example-user3 ID: 30797606 NodeID: MDQ6VXNlcjMwNzk3NjA2 Type: User SiteAdmin: false|
+|Look this comment was made using the GitHub integration|532700206|1|MDEyOklzc3VlQ29tbWVudDUzMjcwMDIwNg==|Login: example-user1 ID: 55035720 NodeID: MDQ6VXNlcjU1MDM1NzIw Type: User SiteAdmin: false|
+
+
+### GitHub-list-pr-files
+
+***
+Lists the pull request files.
+
+#### Base Command
+
+`GitHub-list-pr-files`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| pull_number | The number of the pull request. | Required | 
+| organization | The name of the organization. | Optional | 
+| repository | The repository of the pull request. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.PR.Number | Number | The number of the pull request | 
+| GitHub.PR.File.SHA | String | The SHA hash of the last commit involving the file. | 
+| GitHub.PR.File.Name | String | The name of the file. | 
+| GitHub.PR.File.Status | String | The status of the file. | 
+| GitHub.PR.File.Additions | Number | The number of additions to the file. | 
+| GitHub.PR.File.Deletions | Number | The number of deletions in the file. | 
+| GitHub.PR.File.Changes | Number | The number of changes made in the file. | 
+
+#### Command Example
+
+```!GitHub-list-pr-files pull_number=1```
+
+#### Human Readable Output
+## Pull Request Files for #1
+|Additions|Changes|Deletions|Name|SHA|Status|
+|--- |--- |--- |--- |--- |--- |
+|4|4|0|TEST.md|4e7fd23b44ef46ebd04a9812dda55cecb487fcbe|added|
+
+
+### GitHub-list-pr-reviews
+
+***
+List reviews on a pull request
+
+#### Base Command
+
+`GitHub-list-pr-reviews`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| pull_number | The number of the pull request. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.PR.Number | Number | The number of the pull request | 
+| GitHub.PR.Review.ID | Number | The ID of the review | 
+| GitHub.PR.Review.NodeID | String | The node ID of the review | 
+| GitHub.PR.Review.Body | String | The content of the review | 
+| GitHub.PR.Review.CommitID | String | The ID of the commit for which the review is applicable | 
+| GitHub.PR.Review.State | String | The state of the review | 
+| GitHub.PR.Review.User.Login | String | The reviewer's user login | 
+| GitHub.PR.Review.User.ID | Number | The reviewer's user ID | 
+| GitHub.PR.Review.User.NodeID | String | The reviewer's user node ID | 
+| GitHub.PR.Review.User.Type | String | The reviewer user type | 
+| GitHub.PR.Review.User.SiteAdmin | Boolean | Whether the reviewer is a site admin or not | 
+
+#### Command Example
+
+```!GitHub-list-pr-reviews pull_number=1```
+
+#### Human Readable Output
+## Pull Request Reviews for #1
+|Body|CommitID|ID|NodeID|State|User|
+|--- |--- |--- |--- |--- |--- |
+|review comment|b6cf0431e2aea2b345ea1d66d18aa72be63936a9|287327154|MDE3OlB1bGxSZXF1ZXN0UmV2aWV3Mjg3MzI3MTU0|COMMENTED|Login: example-user2 ID: 31018228 NodeID: MDQ6VXNlcjMxMDE4MjI4 Type: User SiteAdmin: false|
+
+
+### GitHub-get-commit
+
+***
+Get a commit
+
+#### Base Command
+
+`GitHub-get-commit`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| commit_sha | The SHA hash of the commit. Try executing the 'GitHub-get-branch' command to find a commit SHA hash to reference. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.Commit.SHA | String | The SHA hash of the commit | 
+| GitHub.Commit.Author.Date | String | The commit author date | 
+| GitHub.Commit.Author.Name | String | The name of the author | 
+| GitHub.Commit.Author.Email | String | The email of the author | 
+| GitHub.Commit.Committer.Date | String | The date the commiter committed | 
+| GitHub.Commit.Committer.Name | String | The name of the committer | 
+| GitHub.Commit.Committer.Email | String | The email of the committer | 
+| GitHub.Commit.Message | String | The message associated with the commit | 
+| GitHub.Commit.Parent | Unknown | List of parent SHA hashes | 
+| GitHub.Commit.TreeSHA | String | The SHA hash of the commit's tree | 
+| GitHub.Commit.Verification.Verified | Boolean | Whether the commit was verified or not | 
+| GitHub.Commit.Verification.Reason | String | The reason why the commit was or was not verified | 
+| GitHub.Commit.Verification.Signature | Unknown | The commit verification signature | 
+| GitHub.Commit.Verification.Payload | Unknown | The commit verification payload | 
+
+#### Command Example
+
+```!GitHub-get-commit commit_sha=8a67a078139498f3e8e1bd2e26ffc5a2fea1b918```
+
+#### Human Readable Output
+## Commit *8a67a07813*
+|Author|Committer|Message|Parent|SHA|TreeSHA|Verification|
+|--- |--- |--- |--- |--- |--- |--- |
+|Date: 2019-09-16T15:42:43Z Name: example-user1 Email: 55035720example.user1@users.noreply.github.com|Date: 2019-09-16T15:42:43Z Name: GitHub Email: noreply@github.com|Update config.yml|{'SHA': 'd6bafef5a0021a6d9ab0a22e11bd0afd5801d936'}|8a67a078139498f3e8e1bd2e26ffc5a2fea1b918|42fdb6c89538099a141e94fabe4bbc58098f4d90|Verified: true Reason: valid Signature: -----BEGIN PGP SIGNATURE-----  wsBcBAABCAAQBQJ****************************sIKrPT2jUSWyzfu5wnu oWz7+2KMdaglV****************************M08HXTm a9eO/ahlodARkgH/bWjulomeO+jDEgbZenlPUrBnX136QzPPqgl4uvxfquAOj1/a a89YtPAFh2X1+1q7pl5dVtZfYpo6mYJoY9dwVpDRbLoVHJRa1wnqEv4kxRHrrRL9 mGWSMHqK8I6j9zXi4niod8pQpl0k4O/2SlNh81RyeILEYb587Zs1XGuIYQEDrcAf u+FURxEHSuT4yaZ+oBwhhcIsmsWQMGkfABbwo1Fi2BMtEgZpzd/TScNg1KeSrVI= =dWrz -----END PGP SIGNATURE-----  Payload: tree 42fdb6c89538099a141e94fabe4bbc58098f4d90 parent d6bafef5a0021a6d9ab0a22e11bd0afd5801d936 author example-user1 <55035720example.user1@users.noreply.github.com> 1568648563 +0300 committer GitHub <noreply@github.com> 1568648563 +0300  Update config.yml|
+
+
+### GitHub-add-label
+
+***
+Add labels to an issue
+
+#### Base Command
+
+`GitHub-add-label`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issue_number | The number of the issue to add labels to. | Required | 
+| labels | A CSV list of labels to add to an issue. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+
+```!GitHub-add-label issue_number=1 labels=Content```
+
+#### Human Readable Output
+Label "Content" Successfully Added to Issue #1
+
+### GitHub-get-pull-request
+
+***
+Get a pull request
+
+#### Base Command
+
+`GitHub-get-pull-request`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| pull_number | The number of the pull request to retrieve. | Required | 
+| organization | The name of the organization. | Optional | 
+| repository | The repository of the pull request. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.PR.ID | Number | The ID number of the pull request | 
+| GitHub.PR.NodeID | String | The node ID of the pull request | 
+| GitHub.PR.Number | Number | The issue number of the pull request | 
+| GitHub.PR.State | String | The state of the pull request | 
+| GitHub.PR.Locked | Boolean | Whether the pull request is locked or not | 
+| GitHub.PR.Title | String | The title of the pull request | 
+| GitHub.PR.User.Login | String | The login of the user who opened the pull request | 
+| GitHub.PR.User.ID | Number | The ID of the user who opened the pull request | 
+| GitHub.PR.User.NodeID | String | The node ID of the user who opened the pull request | 
+| GitHub.PR.User.Type | String | The type of the user who opened the pull request | 
+| GitHub.PR.User.SiteAdmin | Boolean | Whether the user who opened the pull request is a site admin or not | 
+| GitHub.PR.Body | String | The body content of the pull request | 
+| GitHub.PR.Label.ID | Number | The ID of the label | 
+| GitHub.PR.Label.NodeID | String | The node ID of the label | 
+| GitHub.PR.Label.Name | String | The name of the label | 
+| GitHub.PR.Label.Description | String | The description of the label | 
+| GitHub.PR.Label.Color | String | The hex color value of the label | 
+| GitHub.PR.Label.Default | Boolean | Whether the label is a default or not | 
+| GitHub.PR.Milestone.ID | Number | The ID of the milestone | 
+| GitHub.PR.Milestone.NodeID | String | The node ID of the milestone | 
+| GitHub.PR.Milestone.Number | Number | The number of the milestone | 
+| GitHub.PR.Milestone.State | String | The state of the milestone | 
+| GitHub.PR.Milestone.Title | String | The title of the milestone | 
+| GitHub.PR.Milestone.Description | String | The description of the milestone | 
+| GitHub.PR.Milestone.Creator.Login | String | The login of the milestone creator | 
+| GitHub.PR.Milestone.Creator.ID | Number | The ID the milestone creator | 
+| GitHub.PR.Milestone.Creator.NodeID | String | The node ID of the milestone creator | 
+| GitHub.PR.Milestone.Creator.Type | String | The type of the milestone creator | 
+| GitHub.PR.Milestone.Creator.SiteAdmin | Boolean | Whether the milestone creator is a site admin or not | 
+| GitHub.PR.Milestone.OpenIssues | Number | The number of open issues with this milestone | 
+| GitHub.PR.Milestone.ClosedIssues | Number | The number of closed issues with this milestone | 
+| GitHub.PR.Milestone.CreatedAt | String | The date the milestone was created | 
+| GitHub.PR.Milestone.UpdatedAt | String | The date the milestone was updated | 
+| GitHub.PR.Milestone.ClosedAt | String | The date the milestone was closed | 
+| GitHub.PR.Milestone.DueOn | String | The due date for the milestone | 
+| GitHub.PR.ActiveLockReason | String | The reason the pull request is locked | 
+| GitHub.PR.CreatedAt | String | The date the pull request was created | 
+| GitHub.PR.UpdatedAt | String | The date the pull request was updated | 
+| GitHub.PR.ClosedAt | String | The date the pull request was closed | 
+| GitHub.PR.MergedAt | String | The date the pull request was merged | 
+| GitHub.PR.MergeCommitSHA | String | The SHA hash of the pull request's merge commit | 
+| GitHub.PR.Assignee.Login | String | The login of the user assigned to the pull request | 
+| GitHub.PR.Assignee.ID | Number | The ID of the user assigned to the pull request | 
+| GitHub.PR.Assignee.NodeID | String | The node ID of the user assigned to the pull request | 
+| GitHub.PR.Assignee.Type | String | The type of the user assigned to the pull request | 
+| GitHub.PR.Assignee.SiteAdmin | Boolean | Whether the user assigned to the pull request is a site admin or not | 
+| GitHub.PR.RequestedReviewer.Login | String | The login of the user requested for review | 
+| GitHub.PR.RequestedReviewer.ID | Number | The ID of the user requested for review | 
+| GitHub.PR.RequestedReviewer.NodeID | String | The node ID of the user requested for review | 
+| GitHub.PR.RequestedReviewer.Type | String | The type of the user requested for review | 
+| GitHub.PR.RequestedReviewer.SiteAdmin | Boolean | Whether the user requested for review is a site admin or not | 
+| GitHub.PR.RequestedTeam.ID | Number | The ID of the team requested for review | 
+| GitHub.PR.RequestedTeam.NodeID | String | The node ID of the team requested for review | 
+| GitHub.PR.RequestedTeam.Name | String | The name of the team requested for review | 
+| GitHub.PR.RequestedTeam.Slug | String | The slug of the team requested for review | 
+| GitHub.PR.RequestedTeam.Description | String | The description of the team requested for review | 
+| GitHub.PR.RequestedTeam.Privacy | String | The privacy setting of the team requested for review | 
+| GitHub.PR.RequestedTeam.Permission | String | The permissions of the team requested for review | 
+| GitHub.PR.RequestedTeam.Parent | Unknown | The parent of the team requested for review | 
+| GitHub.PR.Head.Label | String | The label of the branch that HEAD points to | 
+| GitHub.PR.Head.Ref | String | The reference of the branch that HEAD points to | 
+| GitHub.PR.Head.SHA | String | The SHA hash of the commit that HEAD points to | 
+| GitHub.PR.Head.User.Login | String | The login of the committer of the HEAD commit of the checked out branch | 
+| GitHub.PR.Head.User.ID | Number | The ID of the committer of the HEAD commit of the checked out branch | 
+| GitHub.PR.Head.User.NodeID | String | The node ID of the committer of the HEAD commit of the checked out branch | 
+| GitHub.PR.Head.User.Type | String | The type of the committer of the HEAD commit of the checked out branch | 
+| GitHub.PR.Head.User.SiteAdmin | Boolean | Whether the committer of the HEAD commit of the checked out branch is a site admin or not | 
+| GitHub.PR.Head.Repo.ID | Number | The ID of the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.NodeID | String | The node ID of the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.Name | String | The name of the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.FullName | String | The full name of the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.Owner.Login | String | The user login of the owner of the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.Owner.ID | Number | The user ID of the owner of the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.Owner.NodeID | String | The user node ID of the owner of the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.Owner.Type | String | The user type of the owner of the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.Owner.SiteAdmin | Boolean | Whether the owner of the repository of the checked out branch is a site admin or not | 
+| GitHub.PR.Head.Repo.Private | Boolean | Whether the repository of the checked out branch is private or not | 
+| GitHub.PR.Head.Repo.Description | String | The description of the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.Fork | Boolean | Whether the repository of the checked out branch is a fork or not | 
+| GitHub.PR.Head.Repo.Language | Unknown | The language of the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.ForksCount | Number | The number of forks of the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.StargazersCount | Number | The number of stars of the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.WatchersCount | Number | The number of entities watching the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.Size | Number | The size of the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.DefaultBranch | String | The default branch of the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.OpenIssuesCount | Number | The open issues of the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.Topics | Unknown | Topics listed for the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.HasIssues | Boolean | Whether the repository of the checked out branch has issues or not | 
+| GitHub.PR.Head.Repo.HasProjects | Boolean | Whether the repository of the checked out branch has projects or not | 
+| GitHub.PR.Head.Repo.HasWiki | Boolean | Whether the repository of the checked out branch has a wiki or not | 
+| GitHub.PR.Head.Repo.HasPages | Boolean | Whether the repository of the checked out branch has pages or not | 
+| GitHub.PR.Head.Repo.HasDownloads | Boolean | Whether the repository of the checked out branch has downloads or not | 
+| GitHub.PR.Head.Repo.Archived | Boolean | Whether the repository of the checked out branch has been arvhived or not | 
+| GitHub.PR.Head.Repo.Disabled | Boolean | Whether the repository of the checked out branch has been disabled or not | 
+| GitHub.PR.Head.Repo.PushedAt | String | The date of the latest push to the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.CreatedAt | String | The date of creation of the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.UpdatedAt | String | The date the repository of the checked out branch was last updated | 
+| GitHub.PR.Head.Repo.AllowRebaseMerge | Boolean | Whether the repository of the checked out branch permits rebase-style merges or not | 
+| GitHub.PR.Head.Repo.AllowSquashMerge | Boolean | Whether the repository of the checked out branch permits squash merges or not | 
+| GitHub.PR.Head.Repo.AllowMergeCommit | Boolean | Whether the repository of the checked out branch permits merge commits or not | 
+| GitHub.PR.Head.Repo.SubscribersCount | Number | The number of entities subscribing to the repository of the checked out branch | 
+| GitHub.PR.Base.Label | String | The label of the base branch | 
+| GitHub.PR.Base.Ref | String | The reference of the base branch | 
+| GitHub.PR.Base.SHA | String | The SHA hash of the base branch | 
+| GitHub.PR.Base.User.Login | String | The login of the committer of the commit that the base branch points to | 
+| GitHub.PR.Base.User.ID | Number | The ID of the committer of the commit that the base branch points to | 
+| GitHub.PR.Base.User.NodeID | String | The node ID of the committer of the commit that the base branch points to | 
+| GitHub.PR.Base.User.Type | String | The user type of the committer of the commit that the base branch points to | 
+| GitHub.PR.Base.User.SiteAdmin | Boolean | Whether the committer of the commit that the base branch points to is a site admin or not | 
+| GitHub.PR.Base.Repo.ID | Number | The ID of the repository that the base branch belongs to | 
+| GitHub.PR.Base.Repo.NodeID | String | The node ID of the repository that the base branch belongs to | 
+| GitHub.PR.Base.Repo.Name | String | The name of the repository that the base branch belongs to | 
+| GitHub.PR.Base.Repo.FullName | String | The full name of the repository that the base branch belongs to | 
+| GitHub.PR.Base.Repo.Owner.Login | String | The user login of the owner of the repository that the base branch belongs to | 
+| GitHub.PR.Base.Repo.Owner.ID | Number | The user ID of the owner of the repository that the base branch belongs to | 
+| GitHub.PR.Base.Repo.Owner.NodeID | String | The user node ID of the owner of the repository that the base branch belongs to | 
+| GitHub.PR.Base.Repo.Owner.Type | String | The user type of the owner of the repository that the base branch belongs to | 
+| GitHub.PR.Base.Repo.Owner.SiteAdmin | Boolean | Whether the owner of the repository that the base branch belongs to is a site admin or not | 
+| GitHub.PR.Base.Repo.Private | Boolean | Whether the repository that the base branch belongs to is private or not | 
+| GitHub.PR.Base.Repo.Description | String | The description of the repository that the base branch belongs to | 
+| GitHub.PR.Base.Repo.Fork | Boolean | Whether the repository that the base branch belongs to is a fork or not | 
+| GitHub.PR.Base.Repo.Language | Unknown | The language of the repository that the base branch belongs to | 
+| GitHub.PR.Base.Repo.ForksCount | Number | The number of times that the repository that the base branch belongs to has been forked | 
+| GitHub.PR.Base.Repo.StargazersCount | Number | The number of times that the repository that the base branch belongs to has been starred | 
+| GitHub.PR.Base.Repo.WatchersCount | Number | The number of entities watching the repository that the base branch belongs to | 
+| GitHub.PR.Base.Repo.Size | Number | The size of the repository that the base branch belongs to | 
+| GitHub.PR.Base.Repo.DefaultBranch | String | The default branch of the repository that the base branch belongs to | 
+| GitHub.PR.Base.Repo.OpenIssuesCount | Number | The number of open issues in the repository that the base branch belongs to | 
+| GitHub.PR.Base.Repo.Topics | String | Topics listed for the repository that the base branch belongs to | 
+| GitHub.PR.Base.Repo.HasIssues | Boolean | Whether the repository that the base branch belongs to has issues or not | 
+| GitHub.PR.Base.Repo.HasProjects | Boolean | Whether the repository that the base branch belongs to has projects or not | 
+| GitHub.PR.Base.Repo.HasWiki | Boolean | Whether the repository that the base branch belongs to has a wiki or not | 
+| GitHub.PR.Base.Repo.HasPages | Boolean | Whether the repository that the base branch belongs to has pages or not | 
+| GitHub.PR.Base.Repo.HasDownloads | Boolean | Whether the repository that the base branch belongs to has downloads or not | 
+| GitHub.PR.Base.Repo.Archived | Boolean | Whether the repository that the base branch belongs to is archived or not | 
+| GitHub.PR.Base.Repo.Disabled | Boolean | Whether the repository that the base branch belongs to is disabled or not | 
+| GitHub.PR.Base.Repo.PushedAt | String | The date that the repository that the base branch belongs to was last pushed to | 
+| GitHub.PR.Base.Repo.CreatedAt | String | The date of creation of the repository that the base branch belongs to | 
+| GitHub.PR.Base.Repo.UpdatedAt | String | The date that the repository that the base branch belongs to was last updated | 
+| GitHub.PR.Base.Repo.AllowRebaseMerge | Boolean | Whether the repository that the base branch belongs to allows rebase-style merges or not | 
+| GitHub.PR.Base.Repo.AllowSquashMerge | Boolean | Whether the repository that the base branch belongs to allows squash merges or not | 
+| GitHub.PR.Base.Repo.AllowMergeCommit | Boolean | Whether the repository that the base branch belongs to allows merge commits or not | 
+| GitHub.PR.Base.Repo.SubscribersCount | Number | The number of entities that subscribe to the repository that the base branch belongs to | 
+| GitHub.PR.AuthorAssociation | String | The pull request author association | 
+| GitHub.PR.Draft | Boolean | Whether the pull request is a draft or not | 
+| GitHub.PR.Merged | Boolean | Whether the pull request is merged or not | 
+| GitHub.PR.Mergeable | Boolean | Whether the pull request is mergeable or not | 
+| GitHub.PR.Rebaseable | Boolean | Whether the pull request is rebaseable or not | 
+| GitHub.PR.MergeableState | String | The mergeable state of the pull request | 
+| GitHub.PR.MergedBy.Login | String | The login of the user who merged the pull request | 
+| GitHub.PR.MergedBy.ID | Number | The ID of the user who merged the pull request | 
+| GitHub.PR.MergedBy.NodeID | String | The node ID of the user who merged the pull request | 
+| GitHub.PR.MergedBy.Type | String | The type of the user who merged the pull request | 
+| GitHub.PR.MergedBy.SiteAdmin | Boolean | Whether the user who merged the pull request is a site admin or not | 
+| GitHub.PR.Comments | Number | The number of comments on the pull request | 
+| GitHub.PR.ReviewComments | Number | The number of review comments on the pull request | 
+| GitHub.PR.MaintainerCanModify | Boolean | Whether the maintainer can modify the pull request or not | 
+| GitHub.PR.Commits | Number | The number of commits in the pull request | 
+| GitHub.PR.Additions | Number | The number of additions in the pull request | 
+| GitHub.PR.Deletions | Number | The number of deletions in the pull request | 
+| GitHub.PR.ChangedFiles | Number | The number of changed files in the pull request | 
+
+#### Command Example
+
+```!GitHub-get-pull-request pull_number=1```
+
+#### Human Readable Output
+## Pull Request #1
+|Additions|AuthorAssociation|Base|Body|ChangedFiles|Comments|Commits|CreatedAt|Deletions|Head|ID|Label|Locked|MaintainerCanModify|MergeCommitSHA|Mergeable|MergeableState|Merged|NodeID|Number|Rebaseable|RequestedReviewer|ReviewComments|State|UpdatedAt|User|
+|--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |
+|4|FIRST_TIME_CONTRIBUTOR|Label: example-user1:master Ref: master SHA: b27ea6ac9836d2e756b44eb1d66f02d3d4299362 User: {"Login": "example-user1", "ID": 55035720, "NodeID": "MDQ6VXNlcjU1MDM1NzIw", "Type": "User", "SiteAdmin": false} Repo: {"ID": 207744685, "NodeID": "MDEwOlJlcG9zaXRvcnkyMDc3NDQ2ODU=", "Name": "content", "FullName": "example-user1/content", "Owner": {"Login": "example-user1", "ID": 55035720, "NodeID": "MDQ6VXNlcjU1MDM1NzIw", "Type": "User", "SiteAdmin": false}, "Private": false, "Description": "This repository contains all Demisto content and from here we share content updates", "Fork": true, "Language": "Python", "ForksCount": 0, "StargazersCount": 0, "WatchersCount": 0, "Size": 96530, "DefaultBranch": "master", "OpenIssuesCount": 10, "Topics": null, "HasIssues": false, "HasProjects": true, "HasWiki": false, "HasPages": false, "HasDownloads": true, "Archived": false, "Disabled": false, "PushedAt": "2019-09-18T14:05:43Z", "CreatedAt": "2019-09-11T06:59:20Z", "UpdatedAt": "2019-09-16T15:42:46Z", "AllowRebaseMerge": null, "AllowSquashMerge": null, "AllowMergeCommit": null, "SucscribersCount": null}|## Status Ready/In Progress/In Hold(Reason for hold)  ## Related Issues fixes: link to the issue  ## Description A few sentences describing the overall goals of the pull request's commits.  ## Screenshots Paste here any images that will help the reviewer  ## Related PRs List related PRs against other branches:  branch \ PR ------ \ ## Required version of Demistox.x.x ## Does it break backward compatibility?- Yes- Further details:- No ## Must have- [ ] Tests- [ ] Documentation (with link to it)- [ ] Code Review ## DependenciesMention the dependencies of the entity you changed as given from the precommit hooks in checkboxes, and tick after tested them.- [ ] Dependency 1- [ ] Dependency 2- [ ] Dependency 3 ## Additional changesDescribe additional changes done, for example adding a function to common server.|1|5|4|2019-09-11T07:06:26Z|0|Label: example-user4:patch-1 Ref: patch-1 SHA: c01238eea80e35bb76a5c51ac0c95eba4010d8e5 User: {"Login": "example-user4", "ID": 46294017, "NodeID": "MDQ6VXNlcjQ2Mjk0MDE3", "Type": "User", "SiteAdmin": false} Repo: {"ID": 205137013, "NodeID": "MDEwOlJlcG9zaXRvcnkyMDUxMzcwMTM=", "Name": "content", "FullName": "example-user4/content", "Owner": {"Login": "example-user4", "ID": 46294017, "NodeID": "MDQ6VXNlcjQ2Mjk0MDE3", "Type": "User", "SiteAdmin": false}, "Private": false, "Description": "This repository contains all Demisto content and from here we share content updates", "Fork": true, "Language": "Python", "ForksCount": 2, "StargazersCount": 0, "WatchersCount": 0, "Size": 95883, "DefaultBranch": "master", "OpenIssuesCount": 2, "Topics": null, "HasIssues": false, "HasProjects": true, "HasWiki": false, "HasPages": false, "HasDownloads": true, "Archived": false, "Disabled": false, "PushedAt": "2019-09-16T15:43:54Z", "CreatedAt": "2019-08-29T10:18:15Z", "UpdatedAt": "2019-08-29T10:18:18Z", "AllowRebaseMerge": null, "AllowSquashMerge": null, "AllowMergeCommit": null, "SucscribersCount": null}|316303415|'ID': 1563600288, 'NodeID': 'MDU6TGFiZWwxNTYzNjAwMjg4', 'Name': 'Content', 'Description': None, 'Color': None, 'Default': False},{'ID': 1549466359, 'NodeID': 'MDU6TGFiZWwxNTQ5NDY2MzU5', 'Name': 'Contribution', 'Description': None, 'Color': None, 'Default': False},{'ID': 1549411616, 'NodeID': 'MDU6TGFiZWwxNTQ5NDExNjE2', 'Name': 'bug', 'Description': None, 'Color': None, 'Default': True}|false|true|5714b1359b9d7549c89c35fe9fdc266a3db3b766|true|unstable|false|MDExOlB1bGxSZXF1ZXN0MzE2MzAzNDE1|1|true|{'Login': 'example-user3', 'ID': 30797606, 'NodeID': 'MDQ6VXNlcjMwNzk3NjA2', 'Type': 'User', 'SiteAdmin': False}, {'Login': 'example-user1', 'ID': 55035720, 'NodeID': 'MDQ6VXNlcjU1MDM1NzIw', 'Type': 'User', 'SiteAdmin': False}|0|open|2019-09-18T14:05:51Z|Login: example-user4 ID: 46294017 NodeID: MDQ6VXNlcjQ2Mjk0MDE3 Type: User SiteAdmin: false|
+
+
+### GitHub-list-teams
+
+***
+List the teams for an organization. Note that this API call is only available to authenticated members of the organization.
+
+#### Base Command
+
+`GitHub-list-teams`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| organization | The name of the organization. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.Team.ID | Number | The ID of the team | 
+| GitHub.Team.NodeID | String | The node ID of the team | 
+| GitHub.Team.Name | String | The name of the team | 
+| GitHub.Team.Slug | String | The slug of the team | 
+| GitHub.Team.Description | String | The description of the team | 
+| GitHub.Team.Privacy | String | The privacy setting of the team | 
+| GitHub.Team.Permission | String | The permissions of the team | 
+| GitHub.Team.Parent | Unknown | The parent of the team | 
+
+#### Command Example
+
+```!GitHub-list-teams organization=demisto```
+
+#### Human Readable Output
+## Teams for Organization "demisto"
+|Description|ID|Name|NodeID|Permission|Privacy|Slug|
+|--- |--- |--- |--- |--- |--- |--- |
+|Our customer success team|2276690|customer-success|MDQ6VGVhbTIyNzY2NzA=|pull|closed|customer-success|
+|Our beloved content team|3043998|Content|MDQ6VGVhbTMwNDM0NDg=|pull|closed|content|
+
+
+### GitHub-delete-branch
+
+***
+Delete a branch
+
+#### Base Command
+
+`GitHub-delete-branch`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| branch_name | The name of the branch to delete. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+
+```!GitHub-delete-branch branch_name=new-branch-example```
+
+#### Human Readable Output
+Branch "new-branch-example" Deleted Successfully
+
+### GitHub-list-pr-review-comments
+
+***
+Lists all the review comments for a pull request.
+
+#### Base Command
+
+`GitHub-list-pr-review-comments`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| pull_number | The issue number of the pull request. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.PR.Number | Number | The issue number of the pull request. | 
+| GitHub.PR.ReviewComment.ID | Number | The ID number of the pull request review comment. | 
+| GitHub.PR.ReviewComment.NodeID | String | The Node ID of the pull request review comment. | 
+| GitHub.PR.ReviewComment.PullRequestReviewID | Number | The ID of the pull request review. | 
+| GitHub.PR.ReviewComment.DiffHunk | String | The diff hunk for which the review comment applies. | 
+| GitHub.PR.ReviewComment.Path | String | The file path of the proposed file changes for which the review comment applies. | 
+| GitHub.PR.ReviewComment.Position | Number | The position of the change for which the review comment applies. | 
+| GitHub.PR.ReviewComment.OriginalPosition | Number | The original position of the change for which the review comment applies. | 
+| GitHub.PR.ReviewComment.CommitID | String | The commit ID of the proposed change. | 
+| GitHub.PR.ReviewComment.OriginalCommitID | String | The commit ID of the commit before the proposed change. | 
+| GitHub.PR.ReviewComment.InReplyToID | Number | The reply ID of the comment for which the review comment applies. | 
+| GitHub.PR.ReviewComment.User.Login | String | The login of the user who created the review comment. | 
+| GitHub.PR.ReviewComment.User.ID | Number | The ID of the user who created the review comment. | 
+| GitHub.PR.ReviewComment.User.NodeID | String | The Node ID of the user who created the review comment. | 
+| GitHub.PR.ReviewComment.User.Type | String | The type of the user who created the review comment. | 
+| GitHub.PR.ReviewComment.User.SiteAdmin | Boolean | Whether the user who created the review comment is a site administrator. or not | 
+| GitHub.PR.ReviewComment.Body | String | The body content of the review comment. | 
+| GitHub.PR.ReviewComment.CreatedAt | String | The time the review comment was created. | 
+| GitHub.PR.ReviewComment.UpdatedAt | String | The time the review comment was updated. | 
+| GitHub.PR.ReviewComment.AuthorAssociation | String | The association of the user who created the review comment. | 
+
+#### Command Example
+
+```!GitHub-list-pr-review-comments pull_number=1```
+
+#### Human Readable Output
+## Pull Request Review Comments for #1
+|AuthorAssociation|Body|CommitID|CreatedAt|DiffHunk|ID|NodeID|OriginalCommitID|OriginalPosition|Path|Position|PullRequestReviewID|UpdatedAt|User|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+|COLLABORATOR|Change it|1af17e73721dbe0c40011b82ed4bb1a7dbe3ce29|2021-04-08T11:00:21Z|@@ -9,7 +9,7 @@ "url": "some url" } ], -    "another key": [ +    "fixed key": [|609573611|df35047fffd38a65b8fe6963579254e8b09db25e1234567890==|df35047fffd38a65b8fe6963579254e8b09db25e|5|file.json|5|631256917|2021-04-08T11:00:28Z|Login: teizenman ID: 50326704 NodeID: MDQ6VXNlcjUwMzI2NzA0 Type: User SiteAdmin: false|
+
+### GitHub-update-pull-request
+
+***
+Updates a pull request in a repository.
+
+#### Base Command
+
+`GitHub-update-pull-request`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| title | The new title of the pull request. | Optional | 
+| body | The new body content of the pull request. | Optional | 
+| state | The new state of the pull request. Can be "open", or "closed". Possible values are: open, closed. | Optional | 
+| base | The name of the branch that you want your changes pulled, which must be an existing branch in the current repository. You cannot update the base branch in a pull request to point to another repository. | Optional | 
+| maintainer_can_modify | Indicates whether maintainers can modify the pull request. Possible values are: true, false. | Optional | 
+| pull_number | The issue number of the pull request for which to modify. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.PR.ID | Number | The ID number of the pull request. | 
+| GitHub.PR.NodeID | String | The Node ID of the pull request. | 
+| GitHub.PR.Number | Number | The issue number of the pull request. | 
+| GitHub.PR.State | String | The state of the pull request. | 
+| GitHub.PR.Locked | Boolean | Whether the pull request is locked. | 
+| GitHub.PR.Title | String | The title of the pull request. | 
+| GitHub.PR.User.Login | String | The login of the user who opened the pull request. | 
+| GitHub.PR.User.ID | Number | The ID of the user who opened the pull request. | 
+| GitHub.PR.User.NodeID | String | The Node ID of the user who opened the pull request. | 
+| GitHub.PR.User.Type | String | The type of the user who opened the pull request. | 
+| GitHub.PR.User.SiteAdmin | Boolean | Whether the user who opened the pull request is a site administrator. | 
+| GitHub.PR.Body | String | The body content of the pull request. | 
+| GitHub.PR.Label.ID | Number | The ID of the label. | 
+| GitHub.PR.Label.NodeID | String | The Node ID of the label. | 
+| GitHub.PR.Label.Name | String | The name of the label. | 
+| GitHub.PR.Label.Description | String | The description of the label. | 
+| GitHub.PR.Label.Color | String | The hex color value of the label. | 
+| GitHub.PR.Label.Default | Boolean | Whether the label is a default. | 
+| GitHub.PR.Milestone.ID | Number | The ID of the milestone. | 
+| GitHub.PR.Milestone.NodeID | String | The Node ID of the milestone. | 
+| GitHub.PR.Milestone.Number | Number | The number of the milestone. | 
+| GitHub.PR.Milestone.State | String | The state of the milestone. | 
+| GitHub.PR.Milestone.Title | String | The title of the milestone. | 
+| GitHub.PR.Milestone.Description | String | The description of the milestone. | 
+| GitHub.PR.Milestone.Creator.Login | String | The login of the milestone creator. | 
+| GitHub.PR.Milestone.Creator.ID | Number | The ID the milestone creator. | 
+| GitHub.PR.Milestone.Creator.NodeID | String | The Node ID of the milestone creator. | 
+| GitHub.PR.Milestone.Creator.Type | String | The type of the milestone creator. | 
+| GitHub.PR.Milestone.Creator.SiteAdmin | Boolean | Whether the milestone creator is a site administrator. | 
+| GitHub.PR.Milestone.OpenIssues | Number | The number of open issues with this milestone. | 
+| GitHub.PR.Milestone.ClosedIssues | Number | The number of closed issues with this milestone. | 
+| GitHub.PR.Milestone.CreatedAt | String | The date the milestone was created. | 
+| GitHub.PR.Milestone.UpdatedAt | String | The date the milestone was updated. | 
+| GitHub.PR.Milestone.ClosedAt | String | The date the milestone was closed. | 
+| GitHub.PR.Milestone.DueOn | String | The due date for the milestone. | 
+| GitHub.PR.ActiveLockReason | String | The reason the pull request is locked. | 
+| GitHub.PR.CreatedAt | String | The date the pull request was created. | 
+| GitHub.PR.UpdatedAt | String | The date the pull request was updated. | 
+| GitHub.PR.ClosedAt | String | The date the pull request was closed. | 
+| GitHub.PR.MergedAt | String | The date the pull request was merged. | 
+| GitHub.PR.MergeCommitSHA | String | The SHA hash of the pull request's merge commit. | 
+| GitHub.PR.Assignee.Login | String | The login of the user assigned to the pull request. | 
+| GitHub.PR.Assignee.ID | Number | The ID of the user assigned to the pull request. | 
+| GitHub.PR.Assignee.NodeID | String | The Node ID of the user assigned to the pull request. | 
+| GitHub.PR.Assignee.Type | String | The type of the user assigned to the pull request. | 
+| GitHub.PR.Assignee.SiteAdmin | Boolean | Whether the user assigned to the pull request is a site administrator. not | 
+| GitHub.PR.RequestedReviewer.Login | String | The login of the user requested for review. | 
+| GitHub.PR.RequestedReviewer.ID | Number | The ID of the user requested for review. | 
+| GitHub.PR.RequestedReviewer.NodeID | String | The Node ID of the user requested for review. | 
+| GitHub.PR.RequestedReviewer.Type | String | The type of the user requested for review. | 
+| GitHub.PR.RequestedReviewer.SiteAdmin | Boolean | Whether the user requested for review is a site administrator. | 
+| GitHub.PR.RequestedTeam.ID | Number | The ID of the team requested for review. | 
+| GitHub.PR.RequestedTeam.NodeID | String | The Node ID of the team requested for review. | 
+| GitHub.PR.RequestedTeam.Name | String | The name of the team requested for review. | 
+| GitHub.PR.RequestedTeam.Slug | String | The slug of the team requested for review. | 
+| GitHub.PR.RequestedTeam.Description | String | The description of the team requested for review. | 
+| GitHub.PR.RequestedTeam.Privacy | String | The privacy setting of the team requested for review. | 
+| GitHub.PR.RequestedTeam.Permission | String | The permissions of the team requested for review. | 
+| GitHub.PR.RequestedTeam.Parent | Unknown | The parent of the team requested for review. | 
+| GitHub.PR.Head.Label | String | The label of the branch for which the HEAD points. | 
+| GitHub.PR.Head.Ref | String | The reference of the branch for which the HEAD points. | 
+| GitHub.PR.Head.SHA | String | The SHA hash of the commit for which the HEAD points. | 
+| GitHub.PR.Head.User.Login | String | The committer login of the HEAD commit of the checked out branch. | 
+| GitHub.PR.Head.User.ID | Number | The committer ID of the HEAD commit of the checked out branch. | 
+| GitHub.PR.Head.User.NodeID | String | The Node committer ID of the HEAD commit of the checked out branch. | 
+| GitHub.PR.Head.User.Type | String | The committer type of the HEAD commit of the checked out branch. | 
+| GitHub.PR.Head.User.SiteAdmin | Boolean | Whether the committer of the HEAD commit of the checked out branch is a site administrator. | 
+| GitHub.PR.Head.Repo.ID | Number | The ID of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.NodeID | String | The Node ID of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.Name | String | The name of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.FullName | String | The full name of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.Owner.Login | String | The user login of the owner of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.Owner.ID | Number | The user ID of the owner of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.Owner.NodeID | String | The user node ID of the owner of the repository of the checked. out branch | 
+| GitHub.PR.Head.Repo.Owner.Type | String | The user type of the owner of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.Owner.SiteAdmin | Boolean | Whether the owner of the repository of the checked out branch is a site administrator. | 
+| GitHub.PR.Head.Repo.Private | Boolean | Whether the repository of the checked out branch is private. | 
+| GitHub.PR.Head.Repo.Description | String | The description of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.Fork | Boolean | Whether the repository of the checked out branch is a fork. | 
+| GitHub.PR.Head.Repo.Language | Unknown | The language of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.ForksCount | Number | The number of forks of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.StargazersCount | Number | The number of stars of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.WatchersCount | Number | The number of entities watching the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.Size | Number | The size of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.DefaultBranch | String | The default branch of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.OpenIssuesCount | Number | The open issues of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.Topics | Unknown | Topics listed for the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.HasIssues | Boolean | Whether the repository of the checked out branch has issues. | 
+| GitHub.PR.Head.Repo.HasProjects | Boolean | Whether the repository of the checked out branch has projects. | 
+| GitHub.PR.Head.Repo.HasWiki | Boolean | Whether the repository of the checked out branch has a wiki. | 
+| GitHub.PR.Head.Repo.HasPages | Boolean | Whether the repository of the checked out branch has pages. | 
+| GitHub.PR.Head.Repo.HasDownloads | Boolean | Whether the repository of the checked out branch has downloads. | 
+| GitHub.PR.Head.Repo.Archived | Boolean | Whether the repository of the checked out branch has been archived. | 
+| GitHub.PR.Head.Repo.Disabled | Boolean | Whether the repository of the checked out branch has been disabled. | 
+| GitHub.PR.Head.Repo.PushedAt | String | The date of the latest push to the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.CreatedAt | String | The date of creation of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.UpdatedAt | String | The date the repository of the checked out branch was last updated. | 
+| GitHub.PR.Head.Repo.AllowRebaseMerge | Boolean | Whether the repository of the checked out branch permits rebase-style merges. | 
+| GitHub.PR.Head.Repo.AllowSquashMerge | Boolean | Whether the repository of the checked out branch permits squash merges. | 
+| GitHub.PR.Head.Repo.AllowMergeCommit | Boolean | Whether the repository of the checked out branch permits merge commits. | 
+| GitHub.PR.Head.Repo.SubscribersCount | Number | The number of entities subscribing to the repository of the checked out branch. | 
+| GitHub.PR.Base.Label | String | The label of the base branch. | 
+| GitHub.PR.Base.Ref | String | The reference of the base branch. | 
+| GitHub.PR.Base.SHA | String | The SHA hash of the base branch. | 
+| GitHub.PR.Base.User.Login | String | The committer login of the commit for which the base branch points. | 
+| GitHub.PR.Base.User.ID | Number | The ID of the committer of the commit for which the base branch points. | 
+| GitHub.PR.Base.User.NodeID | String | The committer Node ID of the commit for which the base branch points. | 
+| GitHub.PR.Base.User.Type | String | The user committer type of the commit for which the base branch points. | 
+| GitHub.PR.Base.User.SiteAdmin | Boolean | Whether the committer of the commit for which the base branch points is a site administrator. | 
+| GitHub.PR.Base.Repo.ID | Number | The ID of the repository for which the base branch belongs. | 
+| GitHub.PR.Base.Repo.NodeID | String | The Node ID of the repository for which the base branch belongs. | 
+| GitHub.PR.Base.Repo.Name | String | The name of the repository for which the base branch belongs. | 
+| GitHub.PR.Base.Repo.FullName | String | The full name of the repository for which the base branch belongs. | 
+| GitHub.PR.Base.Repo.Owner.Login | String | The user login of the owner of the repository for which the base branch belongs. | 
+| GitHub.PR.Base.Repo.Owner.ID | Number | The user ID of the owner of the repository for which the base branch belongs. | 
+| GitHub.PR.Base.Repo.Owner.NodeID | String | The user node ID of the owner of the repository for which the base branch belongs. | 
+| GitHub.PR.Base.Repo.Owner.Type | String | The user type of the owner of the repository for which the base branch belongs. | 
+| GitHub.PR.Base.Repo.Owner.SiteAdmin | Boolean | Whether the owner of the repository for which the base branch belongs to is a site administrator. | 
+| GitHub.PR.Base.Repo.Private | Boolean | Whether the repository for which the base branch belongs is private. | 
+| GitHub.PR.Base.Repo.Description | String | The description of the repository for which the base branch belongs. | 
+| GitHub.PR.Base.Repo.Fork | Boolean | Whether the repository for which the base branch belongs to is a fork. | 
+| GitHub.PR.Base.Repo.Language | Unknown | The language of the repository for which the base branch belongs. | 
+| GitHub.PR.Base.Repo.ForksCount | Number | The number of times that the repository for which the base branch belongs has been forked. | 
+| GitHub.PR.Base.Repo.StargazersCount | Number | The number of times that the repository for which the base branch belongs has been starred. | 
+| GitHub.PR.Base.Repo.WatchersCount | Number | The number of entities watching the repository for which the base branch belongs. | 
+| GitHub.PR.Base.Repo.Size | Number | The size of the repository for which the base branch belongs. | 
+| GitHub.PR.Base.Repo.DefaultBranch | String | The default branch of the repository for which the base branch belongs. | 
+| GitHub.PR.Base.Repo.OpenIssuesCount | Number | The number of open issues in the repository for which the base branch belongs. | 
+| GitHub.PR.Base.Repo.Topics | String | Topics listed for the repository for which the base branch belongs. | 
+| GitHub.PR.Base.Repo.HasIssues | Boolean | Whether the repository for which the base branch belongs has issues. | 
+| GitHub.PR.Base.Repo.HasProjects | Boolean | Whether the repository for which the base branch belongs has projects. | 
+| GitHub.PR.Base.Repo.HasWiki | Boolean | Whether the repository for which the base branch belongs has a wiki. | 
+| GitHub.PR.Base.Repo.HasPages | Boolean | Whether the repository for which the base branch belongs to has pages. | 
+| GitHub.PR.Base.Repo.HasDownloads | Boolean | Whether the repository for which the base branch belongs has downloads. | 
+| GitHub.PR.Base.Repo.Archived | Boolean | Whether the repository for which the base branch belongs is archived. | 
+| GitHub.PR.Base.Repo.Disabled | Boolean | Whether the repository for which the base branch belongs is disabled. | 
+| GitHub.PR.Base.Repo.PushedAt | String | The date that the repository for which the base branch belongs to was last pushed. | 
+| GitHub.PR.Base.Repo.CreatedAt | String | The date of creation of the repository for which the base branch belongs. | 
+| GitHub.PR.Base.Repo.UpdatedAt | String | The date that the repository for which the base branch belongs was last updated. | 
+| GitHub.PR.Base.Repo.AllowRebaseMerge | Boolean | Whether the repository for which the base branch belongs allows rebase-style merges. | 
+| GitHub.PR.Base.Repo.AllowSquashMerge | Boolean | Whether the repository for which the base branch belongs allows squash merges. | 
+| GitHub.PR.Base.Repo.AllowMergeCommit | Boolean | Whether the repository for which the base branch belongs allows merge commits. | 
+| GitHub.PR.Base.Repo.SubscribersCount | Number | The number of entities for which subscribe to the repository that the base branch belongs. | 
+| GitHub.PR.AuthorAssociation | String | The pull request author association. | 
+| GitHub.PR.Draft | Boolean | Whether the pull request is a draft. | 
+| GitHub.PR.Merged | Boolean | Whether the pull request is merged. | 
+| GitHub.PR.Mergeable | Boolean | Whether the pull request is mergeable. | 
+| GitHub.PR.Rebaseable | Boolean | Whether the pull request is rebaseable. | 
+| GitHub.PR.MergeableState | String | The mergeable state of the pull request. | 
+| GitHub.PR.MergedBy.Login | String | The login of the user who merged the pull request. | 
+| GitHub.PR.MergedBy.ID | Number | The ID of the user who merged the pull request. | 
+| GitHub.PR.MergedBy.NodeID | String | The Node ID of the user who merged the pull request. | 
+| GitHub.PR.MergedBy.Type | String | The type of the user who merged the pull request. | 
+| GitHub.PR.MergedBy.SiteAdmin | Boolean | Whether the user who merged the pull request is a site administrator. | 
+| GitHub.PR.Comments | Number | The number of comments on the pull request. | 
+| GitHub.PR.ReviewComments | Number | The number of review comments on the pull request. | 
+| GitHub.PR.MaintainerCanModify | Boolean | Whether the maintainer can modify the pull request. | 
+| GitHub.PR.Commits | Number | The number of commits in the pull request. | 
+| GitHub.PR.Additions | Number | The number of additions in the pull request. | 
+| GitHub.PR.Deletions | Number | The number of deletions in the pull request. | 
+| GitHub.PR.ChangedFiles | Number | The number of changed files in the pull request. | 
+
+#### Command Example
+
+```!GitHub-update-pull-request pull_number=1 body=Changing```
+
+#### Human Readable Output
+## Updated Pull Request #15
+|Additions|AuthorAssociation|Base|Body|ChangedFiles|Comments|Commits|CreatedAt|Deletions|Draft|Head|ID|Locked|MaintainerCanModify|MergeCommitSHA|Mergeable|MergeableState|Merged|NodeID|Number|Rebaseable|ReviewComments|State|UpdatedAt|User|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+|1|COLLABORATOR|Label: demisto:master Ref: master SHA: 56b289d4b1402b1492dd0cc681325b1f0ae47505 User: {"Login": "demisto", "ID": 11011767, "NodeID": "MDEyOk9yZ2FuaXphdGlvbjExMDExNzY3", "Type": "Organization", "SiteAdmin": false} Repo: {"ID": 315109290, "NodeID": "MDEwOlJlcG9zaXRvcnkzMTUxMDkyOTA=", "Name": "content-internal-dist", "FullName": "demisto/content-internal-dist", "Owner": {"Login": "demisto", "ID": 11011767, "NodeID": "MDEyOk9yZ2FuaXphdGlvbjExMDExNzY3", "Type": "Organization", "SiteAdmin": false}, "Private": true, "Description": null, "Fork": false, "Language": "Python", "ForksCount": 0, "StargazersCount": 0, "WatchersCount": 0, "Size": 226, "DefaultBranch": "master", "OpenIssuesCount": 1, "Topics": null, "HasIssues": true, "HasProjects": true, "HasWiki": true, "HasPages": false, "HasDownloads": true, "Archived": false, "Disabled": false, "PushedAt": "2021-04-08T10:59:28Z", "CreatedAt": "2020-11-22T18:51:37Z", "UpdatedAt": "2021-04-07T08:58:02Z", "AllowRebaseMerge": null, "AllowSquashMerge": null, "AllowMergeCommit": null, "SucscribersCount": null}|Changing|1|0|1|2021-04-08T10:59:27Z|1|false|Label: demisto:teizenman-gh-test Ref: teizenman-gh-test SHA: 87429cec185dfd82be0f2e6d98b0f5d2d0bb91b0 User: {"Login": "demisto", "ID": 11011767, "NodeID": "MDEyOk9yZ2FuaXphdGlvbjExMDExNzY3", "Type": "Organization", "SiteAdmin": false} Repo: {"ID": 315109290, "NodeID": "MDEwOlJlcG9zaXRvcnkzMTUxMDkyOTA=", "Name": "content-internal-dist", "FullName": "demisto/content-internal-dist", "Owner": {"Login": "demisto", "ID": 11011767, "NodeID": "MDEyOk9yZ2FuaXphdGlvbjExMDExNzY3", "Type": "Organization", "SiteAdmin": false}, "Private": true, "Description": null, "Fork": false, "Language": "Python", "ForksCount": 0, "StargazersCount": 0, "WatchersCount": 0, "Size": 226, "DefaultBranch": "master", "OpenIssuesCount": 1, "Topics": null, "HasIssues": true, "HasProjects": true, "HasWiki": true, "HasPages": false, "HasDownloads": true, "Archived": false, "Disabled": false, "PushedAt": "2021-04-08T10:59:28Z", "CreatedAt": "2020-11-22T18:51:37Z", "UpdatedAt": "2021-04-07T08:58:02Z", "AllowRebaseMerge": null, "AllowSquashMerge": null, "AllowMergeCommit": null, "SucscribersCount": null}|611450655|false|false|1af17e73721dbe0c40011b82ed4bb1a7dbe3ce29|true|blocked|false|1af17e73721dbe0c40011b82ed4bb1a7|15|true|1|open|2021-04-08T11:08:14Z|Login: teizenman ID: 50326704 NodeID: MDQ6VXNlcjUwMzI2NzA0 Type: User SiteAdmin: false|
+
+### GitHub-is-pr-merged
+
+***
+Returns a merged pull request. If the pull request has been merged, the API returns 'Status: 204 No Content'. If the pull request
+has not been merged the API returns 'Status: 404 Not Found'
+
+#### Base Command
+
+`GitHub-is-pr-merged`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| pull_number | The issue number of the pull request to check. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+
+```!GitHub-is-pr-merged pull_number=1```
+
+#### Human Readable Output
+Pull Request #1 was Merged
+
+### GitHub-create-pull-request
+
+***
+Creates a new pull request.
+
+#### Base Command
+
+`GitHub-create-pull-request`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| title | The title of the pull request. | Required | 
+| head | The name of the branch where the changes are made. | Required | 
+| base | The name of the branch you want the changes pulled into, which must be an existing branch on the current repository. | Required | 
+| body | The contents of the pull request. | Optional | 
+| maintainer_can_modify | Indicates whether maintainers can modify the pull request. Possible values are: true, false. | Optional | 
+| draft | Indicates whether the pull request is a draft. For more information, see https://help.github.com/en/articles/about-pull-requests#draft-pull-requests. Possible values are: true, false. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.PR.ID | Number | The ID number of the pull request. | 
+| GitHub.PR.NodeID | String | The Node ID of the pull request. | 
+| GitHub.PR.Number | Number | The issue number of the pull request. | 
+| GitHub.PR.State | String | The state of the pull request. | 
+| GitHub.PR.Locked | Boolean | Whether the pull request is locked. | 
+| GitHub.PR.Title | String | The title of the pull request. | 
+| GitHub.PR.User.Login | String | The login of the user who opened the pull request. | 
+| GitHub.PR.User.ID | Number | The ID of the user who opened the pull request. | 
+| GitHub.PR.User.NodeID | String | The Node ID of the user who opened the pull request. | 
+| GitHub.PR.User.Type | String | The user type who opened the pull request. | 
+| GitHub.PR.User.SiteAdmin | Boolean | Whether the user who opened the pull request is a site administrator. | 
+| GitHub.PR.Body | String | The body content of the pull request. | 
+| GitHub.PR.Label.ID | Number | The ID of the label. | 
+| GitHub.PR.Label.NodeID | String | The Node ID of the label. | 
+| GitHub.PR.Label.Name | String | The name of the label. | 
+| GitHub.PR.Label.Description | String | The description of the label. | 
+| GitHub.PR.Label.Color | String | The hex color value of the label. | 
+| GitHub.PR.Label.Default | Boolean | Whether the label is a default. | 
+| GitHub.PR.Milestone.ID | Number | The ID of the milestone. | 
+| GitHub.PR.Milestone.NodeID | String | The Node ID of the milestone. | 
+| GitHub.PR.Milestone.Number | Number | The number of the milestone. | 
+| GitHub.PR.Milestone.State | String | The state of the milestone. | 
+| GitHub.PR.Milestone.Title | String | The title of the milestone. | 
+| GitHub.PR.Milestone.Description | String | The description of the milestone. | 
+| GitHub.PR.Milestone.Creator.Login | String | The login of the milestone creator. | 
+| GitHub.PR.Milestone.Creator.ID | Number | The ID the milestone creator. | 
+| GitHub.PR.Milestone.Creator.NodeID | String | The Node ID of the milestone creator. | 
+| GitHub.PR.Milestone.Creator.Type | String | The type of the milestone creator. | 
+| GitHub.PR.Milestone.Creator.SiteAdmin | Boolean | Whether the milestone creator is a site administrator. | 
+| GitHub.PR.Milestone.OpenIssues | Number | The number of open issues with this milestone. | 
+| GitHub.PR.Milestone.ClosedIssues | Number | The number of closed issues with this milestone. | 
+| GitHub.PR.Milestone.CreatedAt | String | The date the milestone was created. | 
+| GitHub.PR.Milestone.UpdatedAt | String | The date the milestone was updated. | 
+| GitHub.PR.Milestone.ClosedAt | String | The date the milestone was closed. | 
+| GitHub.PR.Milestone.DueOn | String | The due date for the milestone. | 
+| GitHub.PR.ActiveLockReason | String | The reason the pull request is locked. | 
+| GitHub.PR.CreatedAt | String | The date the pull request was created. | 
+| GitHub.PR.UpdatedAt | String | The date the pull request was updated. | 
+| GitHub.PR.ClosedAt | String | The date the pull request was closed. | 
+| GitHub.PR.MergedAt | String | The date the pull request was merged. | 
+| GitHub.PR.MergeCommitSHA | String | The SHA hash of the pull request's merge commit. | 
+| GitHub.PR.Assignee.Login | String | The login of the user assigned to the pull request. | 
+| GitHub.PR.Assignee.ID | Number | The ID of the user assigned to the pull request. | 
+| GitHub.PR.Assignee.NodeID | String | The Node ID of the user assigned to the pull request. | 
+| GitHub.PR.Assignee.Type | String | The type of the user assigned to the pull request. | 
+| GitHub.PR.Assignee.SiteAdmin | Boolean | Whether the user assigned to the pull request is a site administrator. | 
+| GitHub.PR.RequestedReviewer.Login | String | The login of the user requested for review. | 
+| GitHub.PR.RequestedReviewer.ID | Number | The ID of the user requested for review. | 
+| GitHub.PR.RequestedReviewer.NodeID | String | The Node ID of the user requested for review. | 
+| GitHub.PR.RequestedReviewer.Type | String | The type of the user requested for review. | 
+| GitHub.PR.RequestedReviewer.SiteAdmin | Boolean | Whether the user requested for review is a site administrator. | 
+| GitHub.PR.RequestedTeam.ID | Number | The ID of the team requested for review. | 
+| GitHub.PR.RequestedTeam.NodeID | String | The Node ID of the team requested for review. | 
+| GitHub.PR.RequestedTeam.Name | String | The name of the team requested for review. | 
+| GitHub.PR.RequestedTeam.Slug | String | The slug of the team requested for review. | 
+| GitHub.PR.RequestedTeam.Description | String | The description of the team requested for review. | 
+| GitHub.PR.RequestedTeam.Privacy | String | The privacy setting of the team requested for review. | 
+| GitHub.PR.RequestedTeam.Permission | String | The permissions of the team requested for review. | 
+| GitHub.PR.RequestedTeam.Parent | Unknown | The parent of the team requested for review. | 
+| GitHub.PR.Head.Label | String | The label of the branch for which the HEAD points. | 
+| GitHub.PR.Head.Ref | String | The reference of the branch for which the HEAD points. | 
+| GitHub.PR.Head.SHA | String | The SHA hash of the commit for which the HEAD points. | 
+| GitHub.PR.Head.User.Login | String | The committer login of the HEAD commit of the checked out branch. | 
+| GitHub.PR.Head.User.ID | Number | The committer ID of the HEAD commit of the checked out branch. | 
+| GitHub.PR.Head.User.NodeID | String | The Node ID of the committer of the HEAD commit of the checked out branch. | 
+| GitHub.PR.Head.User.Type | String | The committer type of the HEAD commit of the checked out branch. | 
+| GitHub.PR.Head.User.SiteAdmin | Boolean | Whether the committer of the HEAD commit of the checked out branch is a site administrator. | 
+| GitHub.PR.Head.Repo.ID | Number | The ID of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.NodeID | String | The Node ID of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.Name | String | The name of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.FullName | String | The full name of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.Owner.Login | String | The user login of the owner of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.Owner.ID | Number | The user ID of the owner of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.Owner.NodeID | String | The user Node ID of the owner of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.Owner.Type | String | The user type of the owner of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.Owner.SiteAdmin | Boolean | Whether the owner of the repository of the checked out branch is a site administrator. | 
+| GitHub.PR.Head.Repo.Private | Boolean | Whether the repository of the checked out branch is private. | 
+| GitHub.PR.Head.Repo.Description | String | The description of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.Fork | Boolean | Whether the repository of the checked out branch is a fork. | 
+| GitHub.PR.Head.Repo.Language | Unknown | The language of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.ForksCount | Number | The number of forks of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.StargazersCount | Number | The number of stars of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.WatchersCount | Number | The number of entities watching the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.Size | Number | The size of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.DefaultBranch | String | The default branch of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.OpenIssuesCount | Number | The open issues of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.Topics | Unknown | Topics listed for the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.HasIssues | Boolean | Whether the repository of the checked out branch has issues. | 
+| GitHub.PR.Head.Repo.HasProjects | Boolean | Whether the repository of the checked out branch has projects. | 
+| GitHub.PR.Head.Repo.HasWiki | Boolean | Whether the repository of the checked out branch has a wiki. | 
+| GitHub.PR.Head.Repo.HasPages | Boolean | Whether the repository of the checked out branch has pages. | 
+| GitHub.PR.Head.Repo.HasDownloads | Boolean | Whether the repository of the checked out branch has downloads. | 
+| GitHub.PR.Head.Repo.Archived | Boolean | Whether the repository of the checked out branch has been archived. | 
+| GitHub.PR.Head.Repo.Disabled | Boolean | Whether the repository of the checked out branch has been disabled. | 
+| GitHub.PR.Head.Repo.PushedAt | String | The date of the latest push to the repository of the checked out. | 
+| GitHub.PR.Head.Repo.CreatedAt | String | The date of creation of the repository of the checked out branch. | 
+| GitHub.PR.Head.Repo.UpdatedAt | String | The date the repository of the checked out branch was last updated. | 
+| GitHub.PR.Head.Repo.AllowRebaseMerge | Boolean | Whether the repository of the checked out branch permits rebase-style merges. | 
+| GitHub.PR.Head.Repo.AllowSquashMerge | Boolean | Whether the repository of the checked out branch permits squash merges. | 
+| GitHub.PR.Head.Repo.AllowMergeCommit | Boolean | Whether the repository of the checked out branch permits merge commits. | 
+| GitHub.PR.Head.Repo.SubscribersCount | Number | The number of entities subscribing to the repository of the checked out. | 
+| GitHub.PR.Base.Label | String | The label of the base branch. | 
+| GitHub.PR.Base.Ref | String | The reference of the base branch. | 
+| GitHub.PR.Base.SHA | String | The SHA hash of the base branch. | 
+| GitHub.PR.Base.User.Login | String | The committer login of the commit for which the base branch points. | 
+| GitHub.PR.Base.User.ID | Number | The ID of the committer of the commit for which the base branch points. to | 
+| GitHub.PR.Base.User.NodeID | String | The committer Node ID of the commit for which the base branch points. | 
+| GitHub.PR.Base.User.Type | String | The user type of the committer for which the commit base branch points. | 
+| GitHub.PR.Base.User.SiteAdmin | Boolean | Whether the committer of the commit for which the base branch points to is a site administrator. | 
+| GitHub.PR.Base.Repo.ID | Number | The ID of the repository for which the base branch belongs. | 
+| GitHub.PR.Base.Repo.NodeID | String | The Node ID of the repository for which the base branch belongs. | 
+| GitHub.PR.Base.Repo.Name | String | The name of the repository for which the base branch belongs. | 
+| GitHub.PR.Base.Repo.FullName | String | The full name of the repository for which the base branch belongs. | 
+| GitHub.PR.Base.Repo.Owner.Login | String | The user login of the owner of the repository for which the base branch belongs. | 
+| GitHub.PR.Base.Repo.Owner.ID | Number | The user ID of the owner of the repository for which the base branch belongs. | 
+| GitHub.PR.Base.Repo.Owner.NodeID | String | The user node ID of the owner of the repository for which the base branch belongs. | 
+| GitHub.PR.Base.Repo.Owner.Type | String | The user type of the owner of the repository for which the base branch belongs. | 
+| GitHub.PR.Base.Repo.Owner.SiteAdmin | Boolean | Whether the owner of the repository that the base branch belongs to is a site administrator. | 
+| GitHub.PR.Base.Repo.Private | Boolean | Whether the repository for which the base branch belongs to is private. | 
+| GitHub.PR.Base.Repo.Description | String | The description of the repository for which the base branch belongs. | 
+| GitHub.PR.Base.Repo.Fork | Boolean | Whether the repository that the base branch belongs to is a fork. | 
+| GitHub.PR.Base.Repo.Language | Unknown | The language of the repository for which the base branch belongs. | 
+| GitHub.PR.Base.Repo.ForksCount | Number | The number of times that the repository for which the base branch belongs has been forked. | 
+| GitHub.PR.Base.Repo.StargazersCount | Number | The number of times that the repository that the base branch belongs to has been starred. | 
+| GitHub.PR.Base.Repo.WatchersCount | Number | The number of entities watching the repository for which the base branch belongs. | 
+| GitHub.PR.Base.Repo.Size | Number | The size of the repository for which the base branch belongs. | 
+| GitHub.PR.Base.Repo.DefaultBranch | String | The default branch of the repository for which the base branch belongs. | 
+| GitHub.PR.Base.Repo.OpenIssuesCount | Number | The number of open issues in the repository for which the base branch belongs. | 
+| GitHub.PR.Base.Repo.Topics | String | Topics listed for the repository for which the base branch belongs. | 
+| GitHub.PR.Base.Repo.HasIssues | Boolean | Whether the repository for which the base branch belongs to has issues. | 
+| GitHub.PR.Base.Repo.HasProjects | Boolean | Whether the repository for which the base branch belongs to has projects. | 
+| GitHub.PR.Base.Repo.HasWiki | Boolean | Whether the repository for which the base branch belongs to has a wiki. | 
+| GitHub.PR.Base.Repo.HasPages | Boolean | Whether the repository for which the base branch belongs to has pages. | 
+| GitHub.PR.Base.Repo.HasDownloads | Boolean | Whether the repository for which the base branch belongs to has downloads. | 
+| GitHub.PR.Base.Repo.Archived | Boolean | Whether the repository for which the base branch belongs to is archived. | 
+| GitHub.PR.Base.Repo.Disabled | Boolean | Whether the repository for which the base branch belongs to is disabled. | 
+| GitHub.PR.Base.Repo.PushedAt | String | The date that the repository for which the base branch belongs was last pushed. | 
+| GitHub.PR.Base.Repo.CreatedAt | String | The date of creation of the repository for which the base branch belongs. | 
+| GitHub.PR.Base.Repo.UpdatedAt | String | The date that the repository for which the base branch belongs was last updated. | 
+| GitHub.PR.Base.Repo.AllowRebaseMerge | Boolean | Whether the repository for which the base branch belongs allows rebase-style merges. | 
+| GitHub.PR.Base.Repo.AllowSquashMerge | Boolean | Whether the repository for which the base branch belongs allows squash merges. | 
+| GitHub.PR.Base.Repo.AllowMergeCommit | Boolean | Whether the repository for which the base branch belongs allows merge commits. | 
+| GitHub.PR.Base.Repo.SubscribersCount | Number | The number of entities that subscribe to the repository for which the base branch belongs. | 
+| GitHub.PR.AuthorAssociation | String | The pull request author association. | 
+| GitHub.PR.Draft | Boolean | Whether the pull request is a draft. | 
+| GitHub.PR.Merged | Boolean | Whether the pull request is merged. | 
+| GitHub.PR.Mergeable | Boolean | Whether the pull request is mergeable. | 
+| GitHub.PR.Rebaseable | Boolean | Whether the pull request is rebaseable. | 
+| GitHub.PR.MergeableState | String | The mergeable state of the pull request. | 
+| GitHub.PR.MergedBy.Login | String | The login of the user who merged the pull request. | 
+| GitHub.PR.MergedBy.ID | Number | The ID of the user who merged the pull request. | 
+| GitHub.PR.MergedBy.NodeID | String | The Node ID of the user who merged the pull request. | 
+| GitHub.PR.MergedBy.Type | String | The user type who merged the pull request. | 
+| GitHub.PR.MergedBy.SiteAdmin | Boolean | Whether the user who merged the pull request is a site administrator. | 
+| GitHub.PR.Comments | Number | The number of comments on the pull request. | 
+| GitHub.PR.ReviewComments | Number | The number of review comments on the pull request. | 
+| GitHub.PR.MaintainerCanModify | Boolean | Whether the maintainer can modify the pull request. | 
+| GitHub.PR.Commits | Number | The number of commits in the pull request. | 
+| GitHub.PR.Additions | Number | The number of additions in the pull request. | 
+| GitHub.PR.Deletions | Number | The number of deletions in the pull request. | 
+| GitHub.PR.ChangedFiles | Number | The number of changed files in the pull request. | 
+
+#### Command Example
+
+```!GitHub-create-pull-request base=master head=branch-test title=Testing```
+
+#### Human Readable Output
+## Created Pull Request #16
+
+|Additions|AuthorAssociation|Base|ChangedFiles|Comments|Commits|CreatedAt|Deletions|Draft|Head|ID|Locked|MaintainerCanModify|MergeableState|Merged|NodeID|Number|ReviewComments|State|UpdatedAt|User|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+|1|COLLABORATOR|Label: demisto:master Ref: master SHA: 1af17e73721dbe0c40011b82ed4bb1a7dbe3ce29 User: {"Login": "demisto", "ID": XXXXX, "NodeID": "1af17e73721dbe0c40011b82ed4bb1a7", "Type": "Organization", "SiteAdmin": false} Repo: {"ID": 12345, "NodeID": "1af17e73721dbe0c40011b82ed4bb1a=", "Name": "repo", "FullName": "owner/repo", "Owner": {"Login": "login", "ID": 1234, "NodeID": "1af17e73721dbe0c40011b82ed4bb1a7", "Type": "Organization", "SiteAdmin": false}, "Private": true, "Description": null, "Fork": false, "Language": "Python", "ForksCount": 0, "StargazersCount": 0, "WatchersCount": 0, "Size": 229, "DefaultBranch": "master", "OpenIssuesCount": 1, "Topics": null, "HasIssues": true, "HasProjects": true, "HasWiki": true, "HasPages": false, "HasDownloads": true, "Archived": false, "Disabled": false, "PushedAt": "2021-04-08T10:59:28Z", "CreatedAt": "2020-11-22T18:51:37Z", "UpdatedAt": "2021-04-07T08:58:02Z", "AllowRebaseMerge": null, "AllowSquashMerge": null, "AllowMergeCommit": null, "SucscribersCount": null}|1|0|1|2021-04-08T13:13:31Z|1|true|Label: demisto:branch-test Ref: branch-test SHA: 1af17e73721dbe0c40011b82ed4bb1a7dbe3ce29 User: {"Login": "login", "ID": 12345, "NodeID": "1af17e73721dbe0c40011b82ed4bb1a7", "Type": "Organization", "SiteAdmin": false} Repo: {"ID": 12345, "NodeID": "1af17e73721dbe0c40011b82ed4bb1a=", "Name": "repo", "FullName": "owner/repo", "Owner": {"Login": "login", "ID": 12345, "NodeID": "1af17e73721dbe0c40011b82ed4bb1a7", "Type": "Organization", "SiteAdmin": false}, "Private": true, "Description": null, "Fork": false, "Language": "Python", "ForksCount": 0, "StargazersCount": 0, "WatchersCount": 0, "Size": 229, "DefaultBranch": "master", "OpenIssuesCount": 1, "Topics": null, "HasIssues": true, "HasProjects": true, "HasWiki": true, "HasPages": false, "HasDownloads": true, "Archived": false, "Disabled": false, "PushedAt": "2021-04-08T10:59:28Z", "CreatedAt": "2020-11-22T18:51:37Z", "UpdatedAt": "2021-04-07T08:58:02Z", "AllowRebaseMerge": null, "AllowSquashMerge": null, "AllowMergeCommit": null, "SucscribersCount": null}|611546693|false|false|draft|false|1af17e73721dbe0c40011b82ed4bb1a7|16|0|open|2021-04-08T13:13:31Z|Login: teizenman ID: 1234 NodeID: 1af17e73721dbe0c4001 Type: User SiteAdmin: false|
+
+### Github-get-github-actions-usage
+
+***
+Gets the usage details of GitHub action workflows of private repositories, by repository owner.
+
+#### Base Command
+
+`Github-get-github-actions-usage`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| owner | The repository owner. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.ActionsUsage.RepositoryName | String | The name of the private repository. | 
+| GitHub.ActionsUsage.WorkflowID | Number | The workflow ID of the GitHub action. | 
+| GitHub.ActionsUsage.WorkflowName | String | The display name of the GitHub action workflow. | 
+| GitHub.ActionsUsage.WorkflowUsage | Unknown | GitHub action worflow usage on different OS. | 
+
+#### Command Example
+
+```!Github-get-github-actions-usage owner=user```
+
+#### Human Readable Output
+## Github Actions Usage
+|Repositoryname|Workflowid|Workflowname|Workflowusage|
+|---|---|---|---|
+|Git-Repo|12345|An Action|UBUNTU: {"total_ms": 12345}|
+
+### GitHub-get-file-content
+
+***
+Gets the content of a file from GitHub.
+
+#### Base Command
+
+`GitHub-get-file-content`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| file_path | The path of the file. | Required | 
+| branch_name | The branch name from which to get the file. | Optional | 
+| media_type | The media type in which the file contents will be fetched. Possible values are: "raw" and "html". Default value is "raw". Possible values are: raw, html. Default is raw. | Optional | 
+| create_file_from_content | Whether to create a file entry in the War Room with the file contents. Possible values are: "true" and "false". Default value is "false". | Optional | 
+| organization | The name of the organization. | Optional | 
+| repository | The name of the repository. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.FileContent.Path | String | The path of the file. | 
+| GitHub.FileContent.Content | Number | The content of the file. | 
+| GitHub.FileContent.MediaType | String | The media type in which the file was fetched. | 
+| GitHub.FileContent.Branch | Unknown | The branch from which the file was fetched. | 
+
+#### Command Example
+
+```!GitHub-get-file-content file_path=file.json branch_name=branch-test```
+
+#### Human Readable Output
+## File file.json successfully fetched.
+|Branch|Content|MediaType|Path|
+|---|---|---|---|
+|branch-test|This is the content of the file|raw|file.json| 
+
+### Github-list-files
+***
+Get list of files from the given path in the repository.
+
+
+#### Base Command
+
+`Github-list-files`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| path | The path in the branch to get the files from. | Optional | 
+| organization | The name of the organization. | Optional | 
+| repository | The name of the repository. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.File.Name | String | The name of the file. | 
+| GitHub.File.Type | String | Whether the item is file or directory. | 
+| GitHub.File.Size | Number | The size of the file in bytes. | 
+| GitHub.File.Path | String | The file path inside the repository. | 
+| GitHub.File.DownloadUrl | String | Link to download the file content. | 
+| GitHub.File.SHA | String | The SHA of the file. | 
+
+#### Command Example
+```!Github-list-files path=Index```
+
+#### Human Readable Output
+## Files in path: Index
+|Name|Path|Type|Size|DownloadUrl|
+|--- |--- |--- |--- |--- |
+|README.md|Index/README.md|file|1500|https://raw.githubusercontent.com/demisto/hello-world/master/index/README.md|
+|images|Index/images|dir|0||
+
+### GitHub-list-team-members
+***
+List team members.
+#### Base Command
+`GitHub-list-team-members`
+#### Input
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| organization | The name of the organization. | Required | 
+| team_slug | The name of the team under the organiztion. | Required | 
+| maximum_users | The maximum number of users to return | Optional | 
+#### Context Output
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.TeamMember.ID | String | The ID of the team member. | 
+| GitHub.TeamMember.Login | String | The login name of the team member. |
+| GitHub.TeamMember.Team | String | The user's team. |
+#### Command Example
+```!GitHub-list-team-members organization=demisto team_slug=content maximum_users=20```
+
+##### Context Example
+```
+{
+    "GitHub.GitHub": [
         {
-            "Description": "Review our magnificent SDK",
-            "ID": 2084761,
-            "Name": "SDK",
-            "NodeID": "MDQ6VGVhbTIwODQ3NjE=",
-            "Parent": null,
-            "Permission": "pull",
-            "Privacy": "closed",
-            "Slug": "sdk"
-        },
-        {
-            "Description": "Sales engineering",
-            "ID": 2086953,
-            "Name": "SEs &amp; SAs",
-            "NodeID": "MDQ6VGVhbTIwODY5NTM=",
-            "Parent": null,
-            "Permission": "pull",
-            "Privacy": "closed",
-            "Slug": "ses-sas"
-        },
-        {
-            "Description": "Our customer success great again team",
-            "ID": 2276670,
-            "Name": "customer-success",
-            "NodeID": "MDQ6VGVhbTIyNzY2NzA=",
-            "Parent": null,
-            "Permission": "pull",
-            "Privacy": "closed",
-            "Slug": "customer-success"
-        },
-        {
-            "Description": "",
-            "ID": 2615431,
-            "Name": "content-admin",
-            "NodeID": "MDQ6VGVhbTI2MTU0MzE=",
-            "Parent": null,
-            "Permission": "pull",
-            "Privacy": "closed",
-            "Slug": "content-admin"
-        },
-        {
-            "Description": "Our fantastic tech writers",
-            "ID": 2944746,
-            "Name": "tech writers",
-            "NodeID": "MDQ6VGVhbTI5NDQ3NDY=",
-            "Parent": null,
-            "Permission": "pull",
-            "Privacy": "closed",
-            "Slug": "tech-writers"
-        },
-        {
-            "Description": "Contractors for customer success team",
-            "ID": 2973057,
-            "Name": "cs-contractors",
-            "NodeID": "MDQ6VGVhbTI5NzMwNTc=",
-            "Parent": null,
-            "Permission": "pull",
-            "Privacy": "closed",
-            "Slug": "cs-contractors"
-        },
-        {
-            "Description": "Our beloved content team ",
-            "ID": 3043448,
-            "Name": "Content",
-            "NodeID": "MDQ6VGVhbTMwNDM0NDg=",
-            "Parent": null,
-            "Permission": "pull",
-            "Privacy": "closed",
-            "Slug": "content"
-        },
-        {
-            "Description": "Our lovely dev-ops team",
-            "ID": 3054683,
-            "Name": "dev-ops",
-            "NodeID": "MDQ6VGVhbTMwNTQ2ODM=",
-            "Parent": null,
-            "Permission": "pull",
-            "Privacy": "closed",
-            "Slug": "dev-ops"
-        },
-        {
-            "Description": "Our sales team",
-            "ID": 3086506,
-            "Name": "Sales",
-            "NodeID": "MDQ6VGVhbTMwODY1MDY=",
-            "Parent": null,
-            "Permission": "pull",
-            "Privacy": "closed",
-            "Slug": "sales"
-        },
-        {
-            "Description": "SOC 2 team",
-            "ID": 3199605,
-            "Name": "soc2",
-            "NodeID": "MDQ6VGVhbTMxOTk2MDU=",
-            "Parent": null,
-            "Permission": "pull",
-            "Privacy": "closed",
-            "Slug": "soc2"
-        },
-        {
-            "Description": "",
-            "ID": 3235143,
-            "Name": "mobile",
-            "NodeID": "MDQ6VGVhbTMyMzUxNDM=",
-            "Parent": null,
-            "Permission": "pull",
-            "Privacy": "closed",
-            "Slug": "mobile"
+            "ID": 1234567, 
+            "Login": "user1", 
+            "Team": "content", 
         }
     ]
 }
-</pre>
-<h5>Human Readable Output</h5>
-<h3>Teams for Organization "demisto"</h3>
-<table style="width: 750px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th><strong>Description</strong></th>
-<th><strong>ID</strong></th>
-<th><strong>Name</strong></th>
-<th><strong>NodeID</strong></th>
-<th><strong>Permission</strong></th>
-<th><strong>Privacy</strong></th>
-<th><strong>Slug</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Our customer success team</td>
-<td>2276690</td>
-<td>customer-success</td>
-<td>MDQ6VGVhbTIyNzY2NzA=</td>
-<td>pull</td>
-<td>closed</td>
-<td>customer-success</td>
-</tr>
-<tr>
-<td>Our beloved content team</td>
-<td>3043998</td>
-<td>Content</td>
-<td>MDQ6VGVhbTMwNDM0NDg=</td>
-<td>pull</td>
-<td>closed</td>
-<td>content</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h3 id="h_74b1f29f-07f7-4765-ab39-8222cc3413cb">20. Delete a branch</h3>
-<hr>
-<p>Deletes a branch of the repository.</p>
-<h5>Base Command</h5>
-<p><code>GitHub-delete-branch</code></p>
-<h5>Input</h5>
-<table style="width: 748px;" border="2" cellpadding="6">
-<thead>
-<tr>
-<th style="width: 198px;"><strong>Argument Name</strong></th>
-<th style="width: 390px;"><strong>Description</strong></th>
-<th style="width: 120px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 198px;">branch_name</td>
-<td style="width: 390px;">The name of the branch to delete.</td>
-<td style="width: 120px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>  !GitHub-delete-branch branch_name=new-branch-example
-</pre>
-<h5>Human Readable Output</h5>
-<p>Branch "new-branch-example" Deleted Successfully</p>
+```
+
+#### Human Readable Output
+## Team Member of team content in organization XSOAR
+|ID|Login|Team|
+|--- |---|---|
+|1234567|user1|content|
+
+### GitHub-list-branch-pull-requests
+***
+Get pull requests corresponding to the given branch name.
+
+
+#### Base Command
+
+`GitHub-list-branch-pull-requests`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| branch_name | The branch name from which to retrieve pull requests. | Required | 
+| organization | The name of the organization. | Optional | 
+| repository | The repository for the pull request. Defaults to the repository parameter if not provided. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.PR.ID | Number | The ID number of the pull request | 
+| GitHub.PR.NodeID | String | The node ID of the pull request | 
+| GitHub.PR.Number | Number | The issue number of the pull request | 
+| GitHub.PR.State | String | The state of the pull request | 
+| GitHub.PR.Locked | Boolean | Whether the pull request is locked or not | 
+| GitHub.PR.User.Login | String | The login of the user who opened the pull request | 
+| GitHub.PR.User.ID | Number | The ID of the user who opened the pull request | 
+| GitHub.PR.User.NodeID | String | The node ID of the user who opened the pull request | 
+| GitHub.PR.User.Type | String | The type of the user who opened the pull request | 
+| GitHub.PR.User.SiteAdmin | Boolean | Whether the user who opened the pull request is a site admin or not | 
+| GitHub.PR.Body | String | The body content of the pull request | 
+| GitHub.PR.Label.ID | Number | The ID of the label | 
+| GitHub.PR.Label.NodeID | String | The node ID of the label | 
+| GitHub.PR.Label.Name | String | The name of the label | 
+| GitHub.PR.Label.Description | String | The description of the label | 
+| GitHub.PR.Label.Color | String | The hex color value of the label | 
+| GitHub.PR.Label.Default | Boolean | Whether the label is a default or not | 
+| GitHub.PR.Milestone.ID | Number | The ID of the milestone | 
+| GitHub.PR.Milestone.NodeID | String | The node ID of the milestone | 
+| GitHub.PR.Milestone.Number | Number | The number of the milestone | 
+| GitHub.PR.Milestone.State | String | The state of the milestone | 
+| GitHub.PR.Milestone.Title | String | The title of the milestone | 
+| GitHub.PR.Milestone.Description | String | The description of the milestone | 
+| GitHub.PR.Milestone.Creator.Login | String | The login of the milestone creator | 
+| GitHub.PR.Milestone.Creator.ID | Number | The ID the milestone creator | 
+| GitHub.PR.Milestone.Creator.NodeID | String | The node ID of the milestone creator | 
+| GitHub.PR.Milestone.Creator.Type | String | The type of the milestone creator | 
+| GitHub.PR.Milestone.Creator.SiteAdmin | Boolean | Whether the milestone creator is a site admin or not | 
+| GitHub.PR.Milestone.OpenIssues | Number | The number of open issues with this milestone | 
+| GitHub.PR.Milestone.ClosedIssues | Number | The number of closed issues with this milestone | 
+| GitHub.PR.Milestone.CreatedAt | String | The date the milestone was created | 
+| GitHub.PR.Milestone.UpdatedAt | String | The date the milestone was updated | 
+| GitHub.PR.Milestone.ClosedAt | String | The date the milestone was closed | 
+| GitHub.PR.Milestone.DueOn | String | The due date for the milestone | 
+| GitHub.PR.ActiveLockReason | String | The reason the pull request is locked | 
+| GitHub.PR.CreatedAt | String | The date the pull request was created | 
+| GitHub.PR.UpdatedAt | String | The date the pull request was updated | 
+| GitHub.PR.ClosedAt | String | The date the pull request was closed | 
+| GitHub.PR.MergedAt | String | The date the pull request was merged | 
+| GitHub.PR.MergeCommitSHA | String | The SHA hash of the pull request's merge commit | 
+| GitHub.PR.Assignee.Login | String | The login of the user assigned to the pull request | 
+| GitHub.PR.Assignee.ID | Number | The ID of the user assigned to the pull request | 
+| GitHub.PR.Assignee.NodeID | String | The node ID of the user assigned to the pull request | 
+| GitHub.PR.Assignee.Type | String | The type of the user assigned to the pull request | 
+| GitHub.PR.Assignee.SiteAdmin | Boolean | Whether the user assigned to the pull request is a site admin or not | 
+| GitHub.PR.RequestedReviewer.Login | String | The login of the user requested for review | 
+| GitHub.PR.RequestedReviewer.ID | Number | The ID of the user requested for review | 
+| GitHub.PR.RequestedReviewer.NodeID | String | The node ID of the user requested for review | 
+| GitHub.PR.RequestedReviewer.Type | String | The type of the user requested for review | 
+| GitHub.PR.RequestedReviewer.SiteAdmin | Boolean | Whether the user requested for review is a site admin or not | 
+| GitHub.PR.RequestedTeam.ID | Number | The ID of the team requested for review | 
+| GitHub.PR.RequestedTeam.NodeID | String | The node ID of the team requested for review | 
+| GitHub.PR.RequestedTeam.Name | String | The name of the team requested for review | 
+| GitHub.PR.RequestedTeam.Slug | String | The slug of the team requested for review | 
+| GitHub.PR.RequestedTeam.Description | String | The description of the team requested for review | 
+| GitHub.PR.RequestedTeam.Privacy | String | The privacy setting of the team requested for review | 
+| GitHub.PR.RequestedTeam.Permission | String | The permissions of the team requested for review | 
+| GitHub.PR.RequestedTeam.Parent | Unknown | The parent of the team requested for review | 
+| GitHub.PR.Head.Label | String | The label of the branch that HEAD points to | 
+| GitHub.PR.Head.Ref | String | The reference of the branch that HEAD points to | 
+| GitHub.PR.Head.SHA | String | The SHA hash of the commit that HEAD points to | 
+| GitHub.PR.Head.User.Login | String | The login of the committer of the HEAD commit of the checked out branch | 
+| GitHub.PR.Head.User.ID | Number | The ID of the committer of the HEAD commit of the checked out branch | 
+| GitHub.PR.Head.User.NodeID | String | The node ID of the committer of the HEAD commit of the checked out branch | 
+| GitHub.PR.Head.User.Type | String | The type of the committer of the HEAD commit of the checked out branch | 
+| GitHub.PR.Head.User.SiteAdmin | Boolean | Whether the committer of the HEAD commit of the checked out branch is a site admin or not | 
+| GitHub.PR.Head.Repo.ID | Number | The ID of the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.NodeID | String | The node ID of the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.Name | String | The name of the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.FullName | String | The full name of the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.Owner.Login | String | The user login of the owner of the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.Owner.ID | Number | The user ID of the owner of the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.Owner.NodeID | String | The user node ID of the owner of the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.Owner.Type | String | The user type of the owner of the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.Owner.SiteAdmin | Boolean | Whether the owner of the repository of the checked out branch is a site admin or not | 
+| GitHub.PR.Head.Repo.Private | Boolean | Whether the repository of the checked out branch is private or not | 
+| GitHub.PR.Head.Repo.Description | String | The description of the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.Fork | Boolean | Whether the repository of the checked out branch is a fork or not | 
+| GitHub.PR.Head.Repo.Language | Unknown | The language of the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.ForksCount | Number | The number of forks of the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.StargazersCount | Number | The number of stars of the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.WatchersCount | Number | The number of entities watching the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.Size | Number | The size of the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.DefaultBranch | String | The default branch of the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.OpenIssuesCount | Number | The open issues of the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.Topics | Unknown | Topics listed for the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.HasIssues | Boolean | Whether the repository of the checked out branch has issues or not | 
+| GitHub.PR.Head.Repo.HasProjects | Boolean | Whether the repository of the checked out branch has projects or not | 
+| GitHub.PR.Head.Repo.HasWiki | Boolean | Whether the repository of the checked out branch has a wiki or not | 
+| GitHub.PR.Head.Repo.HasPages | Boolean | Whether the repository of the checked out branch has pages or not | 
+| GitHub.PR.Head.Repo.HasDownloads | Boolean | Whether the repository of the checked out branch has downloads or not | 
+| GitHub.PR.Head.Repo.Archived | Boolean | Whether the repository of the checked out branch has been arvhived or not | 
+| GitHub.PR.Head.Repo.Disabled | Boolean | Whether the repository of the checked out branch has been disabled or not | 
+| GitHub.PR.Head.Repo.PushedAt | String | The date of the latest push to the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.CreatedAt | String | The date of creation of the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.UpdatedAt | String | The date the repository of the checked out branch was last updated | 
+| GitHub.PR.Head.Repo.AllowRebaseMerge | Boolean | Whether the repository of the checked out branch permits rebase-style merges or not | 
+| GitHub.PR.Head.Repo.AllowSquashMerge | Boolean | Whether the repository of the checked out branch permits squash merges or not | 
+| GitHub.PR.Head.Repo.AllowMergeCommit | Boolean | Whether the repository of the checked out branch permits merge commits or not | 
+| GitHub.PR.Head.Repo.SubscribersCount | Number | The number of entities subscribing to the repository of the checked out branch | 
+| GitHub.PR.Base.Label | String | The label of the base branch | 
+| GitHub.PR.Base.Ref | String | The reference of the base branch | 
+| GitHub.PR.Base.SHA | String | The SHA hash of the base branch | 
+| GitHub.PR.Base.User.Login | String | The login of the committer of the commit that the base branch points to | 
+| GitHub.PR.Base.User.ID | Number | The ID of the committer of the commit that the base branch points to | 
+| GitHub.PR.Base.User.NodeID | String | The node ID of the committer of the commit that the base branch points to | 
+| GitHub.PR.Base.User.Type | String | The user type of the committer of the commit that the base branch points to | 
+| GitHub.PR.Base.User.SiteAdmin | Boolean | Whether the committer of the commit that the base branch points to is a site admin or not | 
+| GitHub.PR.Base.Repo.ID | Number | The ID of the repository that the base branch belongs to | 
+| GitHub.PR.Base.Repo.NodeID | String | The node ID of the repository that the base branch belongs to | 
+| GitHub.PR.Base.Repo.Name | String | The name of the repository that the base branch belongs to | 
+| GitHub.PR.Base.Repo.FullName | String | The full name of the repository that the base branch belongs to | 
+| GitHub.PR.Base.Repo.Owner.Login | String | The user login of the owner of the repository that the base branch belongs to | 
+| GitHub.PR.Base.Repo.Owner.ID | Number | The user ID of the owner of the repository that the base branch belongs to | 
+| GitHub.PR.Base.Repo.Owner.NodeID | String | The user node ID of the owner of the repository that the base branch belongs to | 
+| GitHub.PR.Base.Repo.Owner.Type | String | The user type of the owner of the repository that the base branch belongs to | 
+| GitHub.PR.Base.Repo.Owner.SiteAdmin | Boolean | Whether the owner of the repository that the base branch belongs to is a site admin or not | 
+| GitHub.PR.Base.Repo.Private | Boolean | Whether the repository that the base branch belongs to is private or not | 
+| GitHub.PR.Base.Repo.Description | String | The description of the repository that the base branch belongs to | 
+| GitHub.PR.Base.Repo.Fork | Boolean | Whether the repository that the base branch belongs to is a fork or not | 
+| GitHub.PR.Base.Repo.Language | Unknown | The language of the repository that the base branch belongs to | 
+| GitHub.PR.Base.Repo.ForksCount | Number | The number of times that the repository that the base branch belongs to has been forked | 
+| GitHub.PR.Base.Repo.StargazersCount | Number | The number of times that the repository that the base branch belongs to has been starred | 
+| GitHub.PR.Base.Repo.WatchersCount | Number | The number of entities watching the repository that the base branch belongs to | 
+| GitHub.PR.Base.Repo.Size | Number | The size of the repository that the base branch belongs to | 
+| GitHub.PR.Base.Repo.DefaultBranch | String | The default branch of the repository that the base branch belongs to | 
+| GitHub.PR.Base.Repo.OpenIssuesCount | Number | The number of open issues in the repository that the base branch belongs to | 
+| GitHub.PR.Base.Repo.Topics | String | Topics listed for the repository that the base branch belongs to | 
+| GitHub.PR.Base.Repo.HasIssues | Boolean | Whether the repository that the base branch belongs to has issues or not | 
+| GitHub.PR.Base.Repo.HasProjects | Boolean | Whether the repository that the base branch belongs to has projects or not | 
+| GitHub.PR.Base.Repo.HasWiki | Boolean | Whether the repository that the base branch belongs to has a wiki or not | 
+| GitHub.PR.Base.Repo.HasPages | Boolean | Whether the repository that the base branch belongs to has pages or not | 
+| GitHub.PR.Base.Repo.HasDownloads | Boolean | Whether the repository that the base branch belongs to has downloads or not | 
+| GitHub.PR.Base.Repo.Archived | Boolean | Whether the repository that the base branch belongs to is archived or not | 
+| GitHub.PR.Base.Repo.Disabled | Boolean | Whether the repository that the base branch belongs to is disabled or not | 
+| GitHub.PR.Base.Repo.PushedAt | String | The date that the repository that the base branch belongs to was last pushed to | 
+| GitHub.PR.Base.Repo.CreatedAt | String | The date of creation of the repository that the base branch belongs to | 
+| GitHub.PR.Base.Repo.UpdatedAt | String | The date that the repository that the base branch belongs to was last updated | 
+| GitHub.PR.Base.Repo.AllowRebaseMerge | Boolean | Whether the repository that the base branch belongs to allows rebase-style merges or not | 
+| GitHub.PR.Base.Repo.AllowSquashMerge | Boolean | Whether the repository that the base branch belongs to allows squash merges or not | 
+| GitHub.PR.Base.Repo.AllowMergeCommit | Boolean | Whether the repository that the base branch belongs to allows merge commits or not | 
+| GitHub.PR.Base.Repo.SubscribersCount | Number | The number of entities that subscribe to the repository that the base branch belongs to | 
+| GitHub.PR.AuthorAssociation | String | The pull request author association | 
+| GitHub.PR.Draft | Boolean | Whether the pull request is a draft or not | 
+| GitHub.PR.Merged | Boolean | Whether the pull request is merged or not | 
+| GitHub.PR.Mergeable | Boolean | Whether the pull request is mergeable or not | 
+| GitHub.PR.Rebaseable | Boolean | Whether the pull request is rebaseable or not | 
+| GitHub.PR.MergeableState | String | The mergeable state of the pull request | 
+| GitHub.PR.MergedBy.Login | String | The login of the user who merged the pull request | 
+| GitHub.PR.MergedBy.ID | Number | The ID of the user who merged the pull request | 
+| GitHub.PR.MergedBy.NodeID | String | The node ID of the user who merged the pull request | 
+| GitHub.PR.MergedBy.Type | String | The type of the user who merged the pull request | 
+| GitHub.PR.MergedBy.SiteAdmin | Boolean | Whether the user who merged the pull request is a site admin or not | 
+| GitHub.PR.Comments | Number | The number of comments on the pull request | 
+| GitHub.PR.ReviewComments | Number | The number of review comments on the pull request | 
+| GitHub.PR.MaintainerCanModify | Boolean | Whether the maintainer can modify the pull request or not | 
+| GitHub.PR.Commits | Number | The number of commits in the pull request | 
+| GitHub.PR.Additions | Number | The number of additions in the pull request | 
+| GitHub.PR.Deletions | Number | The number of deletions in the pull request | 
+| GitHub.PR.ChangedFiles | Number | The number of changed files in the pull request | 
+
+
+#### Command Example
+```!GitHub-list-branch-pull-requests branch_name=Update-Docker-Image```
+
+#### Context Example
+```json
+{
+ "GitHub": {
+     "PR": {
+         "ActiveLockReason": null,
+         "Additions": null,
+         "AuthorAssociation": "MEMBER",
+         "Base": {
+             "Label": "demisto:master",
+             "Ref": "master",
+             "Repo": {
+                 "AllowMergeCommit": null,
+                 "AllowRebaseMerge": null,
+                 "AllowSquashMerge": null,
+                 "Archived": false,
+                 "CreatedAt": "2016-06-06T12:17:02Z",
+                 "DefaultBranch": "master",
+                 "Description": "Demisto is now Cortex XSOAR. Automate and orchestrate your Security Operations with Cortex XSOAR's ever-growing Content Repository. Pull Requests are always welcome and highly appreciated! ",
+                 "Disabled": false,
+                 "Fork": false,
+                 "ForksCount": 678,
+                 "FullName": "demisto/content",
+                 "HasDownloads": true,
+                 "HasIssues": false,
+                 "HasPages": false,
+                 "HasProjects": true,
+                 "HasWiki": false,
+                 "ID": 60525392,
+                 "Language": "Python",
+                 "Name": "content",
+                 "NodeID": "MDEwOlJlcG9zaXRvcnk2MDUyNTM5Mg==",
+                 "OpenIssuesCount": 181,
+                 "Owner": {
+                     "ID": 11011767,
+                     "Login": "demisto",
+                     "NodeID": "MDEyOk9yZ2FuaXphdGlvbjExMDExNzY3",
+                     "SiteAdmin": false,
+                     "Type": "Organization"
+                 },
+                 "Private": false,
+                 "PushedAt": "2021-05-06T11:49:07Z",
+                 "Size": 371861,
+                 "StargazersCount": 635,
+                 "SucscribersCount": null,
+                 "Topics": null,
+                 "UpdatedAt": "2021-05-06T11:41:27Z",
+                 "WatchersCount": 635
+             },
+             "SHA": "9adf770fb981ec8bc9d6e87669be75da23176693",
+             "User": {
+                 "ID": 11011767,
+                 "Login": "demisto",
+                 "NodeID": "MDEyOk9yZ2FuaXphdGlvbjExMDExNzY3",
+                 "SiteAdmin": false,
+                 "Type": "Organization"
+             }
+         },
+         "Body": "Updated Docker Images For Integrations",
+         "ChangedFiles": null,
+         "ClosedAt": null,
+         "Comments": null,
+         "Commits": null,
+         "CreatedAt": "2021-05-03T14:29:25Z",
+         "Deletions": null,
+         "Draft": false,
+         "Head": {
+             "Label": "demisto:Update-Docker-Image",
+             "Ref": "Update-Docker-Image",
+             "Repo": {
+                 "AllowMergeCommit": null,
+                 "AllowRebaseMerge": null,
+                 "AllowSquashMerge": null,
+                 "Archived": false,
+                 "CreatedAt": "2016-06-06T12:17:02Z",
+                 "DefaultBranch": "master",
+                 "Description": "Demisto is now Cortex XSOAR. Automate and orchestrate your Security Operations with Cortex XSOAR's ever-growing Content Repository. Pull Requests are always welcome and highly appreciated! ",
+                 "Disabled": false,
+                 "Fork": false,
+                 "ForksCount": 678,
+                 "FullName": "demisto/content",
+                 "HasDownloads": true,
+                 "HasIssues": false,
+                 "HasPages": false,
+                 "HasProjects": true,
+                 "HasWiki": false,
+                 "ID": 60525392,
+                 "Language": "Python",
+                 "Name": "content",
+                 "NodeID": "MDEwOlJlcG9zaXRvcnk2MDUyNTM5Mg==",
+                 "OpenIssuesCount": 181,
+                 "Owner": {
+                     "ID": 11011767,
+                     "Login": "demisto",
+                     "NodeID": "MDEyOk9yZ2FuaXphdGlvbjExMDExNzY3",
+                     "SiteAdmin": false,
+                     "Type": "Organization"
+                 },
+                 "Private": false,
+                 "PushedAt": "2021-05-06T11:49:07Z",
+                 "Size": 371861,
+                 "StargazersCount": 635,
+                 "SucscribersCount": null,
+                 "Topics": null,
+                 "UpdatedAt": "2021-05-06T11:41:27Z",
+                 "WatchersCount": 635
+             },
+             "SHA": "baee6e30aaa0f52e676987c1968ffd3ce11d7e57",
+             "User": {
+                 "ID": 11011767,
+                 "Login": "demisto",
+                 "NodeID": "MDEyOk9yZ2FuaXphdGlvbjExMDExNzY3",
+                 "SiteAdmin": false,
+                 "Type": "Organization"
+             }
+         },
+         "ID": 629143674,
+         "Label": [
+             {
+                 "Color": null,
+                 "Default": false,
+                 "Description": "",
+                 "ID": 1523790036,
+                 "Name": "docs-approved",
+                 "NodeID": "MDU6TGFiZWwxNTIzNzkwMDM2"
+             }
+         ],
+         "Locked": false,
+         "MaintainerCanModify": null,
+         "MergeCommitSHA": "5854633d909c5672ba6ccf118c4dae68eb4e38c0",
+         "Mergeable": null,
+         "MergeableState": null,
+         "Merged": null,
+         "MergedAt": null,
+         "NodeID": "MDExOlB1bGxSZXF1ZXN0NjI5MTQzNjc0",
+         "Number": 12510,
+         "Rebaseable": null,
+         "ReviewComments": null,
+         "State": "open",
+         "UpdatedAt": "2021-05-03T14:48:58Z",
+         "User": {
+             "ID": 55035720,
+             "Login": "content-bot",
+             "NodeID": "MDQ6VXNlcjU1MDM1NzIw",
+             "SiteAdmin": false,
+             "Type": "User"
+         }
+     }
+  }
+}
+```
+
+#### Human Readable Output
+
+>### Pull Request For Branch #Update-Docker-Image
+>|AuthorAssociation|Base|Body|CreatedAt|Draft|Head|ID|Label|Locked|MergeCommitSHA|NodeID|Number|State|UpdatedAt|User|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| MEMBER | Label: demisto:master<br/>Ref: master<br/>SHA: 9adf770fb981ec8bc9d6e87669be75da23176693<br/>User: {"Login": "demisto", "ID": 11011767, "NodeID": "MDEyOk9yZ2FuaXphdGlvbjExMDExNzY3", "Type": "Organization", "SiteAdmin": false}<br/>Repo: {"ID": 60525392, "NodeID": "MDEwOlJlcG9zaXRvcnk2MDUyNTM5Mg==", "Name": "content", "FullName": "demisto/content", "Owner": {"Login": "demisto", "ID": 11011767, "NodeID": "MDEyOk9yZ2FuaXphdGlvbjExMDExNzY3", "Type": "Organization", "SiteAdmin": false}, "Private": false, "Description": "Demisto is now Cortex XSOAR. Automate and orchestrate your Security Operations with Cortex XSOAR's ever-growing Content Repository. Pull Requests are always welcome and highly appreciated! ", "Fork": false, "Language": "Python", "ForksCount": 678, "StargazersCount": 635, "WatchersCount": 635, "Size": 371861, "DefaultBranch": "master", "OpenIssuesCount": 181, "Topics": null, "HasIssues": false, "HasProjects": true, "HasWiki": false, "HasPages": false, "HasDownloads": true, "Archived": false, "Disabled": false, "PushedAt": "2021-05-06T11:49:07Z", "CreatedAt": "2016-06-06T12:17:02Z", "UpdatedAt": "2021-05-06T11:41:27Z", "AllowRebaseMerge": null, "AllowSquashMerge": null, "AllowMergeCommit": null, "SucscribersCount": null} | Updated Docker Images For Integrations | 2021-05-03T14:29:25Z | false | Label: demisto:Update-Docker-Image<br/>Ref: Update-Docker-Image<br/>SHA: baee6e30aaa0f52e676987c1968ffd3ce11d7e57<br/>User: {"Login": "demisto", "ID": 11011767, "NodeID": "MDEyOk9yZ2FuaXphdGlvbjExMDExNzY3", "Type": "Organization", "SiteAdmin": false}<br/>Repo: {"ID": 60525392, "NodeID": "MDEwOlJlcG9zaXRvcnk2MDUyNTM5Mg==", "Name": "content", "FullName": "demisto/content", "Owner": {"Login": "demisto", "ID": 11011767, "NodeID": "MDEyOk9yZ2FuaXphdGlvbjExMDExNzY3", "Type": "Organization", "SiteAdmin": false}, "Private": false, "Description": "Demisto is now Cortex XSOAR. Automate and orchestrate your Security Operations with Cortex XSOAR's ever-growing Content Repository. Pull Requests are always welcome and highly appreciated! ", "Fork": false, "Language": "Python", "ForksCount": 678, "StargazersCount": 635, "WatchersCount": 635, "Size": 371861, "DefaultBranch": "master", "OpenIssuesCount": 181, "Topics": null, "HasIssues": false, "HasProjects": true, "HasWiki": false, "HasPages": false, "HasDownloads": true, "Archived": false, "Disabled": false, "PushedAt": "2021-05-06T11:49:07Z", "CreatedAt": "2016-06-06T12:17:02Z", "UpdatedAt": "2021-05-06T11:41:27Z", "AllowRebaseMerge": null, "AllowSquashMerge": null, "AllowMergeCommit": null, "SucscribersCount": null} | 629143674 | {'ID': 1523790036, 'NodeID': 'MDU6TGFiZWwxNTIzNzkwMDM2', 'Name': 'docs-approved', 'Description': '', 'Color': None, 'Default': False} | false | 5854633d909c5672ba6ccf118c4dae68eb4e38c0 | MDExOlB1bGxSZXF1ZXN0NjI5MTQzNjc0 | 12510 | open | 2021-05-03T14:48:58Z | Login: content-bot<br/>ID: 55035720<br/>NodeID: MDQ6VXNlcjU1MDM1NzIw<br/>Type: User<br/>SiteAdmin: false |
+
+### Github-commit-file
+***
+Commits a given file.
+
+
+#### Base Command
+
+`Github-commit-file`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| commit_message | Commit message. | Required | 
+| path_to_file | Path to the file in the Github repo (including file name and file ending). | Required | 
+| entry_id | Entry ID for the file to commit. Either "entry_id" or "file_text" must be provided. | Optional | 
+| file_text | Plain text for the file to commit. Either "entry_id" or "file_text" must be provided. | Optional | 
+| branch_name | The branch name. | Required | 
+| file_sha | The blob SHA of the file being replaced. Use the Github-list-files command to get the SHA value of the file.  Required if you are updating a file. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!Github-commit-file commit_message="test commit" path_to_file="TEST.md" branch_name=branch-for-pr file_sha=hjashd878ad file_text=Test```
+
+#### Human Readable Output
+The file TEST.md committed successfully. Link to the commit: https://github.com/content-bot/hello-world/commit/7678213ghg72136
+
+### GitHub-create-release
+***
+Create a release.
+
+
+#### Base Command
+
+`GitHub-create-release`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name of the release. | Optional | 
+| tag_name | The name of the release tag. | Required | 
+| body | Text describing the contents of the tag. | Optional | 
+| draft | True to create a draft (unpublished) release, false to create a published one. Possible values are: True, False. Default is True. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.Release.draft | Boolean | Whether the release is a draft. | 
+| GitHub.Release.html_url | String | The release URL. | 
+| GitHub.Release.id | Number | The ID of the release. | 
+| GitHub.Release.url | String | Github API URL link to the release. | 
+
+
+#### Command Example
+```!GitHub-create-release tag_name=1.0.0 body=`First release` draft=True name=1.0.0```
+
+##### Context Example
+```
+{
+    "GitHub.Release": [
+        {
+            "draft": true,
+            "html_url": "https://github.com/demisto/sdk/releases/tag/1.0.0",
+            "id": 4785254,
+            "url": "https://api.github.com/repos/demisto/sdk/releases/1.0.0"
+        }
+    ]
+}
+```
+
+#### Human Readable Output
+> Release 1.0.0 created successfully for repo sdk: https:<span>//github</span>.com/demisto/sdk/releases/tag/1.0.0
+
+
+### Github-list-issue-events
+***
+Returns events corresponding to the given issue.
+
+
+#### Base Command
+
+`Github-list-issue-events`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issue_number | The issue number for which to retrieve events. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.IssueEvent.id | Number | Event ID. | 
+| GitHub.IssueEvent.node_id | String | Event node ID. | 
+| GitHub.IssueEvent.url | String | Event URL. | 
+| GitHub.IssueEvent.actor.login | String | Event actor login username. | 
+| GitHub.IssueEvent.actor.id | Number | Event actor ID. | 
+| GitHub.IssueEvent.actor.node_id | String | Event actor node ID. | 
+| GitHub.IssueEvent.actor.avatar_url | String | Event actor avatar URL. | 
+| GitHub.IssueEvent.actor.gravatar_id | String | Event actor gravatar ID. | 
+| GitHub.IssueEvent.actor.url | String | Event actor URL. | 
+| GitHub.IssueEvent.actor.html_url | String | Event actor HTML URL. | 
+| GitHub.IssueEvent.actor.followers_url | String | Event actor followers URL. | 
+| GitHub.IssueEvent.actor.following_url | String | Event actor following URL. | 
+| GitHub.IssueEvent.actor.gists_url | String | Event actor gists URL. | 
+| GitHub.IssueEvent.actor.starred_url | String | Event actor starred URL. | 
+| GitHub.IssueEvent.actor.subscriptions_url | String | Event actor subscriptions URL. | 
+| GitHub.IssueEvent.actor.organizations_url | String | Event actor organizations URL. | 
+| GitHub.IssueEvent.actor.repos_url | String | Event actor repos URL. | 
+| GitHub.IssueEvent.actor.events_url | String | Event actor events URL. | 
+| GitHub.IssueEvent.actor.received_events_url | String | Event actor received events URL. | 
+| GitHub.IssueEvent.actor.type | String | Event actor type. | 
+| GitHub.IssueEvent.actor.site_admin | Boolean | Indicates whether the event actor is site admin. | 
+| GitHub.IssueEvent.event | String | Issue event type, e.g labeled, closed. | 
+| GitHub.IssueEvent.commit_id | Unknown | Event commit ID. | 
+| GitHub.IssueEvent.commit_url | Unknown | Event commit URL. | 
+| GitHub.IssueEvent.created_at | Date | Event created time. | 
+| GitHub.IssueEvent.label.name | String | Event label name. | 
+| GitHub.IssueEvent.label.color | String | Event label color | 
+| GitHub.IssueEvent.performed_via_github_app | Unknown | Indicates whether event was performed via GitHub application. | 
+| GitHub.IssueEvent.assignee.login | String | Assignee login username. | 
+| GitHub.IssueEvent.assignee.id | Number | Assignee ID. | 
+| GitHub.IssueEvent.assignee.node_id | String | Assignee node ID. | 
+| GitHub.IssueEvent.assignee.avatar_url | String | Assignee avatar URL. | 
+| GitHub.IssueEvent.assignee.gravatar_id | String | Assignee gravatar ID. | 
+| GitHub.IssueEvent.assignee.url | String | Assignee URL. | 
+| GitHub.IssueEvent.assignee.html_url | String | Assignee HTML URL. | 
+| GitHub.IssueEvent.assignee.followers_url | String | Assignee followers URL. | 
+| GitHub.IssueEvent.assignee.following_url | String | Assignee following URL. | 
+| GitHub.IssueEvent.assignee.gists_url | String | Assignee gists URL. | 
+| GitHub.IssueEvent.assignee.starred_url | String | Assignee starred URL. | 
+| GitHub.IssueEvent.assignee.subscriptions_url | String | Assignee subscriptions URL. | 
+| GitHub.IssueEvent.assignee.organizations_url | String | Assignee organizations URL. | 
+| GitHub.IssueEvent.assignee.repos_url | String | Assignee repos URL. | 
+| GitHub.IssueEvent.assignee.events_url | String | Assignee events URL. | 
+| GitHub.IssueEvent.assignee.received_events_url | String | Assignee received events URL. | 
+| GitHub.IssueEvent.assignee.type | String | Assignee type. | 
+| GitHub.IssueEvent.assignee.site_admin | Boolean | Indicates whether the assignee is site admin. | 
+| GitHub.IssueEvent.assigner.login | String | Assigner login username. | 
+| GitHub.IssueEvent.assigner.id | Number | Assigner ID. | 
+| GitHub.IssueEvent.assigner.node_id | String | Assigner node ID. | 
+| GitHub.IssueEvent.assigner.avatar_url | String | Assigner avatar URL. | 
+| GitHub.IssueEvent.assigner.gravatar_id | String | Assigner gravatar ID. | 
+| GitHub.IssueEvent.assigner.url | String | Assigner URL. | 
+| GitHub.IssueEvent.assigner.html_url | String | Assigner HTML URL. | 
+| GitHub.IssueEvent.assigner.followers_url | String | Assigner followers URL. | 
+| GitHub.IssueEvent.assigner.following_url | String | Assigner following URL. | 
+| GitHub.IssueEvent.assigner.gists_url | String | Assigner gists URL. | 
+| GitHub.IssueEvent.assigner.starred_url | String | Assigner starred URL. | 
+| GitHub.IssueEvent.assigner.subscriptions_url | String | Assigner subscriptions URL. | 
+| GitHub.IssueEvent.assigner.organizations_url | String | Assigner organizations URL. | 
+| GitHub.IssueEvent.assigner.repos_url | String | Assigner repos URL. | 
+| GitHub.IssueEvent.assigner.events_url | String | Assigner events URL. | 
+| GitHub.IssueEvent.assigner.received_events_url | String | Assigner received events URL. | 
+| GitHub.IssueEvent.assigner.type | String | Assigner type. | 
+| GitHub.IssueEvent.assigner.site_admin | Boolean | Indicates whether the assignee is site admin. | 
+
+
+#### Command Example
+```!Github-list-issue-events issue_number=1079```
+
+#### Context Example
+```json
+{
+    "GitHub": {
+        "IssueEvent": [
+            {
+                "actor": {
+                    "avatar_url": "https://avatars.githubusercontent.com/u/70005542?v=4",
+                    "events_url": "https://api.github.com/users/tomneeman151293/events{/privacy}",
+                    "followers_url": "https://api.github.com/users/tomneeman151293/followers",
+                    "following_url": "https://api.github.com/users/tomneeman151293/following{/other_user}",
+                    "gists_url": "https://api.github.com/users/tomneeman151293/gists{/gist_id}",
+                    "gravatar_id": "",
+                    "html_url": "https://github.com/tomneeman151293",
+                    "id": 70005542,
+                    "login": "tomneeman151293",
+                    "node_id": "MDQ6VXNlcjcwMDA1NTQy",
+                    "organizations_url": "https://api.github.com/users/tomneeman151293/orgs",
+                    "received_events_url": "https://api.github.com/users/tomneeman151293/received_events",
+                    "repos_url": "https://api.github.com/users/tomneeman151293/repos",
+                    "site_admin": false,
+                    "starred_url": "https://api.github.com/users/tomneeman151293/starred{/owner}{/repo}",
+                    "subscriptions_url": "https://api.github.com/users/tomneeman151293/subscriptions",
+                    "type": "User",
+                    "url": "https://api.github.com/users/tomneeman151293"
+                },
+                "commit_id": null,
+                "commit_url": null,
+                "created_at": "2021-01-28T13:00:26Z",
+                "event": "labeled",
+                "id": 4260960414,
+                "label": {
+                    "color": "d73a4a",
+                    "name": "bug"
+                },
+                "node_id": "MDEyOkxhYmVsZWRFdmVudDQyNjA5NjA0MTQ=",
+                "performed_via_github_app": null,
+                "url": "https://api.github.com/repos/demisto/demisto-sdk/issues/events/4260960414"
+            },
+            {
+                "actor": {
+                    "avatar_url": "https://avatars.githubusercontent.com/u/70005542?v=4",
+                    "events_url": "https://api.github.com/users/tomneeman151293/events{/privacy}",
+                    "followers_url": "https://api.github.com/users/tomneeman151293/followers",
+                    "following_url": "https://api.github.com/users/tomneeman151293/following{/other_user}",
+                    "gists_url": "https://api.github.com/users/tomneeman151293/gists{/gist_id}",
+                    "gravatar_id": "",
+                    "html_url": "https://github.com/tomneeman151293",
+                    "id": 70005542,
+                    "login": "tomneeman151293",
+                    "node_id": "MDQ6VXNlcjcwMDA1NTQy",
+                    "organizations_url": "https://api.github.com/users/tomneeman151293/orgs",
+                    "received_events_url": "https://api.github.com/users/tomneeman151293/received_events",
+                    "repos_url": "https://api.github.com/users/tomneeman151293/repos",
+                    "site_admin": false,
+                    "starred_url": "https://api.github.com/users/tomneeman151293/starred{/owner}{/repo}",
+                    "subscriptions_url": "https://api.github.com/users/tomneeman151293/subscriptions",
+                    "type": "User",
+                    "url": "https://api.github.com/users/tomneeman151293"
+                },
+                "commit_id": null,
+                "commit_url": null,
+                "created_at": "2021-01-28T15:20:27Z",
+                "event": "closed",
+                "id": 4261648354,
+                "node_id": "MDExOkNsb3NlZEV2ZW50NDI2MTY0ODM1NA==",
+                "performed_via_github_app": null,
+                "url": "https://api.github.com/repos/demisto/demisto-sdk/issues/events/4261648354"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### GitHub Issue Events For Issue 1079
+>|actor|commit_id|commit_url|created_at|event|id|label|node_id|performed_via_github_app|url|
+>|---|---|---|---|---|---|---|---|---|---|
+>| login: tomneeman151293<br/>id: 70005542<br/>node_id: MDQ6VXNlcjcwMDA1NTQy<br/>avatar_url: https://avatars.githubusercontent.com/u/70005542?v=4<br/>gravatar_id: <br/>url: https://api.github.com/users/tomneeman151293<br/>html_url: https://github.com/tomneeman151293<br/>followers_url: https://api.github.com/users/tomneeman151293/followers<br/>following_url: https://api.github.com/users/tomneeman151293/following{/other_user}<br/>gists_url: https://api.github.com/users/tomneeman151293/gists{/gist_id}<br/>starred_url: https://api.github.com/users/tomneeman151293/starred{/owner}{/repo}<br/>subscriptions_url: https://api.github.com/users/tomneeman151293/subscriptions<br/>organizations_url: https://api.github.com/users/tomneeman151293/orgs<br/>repos_url: https://api.github.com/users/tomneeman151293/repos<br/>events_url: https://api.github.com/users/tomneeman151293/events{/privacy}<br/>received_events_url: https://api.github.com/users/tomneeman151293/received_events<br/>type: User<br/>site_admin: false |  |  | 2021-01-28T13:00:26Z | labeled | 4260960414 | name: bug<br/>color: d73a4a | MDEyOkxhYmVsZWRFdmVudDQyNjA5NjA0MTQ= |  | https://api.github.com/repos/demisto/demisto-sdk/issues/events/4260960414 |
+>| login: tomneeman151293<br/>id: 70005542<br/>node_id: MDQ6VXNlcjcwMDA1NTQy<br/>avatar_url: https://avatars.githubusercontent.com/u/70005542?v=4<br/>gravatar_id: <br/>url: https://api.github.com/users/tomneeman151293<br/>html_url: https://github.com/tomneeman151293<br/>followers_url: https://api.github.com/users/tomneeman151293/followers<br/>following_url: https://api.github.com/users/tomneeman151293/following{/other_user}<br/>gists_url: https://api.github.com/users/tomneeman151293/gists{/gist_id}<br/>starred_url: https://api.github.com/users/tomneeman151293/starred{/owner}{/repo}<br/>subscriptions_url: https://api.github.com/users/tomneeman151293/subscriptions<br/>organizations_url: https://api.github.com/users/tomneeman151293/orgs<br/>repos_url: https://api.github.com/users/tomneeman151293/repos<br/>events_url: https://api.github.com/users/tomneeman151293/events{/privacy}<br/>received_events_url: https://api.github.com/users/tomneeman151293/received_events<br/>type: User<br/>site_admin: false |  |  | 2021-01-28T15:20:27Z | closed | 4261648354 |  | MDExOkNsb3NlZEV2ZW50NDI2MTY0ODM1NA== |  | https://api.github.com/repos/demisto/demisto-sdk/issues/events/4261648354 |
+
+### GitHub-list-all-projects
+
+***
+List all project boards a user can see.
+
+#### Base Command
+
+`GitHub-list-all-projects`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_filter | Only list projects with the following numbers (Ids) | Optional | 
+| limit | The number of projects to return. Default is 20. Maximum is 100. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.Project.Name | String | The name of the project board. | 
+| GitHub.Project.ID | Number | The ID of the  project board. | 
+| GitHub.Project.Number | Number | Project board number. | 
+| GitHub.Project.Columns.Name | String | Column Name. | 
+| GitHub.Project.Columns.ColumnID | Number | The ID of the column. | 
+| GitHub.Project.Columns.Cards.CardID | Number | The ID of the card. | 
+| GitHub.Project.Columns.Cards.ContentNumber | Number | The content number of this card, usually this is the issue number. | 
+| GitHub.Project.Issues | List | List of all issue numbers that are in this project board. | 
+            
+#### Command Example
+
+```!GitHub-list-all-projects project_filter="1,2"```
+
+#### Context Example
+```json
+{
+  "GitHub": {
+    "Project": {
+       "XSOAR Data": {
+        "Number": 23,
+        "ID": 2,
+        "Columns": {
+          "In progress": {
+            "Cards": [
+              {
+                "CardID": 55555,
+                "ContentNumber": 33883
+              },
+              {
+                "CardID": 66666,
+                "ContentNumber": 34852
+              },
+            ],
+            "Name": "In progress",
+            "ColumnID": 13241511
+          },
+          "Done": {
+            "Cards": [
+              {
+                "CardID": 61858005,
+                "ContentNumber": 37480
+              },
+              {
+                "CardID": 60428728,
+                "ContentNumber": 36608
+              },
+            ],
+            "Name": "Done",
+            "ColumnID": 13437971
+          }
+        },
+        "Issues": [
+          33883,
+          34852,
+          37480,
+          36608
+        ],
+        "Name": "XSOAR Data"
+      }
+  }
+}
+```
+
+
+### GitHub-move-issue-to-project-board
+
+***
+Move an issue in the project board to a different column.
+
+#### Base Command
+
+`GitHub-move-issue-to-project-board`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| column_id | Destination column ID | Required | 
+| card_id | Card ID to move | Required | 
+| position | The position of the card in the new column | Optional | 
+
+           
+#### Command Example
+
+```!GitHub-move-issue-to-project-board card_id=1111 column_id=1234 position="top"```
+
+### GitHub-get-path-data
+***
+Gets the data of the a given path.
+
+
+#### Base Command
+
+`GitHub-get-path-data`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| relative_path | Relative path to retrieve its data. | Required | 
+| branch_name | The branch name from which to get the file data. Default is master. | Optional | 
+| organization | The name of the organization containing the file. | Optional | 
+| repository | The repository of the file. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.PathData.name | String | Path name. | 
+| GitHub.PathData.path | String | Relative path for the given repository. | 
+| GitHub.PathData.sha | String | Path SHA. | 
+| GitHub.PathData.size | Number | Path size in bytes. Will be 0 if path to a dir was given. | 
+| GitHub.PathData.url | String | Path URL. | 
+| GitHub.PathData.html_url | String | Path HTML URL. | 
+| GitHub.PathData.git_url | String | Path Git URL. | 
+| GitHub.PathData.download_url | String | Path download URL. If a directory path was given will be empty. | 
+| GitHub.PathData.type | String | Path data, e.g file, dir. | 
+| GitHub.PathData.content | String | Content of the path if a file path was given. | 
+| GitHub.PathData.encoding | String | Encoding method if path to a file was given. | 
+| GitHub.PathData.entries.name | String | If dir was given in file_path, name of the dir entry. | 
+| GitHub.PathData.entries.path | String | If dir was given in file_path, path of the dir entry. | 
+| GitHub.PathData.entries.sha | String | If dir was given in file_path, SHA of the dir entry. | 
+| GitHub.PathData.entries.size | Number | If dir was given in file_path, size of the dir entry. Will be 0 if entry is also a dir. | 
+| GitHub.PathData.entries.url | String | If dir was given in file_path, URL of the dir entry. | 
+| GitHub.PathData.entries.html_url | String | If dir was given in file_path, HTML URL of the dir entry. | 
+| GitHub.PathData.entries.git_url | String | If dir was given in file_path, Git URL of the dir entry. | 
+| GitHub.PathData.entries.download_url | String | If dir was given in file_path, download URL of the dir entry. Will be empty if entry is also a dir. | 
+| GitHub.PathData.entries.type | String | If dir was given in file_path, type of the dir entry. | 
+
+
+#### Command Example
+```!GitHub-get-path-data organization=demisto repository=content relative_path=Packs/BitcoinAbuse/Integrations/BitcoinAbuse```
+
+#### Context Example
+```json
+{
+    "GitHub": {
+        "PathData": {
+            "download_url": null,
+            "entries": [
+                {
+                    "download_url": "https://raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.py",
+                    "git_url": "https://api.github.com/repos/demisto/content/git/blobs/23b55cb33aadaa6753e3df1e1d90d3cdc951c745",
+                    "html_url": "https://github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.py",
+                    "name": "BitcoinAbuse.py",
+                    "path": "Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.py",
+                    "sha": "23b55cb33aadaa6753e3df1e1d90d3cdc951c745",
+                    "size": 14395,
+                    "type": "file",
+                    "url": "https://api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.py?ref=master"
+                },
+                {
+                    "download_url": "https://raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.yml",
+                    "git_url": "https://api.github.com/repos/demisto/content/git/blobs/17bbcfd9270570727c2e0f48591fcb9a98a0711e",
+                    "html_url": "https://github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.yml",
+                    "name": "BitcoinAbuse.yml",
+                    "path": "Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.yml",
+                    "sha": "17bbcfd9270570727c2e0f48591fcb9a98a0711e",
+                    "size": 3929,
+                    "type": "file",
+                    "url": "https://api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.yml?ref=master"
+                },
+                {
+                    "download_url": "https://raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_description.md",
+                    "git_url": "https://api.github.com/repos/demisto/content/git/blobs/7d969d68833e2424ba8411c93fb8110face60414",
+                    "html_url": "https://github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_description.md",
+                    "name": "BitcoinAbuse_description.md",
+                    "path": "Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_description.md",
+                    "sha": "7d969d68833e2424ba8411c93fb8110face60414",
+                    "size": 1305,
+                    "type": "file",
+                    "url": "https://api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_description.md?ref=master"
+                },
+                {
+                    "download_url": "https://raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_image.png",
+                    "git_url": "https://api.github.com/repos/demisto/content/git/blobs/52bef504f8dc4b58ddc6f200cdd135bcdfe9719a",
+                    "html_url": "https://github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_image.png",
+                    "name": "BitcoinAbuse_image.png",
+                    "path": "Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_image.png",
+                    "sha": "52bef504f8dc4b58ddc6f200cdd135bcdfe9719a",
+                    "size": 3212,
+                    "type": "file",
+                    "url": "https://api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_image.png?ref=master"
+                },
+                {
+                    "download_url": "https://raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_test.py",
+                    "git_url": "https://api.github.com/repos/demisto/content/git/blobs/dc2c4106cc3589461c7470a5c26e6e8927192d7f",
+                    "html_url": "https://github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_test.py",
+                    "name": "BitcoinAbuse_test.py",
+                    "path": "Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_test.py",
+                    "sha": "dc2c4106cc3589461c7470a5c26e6e8927192d7f",
+                    "size": 7150,
+                    "type": "file",
+                    "url": "https://api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_test.py?ref=master"
+                },
+                {
+                    "download_url": "https://raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile",
+                    "git_url": "https://api.github.com/repos/demisto/content/git/blobs/3523d3b6b93bd611859c23e1f63a774d78a0363a",
+                    "html_url": "https://github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile",
+                    "name": "Pipfile",
+                    "path": "Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile",
+                    "sha": "3523d3b6b93bd611859c23e1f63a774d78a0363a",
+                    "size": 257,
+                    "type": "file",
+                    "url": "https://api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile?ref=master"
+                },
+                {
+                    "download_url": "https://raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile.lock",
+                    "git_url": "https://api.github.com/repos/demisto/content/git/blobs/6bdb9313414e337e128df3715f17d372f5691608",
+                    "html_url": "https://github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile.lock",
+                    "name": "Pipfile.lock",
+                    "path": "Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile.lock",
+                    "sha": "6bdb9313414e337e128df3715f17d372f5691608",
+                    "size": 15993,
+                    "type": "file",
+                    "url": "https://api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile.lock?ref=master"
+                },
+                {
+                    "download_url": "https://raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/README.md",
+                    "git_url": "https://api.github.com/repos/demisto/content/git/blobs/fba823cddcc3637b2989598b7ae08731002f8feb",
+                    "html_url": "https://github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/README.md",
+                    "name": "README.md",
+                    "path": "Packs/BitcoinAbuse/Integrations/BitcoinAbuse/README.md",
+                    "sha": "fba823cddcc3637b2989598b7ae08731002f8feb",
+                    "size": 7188,
+                    "type": "file",
+                    "url": "https://api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/README.md?ref=master"
+                },
+                {
+                    "download_url": null,
+                    "git_url": "https://api.github.com/repos/demisto/content/git/trees/ed2025b734667dfde3b405f8a131b785e9d8fc9d",
+                    "html_url": "https://github.com/demisto/content/tree/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/test_data",
+                    "name": "test_data",
+                    "path": "Packs/BitcoinAbuse/Integrations/BitcoinAbuse/test_data",
+                    "sha": "ed2025b734667dfde3b405f8a131b785e9d8fc9d",
+                    "size": 0,
+                    "type": "dir",
+                    "url": "https://api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/test_data?ref=master"
+                }
+            ],
+            "git_url": "https://api.github.com/repos/demisto/content/git/trees/1a0c49c84e7bcd02af5587082b6ed48634a20402",
+            "html_url": "https://github.com/demisto/content/tree/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse",
+            "name": "BitcoinAbuse",
+            "path": "Packs/BitcoinAbuse/Integrations/BitcoinAbuse",
+            "sha": "1a0c49c84e7bcd02af5587082b6ed48634a20402",
+            "size": 0,
+            "type": "dir",
+            "url": "https://api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse?ref=master"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### File Data For File Packs/BitcoinAbuse/Integrations/BitcoinAbuse
+>|entries|git_url|html_url|name|path|sha|size|type|url|
+>|---|---|---|---|---|---|---|---|---|
+>| {'name': 'BitcoinAbuse.py', 'path': 'Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.py', 'sha': '23b55cb33aadaa6753e3df1e1d90d3cdc951c745', 'size': 14395, 'url': 'https:<span>//</span>api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.py?ref=master', 'html_url': 'https:<span>//</span>github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.py', 'git_url': 'https:<span>//</span>api.github.com/repos/demisto/content/git/blobs/23b55cb33aadaa6753e3df1e1d90d3cdc951c745', 'download_url': 'https:<span>//</span>raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.py', 'type': 'file'},<br/>{'name': 'BitcoinAbuse.yml', 'path': 'Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.yml', 'sha': '17bbcfd9270570727c2e0f48591fcb9a98a0711e', 'size': 3929, 'url': 'https:<span>//</span>api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.yml?ref=master', 'html_url': 'https:<span>//</span>github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.yml', 'git_url': 'https:<span>//</span>api.github.com/repos/demisto/content/git/blobs/17bbcfd9270570727c2e0f48591fcb9a98a0711e', 'download_url': 'https:<span>//</span>raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.yml', 'type': 'file'},<br/>{'name': 'BitcoinAbuse_description.md', 'path': 'Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_description.md', 'sha': '7d969d68833e2424ba8411c93fb8110face60414', 'size': 1305, 'url': 'https:<span>//</span>api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_description.md?ref=master', 'html_url': 'https:<span>//</span>github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_description.md', 'git_url': 'https:<span>//</span>api.github.com/repos/demisto/content/git/blobs/7d969d68833e2424ba8411c93fb8110face60414', 'download_url': 'https:<span>//</span>raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_description.md', 'type': 'file'},<br/>{'name': 'BitcoinAbuse_image.png', 'path': 'Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_image.png', 'sha': '52bef504f8dc4b58ddc6f200cdd135bcdfe9719a', 'size': 3212, 'url': 'https:<span>//</span>api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_image.png?ref=master', 'html_url': 'https:<span>//</span>github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_image.png', 'git_url': 'https:<span>//</span>api.github.com/repos/demisto/content/git/blobs/52bef504f8dc4b58ddc6f200cdd135bcdfe9719a', 'download_url': 'https:<span>//</span>raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_image.png', 'type': 'file'},<br/>{'name': 'BitcoinAbuse_test.py', 'path': 'Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_test.py', 'sha': 'dc2c4106cc3589461c7470a5c26e6e8927192d7f', 'size': 7150, 'url': 'https:<span>//</span>api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_test.py?ref=master', 'html_url': 'https:<span>//</span>github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_test.py', 'git_url': 'https:<span>//</span>api.github.com/repos/demisto/content/git/blobs/dc2c4106cc3589461c7470a5c26e6e8927192d7f', 'download_url': 'https:<span>//</span>raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_test.py', 'type': 'file'},<br/>{'name': 'Pipfile', 'path': 'Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile', 'sha': '3523d3b6b93bd611859c23e1f63a774d78a0363a', 'size': 257, 'url': 'https:<span>//</span>api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile?ref=master', 'html_url': 'https:<span>//</span>github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile', 'git_url': 'https:<span>//</span>api.github.com/repos/demisto/content/git/blobs/3523d3b6b93bd611859c23e1f63a774d78a0363a', 'download_url': 'https:<span>//</span>raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile', 'type': 'file'},<br/>{'name': 'Pipfile.lock', 'path': 'Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile.lock', 'sha': '6bdb9313414e337e128df3715f17d372f5691608', 'size': 15993, 'url': 'https:<span>//</span>api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile.lock?ref=master', 'html_url': 'https:<span>//</span>github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile.lock', 'git_url': 'https:<span>//</span>api.github.com/repos/demisto/content/git/blobs/6bdb9313414e337e128df3715f17d372f5691608', 'download_url': 'https:<span>//</span>raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile.lock', 'type': 'file'},<br/>{'name': 'README.md', 'path': 'Packs/BitcoinAbuse/Integrations/BitcoinAbuse/README.md', 'sha': 'fba823cddcc3637b2989598b7ae08731002f8feb', 'size': 7188, 'url': 'https:<span>//</span>api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/README.md?ref=master', 'html_url': 'https:<span>//</span>github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/README.md', 'git_url': 'https:<span>//</span>api.github.com/repos/demisto/content/git/blobs/fba823cddcc3637b2989598b7ae08731002f8feb', 'download_url': 'https:<span>//</span>raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/README.md', 'type': 'file'},<br/>{'name': 'test_data', 'path': 'Packs/BitcoinAbuse/Integrations/BitcoinAbuse/test_data', 'sha': 'ed2025b734667dfde3b405f8a131b785e9d8fc9d', 'size': 0, 'url': 'https:<span>//</span>api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/test_data?ref=master', 'html_url': 'https:<span>//</span>github.com/demisto/content/tree/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/test_data', 'git_url': 'https:<span>//</span>api.github.com/repos/demisto/content/git/trees/ed2025b734667dfde3b405f8a131b785e9d8fc9d', 'download_url': None, 'type': 'dir'} | https:<span>//</span>api.github.com/repos/demisto/content/git/trees/1a0c49c84e7bcd02af5587082b6ed48634a20402 | https:<span>//</span>github.com/demisto/content/tree/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse | BitcoinAbuse | Packs/BitcoinAbuse/Integrations/BitcoinAbuse | 1a0c49c84e7bcd02af5587082b6ed48634a20402 | 0 | dir | https:<span>//</span>api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse?ref=master |
+
+### GitHub-releases-list
+***
+Get releases data from given repository and organization.
+
+
+#### Base Command
+
+`GitHub-releases-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| page | Page number to retrieve releases from. If limit argument is not given, defaults to 1. | Optional | 
+| page_size | Size of the page. If limit argument is not given, defaults to 50. | Optional |
+| limit | Maximum number of releases data to retrieve. Will get results of the first pages. Cannot be given with page_size or page arguments. | Optional |
+| organization | The name of the organization containing the repository. Defaults to organization instance parameter if not given. | Optional | 
+| repository | The repository containing the releases. Defaults to repository instance parameter if not given. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.Release.url | String | Release URL. | 
+| GitHub.Release.assets_url | String | Release assets URL. | 
+| GitHub.Release.upload_url | String | Upload URL. | 
+| GitHub.Release.html_url | String | HTML URL. | 
+| GitHub.Release.id | Number | Release ID. | 
+| GitHub.Release.author.login | String | The release author login username. | 
+| GitHub.Release.author.id | Number | The release author user ID. | 
+| GitHub.Release.author.node_id | String | The release author node ID. | 
+| GitHub.Release.author.avatar_url | String | The release author avatar URL. | 
+| GitHub.Release.author.gravatar_id | String | The release author gravatar ID. | 
+| GitHub.Release.author.url | String | The release author URL. | 
+| GitHub.Release.author.html_url | String | The release author HTML URL. | 
+| GitHub.Release.author.followers_url | String | The release author followers URL. | 
+| GitHub.Release.author.following_url | String | The release author following URL. | 
+| GitHub.Release.author.gists_url | String | The release author gists URL. | 
+| GitHub.Release.author.starred_url | String | The release author starred URL. | 
+| GitHub.Release.author.subscriptions_url | String | The release author subscriptions URL. | 
+| GitHub.Release.author.organizations_url | String | The release author organizations URL. | 
+| GitHub.Release.author.repos_url | String | The release author repos URL. | 
+| GitHub.Release.author.events_url | String | The release author events URL. | 
+| GitHub.Release.author.received_events_url | String | The release author received events URL. | 
+| GitHub.Release.author.type | String | The release author type. \(E.g, "User"\). | 
+| GitHub.Release.author.site_admin | Boolean | Whether the release author is site admin. | 
+| GitHub.Release.node_id | String | Release Node ID. | 
+| GitHub.Release.tag_name | String | Release tag name. | 
+| GitHub.Release.target_commitish | String | Release target commit. | 
+| GitHub.Release.name | String | Release name. | 
+| GitHub.Release.draft | Boolean | Whether release is draft. | 
+| GitHub.Release.prerelease | Boolean | Whether release is pre release. | 
+| GitHub.Release.created_at | Date | Date when release was created. | 
+| GitHub.Release.published_at | Date | Date when release was published. | 
+| GitHub.Release.tarball_url | String | Release tar URL download. | 
+| GitHub.Release.zipball_url | String | Release zip URL download. | 
+| GitHub.Release.body | String | Release body. | 
+
+
+#### Command Example
+```!GitHub-releases-list limit=1```
+
+#### Context Example
+```json
+{
+    "GitHub": {
+        "Release": {
+            "assets": [],
+            "assets_url": "https://api.github.com/repos/content-bot/hello-world/releases/48262112/assets",
+            "author": {
+                "avatar_url": "https://avatars.githubusercontent.com/u/55035720?v=4",
+                "events_url": "https://api.github.com/users/content-bot/events{/privacy}",
+                "followers_url": "https://api.github.com/users/content-bot/followers",
+                "following_url": "https://api.github.com/users/content-bot/following{/other_user}",
+                "gists_url": "https://api.github.com/users/content-bot/gists{/gist_id}",
+                "gravatar_id": "",
+                "html_url": "https://github.com/content-bot",
+                "id": 55035720,
+                "login": "content-bot",
+                "node_id": "MDQ6VXNlcjU1MDM1NzIw",
+                "organizations_url": "https://api.github.com/users/content-bot/orgs",
+                "received_events_url": "https://api.github.com/users/content-bot/received_events",
+                "repos_url": "https://api.github.com/users/content-bot/repos",
+                "site_admin": false,
+                "starred_url": "https://api.github.com/users/content-bot/starred{/owner}{/repo}",
+                "subscriptions_url": "https://api.github.com/users/content-bot/subscriptions",
+                "type": "User",
+                "url": "https://api.github.com/users/content-bot"
+            },
+            "body": "test",
+            "created_at": "2021-08-23T07:54:37Z",
+            "draft": true,
+            "html_url": "https://github.com/content-bot/hello-world/releases/tag/untagged-e106615f0216817665d8",
+            "id": 48262112,
+            "name": "1.0.0",
+            "node_id": "MDc6UmVsZWFzZTQ4MjYyMTEy",
+            "prerelease": false,
+            "published_at": null,
+            "tag_name": "1.0.0",
+            "tarball_url": null,
+            "target_commitish": "master",
+            "upload_url": "https://uploads.github.com/repos/content-bot/hello-world/releases/48262112/assets{?name,label}",
+            "url": "https://api.github.com/repos/content-bot/hello-world/releases/48262112",
+            "zipball_url": null
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Releases Data Of hello-world
+>|assets_url|author|body|created_at|draft|html_url|id|name|node_id|prerelease|tag_name|target_commitish|upload_url|url|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| https:<span>//</span>api.github.com/repos/content-bot/hello-world/releases/48262112/assets | login: content-bot<br/>id: 55035720<br/>node_id: MDQ6VXNlcjU1MDM1NzIw<br/>avatar_url: https:<span>//</span>avatars.githubusercontent.com/u/55035720?v=4<br/>gravatar_id: <br/>url: https:<span>//</span>api.github.com/users/content-bot<br/>html_url: https:<span>//</span>github.com/content-bot<br/>followers_url: https:<span>//</span>api.github.com/users/content-bot/followers<br/>following_url: https:<span>//</span>api.github.com/users/content-bot/following{/other_user}<br/>gists_url: https:<span>//</span>api.github.com/users/content-bot/gists{/gist_id}<br/>starred_url: https:<span>//</span>api.github.com/users/content-bot/starred{/owner}{/repo}<br/>subscriptions_url: https:<span>//</span>api.github.com/users/content-bot/subscriptions<br/>organizations_url: https:<span>//</span>api.github.com/users/content-bot/orgs<br/>repos_url: https:<span>//</span>api.github.com/users/content-bot/repos<br/>events_url: https:<span>//</span>api.github.com/users/content-bot/events{/privacy}<br/>received_events_url: https:<span>//</span>api.github.com/users/content-bot/received_events<br/>type: User<br/>site_admin: false | test | 2021-08-23T07:54:37Z | true | https:<span>//</span>github.com/content-bot/hello-world/releases/tag/untagged-e106615f0216817665d8 | 48262112 | 1.0.0 | MDc6UmVsZWFzZTQ4MjYyMTEy | false | 1.0.0 | master | https:<span>//</span>uploads.github.com/repos/content-bot/hello-world/releases/48262112/assets{?name,label} | https:<span>//</span>api.github.com/repos/content-bot/hello-world/releases/48262112 |

@@ -181,6 +181,7 @@ def main():
 
     # get the service API url
     base_url = "http://openphish.com"
+    https_base_url = "https://openphish.com"
 
     commands = {
         'url': url_command,
@@ -194,8 +195,9 @@ def main():
         hours_to_refresh = float(hours_to_refresh)
         use_ssl = not user_params.get('insecure', False)
         use_proxy = user_params.get('proxy', False)
+        use_https = user_params.get('https', False)
         client = Client(
-            url=base_url,
+            url=https_base_url if use_https else base_url,
             use_ssl=use_ssl,
             use_proxy=use_proxy,
             fetch_interval_hours=hours_to_refresh)

@@ -3,6 +3,25 @@ commonfields:
   id: PhishTank V2
   version: -1
 configuration:
+- defaultvalue: false
+  display: Use HTTPS connection
+  name: use_https
+  required: false
+  type: 8
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: C - Fairly reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
 - defaultvalue: '1'
   display: Database refresh interval (number of hours to wait between each loading)
   hidden: false
@@ -57,6 +76,9 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
   - deprecated: false
     description: Reloads the PhishTank downloadable database. PhishTank database is
       an up to date phishing detection file (updated hourly) .
@@ -67,7 +89,7 @@ script:
       was loaded.
     execution: false
     name: phishtank-status
-  dockerimage: demisto/python3:3.9.1.14969
+  dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: false
   longRunning: false

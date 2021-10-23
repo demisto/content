@@ -57,7 +57,8 @@ def aws_session(service='cloudtrail', region=None, roleArn=None, roleSessionName
     if kwargs and not AWS_ACCESS_KEY_ID:
 
         if not AWS_ACCESS_KEY_ID:
-            sts_client = boto3.client('sts', config=config, verify=VERIFY_CERTIFICATE)
+            sts_client = boto3.client('sts', config=config, verify=VERIFY_CERTIFICATE,
+                                      region_name=AWS_DEFAULT_REGION)
             sts_response = sts_client.assume_role(**kwargs)
             if region is not None:
                 client = boto3.client(

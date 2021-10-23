@@ -1,18 +1,19 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 """
 
 IMPORTS
 
 """
-import requests
 import base64
-import time
 import json
 import os
 import re
+import time
+
+import requests
+
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -737,7 +738,6 @@ COMMAND HANDLERS
 
 
 def get_token_request():
-
     """
     returns a token on successful request
     """
@@ -784,7 +784,6 @@ HOST INFORMATION
 
 
 def get_host_by_agent_request(agent_id):
-
     """
     returns the response body
 
@@ -810,7 +809,6 @@ def get_host_by_agent_request(agent_id):
 
 
 def get_host_information():
-
     """
 
     return the host information to the war room, given an agentId or hostName from input.
@@ -848,7 +846,6 @@ def get_host_information():
 
 
 def get_hosts_information():
-
     """
 
     return the host information to the war room, given an agentId or hostName from input.
@@ -888,7 +885,6 @@ def get_hosts_information():
 
 
 def get_host_set_information():
-
     """
     return host set information to the war room according to given id or filters
 
@@ -946,7 +942,6 @@ def get_host_set_information():
 def get_hosts_request(limit=None, offset=None, has_active_threats=None, has_alerts=None,
                       agent_version=None, containment_queued=None, containment_state=None,
                       host_name=None, os_platform=None, reported_clone=None, time_zone=None):
-
     """
     returns the response body
 
@@ -996,7 +991,6 @@ def get_host_by_name_request(host_name):
 
 
 def get_all_agents_ids():
-
     """
     returns a list of all agents ids
     """
@@ -1014,7 +1008,6 @@ def get_all_agents_ids():
 
 
 def get_agent_id(host_name):
-
     """
     returns the agent id given the host name
 
@@ -1052,7 +1045,6 @@ HOST CONTAINMENT
 
 
 def containment_request(agent_id):
-
     """
 
     no return value on successful request
@@ -1067,7 +1059,7 @@ def containment_request(agent_id):
         api_version = int(VERSION[-1])
     except Exception as exc:
         raise ValueError('Invalid version was set: {} - {}'.format(VERSION, str(exc)))
-    if api_version > 3:
+    if api_version >= 3:
         http_request(
             'POST',
             url,
@@ -1084,7 +1076,6 @@ def containment_request(agent_id):
 
 
 def containment():
-
     """
 
     returns a success message to the war room
@@ -1118,7 +1109,6 @@ def containment():
 
 
 def containment_cancellation_request(agent_id):
-
     """
 
     no return value on successful request
@@ -1135,7 +1125,6 @@ def containment_cancellation_request(agent_id):
 
 
 def containment_cancellation():
-
     """
 
     returns a success message to the war room
@@ -1211,7 +1200,7 @@ def get_alert():
         'Contents': alert,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': '{}\n{}'.format(alert_table, event_table),
+        'HumanReadable': u'{}\n{}'.format(alert_table, event_table),
         'EntryContext': {
             "FireEyeHX.Alerts(obj._id==val._id)": alert
         }
@@ -1222,7 +1211,6 @@ def get_alert():
 def get_alerts_request(has_share_mode=None, resolution=None, agent_id=None, host_name=None,
                        condition_id=None, limit=None, offset=None, sort=None, min_id=None,
                        event_at=None, alert_id=None, matched_at=None, reported_at=None, source=None):
-
     """
 
     returns the response body on successful request
@@ -1264,7 +1252,6 @@ def get_alerts_request(has_share_mode=None, resolution=None, agent_id=None, host
 
 def get_all_alerts(has_share_mode=None, resolution=None, agent_id=None, condition_id=None, limit=None,
                    sort=None, min_id=None, event_at=None, alert_id=None, matched_at=None, reported_at=None, source=None):
-
     """
 
     returns a list of alerts, all results up to limit
@@ -1360,7 +1347,6 @@ def collect_context(alerts):
 
 
 def get_alerts():
-
     """
 
     returns a list of alerts to the war room
@@ -1439,7 +1425,6 @@ def get_alerts():
 
 
 def suppress_alert_request(alert_id):
-
     """
 
     no return value on successful request
@@ -1455,7 +1440,6 @@ def suppress_alert_request(alert_id):
 
 
 def suppress_alert():
-
     """
 
     returns a success message to the war room
@@ -1483,7 +1467,6 @@ INDICATORS
 
 
 def new_indicator_request(category):
-
     """
     Create a new indicator
     """
@@ -1502,7 +1485,6 @@ def new_indicator_request(category):
 
 
 def create_indicator():
-
     """
     Get new indicator details
     returns a success message to the war room
@@ -1529,7 +1511,6 @@ def create_indicator():
 
 
 def append_conditions_request(name, category, body):
-
     """
     Append conditions to indicator request
     """
@@ -1547,7 +1528,6 @@ def append_conditions_request(name, category, body):
 
 
 def append_conditions():
-
     """
     Append conditions to indicator
     no return value on successfull request
@@ -1577,7 +1557,6 @@ def append_conditions():
 
 
 def get_indicator_request(category, name):
-
     """
 
     returns a json object representing an indicator
@@ -1595,7 +1574,6 @@ def get_indicator_request(category, name):
 
 
 def get_indicator_conditions_request(category, name, limit=None, offset=None, enabled=None, has_alerts=None):
-
     """
 
     returns a list of json objects, each representing an indicator condition
@@ -1646,7 +1624,6 @@ def get_all_enabled_conditions(indicator_category, indicator_name):
 
 
 def get_indicator_conditions():
-
     """
 
     returns a list of enabled conditions assosiated with a specific indicator to the war room
@@ -1863,7 +1840,6 @@ def search_request(query, host_set=None, hosts=None, exhaustive=False):
 
 
 def get_search_information_request(search_id):
-
     """
 
     returns the search information represented by a json object.
@@ -1881,7 +1857,6 @@ def get_search_information_request(search_id):
 
 
 def get_search_results_request(search_id):
-
     """
 
     returns the search results represented by a json object.
@@ -1899,7 +1874,6 @@ def get_search_results_request(search_id):
 
 
 def stop_search_request(search_id):
-
     """
 
     returns the search information represented by a json object.
@@ -1917,7 +1891,6 @@ def stop_search_request(search_id):
 
 
 def delete_search_request(search_id):
-
     """
 
     no return value on successful request
@@ -2116,7 +2089,6 @@ def file_acquisition_information_request(acquisition_id):
 
 
 def delete_file_acquisition_request(acquisition_id):
-
     """
 
     no return value on successful request
@@ -2132,7 +2104,6 @@ def delete_file_acquisition_request(acquisition_id):
 
 
 def delete_file_acquisition():
-
     """
 
     returns a success message to the war room
@@ -2305,8 +2276,118 @@ def data_acquisition():
     demisto.results(fileResult('agent_{}_data.mans'.format(args['agentId']), data))
 
 
-def delete_data_acquisition_request(acquisition_id):
+def initiate_data_acquisition():
+    """
+    Initiate data acquisition
+    """
 
+    args = demisto.args()
+
+    # validate the host name or agent ID was passed
+    if not args.get('hostName') and not args.get('agentId'):
+        raise ValueError('Please provide either agentId or hostName')
+
+    if not args.get('defaultSystemScript') and not args.get('script'):
+        raise ValueError('If the script is not provided, defaultSystemScript must be specified.')
+
+    if args.get('script') and not args.get('scriptName'):
+        raise ValueError('If the script is provided, script name must be specified as well.')
+
+    if args.get('hostName'):
+        args['agentId'] = get_agent_id(args['hostName'])
+
+    # determine whether to use the default script
+    sys = args.get('defaultSystemScript')
+    if sys:
+        args['script'] = json.dumps(SYS_SCRIPT_MAP[sys])
+        args['scriptName'] = '{}DefaultScript'.format(sys)
+
+    acquisition_info = data_acquisition_request(
+        args['agentId'],
+        args['scriptName'],
+        base64.b64encode(bytes(args['script'], 'utf-8')).decode()
+    )
+
+    # Add hostname to the host info of acquisition_info
+    acquisition_info["host"]["hostname"] = args.get('hostName')
+    # Add Integration Instance to the acquisition_info
+    acquisition_info["instance"] = demisto.integrationInstance()
+
+    entry = {
+        'Type': entryTypes['note'],
+        'Contents': 'Acquisition ID: {} on Instance: {}'.format(acquisition_info.get('_id'), demisto.integrationInstance()),
+        'ContentsFormat': formats['text'],
+        'EntryContext': {
+            "FireEyeHX.Acquisitions.Data(obj._id==val._id && obj.instance==val.instance)": acquisition_info
+        }
+    }
+    demisto.results(entry)
+
+
+def get_data_acquisition():
+    """
+    Wait for acquisition process to complete and fetch the data
+    """
+
+    args = demisto.args()
+
+    # validate the acquisitionId was passed
+    if not args.get('acquisitionId'):
+        raise ValueError('Please provide acquisitionId')
+
+    acquisition_id = args.get("acquisitionId")
+
+    acquisition_info = data_acquisition_information_request(acquisition_id)
+
+    agent_id = acquisition_info.get('host').get('_id')
+    host_info = get_host_by_agent_request(agent_id)
+    hostname = host_info.get('hostname')
+
+    # Add hostname to the host info of acquisition_info
+    acquisition_info["host"]["hostname"] = hostname
+    # Add Integration Instance to the acquisition_info
+    acquisition_info["instance"] = demisto.integrationInstance()
+
+    # if `state` equals to 'COMPLETE'
+    if acquisition_info.get('state') == 'COMPLETE':
+
+        message = 'Acquisition completed successfully.'
+        if acquisition_info.get('error_message'):
+            message = acquisition_info.get('error_message')
+
+        # output file and acquisition information to the war room
+        data = data_collection_request(acquisition_id)
+        entry = {
+            'Type': EntryType.NOTE,
+            'Contents': '{}\nacquisition ID: {}'.format(message, acquisition_id),
+            'ContentsFormat': EntryFormat.TEXT,
+            'EntryContext': {
+                'FireEyeHX.Acquisitions.Data(obj._id==val._id)': acquisition_info
+            }
+        }
+        demisto.results(entry)
+        demisto.results(fileResult('{}_agent_{}_data.mans'.format(acquisition_id, agent_id), data))
+        return
+
+    # else return message for states in [ NEW, ERROR, QUEUED, RUNNING, FAILED ]
+    state = acquisition_info.get('state')
+
+    message = "Acquisition process not yet completed."
+    if acquisition_info.get('error_message'):
+        message = acquisition_info.get('error_message')
+
+    entry = {
+        'Type': EntryType.NOTE,
+        'Contents': '{}\nacquisition ID: {}\nstate: {}'.format(message, acquisition_id, state),
+        'ContentsFormat': EntryFormat.TEXT,
+        'EntryContext': {
+            'FireEyeHX.Acquisitions.Data(obj._id==val._id && obj.instance==val.instance)': acquisition_info
+        }
+    }
+    demisto.results(entry)
+
+
+def delete_data_acquisition_request(acquisition_id):
     """
 
     no return value on successful request
@@ -2322,7 +2403,6 @@ def delete_data_acquisition_request(acquisition_id):
 
 
 def delete_data_acquisition():
-
     """
 
     returns a success message to the war room
@@ -2350,11 +2430,14 @@ def fetch_incidents():
 
     last_run = demisto.getLastRun()
     alerts = []  # type: List[Dict[str, str]]
+    fetch_limit = int(demisto.params().get('fetch_limit') or '100')
+
     if last_run and last_run.get('min_id'):
         # get all alerts with id greater than min_id
         alerts = get_all_alerts(
             min_id=last_run.get('min_id'),
-            sort='_id+ascending'
+            sort='_id+ascending',
+            limit=fetch_limit
         )
         # results are sorted in ascending order - the last alert holds the greatest id
         min_id = alerts[-1].get('_id') if alerts else None
@@ -2362,7 +2445,7 @@ def fetch_incidents():
         # get the last 100 alerts
         alerts = get_all_alerts(
             sort='_id+descending',
-            limit=100
+            limit=fetch_limit
         )
         # results are sorted in descending order - the first alert holds the greatest id
         min_id = alerts[0].get('_id') if alerts else None
@@ -2392,7 +2475,7 @@ def parse_alert_to_incident(alert):
     if isinstance(event_values, dict):
         indicator = event_values.get(event_indicator, '')
 
-    incident_name = '{event_type_parsed}: {indicator}'.format(
+    incident_name = u'{event_type_parsed}: {indicator}'.format(
         event_type_parsed=re.sub("([a-z])([A-Z])", "\g<1> \g<2>", event_type).title(),
         indicator=indicator
     )
@@ -2633,6 +2716,10 @@ def main():
             delete_file_acquisition()
         elif command == 'fireeye-hx-data-acquisition':
             data_acquisition()
+        elif command == 'fireeye-hx-initiate-data-acquisition':
+            initiate_data_acquisition()
+        elif command == 'fireeye-hx-get-data-acquisition':
+            get_data_acquisition()
         elif command == 'fireeye-hx-delete-data-acquisition':
             delete_data_acquisition()
         elif command == 'fireeye-hx-search':

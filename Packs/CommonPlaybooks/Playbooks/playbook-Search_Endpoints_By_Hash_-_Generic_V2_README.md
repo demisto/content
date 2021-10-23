@@ -35,7 +35,3 @@ This playbook does not use any commands.
 | --- | --- | --- |
 | Endpoint.Hostname | Device hostname | string |
 | Endpoint | The endpoint | unknown |
-
-## Playbook Image
----
-![Search Endpoints By Hash - Generic V2](Insert the link to your image here)

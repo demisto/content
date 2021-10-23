@@ -1,0 +1,7 @@
+!qualys-fim-assets-list limit=3
+!qualys-fim-events-list limit=12 sort=least_recent filter=severity:4
+!qualys-fim-event-get event_id=de361739-a082-3240-8459-786b8ed5fa3b
+!qualys-fim-incidents-list sort=least_recent limit=15 attributes=name,status,id filter=status:closed
+!qualys-fim-incidents-get-events incident_id=4710aa44-8d69-4c00-8013-737768cb54be limit=7 attributes=id,name,type page_number=2 filter=action:create
+!qualys-fim-incident-create name=testtest7 comment=new_incident filters="dateTime: ['2021-01-01'..'2021-02-15']"
+!qualys-fim-incident-approve incident_id=8af30349-bd07-4c0d-8469-58d9d7218ffa approval_status=APPROVED change_type=AUTOMATED comment=approved disposition_category=MALWARE

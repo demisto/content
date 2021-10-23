@@ -3,21 +3,21 @@
 <div class="row top-padded">
 <div class="five wide break-word column integration-command-name"> </div>
 </div>
-<h3>To set up the integration on Demisto:</h3>
+<h3>To set up the integration on Cortex XSOAR:</h3>
 <ol>
 <li>Go to ‘Settings &gt; Integrations &gt; Servers &amp; Services’</li>
 <li>Locate the VMware Carbon Black App Control v2 integration by searching for ‘VMware Carbon Black App Control v2’ using the search box on the top of the page.</li>
-<li>Click ‘Add instance’ to create and configure a new integration. You should configure the following VMware Carbon Black App Control and Demisto-specific settings:                               <br> <strong>Name</strong>: A textual name for the integration instance.</li>
+<li>Click ‘Add instance’ to create and configure a new integration. You should configure the following VMware Carbon Black App Control and XSOAR-specific settings:                               <br> <strong>Name</strong>: A textual name for the integration instance.</li>
 </ol>
 <p class="wysiwyg-indent4"><strong>Server URL</strong>: The hostname or IP address of the VMware Carbon Black App Control application. Make sure the URL is reachable with respect to IP address and port.</p>
 <p class="wysiwyg-indent4"><strong>API Token: </strong>The API Token provided for VMware Carbon Black App Control. <strong> </strong></p>
-<p class="wysiwyg-indent4"><strong>Incident type:</strong> Choose the type of incident for Demisto handling from the drop-down list.</p>
-<p class="wysiwyg-indent4"><strong>Do not validate server certificate</strong>: Select to avoid server certification validation. You may want to do this in case Demisto cannot validate the integration server certificate (due to missing CA certificate)</p>
+<p class="wysiwyg-indent4"><strong>Incident type:</strong> Choose the type of incident for Cortex XSOAR handling from the drop-down list.</p>
+<p class="wysiwyg-indent4"><strong>Do not validate server certificate</strong>: Select to avoid server certification validation. You may want to do this in case Cortex XSOAR cannot validate the integration server certificate (due to missing CA certificate)</p>
 <p class="wysiwyg-indent4"><strong>Use system proxy settings</strong>: Select whether to communicate via the system proxy server or not.</p>
-<p class="wysiwyg-indent4"><strong>Demisto engine:</strong> If relevant, select the engine that acts as a proxy to the server.  <br> Engines are used when you need to access a remote network segments and there are network devices such as proxies, firewalls, etc. that prevent the Demisto server from accessing the remote networks.<br> <br> For more information on Demisto engines see:<br> <a href="https://support.demisto.com/hc/en-us/articles/226274727-Settings-Integrations-Engines">https://demisto.zendesk.com/hc/en-us/articles/226274727-Settings-Integrations-Engines</a></p>
+<p class="wysiwyg-indent4"><strong>Cortex XSOAR engine:</strong> If relevant, select the engine that acts as a proxy to the server.  <br> Engines are used when you need to access a remote network segments and there are network devices such as proxies, firewalls, etc. that prevent the Cortex XSOAR server from accessing the remote networks.<br> <br> For more information on Cortex XSOAR engines see:<br> <a href="https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/engines">https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/engines</a></p>
 <p class="wysiwyg-indent4"><strong>Require users to enter additional password:</strong> Select whether you’d like an additional step where users are required to authenticate themselves with a password.</p>
 <ol start="4">
-<li>Press the ‘Test’ button to validate connection.<br> If you are experiencing issues with the service configuration, please contact Demisto support at support@demisto.com</li>
+<li>Press the ‘Test’ button to validate connection.</li>
 <li>After completing the test successfully, press the ‘Done’ button.</li>
 </ol>
 <h3>Commands:</h3>

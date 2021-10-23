@@ -14,7 +14,7 @@ class WhereFieldEquals(unittest.TestCase):
         args = {
             "value":
             '[{ "name": "מה זה", "type": "IP" }, {  "name": "myFile.txt", "type": '
-            '"File"  }, { "name": "172.0.0.2", "type": "IP" }]',
+            '"File"  }, { "name": "172.0.0.2", "type": "IP" }, "somestring"]',
             "field":
             "type",
             "equalTo":

@@ -71,7 +71,7 @@ tasks:
       - "4"
     scriptarguments:
       file:
-        simple: c8092abd8d581750c0530fa1fc8d8318
+        simple: b7cc17bea7d0551b39efbc30ff206973
     separatecontext: false
     view: |-
       {
@@ -105,7 +105,7 @@ tasks:
       expectedValue: {}
       fields: {}
       path:
-        simple: DBotScore(val.Indicator === 'c8092abd8d581750c0530fa1fc8d8318' && val.Score == 3)
+        simple: DBotScore(val.Indicator === 'b7cc17bea7d0551b39efbc30ff206973' && val.Score == 3)
     separatecontext: false
     view: |-
       {
@@ -140,7 +140,7 @@ tasks:
       fields:
         simple: MD5,SHA1,SHA256,Malicious,Type,Info,Size
       path:
-        simple: File(val.MD5 === 'c8092abd8d581750c0530fa1fc8d8318')
+        simple: File(val.MD5 === 'b7cc17bea7d0551b39efbc30ff206973')
     separatecontext: false
     view: |-
       {
@@ -167,7 +167,7 @@ tasks:
       - "6"
     scriptarguments:
       hash:
-        simple: c8092abd8d581750c0530fa1fc8d8318
+        simple: b7cc17bea7d0551b39efbc30ff206973
     separatecontext: false
     view: |-
       {
@@ -194,7 +194,7 @@ tasks:
       - "7"
     scriptarguments:
       hash:
-        simple: c8092abd8d581750c0530fa1fc8d8318
+        simple: b7cc17bea7d0551b39efbc30ff206973
     separatecontext: false
     view: |-
       {
@@ -221,7 +221,7 @@ tasks:
       - "8"
     scriptarguments:
       hash:
-        simple: c8092abd8d581750c0530fa1fc8d8318
+        simple: b7cc17bea7d0551b39efbc30ff206973
     separatecontext: false
     view: |-
       {
@@ -248,7 +248,7 @@ tasks:
       - "9"
     scriptarguments:
       hash:
-        simple: c8092abd8d581750c0530fa1fc8d8318
+        simple: b7cc17bea7d0551b39efbc30ff206973
     separatecontext: false
     view: |-
       {
@@ -283,7 +283,7 @@ tasks:
       fields:
         simple: EntryID,Extension
       path:
-        simple: File(val.MD5==='c8092abd8d581750c0530fa1fc8d8318' && val.Info === 'application/octet-stream')
+        simple: File(val.MD5==='b7cc17bea7d0551b39efbc30ff206973' && val.Info === 'application/octet-stream')
     separatecontext: false
     view: |-
       {

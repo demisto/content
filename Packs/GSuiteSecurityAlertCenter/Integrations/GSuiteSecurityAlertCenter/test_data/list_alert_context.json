@@ -1,0 +1,322 @@
+{
+  "GSuiteSecurityAlert.Alert(val.alertId == obj.alertId)": [
+    {
+      "customerId": "demo_customerId",
+      "alertId": "demo_alertId",
+      "createTime": "2020-10-28T20:43:34.381Z",
+      "startTime": "2020-10-28T20:13:33Z",
+      "endTime": "2020-10-28T20:13:33Z",
+      "type": "Customer takeout initiated",
+      "source": "Domain wide takeout",
+      "data": {
+        "@type": "demo type",
+        "takeoutRequestId": "demo_takeoutRequestId",
+        "email": "demo_email"
+      },
+      "metadata": {
+        "customerId": "demo_customerId",
+        "alertId": "demo_alertId",
+        "status": "NOT_STARTED",
+        "updateTime": "2020-10-28T20:43:34.381Z",
+        "severity": "LOW",
+        "etag": "demo_etag="
+      },
+      "updateTime": "2020-10-28T20:43:34.381Z",
+      "etag": "demo_etag=="
+    },
+    {
+      "customerId": "demo_customerId",
+      "alertId": "demo_alertId",
+      "createTime": "2020-10-28T20:43:34.381Z",
+      "startTime": "2020-10-28T20:13:33Z",
+      "endTime": "2020-10-28T20:13:33Z",
+      "type": "Malware reclassification",
+      "source": "Gmail phishing",
+      "data": {
+        "domainId": {
+          "customerPrimaryDomain": "demo_customerPrimaryDomain"
+        },
+        "maliciousEntity": {
+          "entity": {
+            "emailAddress": "demo_emailAddress",
+            "displayName": "demo_displayName"
+          },
+          "fromHeader": "demo_fromHeader",
+          "displayName": "demo_displayName"
+        },
+        "messages": [
+          {
+            "messageId": "demo_messageId",
+            "md5HashMessageBody": "demo_md5HashMessageBody",
+            "messageBodySnippet": "demo_messageBodySnippet",
+            "md5HashSubject": "demo_md5HashSubject",
+            "subjectText": "demo_subjectText",
+            "attachmentsSha256Hash": [
+              "demo_attachmentsSha256Hash"
+            ],
+            "recipient": "demo_recipient",
+            "date": "demo_date"
+          }
+        ],
+        "isInternal": "True",
+        "systemActionType": "demo_systemActionType"
+      },
+      "metadata": {
+        "customerId": "demo_customerId",
+        "alertId": "demo_alertId",
+        "status": "NOT_STARTED",
+        "updateTime": "2020-10-28T20:43:34.381Z",
+        "severity": "LOW",
+        "etag": "demo_etag="
+      },
+      "updateTime": "2020-10-28T20:43:34.381Z",
+      "etag": "demo_etag=="
+    },
+    {
+      "customerId": "demo_customerId",
+      "alertId": "demo_alertId",
+      "createTime": "2020-10-28T20:43:34.381Z",
+      "startTime": "2020-10-28T20:13:33Z",
+      "endTime": "2020-10-28T20:13:33Z",
+      "type": "Leaked password",
+      "source": "Google identity",
+      "data": {
+        "email": "demo_email",
+        "loginDetails": {
+          "loginTime": "demo_loginTime",
+          "ipAddress": "demo_ipAddress"
+        }
+      },
+      "metadata": {
+        "customerId": "demo_customerId",
+        "alertId": "demo_alertId",
+        "status": "NOT_STARTED",
+        "updateTime": "2020-10-28T20:43:34.381Z",
+        "severity": "LOW",
+        "etag": "demo_etag="
+      },
+      "updateTime": "2020-10-28T20:43:34.381Z",
+      "etag": "demo_etag=="
+    },
+    {
+      "customerId": "demo_customerId",
+      "alertId": "demo_alertId",
+      "createTime": "2020-10-28T20:43:34.381Z",
+      "startTime": "2020-10-28T20:13:33Z",
+      "endTime": "2020-10-28T20:13:33Z",
+      "type": "Google Operations",
+      "source": "Google Operations",
+      "data": {
+        "title": "demo_title",
+        "description": "demo_description",
+        "affectedUserEmails": [
+          "demo1"
+        ],
+        "attachmentData": {
+          "csv": {
+            "headers": [
+              "header1"
+            ],
+            "dataRows": [
+              {
+                "entries": [
+                  "entries1"
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "metadata": {
+        "customerId": "demo_customerId",
+        "alertId": "demo_alertId",
+        "status": "NOT_STARTED",
+        "updateTime": "2020-10-28T20:43:34.381Z",
+        "severity": "LOW",
+        "etag": "demo_etag="
+      },
+      "updateTime": "2020-10-28T20:43:34.381Z",
+      "etag": "demo_etag=="
+    },
+    {
+      "customerId": "demo_customerId",
+      "alertId": "demo_alertId",
+      "createTime": "2020-10-28T20:43:34.381Z",
+      "startTime": "2020-10-28T20:13:33Z",
+      "endTime": "2020-10-28T20:13:33Z",
+      "type": "Government attack warning",
+      "source": "State Sponsored Attack",
+      "data": {
+        "email": "demo_email"
+      },
+      "metadata": {
+        "customerId": "demo_customerId",
+        "alertId": "demo_alertId",
+        "status": "NOT_STARTED",
+        "updateTime": "2020-10-28T20:43:34.381Z",
+        "severity": "LOW",
+        "etag": "demo_etag="
+      },
+      "updateTime": "2020-10-28T20:43:34.381Z",
+      "etag": "demo_etag=="
+    },
+    {
+      "customerId": "demo_customerId",
+      "alertId": "demo_alertId",
+      "createTime": "2020-10-28T20:43:34.381Z",
+      "startTime": "2020-10-28T20:13:33Z",
+      "endTime": "2020-10-28T20:13:33Z",
+      "type": "Device compromised",
+      "source": "Mobile device management",
+      "data": {
+        "email": "demo_email",
+        "events": [
+          {
+            "deviceId": "demo_device_id",
+            "serialNumber": "demo_serialNumber",
+            "deviceType": "demo_deviceType",
+            "deviceModel": "demo_deviceModel",
+            "resourceId": "demo_resourceId",
+            "iosVendorId": "demo_iosVendorId",
+            "deviceCompromisedState": "demo_deviceCompromisedState"
+          }
+        ]
+      },
+      "metadata": {
+        "customerId": "demo_customerId",
+        "alertId": "demo_alertId",
+        "status": "NOT_STARTED",
+        "updateTime": "2020-10-28T20:43:34.381Z",
+        "severity": "LOW",
+        "etag": "demo_etag="
+      },
+      "updateTime": "2020-10-28T20:43:34.381Z",
+      "etag": "demo_etag=="
+    },
+    {
+      "customerId": "demo_customerId",
+      "alertId": "demo_alertId",
+      "createTime": "2020-10-28T20:43:34.381Z",
+      "startTime": "2020-10-28T20:13:33Z",
+      "endTime": "2020-10-28T20:13:33Z",
+      "type": "AppMaker Default Cloud SQL setup",
+      "source": "AppMaker Editor",
+      "data": {
+        "requestInfo": [
+          {
+            "appKey": "demo_appKey",
+            "appDeveloperEmail": [
+              "demo_appDeveloperEmail"
+            ],
+            "numberOfRequests": "demo_numberOfRequests"
+          }
+        ]
+      },
+      "metadata": {
+        "customerId": "demo_customerId",
+        "alertId": "demo_alertId",
+        "status": "NOT_STARTED",
+        "updateTime": "2020-10-28T20:43:34.381Z",
+        "severity": "LOW",
+        "etag": "demo_etag="
+      },
+      "updateTime": "2020-10-28T20:43:34.381Z",
+      "etag": "demo_etag=="
+    },
+    {
+      "customerId": "demo_customerId",
+      "alertId": "demo_alertId",
+      "createTime": "2020-10-28T20:43:34.381Z",
+      "startTime": "2020-10-28T20:13:33Z",
+      "endTime": "2020-10-28T20:13:33Z",
+      "type": "Activity Rule",
+      "source": "Security Center rules",
+      "data": {
+        "name": "demo_name",
+        "displayName": "demo_displayName",
+        "description": "demo_description",
+        "windowSize": "demo_windowSize",
+        "threshold": "demo_threshold",
+        "createTime": "demo_createTime",
+        "updateTime": "demo_updateTime",
+        "triggerSource": "demo_triggerSource",
+        "supersededAlerts": [
+          "demo_supersededAlerts"
+        ],
+        "supersedingAlert": "demo_supersedingAlert",
+        "actionNames": [
+          "demo_actionNames"
+        ],
+        "query": "demo_query"
+      },
+      "metadata": {
+        "customerId": "demo_customerId",
+        "alertId": "demo_alertId",
+        "status": "NOT_STARTED",
+        "updateTime": "2020-10-28T20:43:34.381Z",
+        "severity": "LOW",
+        "etag": "demo_etag="
+      },
+      "updateTime": "2020-10-28T20:43:34.381Z",
+      "etag": "demo_etag=="
+    },
+    {
+      "customerId": "demo_customerId",
+      "alertId": "demo_alertId",
+      "createTime": "2020-10-28T20:43:34.381Z",
+      "startTime": "2020-10-28T20:13:33Z",
+      "endTime": "2020-10-28T20:13:33Z",
+      "type": "Data Loss Prevention",
+      "source": "Data Loss Prevention",
+      "data": {
+        "ruleViolationInfo": {
+          "ruleInfo": {
+            "resourceName": "demo_resourceName",
+            "displayName": "demo_displayName"
+          },
+          "dataSource": "demo_dataSource",
+          "trigger": "demo_trigger",
+          "triggeringUserEmail": "demo_triggeringUserEmail",
+          "recipients": [
+            "demo_recipients"
+          ],
+          "resourceInfo": {
+            "resourceTitle": "demo_resourceTitle",
+            "documentId": "demo_documentId"
+          },
+          "matchInfo": [
+            {
+              "userDefinedDetector": {
+                "resourceName": "demo_resourceName",
+                "displayName": "demo_displayName"
+              },
+              "predefinedDetector": {
+                "detectorName": "demo_detectorName"
+              }
+            }
+          ],
+          "triggeredActionTypes": [
+            "demo_triggeredActionTypes"
+          ],
+          "suppressedActionTypes": [
+            "demo_suppressedActionTypes"
+          ]
+        }
+      },
+      "metadata": {
+        "customerId": "demo_customerId",
+        "alertId": "demo_alertId",
+        "status": "NOT_STARTED",
+        "updateTime": "2020-10-28T20:43:34.381Z",
+        "severity": "LOW",
+        "etag": "demo_etag="
+      },
+      "updateTime": "2020-10-28T20:43:34.381Z",
+      "etag": "demo_etag=="
+    }
+  ],
+  "GSuiteSecurityAlert.PageToken.Alert(val.name == val.name)": {
+    "name": "gsac-alert-list",
+    "nextPageToken": "ChAKDmIMCIKp9IAGEIjg2ABCDxNaWNJbmNpZGVudHMiADoIMDNwdWVraGQ"
+  }
+}

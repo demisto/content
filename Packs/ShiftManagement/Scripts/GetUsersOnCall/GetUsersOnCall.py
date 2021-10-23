@@ -47,7 +47,7 @@ def main():
             contents = filter_OOO_users(get_users_response[0], list_name)
 
         if contents == 'No data returned':
-            contents = 'On-Call Team members\nNo analysts were found on-call.'
+            contents = 'On-Call Team members\nNo team members were found on-call.'
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['markdown'],

@@ -2,7 +2,7 @@
 <p>Use the AbuseIPDB integration to report and identify IP addresses that have been associated with malicious activity online.</p>
 <h2>Use Cases</h2>
 <p>Check, Report, and get Blacklist of top malicious IPs.</p>
-<h2>Configure AbuseIPDB on Demisto</h2>
+<h2>Configure AbuseIPDB on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for AbuseIPDB.</li>
@@ -11,6 +11,7 @@
 <li>
 <strong>Name</strong>: a textual name for the integration instance.</li>
 <li><strong>API Key (v2).</strong></li>
+<li><strong>Source Reliability</strong>: Reliability of the source providing the intelligence data.</li>
 <li><strong>IP Threshold. Minimum score from AbuseIPDB analysis to consider the IP malicious. (&gt;20).</strong></li>
 <li><strong>Max reports age.</strong></li>
 <li><strong>Disregard quota errors.</strong></li>
@@ -19,7 +20,7 @@
 <li>Click <strong>Test</strong> to validate the API Key, and connection.</li>
 </ol>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.<br>After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.<br>After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_52262055641545911025223">Check if an IP address is in the AbuseIP database: ip</a></li>
 <li><a href="#h_130633879481545911083799">Query a block of IP addresses: abuseipdb-check-cidr-block</a></li>
@@ -130,6 +131,16 @@
 <td style="width: 58px;">unknown</td>
 <td style="width: 414px;">The Detections that led to the verdict</td>
 </tr>
+<tr>
+<td style="width: 271px;">AbuseIPDB.IP.UsageType</td>
+<td style="width: 55px;">String</td>
+<td style="width: 414px;">Usage type of the IP.</td>
+</tr>
+<tr>
+<td style="width: 271px;">AbuseIPDB.IP.Domain</td>
+<td style="width: 55px;">String</td>
+<td style="width: 414px;">Domain of the IP.</td>
+</tr>
 </tbody>
 </table>
 <p> </p>
@@ -236,6 +247,16 @@
 <td style="width: 55px;">unknown</td>
 <td style="width: 414px;">The Detections that led to the verdict</td>
 </tr>
+<tr>
+<td style="width: 271px;">AbuseIPDB.IP.UsageType</td>
+<td style="width: 55px;">String</td>
+<td style="width: 414px;">Usage type of the IP.</td>
+</tr>
+<tr>
+<td style="width: 271px;">AbuseIPDB.IP.Domain</td>
+<td style="width: 55px;">String</td>
+<td style="width: 414px;">Domain of the IP.</td>
+</tr>
 </tbody>
 </table>
 <p> </p>
@@ -301,6 +322,11 @@
 <tr>
 <td style="width: 169px;">limit</td>
 <td style="width: 481px;">Maximum number of IPs to retrieve, default is 50</td>
+<td style="width: 90px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 169px;">confidence</td>
+<td style="width: 481px;">The Minimum confidence required for the retrieved IPs. Default is 100</td>
 <td style="width: 90px;">Optional</td>
 </tr>
 </tbody>

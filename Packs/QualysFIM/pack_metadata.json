@@ -1,0 +1,16 @@
+{
+    "name": "QualysFIM",
+    "description": "Cloud solution for detecting and identifying critical changes, incidents, and risks resulting from normal and malicious events",
+    "support": "xsoar",
+    "currentVersion": "1.0.4",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-01-21T16:22:30Z",
+    "categories": [
+        "IT Services"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}

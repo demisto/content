@@ -1,13 +1,13 @@
 id: WildFire - Detonate file
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: WildFire - Detonate file
-fromversion: 5.0.0
 description: |-
   Detonate one or more files using the Wildfire integration. This playbook
   returns relevant reports to the War Room and file reputations to the context data.
   The detonation supports the following file types -
-  APK, JAR, DOC, DOCX, RTF, XLS, XLSX, PPT, PPTX, OOXML, PE32, PE, PDF, DMG, PKG, RAR, 7Z
-  APK, JAR, DOC, DOCX, RTF, XLS, XLSX, PPT, PPTX, OOXML, PE32, PE, PDF, DMG, PKG, RAR, 7Z
+  APK, JAR, DOC, DOCX, RTF, XLS, XLSX, PPT, PPTX, OOXML, PE32, PE, PDF, DMG, PKG, RAR, 7Z, JS, ELF, HTA, LNK, VBS, PS1, PERL, PYTHON, SHELL.
 starttaskid: "0"
 tasks:
   "0":
@@ -18,9 +18,9 @@ tasks:
       id: ff6c3afb-1f37-491b-8569-f2f9d6a79ff3
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "7"
@@ -35,6 +35,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
     taskid: d89662d0-dedb-49ff-8cba-4855a985cc38
@@ -59,8 +61,6 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      AdditionalPollingCommandArgNames: {}
-      AdditionalPollingCommandArgValues: {}
       Ids:
         complex:
           root: WildFire
@@ -82,6 +82,7 @@ tasks:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -92,6 +93,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
     taskid: 4d801593-76c0-45bc-880c-46572315ab6d
@@ -100,7 +103,7 @@ tasks:
       id: 4d801593-76c0-45bc-880c-46572315ab6d
       version: -1
       name: WildFire Get Report
-      description: Retrieve results for a file hash using WildFire
+      description: Retrieve results for a file hash using WildFire.
       script: '|||wildfire-report'
       type: regular
       iscommand: true
@@ -116,9 +119,6 @@ tasks:
         complex:
           root: WildFire
           accessor: Report.SHA256
-      md5: {}
-      sha256: {}
-      verbose: {}
     separatecontext: false
     view: |-
       {
@@ -130,6 +130,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
     taskid: 7cb53d1d-e613-47cd-847e-c1908e384d53
@@ -138,10 +140,10 @@ tasks:
       id: 7cb53d1d-e613-47cd-847e-c1908e384d53
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -153,6 +155,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
     taskid: 5944d365-4547-4e91-8f62-fa295fa32b38
@@ -160,8 +164,8 @@ tasks:
     task:
       id: 5944d365-4547-4e91-8f62-fa295fa32b38
       version: -1
-      name: Is there a File to detonate?
-      description: Look for files to detonate
+      name: Is there a file to detonate?
+      description: Look for files to detonate.
       type: condition
       iscommand: false
       brand: ""
@@ -184,13 +188,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 170,
           "y": 370
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
     taskid: f959299e-1445-4a65-85bf-d4f70a0c7ebf
@@ -199,7 +205,7 @@ tasks:
       id: f959299e-1445-4a65-85bf-d4f70a0c7ebf
       version: -1
       name: Is WildFire sandbox enabled?
-      description: Check if integration instance is enabled
+      description: Check if integration instance is enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -254,15 +260,17 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "10":
     id: "10"
-    taskid: 09aec71d-10ce-419d-836b-88f9d41a52eb
+    taskid: 329341a2-3ac5-422f-8264-b9fbaae07d3f
     type: condition
     task:
-      id: 09aec71d-10ce-419d-836b-88f9d41a52eb
+      id: 329341a2-3ac5-422f-8264-b9fbaae07d3f
       version: -1
       name: Is the file type supported?
-      description: Check if file type is supported
+      description: Check if file type is supported.
       type: condition
       iscommand: false
       brand: ""
@@ -279,25 +287,34 @@ tasks:
           left:
             value:
               complex:
-                root: File
+                root: inputs.File
                 filters:
                 - - operator: match
                     left:
                       value:
-                        simple: File.Type
+                        simple: inputs.File.Type
                       iscontext: true
                     right:
                       value:
-                        simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PE|PDF|DMG|PKG|RAR|7Z)\b
+                        simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PE|PDF|DMG|PKG|RAR|7Z|JS|ELF|HTA|LNK|VBS|PS1|PERL|sh|PYTHON|SHELL)\b
                     ignorecase: true
                   - operator: match
                     left:
                       value:
-                        simple: File.Info
+                        simple: inputs.File.Info
                       iscontext: true
                     right:
                       value:
-                        simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PE|PDF|DMG|PKG|RAR|7Z)\b
+                        simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PE|PDF|DMG|PKG|RAR|7Z|JS|ELF|HTA|LNK|VBS|PS1|PERL|sh|PYTHON|SHELL)\b
+                    ignorecase: true
+                  - operator: match
+                    left:
+                      value:
+                        simple: inputs.File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PE|PDF|DMG|PKG|RAR|7Z|JS|ELF|HTA|LNK|VBS|PS1|PERL|sh|PYTHON|SHELL)\b
                     ignorecase: true
                 accessor: EntryID
             iscontext: true
@@ -312,6 +329,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "11":
     id: "11"
     taskid: 16c9088e-43fa-494a-80f2-646461c74a66
@@ -320,7 +339,7 @@ tasks:
       id: 16c9088e-43fa-494a-80f2-646461c74a66
       version: -1
       name: Set Context
-      description: Sets a value into the context with the given context key
+      description: Sets a value into the context with the given context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -329,7 +348,6 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
-      append: {}
       key:
         simple: File
       value:
@@ -346,12 +364,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "12":
     id: "12"
-    taskid: 78a1b352-6088-4d7d-892e-d4658f8f2ff5
+    taskid: f964fe7b-3805-44e8-8f2e-a4b71300ad70
     type: regular
     task:
-      id: 78a1b352-6088-4d7d-892e-d4658f8f2ff5
+      id: f964fe7b-3805-44e8-8f2e-a4b71300ad70
       version: -1
       name: WildFire Upload File
       description: Uploads a file to WildFire for analysis.
@@ -374,7 +394,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PE|PDF|DMG|PKG|RAR|7Z)\b
+                  simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PE|PDF|DMG|PKG|RAR|7Z|JS|ELF|HTA|LNK|VBS|PS1|PERL|sh|PYTHON|SHELL)\b
               ignorecase: true
             - operator: match
               left:
@@ -383,7 +403,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PE|PDF|DMG|PKG|RAR|7Z)\b
+                  simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PE|PDF|DMG|PKG|RAR|7Z|JS|ELF|HTA|LNK|VBS|PS1|PERL|sh|PYTHON|SHELL)\b
               ignorecase: true
             - operator: match
               left:
@@ -392,7 +412,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PE|PDF|DMG|PKG|RAR|7Z)\b
+                  simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PE|PDF|DMG|PKG|RAR|7Z|JS|ELF|HTA|LNK|VBS|PS1|PERL|sh|PYTHON|SHELL)\b
               ignorecase: true
           accessor: EntryID
     separatecontext: false
@@ -406,15 +426,17 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "13":
     id: "13"
-    taskid: e6f7bf0f-0b19-47aa-83e8-403a1ed89560
+    taskid: d1c6a572-54e7-4233-8228-daa0f7dcb176
     type: condition
     task:
-      id: e6f7bf0f-0b19-47aa-83e8-403a1ed89560
+      id: d1c6a572-54e7-4233-8228-daa0f7dcb176
       version: -1
-      name: Was upload finished successfully?
-      description: ""
+      name: Did the upload finish successfully?
+      description: Checks if the upload was successfully finished.
       type: condition
       iscommand: false
       brand: ""
@@ -447,12 +469,14 @@ tasks:
       {
         "position": {
           "x": 387.5,
-          "y": 1070
+          "y": 1060
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
@@ -471,102 +495,108 @@ inputs:
     complex:
       root: File
   required: false
-  description: File object of the file to detonate. The File is taken from the context.
+  description: File object of the file to detonate. The file is taken from the context.
+  playbookInputQuery:
 - key: Interval
   value:
     simple: "1"
   required: false
-  description: Duration for executing the pooling (in minutes)
+  description: The duration for executing the polling (in minutes).
+  playbookInputQuery:
 - key: Timeout
   value:
     simple: "15"
   required: false
-  description: The duration after which to stop pooling and to resume the playbook (in minutes)
+  description: The duration after which to stop polling and to resume the playbook.
+    (in minutes)
+  playbookInputQuery:
 - key: ReportFileType
   value: {}
   required: false
-  description: The resource type to download. Default is pdf. xml is also possible.
+  description: The resource type to download. 
+  playbookInputQuery:
 outputs:
 - contextPath: DBotScore.Score
-  description: The actual score
+  description: The actual score.
   type: string
 - contextPath: DBotScore.Type
-  description: The type of the indicator
+  description: The type of the indicator.
   type: string
 - contextPath: File.Type
-  description: File type e.g. "PE"
+  description: The file type, e.g. "PE".
   type: string
 - contextPath: File.Size
-  description: File size
+  description: The file size
   type: number
 - contextPath: File.MD5
-  description: MD5 hash of the file
+  description: The MD5 hash of the file.
   type: string
 - contextPath: File.Name
-  description: Filename
+  description: The filename.
   type: string
 - contextPath: File.SHA1
-  description: SHA1 hash of the file
+  description: The SHA1 hash of the file.
   type: string
 - contextPath: File
-  description: The File object
+  description: The file object.
   type: unknown
 - contextPath: File.SHA256
-  description: SHA256 hash of the file
+  description: TheSHA256 hash of the file.
   type: string
 - contextPath: File.Malicious
-  description: The Malicious object
+  description: The malicious object.
   type: unknown
 - contextPath: File.Malicious.Vendor
-  description: For malicious files, the vendor that made the decision
+  description: The vendor that made the decision that the file is malicious.
   type: string
 - contextPath: DBotScore
-  description: The DBot object
+  description: The DBot object.
   type: unknown
 - contextPath: DBotScore.Indicator
-  description: The indicator we tested
+  description: The indicator that was tested.
   type: string
 - contextPath: DBotScore.Vendor
-  description: Vendor used to calculate the score
+  description: The vendor used to calculate the score.
   type: string
 - contextPath: WildFire.Report
-  description: The submission object
+  description: The submission object.
   type: unknown
 - contextPath: WildFire.Report.Status
-  description: The status of the submission
+  description: The status of the submission.
   type: string
 - contextPath: WildFire.Report.SHA256
-  description: SHA256 of the submission
+  description: The SHA256 hash of the submission.
   type: string
 - contextPath: InfoFile
-  description: The report file object
+  description: The report file object.
   type: unknown
 - contextPath: InfoFile.EntryID
-  description: The EntryID of the report file
+  description: The EntryID of the report file.
   type: string
 - contextPath: InfoFile.Extension
-  description: The extension of the report file
+  description: The extension of the report file.
   type: string
 - contextPath: InfoFile.Name
-  description: The name of the report file
+  description: The name of the report file.
   type: string
 - contextPath: InfoFile.Info
-  description: The info of the report file
+  description: The info of the report file.
   type: string
 - contextPath: InfoFile.Size
-  description: The size of the report file
+  description: The size of the report file.
   type: number
 - contextPath: InfoFile.Type
-  description: The type of the report file
+  description: The type of the report file.
   type: string
 - contextPath: WildFire.Report.MD5
-  description: MD5 of the submission
+  description: The MD5 hash of the submission.
   type: string
 - contextPath: WildFire.Report.FileType
-  description: The type of the submission
+  description: The type of the submission.
   type: string
 - contextPath: WildFire.Report.Size
-  description: The size of the submission
+  description: The size of the submission.
   type: number
 tests:
-- Wildfire Test
+- No tests (auto formatted)
+fromversion: 5.0.0

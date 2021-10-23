@@ -1,16 +1,30 @@
 {
-  "name": "ReversingLabs Titanium Cloud",
-  "description": "ReversingLabs Data provides malware status of the sample",
-  "support": "xsoar",
-  "currentVersion": "1.0.0",
-  "author": "Cortex XSOAR",
-  "url": "https://www.paloaltonetworks.com/cortex",
-  "email": "",
+  "name": "ReversingLabs TitaniumCloud",
+  "description": "ReversingLabs TitaniumCloud provides file reputation services, threat classification and rich context on over 10 billion files.",
+  "support": "partner",
+  "currentVersion": "2.0.2",
+  "author": "ReversingLabs",
+  "url": "https://www.reversinglabs.com/products/malware-analysis-platform",
+  "email": "support@reversinglabs.com",
+  "devEmail": "integrations-team@reversinglabs.com",
+  "githubUser": [
+        "MislavReversingLabs",
+        "ivukovicRL"
+    ],
   "created": "2020-04-14T00:00:00Z",
   "categories": [
     "Data Enrichment & Threat Intelligence"
   ],
-  "tags": [],
+  "tags": [
+      "Forensics",
+      "Malware",
+      "Security",
+      "Threat Intelligence"
+  ],
   "useCases": [],
-  "keywords": []
+  "keywords": [
+      "Static Analysis",
+      "Dynamic Analysis",
+      "File Analysis"
+  ]
 }

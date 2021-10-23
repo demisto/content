@@ -39,6 +39,12 @@ configuration:
   name: first_fetch
   required: false
   type: 0
+- additionalinfo: The timeout of the HTTP requests sent to Microsoft Graph API (in seconds).
+  defaultvalue: '10'
+  display: HTTP Timeout
+  name: timeout
+  required: false
+  type: 0
 - defaultvalue: '50'
   display: Maximum number of emails to pull per fetch
   name: fetch_limit
@@ -62,7 +68,7 @@ configuration:
   type: 13
 description: Microsoft Graph lets your app get authorized access to a user's Outlook
   mail data in a personal or organization account.
-display: Microsoft Graph Mail
+display: O365 Outlook Mail (Using Graph API)
 name: MicrosoftGraphMail
 script:
   commands:
@@ -92,6 +98,12 @@ script:
       name: search
       required: false
       secret: false
+    - defaultValue: 20
+      description: 'Limit emails to fetch in one request'
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
     - default: true
       defaultValue: '1'
       description: The number of pages of emails to return (maximum is 10 emails per
@@ -101,7 +113,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets the properties of returned emails.
+    description: Gets the properties of returned emails. Typically shows partial results,
+      use the "page_size" and "pages_to_pull" arguments to get all results.
     execution: false
     name: msgraph-mail-list-emails
     outputs:
@@ -167,6 +180,23 @@ script:
       type: String
     - contextPath: MSGraphMail.UserID
       description: The ID of the user.
+      type: String
+    - contextPath: MSGraphMail.ConversationID
+      description: The ID of the conversation.
+      type: String
+    - contextPath: MSGraphMail.InternetMessageID
+      description: Internet Message ID of the message
+      type: String
+    - contextPath: MSGraphMail.Recipients.Name
+      description: The name of the user in the 'toRecipients' field of the email.
+      type: String
+    - contextPath: MSGraphMail.Recipients.Address
+      description: The email address of the user in the 'toRecipients' field of the
+        email.
+      type: String
+    - contextPath: MSGraphMail.NextPage
+      description: A token to pass to the next list command to retrieve additional
+        results.
       type: String
   - arguments:
     - default: false
@@ -272,6 +302,19 @@ script:
       type: String
     - contextPath: MSGraphMail.UserID
       description: The ID of the user.
+      type: String
+    - contextPath: MSGraphMail.ConversationID
+      description: The ID of the conversation.
+      type: String
+    - contextPath: MSGraphMail.InternetMessageID
+      description: Internet Message ID of the message
+      type: String
+    - contextPath: MSGraphMail.Recipients.Name
+      description: The name of the user in the 'toRecipients' field of the email.
+      type: String
+    - contextPath: MSGraphMail.Recipients.Address
+      description: The email address of the user in the 'toRecipients' field of the
+        email.
       type: String
   - arguments:
     - default: false
@@ -1017,7 +1060,100 @@ script:
     description: Sends a draft email using Microsoft Graph.
     execution: false
     name: msgraph-mail-send-draft
-  dockerimage: demisto/crypto:1.0.0.12979
+  - arguments:
+    - default: false
+      description: A CSV list of email addresses for the 'to' field.
+      isArray: true
+      name: to
+      required: true
+      secret: false
+    - default: false
+      description: The contents (body) of the email to be sent.
+      isArray: false
+      name: body
+      required: false
+      secret: false
+    - default: false
+      description: Subject for the email to be sent.
+      isArray: false
+      name: subject
+      required: true
+      secret: false
+    - name: inReplyTo
+      required: true
+      secret: false
+      description: ID of the item to reply to.
+    - default: false
+      description: 'A CSV list of War Room entry IDs that contain files, and are used
+        to attach files to the outgoing email. For example: attachIDs=15@8,19@8.'
+      isArray: true
+      name: attachIDs
+      required: false
+      secret: false
+    - default: false
+      description: A CSV list of email addresses for the 'cc' field.
+      isArray: true
+      name: cc
+      required: false
+      secret: false
+    - default: false
+      description: A CSV list of email addresses for the 'bcc' field.
+      isArray: true
+      name: bcc
+      required: false
+      secret: false
+    - default: false
+      description: HTML formatted content (body) of the email to be sent. This argument
+        overrides the "body" argument.
+      isArray: false
+      name: htmlBody
+      required: false
+      secret: false
+    - default: false
+      description: A CSV list of names of attachments to send. Should be the same
+        number of elements as attachIDs.
+      isArray: true
+      name: attachNames
+      required: false
+      secret: false
+    - default: false
+      description: A CSV list of CIDs to embed attachments within the email itself.
+      isArray: true
+      name: attachCIDs
+      required: false
+      secret: false
+    - default: false
+      description: Email address of the sender.
+      name: from
+      required: false
+      secret: false
+    deprecated: false
+    description: Replies to an email using Graph Mail.
+    execution: false
+    name: reply-mail
+    outputs:
+    - contextPath: MicrosoftGraph.SentMail.body
+      description: The body of the email.
+      type: String
+    - contextPath: MicrosoftGraph.SentMail.bodyPreview
+      description: The body preview of the email.
+      type: String
+    - contextPath: MicrosoftGraph.SentMail.subject
+      description: The subject of the email.
+      type: String
+    - contextPath: MicrosoftGraph.SentMail.toRecipients
+      description: The 'To' recipients of the email.
+      type: String
+    - contextPath: MicrosoftGraph.SentMail.ccRecipients
+      description: The CC recipients of the email.
+      type: String
+    - contextPath: MicrosoftGraph.SentMail.bccRecipients
+      description: The BCC recipients of the email.
+      type: String
+    - contextPath: MicrosoftGraph.SentMail.ID
+      description: The immutable ID of the message.
+      type: String
+  dockerimage: demisto/crypto:1.0.0.24037
   feed: false
   isfetch: true
   longRunning: false
@@ -1027,5 +1163,7 @@ script:
   subtype: python3
   type: python
 tests:
-- MicrosoftGraphMail-Test
+- MicrosoftGraphMail-Test_dev_no_oproxy
+- MicrosoftGraphMail-Test_dev
+- MicrosoftGraphMail-Test_prod
 fromversion: 5.0.0

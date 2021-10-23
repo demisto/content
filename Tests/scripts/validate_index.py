@@ -9,9 +9,9 @@ import logging
 import sys
 import os
 
-from Tests.Marketplace.marketplace_services import init_storage_client, load_json, get_content_git_client, \
-    GCPConfig, CONTENT_ROOT_PATH
+from Tests.Marketplace.marketplace_services import init_storage_client, load_json, get_content_git_client
 from Tests.Marketplace.upload_packs import download_and_extract_index
+from Tests.Marketplace.marketplace_constants import GCPConfig, CONTENT_ROOT_PATH
 from Tests.scripts.utils.log_util import install_logging
 from pprint import pformat
 
@@ -24,8 +24,10 @@ def options_handler():
                         help=f'Full path of folder to extract the {GCPConfig.INDEX_NAME}.zip to',
                         required=True)
     parser.add_argument('-pb', '--production_bucket_name', help='Production bucket name', required=True)
+    parser.add_argument('-sb', '--storage_base_path', help="Storage base path of the directory to upload to.",
+                        required=False)
     parser.add_argument('-sa', '--service_account', help='Path to gcloud service account', required=True)
-
+    parser.add_argument('-c', '--circle_branch', help="CircleCi branch of current build", required=True)
     options = parser.parse_args()
     return options
 
@@ -101,37 +103,41 @@ def verify_pack(pack: dict) -> bool:
     return all([id_exists, price_is_valid])
 
 
-def check_commit_in_master_history(index_commit_hash: str) -> bool:
-    """Assert commit hash is in master history.
+def check_commit_in_branch_history(index_commit_hash: str, circle_branch: str) -> bool:
+    """Assert commit hash is in branch's commit history.
 
     Args:
         index_commit_hash: commit hash
+        circle_branch: circle branch of current run
 
-    Returns: True if commit hash is in master history, False otherwise.
+    Returns: True if commit hash is in branch's commit history, False otherwise.
     """
     content_repo = get_content_git_client(CONTENT_ROOT_PATH)
-    master_commits = list(map(lambda commit: commit.hexsha, list(content_repo.iter_commits("origin/master"))))
+    branch_commits = list(map(lambda commit: commit.hexsha, list(content_repo.iter_commits(f"origin/{circle_branch}"))))
 
-    return log_message_if_statement(statement=(index_commit_hash in master_commits),
-                                    error_message=f"Commit hash {index_commit_hash} is not in master history",
+    return log_message_if_statement(statement=(index_commit_hash in branch_commits),
+                                    error_message=f"Commit hash {index_commit_hash} is not in {circle_branch} history",
                                     success_message="Commit hash in index file is valid.")
 
 
-def get_index_json_data(service_account: str, production_bucket_name: str, extract_path: str) -> (dict, str):
+def get_index_json_data(service_account: str, production_bucket_name: str, extract_path: str, storage_base_path: str) \
+        -> (dict, str):
     """Retrieve the index.json file from production bucket.
 
     Args:
         service_account: Path to gcloud service account
         production_bucket_name: Production bucket name
         extract_path: Full path of folder to extract the index.zip to
+        storage_base_path: The base path in the bucket
 
     Returns:
         (Dict: content of the index.json, Str: path to index.json)
     """
     logging.info('Downloading and extracting index.zip from the cloud')
+
     storage_client = init_storage_client(service_account)
     production_bucket = storage_client.bucket(production_bucket_name)
-    index_folder_path, _, _ = download_and_extract_index(production_bucket, extract_path)
+    index_folder_path, _, _ = download_and_extract_index(production_bucket, extract_path, storage_base_path)
 
     logging.info("Retrieving the index file")
     index_file_path = os.path.join(index_folder_path, f"{GCPConfig.INDEX_NAME}.json")
@@ -144,9 +150,10 @@ def main():
     install_logging("Validate index.log")
     options = options_handler()
     exit_code = 0
-    index_data, index_file_path = get_index_json_data(service_account=options.service_account,
-                                                      production_bucket_name=options.production_bucket_name,
-                                                      extract_path=options.extract_path)
+    index_data, index_file_path = get_index_json_data(
+        service_account=options.service_account, production_bucket_name=options.production_bucket_name,
+        extract_path=options.extract_path, storage_base_path=options.storage_base_path
+    )
 
     # Validate index.json file
     index_is_valid = check_index_data(index_data)
@@ -158,7 +165,7 @@ def main():
     commit_hash_is_valid = log_message_if_statement(statement=("commit" in index_data),
                                                     error_message="No commit field was found in the index.json")
     if commit_hash_is_valid:
-        commit_hash_is_valid = check_commit_in_master_history(index_data.get("commit", ""))
+        commit_hash_is_valid = check_commit_in_branch_history(index_data.get("commit", ""), options.circle_branch)
 
     if not all([index_is_valid, commit_hash_is_valid]):
         logging.critical("Index content is invalid. Aborting.")

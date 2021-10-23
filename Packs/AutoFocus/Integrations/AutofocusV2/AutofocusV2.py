@@ -1,8 +1,4 @@
-from typing import Optional
-
-import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 
 ''' IMPORTS '''
 
@@ -11,27 +7,38 @@ import json
 import requests
 import socket
 import traceback
+from typing import Callable, Tuple
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 PARAMS = demisto.params()
-API_KEY = PARAMS.get('api_key')
+
+API_KEY = AutoFocusKeyRetriever(PARAMS.get('api_key')).key
+
 # Remove trailing slash to prevent wrong URL path to service
 SERVER = 'https://autofocus.paloaltonetworks.com'
 # Should we use SSL
 USE_SSL = not PARAMS.get('insecure', False)
 # Service base URL
 BASE_URL = SERVER + '/api/v1.0'
-
 VENDOR_NAME = 'AutoFocus V2'
 
 # Headers to be sent in requests
 HEADERS = {
     'Content-Type': 'application/json'
 }
-
+RELATIONSHIP_TYPE_BY_TAG_CLASS_ID = {
+    1: {'entity_b_type': 'STIX Threat Actor',
+        'name': 'indicator-of'},
+    2: {'entity_b_type': 'Campaign',
+        'name': 'indicator-of'},
+    3: {'entity_b_type': 'STIX Malware',
+        'name': 'indicator-of'},
+    5: {'entity_b_type': 'STIX Attack Pattern',
+        'name': 'indicator-of'}
+}
 API_PARAM_DICT = {
     'scope': {
         'Private': 'private',
@@ -84,8 +91,8 @@ API_PARAM_DICT = {
     },
     'search_arguments': {
         'file_hash': {
-            'api_name': 'alias.hash',
-            'operator': 'contains'
+            'api_name': 'alias.hash_lookup',
+            'operator': 'is'
         },
         'domain': {
             'api_name': 'alias.domain',
@@ -261,9 +268,57 @@ if PARAMS.get('mark_as_malicious'):
 ''' HELPER FUNCTIONS '''
 
 
+def run_polling_command(args: dict, cmd: str, search_function: Callable, results_function: Callable):
+    ScheduledCommand.raise_error_if_not_supported()
+    interval_in_secs = int(args.get('interval_in_seconds', 60))
+    if 'af_cookie' not in args:
+        # create new search
+        command_results = search_function(args)
+        outputs = command_results.outputs
+        af_cookie = outputs.get('AFCookie')
+        if outputs.get('Status') != 'complete':
+            polling_args = {
+                'af_cookie': af_cookie,
+                'interval_in_seconds': interval_in_secs,
+                'polling': True,
+                **args
+            }
+            scheduled_command = ScheduledCommand(
+                command=cmd,
+                next_run_in_seconds=interval_in_secs,
+                args=polling_args,
+                timeout_in_seconds=600)
+            command_results.scheduled_command = scheduled_command
+            return command_results
+        else:
+            # continue to look for search results
+            args['af_cookie'] = af_cookie
+    # get search status
+    command_results, status = results_function(args)
+    if status != 'complete':
+        # schedule next poll
+        polling_args = {
+            'af_cookie': args.get('af_cookie'),
+            'interval_in_seconds': interval_in_secs,
+            'polling': True,
+            **args
+        }
+        scheduled_command = ScheduledCommand(
+            command=cmd,
+            next_run_in_seconds=interval_in_secs,
+            args=polling_args,
+            timeout_in_seconds=600)
+
+        # result with scheduled_command only - no update to the war room
+        command_results = CommandResults(scheduled_command=scheduled_command)
+    return command_results
+
+
 def parse_response(resp, err_operation):
     try:
         # Handle error responses gracefully
+        if demisto.params().get('handle_error', True) and resp.status_code == 409:
+            raise Exception("Response status code: 409 \nRequested sample not found")
         res_json = resp.json()
         resp.raise_for_status()
         return res_json
@@ -284,8 +339,8 @@ def parse_response(resp, err_operation):
             return return_error(err_msg)
     # Unexpected errors (where no json object was received)
     except Exception as err:
-        err_msg = f'{err_operation}: {err}'
-        return return_error(err_msg)
+        demisto.results(f'{err_operation}: {err}')
+        sys.exit(0)
 
 
 def http_request(url_suffix, method='POST', data={}, err_operation=None):
@@ -550,8 +605,12 @@ def sample_analysis(sample_id, os, filter_data_flag):
     }
     if os:
         data['platforms'] = [os]  # type: ignore
+
     result = http_request(path, data=data, err_operation='Sample analysis failed')
+    if 'error' in result:
+        return demisto.results(result['error'])
     analysis_obj = parse_sample_analysis_response(result, filter_data_flag)
+
     return analysis_obj
 
 
@@ -901,6 +960,14 @@ def search_indicator(indicator_type, indicator_value):
     # Unexpected errors (where no json object was received)
     except Exception as err:
         try:
+            if demisto.params().get('handle_error', True) and result.status_code == 404:
+                return {
+                    'indicator': {
+                        'indicatorType': indicator_type,
+                        'indicatorValue': indicator_value,
+                        'latestPanVerdicts': {'PAN_DB': 'UNKNOWN'},
+                    }
+                }
             text_error = result.json()
         except ValueError:
             text_error = {}
@@ -1065,6 +1132,14 @@ def resolve_ip_address(ip):
     return None
 
 
+def convert_url_to_ascii_character(url_name):
+    def convert_non_ascii_chars(non_ascii):
+        # converts non-ASCII chars to IDNA notation
+        return str(non_ascii.group(0)).encode('idna').decode("utf-8")
+
+    return re.sub('([^a-zA-Z\W]+)', convert_non_ascii_chars, url_name)
+
+
 ''' COMMANDS'''
 
 
@@ -1087,8 +1162,7 @@ def test_module():
     return
 
 
-def search_samples_command():
-    args = demisto.args()
+def search_samples_command(args):
     file_hash = argToList(args.get('file_hash'))
     domain = argToList(args.get('domain'))
     ip = argToList(args.get('ip'))
@@ -1106,17 +1180,20 @@ def search_samples_command():
                           domain=domain, ip=ip, url=url, wildfire_verdict=wildfire_verdict, first_seen=first_seen,
                           last_updated=last_updated, artifact_source=artifact_source)
     md = tableToMarkdown('Search Samples Info:', info)
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['text'],
-        'Contents': info,
-        'EntryContext': {'AutoFocus.SamplesSearch(val.AFCookie == obj.AFCookie)': info},
-        'HumanReadable': md
-    })
+    return CommandResults(outputs=info, readable_output=md, outputs_key_field='AFCookie',
+                          outputs_prefix='AutoFocus.SamplesSearch')
 
 
-def search_sessions_command():
-    args = demisto.args()
+def search_samples_with_polling_command(args):
+    return run_polling_command(args, 'autofocus-search-samples', search_samples_command, samples_search_results_command)
+
+
+def search_sessions_with_polling_command(args):
+    return run_polling_command(args, 'autofocus-search-sessions', search_sessions_command,
+                               sessions_search_results_command)
+
+
+def search_sessions_command(args):
     file_hash = argToList(args.get('file_hash'))
     domain = argToList(args.get('domain'))
     ip = argToList(args.get('ip'))
@@ -1139,27 +1216,25 @@ def search_sessions_command():
     info = search_sessions(query=query, size=max_results, sort=sort, order=order, file_hash=file_hash, domain=domain,
                            ip=ip, url=url, from_time=from_time, to_time=to_time)
     md = tableToMarkdown('Search Sessions Info:', info)
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['text'],
-        'Contents': info,
-        'EntryContext': {'AutoFocus.SessionsSearch(val.AFCookie == obj.AFCookie)': info},
-        'HumanReadable': md
-    })
+    cmd_results = CommandResults(
+        outputs_prefix='AutoFocus.SessionsSearch',
+        outputs_key_field='AFCookie',
+        outputs=info,
+        readable_output=md
+    )
+    return cmd_results
 
 
-def samples_search_results_command():
-    args = demisto.args()
+def samples_search_results_command(args):
     af_cookie = args.get('af_cookie')
     results, status = get_search_results('samples', af_cookie)
     files = get_files_data_from_results(results)
     hr = ''
     if not results or len(results) == 0:
-        hr = 'No entries found that match the query'
-        status = 'complete'
+        hr = 'No entries found that match the query' if status == 'complete' else f'Search Sessions Results is {status}'
     context = {
         'AutoFocus.SamplesResults(val.ID === obj.ID)': results,
-        'AutoFocus.SamplesSearch(val.AFCookie ==== obj.AFCookie)': {'Status': status, 'AFCookie': af_cookie},
+        'AutoFocus.SamplesSearch(val.AFCookie === obj.AFCookie)': {'Status': status, 'AFCookie': af_cookie},
         outputPaths['file']: files
     }
     if not results:
@@ -1174,6 +1249,7 @@ def samples_search_results_command():
                 hr = tableToMarkdown(f'Search Samples Result is {status}', result)
                 hr += tableToMarkdown('Artifacts for Sample: ', [])
                 return_outputs(readable_output=hr, outputs=context, raw_response=results)
+    return None, status
 
 
 def samples_search_result_hr(result: dict, status: str) -> str:
@@ -1201,28 +1277,20 @@ def samples_search_result_hr(result: dict, status: str) -> str:
     return hr
 
 
-def sessions_search_results_command():
-    args = demisto.args()
+def sessions_search_results_command(args):
     af_cookie = args.get('af_cookie')
     results, status = get_search_results('sessions', af_cookie)
     files = get_files_data_from_results(results)
     if not results or len(results) == 0:
         md = results = 'No entries found that match the query'
-        status = 'complete'
     else:
-        md = tableToMarkdown(f'Search Sessions Results is {status}', results)
+        md = tableToMarkdown(f'Search Samples Results is {status}', results)
     context = {
         'AutoFocus.SessionsResults(val.ID === obj.ID)': results,
         'AutoFocus.SessionsSearch(val.AFCookie === obj.AFCookie)': {'Status': status, 'AFCookie': af_cookie},
         outputPaths['file']: files
     }
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['text'],
-        'Contents': results,
-        'EntryContext': context,
-        'HumanReadable': md
-    })
+    return CommandResults(outputs=context, raw_response=results, readable_output=md), status
 
 
 def get_session_details_command():
@@ -1277,8 +1345,7 @@ def tag_details_command():
     })
 
 
-def top_tags_search_command():
-    args = demisto.args()
+def top_tags_search_command(args):
     scope = args.get('scope')
     tag_class = args.get('class')
     private = args.get('private') == 'True'
@@ -1287,40 +1354,41 @@ def top_tags_search_command():
     unit42 = args.get('unit42') == 'True'
     info = autofocus_top_tags_search(scope, tag_class, private, public, commodity, unit42)
     md = tableToMarkdown('Top tags search Info:', info)
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['text'],
-        'Contents': info,
-        'EntryContext': {'AutoFocus.TopTagsSearch(val.AFCookie == obj.AFCookie)': info},
-        'HumanReadable': md
-    })
+    return CommandResults(
+        outputs_prefix='AutoFocus.TopTagsSearch',
+        outputs_key_field='AFCookie',
+        outputs=info,
+        readable_output=md
+    )
 
 
-def top_tags_results_command():
-    args = demisto.args()
+def top_tags_results_command(args) -> Tuple[CommandResults, str]:
     af_cookie = args.get('af_cookie')
     results, status = get_top_tags_results(af_cookie)
     md = tableToMarkdown(f'Search Top Tags Results is {status}:', results, headerTransform=string_to_table_header)
     context = createContext(results, keyTransform=string_to_context_key)
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['text'],
-        'Contents': results,
-        'EntryContext': {'AutoFocus.TopTagsResults(val.PublicTagName == obj.PublicTagName)': context,
-                         'AutoFocus.TopTagsSearch(val.AFCookie == obj.AFCookie)': {'Status': status,
-                                                                                   'AFCookie': af_cookie}},
-        'HumanReadable': md
-    })
+    outputs = {
+        'AutoFocus.TopTagsResults(val.PublicTagName === obj.PublicTagName)': context,
+        'AutoFocus.TopTagsSearch(val.AFCookie === obj.AFCookie)': {'Status': status, 'AFCookie': af_cookie}
+    }
+    return CommandResults(outputs=outputs, raw_response=results, readable_output=md), status
 
 
-def search_ip_command(ip):
+def top_tags_with_polling_command(args):
+    return run_polling_command(args, 'autofocus-top-tags-search', top_tags_search_command, top_tags_results_command)
+
+
+def search_ip_command(ip, reliability, create_relationships):
     indicator_type = 'IP'
     ip_list = argToList(ip)
 
     command_results = []
+    relationships = []
 
     for ip_address in ip_list:
-        raw_res = search_indicator('ipv4_address', ip_address)
+        ip_type = 'ipv6_address' if is_ipv6_valid(ip_address) else 'ipv4_address'
+        raw_res = search_indicator(ip_type, ip_address)
+
         if not raw_res.get('indicator'):
             raise ValueError('Invalid response for indicator')
 
@@ -1332,12 +1400,18 @@ def search_ip_command(ip):
             indicator=ip_address,
             indicator_type=DBotScoreType.IP,
             integration_name=VENDOR_NAME,
-            score=score
+            score=score,
+            reliability=reliability
         )
-
+        if create_relationships:
+            relationships = create_relationships_list(entity_a=ip_address, entity_a_type=indicator_type, tags=raw_tags,
+                                                      reliability=reliability)
         ip = Common.IP(
             ip=ip_address,
-            dbot_score=dbot_score
+            dbot_score=dbot_score,
+            malware_family=get_tags_for_tags_and_malware_family_fields(raw_tags, True),
+            tags=get_tags_for_tags_and_malware_family_fields(raw_tags),
+            relationships=relationships
         )
 
         autofocus_ip_output = parse_indicator_response(indicator, raw_tags, indicator_type)
@@ -1359,17 +1433,19 @@ def search_ip_command(ip):
             outputs=autofocus_ip_output,
             readable_output=md,
             raw_response=raw_res,
-            indicator=ip
+            indicator=ip,
+            relationships=relationships
         ))
 
     return command_results
 
 
-def search_domain_command(args):
+def search_domain_command(domain, reliability, create_relationships):
     indicator_type = 'Domain'
-    domain_name_list = argToList(args.get('domain'))
+    domain_name_list = argToList(domain)
 
     command_results = []
+    relationships = []
 
     for domain_name in domain_name_list:
         raw_res = search_indicator('domain', domain_name)
@@ -1382,8 +1458,13 @@ def search_domain_command(args):
                 indicator=domain_name,
                 indicator_type=DBotScoreType.DOMAIN,
                 integration_name=VENDOR_NAME,
-                score=score
+                score=score,
+                reliability=reliability
             )
+            if create_relationships:
+                relationships = create_relationships_list(entity_a=domain_name, entity_a_type=indicator_type,
+                                                          tags=raw_tags,
+                                                          reliability=reliability)
             domain = Common.Domain(
                 domain=domain_name,
                 dbot_score=dbot_score,
@@ -1392,8 +1473,12 @@ def search_domain_command(args):
                 updated_date=indicator.get('whoisDomainUpdateDate'),
                 admin_email=indicator.get('whoisAdminEmail'),
                 admin_name=indicator.get('whoisAdminName'),
+                admin_country=indicator.get('whoisAdminCountry'),
                 registrar_name=indicator.get('whoisRegistrar'),
-                registrant_name=indicator.get('whoisRegistrant')
+                registrant_name=indicator.get('whoisRegistrant'),
+                malware_family=get_tags_for_tags_and_malware_family_fields(raw_tags, True),
+                tags=get_tags_for_tags_and_malware_family_fields(raw_tags),
+                relationships=relationships
             )
             autofocus_domain_output = parse_indicator_response(indicator, raw_tags, indicator_type)
             # create human readable markdown for ip
@@ -1411,7 +1496,8 @@ def search_domain_command(args):
                 indicator=domain_name,
                 indicator_type=DBotScoreType.DOMAIN,
                 integration_name=VENDOR_NAME,
-                score=0
+                score=0,
+                reliability=reliability
             )
             domain = Common.Domain(
                 domain=domain_name,
@@ -1426,24 +1512,26 @@ def search_domain_command(args):
             outputs=autofocus_domain_output,
             readable_output=md,
             raw_response=raw_res,
-            indicator=domain
+            indicator=domain,
+            relationships=relationships
         ))
     return command_results
 
 
-def search_url_command(url):
+def search_url_command(url, reliability, create_relationships):
     indicator_type = 'URL'
     url_list = argToList(url)
 
     command_results = []
+    relationships = []
 
     for url_name in url_list:
-
-        raw_res = search_indicator('url', url_name)
+        raw_res = search_indicator('url', convert_url_to_ascii_character(url_name))
         if not raw_res.get('indicator'):
             raise ValueError('Invalid response for indicator')
 
         indicator = raw_res.get('indicator')
+        indicator['indicatorValue'] = url_name
         raw_tags = raw_res.get('tags')
 
         score = calculate_dbot_score(indicator, indicator_type)
@@ -1452,15 +1540,23 @@ def search_url_command(url):
             indicator=url_name,
             indicator_type=DBotScoreType.URL,
             integration_name=VENDOR_NAME,
-            score=score
+            score=score,
+            reliability=reliability
         )
-
+        if create_relationships:
+            relationships = create_relationships_list(entity_a=url_name, entity_a_type=indicator_type,
+                                                      tags=raw_tags,
+                                                      reliability=reliability)
         url = Common.URL(
             url=url_name,
-            dbot_score=dbot_score
+            dbot_score=dbot_score,
+            malware_family=get_tags_for_tags_and_malware_family_fields(raw_tags, True),
+            tags=get_tags_for_tags_and_malware_family_fields(raw_tags),
+            relationships=relationships
         )
 
         autofocus_url_output = parse_indicator_response(indicator, raw_tags, indicator_type)
+        autofocus_url_output = {k: v for k, v in autofocus_url_output.items() if v}
 
         tags = autofocus_url_output.get('Tags')
         table_name = f'{VENDOR_NAME} {indicator_type} reputation for: {url_name}'
@@ -1476,20 +1572,21 @@ def search_url_command(url):
             outputs_prefix='AutoFocus.URL',
             outputs_key_field='IndicatorValue',
             outputs=autofocus_url_output,
-
             readable_output=md,
             raw_response=raw_res,
-            indicator=url
+            indicator=url,
+            relationships=relationships
         ))
 
     return command_results
 
 
-def search_file_command(file):
+def search_file_command(file, reliability, create_relationships):
     indicator_type = 'File'
     file_list = argToList(file)
 
     command_results = []
+    relationships = []
 
     for sha256 in file_list:
         raw_res = search_indicator('filehash', sha256.lower())
@@ -1504,14 +1601,13 @@ def search_file_command(file):
             indicator=sha256,
             indicator_type=DBotScoreType.FILE,
             integration_name=VENDOR_NAME,
-            score=score
+            score=score,
+            reliability=reliability
         )
-
-        file = Common.File(
-            sha256=sha256,
-            dbot_score=dbot_score
-        )
-
+        if create_relationships:
+            relationships = create_relationships_list(entity_a=sha256, entity_a_type=indicator_type,
+                                                      tags=raw_tags,
+                                                      reliability=reliability)
         autofocus_file_output = parse_indicator_response(indicator, raw_tags, indicator_type)
 
         tags = autofocus_file_output.get('Tags')
@@ -1524,6 +1620,14 @@ def search_file_command(file):
         else:
             md = tableToMarkdown(table_name, autofocus_file_output)
 
+        file = Common.File(
+            sha256=sha256,
+            dbot_score=dbot_score,
+            malware_family=get_tags_for_tags_and_malware_family_fields(raw_tags, True),
+            tags=get_tags_for_tags_and_malware_family_fields(raw_tags),
+            relationships=relationships
+        )
+
         command_results.append(CommandResults(
             outputs_prefix='AutoFocus.File',
             outputs_key_field='IndicatorValue',
@@ -1531,10 +1635,79 @@ def search_file_command(file):
 
             readable_output=md,
             raw_response=raw_res,
-            indicator=file
+            indicator=file,
+            relationships=relationships
         ))
 
     return command_results
+
+
+def get_tags_for_generic_context(tags: Optional[list]):
+    if not tags:
+        return None
+    results = []
+    keys = ['TagGroups', 'Aliases', 'PublicTagName', 'TagName']
+    sub_keys = ['TagGroupName']
+    for item in tags:
+        generic_context_tags = {key: item.get(key) for key in keys}
+        generic_context_tags['tagGroups'] = {key: item.get(key) for key in sub_keys}
+        results.append(remove_empty_elements(generic_context_tags))
+    return results
+
+
+def get_tags_for_tags_and_malware_family_fields(tags: Optional[list], is_malware_family=False):
+    """get specific tags for the tgas and malware_family fields
+    Args
+        tags (Optional[list]): tags from the response
+        is_malware_family (bool): indicating whether it is for the malware_family field
+    return:
+        List[str]: list of tags without duplicates and empty elements
+    """
+    if not tags:
+        return None
+    results = []
+    for item in tags:
+        results.append(item.get('tag_name'))
+        results.append(item.get('public_tag_name'))
+        for alias in item.get('aliases', []):
+            results.append(alias)
+        if not is_malware_family:
+            for group in item.get('tagGroups', [{}]):
+                results.append(group.get('tag_group_name'))
+    # Returns a list without duplicates and empty elements
+    return list(set(filter(None, results)))
+
+
+def create_relationships_list(entity_a, entity_a_type, tags, reliability):
+    """
+    Create a list of relationships objects from the tags.
+
+    entity_a (str): the entity a of the relation which is the current indicator.
+    entity_a_type (str): the entity a type which is the type of the current indicator (IP/Domain/URL/File)
+    tags (list): list of tags returned from the api.
+    reliability (str): reliability of the source.
+
+    return:
+    list of EntityRelationship objects containing all the relationships from the enricher.
+    """
+    if not tags:
+        return []
+    relationships = []
+    for tag in tags:
+        tag_class = tag.get('tag_class_id')
+        entity_b = tag.get('tag_name')
+        relation_by_type = RELATIONSHIP_TYPE_BY_TAG_CLASS_ID.get(tag_class)
+        if entity_b and relation_by_type:
+            relationships.append(EntityRelationship(relation_by_type.get('name'),
+                                                    entity_a=entity_a,
+                                                    entity_a_type=entity_a_type,
+                                                    entity_b=entity_b,
+                                                    entity_b_type=FeedIndicatorType.indicator_type_by_server_version(
+                                                        relation_by_type.get('entity_b_type')),
+                                                    source_reliability=reliability,
+                                                    brand=VENDOR_NAME))
+
+    return relationships
 
 
 def get_export_list_command(args):
@@ -1625,25 +1798,40 @@ def get_export_list_command(args):
 
 def main():
     demisto.debug('Command being called is %s' % (demisto.command()))
+    reliability = PARAMS.get('integrationReliability', 'B - Usually reliable')
+    create_relationships = PARAMS.get('create_relationships', True)
+    if DBotScoreReliability.is_valid_type(reliability):
+        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+    else:
+        Exception("AutoFocus error: Please provide a valid value for the Source Reliability parameter")
 
     try:
         # Remove proxy if not set to true in params
         handle_proxy()
         active_command = demisto.command()
-
         args = {k: v for (k, v) in demisto.args().items() if v}
+        args['reliability'] = reliability
+        args['create_relationships'] = create_relationships
         if active_command == 'test-module':
             # This is the call made when pressing the integration test button.
             test_module()
             demisto.results('ok')
         elif active_command == 'autofocus-search-samples':
-            search_samples_command()
+            if args.get('polling') == 'true':
+                cmd_res = search_samples_with_polling_command(args)
+                if cmd_res is not None:
+                    return_results(cmd_res)
+            else:
+                return_results(search_samples_command(args))
         elif active_command == 'autofocus-search-sessions':
-            search_sessions_command()
+            if args.get('polling') == 'true':
+                return_results(search_sessions_with_polling_command(args))
+            else:
+                return_results(search_sessions_command(args))
         elif active_command == 'autofocus-samples-search-results':
-            samples_search_results_command()
+            samples_search_results_command(args)
         elif active_command == 'autofocus-sessions-search-results':
-            sessions_search_results_command()
+            return_results(sessions_search_results_command(args)[0])  # first result is CommandResults
         elif active_command == 'autofocus-get-session-details':
             get_session_details_command()
         elif active_command == 'autofocus-sample-analysis':
@@ -1651,15 +1839,18 @@ def main():
         elif active_command == 'autofocus-tag-details':
             tag_details_command()
         elif active_command == 'autofocus-top-tags-search':
-            top_tags_search_command()
+            if args.get('polling') == 'true':
+                return_results(top_tags_with_polling_command(args))
+            else:
+                return_results(top_tags_search_command(args))
         elif active_command == 'autofocus-top-tags-results':
-            top_tags_results_command()
+            return_results(top_tags_results_command(args)[0])
         elif active_command == 'autofocus-get-export-list-indicators':
             get_export_list_command(args)
         elif active_command == 'ip':
             return_results(search_ip_command(**args))
         elif active_command == 'domain':
-            return_results(search_domain_command(args))
+            return_results(search_domain_command(**args))
         elif active_command == 'url':
             return_results(search_url_command(**args))
         elif active_command == 'file':

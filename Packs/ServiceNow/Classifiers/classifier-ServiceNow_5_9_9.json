@@ -576,7 +576,10 @@
                                 "args": {
                                     "dayfirst": {
                                         "isContext": false,
-                                        "value": null
+                                        "value": {
+                                                  "complex": null,
+                                                  "simple": "false"
+                                                }
                                     },
                                     "fuzzy": {
                                         "isContext": false,

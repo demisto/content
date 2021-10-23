@@ -23,7 +23,7 @@ This integration was integrated and tested with version 1.20 of Cofense Triage v
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### cofense-search-reports
 ***
@@ -445,7 +445,7 @@ Retrieves Email address of the reporter by ID
 | Cofense.Reporter.Email | string | Reporter email address. | 
 | Cofense.Reporter.CreatedAt | string | Reporter creation date. | 
 | Cofense.Reporter.UpdatedAt | string | Reporter last\-updated date. | 
-| Cofense.Reporter.CreditibilityScore | number | Reporter credibility score. | 
+| Cofense.Reporter.CredibilityScore | number | Reporter credibility score. | 
 | Cofense.Reporter.ReportsCount | number | Number of reports. | 
 | Cofense.Reporter.LastReportedAt | string | Date of most recent report. | 
 | Cofense.Reporter.VIP | bool | Whether Reporter is a VIP. | 

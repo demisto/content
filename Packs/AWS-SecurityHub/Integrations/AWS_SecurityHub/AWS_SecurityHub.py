@@ -1,31 +1,12 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
-# flake8: noqa
-import boto3
-import json
-from botocore.config import Config
-from botocore.parsers import ResponseParserError
 import urllib3.util
 from datetime import timezone
 from dateparser import parse
 
 # Disable insecure warnings
 urllib3.disable_warnings()
-
-'''PARAMETERS'''
-AWS_DEFAULT_REGION = demisto.params().get('defaultRegion')
-AWS_ROLE_ARN = demisto.params().get('roleArn')
-AWS_ROLE_SESSION_NAME = demisto.params().get('roleSessionName')
-AWS_ROLE_SESSION_DURATION = demisto.params().get('sessionDuration')
-AWS_ROLE_POLICY = None
-AWS_ACCESS_KEY_ID = demisto.params().get('access_key')
-AWS_SECRET_ACCESS_KEY = demisto.params().get('secret_key')
-VERIFY_CERTIFICATE = not demisto.params().get('insecure', True)
-AWS_SH_SEVERITY = demisto.params().get('sh_severity')
-ARCHIVE_FINDINGS = demisto.params().get('archiveFindings', False)
-ADDITIONAL_FILTERS = demisto.params().get('additionalFilters', '')
 
 '''HELPER FUNCTIONS'''
 
@@ -498,106 +479,7 @@ def generate_kwargs_for_get_findings(args: dict) -> dict:
     return kwargs
 
 
-def aws_session(config,
-                service='securityhub',
-                region=None,
-                roleArn=None,
-                roleSessionName=None,
-                roleSessionDuration=None,
-                rolePolicy=None,
-                ):
-    kwargs = {}
-    if roleArn and roleSessionName is not None:
-        kwargs.update({
-            'RoleArn': roleArn,
-            'RoleSessionName': roleSessionName,
-        })
-    elif AWS_ROLE_ARN and AWS_ROLE_SESSION_NAME is not None:
-        kwargs.update({
-            'RoleArn': AWS_ROLE_ARN,
-            'RoleSessionName': AWS_ROLE_SESSION_NAME,
-        })
-
-    if roleSessionDuration is not None:
-        kwargs.update({'DurationSeconds': int(roleSessionDuration)})
-    elif AWS_ROLE_SESSION_DURATION is not None:
-        kwargs.update({'DurationSeconds': int(AWS_ROLE_SESSION_DURATION)})
-
-    if rolePolicy is not None:
-        kwargs.update({'Policy': rolePolicy})
-    elif AWS_ROLE_POLICY is not None:
-        kwargs.update({'Policy': AWS_ROLE_POLICY})
-    if kwargs and not AWS_ACCESS_KEY_ID:
-
-        if not AWS_ACCESS_KEY_ID:
-            sts_client = boto3.client('sts', config=config, verify=VERIFY_CERTIFICATE)
-            sts_response = sts_client.assume_role(**kwargs)
-            if region is not None:
-                client = boto3.client(
-                    service_name=service,
-                    region_name=region,
-                    aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
-                    aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
-                    aws_session_token=sts_response['Credentials']['SessionToken'],
-                    verify=VERIFY_CERTIFICATE,
-                    config=config
-                )
-            else:
-                client = boto3.client(
-                    service_name=service,
-                    region_name=AWS_DEFAULT_REGION,
-                    aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
-                    aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
-                    aws_session_token=sts_response['Credentials']['SessionToken'],
-                    verify=VERIFY_CERTIFICATE,
-                    config=config
-                )
-    elif AWS_ACCESS_KEY_ID and AWS_ROLE_ARN:
-        sts_client = boto3.client(
-            service_name='sts',
-            aws_access_key_id=AWS_ACCESS_KEY_ID,
-            aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-            verify=VERIFY_CERTIFICATE,
-            config=config
-        )
-        kwargs.update({
-            'RoleArn': AWS_ROLE_ARN,
-            'RoleSessionName': AWS_ROLE_SESSION_NAME,
-        })
-        sts_response = sts_client.assume_role(**kwargs)
-        client = boto3.client(
-            service_name=service,
-            region_name=AWS_DEFAULT_REGION,
-            aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
-            aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
-            aws_session_token=sts_response['Credentials']['SessionToken'],
-            verify=VERIFY_CERTIFICATE,
-            config=config
-        )
-    else:
-        if region is not None:
-            client = boto3.client(
-                service_name=service,
-                region_name=region,
-                aws_access_key_id=AWS_ACCESS_KEY_ID,
-                aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-                verify=VERIFY_CERTIFICATE,
-                config=config
-            )
-        else:
-            client = boto3.client(
-                service_name=service,
-                region_name=AWS_DEFAULT_REGION,
-                aws_access_key_id=AWS_ACCESS_KEY_ID,
-                aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-                verify=VERIFY_CERTIFICATE,
-                config=config
-            )
-
-    return client
-
-
-def parse_filter_field(string_filters: str = ADDITIONAL_FILTERS) -> dict:
+def parse_filter_field(string_filters) -> dict:
     """
     Parses string with sets of name, value and comparison into a dict
     Args:
@@ -702,12 +584,13 @@ def get_master_account_command(client, args):
 
 def get_findings_command(client, args):
     kwargs = generate_kwargs_for_get_findings(args)
-    findings = []
     response = client.get_findings(**kwargs)
+    findings = response.get('Findings', [])
     next_token = response.get('NextToken')
     while next_token:
+        kwargs['NextToken'] = next_token
         findings.extend(response.get('Findings'))
-        response = client.get_findings(NextToken=next_token)
+        response = client.get_findings(**kwargs)
         next_token = response.get('NextToken')
     outputs = {'AWS-SecurityHub.Findings(val.Id === obj.Id)': findings}
     table_header = 'AWS SecurityHub GetFindings'
@@ -804,7 +687,7 @@ def batch_update_findings_command(client, args):
     return human_readable, outputs, response
 
 
-def fetch_incidents(client):
+def fetch_incidents(client, aws_sh_severity, archive_findings, additional_filters):
     last_run = demisto.getLastRun().get('lastRun', None)
     next_token = demisto.getLastRun().get('next_token', None)
     if last_run is None:
@@ -820,11 +703,11 @@ def fetch_incidents(client):
             'End': now.isoformat()
         }],
         'SeverityNormalized': [{
-            'Gte': sh_severity_mapping(AWS_SH_SEVERITY),
+            'Gte': sh_severity_mapping(aws_sh_severity),
         }]
     }
-    if ADDITIONAL_FILTERS is not None:
-        filters.update(parse_filter_field())
+    if additional_filters is not None:
+        filters.update(parse_filter_field(additional_filters))
     if next_token:
         try:
             response = client.get_findings(NextToken=next_token)
@@ -841,11 +724,17 @@ def fetch_incidents(client):
         'rawJSON': json.dumps(finding)
     }
         for finding in findings]
-    demisto.setLastRun({'lastRun': max(findings, key=lambda finding: finding.get('CreatedAt')).get('CreatedAt'),
+    if findings:
+        # in case we got finding, we should get the latest created one and increase it by 1 ms so the next fetch
+        # wont include it in the query and fetch duplicates
+        last_created_finding = max(findings, key=lambda finding: finding.get('CreatedAt')).get('CreatedAt')
+        last_created_finding_dt = parse(last_created_finding) + timedelta(milliseconds=1)  # type: ignore[operator]
+        last_run = last_created_finding_dt.isoformat()  # type: ignore[union-attr]
+    demisto.setLastRun({'lastRun': last_run,
                         'next_token': next_token})
     demisto.incidents(incidents)
 
-    if ARCHIVE_FINDINGS:
+    if archive_findings:
         kwargs = {
             'FindingIdentifiers': [
                 {'Id': finding['Id'], 'ProductArn': finding['ProductArn']} for finding in findings
@@ -869,24 +758,39 @@ def test_function(client):
 
 
 def main():  # pragma: no cover
-    proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
-    config = Config(
-        connect_timeout=1,
-        retries=dict(
-            max_attempts=5
-        ),
-        proxies=proxies
-    )
+
     args = demisto.args()
-    client = aws_session(
-        config=config,
-        region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
-    )
     command = demisto.command()
+    params = demisto.params()
+
+    aws_default_region = params.get('defaultRegion')
+    aws_role_arn = params.get('roleArn')
+    aws_role_session_name = params.get('roleSessionName')
+    aws_role_session_duration = params.get('sessionDuration')
+    aws_role_policy = None
+    aws_access_key_id = params.get('access_key')
+    aws_secret_access_key = params.get('secret_key')
+    verify_certificate = not params.get('insecure', True)
+    timeout = params.get('timeout')
+    retries = params.get('retries') or 5
+    aws_sh_severity = params.get('sh_severity')
+    archive_findings = params.get('archiveFindings', False)
+    additional_filters = params.get('additionalFilters', '')
+
     try:
+        validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id,
+                        aws_secret_access_key)
+        aws_client = AWSClient(aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
+                               aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate, timeout,
+                               retries)
+        client = aws_client.aws_session(
+            service='securityhub',
+            region=args.get('region'),
+            role_arn=args.get('roleArn'),
+            role_session_name=args.get('roleSessionName'),
+            role_session_duration=args.get('roleSessionDuration')
+        )
+
         LOG('Command being called is {command}'.format(
             command=command))
 
@@ -908,17 +812,16 @@ def main():  # pragma: no cover
         elif command == 'aws-securityhub-batch-update-findings':
             human_readable, outputs, response = batch_update_findings_command(client, args)
         elif command == 'fetch-incidents':
-            fetch_incidents(client)
+            fetch_incidents(client, aws_sh_severity, archive_findings, additional_filters)
             return
         return_outputs(human_readable, outputs, response)
 
-    except ResponseParserError as e:
-        return_error('Could not connect to the AWS endpoint. Please check that the region is valid. {error}'.format(
-            error=type(e)), error=e)
     except Exception as e:
         return_error('Error has occurred in the AWS securityhub Integration: {code} {message}'.format(
             code=type(e), message=e), error=e)
 
+
+from AWSApiModule import *  # noqa: E402
 
 if __name__ in ['__builtin__', 'builtins', '__main__']:  # pragma: no cover
     main()

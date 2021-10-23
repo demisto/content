@@ -1,7 +1,8 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Brute Force"
+        "Brute Force",
+        "FraudWatch Incident"
     ],
     "breachScript": "",
     "caseInsensitive": true,

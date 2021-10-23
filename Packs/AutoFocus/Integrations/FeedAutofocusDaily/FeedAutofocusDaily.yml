@@ -8,9 +8,10 @@ configuration:
   required: false
   defaultvalue: 'true'
   type: 8
-- display: The AutoFocus API key
+- additionalinfo: TIM customers that upgraded to version 6.2 or above, can have this value pre-configured in their main account so no additional input is needed. To use this feature, upgrade your license so it includes the license key.
+  display: API Key
   name: api_key
-  required: true
+  required: false
   type: 4
 - additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: Bad
@@ -118,7 +119,7 @@ script:
     description: Gets indicators from AutoFocus.
     execution: false
     name: autofocus-daily-get-indicators
-  dockerimage: demisto/python3:3.8.5.10845
+  dockerimage: demisto/python3:3.9.7.24076
   feed: true
   isfetch: false
   longRunning: false

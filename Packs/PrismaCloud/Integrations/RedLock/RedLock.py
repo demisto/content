@@ -1,30 +1,14 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa F401 # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa F401 # pylint: disable=unused-wildcard-import
-from datetime import datetime
-
-import requests
-import os
+from CommonServerPython import *
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
-URL = demisto.getParam('url')
-if URL[-1] != '/':
-    URL += '/'
-
-if not demisto.getParam('proxy'):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
-
-VERIFY = not demisto.params().get('unsecure', False)
-
+URL = ''
+VERIFY = False
 DEFAULT_LIMIT = 100
 
 # Standard headers
-HEADERS = {'Content-Type': 'application/json', 'Accept': 'application/json'}
+HEADERS = {'Content-Type': 'application/json', 'Accept': '*/*'}
 TOKEN = None
 
 
@@ -64,6 +48,7 @@ def req(method, path, data, param_data):
     if not TOKEN:
         get_token()
     response = requests.request(method, URL + path, json=data, params=param_data, headers=HEADERS, verify=VERIFY)
+
     if response.status_code != requests.codes.ok:  # pylint: disable=no-member
         text = response.text
         if response.headers.get('x-redlock-status'):
@@ -111,11 +96,11 @@ def list_filters():
     })
 
 
-def convert_date_to_unix(date_str):
+def convert_date_to_unix(date_str, date_format="%m/%d/%Y"):
     """
-    Convert a given string with MM/DD/YYYY format to millis since epoch
+    Convert the given string in the given format (by default - MM/DD/YYYY) to millis since epoch
     """
-    date = datetime.strptime(date_str, '%m/%d/%Y')
+    date = datetime.strptime(date_str, date_format)
     return int((date - datetime.utcfromtimestamp(0)).total_seconds() * 1000)
 
 
@@ -353,7 +338,8 @@ def dismiss_alerts():
         if ids:
             context['Redlock.DismissedAlert.ID'] = ids
 
-            md = '### Alerts {} successfully. {} Note: {}.'.format(msg_notes[0], msg_notes[1], demisto.getArg('dismissal-note'))
+            md = '### Alerts {} successfully. {} Note: {}.'.format(msg_notes[0], msg_notes[1],
+                                                                   demisto.getArg('dismissal-note'))
 
         demisto.results({
             'Type': entryTypes['note'],
@@ -404,14 +390,13 @@ def translate_severity(alert):
     return 0
 
 
-def get_rql_response():
-
+def get_rql_response(args):
     """"
     Retrieve any RQL
     """
-    rql = demisto.getArg('rql').encode("utf-8")
+    rql = args.get('rql').encode("utf-8")
 
-    limit = demisto.args().get('limit', '1')
+    limit = str(args.get('limit', '1'))
     rql += " limit search records to {}".format(limit)
 
     payload = {"query": rql, "filter": {}}
@@ -423,7 +408,8 @@ def get_rql_response():
 
     human_readable = []
 
-    items = response["data"]["items"]
+    attributes = response.get('data')
+    items = attributes.get('items', [])
 
     for item in items:
         tmp_human_readable = {
@@ -517,22 +503,205 @@ def redlock_search_config():
     response = req('POST', 'search/config', payload, None)
 
     if (
-        not response
-        or 'data' not in response
-        or not isinstance(response['data'], dict)
-        or 'items' not in response['data']
-        or not isinstance(response['data']['items'], list)
+            not response
+            or 'data' not in response
+            or not isinstance(response['data'], dict)
+            or 'items' not in response['data']
+            or not isinstance(response['data']['items'], list)
     ):
         demisto.results('No results found')
     else:
-        items = response['data']['items']
-        MD = tableToMarkdown("Configuration Details", items)
+        response_data = response.get('data')
+        items = response_data.get('items', [])
+        md = tableToMarkdown("Configuration Details", items)
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': items,
             'EntryContext': {'Redlock.Asset(val.id == obj.id)': items},
-            'HumanReadable': MD
+            'HumanReadable': md
+        })
+
+
+def redlock_list_scans():
+    """
+     Returns a list of IaC scans that meet the given conditions.
+
+     See Also:
+         https://prisma.pan.dev/api/cloud/cspm/iac-scan/#operation/getScans
+
+    """
+    args = demisto.args()
+    group_by = args.get('group_by', 'scanId')
+    page_size = args.get('page_size', 25)
+    page_number = args.get('page_number', 1)
+    sort = args.get('sort', None)
+    filter_type = args.get('filter_type', 'relative')
+    filter_time_amount = args.get('filter_time_amount', 1)
+    to_now_time_unit = args.get('to_now_time_unit', 'login')
+    relative_time_unit = args.get('relative_time_unit', 'day')
+    filter_user = args.get('filter_user', None)
+    filter_status = args.get('filter_status', None)
+    filter_asset_type = args.get('filter_asset_type', None)
+    filter_asset_name = args.get('filter_asset_name', None)
+    filter_start_time = args.get('filter_start_time', None)
+    filter_end_time = args.get('filter_end_time', None)
+
+    list_filter = {
+        'groupBy': group_by,
+        'page[size]': page_size,
+        'page[number]': page_number,
+        'filter[timeType]': filter_type
+    }
+
+    if sort:
+        list_filter['sort'] = sort
+
+    if filter_type == 'relative':
+        if relative_time_unit and filter_time_amount:
+            list_filter['filter[timeUnit]'] = relative_time_unit
+            list_filter['filter[timeAmount]'] = filter_time_amount
+        else:
+            return_error('You must specify a relative_time_unit and filter_time_amount with relative type filter')
+    elif filter_type == 'to_now':
+        if to_now_time_unit:
+            list_filter['filter[timeUnit]'] = to_now_time_unit
+        else:
+            return_error('You must specify to_now_time_unit with to_now type filter')
+    elif filter_type == 'absolute':
+        if filter_start_time and filter_end_time:
+            list_filter['filter[startTime]'] = convert_date_to_unix(filter_start_time, date_format="%m/%d/%Y %H:%M:%S")
+            list_filter['filter[endTime]'] = convert_date_to_unix(filter_end_time, date_format="%m/%d/%Y %H:%M:%S")
+        else:
+            return_error('You must specify a filter_start_time and filter_end_time with absolute type filter')
+
+    if filter_user:
+        list_filter['filter[user]'] = filter_user
+
+    if filter_status:
+        list_filter['filter[status]'] = filter_status
+
+    if filter_asset_type:
+        list_filter['filter[assetType]'] = filter_asset_type
+
+    if filter_asset_name:
+        list_filter['filter[assetName]'] = filter_asset_name
+
+    response = req('GET', 'iac/v2/scans', param_data=list_filter, data={})
+    if (
+            not response
+            or 'data' not in response
+            or not isinstance(response.get('data'), list)
+    ):
+        demisto.results('No results found')
+    else:
+        items = response.get('data', [])
+        readable_output = []
+        for item in items:
+            id = item.get('id')
+            attributes = item.get('attributes', {})
+            readable_output.append({
+                "ID": id,
+                "Name": attributes.get('name', []),
+                "Type": attributes.get('type', []),
+                "Scan Time": attributes.get('scanTime'),
+                "User": attributes.get('user', [])
+            })
+            # flatten the attributes section of the item - i.e removes 'attributes' key
+            item.pop('attributes', None)
+            for key, value in attributes.items():
+                item[key] = value
+
+        md = tableToMarkdown("Scans List:", readable_output)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': items,
+            'EntryContext': {'Redlock.Scans(val.id == obj.id)': items},
+            'HumanReadable': md
+        })
+
+
+def redlock_get_scan_status():
+    """
+    Returns the status of the asynchronous IaC scan job that has the specified scan ID.
+
+    See Also:
+        https://prisma.pan.dev/api/cloud/cspm/iac-scan/#operation/getAsyncScanStatus
+
+    """
+    scan_id = demisto.args().get('scan_id', None)
+
+    response = req('GET', f'iac/v2/scans/{scan_id}/status', param_data={}, data={})
+    if (
+            not response
+            or 'data' not in response
+    ):
+        demisto.results('No results found')
+    else:
+        result = response.get('data', {})
+        id = result.get('id')
+        status = result.get('attributes', {}).get('status')
+        readable_output = {
+            "ID": id,
+            "Status": status
+        }
+
+        result = {
+            'id': id,
+            'status': status
+        }
+
+        md = tableToMarkdown("Scan Status:", readable_output)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'EntryContext': {'Redlock.Scans(val.id == obj.id)': result},
+            'HumanReadable': md
+        })
+
+
+def redlock_get_scan_results():
+    """
+    Returns scan result details for the completed scan that has the specified scan ID.
+
+    See Also:
+        https://prisma.pan.dev/api/cloud/cspm/iac-scan/#operation/getScanResult
+    """
+    scan_id = demisto.args().get('scan_id', None)
+
+    response = req('GET', f'iac/v2/scans/{scan_id}/results', param_data={}, data={})
+    if (
+            not response
+            or 'data' not in response
+            or not isinstance(response.get('data'), list)
+    ):
+        demisto.results('No results found')
+    else:
+        items = response.get('data', [])
+        readable_output = []
+        for item in items:
+            id = item.get('id')
+            attributes = item.get('attributes', {})
+            readable_output.append({
+                "ID": id,
+                "Name": attributes.get('name'),
+                "Policy ID": attributes.get('policyId'),
+                "Description": attributes.get('desc'),
+                "Severity": attributes.get('severity')
+            })
+        results = {
+            "id": scan_id,
+            "results": items
+        }
+        md = tableToMarkdown("Scan Results:", readable_output)
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': results,
+            'EntryContext': {'Redlock.Scans(val.id == obj.id)': results},
+            'HumanReadable': md
         })
 
 
@@ -541,10 +710,10 @@ def fetch_incidents():
     Retrieve new incidents periodically based on pre-defined instance parameters
     """
     now = int((datetime.utcnow() - datetime.utcfromtimestamp(0)).total_seconds() * 1000)
-    last_run_object = demisto.getLastRun()
-    last_run = last_run_object and last_run_object['time']
-    if not last_run:
-        last_run = now - 24 * 60 * 60 * 1000
+    last_run = demisto.getLastRun().get('time')
+    if not last_run:  # first time fetch
+        last_run = now - parse_date_range(demisto.params().get('fetch_time', '3 days').strip(), to_timestamp=True)[0]
+
     payload = {'timeRange': {
         'type': 'absolute',
         'value': {
@@ -558,7 +727,9 @@ def fetch_incidents():
     if demisto.getParam('policySeverity'):
         payload['filters'].append({'name': 'policy.severity', 'operator': '=',  # type: ignore
                                    'value': demisto.getParam('policySeverity')})
-
+    if demisto.getParam('policyName'):
+        payload['filters'].append({'name': 'policy.name', 'operator': '=',  # type: ignore
+                                   'value': demisto.getParam('policyName')})
     demisto.info("Executing Prisma Cloud (RedLock) fetch_incidents with payload: {}".format(payload))
     response = req('POST', 'alert', payload, {'detailed': 'true'})
     incidents = []
@@ -569,33 +740,55 @@ def fetch_incidents():
             'severity': translate_severity(alert),
             'rawJSON': json.dumps(alert)
         })
-    demisto.incidents(incidents)
-    demisto.setLastRun({'time': now})
+
+    return incidents, now
 
 
-try:
-    if demisto.command() == 'test-module':
-        get_token()
-        demisto.results('ok')
-    elif demisto.command() == 'redlock-search-alerts':
-        search_alerts()
-    elif demisto.command() == 'redlock-list-alert-filters':
-        list_filters()
-    elif demisto.command() == 'redlock-get-alert-details':
-        get_alert_details()
-    elif demisto.command() == 'redlock-dismiss-alerts':
-        dismiss_alerts()
-    elif demisto.command() == 'redlock-reopen-alerts':
-        reopen_alerts()
-    elif demisto.command() == 'redlock-get-remediation-details':
-        get_remediation_details()
-    elif demisto.command() == 'redlock-get-rql-response':
-        get_rql_response()
-    elif demisto.command() == 'redlock-search-config':
-        redlock_search_config()
-    elif demisto.command() == 'fetch-incidents':
-        fetch_incidents()
-    else:
-        raise Exception('Unrecognized command: ' + demisto.command())
-except Exception as err:
-    return_error(str(err))
+def main():
+    global URL, VERIFY
+    handle_proxy()
+    params = demisto.params()
+    URL = params.get('url')
+    if URL[-1] != '/':
+        URL += '/'
+    VERIFY = not params.get('unsecure', False)
+    try:
+        command = demisto.command()
+        if command == 'test-module':
+            get_token()
+            return_results('ok')
+        elif command == 'redlock-search-alerts':
+            search_alerts()
+        elif command == 'redlock-list-alert-filters':
+            list_filters()
+        elif command == 'redlock-get-alert-details':
+            get_alert_details()
+        elif command == 'redlock-dismiss-alerts':
+            dismiss_alerts()
+        elif command == 'redlock-reopen-alerts':
+            reopen_alerts()
+        elif command == 'redlock-get-remediation-details':
+            get_remediation_details()
+        elif command == 'redlock-get-rql-response':
+            get_rql_response(demisto.args())
+        elif command == 'redlock-search-config':
+            redlock_search_config()
+        elif command == 'redlock-list-scans':
+            redlock_list_scans()
+        elif command == 'redlock-get-scan-status':
+            redlock_get_scan_status()
+        elif command == 'redlock-get-scan-results':
+            redlock_get_scan_results()
+        elif command == 'fetch-incidents':
+            incidents, new_run = fetch_incidents()
+            demisto.incidents(incidents)
+            demisto.setLastRun({'time': new_run})
+        else:
+            raise Exception('Unrecognized command: ' + command)
+    except Exception as err:
+        demisto.error(traceback.format_exc())  # print the traceback
+        return_error(str(err))
+
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()

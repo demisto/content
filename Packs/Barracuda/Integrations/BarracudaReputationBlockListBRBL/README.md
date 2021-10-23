@@ -9,7 +9,7 @@ This integration was integrated and tested with Barracuda Reputation Block List 
 
 4. Click **Test** to validate the connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### ip
 ***
@@ -32,10 +32,10 @@ Get IP Reputation
 | --- | --- | --- |
 | ip | String | Get IP details from Barracuda\(BRBL\) service | 
 | Barracuda.IP | String | IP details | 
-| DbotScore.Indicator | String | The indicator itself | 
-| DbotScore.Score | Number | Score | 
-| DbotScore.Type | String | Type of the indicator | 
-| DbotScore.Vendor | String | Vendor information | 
+| DBotScore.Indicator | String | The indicator itself | 
+| DBotScore.Score | Number | Score | 
+| DBotScore.Type | String | Type of the indicator | 
+| DBotScore.Vendor | String | Vendor information | 
 | IP.Address | String | IP address | 
 | IP.Malicious.Vendor | String | The vendor reporting the IP address as malicious. | 
 | IP.Malicious.Description | String | A description explaining why the IP address was reported as malicious. | 

@@ -92,11 +92,6 @@ configuration:
   name: feed
   required: false
   type: 8
-- defaultvalue: https://api-feeds.cyren.com/v1/feed
-  display: API URL
-  name: url
-  required: true
-  type: 0
 - display: API Token
   name: apikey
   type: 4
@@ -144,7 +139,21 @@ script:
     description: Fetching Cyren Threat InDepth indicators
     execution: true
     name: cyren-threat-indepth-get-indicators
-  dockerimage: demisto/python3:3.9.1.14969
+  - arguments:
+    - description: The new offset from the feed (if not provided, the latest offset is taken).
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    deprecated: false
+    description: Resets the max client offset stored in the integration context.
+    execution: true
+    name: cyren-threat-indepth-reset-client-offset
+  - deprecated: false
+    description: Prints the max client offset stored in the integration context.
+    execution: true
+    name: cyren-threat-indepth-get-client-offset
+  dockerimage: demisto/python3:3.9.7.24076
   feed: true
   isfetch: false
   longRunning: false

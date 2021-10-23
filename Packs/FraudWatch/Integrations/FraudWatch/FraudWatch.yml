@@ -1,0 +1,516 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: FraudWatch
+  version: -1
+configuration:
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: API Token (leave empty. Fill in the API token in the password field.)
+  displaypassword: API Token
+  name: credentials
+  type: 9
+  required: false
+  hiddenusername: true
+- display: Server URL
+  name: base_url
+  type: 0
+  required: true
+  additionalinfo: URL of the server.
+  defaultvalue: https://www.phishportal.com
+- display: Brand
+  name: brand
+  type: 0
+  required: false
+  additionalinfo: Fetch incidents that match the specified brand. An error is encountered
+    if the brand does not exist. A list of the existing brands can be retrieved by the 'fraudwatch-brands-list'
+    command.
+- display: Status
+  name: status
+  type: 15
+  required: false
+  options:
+  - active
+  - new
+  - monitor
+  - reactive
+  - onhold
+  - closed
+  - closedmonitor
+  - rejected
+  - duplicate
+  additionalinfo: Fetch incidents that have the specified status.
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: "1"
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+- defaultvalue: 1 day
+  display: First fetch timestamp
+  name: first_fetch
+  required: false
+  type: 0
+  additionalinfo: 'format: <number> <time unit>, e.g., 12 hours, 1 day. Due to limitations
+    in FraudWatch API, first fetch timestamp can be at most 1 day.'
+- defaultvalue: '50'
+  name: max_fetch
+  required: false
+  type: 0
+  display: Maximum Incidents To Fetch
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Manage incidents via the Fraudwatch API. FraudWatch International provides
+  a fully managed Enterprise Digital Brand Protection Suite, including online brand
+  management & monitoring, as well as providing other brand protection solutions that
+  protect organizations and their customers around the world against online brand-related
+  abuse.
+display: FraudWatch
+name: FraudWatch
+script:
+  commands:
+  - arguments:
+    - description: Retrieve incidents that match the specified brand. An error is encountered
+        if the brand does not exist. A list of the existing brands can be retrieved by the
+        'fraudwatch-brands-list' command.
+      name: brand
+    - auto: PREDEFINED
+      description: Retrieve incidents that have the specified status.
+      name: status
+      predefined:
+      - active
+      - new
+      - monitor
+      - reactive
+      - onhold
+      - closed
+      - closedmonitor
+      - rejected
+      - duplicate
+    - description: Number of incidents to retrieve.
+      name: limit
+    - description: The number of incidents in a page. Maximum value is 200. If page is given, defaults of this argument will be 50.
+      name: page_size
+    - description: Retrieve incidents by the given page number.
+      name: page
+    - description: "Retrieve alerts for which 'date opened' is higher or equal to the 'from'\
+        \ value. Supports ISO and time range (<number> <time unit>, e.g., 12 hours,\
+        \ 7 days) formats. If not specified, the default value of 'to' is the\
+        \ current time."
+      name: from
+    - description: "Retrieve alerts for which 'date opened' is lower or equal to the 'to'\
+        \ value. Supports ISO and time range (<number> <time unit>, e.g., 12 hours,\
+        \ 7 days) formats. If not specified, the default value of 'from'\
+        \ is 12 months before 'to'."
+      name: to
+    description: Get a list of incidents from FraudWatch service.
+    name: fraudwatch-incidents-list
+    outputs:
+    - contextPath: FraudWatch.Incident.identifier
+      description: Incident identifier.
+      type: String
+    - contextPath: FraudWatch.Incident.reference_id
+      description: Incident reference ID.
+      type: String
+    - contextPath: FraudWatch.Incident.url
+      description: Main URL associated with the incident.
+      type: String
+    - contextPath: FraudWatch.Incident.status
+      description: Incident status.
+      type: String
+    - contextPath: FraudWatch.Incident.type
+      description: Incident type.
+      type: String
+    - contextPath: FraudWatch.Incident.brand
+      description: Incident brand.
+      type: String
+    - contextPath: FraudWatch.Incident.client
+      description: Incident client.
+      type: String
+    - contextPath: FraudWatch.Incident.content_ip
+      description: Incident content IP.
+      type: String
+    - contextPath: FraudWatch.Incident.host
+      description: Incident host.
+      type: String
+    - contextPath: FraudWatch.Incident.host_country
+      description: Incident host country.
+      type: String
+    - contextPath: FraudWatch.Incident.host_timezone
+      description: Incident host timezone.
+      type: String
+    - contextPath: FraudWatch.Incident.created_by
+      description: Who created the incident.
+      type: String
+    - contextPath: FraudWatch.Incident.discovered_by
+      description: Who discovered the incident.
+      type: String
+    - contextPath: FraudWatch.Incident.current_duration
+      description: Current duration of the incident.
+      type: String
+    - contextPath: FraudWatch.Incident.active_duration
+      description: Current active duration of the incident.
+      type: Unknown
+    - contextPath: FraudWatch.Incident.date_opened
+      description: The date in which the incident was opened.
+      type: Date
+    - contextPath: FraudWatch.Incident.date_closed
+      description: The date in which the incident was closed.
+      type: Date
+    - contextPath: FraudWatch.Incident.additional_urls
+      description: Additional URLs associated with the incident.
+      type: String
+    - contextPath: FraudWatch.Incident.link
+      description: Link to the incident page in the FraudWatch user interface.
+      type: String
+  - arguments:
+    - description: The brand associated with the reported incident. An error is encountered if the
+        brand does not exist. A list of the existing brands can be retrieved by the 'fraudwatch-brands-list'
+        command.
+      name: brand
+      required: true
+    - auto: PREDEFINED
+      description: The incident type to be associated with the reported incident.
+      name: type
+      predefined:
+      - phishing
+      - vishing
+      - brand_abuse
+      - malware
+      - social_media_brand_abuse
+      - mobile_app_unauthorized
+      - pac_file
+      - pharming
+      - messaging
+      - dmarc_email_server
+      required: true
+    - description: Reference ID to be associated with the reported incident. Should
+        be unique. Reference ID can be used later on to retrieve a specific incident by
+        its reference ID.
+      name: reference_id
+    - description: Primary URL of the reported incident.
+      name: primary_url
+      required: true
+    - description: A Comma-separated list of additional URLs
+        to be associated with the reported incident.
+      isArray: true
+      name: urls
+    - description: Evidence to be added (such as logs, etc...) to the reported incident.
+      name: evidence
+    - description: Additional instructions to be added for the FraudWatch security team.
+      name: instructions
+    description: Report an incident to FraudWatch service.
+    name: fraudwatch-incident-report
+    outputs:
+    - contextPath: FraudWatch.Incident.identifier
+      description: Incident identifier.
+      type: String
+    - contextPath: FraudWatch.Incident.reference_id
+      description: Incident reference ID.
+      type: String
+    - contextPath: FraudWatch.Incident.url
+      description: Main URL associated with the incident.
+      type: String
+    - contextPath: FraudWatch.Incident.status
+      description: Incident status.
+      type: String
+    - contextPath: FraudWatch.Incident.type
+      description: Incident type.
+      type: String
+    - contextPath: FraudWatch.Incident.brand
+      description: Incident brand.
+      type: String
+    - contextPath: FraudWatch.Incident.client
+      description: Incident client.
+      type: String
+    - contextPath: FraudWatch.Incident.content_ip
+      description: Incident content IP.
+      type: String
+    - contextPath: FraudWatch.Incident.host
+      description: Incident host.
+      type: String
+    - contextPath: FraudWatch.Incident.host_country
+      description: Incident host contry.
+      type: String
+    - contextPath: FraudWatch.Incident.host_timezone
+      description: Incident host timezone.
+      type: String
+    - contextPath: FraudWatch.Incident.created_by
+      description: Who created the incident.
+      type: String
+    - contextPath: FraudWatch.Incident.discovered_by
+      description: Who discovered the incident.
+      type: String
+    - contextPath: FraudWatch.Incident.current_duration
+      description: Current duration of the incident.
+      type: String
+    - contextPath: FraudWatch.Incident.active_duration
+      description: Current active duration of the incident.
+      type: Unknown
+    - contextPath: FraudWatch.Incident.date_opened
+      description: The date in which the incident was opened. 
+      type: Date
+    - contextPath: FraudWatch.Incident.date_closed
+      description: The date in which the incident was closed. This field is expected to be empty because the incident
+        was just created.
+      type: Date
+    - contextPath: FraudWatch.Incident.additional_urls
+      description: Additional URLs associated with the incident.
+      type: String
+    - contextPath: FraudWatch.Incident.link
+      description: Link to the incident page in the FraudWatch user interface.
+      type: String
+  - arguments:
+    - description: The ID of the incident to be updated. The incident ID is the 'identifier'
+        field returned by the 'fraudwatch-incidents-list' command.
+      name: incident_id
+      required: true
+    - description: Updates the incident associated with the 'incident_id' with the brand
+        specified. An error is encountered if the brand does not exist. A list of the existing brands can
+        be retrieved by the 'fraudwatch-brands-list' command.
+      name: brand
+    - description: Updates the incident associated with the 'incident_id' with the reference
+        ID specified. Reference ID should be unique, and can be used by the 'fraudwatch-incident-get-by-identifier'
+        command to retrieve a specific incident by its reference id.
+      name: reference_id
+    - description: Evidence to be added (such as logs, etc...) to the incident.
+      name: evidence
+    - description: Updates the incident associated with the 'incident_id' with additional
+        instructions for the FraudWatch security team.
+      name: instructions
+    description: Updates the incident associated with the 'incident_id' with the specified argument
+      values.
+    name: fraudwatch-incident-update
+  - arguments:
+    - description: The ID of the incident to retrieve. Incident ID
+        is the 'identifier' field returned by the 'fraudwatch-incidents-list' command.
+      name: incident_id
+    - description: Reference id of the incident to retrieve. If more
+        than one incident is associated with 'reference_id' specified, returns the details of the
+        incident with the latest 'date opened'. Reference ID is the 'reference_id' field
+        returned by the 'fraudwatch-incidents-list' command.
+      name: reference_id
+    description: Gets an incident from FraudWatch service by its reference ID or incident
+      ID. Single values of 'reference_id' and 'incident_id' should be specified.
+    name: fraudwatch-incident-get-by-identifier
+    outputs:
+    - contextPath: FraudWatch.Incident.identifier
+      description: Incident identifier.
+      type: String
+    - contextPath: FraudWatch.Incident.reference_id
+      description: Incident reference ID.
+      type: String
+    - contextPath: FraudWatch.Incident.url
+      description: Main URL associated with the incident.
+      type: String
+    - contextPath: FraudWatch.Incident.status
+      description: Incident status.
+      type: String
+    - contextPath: FraudWatch.Incident.type
+      description: Incident type.
+      type: String
+    - contextPath: FraudWatch.Incident.brand
+      description: Incident brand.
+      type: String
+    - contextPath: FraudWatch.Incident.client
+      description: Incident client.
+      type: String
+    - contextPath: FraudWatch.Incident.content_ip
+      description: Incident content IP.
+      type: String
+    - contextPath: FraudWatch.Incident.host
+      description: Incident host.
+      type: String
+    - contextPath: FraudWatch.Incident.host_country
+      description: Incident host country.
+      type: String
+    - contextPath: FraudWatch.Incident.host_timezone
+      description: Incident host timezone.
+      type: String
+    - contextPath: FraudWatch.Incident.created_by
+      description: Who created the incident.
+      type: String
+    - contextPath: FraudWatch.Incident.discovered_by
+      description: Who discovered the incident.
+      type: String
+    - contextPath: FraudWatch.Incident.current_duration
+      description: Current duration of the incident.
+      type: String
+    - contextPath: FraudWatch.Incident.active_duration
+      description: Current active duration of the incident.
+      type: Unknown
+    - contextPath: FraudWatch.Incident.date_opened
+      description: The date in which the incident was opened.
+      type: Date
+    - contextPath: FraudWatch.Incident.date_closed
+      description: The date in which the incident was closed.
+      type: Date
+    - contextPath: FraudWatch.Incident.additional_urls
+      description: Additional URLs associated with the incident.
+      type: String
+    - contextPath: FraudWatch.Incident.link
+      description: Link to the incident page in the FraudWatch user interface.
+      type: String
+  - arguments:
+    - description: The ID of the incident for which to retrieve the forensic data. Incident
+        ID is the 'identifier' field returned by the 'fraudwatch-incidents-list' command.
+      name: incident_id
+      required: true
+    description: Gets the forensic data of the incident associated with the specified incident
+      ID.
+    name: fraudwatch-incident-forensic-get
+    outputs:
+    - contextPath: FraudWatch.IncidentForensicData.host_provider.name
+      description: Name of the host provider.
+      type: String
+    - contextPath: FraudWatch.IncidentForensicData.host_provider.country
+      description: Country of the host provider.
+      type: String
+    - contextPath: FraudWatch.IncidentForensicData.host_nameservers
+      description: Names of the host servers.
+      type: String
+    - contextPath: FraudWatch.IncidentForensicData.host_domain_registrar.name
+      description: Host domain registrar name.
+      type: String
+    - contextPath: FraudWatch.IncidentForensicData.host_domain_registrar.email
+      description: Host domain registrar email.
+      type: String
+    - contextPath: FraudWatch.IncidentForensicData.host_domain_registrar.country
+      description: Host domain registrar country.
+      type: String
+    - contextPath: FraudWatch.IncidentForensicData.host_site_owner
+      description: Host site owner.
+      type: Unknown
+    - contextPath: FraudWatch.IncidentForensicData.host_site_admin
+      description: Host site admin.
+      type: Unknown
+    - contextPath: FraudWatch.IncidentForensicData.host_domain_admin
+      description: Host domain admin.
+      type: Unknown
+    - contextPath: FraudWatch.IncidentForensicData.host_ip_providier
+      description: Host IP provider.
+      type: Unknown
+    - contextPath: FraudWatch.IncidentForensicData.identifier
+      description: Identifier of the incident.
+      type: String
+  - arguments:
+    - description: The ID of the incident for which to retrieve the related messages. Incident
+        ID is the 'identifier' field returned by the 'fraudwatch-incidents-list' command.
+      name: incident_id
+      required: true
+    - description: Number of related messages to retrieve.
+      name: limit
+    - description: Maximum number of related messages in a page. Maximum value is 200. If page is given, defaults of this argument will be 50.
+      name: page_size
+    - description: Retrieve related messages by the specified page number.
+      name: page
+    description: Provides a list of the messages related to the incident associated with the specified
+      incident ID.
+    name: fraudwatch-incident-contact-emails-list
+    outputs:
+    - contextPath: FraudWatch.IncidentContacts.noteId
+      description: Note ID of the related message.
+      type: String
+    - contextPath: FraudWatch.IncidentContacts.subject
+      description: Subject of the related message.
+      type: String
+    - contextPath: FraudWatch.IncidentContacts.creator
+      description: The creator of the related message.
+      type: String
+    - contextPath: FraudWatch.IncidentContacts.content
+      description: The content of the related message.
+      type: String
+    - contextPath: FraudWatch.IncidentContacts.date
+      description: The date of the related message.
+      type: Date
+  - arguments:
+    - description: Add a related message to the incident with the specified incident ID.
+        Incident ID is the 'identifier' field returned by the 'fraudwatch-incidents-list' command.
+      name: incident_id
+      required: true
+    - description: Content of the related message.
+      name: message_content
+      required: true
+    description: Add a new related message to the incident associated with
+      the specified incident ID.
+    name: fraudwatch-incident-messages-add
+  - arguments:
+    - description: The ID of the incident to add additional urls to. Incident ID is
+        the 'identifier' field returned by the 'fraudwatch-incidents-list' command.
+      name: incident_id
+      required: true
+    - description: A comma-separated list of additional URLs to be added to the incident
+        associated with the 'incident_id'.
+      name: urls
+      required: true
+      isArray: true
+    description: Adds additional URLs to the incident associated with the specified incident
+      ID. Fails if one of the new urls already exists.
+    name: fraudwatch-incident-urls-add
+    outputs:
+    - contextPath: FraudWatch.IncidentUrls.success
+      description: Whether the URLs were added successfully.
+      type: String
+    - contextPath: FraudWatch.IncidentUrls.new_urls
+      description: The new URLs that were added.
+      type: String
+  - arguments:
+    - description: The ID of the incident to add a file attachment to. Incident ID
+        is the 'identifier' field returned by the 'fraudwatch-incidents-list' command.
+      name: incident_id
+      required: true
+    - description: The entry id in Demisto of the attachment to be added to the incident.
+      name: entry_id
+      required: true
+    description: Adds a new file attachment to the incident associated with the specified
+      incident ID.
+    name: fraudwatch-incident-attachment-upload
+  - arguments:
+    - description: Number of brands to retrieve.
+      name: limit
+    - description: 'Total number of brands in a page. Values range: 20-100. If page is given, defaults of this argument will be 50.'
+      name: page_size
+    - description: Retrieve brands by the specified page number.
+      name: page
+    description: Gets a list of brands from FraudWatch service.
+    name: fraudwatch-brands-list
+    outputs:
+    - contextPath: FraudWatch.Brand.client
+      description: Brand client.
+      type: String
+    - contextPath: FraudWatch.Brand.alternate business name
+      description: Brand alternative business name.
+      type: String
+    - contextPath: FraudWatch.Brand.name
+      description: Brand name.
+      type: String
+    - contextPath: FraudWatch.Brand.active
+      description: Wether the brand is active or not.
+      type: Boolean
+    - contextPath: FraudWatch.Brand.services.name
+      description: Brand service name.
+      type: String
+    - contextPath: FraudWatch.Brand.services.action
+      description: Brand service action.
+      type: String
+  dockerimage: demisto/python3:3.9.7.24076
+  isFetchSamples: true
+  isfetch: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 5.0.0
+tests:
+- FraudWatch-Test
+defaultmapperin: FraudWatch-mapper

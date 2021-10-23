@@ -1,0 +1,20 @@
+{
+    "size": 0,
+    "dataType": "scripts",
+    "query": "DBotGroupXDRIncidents",
+    "modified": "2021-05-20T13:40:36.181876171Z",
+    "name": "Cortex XDR Groups - Scatter",
+    "dateRange": {
+        "period": {
+            "byFrom": "days",
+            "fromValue": null
+        },
+        "fromDateLicense": "0001-01-01T00:00:00Z"
+    },
+    "isPredefined": true,
+    "version": -1,
+    "id": "5827f988-df26-42a5-8c46-18b3af444702",
+    "widgetType": "scatter",
+    "fromVersion": "6.2.0",
+    "description": ""
+}

@@ -1,0 +1,87 @@
+category: Utilities
+commonfields:
+  id: Screenshot Machine
+  version: -1
+configuration:
+- display: Api Key
+  name: apikey
+  required: true
+  type: 4
+description: Uses screenshot machine to get a screenshot
+display: Screenshot Machine
+name: Screenshot Machine
+script:
+  commands:
+  - arguments:
+    - description: URL to screenshot
+      name: url
+      required: true
+    - auto: PREDEFINED
+      defaultValue: desktop
+      description: Capture as desktop, mobile, tablet
+      name: device
+      predefined:
+      - desktop
+      - mobile
+      - tablet
+    - auto: PREDEFINED
+      defaultValue: 1024xfull
+      description: Dimensions to capture
+      name: dimension
+      predefined:
+      - 320x240
+      - 800x600
+      - 1024x768
+      - 1920x1020
+      - 1240xfull
+    - auto: PREDEFINED
+      defaultValue: "1"
+      description: Allows cached images (up to max lifetime of 1 day)
+      name: cacheLimit
+      predefined:
+      - "0"
+      - "1"
+      - "2"
+      - "3"
+      - "4"
+      - "5"
+      - "6"
+      - "7"
+      - "8"
+      - "9"
+      - "10"
+      - "11"
+      - "12"
+      - "13"
+      - "14"
+    - auto: PREDEFINED
+      defaultValue: "200"
+      description: Delay before capturing image
+      name: delay
+      predefined:
+      - "200"
+      - "400"
+      - "600"
+      - "800"
+      - "1000"
+      - "2000"
+      - "3000"
+      - "4000"
+      - "5000"
+      - "6000"
+      - "7000"
+      - "8000"
+      - "9000"
+      - "10000"
+    - description: leave secret phrase empty, if not needed
+      name: md5Secret
+    description: Retrieve screenshot
+    name: screenshot-machine-get-screenshot
+  dockerimage: demisto/python3:3.9.7.24076
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

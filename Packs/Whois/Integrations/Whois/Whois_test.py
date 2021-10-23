@@ -8,6 +8,22 @@ import time
 import tempfile
 import sys
 
+from CommonServerPython import DBotScoreReliability
+
+import json
+
+INTEGRATION_NAME = 'Whois'
+
+
+@pytest.fixture(autouse=True)
+def handle_calling_context(mocker):
+    mocker.patch.object(demisto, 'callingContext', {'context': {'IntegrationBrand': INTEGRATION_NAME}})
+
+
+def load_test_data(json_path):
+    with open(json_path) as f:
+        return json.load(f)
+
 
 def assert_results_ok():
     assert demisto.results.call_count == 1
@@ -73,12 +89,14 @@ TEST_QUERY_RESULT_INPUT = [
         {'contacts': {'admin': None, 'billing': None, 'registrant': None, 'tech': None},
          'raw': ['NOT FOUND\n>>> Last update of WHOIS database: 2020-05-07T13:55:34Z <<<']},
         'rsqupuo.info',
+        DBotScoreReliability.B,
         False
     ),
     (
         {'contacts': {'admin': None, 'billing': None, 'registrant': None, 'tech': None},
          'raw': ['No match for "BLABLA43213422342AS.COM".>>> Last update of whois database: 2020-05-20T08:39:17Z <<<']},
-        "BLABLA43213422342AS.COM", False
+        "BLABLA43213422342AS.COM",
+        DBotScoreReliability.B, False
     ),
     (
         {'status': ['clientUpdateProhibited (https://www.icann.org/epp#clientUpdateProhibited)'],
@@ -92,11 +110,13 @@ TEST_QUERY_RESULT_INPUT = [
          'raw': ['Domain Name: google.com\nRegistry Domain ID: 2138514_DOMAIN_COM-VRSN'],
          'creation_date': [datetime.datetime(1997, 9, 15, 0, 0)], 'id': ['2138514_DOMAIN_COM-VRSN']},
         'google.com',
+        DBotScoreReliability.B,
         True
     ),
     (
         {'contacts': {'admin': None, 'billing': None, 'registrant': None, 'tech': None}},
         'rsqupuo.info',
+        DBotScoreReliability.B,
         False
     ),
     (
@@ -111,6 +131,7 @@ TEST_QUERY_RESULT_INPUT = [
          'raw': 'Domain Name: google.com\nRegistry Domain ID: 2138514_DOMAIN_COM-VRSN',
          'creation_date': [datetime.datetime(1997, 9, 15, 0, 0)], 'id': ['2138514_DOMAIN_COM-VRSN']},
         'google.com',
+        DBotScoreReliability.B,
         True
     ),
     (
@@ -125,19 +146,91 @@ TEST_QUERY_RESULT_INPUT = [
          'raw': {'data': 'Domain Name: google.com\nRegistry Domain ID: 2138514_DOMAIN_COM-VRSN'},
          'creation_date': [datetime.datetime(1997, 9, 15, 0, 0)], 'id': ['2138514_DOMAIN_COM-VRSN']},
         'google.com',
+        DBotScoreReliability.B,
         True
     ),
     (
         {'contacts': {'admin': None, 'billing': None, 'registrant': None, 'tech': None},
          'raw': {'data': 'Domain Name: google.com\nRegistry Domain ID: 2138514_DOMAIN_COM-VRSN'}},
         'rsqupuo.info',
+        DBotScoreReliability.B,
         True
     ),
 ]
 
 
-@pytest.mark.parametrize('whois_result, domain, expected', TEST_QUERY_RESULT_INPUT)
-def test_query_result(whois_result, domain, expected):
+@pytest.mark.parametrize('whois_result, domain, reliability, expected', TEST_QUERY_RESULT_INPUT)
+def test_query_result(whois_result, domain, reliability, expected):
     from Whois import create_outputs
-    md, standard_ec, dbot_score = create_outputs(whois_result, domain)
+    md, standard_ec, dbot_score = create_outputs(whois_result, domain, reliability)
     assert standard_ec['Whois']['QueryResult'] == expected
+    assert dbot_score.get('DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && '
+                          'val.Type == obj.Type)').get('Reliability') == 'B - Usually reliable'
+
+
+def test_ip_command(mocker):
+    """
+    Given:
+        - IP addresses
+
+    When:
+        - running the IP command
+
+    Then:
+        - Verify the result is as expected
+        - Verify support list of IPs
+    """
+    from Whois import ip_command
+    response = load_test_data('./test_data/ip_output.json')
+    mocker.patch.object(Whois, 'get_whois_ip', return_value=response)
+    result = ip_command(['4.4.4.4', '4.4.4.4'], DBotScoreReliability.B)
+    assert len(result) == 2
+    assert result[0].outputs_prefix == 'Whois.IP'
+    assert result[0].outputs.get('query') == '4.4.4.4'
+    assert result[0].indicator.to_context() == {
+        'IP(val.Address && val.Address == obj.Address)': {
+            'Organization': {'Name': u'LEVEL3, US'},
+            'FeedRelatedIndicators': [{'type': 'CIDR', 'description': None, 'value': u'4.4.0.0/16'}],
+            'Geo': {'Country': u'US'},
+            'ASN': u'3356',
+            'Address': '4.4.4.4'},
+        'DBotScore('
+        'val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)':
+            {'Reliability': 'B - Usually reliable',
+             'Vendor': 'Whois',
+             'Indicator': '4.4.4.4',
+             'Score': 0,
+             'Type': 'ip'}}
+
+
+def test_get_whois_ip_proxy_param(mocker):
+    """
+    Given:
+        - proxy address
+
+    When:
+        - running the get_whois_ip function
+
+    Then:
+        - Verify the function doesn't fail due to type errors
+    """
+    from Whois import get_whois_ip
+    mocker.patch.object(demisto, 'params', return_value={"proxy": True})
+    result = get_whois_ip('1.1.1.1')
+    assert result
+
+
+def test_indian_tld():
+    """
+    Given:
+        - indian domain
+
+    When:
+        - running the get_root_server function
+
+    Then:
+        - Verify the function returns the correct Whois server
+    """
+    from Whois import get_root_server
+    result = get_root_server("google.in")
+    assert result == "in.whois-servers.net"

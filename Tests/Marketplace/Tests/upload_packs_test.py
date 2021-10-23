@@ -1,9 +1,10 @@
+import copy
 import json
 import os
 
 import pytest
 from unittest.mock import patch
-from Tests.Marketplace.upload_packs import get_packs_names, get_updated_private_packs
+from Tests.Marketplace.upload_packs import get_packs_names, get_updated_private_packs, is_private_packs_updated
 
 
 # disable-secrets-detection-start
@@ -397,7 +398,7 @@ class TestCleanPacks:
     """ Test for clean_non_existing_packs function scenarios.
     """
 
-    @patch.dict('os.environ', {'CI': 'true', 'CIRCLE_BRANCH': 'dummy_branch'})
+    @patch.dict('os.environ', {'CI': 'true', 'CI_COMMIT_BRANCH': 'dummy_branch'})
     def test_clean_non_existing_packs_skip_non_master(self, mocker):
         """
         Scenario: running clean_non_existing_packs function on CI environment but not on master branch
@@ -414,17 +415,18 @@ class TestCleanPacks:
         - Ensure that task is skipped and blob form master bucket are not deleted
         """
         from Tests.Marketplace.upload_packs import clean_non_existing_packs
-        from Tests.Marketplace.marketplace_services import GCPConfig
+        from Tests.Marketplace.marketplace_constants import GCPConfig
 
         dummy_storage_bucket = mocker.MagicMock()
         dummy_storage_bucket.name = GCPConfig.PRODUCTION_BUCKET
 
         skipped_cleanup = clean_non_existing_packs(index_folder_path="dummy_index_path", private_packs=[],
-                                                   storage_bucket=dummy_storage_bucket)
+                                                   storage_bucket=dummy_storage_bucket,
+                                                   storage_base_path=GCPConfig.PRODUCTION_STORAGE_BASE_PATH)
 
         assert skipped_cleanup
 
-    @patch.dict('os.environ', {'CI': 'true', 'CIRCLE_BRANCH': 'master'})
+    @patch.dict('os.environ', {'CI': 'true', 'CI_COMMIT_BRANCH': 'master'})
     def test_clean_non_existing_packs_skip_non_production_bucket(self, mocker):
         """
         Scenario: running clean_non_existing_packs function on CI environment on master branch but not on production
@@ -442,16 +444,18 @@ class TestCleanPacks:
         - Ensure that task is skipped and blob form master bucket are not deleted
         """
         from Tests.Marketplace.upload_packs import clean_non_existing_packs
+        from Tests.Marketplace.marketplace_constants import GCPConfig
 
         dummy_storage_bucket = mocker.MagicMock()
         dummy_storage_bucket.name = "dummy_bucket"
 
         skipped_cleanup = clean_non_existing_packs(index_folder_path="dummy_index_path", private_packs=[],
-                                                   storage_bucket=dummy_storage_bucket)
+                                                   storage_bucket=dummy_storage_bucket,
+                                                   storage_base_path=GCPConfig.PRODUCTION_STORAGE_BASE_PATH)
 
         assert skipped_cleanup
 
-    @patch.dict('os.environ', {'CI': 'true', 'CIRCLE_BRANCH': 'master'})
+    @patch.dict('os.environ', {'CI': 'true', 'CI_COMMIT_BRANCH': 'master'})
     def test_clean_non_existing_packs(self, mocker):
         """
          Scenario: deleting pack that is not part of content repo or paid packs from index
@@ -468,7 +472,7 @@ class TestCleanPacks:
          - Ensure that not valid pack is deleted from index
          """
         from Tests.Marketplace.upload_packs import clean_non_existing_packs
-        from Tests.Marketplace.marketplace_services import GCPConfig
+        from Tests.Marketplace.marketplace_constants import GCPConfig
         import os
         import shutil
 
@@ -494,7 +498,8 @@ class TestCleanPacks:
         private_packs = [{'id': private_pack, 'price': 120}]
 
         skipped_cleanup = clean_non_existing_packs(index_folder_path=index_folder_path, private_packs=private_packs,
-                                                   storage_bucket=dummy_storage_bucket)
+                                                   storage_bucket=dummy_storage_bucket,
+                                                   storage_base_path=GCPConfig.PRODUCTION_STORAGE_BASE_PATH)
 
         assert not skipped_cleanup
         shutil.rmtree.assert_called_once_with(os.path.join(index_folder_path, invalid_pack))
@@ -557,3 +562,45 @@ class TestUpdatedPrivatePacks:
         assert len(updated_private_packs) == 1
         assert updated_private_packs[0] == "updated_pack" and updated_private_packs[0] != "first_non_updated_pack" and \
                updated_private_packs[0] != "second_non_updated_pack"
+
+    def test_is_private_packs_updated(self, mocker):
+        """
+         Scenario: as part of upload packs flow, we want to check if there is at least one private pack was updated
+         by comparing "content commit hash" in the public index and in the private index files.
+
+         Given
+         - valid public index json
+         - valid private index json
+
+         When
+         - first check - there is no private pack that changed.
+         - second check - private pack was deleted
+         - third check - one commit hash was changed.
+         - forth check - private pack was added
+
+         Then
+         - Ensure that the function recognises successfully the updated private pack.
+         """
+        index_folder_path = self.get_index_folder_path()
+        index_file_path = os.path.join(index_folder_path, "index.json")
+        with open(index_file_path, 'r') as public_index_json_file:
+            public_index_json = json.load(public_index_json_file)
+
+        private_index_json = copy.deepcopy(public_index_json)
+        mocker.patch('Tests.Marketplace.upload_packs.load_json', return_value=private_index_json)
+        assert not is_private_packs_updated(public_index_json, index_file_path)
+
+        # private pack was deleted
+        del (private_index_json.get("packs")[0])
+        mocker.patch('Tests.Marketplace.upload_packs.load_json', return_value=private_index_json)
+        assert is_private_packs_updated(public_index_json, index_file_path)
+
+        # changed content commit hash of one private pack
+        private_index_json.get("packs").append({"id": "first_non_updated_pack", "contentCommitHash": "111"})
+        mocker.patch('Tests.Marketplace.upload_packs.load_json', return_value=private_index_json)
+        assert is_private_packs_updated(public_index_json, index_file_path)
+
+        # private pack was added
+        private_index_json.get("packs").append({"id": "new_private_pack", "contentCommitHash": "111"})
+        mocker.patch('Tests.Marketplace.upload_packs.load_json', return_value=private_index_json)
+        assert is_private_packs_updated(public_index_json, index_file_path)

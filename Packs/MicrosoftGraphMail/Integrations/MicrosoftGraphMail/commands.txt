@@ -14,3 +14,4 @@ msgraph-mail-create-draft from=dev@demistodev.onmicrosoft.com subject="This is a
 msgraph-mail-reply-to AAAA== body="reply_body" from=dev@demistodev.onmicrosoft.com to=dev@demistodev.onmicrosoft.com
 msgraph-mail-send-draft draft_id=AAA= from=dev@demistodev.onmicrosoft.com
 send-mail subject="Demo test send mail" from=dev@demistodev.onmicrosoft.com attachIDs=7613@f6e9c46f-e2e9-446f-8cd9-909bd5f72dbf to=dev@demistodev.onmicrosoft.com attachNames="test_attachment"
+reply-mail to=dev@demistodev.onmicrosoft.com body=This is the body subject=This is the subject inReplyTo=AAMkAGY3OTQyM cc=dev3@demistodev.onmicrosoft.com bcc=dev2@demistodev.onmicrosoft.com attachCIDs=3604@6e069bc4-2a1e-43ea-8ed3-ea558e377751

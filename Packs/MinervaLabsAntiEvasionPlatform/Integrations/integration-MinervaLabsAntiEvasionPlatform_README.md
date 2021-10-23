@@ -6,8 +6,8 @@
 <p>Minerva modular design enables customers and partners to use Minerva-provided solutions or customize their Minerva deployment to fit their existing defense architecture.</p>
 </div>
 <div class="cl-preview-section">
-<p>Using the Demisto platform, enterprises and service providers can now have automated visibility into prevented anomalies across endpoints and servers in the network, while processing them using built-in playbooks.</p>
-<p><br> Minerva Labs’ Endpoint Malware Vaccination enables incident response teams to immunize endpoints in seconds and neutralize attacks by simulating infection markers, rather than creating them, allowing Minerva to contain outbreaks without impacting performance. The combined interlock of Demisto and Minerva offers orchestration of an instant deployment of malware vaccinations thus preventing outbreaks of known network worms, by simulating their infection markers and preventing the malicious code installation.</p>
+<p>Using the Cortex XSOAR platform, enterprises and service providers can now have automated visibility into prevented anomalies across endpoints and servers in the network, while processing them using built-in playbooks.</p>
+<p><br> Minerva Labs’ Endpoint Malware Vaccination enables incident response teams to immunize endpoints in seconds and neutralize attacks by simulating infection markers, rather than creating them, allowing Minerva to contain outbreaks without impacting performance. The combined interlock of Cortex XSOAR and Minerva offers orchestration of an instant deployment of malware vaccinations thus preventing outbreaks of known network worms, by simulating their infection markers and preventing the malicious code installation.</p>
 </div>
 <div class="cl-preview-section">
 <p>This integration was integrated and tested with version 3.0 of Minerva Labs Anti-Evasion Platform.</p>
@@ -17,7 +17,7 @@
 </div>
 <div class="cl-preview-section">
 <ul>
-<li>Fetch events from Minerva platform into Demisto Playground</li>
+<li>Fetch events from Minerva platform into Cortex XSOAR Playground</li>
 <li>List, add and delete vaccination artifacts to Minerva platform</li>
 <li>List, add and delete exclusions in order to handle FPs</li>
 <li>Search for events according to criteria</li>
@@ -25,7 +25,7 @@
 </ul>
 </div>
 <div class="cl-preview-section">
-<h2 id="configure-minerva-labs-anti-evasion-platform-on-demisto">Configure Minerva Labs Anti-Evasion Platform on Demisto</h2>
+<h2 id="configure-minerva-labs-anti-evasion-platform-on-demisto">Configure Minerva Labs Anti-Evasion Platform on Cortex XSOAR</h2>
 </div>
 <div class="cl-preview-section">
 <ol>
@@ -57,7 +57,7 @@
 <h2 id="fetched-incidents-data">Fetched Incidents Data</h2>
 </div>
 <div class="cl-preview-section">
-<p>The integration imports events from Minerva Management Console as incidents in Demisto.<br> As each incident represents malicious activity, it contains all the available information gathered by Minerva for further analysis.</p>
+<p>The integration imports events from Minerva Management Console as incidents in Cortex XSOAR.<br> As each incident represents malicious activity, it contains all the available information gathered by Minerva for further analysis.</p>
 </div>
 <div class="cl-preview-section">
 <p>To use Fetch Incidents, configure a new instance and select the ‘Fetch-incidents’ option in the instance settings.</p>
@@ -66,7 +66,7 @@
 <h2 id="commands">Commands</h2>
 </div>
 <div class="cl-preview-section">
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 </div>
 <div class="cl-preview-section">
 <ol>
@@ -939,7 +939,7 @@
 <h5 id="human-readable-output-6">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p>Demisto outputs:<span> </span><code>"Vaccine '9fef012d-b066-4dc3-a912-8f6613e5bef0' was deleted"</code></p>
+<p>Cortex XSOAR outputs:<span> </span><code>"Vaccine '9fef012d-b066-4dc3-a912-8f6613e5bef0' was deleted"</code></p>
 </div>
 <div class="cl-preview-section">
 <h3 id="get-all-exclusions">8. Get all exclusions</h3>
@@ -1112,7 +1112,7 @@
 <h5 id="human-readable-output-8">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p>Demisto outputs:<span> </span><code>"Exclusion a2ea76c5-95f5-4f40-88f6-bac40ce6d685 was deleted"</code></p>
+<p>Cortex XSOAR outputs:<span> </span><code>"Exclusion a2ea76c5-95f5-4f40-88f6-bac40ce6d685 was deleted"</code></p>
 </div>
 <div class="cl-preview-section">
 <h3 id="move-all-events-from-archive-to-new-event-state">10. Move all events from Archive to New event state</h3>
@@ -1150,7 +1150,7 @@
 <h5 id="human-readable-output-9">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p>Demisto outputs:<span> </span><code>"Events were un-archived"</code></p>
+<p>Cortex XSOAR outputs:<span> </span><code>"Events were un-archived"</code></p>
 </div>
 <div class="cl-preview-section">
 <h2 id="known-limitations">Known Limitations</h2>

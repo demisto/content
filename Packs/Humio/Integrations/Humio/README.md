@@ -1,6 +1,6 @@
 Integration with Humio
 
-## Configure Humio on Demisto
+## Configure Humio on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Humio.
@@ -24,10 +24,10 @@ Integration with Humio
 Go to https://your-humio/settings and copy the API token. Example [https://cloud.humio.com/settings](https://cloud.humio.com/settings)
 
 ## Fetch incidents
-The parameters used for fetch-incidents are only used if you want to use the fetch incidents feature. It is recommended to use alerts and notifiers in Humio to send this data to XSOAR via a webhook notifier instead. You can read more about the supported time-formats for backfilling [here](https://docs.humio.com/api/using-the-search-api-with-humio/#time-specification)
+The parameters used for fetch-incidents are only used if you want to use the fetch incidents feature. It is recommended to use alerts and notifiers in Humio to send this data to XSOAR via a webhook notifier instead. You can read more about the supported time-formats for backfilling [here](https://docs.humio.com/reference/api/search-api/#time-specification).
 
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### humio-query
 ***

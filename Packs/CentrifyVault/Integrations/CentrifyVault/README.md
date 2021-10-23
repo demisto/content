@@ -224,7 +224,7 @@ Delete Secret from the Centrify Vault. Please note:  Enabling "recursiveDelete" 
 | secretName | Name of the secret to be deleted. | Required | 
 | folderName | Name of the folder from where the secret should be deleted. If the secret is in subfolder, then provide parent folder followed by "/" and subfolder name. Ex: XSOAR/Demisto. | Optional | 
 | recursiveDelete | "Yes" if you want to delete all the secrets having same name in all the subfolders recursively. "No" if you want do not want to delete the secret in the subfolders. Possible values are: Yes, No. | Required | 
-| matchPartOfSecret | "Yes" if you want to delete the secret having the provided secretname as a part of the Secret. "No" if you want to delete the secret with the exact name match. Ex: Demisto* will delete all secrets like Demisto_1, Demisto_pwd, Demisto. . Possible values are: Yes, No. | Required | 
+| matchPartOfSecret | "Yes" if you want to delete the secret having the provided secretname as a part of the Secret. "No" if you want to delete the secret with the exact name match. Ex: XSOAR* will delete all secrets like XSOAR_1, XSOAR_pwd, XSOAR. . Possible values are: Yes, No. | Required | 
 
 
 #### Context Output

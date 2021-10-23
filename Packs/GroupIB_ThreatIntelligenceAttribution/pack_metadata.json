@@ -1,0 +1,37 @@
+{
+    "name": "Group-IB Threat Intelligence & Attribution",
+    "description": "Group-IB Threat Intelligence & Attribution is a system for analyzing and attributing cyberattacks, threat hunting, and protecting network infrastructure based on data relating to adversary tactics, tools, and activity. Use this pack to fast receive incidents related to you, attribute them to adversaries to do instant response, enrich your security with an enormous IOCs collection, and provide possibilities for manual investigation through Group-IB data via Cortex XSOAR interface.",
+    "support": "partner",
+    "currentVersion": "1.2.1",
+    "author": "Group-IB",
+    "url": "https://www.group-ib.com/",
+    "email": "presale@group-ib.com",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "itemPrefix": [
+        "GIB"
+    ],
+    "tags": [
+        "Alerts",
+        "Attack",
+        "Dark Web",
+        "Email",
+        "Malware",
+        "Threat Intelligence",
+        "Security"
+    ],
+    "useCases": [
+        "Hunting",
+        "Lost or Stolen Device",
+        "Phishing",
+        "Threat Intelligence Management",
+        "Malware"
+    ],
+    "keywords": [
+        "Threat intelligence"
+    ],
+    "githubUser": [
+        "EvgeniyMeteliza"
+    ]
+}

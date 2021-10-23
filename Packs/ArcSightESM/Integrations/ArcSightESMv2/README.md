@@ -13,8 +13,8 @@ ArcSight XML is no longer supported. Use the ArcSight ESM integration instead.
 4. Updating a case or deleting it.
 5. Getting all entries from an active list, updating an entry and clearing the list.
 
-## Set up ArcSight ESM to work with Demisto
-The set up for using ArcSight ESM to work with Demisto depends on whether you will be using the integration to fetch events or cases.
+## Set up ArcSight ESM to work with Cortex XSOAR
+The set up for using ArcSight ESM to work with Cortex XSOAR depends on whether you will be using the integration to fetch events or cases.
 
 #### For fetching Events/Cases:
 
@@ -32,7 +32,7 @@ The set up for using ArcSight ESM to work with Demisto depends on whether you wi
     - Add conditions if needed (malicious/suspicious behavior such as malware found, failed login,
       access to a known malicious site and/or conditions like severity, criticality, assets etc).
 #### Note: 
-Demisto is designed for an automatic response, so make sure to define conditions for actionable/sever/critical events only.
+Cortex XSOAR is designed for an automatic response, so make sure to define conditions for actionable/sever/critical events only.
 
 5.Create a query viewer based on the query.
 
@@ -40,10 +40,10 @@ Demisto is designed for an automatic response, so make sure to define conditions
     - Set the Refresh Data After parameter to 1.
     - Configure the rest of the query viewer as necessary.
     
-6.Save the Query Viewer resource ID integration configuration in Demisto.
+6.Save the Query Viewer resource ID integration configuration in Cortex XSOAR.
 
 
-# Configure ArcSight ESM on Demisto
+# Configure ArcSight ESM on Cortex XSOAR
 1. Navigate to Settings>Integrations>Servers & Services.
 2. Search for ArcSight ESM.
 3. Click **Add instance** to create and configure a new integration instance.
@@ -53,20 +53,20 @@ Demisto is designed for an automatic response, so make sure to define conditions
     - **Fetch Events as incidents via Query Viewer ID**: Must have Start Time and Event ID fields.
     - **Fetch Cases as incidents via Query Viewer ID**: Must have Create Time and ID fields.
     - **The maximum number of unique IDs expected to be fetched**: If unique IDs exceeds the maximum, duplicates will be fetched.
-    - **Do not validate server certificate (unsecured)**: Select to avoid server certification validation. You may want to do this in case Demisto cannot validate the integration server certificate (due to missing CA certificate).
+    - **Do not validate server certificate (unsecured)**: Select to avoid server certification validation. You may want to do this in case Cortex XSOAR cannot validate the integration server certificate (due to missing CA certificate).
     - **Use system proxy settings**: Select whether to communicate via the system proxy server or not.
-    - **Fetch incidents**: Mark the Fetch incidents checkbox to automatically create Demisto incidents from this integration instance.
+    - **Fetch incidents**: Mark the Fetch incidents checkbox to automatically create Cortex XSOAR incidents from this integration instance.
     - **Incident type**: Select the incident type to trigger.
     - **Use REST Endpoints**: Mark this checkbox to use REST endpoints for the commands related to 'entries' instead of the default legacy SOAP endpoints.
 4. Click **Test** to validate the URLs, token, and connection.
-    If you are experiencing issues with the service configuration, please contact Demisto support at support@paloaltonetworks.com.
+    If you are experiencing issues with the service configuration, please contact Cortex XSOAR support at support@paloaltonetworks.com.
 5. After completing the test successfully, press the ‘Done’ button.
 
 ## Use-Cases
-- **Fetch events** - New events that match the predefined condition will be fetched to Demisto as an incident and will trigger playbooks for automation and response. Such events could be any kind of security events.
-- **Fetch cases** - New cases that match the predefined condition will be fetched to Demisto as an incident and will trigger playbooks for automation and response. Such cases could include any kind of security events. The final step of the playbook could be updating, closing or deleting the case.
+- **Fetch events** - New events that match the predefined condition will be fetched to Cortex XSOAR as an incident and will trigger playbooks for automation and response. Such events could be any kind of security events.
+- **Fetch cases** - New cases that match the predefined condition will be fetched to Cortex XSOAR as an incident and will trigger playbooks for automation and response. Such cases could include any kind of security events. The final step of the playbook could be updating, closing or deleting the case.
 - **Search events** - Query specific events based on an existing query viewer.
-- **Getting active** list entries - Returning active list entries (such as “Blacklist IPS”, “Malicious MD5s”, etc) by using as-get-entries and providing the resource ID of the active list. The entries can be added as a list in Demisto for cross-platform usage, additional automation, and data enrichment.
+- **Getting active** list entries - Returning active list entries (such as “Blacklist IPS”, “Malicious MD5s”, etc) by using as-get-entries and providing the resource ID of the active list. The entries can be added as a list in Cortex XSOAR for cross-platform usage, additional automation, and data enrichment.
 
 ## Fetched Incidents Data
 The integration can fetch events and cases.
@@ -76,7 +76,7 @@ The integration can fetch events and cases.
 - In case of slowness, timeouts or crashes try reducing the max fetch parameter.
 
 ## Commands
-You can execute these commands from the Demisto CLI, as part of automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 1. (Deprecated) Get all case resource IDs: as-get-all-cases
@@ -155,7 +155,6 @@ Gets information about a single case.
 | --- | --- | --- |
 | resourceId | Resource ID of the case to get information for | Required | 
 | withBaseEvents | If "true", then will return case and base events of that case | Optional | 
-
 
 #### Context Output
 
@@ -481,7 +480,7 @@ Returns up to 2000 entries.
 | --- | --- | --- |
 | ArcSightESM.ActiveList | Unknown | Active List is a map of active list resource id =&gt; active list entries | 
 | ArcSightESM.ActiveList.ListID | list | The ActiveList ID | 
-| ArcSightESM.ActiveList.Entry | Unknown | Active List is a map of active list resource id =&gt; active list | 
+| ArcSightESM.ActiveList.Entries | Unknown | Active List is a map of active list resource id =&gt; active list | 
 
 
 #### Command Example

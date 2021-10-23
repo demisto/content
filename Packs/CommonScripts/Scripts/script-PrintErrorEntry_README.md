@@ -7,7 +7,7 @@ Prints an error entry with a given message.
 | --- | --- |
 | Script Type | python |
 | Tags | - |
-| Demisto Version | 4.0.0+ |
+| Cortex XSOAR Version | 4.0.0+ |
 
 ## Inputs
 ---

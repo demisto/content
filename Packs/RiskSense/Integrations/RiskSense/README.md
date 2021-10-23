@@ -10,7 +10,7 @@ The SOAR market is still an emerging market and is often used as an umbrella ter
 Gartner claims that organizations need to have a continuous adaptive risk and trust assessment (CARTA) strategy to make their investments in SOAR technology pay off. CARTA’s value is that it is continuous, and one element helps and informs other elements, allowing for continuous improvement in your organization’s ability to improve both security posture and digital resilience.
 
 
-## Configure RiskSense on Demisto
+## Configure RiskSense on Cortex XSOAR
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
@@ -29,7 +29,7 @@ Gartner claims that organizations need to have a continuous adaptive risk and tr
 
 ## Commands
 ---
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 1. risksense-get-hosts
 2. risksense-get-host-detail

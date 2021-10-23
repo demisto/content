@@ -1,0 +1,29 @@
+{
+    "id": "F5 Silverline L7 DDoS Events",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "F5 Silverline L7 DDoS Events",
+    "prevName": "F5 Silverline L7 DDoS Events",
+    "color": "#5C6BC0",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "layout": "F5 Silverline L7 DDoS Events Layout",
+    "detached": false,
+    "extractSettings": {
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {}
+    },
+    "fromVersion": "6.0.0"
+}

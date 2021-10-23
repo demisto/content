@@ -1,0 +1,1 @@
+!dns-nsupdate record=test.example.com. value=123.123.123.123

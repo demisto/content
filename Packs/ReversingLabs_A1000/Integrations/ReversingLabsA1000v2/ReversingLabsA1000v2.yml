@@ -1,0 +1,343 @@
+category: Forensics & Malware Analysis
+commonfields:
+  id: ReversingLabs A1000 v2
+  version: -1
+configuration:
+- defaultvalue: https://a1000.reversinglabs.com
+  display: ReversingLabs A1000 instance URL
+  name: host
+  required: true
+  type: 0
+- display: API Token
+  name: token
+  required: true
+  type: 4
+- defaultvalue: 'true'
+  display: Verify host certificates
+  name: verify
+  required: false
+  type: 8
+- defaultvalue: C - Fairly reliable
+  display: Reliability
+  hidden: false
+  name: reliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: false
+  type: 15
+- defaultvalue: '2'
+  display: Wait time between report fetching retries (seconds). Deafult is 2 seconds.
+  hidden: false
+  name: wait_time_seconds
+  required: false
+  type: 0
+- defaultvalue: '30'
+  display: Number of report fetching retries. Default is 30.
+  hidden: false
+  name: num_of_retries
+  required: false
+  type: 0
+description: ReversingLabs A1000 advanced Malware Analysis Platform.
+display: ReversingLabs A1000 v2
+name: ReversingLabs A1000 v2
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: file hash
+      isArray: false
+      name: hash
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve sample analysis results
+    execution: false
+    name: reversinglabs-a1000-get-results
+    outputs:
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA512
+      description: The SHA512 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: File.EntryID
+      description: The Entry ID.
+      type: String
+    - contextPath: File.Info
+      description: Information about the file.
+      type: String
+    - contextPath: File.Type
+      description: The type of the file.
+      type: String
+    - contextPath: File.MD5
+      description: MD5 hash of the file.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: ReversingLabs.a1000_report
+      description: A1000 report
+      type: Unknown
+  - arguments:
+    - default: true
+      description: The file entry to upload
+      isArray: false
+      name: entryId
+      required: true
+      secret: false
+    - default: false
+      description: A comment to add to the file
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    - default: false
+      description: List of tags for the file
+      isArray: false
+      name: tags
+      required: false
+      secret: false
+    deprecated: false
+    description: Upload sample to A1000 for analysis
+    execution: true
+    name: reversinglabs-a1000-upload-sample
+    outputs:
+    - contextPath: ReversingLabs.a1000_upload_report
+      description: A1000 report
+      type: Unknown
+  - arguments:
+    - default: true
+      description: The file entry to upload
+      isArray: false
+      name: entryId
+      required: true
+      secret: false
+    - default: false
+      description: A comment to add to the file
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    - default: false
+      description: List of tags for the file
+      isArray: false
+      name: tags
+      required: false
+      secret: false
+    deprecated: false
+    description: Upload sample to A1000 and retrieve analysis results
+    execution: false
+    name: reversinglabs-a1000-upload-sample-and-get-results
+    outputs:
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA512
+      description: The SHA512 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: File.EntryID
+      description: The Entry ID.
+      type: String
+    - contextPath: File.Info
+      description: Information about the file.
+      type: String
+    - contextPath: File.Type
+      description: The type of the file.
+      type: String
+    - contextPath: File.MD5
+      description: MD5 hash of the file.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: ReversingLabs.a1000_report
+      description: A1000 report
+      type: Unknown
+  - arguments:
+    - default: true
+      description: The hash to delete
+      isArray: false
+      name: hash
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete an uploaded sample from A1000
+    execution: true
+    name: reversinglabs-a1000-delete-sample
+    outputs:
+    - contextPath: ReversingLabs.a1000_delete_report
+      description: A1000 file delete report
+      type: Unknown
+  - arguments:
+    - default: true
+      description: The sample hash
+      isArray: false
+      name: hash
+      required: true
+      secret: false
+    deprecated: false
+    description: List files extracted from a sample
+    execution: false
+    name: reversinglabs-a1000-list-extracted-files
+    outputs:
+    - contextPath: ReversingLabs.a1000_list_extracted_report
+      description: A1000 list extracted files report
+      type: Unknown
+  - arguments:
+    - default: true
+      description: Sample hash to download
+      isArray: false
+      name: hash
+      required: true
+      secret: false
+    deprecated: false
+    description: Download sample from A1000
+    execution: false
+    name: reversinglabs-a1000-download-sample
+  - arguments:
+    - default: true
+      description: The hash of an already uploaded sample
+      isArray: false
+      name: hash
+      required: true
+      secret: false
+    deprecated: false
+    description: Re-analyze sample on A1000
+    execution: false
+    name: reversinglabs-a1000-reanalyze
+    outputs:
+    - contextPath: ReversingLabs.a1000_reanalyze_report
+      description: Get extracted files report
+      type: Unknown
+  - arguments:
+    - default: true
+      description: The sample hash we want unpacked samples for
+      isArray: false
+      name: hash
+      required: true
+      secret: false
+    deprecated: false
+    description: Download samples obtained through the unpacking process
+    execution: false
+    name: reversinglabs-a1000-download-extracted-files
+  - arguments:
+    - default: false
+      description: The hash of a desired sample
+      isArray: false
+      name: hash
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve classification report for a sample
+    execution: false
+    name: reversinglabs-a1000-get-classification
+    outputs:
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA512
+      description: The SHA512 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: File.EntryID
+      description: The Entry ID.
+      type: String
+    - contextPath: File.Info
+      description: Information about the file.
+      type: String
+    - contextPath: File.Type
+      description: The type of the file.
+      type: String
+    - contextPath: File.MD5
+      description: MD5 hash of the file.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: ReversingLabs.a1000_classification_report
+      description: A1000 classification report
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Advanced search query
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '5000'
+      description: Maximum number of results
+      isArray: false
+      name: result_limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Search for hashes on A1000 using multi-part search criteria
+    execution: false
+    name: reversinglabs-a1000-advanced-search
+    outputs:
+    - contextPath: ReversingLabs.a1000_advanced_search_report
+      description: A1000 classification report
+      type: Unknown
+  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.23997
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+  - No tests (auto formatted)
+fromversion: 5.5.0

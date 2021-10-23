@@ -1,21 +1,30 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 ''' IMPORTS '''
+import copy
 import urllib
-
-import demistomock as demisto
-from CommonServerPython import *
-
-
-from urllib.parse import urlparse, quote
 from datetime import timedelta
 from distutils.util import strtobool
+from urllib.parse import quote, urlparse
+
 from threatconnect import ThreatConnect
-from threatconnect.RequestObject import RequestObject
 from threatconnect.Config.ResourceType import ResourceType
-import copy
+from threatconnect.RequestObject import RequestObject
 
 '''GLOBAL VARS'''
 FRESHNESS = int(demisto.params().get('freshness', 0))
 MAX_CONTEXT = 100
+
+RELIABILITY = demisto.params().get('integrationReliability', 'B - Usually reliable')
+
+if DBotScoreReliability.is_valid_type(RELIABILITY):
+    RELIABILITY = DBotScoreReliability.get_dbot_score_reliability_from_str(RELIABILITY)
+else:
+    return_error("Please provide a valid value for the Source Reliability parameter.")
+
+ENCODED_API_BRANCHES = ["urls", "hosts"]
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -130,6 +139,7 @@ def create_context(indicators, include_dbot_score=False):
                     'Type': indicator_type,
                     'Vendor': 'ThreatConnect'
                 }
+            indicators_dbot_score[value]['Reliability'] = RELIABILITY
 
         context['TC.Indicator(val.ID && val.ID === obj.ID)'].append({
             'ID': ind['id'],
@@ -141,6 +151,7 @@ def create_context(indicators, include_dbot_score=False):
             'LastModified': ind['lastModified'],
             'Rating': rating,
             'Confidence': confidence,
+            'WebLink': ind.get('webLink'),
 
             # relevant for domain
             'Active': ind.get('whoisActive'),
@@ -168,6 +179,11 @@ def create_context(indicators, include_dbot_score=False):
             if ind['indicator_observations']:
                 context['TC.Indicator(val.ID && val.ID === obj.ID)'][0]['IndicatorsObservations'] = ind[
                     'indicator_observations']
+
+        if 'indicator_attributes' in ind:
+            if ind['indicator_attributes']:
+                context['TC.Indicator(val.ID && val.ID === obj.ID)'][0]['IndicatorAttributes'] = ind[
+                    'indicator_attributes']
 
     context['DBotScore'] = list(indicators_dbot_score.values())
     context = {k: createContext(v, removeNull=True)[:MAX_CONTEXT] for k, v in context.items() if v}
@@ -244,7 +260,7 @@ def get_indicator_owner(indicator_value, owner=None):
 # pylint: disable=E1101
 def get_indicators(indicator_value=None, indicator_type=None, owners=None, rating_threshold=-1, confidence_threshold=-1,
                    freshness=None, associated_groups=False, associated_indicators=False, include_observations=False,
-                   include_tags=False):
+                   include_tags=False, include_attributes=False):
     tc = get_client()
     raw_indicators = []
     if owners and owners.find(",") > -1:
@@ -294,6 +310,10 @@ def get_indicators(indicator_value=None, indicator_type=None, owners=None, ratin
                 demisto.error(str(error))
                 indicator_to_add['indicator_observations'] = indicator_observations
 
+        if include_attributes:
+            indicator_to_add['indicator_attributes'] = tc_indicator_get_attributes(
+                tc, owners, indicator_value, raw_indicator['type'])
+
         if associated_indicators:
             try:
                 for indicator in raw_indicators:
@@ -312,7 +332,9 @@ def get_indicators(indicator_value=None, indicator_type=None, owners=None, ratin
             except Exception as error:
                 demisto.error(str(error))
                 indicator_to_add['indicator_associations'] = associatedIndicators
+
         indicators.append(indicator_to_add)
+
     return indicators
 
 
@@ -508,7 +530,9 @@ def tc_associated_groups(tc, owners, indicator_value, indicator_type):
     ro.set_http_method('GET')
     ro.set_owner(owners)
     if apiBranch is not None:
-        ro.set_request_uri("/v2/indicators/{}/{}/groups".format(apiBranch, indicator_value))
+        if apiBranch in ENCODED_API_BRANCHES:
+            indicator_value = quote(indicator_value, safe='')
+        ro.set_request_uri("/v2/indicators/{}/{}/tags".format(apiBranch, indicator_value))
         results = tc.api_request(ro)
         if results.headers['content-type'] == 'application/json':
             if 'data' in results.json():
@@ -550,6 +574,8 @@ def tc_indicator_get_tags(tc, owners, indicator_value, indicator_type):
     ro.set_http_method('GET')
     ro.set_owner(owners)
     if apiBranch is not None:
+        if apiBranch in ENCODED_API_BRANCHES:
+            indicator_value = quote(indicator_value, safe='')
         ro.set_request_uri("/v2/indicators/{}/{}/tags".format(apiBranch, indicator_value))
         results = tc.api_request(ro)
         if results.headers['content-type'] == 'application/json':
@@ -575,6 +601,50 @@ def tc_indicator_get_tags(tc, owners, indicator_value, indicator_type):
             demisto.error(str(error))
 
     return tags
+
+
+def tc_indicator_get_attributes(tc, owners, indicator_value, indicator_type):
+    attributes = []
+    types = tc_get_indicator_types_request()['data']['indicatorType']
+    for item in types:
+        if indicator_type is not None:
+            if item['name'] == indicator_type:
+                apiBranch = item['apiBranch']
+        else:
+            # meaning we got an indicator but SDK returned a null type
+            apiBranch = None
+
+    ro = RequestObject()
+    ro.set_http_method('GET')
+    ro.set_owner(owners)
+    if apiBranch is not None:
+        if apiBranch in ENCODED_API_BRANCHES:
+            indicator_value = quote(indicator_value, safe='')
+        ro.set_request_uri("/v2/indicators/{}/{}/tags".format(apiBranch, indicator_value))
+        results = tc.api_request(ro)
+        if results.headers['content-type'] == 'application/json':
+            if 'data' in results.json():
+                if 'attribute' in results.json()['data']:
+                    attributes = results.json()['data']['attribute']
+            else:
+                attributes = []
+    else:
+        try:
+            for item in types:
+                ro.set_request_uri(
+                    "/v2/indicators/{}/{}/attributes".format(item['apiBranch'], quote(indicator_value, safe='')))
+                results = tc.api_request(ro)
+                if results.headers['content-type'] == 'application/json':
+                    if 'data' in results.json():
+                        if 'attribute' in results.json()['data']:
+                            attributes = results.json()['data']['attribute']
+                            break
+                    else:
+                        attributes = []
+        except Exception as error:
+            demisto.error(str(error))
+
+    return attributes
 
 
 def tc_indicators_command():
@@ -686,14 +756,17 @@ def tc_get_indicator_command():
     associated_indicators = json.loads(args['indicator_associations'].lower())
     include_tags = json.loads(args['indicator_tags'].lower())
     include_observations = json.loads(args['indicator_observations'].lower())
+    include_attributes = json.loads(args['indicator_attributes'].lower())
     if 'indicator_type' in args:
         indicator_type = args['indicator_type']
     else:
         indicator_type = None
 
-    ec, indicators, raw_indicators, indicators_associations, indicator_groups, indicator_observations, indicator_tags \
-        = tc_get_indicator(indicator, owners, rating_threshold, confidence_threshold, associated_groups,
-                           associated_indicators, include_observations, include_tags, indicator_type)
+    ec, indicators, raw_indicators, indicators_associations, indicator_groups, indicator_observations, indicator_tags, \
+        indicator_attributes = tc_get_indicator(indicator, owners, rating_threshold, confidence_threshold, associated_groups,
+                                                associated_indicators, include_observations, include_tags, indicator_type,
+                                                include_attributes)
+
     # remove extra items from the indicator markdown
     if ec == []:
         ec = {}
@@ -713,6 +786,9 @@ def tc_get_indicator_command():
         if include_observations:
             if 'IndicatorsObservations' in indicators[0]:
                 del indicators[0]['IndicatorsObservations']
+        if include_attributes:
+            if 'IndicatorAttributes' in indicators[0]:
+                del indicators[0]['IndicatorAttributes']
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -756,6 +832,16 @@ def tc_get_indicator_command():
                                              headerTransform=pascalToSpace)
         })
 
+    if include_attributes:
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': indicator_attributes,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('ThreatConnect Attributes for indicator: {}'.format(indicator), indicator_attributes,
+                                             headerTransform=pascalToSpace)
+        })
+
     if include_observations:
         demisto.results({
             'Type': entryTypes['note'],
@@ -767,20 +853,23 @@ def tc_get_indicator_command():
                                              headerTransform=pascalToSpace)
         })
 
-
 # @loger
+
+
 def tc_get_indicator(indicator, owners, rating_threshold, confidence_threshold, associated_groups, associated_indicators,
-                     include_observations, include_tags, indicator_type):
+                     include_observations, include_tags, indicator_type, include_attributes):
     raw_indicators = get_indicators(indicator, indicator_type=indicator_type, owners=owners, rating_threshold=rating_threshold,
                                     confidence_threshold=confidence_threshold, associated_groups=associated_groups,
                                     associated_indicators=associated_indicators, include_observations=include_observations,
-                                    include_tags=include_tags)
+                                    include_tags=include_tags, include_attributes=include_attributes)
+
     ec = []
     indicators = []
     indicator_groups = []
     indicators_associations = []
     indicator_tags = []
     indicator_observations = []
+    indicator_attributes = []
 
     if len(raw_indicators) > 0:
         ec, indicators = create_context(raw_indicators, include_dbot_score=True)
@@ -796,7 +885,11 @@ def tc_get_indicator(indicator, owners, rating_threshold, confidence_threshold, 
         if 'indicator_observations' in raw_indicators[0]:
             indicator_observations = raw_indicators[0]['indicator_observations']
 
-    return ec, indicators, raw_indicators, indicators_associations, indicator_groups, indicator_observations, indicator_tags
+        if 'indicator_attributes' in raw_indicators[0]:
+            indicator_attributes = raw_indicators[0]['indicator_attributes']
+
+    return (ec, indicators, raw_indicators, indicators_associations, indicator_groups,
+            indicator_observations, indicator_tags, indicator_attributes)
 
 
 def tc_get_indicators_by_tag_command():

@@ -3,7 +3,7 @@
 <p>Demisto Lock is a mechanism that enables users to prevent concurrent execution of tasks. This is a native integration, which does not require configuration.</p>
 <hr>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_27761285331529904975109">Get a lock: lock-get</a></li>
 <li><a href="#h_742419847101529905253137">Show lock information: lock-info</a></li>
@@ -79,3 +79,5 @@
 <p><code>lock-release-all</code></p>
 <h5>Input</h5>
 <p>There is no input for this command.</p>
+<h2>Troubleshooting</h2>
+If you use multiple locks which might be set in parallel, it is recommended to enable the <b>Sync integration cache</b> (Available from Cortex XSOAR 6.2.0).

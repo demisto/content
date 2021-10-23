@@ -2,7 +2,6 @@ from XFE_v2 import Client, ip_command, url_command, cve_get_command, \
     cve_search_command, file_command, whois_command
 from CommonServerPython import outputPaths
 
-
 DBOT_SCORE_KEY = 'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)'
 
 MOCK_BASE_URL = 'https://www.this-is-a-fake-url.com'
@@ -13,6 +12,7 @@ MOCK_IP = '8.8.8.8'
 MOCK_URL = 'https://www.google.com'
 MOCK_CVE = 'CVE-2014-2601'
 MOCK_HASH = '474B9CCF5AB9D72CA8A333889BBB34F0'
+MOCK_HASH_NO_FAMILY = '55d2ad612f36aebf2184f138d37ba1a16b774627fbbafd737425731369efd010'
 MOCK_HOST = 'google.com'
 MOCK_CVE_QUERY = 'hello'
 
@@ -56,11 +56,26 @@ MOCK_IP_RESP = {
         "country": "United States",
         "countrycode": "US"
     },
+    "DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)": {
+        "Indicator": "8.8.8.8",
+        "Type": "ip",
+        "Vendor": "XFE",
+        "Score": 1,
+        "Reliability": "C - Fairly reliable"
+    },
     "score": 1,
     "reason": "Regional Internet Registry",
     "reasonDescription": "One of the five RIRs announced a (new) location mapping of the IP.",
     "categoryDescriptions": {},
     "tags": []
+}
+MOCK_INVALID_IP_RESP = {
+    'ip': '8.8.8.8',
+    'history': [],
+    'subnets': [],
+    'cats': {},
+    'score': 1,
+    'tags': []
 }
 
 MOCK_URL_RESP = {
@@ -96,6 +111,13 @@ MOCK_URL_RESP = {
             }
         }
     ],
+    "DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)": {
+        "Indicator": "https://www.google.com",
+        "Type": "url",
+        "Vendor": "XFE",
+        "Score": 1,
+        "Reliability": "C - Fairly reliable"
+    },
     "tags": []
 }
 
@@ -278,6 +300,24 @@ MOCK_HASH_RESP = {
     ]
 }
 
+HASH_RESP_NO_FAMILY = {
+    'malware': {
+        'origins': {
+            'external': {
+                'source': 'reversingLabs',
+                'firstSeen': '2021-08-02T21:59:46Z',
+                'lastSeen': '2021-08-16T04:35:50Z',
+                'detectionCoverage': 0,
+                'family': None
+            }
+        },
+        'type': 'sha256',
+        'sha256': '0x55D2AD612F36AEBF2184F138D37BA1A16B774627FBBAFD737425731369EFD010',
+        'hash': '0x55D2AD612F36AEBF2184F138D37BA1A16B774627FBBAFD737425731369EFD010',
+        'risk': 'low'
+    }
+}
+
 MOCK_HOST_RESP = {
     "createdDate": "1997-09-15T07:00:00.000Z",
     "updatedDate": "2019-09-09T15:39:04.000Z",
@@ -350,6 +390,14 @@ MOCK_CVE_SEARCH_RESP = {'total_rows': 1,
 
 
 def test_ip(requests_mock):
+    """
+    Given: Arguments for ip command
+
+    When: The server response is complete
+
+    Then: validates the outputs
+
+    """
     requests_mock.get(f'{MOCK_BASE_URL}/ipr/{MOCK_IP}', json=MOCK_IP_RESP)
 
     client = Client(MOCK_BASE_URL, MOCK_API_KEY, MOCK_PASSWORD, True, False)
@@ -359,6 +407,34 @@ def test_ip(requests_mock):
     _, outputs, _ = ip_command(client, args)
 
     assert outputs[outputPaths['ip']][0]['Address'] == MOCK_IP
+    assert outputs[DBOT_SCORE_KEY][0] == MOCK_IP_RESP[DBOT_SCORE_KEY]
+
+
+def test_ip_with_invalid_resp(requests_mock):
+    """
+    Given: Arguments for ip command
+
+    When: The server response is not complete and some data fields are empty
+
+    Then: validates the outputs
+
+    """
+    requests_mock.get(f'{MOCK_BASE_URL}/ipr/{MOCK_IP}', json=MOCK_INVALID_IP_RESP)
+
+    client = Client(MOCK_BASE_URL, MOCK_API_KEY, MOCK_PASSWORD, True, False)
+    args = {
+        'ip': MOCK_IP
+    }
+    md, outputs, reports = ip_command(client, args)
+
+    assert outputs[outputPaths['ip']][0]['Address'] == MOCK_IP
+    assert reports[0] == {'ip': '8.8.8.8', 'history': [], 'subnets': [], 'cats': {}, 'score': 1, 'tags': []}
+    assert md == """### X-Force IP Reputation for: 8.8.8.8
+https://exchange.xforce.ibmcloud.com/ip/8.8.8.8
+|Reason|Score|
+|---|---|
+| Reason not found. | 1 |
+"""
 
 
 def test_url(requests_mock):
@@ -371,6 +447,7 @@ def test_url(requests_mock):
     _, outputs, _ = url_command(client, args)
 
     assert outputs[outputPaths['url']][0]['Data'] == MOCK_URL
+    assert outputs[DBOT_SCORE_KEY][0] == MOCK_URL_RESP[DBOT_SCORE_KEY]
 
 
 def test_get_cve(requests_mock):
@@ -386,6 +463,7 @@ def test_get_cve(requests_mock):
     assert outputs[DBOT_SCORE_KEY][0]['Indicator'] == MOCK_CVE, 'The indicator is not matched'
     assert outputs[DBOT_SCORE_KEY][0]['Type'] == 'cve', 'The indicator type should be cve'
     assert 1 <= outputs[DBOT_SCORE_KEY][0]['Score'] <= 3, 'Invalid indicator score range'
+    assert outputs[DBOT_SCORE_KEY][0]['Reliability'] == 'C - Fairly reliable'
 
 
 def test_cve_latest(requests_mock):
@@ -397,17 +475,65 @@ def test_cve_latest(requests_mock):
 
 
 def test_file(requests_mock):
+    """
+     Given:
+         - A hash.
+     When:
+         - When running the file command.
+     Then:
+         - Validate that the file outputs are created properly
+         - Validate that the DbotScore outputs are created properly
+     """
+    dbot_score_key = 'DBotScore(val.Indicator && val.Indicator == obj.Indicator &&' \
+                     ' val.Vendor == obj.Vendor && val.Type == obj.Type)'
     requests_mock.get(f'{MOCK_BASE_URL}/malware/{MOCK_HASH}', json=MOCK_HASH_RESP)
 
     client = Client(MOCK_BASE_URL, MOCK_API_KEY, MOCK_PASSWORD, True, False)
-    _, outputs, _ = file_command(client, {'file': MOCK_HASH})
-
+    outputs = file_command(client, {'file': MOCK_HASH})[0].to_context()['EntryContext']
     file_key = next(filter(lambda k: 'File' in k, outputs.keys()), 'File')
 
     assert outputs[file_key][0].get('MD5', '') == MOCK_HASH, 'The indicator value is wrong'
-    assert outputs[DBOT_SCORE_KEY][0]['Indicator'] == MOCK_HASH, 'The indicator is not matched'
-    assert outputs[DBOT_SCORE_KEY][0]['Type'] == 'file', 'The indicator type should be file'
-    assert 1 <= outputs[DBOT_SCORE_KEY][0]['Score'] <= 3, 'Invalid indicator score range'
+    assert outputs[dbot_score_key][0]['Indicator'] == MOCK_HASH, 'The indicator is not matched'
+    assert outputs[dbot_score_key][0]['Type'] == 'file', 'The indicator type should be file'
+    assert 1 <= outputs[dbot_score_key][0]['Score'] <= 3, 'Invalid indicator score range'
+
+
+def test_file__no_family(requests_mock):
+    """
+    Given:
+        - Hash with results that have family set to None
+
+    When:
+        - Running the file commandd
+
+    Then:
+        - Ensure the Relationships object is empty
+    """
+    requests_mock.get(f'{MOCK_BASE_URL}/malware/{MOCK_HASH_NO_FAMILY}', json=HASH_RESP_NO_FAMILY)
+
+    client = Client(MOCK_BASE_URL, MOCK_API_KEY, MOCK_PASSWORD, True, False)
+    outputs = file_command(client, {'file': MOCK_HASH_NO_FAMILY})[0].to_context()
+    assert not outputs['Relationships']
+
+
+def test_file_connections(requests_mock):
+    """
+     Given:
+         - A hash.
+     When:
+         - When running the file command.
+     Then:
+         - Validate that the relationships are crated correctly
+     """
+    requests_mock.get(f'{MOCK_BASE_URL}/malware/{MOCK_HASH}', json=MOCK_HASH_RESP)
+
+    client = Client(MOCK_BASE_URL, MOCK_API_KEY, MOCK_PASSWORD, True, False)
+    relations = file_command(client, {'file': MOCK_HASH})[0].relationships[0].to_context()
+    assert relations.get('Relationship') == 'related-to'
+    assert relations.get('EntityA') == MOCK_HASH
+    assert relations.get('EntityAType') == 'File'
+    assert relations.get('EntityB') == 'badur'
+    assert relations.get('EntityBType') == 'STIX Malware'
 
 
 def test_whois(requests_mock):

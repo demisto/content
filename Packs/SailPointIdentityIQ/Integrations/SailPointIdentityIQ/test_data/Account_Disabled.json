@@ -1,0 +1,37 @@
+{
+    "lastRefresh": "2020-08-31T08:50:25.731-05:00",
+    "displayName": "bjack",
+    "active": false,
+    "manuallyCorrelated": false,
+    "nativeIdentity": "bjack",
+    "application": {
+        "displayName": "SCIM SDK",
+        "value": "7f00000174361533817436281cbe0013",
+        "$ref": "http://localhost:8088/iiq/scim/v2/Applications/7f00000174361533817436281cbe0013"
+    },
+    "urn:ietf:params:scim:schemas:sailpoint:1.0:Application:Schema:SCIM SDK:account": {
+        "active": false,
+        "id": "bjack",
+        "userName": "bjack"
+    },
+    "identity": {
+        "displayName": "bjack",
+        "userName": "bjack",
+        "value": "7f00000174441779817444c883c10015",
+        "$ref": "http://localhost:8088/iiq/scim/v2/Users/7f00000174441779817444c883c10015"
+    },
+    "meta": {
+        "created": "2020-08-31T08:50:25.731-05:00",
+        "location": "http://localhost:8088/iiq/scim/v2/Accounts/7f00000174441779817444c883c30016",
+        "lastModified": "2020-08-31T08:50:25.775-05:00",
+        "version": "W/\"1598881825775\"",
+        "resourceType": "Account"
+    },
+    "schemas": [
+        "urn:ietf:params:scim:schemas:sailpoint:1.0:Application:Schema:SCIM SDK:account",
+        "urn:ietf:params:scim:schemas:sailpoint:1.0:Account"
+    ],
+    "hasEntitlements": false,
+    "id": "7f00000174441779817444c883c30016",
+    "locked": false
+}

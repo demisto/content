@@ -120,7 +120,7 @@ script:
     description: Gets the feed indicators.
     execution: false
     name: spamhaus-get-indicators
-  dockerimage: demisto/python3:3.8.5.10845
+  dockerimage: demisto/python3:3.9.7.24076
   feed: true
   isfetch: false
   longRunning: false

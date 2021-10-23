@@ -1,6 +1,6 @@
 The TAXII Feed integration ingests indicator feeds from TAXII 1.x servers.
 
-## Configure TAXIIFeed on Demisto
+## Configure TAXIIFeed on Cortex XSOAR
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
 2. Search for TAXIIFeed.

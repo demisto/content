@@ -1,0 +1,27 @@
+commonfields:
+  id: CofenseTriageReportDownload
+  version: -1
+name: CofenseTriageReportDownload
+script: '-'
+type: python
+tags:
+- enhancement
+comment: Download all reports associated with the email address.
+enabled: true
+args:
+- name: email
+  required: true
+  default: true
+  description: From address for which to download the report.
+scripttarget: 0
+subtype: python3
+dependson:
+  must:
+  - '|||cofense-report-list'
+  - '|||cofense-report-download'
+runonce: false
+dockerimage: demisto/python3:3.9.7.24076
+runas: DBotWeakRole
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

@@ -1,358 +1,362 @@
 {
-	"id": "EWS v2-mapper",
+    "description": "Maps incoming EWS phishing email message fields.",
+    "feed": false,
+    "id": "EWS v2-mapper",
+    "mapping": {
+        "Phishing": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Attachment Count": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "attachments",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "count"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Attachment Extension": {
+                    "complex": {
+                        "accessor": "attachmentName",
+                        "filters": [],
+                        "root": "attachments",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            },
+                            {
+                                "args": {
+                                    "from": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "."
+                                        }
+                                    }
+                                },
+                                "operator": "substringFrom"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Attachment ID": {
+                    "complex": {
+                        "accessor": "attachmentId",
+                        "filters": [],
+                        "root": "attachments",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Attachment Name": {
+                    "complex": {
+                        "accessor": "attachmentName",
+                        "filters": [],
+                        "root": "attachments",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Attachment size": {
+                    "complex": {
+                        "accessor": "attachmentSize",
+                        "filters": [],
+                        "root": "attachments",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Attachment type": {
+                    "complex": {
+                        "accessor": "attachmentType",
+                        "filters": [],
+                        "root": "attachments",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Email BCC": {
+                    "complex": null,
+                    "simple": "bcc_recipients.email_address"
+                },
+                "Email Body": {
+                    "complex": null,
+                    "simple": "text_body"
+                },
+                "Email CC": {
+                    "complex": {
+                        "accessor": "email_address",
+                        "filters": [],
+                        "root": "cc_recipients",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Email From": {
+                    "complex": null,
+                    "simple": "sender.email_address"
+                },
+                "Email HTML": {
+                    "complex": null,
+                    "simple": "body"
+                },
+                "Email Headers": {
+                    "complex": null,
+                    "simple": "headers"
+                },
+                "Email Message ID": {
+                    "complex": null,
+                    "simple": "message_id"
+                },
+                "Email Received": {
+                    "complex": null,
+                    "simple": "received_representing.email_address"
+                },
+                "Email Reply To": {
+                    "complex": {
+                        "accessor": "value",
+                        "filters": [
+                            [
+                                {
+                                    "ignoreCase": false,
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "headers.name"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "In-Reply-To"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "headers",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "chars": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "\u003c\u003e"
+                                        }
+                                    }
+                                },
+                                "operator": "StripChars"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Email Return Path": {
+                    "complex": {
+                        "accessor": "value",
+                        "filters": [
+                            [
+                                {
+                                    "ignoreCase": false,
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "headers.name"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Return-Path"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "headers",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Email Sender IP": {
+                    "complex": {
+                        "accessor": "value",
+                        "filters": [
+                            [
+                                {
+                                    "ignoreCase": false,
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "headers.name"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "X-Originating-IP"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "headers",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "chars": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "[]"
+                                        }
+                                    }
+                                },
+                                "operator": "StripChars"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Email Size": {
+                    "complex": null,
+                    "simple": "size"
+                },
+                "Email Subject": {
+                    "complex": null,
+                    "simple": "subject"
+                },
+                "Email To": {
+                    "complex": {
+                        "accessor": "email_address",
+                        "filters": [],
+                        "root": "to_recipients",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Email To Count": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "to_recipients",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "count"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                }
+            }
+        }
+    },
     "name": "EWS - Incoming Mapper",
     "type": "mapping-incoming",
-    "description": "Maps incoming EWS phishing email message fields.",
-	"version": -1,
-	"defaultIncidentType": "",
-	"mapping": {
-		"Phishing": {
-			"internalMapping": {
-				"Email HTML": {
-					"complex": null,
-					"simple": "Html"
-				},
-				"Attachment Count": {
-					"simple": "",
-					"complex": {
-						"root": "attachments",
-						"filters": [],
-						"accessor": "",
-						"transformers": [
-							{
-								"operator": "general.count",
-								"args": {}
-							}
-						]
-					}
-				},
-				"Attachment Extension": {
-					"simple": "",
-					"complex": {
-						"root": "attachments",
-						"filters": [],
-						"accessor": "attachmentName",
-						"transformers": [
-							{
-								"operator": "general.join",
-								"args": {
-									"separator": {
-										"value": {
-											"simple": ",",
-											"complex": null
-										},
-										"isContext": false
-									}
-								}
-							},
-							{
-								"operator": "string.substringFrom",
-								"args": {
-									"from": {
-										"value": {
-											"simple": ".",
-											"complex": null
-										},
-										"isContext": false
-									}
-								}
-							}
-						]
-					}
-				},
-				"Attachment ID": {
-					"simple": "",
-					"complex": {
-						"root": "attachments",
-						"filters": [],
-						"accessor": "attachmentId",
-						"transformers": [
-							{
-								"operator": "general.join",
-								"args": {
-									"separator": {
-										"value": {
-											"simple": ",",
-											"complex": null
-										},
-										"isContext": false
-									}
-								}
-							}
-						]
-					}
-				},
-				"Attachment Name": {
-					"simple": "",
-					"complex": {
-						"root": "attachments",
-						"filters": [],
-						"accessor": "attachmentName",
-						"transformers": [
-							{
-								"operator": "general.join",
-								"args": {
-									"separator": {
-										"value": {
-											"simple": ",",
-											"complex": null
-										},
-										"isContext": false
-									}
-								}
-							}
-						]
-					}
-				},
-				"Attachment size": {
-					"simple": "",
-					"complex": {
-						"root": "attachments",
-						"filters": [],
-						"accessor": "attachmentSize",
-						"transformers": [
-							{
-								"operator": "general.join",
-								"args": {
-									"separator": {
-										"value": {
-											"simple": ",",
-											"complex": null
-										},
-										"isContext": false
-									}
-								}
-							}
-						]
-					}
-				},
-				"Attachment type": {
-					"simple": "",
-					"complex": {
-						"root": "attachments",
-						"filters": [],
-						"accessor": "attachmentType",
-						"transformers": [
-							{
-								"operator": "general.join",
-								"args": {
-									"separator": {
-										"value": {
-											"simple": ",",
-											"complex": null
-										},
-										"isContext": false
-									}
-								}
-							}
-						]
-					}
-				},
-				"Email BCC": {
-					"simple": "bcc_recipients.email_address",
-					"complex": null
-				},
-				"Email Body": {
-					"simple": "text_body",
-					"complex": null
-				},
-				"Email CC": {
-					"simple": "",
-					"complex": {
-						"root": "cc_recipients",
-						"filters": [],
-						"accessor": "email_address",
-						"transformers": [
-							{
-								"operator": "general.join",
-								"args": {
-									"separator": {
-										"value": {
-											"simple": ",",
-											"complex": null
-										},
-										"isContext": false
-									}
-								}
-							}
-						]
-					}
-				},
-				"Email From": {
-					"simple": "sender.email_address",
-					"complex": null
-				},
-				"Email Message ID": {
-					"simple": "message_id",
-					"complex": null
-				},
-				"Email Received": {
-					"simple": "received_representing.email_address",
-					"complex": null
-				},
-				"Email Reply To": {
-					"simple": "",
-					"complex": {
-						"root": "headers",
-						"filters": [
-							[
-								{
-									"operator": "string.isEqual",
-									"left": {
-										"value": {
-											"simple": "headers.name",
-											"complex": null
-										},
-										"isContext": true
-									},
-									"right": {
-										"value": {
-											"simple": "In-Reply-To",
-											"complex": null
-										},
-										"isContext": false
-									},
-									"ignoreCase": false
-								}
-							]
-						],
-						"accessor": "value",
-						"transformers": [
-							{
-								"operator": "string.StripChars",
-								"args": {
-									"chars": {
-										"value": {
-											"simple": "\u003c\u003e",
-											"complex": null
-										},
-										"isContext": false
-									}
-								}
-							}
-						]
-					}
-				},
-				"Email Return Path": {
-					"simple": "",
-					"complex": {
-						"root": "headers",
-						"filters": [
-							[
-								{
-									"operator": "string.isEqual",
-									"left": {
-										"value": {
-											"simple": "headers.name",
-											"complex": null
-										},
-										"isContext": true
-									},
-									"right": {
-										"value": {
-											"simple": "Return-Path",
-											"complex": null
-										},
-										"isContext": false
-									},
-									"ignoreCase": false
-								}
-							]
-						],
-						"accessor": "value",
-						"transformers": []
-					}
-				},
-				"Email Sender IP": {
-					"simple": "",
-					"complex": {
-						"root": "headers",
-						"filters": [
-							[
-								{
-									"operator": "string.isEqual",
-									"left": {
-										"value": {
-											"simple": "headers.name",
-											"complex": null
-										},
-										"isContext": true
-									},
-									"right": {
-										"value": {
-											"simple": "X-Originating-IP",
-											"complex": null
-										},
-										"isContext": false
-									},
-									"ignoreCase": false
-								}
-							]
-						],
-						"accessor": "value",
-						"transformers": [
-							{
-								"operator": "string.StripChars",
-								"args": {
-									"chars": {
-										"value": {
-											"simple": "[]",
-											"complex": null
-										},
-										"isContext": false
-									}
-								}
-							}
-						]
-					}
-				},
-				"Email Size": {
-					"simple": "size",
-					"complex": null
-				},
-				"Email Subject": {
-					"simple": "subject",
-					"complex": null
-				},
-				"Email To": {
-					"simple": "",
-					"complex": {
-						"root": "to_recipients",
-						"filters": [],
-						"accessor": "email_address",
-						"transformers": [
-							{
-								"operator": "general.join",
-								"args": {
-									"separator": {
-										"value": {
-											"simple": ",",
-											"complex": null
-										},
-										"isContext": false
-									}
-								}
-							}
-						]
-					}
-				},
-				"Email To Count": {
-					"simple": "",
-					"complex": {
-						"root": "to_recipients",
-						"filters": [],
-						"accessor": "",
-						"transformers": [
-							{
-								"operator": "general.count",
-								"args": {}
-							}
-						]
-					}
-				}
-			},
-			"dontMapEventToLabels": false
-		}
-	},
-	"fromVersion": "6.0.0"
+    "version": -1,
+    "fromVersion": "6.0.0"
 }

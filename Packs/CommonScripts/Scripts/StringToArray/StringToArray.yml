@@ -1,0 +1,25 @@
+args:
+- default: false
+  description: The URL to transform.
+  isArray: false
+  name: value
+  required: true
+  secret: false
+comment: "Converts string to array. \nFor example: `http://example.com/?score:1,4,time:55`\
+  \ will be transformed to `[\"http://example.com/?score:1,4,time:55\"]`."
+commonfields:
+  id: StringToArray
+  version: -1
+enabled: false
+name: StringToArray
+script: '-'
+subtype: python3
+system: false
+tags:
+- transformer
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.9.7.24076
+fromversion: 6.0.0
+tests:
+- StringToArray_test

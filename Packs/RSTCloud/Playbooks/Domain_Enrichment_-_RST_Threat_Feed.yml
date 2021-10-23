@@ -1,0 +1,243 @@
+id: Domain Enrichment - RST Threat Feed
+version: -1
+fromversion: 6.0.0
+contentitemexportablefields:
+  contentitemfields: {}
+name: Domain Enrichment - RST Threat Feed
+description: |-
+  Enrich domains using one or more integrations.
+  Domain enrichment includes:
+  * Threat information
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3f6b8522-c653-4608-800d-f7da232392fb
+    type: start
+    task:
+      id: 3f6b8522-c653-4608-800d-f7da232392fb
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 281,
+          "y": 41
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: b0ff1fa7-e741-4cb0-8fb6-98929d4d6e7d
+    type: condition
+    task:
+      id: b0ff1fa7-e741-4cb0-8fb6-98929d4d6e7d
+      version: -1
+      name: Is there a domain to enrich?
+      description: Checks whether the playbook's input contains at least one domain
+        name to enrich.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.Domain
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 281,
+          "y": 171
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: f6da103d-6baa-4afb-8b7d-65740714dcf2
+    type: title
+    task:
+      id: f6da103d-6baa-4afb-8b7d-65740714dcf2
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 281,
+          "y": 765
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 65fe8b04-a445-464b-8531-001bc480f259
+    type: condition
+    task:
+      id: 65fe8b04-a445-464b-8531-001bc480f259
+      version: -1
+      name: Is RST Threat Feed API enabled?
+      description: Checks if there is an active instance of the RST Threat Feed API
+        API integration enabled. enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: RST Cloud - Threat Feed API
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 578.5,
+          "y": 365
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: f5077ea1-0da5-452b-8b8c-4615b1c86d9b
+    type: regular
+    task:
+      id: f5077ea1-0da5-452b-8b8c-4615b1c86d9b
+      version: -1
+      name: Get RST Threat Feed report for domains
+      description: Returns Domain information and reputation.
+      script: 'RST Cloud - Threat Feed API|||domain'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      domain:
+        complex:
+          root: inputs.Domain
+          transformers:
+          - operator: uniq
+      threshold:
+        simple: inputs.threshold
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 578.5,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "16_24_#default#": 0.18,
+      "26_24_#default#": 0.55,
+      "26_28_yes": 0.61
+    },
+    "paper": {
+      "dimensions": {
+        "height": 789,
+        "width": 677.5,
+        "x": 281,
+        "y": 41
+      }
+    }
+  }
+inputs:
+- key: Domain
+  value:
+    complex:
+      root: Domain
+      accessor: Name
+      transformers:
+      - operator: uniq
+  required: false
+  description: The domain name to enrich.
+  playbookInputQuery:
+- key: threshold
+  value:
+    simple: inputs.threshold
+  required: false
+  description: Defines the minimum score to set indicators as malicious
+  playbookInputQuery:
+outputs:
+- contextPath: Domain
+  description: The domain objects.
+  type: unknown
+- contextPath: DBotScore
+  description: Indicator, Score, Type, and Vendor.
+  type: unknown
+tests:
+- No tests (auto formatted)

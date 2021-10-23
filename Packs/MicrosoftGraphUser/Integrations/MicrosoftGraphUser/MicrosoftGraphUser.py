@@ -2,6 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 from typing import Dict
+from urllib.parse import quote
 
 # disable insecure warnings
 
@@ -66,7 +67,7 @@ class MsGraphClient:
     def terminate_user_session(self, user):
         self.ms_client.http_request(
             method='PATCH',
-            url_suffix=f'users/{user}',
+            url_suffix=f'users/{quote(user)}',
             data=BLOCK_ACCOUNT_JSON,
             resp_type="text"
         )
@@ -75,7 +76,7 @@ class MsGraphClient:
     def unblock_user(self, user):
         self.ms_client.http_request(
             method='PATCH',
-            url_suffix=f'users/{user}',
+            url_suffix=f'users/{quote(user)}',
             data=UNBLOCK_ACCOUNT_JSON,
             resp_type="text"
         )
@@ -85,7 +86,7 @@ class MsGraphClient:
     def delete_user(self, user):
         self.ms_client.http_request(
             method='DELETE',
-            url_suffix=f'users/{user}',
+            url_suffix=f'users/{quote(user)}',
             resp_type="text"
         )
 
@@ -104,7 +105,7 @@ class MsGraphClient:
             body[field] = value
         self.ms_client.http_request(
             method='PATCH',
-            url_suffix=f'users/{user}',
+            url_suffix=f'users/{quote(user)}',
             json_data=body,
             resp_type="text")
 
@@ -122,7 +123,7 @@ class MsGraphClient:
         }
         self.ms_client.http_request(
             method='PATCH',
-            url_suffix=f'users/{user}',
+            url_suffix=f'users/{quote(user)}',
             json_data=body,
             resp_type="text")
 
@@ -134,12 +135,18 @@ class MsGraphClient:
         return users.get('value', '')
 
     def get_user(self, user, properties):
-        user_data = self.ms_client.http_request(
-            method='GET',
-            url_suffix=f'users/{user}',
-            params={'$select': properties})
-        user_data.pop('@odata.context', None)
-        return user_data
+        try:
+            user_data = self.ms_client.http_request(
+                method='GET',
+                url_suffix=f'users/{quote(user)}',
+                params={'$select': properties})
+            user_data.pop('@odata.context', None)
+            return user_data
+        except NotFoundError as e:
+            LOG(f'User {user} was not found')
+            return {'NotFound': e.message}
+        except Exception as e:
+            raise e
 
     def list_users(self, properties, page_url):
         if page_url:
@@ -153,7 +160,7 @@ class MsGraphClient:
     def get_direct_reports(self, user):
         res = self.ms_client.http_request(
             method='GET',
-            url_suffix=f'users/{user}/directReports')
+            url_suffix=f'users/{quote(user)}/directReports')
 
         res.pop('@odata.context', None)
         return res.get('value', [])
@@ -161,7 +168,7 @@ class MsGraphClient:
     def get_manager(self, user):
         manager_data = self.ms_client.http_request(
             method='GET',
-            url_suffix=f'users/{user}/manager')
+            url_suffix=f'users/{quote(user)}/manager')
         manager_data.pop('@odata.context', None)
         manager_data.pop('@odata.type', None)
         return manager_data
@@ -173,7 +180,7 @@ class MsGraphClient:
         body = {"@odata.id": manager_ref}
         self.ms_client.http_request(
             method='PUT',
-            url_suffix=f'users/{user}/manager/$ref',
+            url_suffix=f'users/{quote(user)}/manager/$ref',
             json_data=body,
             resp_type="text"
         )
@@ -246,6 +253,7 @@ def create_user_command(client: MsGraphClient, args: Dict):
     # display the new user and it's properties
     user = required_properties.get('userPrincipalName')
     user_data = client.get_user(user, '*')
+
     user_readable, user_outputs = parse_outputs(user_data)
     human_readable = tableToMarkdown(name=f"{user} was created successfully:", t=user_readable, removeNull=True)
     outputs = {'MSGraphUser(val.ID == obj.ID)': user_outputs}
@@ -286,6 +294,12 @@ def get_user_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
     properties = args.get('properties', '*')
     user_data = client.get_user(user, properties)
+
+    # In case the request returned a 404 error display a proper message to the war room
+    if user_data.get('NotFound', ''):
+        error_message = user_data.get('NotFound')
+        human_readable = f'### User {user} was not found.\nMicrosoft Graph Response: {error_message}'
+        return human_readable, {}, error_message
 
     user_readable, user_outputs = parse_outputs(user_data)
     human_readable = tableToMarkdown(name=f"{user} data", t=user_readable, removeNull=True)

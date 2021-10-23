@@ -1,7 +1,7 @@
 <!-- HTML_DOC -->
 <h2> </h2>
 <p>The Secureworks CTP Ticketing system is used to respond to security changes, requests, security incidents, network problems, and other issues reported by external and<br> internal end-users.</p>
-<p>In Demisto, the integration provides access to the Secureworks CTP ticketing system and enables managing tickets, which includes viewing, editing, creating and closing operations, in accordance with the Secureworks Ticketing API guide.</p>
+<p>In Cortex XSOAR, the integration provides access to the Secureworks CTP ticketing system and enables managing tickets, which includes viewing, editing, creating and closing operations, in accordance with the Secureworks Ticketing API guide.</p>
 <h2>Use cases</h2>
 <p>The integration allows managing CTP tickets with support for parameters (e.g whether to retrieve worklogs for a ticket), with the ability of fetching newly created tickets.</p>
 <h2>Prerequisites</h2>
@@ -12,7 +12,7 @@
 <li>For more information about setting up the API, see the SecureWorks <a href="https://portal.secureworks.com/portal/">ticketing API guide</a>.</li>
 <li>For tickets to be fetched, they first need to be updated as acknowledged.</li>
 </ul>
-<h2>Configure Dell Secureworks on Demisto</h2>
+<h2>Configure Dell Secureworks on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for Dell Secureworks.</li>
@@ -40,7 +40,7 @@
 <p>A maximum amount of 10 ticket updates can be fetched in each interval (sorted in ascending order of ticket update time in the past 24 hours).</p>
 <h2>Commands</h2>
 <hr>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_17023983171541591852162">Create a ticket: secure-works-create-ticket</a></li>
 <li><a href="#h_9085029801081541591856856">Update a ticket: secure-works-update-ticket</a></li>

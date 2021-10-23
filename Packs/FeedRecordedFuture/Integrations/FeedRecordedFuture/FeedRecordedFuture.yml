@@ -18,7 +18,8 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  additionalinfo: Indicators from this integration instance will be marked with this reputation
+  additionalinfo: Indicators from this integration instance will be marked with this
+    reputation
 - defaultvalue: A - Completely reliable
   display: Source Reliability
   name: feedReliability
@@ -32,7 +33,8 @@ configuration:
   required: true
   type: 15
   additionalinfo: Reliability of the source providing the intelligence data
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
+    fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -106,6 +108,7 @@ configuration:
     Limit the indicators list to a specific risk rule. To see available
     risk rules run the rf-feed-get-risk-rules command. This parameter will only be
     used for the 'connectApi' service.
+    Using the 'large' risk rule is not recommended.
   display: Risk Rule
   hidden: false
   name: risk_rule
@@ -198,7 +201,7 @@ script:
     - contextPath: RecordedFutureFeed.RiskRule.Criticality
       description: The risk rule criticality.
       type: String
-  dockerimage: demisto/python3:3.8.6.12176
+  dockerimage: demisto/python3:3.9.7.24076
   feed: true
   isfetch: false
   longRunning: false

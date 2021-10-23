@@ -41,7 +41,8 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
+    fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -91,6 +92,11 @@ configuration:
   name: proxy
   required: false
   type: 8
+- defaultvalue: 'true'
+  display: Create relationships
+  name: create_relationships
+  required: false
+  type: 8
 description: Gets a list of bad IPs from Feodo Tracker.
 display: Feodo Tracker IP Blocklist Feed
 name: Feodo Tracker IP Blocklist Feed
@@ -108,7 +114,7 @@ script:
     description: Gets the feed indicators.
     execution: false
     name: feodotracker-ipblocklist-get-indicators
-  dockerimage: demisto/python3:3.8.5.10845
+  dockerimage: demisto/python3:3.9.7.24076
   feed: true
   isfetch: false
   longRunning: false
@@ -117,4 +123,6 @@ script:
   script: '-'
   subtype: python3
   type: python
+tests:
+- playbook-feodotrackeripblock_test
 fromversion: 5.5.0

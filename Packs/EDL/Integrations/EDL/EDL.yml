@@ -3,8 +3,8 @@ commonfields:
   id: EDL
   version: -1
 configuration:
-- additionalinfo: The query to run to update its EDL. To view expected results, you
-    can run the following command from the Demisto CLI `!findIndicators query=<your
+- additionalinfo: The query to run to update the EDL. To view expected results, you
+    can run the following command from the Cortex XSOAR CLI `!findIndicators query=<your
     query>`
   display: Indicator Query
   name: indicators_query
@@ -22,8 +22,8 @@ configuration:
   name: on_demand
   required: false
   type: 8
-- additionalinfo: How often to refresh the EDL (e.g., 12 hours, 7 days, 3 months,
-    1 year)
+- additionalinfo: How often to refresh the EDL (e.g., 5 minutes, 12 hours, 7 days, 3 months,
+    1 year). For performance reasons, we do not recommend setting this value to less than 1 minute.
   defaultvalue: 5 minutes
   display: Refresh Rate
   name: cache_refresh_rate
@@ -35,7 +35,7 @@ configuration:
   required: false
   type: 8
   hidden: true
-- additionalinfo: Will run the EDL service on this port from within Demisto. Requires
+- additionalinfo: Will run the EDL service on this port from within Cortex XSOAR. Requires
     a unique port for each long-running integration instance. Do not use the same
     port for multiple instances.
   display: Listen Port
@@ -65,10 +65,17 @@ configuration:
   type: 8
 - additionalinfo: If selected, any URL entry that is not compliant with PAN-OS EDL
     URL format is dropped instead of being rewritten.
-  display: PAN-OS URL Format Drop Invalid Entries
+  display: PAN-OS URL Drop Invalid Entries
   hidden: false
   name: drop_invalids
   required: false
+  type: 8
+- additionalinfo: If selected, add to an empty EDL the comment "# Empty EDL".
+  display: Add Comment To Empty EDL
+  hidden: false
+  name: add_comment_if_empty
+  required: false
+  defaultvalue: true
   type: 8
 - defaultvalue: Don't Collapse
   display: 'Should Collapse IPs:'
@@ -80,6 +87,37 @@ configuration:
   - To Ranges
   required: false
   type: 15
+- additionalinfo: Internal page size used when querying Cortex XSOAR for the EDL. By default,
+    this value shouldn't be changed.
+  defaultvalue: '2000'
+  display: XSOAR Indicator Page Size
+  hidden: false
+  name: page_size
+  required: false
+  type: 0
+- additionalinfo: "NGINX global directives to be passed on the command line using the -g option. Each directive should end with `;`.
+    For example: `worker_processes 4; timer_resolution 100ms;`.
+    Advanced configuration to be used only if instructed by Cortex XSOAR Support."
+  display: NGINX Global Directives
+  hidden: false
+  name: nginx_global_directives
+  required: false
+  type: 0
+- additionalinfo: "NGINX server configuration. To be used instead of the default NGINX_SERVER_CONF used in the integration code.
+    Advanced configuration to be used only if instructed by Cortex XSOAR Support."
+  display: NGINX Server Conf
+  hidden: false
+  name: nginx_server_conf
+  required: false
+  type: 12
+- additionalinfo: "Legacy Queries: When enabled, the integration will query the Server
+    using full queries. Enable this query mode, if you've been instructed by Support,
+    or you've encountered in the log errors of the form: msgpack: invalid code."
+  display: 'Advanced: Use Legacy Queries'
+  hidden: false
+  name: use_legacy_query
+  required: false
+  type: 8
 description: This integration provides External Dynamic List (EDL) as a service for
   the system indicators (Outbound feed).
 display: Palo Alto Networks PAN-OS EDL Service
@@ -101,16 +139,6 @@ script:
       name: edl_size
       required: false
       secret: false
-    - default: false
-      defaultValue: 'false'
-      description: Whether to print stored indicators or not.
-      isArray: false
-      name: print_indicators
-      predefined:
-      - 'true'
-      - 'false'
-      required: true
-      secret: false
     - auto: PREDEFINED
       default: false
       defaultValue: false
@@ -121,6 +149,29 @@ script:
       predefined:
       - 'False'
       - 'True'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: false
+      description: If set to True, a URL that includes a port number will be reformatted
+        to remove the port. For example, 'www.example.com:9999/path' would become 'www.example.com/path'.
+      isArray: false
+      name: url_port_stripping
+      predefined:
+        - 'False'
+        - 'True'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: false
+      description: If selected, add to an empty EDL the comment "# Empty EDL".
+      isArray: false
+      name: add_comment_if_empty
+      predefined:
+        - 'False'
+        - 'True'
       required: false
       secret: false
     - auto: PREDEFINED
@@ -146,7 +197,7 @@ script:
     description: Updates values stored in the EDL (only available On-Demand).
     execution: false
     name: edl-update
-  dockerimage: demisto/teams:1.0.0.15630
+  dockerimage: demisto/flask-nginx:1.0.0.23674
   feed: false
   isfetch: false
   longRunning: true
@@ -157,4 +208,5 @@ script:
   type: python
 tests:
 - Test_EDL
+- EDL Performance Test
 fromversion: 5.5.0

@@ -1,0 +1,30 @@
+{
+	"isArchived": false,
+	"discoverySettings": {
+		"showInTeamsSearchAndSuggestions": true
+	},
+	"memberSettings": {
+		"allowCreateUpdateChannels": true,
+		"allowDeleteChannels": true,
+		"allowAddRemoveApps": true,
+		"allowCreateUpdateRemoveTabs": true,
+		"allowCreateUpdateRemoveConnectors": true
+	},
+	"guestSettings": {
+		"allowCreateUpdateChannels": true,
+		"allowDeleteChannels": true
+	},
+	"messagingSettings": {
+		"allowUserEditMessages": true,
+		"allowUserDeleteMessages": true,
+		"allowOwnerDeleteMessages": true,
+		"allowTeamMentions": true,
+		"allowChannelMentions": true
+	},
+	"funSettings": {
+		"allowGiphy": true,
+		"giphyContentRating": "strict",
+		"allowStickersAndMemes": true,
+		"allowCustomMemes": true
+	}
+}

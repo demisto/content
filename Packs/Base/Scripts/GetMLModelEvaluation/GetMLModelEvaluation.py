@@ -248,7 +248,7 @@ def find_best_threshold_for_target_precision(class_to_arrs, customer_target_prec
                 legal_threshold_for_all_classes = True
                 threshold_precision = sys.maxsize
                 for class_ in labels:
-                    i = np.argmax(class_to_arrs[class_]['thresholds'] >= threshold)
+                    i = np.argmax(class_to_arrs[class_]['thresholds'] >= threshold)  # type: ignore
                     threshold_precision_for_class = class_to_arrs[class_]['precisions'][i]
                     threshold_precision = min(threshold_precision, threshold_precision_for_class)
                     if threshold_precision_for_class >= target_unified_precision:

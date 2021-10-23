@@ -35,10 +35,16 @@ def test_smart_search(requests_mock, client):
         - Verify command outputs are as expected
     """
     args = {
-        'action': 'accept'
+        'action': 'accept',
+        'start_time': '2021-02-08T08:12:30-05:00',
+    }
+    params = {
+        'action': 'accept',
+        'from': '2021-02-08T08:12:30-0500',
+        'count': '100',
     }
     api_response = load_test_data('./test_data/smart_search_response.json')
-    requests_mock.get(SERVER_URL + '/pss/filter?' + urlencode(args), json=api_response)
+    requests_mock.get(SERVER_URL + '/pss/filter?' + urlencode(params), json=api_response)
     result = smart_search(client=client, args=args)
     assert result.outputs == api_response.get('result')
 
@@ -60,7 +66,7 @@ def test_list_quarantined_messages(requests_mock, client):
         'rcpt': recipient
     }
     api_response = load_test_data('./test_data/quarantined_messages_response.json')
-    matcher = re.compile(SERVER_URL + '/quarantine\?' + urlencode(url_query_args))
+    matcher = re.compile(SERVER_URL + r'/quarantine\?' + urlencode(url_query_args))
     requests_mock.get(matcher, json=api_response)
     result = list_quarantined_messages(client=client, args=args)
     assert result.outputs == api_response.get('records')
@@ -207,7 +213,8 @@ def test_download_message_positive(mocker, request, requests_mock, client):
     args = {
         'guid': guid
     }
-    api_response = open('./test_data/download_message_response').read().encode('utf8')
+    with open('./test_data/download_message_response') as _file:
+        api_response = _file.read().encode('utf8')
     requests_mock.get(SERVER_URL + '/quarantine?' + urlencode(args), content=api_response)
     result = download_message(client=client, args=args)
     assert result['File'] == guid + '.eml'

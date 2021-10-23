@@ -3,7 +3,6 @@
 import pytest
 from RunPollingCommand import prepare_arg_dict
 
-
 IDS_ARGS = [
     # sanity
     (
@@ -25,20 +24,26 @@ IDS_ARGS = [
         ('ids', ['a', 'b', 'c'], u'arg1', u'value1'),
         {'ids': 'a,b,c', 'arg1': 'value1'},
     ),
-    # extra args
+    # extra args as unicode lists
     (
         ('ids', ['a', 'b', 'c'], [u'arg1', u'arg2'], [u'value1', u'value2']),
         {'ids': 'a,b,c', 'arg1': 'value1', 'arg2': 'value2'},
     ),
-    # extra args
+    # extra args as chane of unicode
     (
         ('ids', ['a', 'b', 'c'], u'arg1, arg2,arg3', [u'value1', u'value2', u'value3']),
         {'ids': 'a,b,c', 'arg1': 'value1', 'arg2': 'value2', 'arg3': 'value3'},
     ),
+    # extra args as string
     (
         ('ids', ['שלום'], 'היי, arg2,arg3', ['ביי', 'value2', 'value3']),
         {'ids': 'שלום', 'היי': 'ביי', 'arg2': 'value2', 'arg3': 'value3'},
-    )
+    ),
+    # extra args as string with int values
+    (
+        ('ids', ['a', 'b', 'c'], 'arg1,arg2', [1, 2]),
+        {'ids': 'a,b,c', 'arg1': '1', 'arg2': '2'},
+    ),
 ]
 
 

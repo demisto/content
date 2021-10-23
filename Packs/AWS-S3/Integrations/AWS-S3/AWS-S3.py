@@ -1,132 +1,18 @@
 import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 
-import boto3
 import io
 import math
 import json
 from datetime import datetime, date
-from botocore.config import Config
-from botocore.parsers import ResponseParserError
 import urllib3.util
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-"""PARAMETERS"""
-AWS_DEFAULT_REGION = demisto.params().get('defaultRegion')
-AWS_ROLE_ARN = demisto.params().get('roleArn')
-AWS_ROLE_SESSION_NAME = demisto.params().get('roleSessionName')
-AWS_ROLE_SESSION_DURATION = demisto.params().get('sessionDuration')
-AWS_ROLE_POLICY = None
-AWS_ACCESS_KEY_ID = demisto.params().get('access_key')
-AWS_SECRET_ACCESS_KEY = demisto.params().get('secret_key')
-VERIFY_CERTIFICATE = not demisto.params().get('insecure', True)
-proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
-config = Config(
-    connect_timeout=1,
-    retries=dict(
-        max_attempts=5
-    ),
-    proxies=proxies
-)
-
+SERVICE = 's3'
 
 """HELPER FUNCTIONS"""
-
-
-def aws_session(service='s3', region=None, roleArn=None, roleSessionName=None, roleSessionDuration=None,
-                rolePolicy=None):
-    kwargs = {}
-    if roleArn and roleSessionName is not None:
-        kwargs.update({
-            'RoleArn': roleArn,
-            'RoleSessionName': roleSessionName,
-        })
-    elif AWS_ROLE_ARN and AWS_ROLE_SESSION_NAME is not None:
-        kwargs.update({
-            'RoleArn': AWS_ROLE_ARN,
-            'RoleSessionName': AWS_ROLE_SESSION_NAME,
-        })
-
-    if roleSessionDuration is not None:
-        kwargs.update({'DurationSeconds': int(roleSessionDuration)})
-    elif AWS_ROLE_SESSION_DURATION is not None:
-        kwargs.update({'DurationSeconds': int(AWS_ROLE_SESSION_DURATION)})
-
-    if rolePolicy is not None:
-        kwargs.update({'Policy': rolePolicy})
-    elif AWS_ROLE_POLICY is not None:
-        kwargs.update({'Policy': AWS_ROLE_POLICY})
-    if kwargs and not AWS_ACCESS_KEY_ID:
-
-        if not AWS_ACCESS_KEY_ID:
-            sts_client = boto3.client('sts', config=config, verify=VERIFY_CERTIFICATE)
-            sts_response = sts_client.assume_role(**kwargs)
-            if region is not None:
-                client = boto3.client(
-                    service_name=service,
-                    region_name=region,
-                    aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
-                    aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
-                    aws_session_token=sts_response['Credentials']['SessionToken'],
-                    verify=VERIFY_CERTIFICATE,
-                    config=config
-                )
-            else:
-                client = boto3.client(
-                    service_name=service,
-                    region_name=AWS_DEFAULT_REGION,
-                    aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
-                    aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
-                    aws_session_token=sts_response['Credentials']['SessionToken'],
-                    verify=VERIFY_CERTIFICATE,
-                    config=config
-                )
-    elif AWS_ACCESS_KEY_ID and AWS_ROLE_ARN:
-        sts_client = boto3.client(
-            service_name='sts',
-            aws_access_key_id=AWS_ACCESS_KEY_ID,
-            aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-            verify=VERIFY_CERTIFICATE,
-            config=config
-        )
-        kwargs.update({
-            'RoleArn': AWS_ROLE_ARN,
-            'RoleSessionName': AWS_ROLE_SESSION_NAME,
-        })
-        sts_response = sts_client.assume_role(**kwargs)
-        client = boto3.client(
-            service_name=service,
-            region_name=AWS_DEFAULT_REGION,
-            aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
-            aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
-            aws_session_token=sts_response['Credentials']['SessionToken'],
-            verify=VERIFY_CERTIFICATE,
-            config=config
-        )
-    else:
-        if region is not None:
-            client = boto3.client(
-                service_name=service,
-                region_name=region,
-                aws_access_key_id=AWS_ACCESS_KEY_ID,
-                aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-                verify=VERIFY_CERTIFICATE,
-                config=config
-            )
-        else:
-            client = boto3.client(
-                service_name=service,
-                region_name=AWS_DEFAULT_REGION,
-                aws_access_key_id=AWS_ACCESS_KEY_ID,
-                aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-                verify=VERIFY_CERTIFICATE,
-                config=config
-            )
-
-    return client
 
 
 def convert_size(size_bytes):
@@ -150,12 +36,13 @@ class DatetimeEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-def create_bucket_command(args):
-    client = aws_session(
+def create_bucket_command(args, aws_client):
+    client = aws_client. aws_session(
+        service=SERVICE,
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     data = []
     kwargs = {'Bucket': args.get('bucket').lower()}
@@ -185,12 +72,13 @@ def create_bucket_command(args):
     return_outputs(human_readable, ec)
 
 
-def delete_bucket_command(args):
-    client = aws_session(
+def delete_bucket_command(args, aws_client):
+    client = aws_client.aws_session(
+        service=SERVICE,
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
 
     response = client.delete_bucket(Bucket=args.get('bucket').lower())
@@ -198,12 +86,13 @@ def delete_bucket_command(args):
         demisto.results("the Bucket {bucket} was Deleted ".format(bucket=args.get('bucket')))
 
 
-def list_buckets_command(args):
-    client = aws_session(
+def list_buckets_command(args, aws_client):
+    client = aws_client.aws_session(
+        service=SERVICE,
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     data = []
     response = client.list_buckets()
@@ -217,12 +106,13 @@ def list_buckets_command(args):
     return_outputs(human_readable, ec)
 
 
-def get_bucket_policy_command(args):
-    client = aws_session(
+def get_bucket_policy_command(args, aws_client):
+    client = aws_client.aws_session(
+        service=SERVICE,
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     data = []
     response = client.get_bucket_policy(Bucket=args.get('bucket').lower())
@@ -245,12 +135,13 @@ def get_bucket_policy_command(args):
     return_outputs(human_readable, ec)
 
 
-def put_bucket_policy_command(args):
-    client = aws_session(
+def put_bucket_policy_command(args, aws_client):
+    client = aws_client.aws_session(
+        service=SERVICE,
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     kwargs = {
         'Bucket': args.get('bucket').lower(),
@@ -265,23 +156,25 @@ def put_bucket_policy_command(args):
         demisto.results('Successfully applied Bucket policy to {bucket} bucket'.format(bucket=args.get('BucketName')))
 
 
-def delete_bucket_policy_command(args):
-    client = aws_session(
+def delete_bucket_policy_command(args, aws_client):
+    client = aws_client.aws_session(
+        service=SERVICE,
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     client.delete_bucket_policy(Bucket=args.get('bucket').lower())
     demisto.results('Policy deleted from {}'.format(args.get('bucket')))
 
 
-def download_file_command(args):
-    client = aws_session(
+def download_file_command(args, aws_client):
+    client = aws_client.aws_session(
+        service=SERVICE,
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     data = io.BytesIO()
     client.download_fileobj(args.get('bucket').lower(), args.get('key'), data)
@@ -289,25 +182,28 @@ def download_file_command(args):
     demisto.results(fileResult(args.get('key'), data.getvalue()))
 
 
-def list_objects_command(args):
-    client = aws_session(
+def list_objects_command(args, aws_client):
+    client = aws_client.aws_session(
+        service=SERVICE,
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     data = []
     response = client.list_objects(Bucket=args.get('bucket'))
-    for key in response['Contents']:
-        data.append({
-            'Key': key['Key'],
-            'Size': convert_size(key['Size']),
-            'LastModified': datetime.strftime(key['LastModified'], '%Y-%m-%dT%H:%M:%S')
-        })
-
-    ec = {'AWS.S3.Buckets(val.BucketName === args.get("bucket")).Objects': data}
-    human_readable = tableToMarkdown('AWS S3 Bucket Objects', data)
-    return_outputs(human_readable, ec)
+    if response.get('Contents', None):
+        for key in response['Contents']:
+            data.append({
+                'Key': key['Key'],
+                'Size': convert_size(key['Size']),
+                'LastModified': datetime.strftime(key['LastModified'], '%Y-%m-%dT%H:%M:%S')
+            })
+        ec = {'AWS.S3.Buckets(val.BucketName === args.get("bucket")).Objects': data}
+        human_readable = tableToMarkdown('AWS S3 Bucket Objects', data)
+        return_outputs(human_readable, ec)
+    else:
+        return_outputs("The {} bucket contains no objects.".format(args.get('bucket')))
 
 
 def get_file_path(file_id):
@@ -315,12 +211,13 @@ def get_file_path(file_id):
     return filepath_result
 
 
-def upload_file_command(args):
-    client = aws_session(
+def upload_file_command(args, aws_client):
+    client = aws_client.aws_session(
+        service=SERVICE,
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     path = get_file_path(args.get('entryID'))
 
@@ -333,47 +230,70 @@ def upload_file_command(args):
         return_error("Could not read file: {path}\n {msg}".format(path=path, msg=e.message))
 
 
-"""COMMAND BLOCK"""
-try:
-    LOG('Command being called is {command}'.format(command=demisto.command()))
-    if demisto.command() == 'test-module':
-        client = aws_session()
-        response = client.list_buckets()
-        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-            demisto.results('ok')
+def main():
+    params = demisto.params()
+    aws_default_region = params.get('defaultRegion')
+    aws_role_arn = params.get('roleArn')
+    aws_role_session_name = params.get('roleSessionName')
+    aws_role_session_duration = params.get('sessionDuration')
+    aws_role_policy = None
+    aws_access_key_id = params.get('access_key')
+    aws_secret_access_key = params.get('secret_key')
+    verify_certificate = not params.get('insecure', True)
+    timeout = params.get('timeout')
+    retries = params.get('retries') or 5
 
-    elif demisto.command() == 'aws-s3-create-bucket':
-        create_bucket_command(demisto.args())
+    try:
+        validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id,
+                        aws_secret_access_key)
 
-    elif demisto.command() == 'aws-s3-delete-bucket':
-        delete_bucket_command(demisto.args())
+        aws_client = AWSClient(aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
+                               aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate, timeout,
+                               retries)
 
-    elif demisto.command() == 'aws-s3-list-buckets':
-        list_buckets_command(demisto.args())
+        command = demisto.command()
+        args = demisto.args()
 
-    elif demisto.command() == 'aws-s3-get-bucket-policy':
-        get_bucket_policy_command(demisto.args())
+        LOG('Command being called is {command}'.format(command=demisto.command()))
+        if command == 'test-module':
+            client = aws_client.aws_session(service=SERVICE)
+            response = client.list_buckets()
+            if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+                demisto.results('ok')
 
-    elif demisto.command() == 'aws-s3-put-bucket-policy':
-        put_bucket_policy_command(demisto.args())
+        elif command == 'aws-s3-create-bucket':
+            create_bucket_command(args, aws_client)
 
-    elif demisto.command() == 'aws-s3-delete-bucket-policy':
-        delete_bucket_policy_command(demisto.args())
+        elif command == 'aws-s3-delete-bucket':
+            delete_bucket_command(args, aws_client)
 
-    elif demisto.command() == 'aws-s3-download-file':
-        download_file_command(demisto.args())
+        elif command == 'aws-s3-list-buckets':
+            list_buckets_command(args, aws_client)
 
-    elif demisto.command() == 'aws-s3-list-bucket-objects':
-        list_objects_command(demisto.args())
+        elif command == 'aws-s3-get-bucket-policy':
+            get_bucket_policy_command(args, aws_client)
 
-    elif demisto.command() == 'aws-s3-upload-file':
-        upload_file_command(demisto.args())
+        elif command == 'aws-s3-put-bucket-policy':
+            put_bucket_policy_command(args, aws_client)
 
-except ResponseParserError as e:
-    return_error('Could not connect to the AWS endpoint. Please check that the region is valid.\n {error}'.format(
-        error=type(e)))
-    LOG(e.message)
+        elif command == 'aws-s3-delete-bucket-policy':
+            delete_bucket_policy_command(args, aws_client)
 
-except Exception as e:
-    return_error('Error has occurred in the AWS S3 Integration: {error}\n {message}'.format(
-        error=type(e), message=e.message))
+        elif command == 'aws-s3-download-file':
+            download_file_command(args, aws_client)
+
+        elif command == 'aws-s3-list-bucket-objects':
+            list_objects_command(args, aws_client)
+
+        elif command == 'aws-s3-upload-file':
+            upload_file_command(args, aws_client)
+
+    except Exception as e:
+        return_error('Error has occurred in the AWS S3 Integration: {error}\n {message}'.format(
+            error=type(e), message=e.message))
+
+
+from AWSApiModule import *  # noqa: E402
+
+if __name__ in ('__builtin__', 'builtins', '__main__'):
+    main()

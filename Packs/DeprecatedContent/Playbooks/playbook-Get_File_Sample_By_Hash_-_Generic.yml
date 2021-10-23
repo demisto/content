@@ -146,3 +146,4 @@ outputs:
   type: unknown
 tests:
 - No tests
+deprecated: true

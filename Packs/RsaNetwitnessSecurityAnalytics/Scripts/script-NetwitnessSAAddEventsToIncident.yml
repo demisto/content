@@ -29,7 +29,9 @@ args:
   description: '[string] Existing incident id. '
 - name: eventList
   required: true
-  description: '[array of strings] List of event ids separated by comma [,] must not include spaces in it. In order to get list of events you can use nw-get-events. Example: "23,12,3"'
+  description: '[array of strings] List of event ids separated by comma [,] must not
+    include spaces in it. In order to get list of events you can use nw-get-events.
+    Example: "23,12,3"'
 - name: alertSummary
   required: true
   description: '[string] Short summary of the alert which will be attached to incident'
@@ -47,3 +49,6 @@ dependson:
   - nw-add-events-to-incident
 timeout: 0s
 fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.24066
+tests:
+- No tests (auto formatted)

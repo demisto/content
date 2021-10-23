@@ -5,7 +5,12 @@ import traceback
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-'''CLIENT CLASS'''
+''' GLOBALS '''
+INPUT_SCIM_EXTENSION_KEY = "urn:scim:schemas:extension:custom:1.0:user"
+SLACK_SCIM_EXTENSION_KEY = "urn:scim:schemas:extension:enterprise:1.0"
+SLACK_SCIM_CORE_SCHEMA_KEY = "urn:scim:schemas:core:1.0"
+
+'''CLIENT CLASSES'''
 
 
 class Client(BaseClient):
@@ -40,6 +45,10 @@ class Client(BaseClient):
     def create_user(self, user_data):
         uri = '/Users'
         user_data["schemas"] = ["urn:scim:schemas:core:1.0"]  # Mandatory user profile field.
+        if not isinstance(user_data["emails"], list):
+            user_data["emails"] = [user_data["emails"]]
+        if not isinstance(user_data["phoneNumbers"], list):
+            user_data["phoneNumbers"] = [user_data["phoneNumbers"]]
         res = self._http_request(
             method='POST',
             url_suffix=uri,
@@ -115,6 +124,93 @@ class Client(BaseClient):
         demisto.error(traceback.format_exc())
 
 
+class GroupClient(BaseClient):
+    """
+    GroupClient will implement the service API, and should not contain any Demisto logic.
+    Should only do requests and return data.
+    """
+    def __init__(self, base_url, verify=True, proxy=False, headers=None):
+        super().__init__(base_url=base_url, verify=verify, headers=headers, proxy=proxy)
+
+    def http_request(self, method, url_suffix, params=None, data=None, headers=None):
+        if headers is None:
+            headers = self._headers
+        full_url = self._base_url + url_suffix
+        res = requests.request(
+            method,
+            full_url,
+            verify=self._verify,
+            headers=headers,
+            params=params,
+            json=data
+        )
+
+        return res
+
+    def get_group_by_id(self, group_id):
+        uri = f'/Groups/{group_id}'
+        return self.http_request(
+            method="GET",
+            url_suffix=uri
+        )
+
+    def search_group(self, group_name):
+        uri = '/Groups'
+        query_params = {
+            'filter': f'displayName eq "{group_name}"'
+        }
+        return self.http_request(
+            method="GET",
+            url_suffix=uri,
+            params=query_params
+        )
+
+    def create_group(self, data):
+        uri = '/Groups'
+        return self.http_request(
+            method="POST",
+            url_suffix=uri,
+            data=data
+        )
+
+    def update_group(self, group_id, data):
+        uri = f'/Groups/{group_id}'
+        return self.http_request(
+            method="PATCH",
+            url_suffix=uri,
+            data=data
+        )
+
+    def delete_group(self, group_id):
+        uri = f'/Groups/{group_id}'
+        return self.http_request(
+            method="DELETE",
+            url_suffix=uri
+        )
+
+    def build_slack_user_profile(self, args, scim, custom_mapping):
+        if args.get('customMapping'):
+            custom_mapping = json.loads(args.get('customMapping'))
+        elif custom_mapping:
+            custom_mapping = json.loads(custom_mapping)
+
+        extension_schema = scim.get(INPUT_SCIM_EXTENSION_KEY, {})
+
+        if extension_schema:
+            if custom_mapping:
+                new_extension_schema = {}
+                for key, value in custom_mapping.items():
+                    # key is the attribute name in input scim. value is the attribute name of slack profile
+                    new_extension_schema[value] = extension_schema.get(key)
+                scim[SLACK_SCIM_EXTENSION_KEY] = new_extension_schema
+            else:
+                scim[SLACK_SCIM_EXTENSION_KEY] = extension_schema
+
+        scim['schemas'] = [SLACK_SCIM_CORE_SCHEMA_KEY, SLACK_SCIM_EXTENSION_KEY]
+
+        return scim
+
+
 '''COMMAND FUNCTIONS'''
 
 
@@ -130,12 +226,242 @@ def get_mapping_fields(client: Client) -> GetMappingFieldsResponse:
     :return: (GetMappingFieldsResponse) An object that represents the user schema
     """
     app_fields = client.get_app_fields()
-    incident_type_scheme = SchemeTypeMapping(type_name=IAMUserProfile.INDICATOR_TYPE)
+    incident_type_scheme = SchemeTypeMapping(type_name=IAMUserProfile.DEFAULT_INCIDENT_TYPE)
 
     for field, description in app_fields.items():
         incident_type_scheme.add_field(field, description)
 
     return GetMappingFieldsResponse([incident_type_scheme])
+
+
+class OutputContext:
+    """
+        Class to build a generic output and context.
+    """
+    def __init__(self, success=None, active=None, id=None, username=None, email=None, errorCode=None,
+                 errorMessage=None, details=None, displayName=None, members=None):
+        self.instanceName = demisto.callingContext['context']['IntegrationInstance']
+        self.brand = demisto.callingContext['context']['IntegrationBrand']
+        self.command = demisto.command().replace('-', '_').title().replace('_', '')
+        self.success = success
+        self.active = active
+        self.id = id
+        self.username = username
+        self.email = email
+        self.errorCode = errorCode
+        self.errorMessage = errorMessage
+        self.details = details
+        self.displayName = displayName  # Used in group
+        self.members = members  # Used in group
+        self.data = {
+            "brand": self.brand,
+            "instanceName": self.instanceName,
+            "success": success,
+            "active": active,
+            "id": id,
+            "username": username,
+            "email": email,
+            "errorCode": errorCode,
+            "errorMessage": errorMessage,
+            "details": details,
+            "displayName": displayName,
+            "members": members
+        }
+        # Remoove empty values
+        self.data = {
+            k: v
+            for k, v in self.data.items()
+            if v is not None
+        }
+
+
+def get_group_id_by_name(client, group_name):
+    res = client.search_group(group_name)
+
+    if res.get('totalResults') >= 1:
+        return res['Resources'][0].get('id')
+    return None
+
+
+def get_group_command(client, args):
+    scim = safe_load_json(args.get('scim'))
+
+    group_id = scim.get('id')
+    group_name = scim.get('displayName')
+
+    if not (group_id or group_name):
+        return_error("You must supply either 'id' or 'displayName' in the scim data")
+    if not group_id:
+        res = client.search_group(group_name)
+        res_json = res.json()
+
+        if res.status_code == 200:
+            if res_json.get('totalResults') < 1:
+                generic_iam_context = OutputContext(success=False, displayName=group_name, errorCode=404,
+                                                    errorMessage="Group Not Found", details=res_json)
+                return CommandResults(
+                    raw_response=generic_iam_context.data,
+                    outputs_prefix=generic_iam_context.command,
+                    outputs_key_field='id',
+                    outputs=generic_iam_context.data,
+                    readable_output=tableToMarkdown('Slack Get Group:', generic_iam_context.data, removeNull=True)
+                )
+            else:
+                group_id = res_json['Resources'][0].get('id')
+        else:
+            generic_iam_context = OutputContext(success=False, displayName=group_name, id=group_id,
+                                                errorCode=res_json['Errors']['code'],
+                                                errorMessage=res_json['Errors']['description'], details=res_json)
+            return CommandResults(
+                raw_response=generic_iam_context.data,
+                outputs_prefix=generic_iam_context.command,
+                outputs_key_field='id',
+                outputs=generic_iam_context.data,
+                readable_output=tableToMarkdown('Slack Get Group:', generic_iam_context.data, removeNull=True)
+            )
+    res = client.get_group_by_id(group_id)
+    res_json = res.json()
+
+    if res.status_code == 200:
+        include_members = args.get('includeMembers')
+        if include_members.lower() == 'false' and 'members' in res_json:
+            del res_json['members']
+        generic_iam_context = OutputContext(success=True, id=res_json.get('id'),
+                                            displayName=res_json.get('displayName'),
+                                            members=res_json.get('members'))
+    elif res.status_code == 404:
+        generic_iam_context = OutputContext(success=False, displayName=group_name, id=group_id, errorCode=404,
+                                            errorMessage="Group Not Found", details=res_json)
+    else:
+        generic_iam_context = OutputContext(success=False, displayName=group_name, id=group_id,
+                                            errorCode=res_json['Errors']['code'],
+                                            errorMessage=res_json['Errors']['description'], details=res_json)
+
+    return CommandResults(
+        raw_response=generic_iam_context.data,
+        outputs_prefix=generic_iam_context.command,
+        outputs_key_field='id',
+        outputs=generic_iam_context.data,
+        readable_output=tableToMarkdown('Slack Get Group:', generic_iam_context.data, removeNull=True)
+    )
+
+
+def delete_group_command(client, args):
+    scim = safe_load_json(args.get('scim'))
+    group_id = scim.get('id')
+    group_name = scim.get('displayName')
+
+    if not group_id:
+        group_id = get_group_id_by_name(client, group_name)
+        if not group_id:
+            return_error("You must supply 'id' in the scim data")
+
+    res = client.delete_group(group_id)
+
+    if res.status_code == 204:
+        generic_iam_context = OutputContext(success=True, id=group_id, displayName=group_name)
+    elif res.status_code == 404:
+        generic_iam_context = OutputContext(success=False, id=group_id, displayName=group_name, errorCode=404,
+                                            errorMessage="Group Not Found", details=res.json())
+    else:
+        res_json = res.json()
+        generic_iam_context = OutputContext(success=False, displayName=group_name, id=group_id,
+                                            errorCode=res_json['Errors']['code'],
+                                            errorMessage=res_json['Errors']['description'], details=res_json)
+    return CommandResults(
+        raw_response=generic_iam_context.data,
+        outputs_prefix=generic_iam_context.command,
+        outputs_key_field='id',
+        outputs=generic_iam_context.data,
+        readable_output=tableToMarkdown('Slack Delete Group:', generic_iam_context.data, removeNull=True)
+    )
+
+
+def create_group_command(client, args):
+    scim = safe_load_json(args.get('scim'))
+    group_name = scim.get('displayName')
+
+    if not group_name:
+        return_error("You must supply 'displayName' of the group in the scim data")
+
+    group_data = {'schemas': [SLACK_SCIM_CORE_SCHEMA_KEY], 'displayName': group_name}
+    res = client.create_group(group_data)
+    res_json = res.json()
+
+    if res.status_code == 201:
+        generic_iam_context = OutputContext(success=True, id=res_json.get('id'),
+                                            displayName=res_json.get('displayName'))
+    else:
+        res_json = res.json()
+        generic_iam_context = OutputContext(success=False, displayName=group_name,
+                                            errorCode=res_json['Errors']['code'],
+                                            errorMessage=res_json['Errors']['description'], details=res_json)
+
+    return CommandResults(
+        raw_response=generic_iam_context.data,
+        outputs_prefix=generic_iam_context.command,
+        outputs_key_field='id',
+        outputs=generic_iam_context.data,
+        readable_output=tableToMarkdown('Slack Create Group:', generic_iam_context.data, removeNull=True)
+    )
+
+
+def update_group_command(client, args):
+    scim = safe_load_json(args.get('scim'))
+
+    group_id = scim.get('id')
+    group_name = scim.get('displayName')
+
+    if not group_id:
+        group_id = get_group_id_by_name(client, group_name)
+        if not group_id:
+            return_error("You must supply 'id' in the scim data")
+
+    member_ids_to_add = args.get('memberIdsToAdd')
+    member_ids_to_delete = args.get('memberIdsToDelete')
+
+    member_ids_json_list = []
+    if member_ids_to_add:
+        if type(member_ids_to_add) is not list:
+            member_ids_to_add = json.loads(member_ids_to_add)
+        for member_id in member_ids_to_add:
+            member_ids_json_list.append(
+                {
+                    "value": member_id
+                }
+            )
+    if member_ids_to_delete:
+        if type(member_ids_to_delete) is not list:
+            member_ids_to_delete = json.loads(member_ids_to_delete)
+        for member_id in member_ids_to_delete:
+            member_ids_json_list.append(
+                {
+                    "value": member_id,
+                    "operation": "delete"
+                }
+            )
+
+    group_input = {'schemas': [SLACK_SCIM_CORE_SCHEMA_KEY], 'members': member_ids_json_list}
+
+    res = client.update_group(group_id, group_input)
+
+    if res.status_code == 204:
+        generic_iam_context = OutputContext(success=True, id=group_id, displayName=group_name)
+    elif res.status_code == 404:
+        generic_iam_context = OutputContext(success=False, id=group_id, displayName=group_name, errorCode=404,
+                                            errorMessage="Group Not Found", details=res.json())
+    else:
+        res_json = res.json()
+        generic_iam_context = OutputContext(success=False, displayName=group_name, id=group_id,
+                                            errorCode=res_json['Errors']['code'],
+                                            errorMessage=res_json['Errors']['description'], details=res_json)
+    return CommandResults(
+        raw_response=generic_iam_context.data,
+        outputs_prefix=generic_iam_context.command,
+        outputs_key_field='id',
+        outputs=generic_iam_context.data,
+        readable_output=tableToMarkdown('Slack Update Group:', generic_iam_context.data, removeNull=True)
+    )
 
 
 def main():
@@ -151,13 +477,15 @@ def main():
     mapper_in = params.get('mapper_in')
     mapper_out = params.get('mapper_out')
     is_create_enabled = params.get("create_user_enabled")
+    is_enable_enabled = demisto.params().get("enable_user_enabled")
     is_disable_enabled = params.get("disable_user_enabled")
     is_update_enabled = demisto.params().get("update_user_enabled")
     create_if_not_exists = demisto.params().get("create_if_not_exists")
 
-    iam_command = IAMCommand(is_create_enabled, is_disable_enabled, is_update_enabled,
+    iam_command = IAMCommand(is_create_enabled, is_enable_enabled, is_disable_enabled, is_update_enabled,
                              create_if_not_exists, mapper_in, mapper_out)
 
+    base_url = 'https://api.slack.com/scim/v1/'
     headers = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
@@ -165,11 +493,18 @@ def main():
     }
 
     client = Client(
-        base_url='https://api.slack.com/scim/v1/',
+        base_url=base_url,
         verify=verify_certificate,
         proxy=proxy,
         headers=headers,
-        ok_codes=(200, 201)
+        ok_codes=(200, 201),
+    )
+
+    group_client = GroupClient(
+        base_url=base_url,
+        verify=verify_certificate,
+        proxy=proxy,
+        headers=headers,
     )
 
     demisto.debug(f'Command being called is {command}')
@@ -200,6 +535,18 @@ def main():
     except Exception:
         # For any other integration command exception, return an error
         return_error(f'Failed to execute {command} command. Traceback: {traceback.format_exc()}')
+
+    if command == 'iam-get-group':
+        return_results(get_group_command(group_client, args))
+
+    elif command == 'iam-create-group':
+        return_results(create_group_command(group_client, args))
+
+    elif command == 'iam-update-group':
+        return_results(update_group_command(group_client, args))
+
+    elif command == 'iam-delete-group':
+        return_results(delete_group_command(group_client, args))
 
 
 from IAMApiModule import *  # noqa: E402
