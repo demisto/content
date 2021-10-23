@@ -690,7 +690,7 @@ script:
           description: 'The date and time the rule was modified. Time format: YYYY-MM-DDThh:mm:ss+00:00'
           type: Date
     - name: o365-defender-safelinks-rule-update
-      description: description
+      description: Update a given Safe Links rule.
       deprecated: false
       arguments:
         - name: name
