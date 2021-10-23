@@ -26,7 +26,7 @@ tasks:
       {
         "position": {
           "x": 377.5,
-          "y": -280
+          "y": -510
         }
       }
     note: false
@@ -69,7 +69,7 @@ tasks:
       {
         "position": {
           "x": 377.5,
-          "y": 245
+          "y": 15
         }
       }
     note: false
@@ -108,8 +108,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -980,
-          "y": 1390
+          "x": -330,
+          "y": 2040
         }
       }
     note: false
@@ -148,7 +148,7 @@ tasks:
       {
         "position": {
           "x": 600,
-          "y": 1560
+          "y": 1150
         }
       }
     note: false
@@ -160,10 +160,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 6340d4ba-b3c6-403e-80de-10f3c5ccbe05
+    taskid: e3b5e51d-c643-400d-84fd-fd54ad6b5014
     type: condition
     task:
-      id: 6340d4ba-b3c6-403e-80de-10f3c5ccbe05
+      id: e3b5e51d-c643-400d-84fd-fd54ad6b5014
       version: -1
       name: Can an image of the email be rendered?
       description: Checks whether the email is HTML-formatted, and whether the Rasterize
@@ -218,8 +218,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 350,
-          "y": 2760
+          "x": 340,
+          "y": 2580
         }
       }
     note: false
@@ -259,8 +259,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 110,
-          "y": 2980
+          "x": 100,
+          "y": 2800
         }
       }
     note: false
@@ -286,8 +286,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 350,
-          "y": 3210
+          "x": 340,
+          "y": 3030
         }
       }
     note: false
@@ -316,8 +316,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 350,
-          "y": 2610
+          "x": 340,
+          "y": 2430
         }
       }
     note: false
@@ -361,44 +361,7 @@ tasks:
       {
         "position": {
           "x": -260,
-          "y": 420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "17":
-    id: "17"
-    taskid: e7a60f4a-46be-4d03-8980-ff8a66b8cfca
-    type: playbook
-    task:
-      id: e7a60f4a-46be-4d03-8980-ff8a66b8cfca
-      version: -1
-      name: Get Original Email - Generic v2
-      description: |-
-        Use this playbook to retrieve the original email in the thread, including headers and attahcments, when the reporting user forwarded the original email not as an attachment.
-
-        You must have the necessary permissions in your email service to execute global search.
-
-        - EWS: eDiscovery
-        - Gmail: Google Apps Domain-Wide Delegation of Authority
-      playbookName: Get Original Email - Generic v2
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "18"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": -70,
-          "y": 940
+          "y": 190
         }
       }
     note: false
@@ -410,35 +373,36 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 31dcd39d-b40f-4291-8a17-635dac3e3099
+    taskid: eefa9fe2-e6a7-4031-893a-2765e539d1c4
     type: condition
     task:
-      id: 31dcd39d-b40f-4291-8a17-635dac3e3099
+      id: eefa9fe2-e6a7-4031-893a-2765e539d1c4
       version: -1
       name: Was the original email retrieved?
-      description: Is there an email object in the context?
+      description: Is there an "Email" object in the context?
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
       - "2"
-      "yes":
-      - "34"
+      Email Exist:
+      - "22"
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: Email Exist
       condition:
       - - operator: isExists
           left:
             value:
-              simple: Email
+              complex:
+                root: Email
             iscontext: true
     view: |-
       {
         "position": {
-          "x": -70,
-          "y": 1110
+          "x": 140,
+          "y": 1150
         }
       }
     note: false
@@ -629,8 +593,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 810,
-          "y": 2220
+          "x": 1080,
+          "y": 2040
         }
       }
     note: false
@@ -642,14 +606,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 94c91957-8000-4bc6-8bb0-20e47c260310
+    taskid: 3f9a8389-609a-4330-85b5-c584fb562275
     type: regular
     task:
-      id: 94c91957-8000-4bc6-8bb0-20e47c260310
+      id: 3f9a8389-609a-4330-85b5-c584fb562275
       version: -1
-      name: Display email headers in layout
+      name: Display email headers in layout - Email.Headers
       description: Fills the "Email Headers" grid field in the incident layout with
-        the email attachment's headers.
+        the retrieved email headers.
       scriptName: SetGridField
       type: regular
       iscommand: false
@@ -661,7 +625,7 @@ tasks:
       columns:
         simple: headername,headervalue
       context_path:
-        simple: Email.HeadersMap
+        simple: Email.Headers
       grid_id:
         simple: emailheaders
       overwrite:
@@ -669,15 +633,15 @@ tasks:
       sort_by:
         simple: headername
       unpack_nested_elements:
-        simple: "true"
+        simple: "false"
     reputationcalc: 3
     continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -2.5,
-          "y": 2180
+          "x": 120,
+          "y": 2040
         }
       }
     note: false
@@ -689,10 +653,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: a915bae7-16a6-41cb-81bc-3fe3917b3e46
+    taskid: 02773e7a-623b-491d-8667-76e99063765c
     type: condition
     task:
-      id: a915bae7-16a6-41cb-81bc-3fe3917b3e46
+      id: 02773e7a-623b-491d-8667-76e99063765c
       version: -1
       name: Were email headers extracted successfully?
       description: Checks whether the email headers were extracted from the original
@@ -702,12 +666,14 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "11"
-      "yes":
+      - "2"
+      Headers:
       - "20"
+      HeadersMap:
+      - "37"
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: HeadersMap
       condition:
       - - operator: isNotEmpty
           left:
@@ -716,11 +682,18 @@ tasks:
                 root: Email
                 accessor: HeadersMap
             iscontext: true
+    - label: Headers
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Email.Headers
+            iscontext: true
     view: |-
       {
         "position": {
-          "x": 230,
-          "y": 1880
+          "x": 120,
+          "y": 1660
         }
       }
     note: false
@@ -751,7 +724,7 @@ tasks:
       {
         "position": {
           "x": 600,
-          "y": 1730
+          "y": 1460
         }
       }
     note: false
@@ -793,7 +766,7 @@ tasks:
       {
         "position": {
           "x": 377.5,
-          "y": -130
+          "y": -360
         }
       }
     note: false
@@ -832,7 +805,7 @@ tasks:
       {
         "position": {
           "x": 377.5,
-          "y": 60
+          "y": -170
         }
       }
     note: false
@@ -866,8 +839,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2380,
-          "y": 1880
+          "x": 2370,
+          "y": 1700
         }
       }
     note: false
@@ -916,8 +889,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
-          "y": 2040
+          "x": 1760,
+          "y": 1860
         }
       }
     note: false
@@ -971,8 +944,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1370,
-          "y": 2040
+          "x": 1360,
+          "y": 1860
         }
       }
     note: false
@@ -1026,8 +999,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2177.5,
-          "y": 2040
+          "x": 2167.5,
+          "y": 1860
         }
       }
     note: false
@@ -1081,8 +1054,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2990,
-          "y": 2040
+          "x": 2980,
+          "y": 1860
         }
       }
     note: false
@@ -1136,8 +1109,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2590,
-          "y": 2040
+          "x": 2580,
+          "y": 1860
         }
       }
     note: false
@@ -1191,8 +1164,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3400,
-          "y": 2040
+          "x": 3390,
+          "y": 1860
         }
       }
     note: false
@@ -1204,20 +1177,22 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: c833db72-2412-4e50-84f5-8e33981f5195
+    taskid: 4b0f5b7f-41cf-4569-878f-6733a97a4e20
     type: regular
     task:
-      id: c833db72-2412-4e50-84f5-8e33981f5195
+      id: 4b0f5b7f-41cf-4569-878f-6733a97a4e20
       version: -1
-      name: Normalize Email Headers
+      name: Normalize Reporter Email Headers
+      description: This task normalizes the keys names of the headers which are different
+        with each client. It will assist with extracting the relevant values for the
+        next tasks.
       scriptName: SetGridField
       type: regular
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
-      - "17"
+      - "34"
     scriptarguments:
       columns:
         simple: headername,headervalue
@@ -1238,7 +1213,7 @@ tasks:
       {
         "position": {
           "x": 140,
-          "y": 760
+          "y": 530
         }
       }
     note: false
@@ -1250,13 +1225,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 9994ccf5-3134-48c9-81dd-4ad6f6501909
+    taskid: a353acb2-9257-4df4-8af5-63f652d7a3ed
     type: regular
     task:
-      id: 9994ccf5-3134-48c9-81dd-4ad6f6501909
+      id: a353acb2-9257-4df4-8af5-63f652d7a3ed
       version: -1
-      name: Extract Thread headers
-      description: Set a value in context under the key you entered.
+      name: Extract Reporter Email Headers
+      description: In order to preserve the original state of reporter's headers,
+        we will store them in the context.
       scriptName: Set
       type: regular
       iscommand: false
@@ -1276,7 +1252,7 @@ tasks:
       {
         "position": {
           "x": 140,
-          "y": 595
+          "y": 365
         }
       }
     note: false
@@ -1288,10 +1264,98 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: d91a150d-2069-4334-8ff6-73d1ee7a7052
+    taskid: d59c63ee-9372-4348-88c3-c4c62bf020a1
+    type: playbook
+    task:
+      id: d59c63ee-9372-4348-88c3-c4c62bf020a1
+      version: -1
+      name: Get Original Email - Generic v2
+      playbookName: Get Original Email - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      EmailFrom:
+        complex:
+          root: incident
+          accessor: emailfrom
+      EmailTo:
+        complex:
+          root: incident
+          accessor: emailto
+      InReplyTo:
+        complex:
+          root: incident.phishingreporteremailheaders
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: incident.phishingreporteremailheaders.headername
+                iscontext: true
+              right:
+                value:
+                  simple: In-Reply-To
+          accessor: headervalue
+      MessageID:
+        complex:
+          root: incident
+          accessor: apdinternalmessageid
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: incident.emailmessageid
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: incident.uuid
+                iscontext: true
+      ThreadTopic:
+        complex:
+          root: incident.phishingreporteremailheaders
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: incident.phishingreporteremailheaders.headername
+                iscontext: true
+              right:
+                value:
+                  simple: Thread-Topic
+          accessor: headervalue
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 838269c2-4da2-4b5b-8734-7f1d86422cfe
     type: condition
     task:
-      id: d91a150d-2069-4334-8ff6-73d1ee7a7052
+      id: 838269c2-4da2-4b5b-8734-7f1d86422cfe
       version: -1
       name: Do we have original emails attached?
       description: Identify whether the incident includes an email message attached
@@ -1305,7 +1369,7 @@ tasks:
       brand: ""
     nexttasks:
       "no":
-      - "22"
+      - "18"
       "yes":
       - "3"
     scriptarguments:
@@ -1318,8 +1382,55 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 160,
-          "y": 1390
+          "x": 140,
+          "y": 885
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 006a64a2-b76b-4a09-8c2c-02634a6d38b4
+    type: regular
+    task:
+      id: 006a64a2-b76b-4a09-8c2c-02634a6d38b4
+      version: -1
+      name: Display email headers in layout - Email.HeadersMap
+      description: Fills the "Email Headers" grid field in the incident layout with
+        the retrieved email headers.
+      scriptName: SetGridField
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      columns:
+        simple: headername,headervalue
+      context_path:
+        simple: Email.HeadersMap
+      grid_id:
+        simple: emailheaders
+      overwrite:
+        simple: "true"
+      sort_by:
+        simple: headername
+      unpack_nested_elements:
+        simple: "true"
+    reputationcalc: 3
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": 2040
         }
       }
     note: false
@@ -1334,18 +1445,15 @@ view: |-
   {
     "linkLabelsPosition": {
       "16_2_#default#": 0.28,
-      "18_2_#default#": 0.43,
-      "21_11_#default#": 0.2,
-      "21_20_yes": 0.35,
       "23_24_yes": 0.49,
       "4_5_yes": 0.57
     },
     "paper": {
       "dimensions": {
-        "height": 3555,
-        "width": 4760,
-        "x": -980,
-        "y": -280
+        "height": 3605,
+        "width": 4100,
+        "x": -330,
+        "y": -510
       }
     }
   }
@@ -1409,7 +1517,7 @@ inputs:
   value:
     complex:
       root: incident
-      accessor: phishingreporteremailheaders
+      accessor: phishingemailthreadheaders
   required: false
   description: The email’s headers.
   playbookInputQuery:
@@ -1423,7 +1531,7 @@ inputs:
   playbookInputQuery:
 - key: GetOriginalEmail
   value:
-    simple: "True"
+    simple: "False"
   required: false
   description: |-
     Retrieve the original email in the thread. Default is "False".
@@ -1432,6 +1540,12 @@ inputs:
 
     - EWS: eDiscovery
     - Gmail: Google Apps Domain-Wide Delegation of Authority
+  playbookInputQuery:
+- key: EmailBody
+  value:
+    simple: ${incident.emailhtml}
+  required: false
+  description: The email HTML body
   playbookInputQuery:
 outputs:
 - contextPath: Email.HTML

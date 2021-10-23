@@ -17,9 +17,9 @@ This playbook does not use any sub-playbooks.
 * Set
 
 ### Commands
-* gmail-search
-* gmail-get-attachments
 * gmail-get-mail
+* gmail-get-attachments
+* gmail-search
 
 ## Playbook Inputs
 ---
@@ -49,4 +49,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![Get Original Email - Gmail](Insert the link to your image here)
+![Get Original Email - Gmail](../doc_files/Get_Original_Email_Gmail.png)
