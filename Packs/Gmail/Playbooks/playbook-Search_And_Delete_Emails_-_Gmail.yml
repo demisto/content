@@ -1,0 +1,565 @@
+id: Search And Delete Emails - Gmail
+version: -1
+name: Search And Delete Emails - Gmail
+description: This playbook searches Gmail to identify and delete emails with similar
+  attributes of a malicious email. Please note that in order to perform these actions,
+  splecial permissiosn are required.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 486e9c35-88f2-409b-8b1b-6c4e75768e7f
+    type: start
+    task:
+      id: 486e9c35-88f2-409b-8b1b-6c4e75768e7f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 0e1364c4-fadc-4d54-88d6-f7d2210b3f73
+    type: condition
+    task:
+      id: 0e1364c4-fadc-4d54-88d6-f7d2210b3f73
+      version: -1
+      name: Is Gmail enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Gmail
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 263405ee-fe11-4f70-8a97-222a20b6119d
+    type: title
+    task:
+      id: 263405ee-fe11-4f70-8a97-222a20b6119d
+      version: -1
+      name: Search all mailboxes in Gmail
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 7b827717-11bd-45c9-80e1-6fb78ca3d450
+    type: regular
+    task:
+      id: 7b827717-11bd-45c9-80e1-6fb78ca3d450
+      version: -1
+      name: Search Gmail for similar emails last 7 days
+      description: Searches the Gmail records for all Google users.
+      script: '|||gmail-search-all-mailboxes'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      after:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: TimeStampToDate
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: ^[^T]+
+      filename:
+        complex:
+          root: inputs.AttachmentName
+      from:
+        complex:
+          root: inputs.From
+      include-spam-trash:
+        simple: "True"
+      max-results:
+        complex:
+          root: inputs.Limit
+      subject:
+        complex:
+          root: inputs.Subject
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: a178934c-60c2-4c2c-843f-f35f68c7b0c9
+    type: regular
+    task:
+      id: a178934c-60c2-4c2c-843f-f35f68c7b0c9
+      version: -1
+      name: Delete emails from Gmail
+      description: Deletes an email in the user's mailbox.
+      script: '|||gmail-delete-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      message-id:
+        complex:
+          root: Gmail
+          accessor: ID
+      permanent:
+        complex:
+          root: inputs.DeleteType
+      user-id:
+        complex:
+          root: Gmail
+          accessor: Mailbox
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 4f043f10-356a-4d1c-85ec-5acf463cc6e6
+    type: condition
+    task:
+      id: 4f043f10-356a-4d1c-85ec-5acf463cc6e6
+      version: -1
+      name: Were similar emails found?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Gmail
+                accessor: ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": 1120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 9ca05514-787c-4077-8473-d352eede69d1
+    type: title
+    task:
+      id: 9ca05514-787c-4077-8473-d352eede69d1
+      version: -1
+      name: Delete similar emails
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 7a88f9cb-9a10-4270-8bbd-5385318aa571
+    type: title
+    task:
+      id: 7a88f9cb-9a10-4270-8bbd-5385318aa571
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": 1830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: abd59d58-764d-496c-8062-18751a0a718b
+    type: condition
+    task:
+      id: abd59d58-764d-496c-8062-18751a0a718b
+      version: -1
+      name: 'Search only a week time range? '
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.SearchThisWeek
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: b80fe619-0df6-40dc-850d-6eedc4589f1e
+    type: regular
+    task:
+      id: b80fe619-0df6-40dc-850d-6eedc4589f1e
+      version: -1
+      name: Set time range
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      daysAgo:
+        simple: "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 62670b01-b601-49e3-8bc4-908fbe9724bb
+    type: regular
+    task:
+      id: 62670b01-b601-49e3-8bc4-908fbe9724bb
+      version: -1
+      name: Search Gmail for similar emails
+      description: Searches the Gmail records for all Google users.
+      script: '|||gmail-search-all-mailboxes'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      after:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: TimeStampToDate
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: ^[^T]+
+      filename:
+        complex:
+          root: inputs.AttachmentName
+      from:
+        complex:
+          root: inputs.From
+      include-spam-trash:
+        simple: "True"
+      max-results:
+        complex:
+          root: inputs.Limit
+      subject:
+        complex:
+          root: inputs.Subject
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 7205b69a-8da1-4183-893a-7a8a32dd8024
+    type: condition
+    task:
+      id: 7205b69a-8da1-4183-893a-7a8a32dd8024
+      version: -1
+      name: Should the found emails be deleted from Gmail?
+      description: |-
+        Review the Gmail search results and decide whether to delete all of the emails.
+
+        Note: You cannot delete a subset of the emails.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "Yes":
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "12_5_Yes": 0.44,
+      "12_8_#default#": 0.46,
+      "1_2_yes": 0.39,
+      "1_8_#default#": 0.22,
+      "6_7_yes": 0.48,
+      "6_8_#default#": 0.19,
+      "9_10_yes": 0.61
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1835,
+        "width": 790,
+        "x": 100,
+        "y": 60
+      }
+    }
+  }
+inputs:
+- key: From
+  value: {}
+  required: false
+  description: The value of the malicious email's "From" attribute.
+  playbookInputQuery:
+- key: Subject
+  value: {}
+  required: false
+  description: The value of the malicious email's "Subject" attribute.
+  playbookInputQuery:
+- key: AttachmentName
+  value: {}
+  required: false
+  description: The value of the malicious email's "AttachmentName" attribute.
+  playbookInputQuery:
+- key: Limit
+  value:
+    simple: "50"
+  required: false
+  description: The maximum number of search results.
+  playbookInputQuery:
+- key: DeleteType
+  value:
+    simple: "False"
+  required: false
+  description: |-
+    The deletion type (trash or permanent).
+    For permanent choose 'True'.
+  playbookInputQuery:
+- key: SearchThisWeek
+  value:
+    simple: "true"
+  required: false
+  description: Limit the search to the current week (true/false).
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

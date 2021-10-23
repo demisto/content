@@ -4,8 +4,9 @@ This playbook searches and delete emails with similar attributes of a malicious 
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Search And Delete Emails - EWS
 * O365 - Security And Compliance - Search And Delete
+* Search And Delete Emails - Gmail
+* Search And Delete Emails - EWS
 
 ### Integrations
 This playbook does not use any integrations.
@@ -32,6 +33,7 @@ This playbook does not use any commands.
 | O365DeleteType | Used only in O365. The delete type to perform on the search results. Possible values are Hard and Soft or leave empty to select manually. \(Hard = Unrecoverable, Soft=Recoverable\) | inputs.O365DeleteType | Optional |
 | O365ExchangeLocationExclusion | Used only when searching and deleting emails in O365. The exchange location. Determines from where to search and delete emails searched using O365 playbooks. Use the value "All" to search all mailboxes, use "SingleMailbox" to search and delete the email only from the recipient's inbox, or specify "Manual" to decide manually for every incident. Note - searching all mailboxes may take a significant amount of time. | inputs.O365ExchangeLocationExclusion.None | Optional |
 | To | The email address to which the email was sent. This is used if the user decides to search for and delete emails only from the inbox of the recipient using O365. | incident.emailto | Optional |
+| SearchThisWeek | Limit the search to the current week \(true/false\). | true | Optional |
 
 ## Playbook Outputs
 ---
@@ -39,4 +41,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Search_And_Delete_Emails_Generic](../doc_files/Search_And_Delete_Emails_-_Generic_-_v2.png)
+![Search And Delete Emails - Generic v2](../doc_files/Search_And_Delete_Emails_-_Generic_v2.png)

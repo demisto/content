@@ -34,12 +34,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: a7b6936c-73ee-4fba-8314-3514fa9a9070
+    taskid: 0a7ca589-107b-48e4-8705-2becca697165
     type: playbook
     task:
-      id: a7b6936c-73ee-4fba-8314-3514fa9a9070
+      id: 0a7ca589-107b-48e4-8705-2becca697165
       version: -1
       name: Search And Delete Emails - EWS
       description: This playbook searches EWS to identify and delete emails with similar
@@ -67,7 +69,7 @@ tasks:
       Subject:
         complex:
           root: inputs.Subject
-    separatecontext: true
+    separatecontext: false
     loop:
       iscommand: false
       exitCondition: ""
@@ -85,6 +87,8 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
     taskid: 88c58e53-8fe7-4ca2-8697-0ed3f67191fe
@@ -110,12 +114,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 5902bdde-4d32-4ee2-8cb3-73707f7c90aa
+    taskid: 5d27f641-bdaf-47ba-8e33-f27ad29eff1a
     type: playbook
     task:
-      id: 5902bdde-4d32-4ee2-8cb3-73707f7c90aa
+      id: 5d27f641-bdaf-47ba-8e33-f27ad29eff1a
       version: -1
       name: O365 - Security And Compliance - Search And Delete
       description: |-
@@ -154,7 +160,7 @@ tasks:
           root: inputs.O365KQL
       preview:
         simple: "true"
-    separatecontext: true
+    separatecontext: false
     loop:
       iscommand: false
       exitCondition: ""
@@ -172,12 +178,14 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: e201e0a1-cd90-42de-8bfa-fabda317318f
+    taskid: 5f928439-1d6a-4305-8ad9-f81da631b65d
     type: condition
     task:
-      id: e201e0a1-cd90-42de-8bfa-fabda317318f
+      id: 5f928439-1d6a-4305-8ad9-f81da631b65d
       version: -1
       name: In what integration should emails be searched and deleted?
       description: Checks which integration and playbook should be used to run the
@@ -193,6 +201,8 @@ tasks:
       - "9"
       Both Enabled, input is O365:
       - "12"
+      Gmail:
+      - "13"
       Only EWS enabled:
       - "10"
       Only O365 Enabled:
@@ -409,6 +419,34 @@ tasks:
                       value:
                         simple: active
             iscontext: true
+    - label: Gmail
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Gmail
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
     view: |-
       {
         "position": {
@@ -421,6 +459,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
     taskid: d2db2ba7-3e13-47ce-8fd2-0842b89a386f
@@ -479,6 +519,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
     taskid: 25801150-ef91-4ccc-8275-5ca5225fc857
@@ -511,6 +553,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
     taskid: ac91c4b3-329f-4341-894e-4cb9a92ab88e
@@ -545,6 +589,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
     taskid: 586e6f48-4fd2-489d-8948-f5327f2e431d
@@ -580,6 +626,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
     taskid: eca8ae30-ebfa-4f62-82c9-5586e000e431
@@ -608,6 +656,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
     taskid: 43de9303-2031-43bc-8c5c-0f88a25a78f4
@@ -636,6 +686,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
     taskid: afe381a2-655b-4dd3-8b22-2561451fcee2
@@ -664,6 +716,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
     taskid: 60128cf4-a622-4411-87b3-1bb25b0b14d2
@@ -692,6 +746,91 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 86139d40-fef3-485f-86e9-fc99d4203c7b
+    type: title
+    task:
+      id: 86139d40-fef3-485f-86e9-fc99d4203c7b
+      version: -1
+      name: Use Gmail
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1660,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 17b0d303-d323-4edd-86ae-61d74b12de1f
+    type: playbook
+    task:
+      id: 17b0d303-d323-4edd-86ae-61d74b12de1f
+      version: -1
+      name: Search And Delete Emails - Gmail
+      playbookName: Search And Delete Emails - Gmail
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      AttachmentName:
+        complex:
+          root: inputs.AttachmentName
+      DeleteType:
+        simple: "False"
+      From:
+        complex:
+          root: inputs.From
+      Limit:
+        simple: "50"
+      SearchThisWeek:
+        complex:
+          root: inputs.SearchThisWeek
+      Subject:
+        complex:
+          root: inputs.Subject
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1660,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 system: true
 view: |-
   {
@@ -702,7 +841,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1435,
-        "width": 2520,
+        "width": 3130,
         "x": -1090,
         "y": 50
       }
@@ -798,7 +937,13 @@ inputs:
     user decides to search for and delete emails only from the inbox of the recipient
     using O365.
   playbookInputQuery:
+- key: SearchThisWeek
+  value:
+    simple: "true"
+  required: false
+  description: Limit the search to the current week (true/false).
+  playbookInputQuery:
 outputs: []
 tests:
-- No test
+- No tests
 fromversion: 5.5.0
