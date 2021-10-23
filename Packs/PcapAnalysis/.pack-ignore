@@ -12,3 +12,9 @@ ignore=PA116
 
 [file:layoutscontainer-PCAP_Analysis.json]
 ignore=BA101
+
+[file:playbook-PCAP_Analysis_README.md]
+ignore=RM106
+
+[file:playbook-PCAP_Parsing_And_Indicator_Enrichment_README.md]
+ignore=RM106

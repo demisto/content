@@ -1,3 +1,4 @@
+deprecated: true
 category: Data Enrichment & Threat Intelligence
 commonfields:
   id: PolySwarm
@@ -17,8 +18,8 @@ configuration:
   name: polyswarm_community
   required: true
   type: 0
-description: Real-time threat intelligence from a crowd-sourced network of security experts and antivirus companies.
-display: PolySwarm
+description: Deprecated. Use PolySwarm V2 instead.
+display: PolySwarm (Deprecated)
 name: PolySwarm
 script:
   commands:
@@ -297,4 +298,5 @@ script:
   script: '-'
   subtype: python2
   type: python
+  dockerimage: demisto/python:2.7.18.20958
 fromversion: 5.0.0

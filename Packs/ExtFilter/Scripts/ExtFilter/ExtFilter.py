@@ -172,12 +172,30 @@ def exit_error(err_msg: str):
     raise RuntimeError(err_msg)
 
 
-def lower(value: Any, recursive: bool = False) -> Any:
+def lower(value: Any, recursive: bool = False, dict_value: bool = False, dict_key: bool = False) -> Any:
     if isinstance(value, list):
         if recursive:
             return [lower(v) for v in value]
         else:
             return [v.lower() if isinstance(v, str) else v for v in value]
+    elif isinstance(value, dict):
+        if dict_key:
+            if recursive:
+                value = {lower(k, recursive, dict_value, dict_key): v for k, v in value.items()}
+            else:
+                value = {
+                    k.lower() if isinstance(k, str) else lower(k, False, False, False): v
+                    for k, v in value.items()
+                }
+        if dict_value:
+            if recursive:
+                value = {k: lower(v, recursive, dict_value, dict_key) for k, v in value.items()}
+            else:
+                value = {
+                    k: v.lower() if isinstance(v, str) else lower(v, False, False, False)
+                    for k, v in value.items()
+                }
+        return value
     elif isinstance(value, str):
         return value.lower()
     else:
@@ -548,6 +566,18 @@ class ExtFilter:
             except (ValueError, TypeError):
                 pass
             return False
+
+        elif optype == "in":
+            return lhs in listize(rhs)
+
+        elif optype == "not in":
+            return lhs not in listize(rhs)
+
+        elif optype == "in caseless":
+            return lower(lhs, True, True) in listize(lower(rhs, True, True))
+
+        elif optype == "not in caseless":
+            return lower(lhs, True, True) not in listize(lower(rhs, True, True))
 
         elif optype == "in range":
             if not isinstance(rhs, str):
@@ -1015,6 +1045,9 @@ class ExtFilter:
             exit_error(
                 f"ABORT: value = {root}, conds = {conds}, path = {path}")
 
+        elif optype == "is collectively transformed with":
+            return self.filter_value(root, "is transformed with", conds, path, True)
+
         elif optype == "is transformed with":
             conds = listize(self.parse_conds_json(conds))
 
@@ -1323,7 +1356,7 @@ class ExtFilter:
         elif optype == "contains":
             rhs = self.extract_value(conds, root)
             lhs = listize(root)
-            if isinstance(rhs, str) and rhs in lhs:
+            if rhs in lhs:
                 return Value(root)
             else:
                 return None
@@ -1331,7 +1364,7 @@ class ExtFilter:
         elif optype == "contains caseless":
             rhs = self.extract_value(conds, root)
             lhs = listize(root)
-            if isinstance(rhs, str) and rhs.lower() in lower(lhs):
+            if lower(rhs, True, True) in lower(lhs, True, True):
                 return Value(root)
             else:
                 return None
@@ -1565,9 +1598,9 @@ class ExtFilter:
             rhs = self.parse_and_extract_conds_json(conds, root)
             lhs = root
             if isinstance(lhs, dict) and isinstance(rhs, dict):
-                lhs.update(rhs)
+                lhs.update(copy.deepcopy(rhs))
             elif isinstance(lhs, list) and len(lhs) == 1 and isinstance(lhs[0], dict):
-                lhs[0].update(rhs)
+                lhs[0].update(copy.deepcopy(rhs))
             else:
                 lhs = rhs
             return Value(lhs)
@@ -1731,5 +1764,7 @@ if __name__ in ('__builtin__', 'builtins', '__main__'):
     value = xfilter.filter_value(value, optype, conds, path)
     value = value.value if value else None
     value = marshal(value)
+    value = value if value is not None else []
+    value = value if isinstance(value, list) else [value]
 
     demisto.results(value)

@@ -5,15 +5,19 @@ args:
   description: The text data from which to extract from.
 - name: regex
   required: true
-  description: The regex to match and extract.
+  description: The regex to match and extract. Take into account that data taken from
+    context data contains special characters which are not visible, such as \n and
+    \b.
 - name: group
-  description: The matching group to return. If no group is provided the full match will be returned. Te group value should start at 1.
+  description: The matching group to return. If no group is provided the full match
+    will be returned. The group value should start at 1.
 - name: contextKey
   description: The context key to populate with the result.
 - name: flags
   description: The regex flags to match. Default is "gim".
   defaultValue: gim
-comment: Extracts regex data from the provided text. The script support groups and looping.
+comment: Extracts regex data from the provided text. The script support groups and
+  looping.
 commonfields:
   id: MatchRegexV2
   version: -1
@@ -31,8 +35,10 @@ tags:
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.8.5.10845
+dockerimage: demisto/python3:3.9.7.24076
 
 
 
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

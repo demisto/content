@@ -12,6 +12,12 @@ configuration:
   name: credentials
   required: false
   type: 9
+- display: Fetch the schema from the transport
+  name: fetch_schema_from_transport
+  required: false
+  type: 8
+  defaultvalue: true
+  additionalinfo: Whether to fetch the schema from the transport using an introspection query. When set to false, schema validation will not be performed.
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -137,7 +143,7 @@ script:
     description: Executes a mutation request to the GraphQL server.
     execution: false
     name: graphql-mutation
-  dockerimage: demisto/graphql:1.0.0.17480
+  dockerimage: demisto/graphql:1.0.0.24037
   feed: false
   isfetch: false
   longRunning: false

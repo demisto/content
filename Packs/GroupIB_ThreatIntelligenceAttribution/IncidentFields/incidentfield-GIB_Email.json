@@ -1,0 +1,32 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GIB Data Breach",
+        "GIB Compromised Account",
+        "GIB Compromised Card",
+        "GIB Brand Protection Domain"
+    ],
+    "caseInsensitive": false,
+    "cliName": "gibemail",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_gibemail",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GIB Email",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

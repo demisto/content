@@ -4,7 +4,7 @@ This integration replaces the Gmail functionality in the GoogleApps API and G Su
 
 ### Prerequisites
 
-There are several procedures you have to perform in Google before configuring the integration on Demisto.
+There are several procedures you have to perform in Google before configuring the integration on Cortex XSOAR.
 
 * [Get a New Private Key](#get-a-new-private-key)
 * [Delegate Domain-wide Authority to Your Service Account](#delegate-domain-wide-authority-to-your-service-account)
@@ -61,7 +61,7 @@ In order to revoke/fetch a user role, you need an Immutable Google Apps ID param
     | --- | --- | --- |
     | adminEmail | Email of user with admin privileges \(the Password refers to the content of the Service Account file\) | True |
     | gappsID | Immutable Google Apps Id -  Only the Cxxxxxxxx, section is needed| False |
-    | query | Events query \(e.g. "from:example@demisto.com"\) The query language follows the Gmail query specification example: "from:someuser@example.com rfc822msgid:<somemsgid@example.com> is:unread". For more information, read the [Gmail Query Language documentation](https://support.google.com/mail/answer/7190?hl=en). | False |
+    | query | Events search query \(e.g. "from:example@demisto.com"\) Used for searching emails in the inbox. The query language follows the Gmail query specification example: "from:someuser@example.com rfc822msgid:<somemsgid@example.com> is:unread". For more information, read the [Gmail Query Language documentation](https://support.google.com/mail/answer/7190?hl=en). | False |
     | queryUserKey | Events user key \(e.g. example@demisto.com\) Use this to specify the email account to search for messages. By default, the integration uses the email address specified in the admin instance. | False |
     | isFetch | Fetch incidents | False |
     | insecure | Trust any certificate \(not secure\) | False |
@@ -98,7 +98,7 @@ In order to revoke/fetch a user role, you need an Immutable Google Apps ID param
 
 
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 - Delete a user: **gmail-delete-user**
 - Get tokens for a user: **gmail-get-tokens-for-user**

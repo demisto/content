@@ -28,7 +28,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": -825
+          "y": -1015
         }
       }
     note: false
@@ -208,10 +208,10 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: 24d79967-83c9-42c9-8177-83006a99a4f8
+    taskid: b747c4ab-1503-455f-8dd6-33277a1c2d59
     type: regular
     task:
-      id: 24d79967-83c9-42c9-8177-83006a99a4f8
+      id: b747c4ab-1503-455f-8dd6-33277a1c2d59
       version: -1
       name: Close investigation
       description: Closes the incident.
@@ -918,17 +918,15 @@ tasks:
     quietmode: 0
   "40":
     id: "40"
-    taskid: db2563e5-3d7c-4b5e-8d4b-61a89018b6d3
+    taskid: a156cd63-d9c1-4cf0-8c1a-d752c2d378e3
     type: regular
     task:
-      id: db2563e5-3d7c-4b5e-8d4b-61a89018b6d3
+      id: a156cd63-d9c1-4cf0-8c1a-d752c2d378e3
       version: -1
       name: Find similar incidents
-      description: |-
-        Finds similar incidents by common incident keys, labels, custom fields or context keys.
-        It's highly recommended to use incident keys if possible (e.g., "type" for the same incident type).
-        For best performance, it's recommended to avoid using context keys whenever possible (for example, if the value also appears in a label key, use label).
-      scriptName: FindSimilarIncidents
+      description: Find past similar incidents based on incident fields similarity.
+        Includes an option to also display indicators similarity.
+      scriptName: DBotFindSimilarIncidents
       type: regular
       iscommand: false
       brand: ""
@@ -936,26 +934,37 @@ tasks:
       '#none#':
       - "43"
     scriptarguments:
-      filterQuery: {}
-      hoursBack: {}
-      ignoreClosedIncidents: {}
-      incidentFieldsAppliedCondition: {}
-      maxNumberOfIncidents: {}
-      maxResults: {}
-      similarContextKeys: {}
-      similarCustomFields: {}
-      similarIncidentFields:
-        simple: ${inputs.similarIncidentFields}
-      similarIncidentKeys: {}
-      similarLabelsKeys: {}
-      skipMissingValues: {}
-      timeField: {}
+      aggreagateIncidentsDifferentDate: {}
+      fieldExactMatch:
+        simple: incident.type
+      fieldsToDisplay: {}
+      fromDate: {}
+      incidentId: {}
+      includeIndicatorsSimilarity: {}
+      indicatorsTypes: {}
+      limit: {}
+      maxIncidentsInIndicatorsForWhiteList: {}
+      maxIncidentsToDisplay: {}
+      minNumberOfIndicators: {}
+      minimunIncidentSimilarity: {}
+      query: {}
+      showCurrentIncident:
+        simple: "True"
+      showIncidentSimilarityForAllFields:
+        simple: "True"
+      similarCategoricalField:
+        simple: incident.xdrfileartifacts.filesha256,incident.xdralerts.hostip
+      similarJsonField: {}
+      similarTextField:
+        simple: incident.xdralerts.osactorprocesscommandline,incident.xdralerts.actorprocesscommandline,incident.xdralerts.actionprocessimagecommandline,incident.xdralerts.causalityactorprocesscommandline,incident.xdralerts.host_name,incident.xdralerts.user_name
+      toDate: {}
+      useAllFields: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": -470
+          "y": -660
         }
       }
     note: false
@@ -1009,10 +1018,10 @@ tasks:
     quietmode: 0
   "43":
     id: "43"
-    taskid: f072d598-4100-4ce7-8930-5c355e8b312b
+    taskid: e3873cbf-83ca-47ed-8c4d-ea6d4c32a0a2
     type: condition
     task:
-      id: f072d598-4100-4ce7-8930-5c355e8b312b
+      id: e3873cbf-83ca-47ed-8c4d-ea6d4c32a0a2
       version: -1
       name: Similar incidents found?
       description: Were any similar incidents found?
@@ -1023,7 +1032,7 @@ tasks:
       '#default#':
       - "2"
       "yes":
-      - "41"
+      - "77"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1032,7 +1041,8 @@ tasks:
           left:
             value:
               complex:
-                root: isSimilarIncidentFound
+                root: DBotFindSimilarIncidents
+                accessor: isSimilarIncidentFound
                 transformers:
                 - operator: toLowerCase
             iscontext: true
@@ -1043,7 +1053,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": -280
+          "y": -470
         }
       }
     note: false
@@ -1182,10 +1192,10 @@ tasks:
     quietmode: 0
   "49":
     id: "49"
-    taskid: aaafae13-8eb8-4731-8764-814783e8de1c
+    taskid: 5da8fb53-bb53-4995-8487-c4eb10c47dab
     type: regular
     task:
-      id: aaafae13-8eb8-4731-8764-814783e8de1c
+      id: 5da8fb53-bb53-4995-8487-c4eb10c47dab
       version: -1
       name: Close investigation - false positive
       description: Closes the incident.
@@ -1200,7 +1210,8 @@ tasks:
       assetid: {}
       closeNotes:
         simple: Closed as false positive.
-      closeReason: {}
+      closeReason:
+        simple: False Positive
       code42alerttype: {}
       emailclassification: {}
       id: {}
@@ -1222,10 +1233,10 @@ tasks:
     quietmode: 0
   "50":
     id: "50"
-    taskid: 28b88c41-885d-480b-8845-a9bdd66fdb0a
+    taskid: 8d976e32-9eb8-449d-8cd2-40331ac1593c
     type: regular
     task:
-      id: 28b88c41-885d-480b-8845-a9bdd66fdb0a
+      id: 8d976e32-9eb8-449d-8cd2-40331ac1593c
       version: -1
       name: Close investigation- duplicate
       description: Closes the incident.
@@ -1240,7 +1251,8 @@ tasks:
       assetid: {}
       closeNotes:
         simple: Closed as duplicate.
-      closeReason: {}
+      closeReason:
+        simple: Duplicate
       code42alerttype: {}
       emailclassification: {}
       id: {}
@@ -1397,7 +1409,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": -670
+          "y": -860
         }
       }
     note: false
@@ -1591,10 +1603,10 @@ tasks:
     quietmode: 0
   "57":
     id: "57"
-    taskid: 9de78be7-6c41-4826-87e1-3a3183e2fc10
+    taskid: 9e5acab5-1db9-4281-8680-b0271e9a6a25
     type: regular
     task:
-      id: 9de78be7-6c41-4826-87e1-3a3183e2fc10
+      id: 9e5acab5-1db9-4281-8680-b0271e9a6a25
       version: -1
       name: Link similar incidents
       description: commands.local.cmd.linkIncidents
@@ -1613,8 +1625,8 @@ tasks:
           accessor: id
       linkedIncidentIDs:
         complex:
-          root: similarIncident
-          accessor: rawId
+          root: DBotFindSimilarIncidents.similarIncident
+          accessor: id
     separatecontext: false
     view: |-
       {
@@ -1702,6 +1714,48 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "77":
+    id: "77"
+    taskid: 5a8723cb-a358-40d6-82c4-e45d5e1d749e
+    type: regular
+    task:
+      id: 5a8723cb-a358-40d6-82c4-e45d5e1d749e
+      version: -1
+      name: Set similar incidents grid
+      description: Creates a Grid table from items or key-value pairs.
+      scriptName: SetGridField
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      columns:
+        simple: Incident Id,Created,Name,Incident Similarity,Username,Hostname,OS
+          actor command line
+      context_path:
+        simple: DBotFindSimilarIncidents.similarIncident(val.id='#/Details/'+val.id)
+      grid_id:
+        simple: xdrsimilarincidents
+      keys:
+        simple: id,created,name,similarity incident,xdralerts.user_name,xdralerts.host_name,xdralerts.osactorprocesscommandline
+      overwrite: {}
+      sort_by: {}
+      unpack_nested_elements: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": -280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
@@ -1715,6 +1769,7 @@ view: |-
       "41_44_#default#": 0.49,
       "41_57_yes": 0.4,
       "43_2_#default#": 0.32,
+      "43_77_yes": 0.51,
       "44_2_no": 0.47,
       "44_46_yes": 0.41,
       "52_11_#default#": 0.43,
@@ -1723,10 +1778,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 5400,
+        "height": 5590,
         "width": 1650,
         "x": -240,
-        "y": -825
+        "y": -1015
       }
     }
   }

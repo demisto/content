@@ -47,7 +47,11 @@ configuration:
   name: insecure
   required: false
   type: 8
-description: TwinWave’s threat analysis platform analyzes both URLs and files to detect credential phishing and malware threats. Our platform automatically navigates complex attack chains that attackers put in front of threats in order to evade analysis. In addition to detecting threats, the TwinWave platform generates actionable intelligence for threat hunting and other activities.
+description: TwinWave’s threat analysis platform analyzes both URLs and files to detect
+  credential phishing and malware threats. Our platform automatically navigates complex
+  attack chains that attackers put in front of threats in order to evade analysis.
+  In addition to detecting threats, the TwinWave platform generates actionable intelligence
+  for threat hunting and other activities.
 display: Twinwave
 name: Twinwave
 script:
@@ -61,6 +65,7 @@ script:
         the analysis. If you''d like to use the default Engines for your account,
         omit this field or specify the empty array []. '
       name: engines
+      isArray: true
     - description: 'Optional list of parameters to customize behavior during analysis
         of the job. (E.g., passwords for archives.) {"archive_document_password":
         "", "decode_rewritten_urls": "true/false"}'
@@ -87,6 +92,11 @@ script:
     - name: entry_id
       required: true
       description: The entry id of the File.
+    - description: 'Array of strings (EngineName). List of engines to be used during
+        the analysis. If you''d like to use the default Engines for your account,
+        omit this field or specify the empty array []. '
+      name: engines
+      isArray: true
     - defaultValue: "10"
       description: The job's priority relative to other jobs. Jobs with a lower priority
         value are processed before those with a higher value. (e.g., a priority=1
@@ -270,7 +280,7 @@ script:
     - contextPath: Twinwave.TempArtifactURL.URL
       description: Temporary URL
       type: Unknown
-  dockerimage: demisto/python3:3.9.1.15759
+  dockerimage: demisto/python3:3.9.7.24076
   isfetch: true
   runonce: false
   script: ''

@@ -1,0 +1,985 @@
+id: Configuration Setup
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Configuration Setup
+description: Playbook for the configuration incident type.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 56a47cd0-a894-45ca-86e0-3789bb3971f9
+    type: start
+    task:
+      id: 56a47cd0-a894-45ca-86e0-3789bb3971f9
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 602.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 70090998-8edf-4e41-8fe2-a07ea531cda6
+    type: regular
+    task:
+      id: 70090998-8edf-4e41-8fe2-a07ea531cda6
+      version: -1
+      name: Configuration Setup with File
+      description: Configuration loader for the content management pack.
+      scriptName: ConfigurationSetup
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      configuration_file_entry_id:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: xsoar_config.json
+          accessor: EntryID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: f565187c-1885-43fa-8e28-8074da0d36e7
+    type: title
+    task:
+      id: f565187c-1885-43fa-8e28-8074da0d36e7
+      version: -1
+      name: DONE
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 2555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: b468ef52-00b3-45c2-8a03-8fc321a97f7a
+    type: regular
+    task:
+      id: b468ef52-00b3-45c2-8a03-8fc321a97f7a
+      version: -1
+      name: Set Custom Packs Installed field
+      description: Changes the properties of an incident.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      custompacksinstalled:
+        simple: ${ConfigurationSetup.CustomPacks}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1370,
+          "y": 1535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: a6a6d0f2-5ee2-4df7-836a-55b2d0b64b1c
+    type: regular
+    task:
+      id: a6a6d0f2-5ee2-4df7-836a-55b2d0b64b1c
+      version: -1
+      name: Set Marketplace Packs Installed field
+      description: Changes the properties of an incident.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      marketplacepacksinstalled:
+        simple: ${ConfigurationSetup.MarketplacePacks}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 1535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: b3e084ec-bcc9-4ebf-809f-b325f474a217
+    type: regular
+    task:
+      id: b3e084ec-bcc9-4ebf-809f-b325f474a217
+      version: -1
+      name: Set Lists Created field
+      description: Changes the properties of an incident.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      listscreated:
+        simple: ${ConfigurationSetup.Lists}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: ae17aef1-b139-4f96-8539-73cf2e27f008
+    type: regular
+    task:
+      id: ae17aef1-b139-4f96-8539-73cf2e27f008
+      version: -1
+      name: Set Jobs Created field
+      description: Changes the properties of an incident.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      jobscreated:
+        simple: ${ConfigurationSetup.Jobs}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 397.5,
+          "y": 2205
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 2845d11d-c192-4747-8fd3-e7addeb59871
+    type: regular
+    task:
+      id: 2845d11d-c192-4747-8fd3-e7addeb59871
+      version: -1
+      name: Download Custom Packs from Google Cloud Storage
+      description: Retrieves object data into a file.
+      script: Google Cloud Storage|||gcs-download-file
+      type: regular
+      iscommand: true
+      brand: Google Cloud Storage
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      object_name:
+        simple: ${ConfigurationSetup.CustomPacks.packurl}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1370,
+          "y": 1185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: fe44aea6-1d68-4c78-8540-a5efdef8e35c
+    type: title
+    task:
+      id: fe44aea6-1d68-4c78-8540-a5efdef8e35c
+      version: -1
+      name: Install Custom Packs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1370,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: b27bb8f2-7ab1-46f4-896d-a2ca922ff0f9
+    type: regular
+    task:
+      id: b27bb8f2-7ab1-46f4-896d-a2ca922ff0f9
+      version: -1
+      name: Install Custom Packs
+      description: Custom packs installer for the content management pack.
+      scriptName: CustomPackInstaller
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      pack_id:
+        simple: ${ConfigurationSetup.CustomPacks.packid}
+      retry-count:
+        simple: "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1370,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 2135c722-279a-41f1-86b8-3a91d3351cc3
+    type: title
+    task:
+      id: 2135c722-279a-41f1-86b8-3a91d3351cc3
+      version: -1
+      name: Install Marketplace Packs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 52ddaccc-bef7-40a4-86da-0c313f6e8552
+    type: regular
+    task:
+      id: 52ddaccc-bef7-40a4-86da-0c313f6e8552
+      version: -1
+      name: Install Marketplace Packs
+      description: Marketplace packs installer for the content management pack.
+      scriptName: MarketplacePackInstaller
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      pack_id_key:
+        simple: packid
+      pack_version_key:
+        simple: packversion
+      packs_data:
+        simple: ${ConfigurationSetup.MarketplacePacks}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 0850e0e3-60e0-4a41-8339-040874f1f3ed
+    type: title
+    task:
+      id: 0850e0e3-60e0-4a41-8339-040874f1f3ed
+      version: -1
+      name: Configure Lists
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "33"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 1025
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 63d6392e-96a5-4aeb-8a03-ec7e9cdd1e1e
+    type: title
+    task:
+      id: 63d6392e-96a5-4aeb-8a03-ec7e9cdd1e1e
+      version: -1
+      name: Configure Jobs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "34"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: c2ae399f-b45c-4b1c-8f16-a43ab45a03fb
+    type: regular
+    task:
+      id: c2ae399f-b45c-4b1c-8f16-a43ab45a03fb
+      version: -1
+      name: Create Jobs
+      description: Job creator for the content management pack.
+      scriptName: JobCreator
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      job_name:
+        simple: ${ConfigurationSetup.Jobs.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 397.5,
+          "y": 2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 9ba2b5d4-b0c8-452a-805d-dbe89fd77702
+    type: regular
+    task:
+      id: 9ba2b5d4-b0c8-452a-805d-dbe89fd77702
+      version: -1
+      name: Create Lists
+      description: List creator for the content management pack.
+      scriptName: ListCreator
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      list_data:
+        simple: ${ConfigurationSetup.Lists.listdata}
+      list_name:
+        simple: ${ConfigurationSetup.Lists.listname}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: af67a5f0-6252-43be-8a8d-0fe14fa241d9
+    type: regular
+    task:
+      id: af67a5f0-6252-43be-8a8d-0fe14fa241d9
+      version: -1
+      name: Get Configuration File from GitHub
+      description: Gets the file content from GitHub.
+      script: '|||GitHub-get-file-content'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      branch_name:
+        simple: ${incident.branchname}
+      create_file_from_content:
+        simple: "true"
+      file_path:
+        simple: ${incident.configfilepath}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: a18b95d8-d767-411b-8239-4f686185c229
+    type: condition
+    task:
+      id: a18b95d8-d767-411b-8239-4f686185c229
+      version: -1
+      name: What is the Source of the Configuration File?
+      description: Determines from where to get the configuration file.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Attachment:
+      - "2"
+      GitHub:
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: Attachment
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.configurationfilesource
+            iscontext: true
+          right:
+            value:
+              simple: Attachment
+    - label: GitHub
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.configurationfilesource
+            iscontext: true
+          right:
+            value:
+              simple: GitHub
+    view: |-
+      {
+        "position": {
+          "x": 602.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 8278de62-5015-4d59-8797-a2302fe7d8a5
+    type: regular
+    task:
+      id: 8278de62-5015-4d59-8797-a2302fe7d8a5
+      version: -1
+      name: Configuration Setup with InfoFile
+      description: Configuration loader for the content management pack.
+      scriptName: ConfigurationSetup
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      configuration_file_entry_id:
+        complex:
+          root: InfoFile
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: InfoFile.Name
+                iscontext: true
+              right:
+                value:
+                  simple: xsoar_config.json
+          accessor: EntryID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: a166e331-540f-47d2-89e9-ce4fe4f00f19
+    type: title
+    task:
+      id: a166e331-540f-47d2-89e9-ce4fe4f00f19
+      version: -1
+      name: Configurations
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "15"
+      - "13"
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 602.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 7884abcb-78cc-4ee5-8055-035ec88e531d
+    type: condition
+    task:
+      id: 7884abcb-78cc-4ee5-8055-035ec88e531d
+      version: -1
+      name: What is the Source of the Custom Packs?
+      description: Determines where to get the custom pack files to install.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "31"
+      Attachments:
+      - "12"
+      Google Cloud Storage:
+      - "10"
+      HTTP request:
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: Attachments
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.custompackssource
+            iscontext: true
+          right:
+            value:
+              simple: Attachments
+    - label: Google Cloud Storage
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.custompackssource
+            iscontext: true
+          right:
+            value:
+              simple: Google Cloud Storage
+    - label: HTTP request
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.custompackssource
+            iscontext: true
+          right:
+            value:
+              simple: HTTP request
+    view: |-
+      {
+        "position": {
+          "x": 1370,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 56b086df-0caf-401f-81df-6a00c2f7074e
+    type: regular
+    task:
+      id: 56b086df-0caf-401f-81df-6a00c2f7074e
+      version: -1
+      name: Download Custom Packs using an HTTP request
+      description: Sends an HTTP request. Returns the response as a JSON file.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      method:
+        simple: POST
+      saveAsFile:
+        simple: "yes"
+      url:
+        simple: ${ConfigurationSetup.CustomPacks.packurl}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1800,
+          "y": 1185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 4c2f3fac-7aeb-4aac-805f-81f51bc729b1
+    type: condition
+    task:
+      id: 4c2f3fac-7aeb-4aac-805f-81f51bc729b1
+      version: -1
+      name: If there is no Source Provided, then no Custom Packs should be Installed.
+      description: Checks whether there are custom packs to install when no source
+        is provided. In that case, the playbook will stop with an error.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              complex:
+                root: ConfigurationSetup
+                accessor: CustomPacks
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 1535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: cb82ea65-8eca-4fbd-8b91-bcfb2618e137
+    type: regular
+    task:
+      id: cb82ea65-8eca-4fbd-8b91-bcfb2618e137
+      version: -1
+      name: closeInvestigation
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 2380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: ce7b9c34-e320-4e2b-804a-4f7e243d68e5
+    type: condition
+    task:
+      id: ce7b9c34-e320-4e2b-804a-4f7e243d68e5
+      version: -1
+      name: Are there Lists to create?
+      description: Changes the properties of an incident.
+      type: condition
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#default#':
+      - "17"
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ConfigurationSetup.Lists
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 1185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 33a19d8e-4b9d-433e-8d66-6d413841ca69
+    type: condition
+    task:
+      id: 33a19d8e-4b9d-433e-8d66-6d413841ca69
+      version: -1
+      name: Are there Jobs to create?
+      description: Changes the properties of an incident.
+      type: condition
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#default#':
+      - "32"
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ConfigurationSetup.Jobs
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 1855
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2570,
+        "width": 2130,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

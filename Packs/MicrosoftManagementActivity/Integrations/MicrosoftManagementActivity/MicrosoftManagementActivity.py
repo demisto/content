@@ -1,9 +1,10 @@
-import demistomock as demisto
-from CommonServerPython import *
-import jwt
 import json
+from typing import List, Set
+
+import demistomock as demisto  # noqa: F401
+import jwt
 import requests
-from typing import Set, List
+from CommonServerPython import *  # noqa: F401
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -70,7 +71,7 @@ class Client(BaseClient):
 
     def __init__(self, base_url: str, verify: bool,
                  proxy: bool, self_deployed, refresh_token, auth_and_token_url,
-                 enc_key, auth_code, tenant_id):
+                 enc_key, auth_code, tenant_id, redirect_uri):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.tenant_id = tenant_id
         self.suffix_template = '{}/activity/feed/subscriptions/{}'
@@ -93,7 +94,8 @@ class Client(BaseClient):
                                          scope='',
                                          auth_code=auth_code,
                                          resource='https://manage.office.com',
-                                         token_retrieval_url='https://login.windows.net/common/oauth2/token')
+                                         token_retrieval_url='https://login.windows.net/common/oauth2/token',
+                                         redirect_uri=redirect_uri)
 
     def get_access_token_data(self):
         access_token_jwt = self.ms_client.get_access_token()
@@ -201,8 +203,10 @@ def test_module():
     user_input_fetch_start_date, _ = parse_date_range(fetch_delta)
     if datetime.now() - timedelta(days=7) - timedelta(minutes=5) >= user_input_fetch_start_date:
         return 'Error: first fetch time delta should not be over one week.'
-    if params.get('self_deployed') and not params.get('auth_code'):
-        return 'Error: in the self_deployed authentication flow the authentication code parameter cannot be empty.'
+    if params.get('self_deployed'):
+        if not params.get('auth_code') or not params.get('redirect_uri'):
+            return 'Error: in the self_deployed authentication flow the authentication code parameter and ' \
+                   'redirect uri cannot be empty.'
     return 'The basic parameters are ok, authentication cannot be checked using the test module. ' \
            'Please run ms-management-activity-list-subscriptions to test your credentials.'
 
@@ -520,6 +524,7 @@ def main():
         params = demisto.params()
         refresh_token = params.get('refresh_token', '')
         self_deployed = params.get('self_deployed', False)
+        redirect_uri = params.get('redirect_uri', '')
         tenant_id = refresh_token if self_deployed else ''
         auth_id = params['auth_id']
         enc_key = params['enc_key']
@@ -535,7 +540,8 @@ def main():
             refresh_token=refresh_token,
             auth_and_token_url=auth_id,
             enc_key=enc_key,
-            auth_code=params.get('auth_code', '')
+            auth_code=params.get('auth_code', ''),
+            redirect_uri=redirect_uri
         )
 
         access_token, token_data = client.get_access_token_data()
@@ -568,7 +574,7 @@ def main():
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
 
-from MicrosoftApiModule import *  # noqa: E402
+from MicrosoftApiModule import *   # noqa: E402
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()

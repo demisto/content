@@ -1,0 +1,2 @@
+[file:playbook-Prisma_Access_Whitelist_Egress_IPs_on_SaaS_Services.yml]
+ignore=PB114,PB115

@@ -12,14 +12,12 @@ configuration:
   name: token
   required: false
   type: 4
-- defaultvalue: ''
-  display: Trust any certificate (not secure)
+- display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
   required: false
   type: 8
 - defaultvalue: 24 hours
@@ -39,7 +37,14 @@ configuration:
   name: incidentType
   required: false
   type: 13
-description: The Freshdesk integration allows you to create, update, and delete tickets; reply to and create notes for tickets as well as view Groups, Agents and Contacts.
+- defaultvalue: '50'
+  display: Maximum number of incidents per fetch.
+  hidden: false
+  name: maxFetch
+  required: false
+  type: 0
+description: The Freshdesk integration allows you to create, update, and delete tickets;
+  reply to and create notes for tickets as well as view Groups, Agents and Contacts.
 display: Freshdesk
 name: Freshdesk
 script:
@@ -59,7 +64,9 @@ script:
       secret: false
     - default: false
       defaultValue: '1'
-      description: Priority of the ticket. Each number has a corresponding value. 1 - Low, 2 - Medium, 3 - High, 4 - Urgent. This argument accepts the priority number or string.
+      description: Priority of the ticket. Each number has a corresponding value.
+        1 - Low, 2 - Medium, 3 - High, 4 - Urgent. This argument accepts the priority
+        number or string.
       isArray: false
       name: priority
       predefined:
@@ -71,7 +78,10 @@ script:
       secret: false
     - default: false
       defaultValue: '2'
-      description: Status of the ticket. Each number has a corresponding value. 2 - Open, 3 - Pending, 4 - Resolved, 5 - Closed, 6 - Waiting on Customer, 7 - Waiting on Third Party. This argument accepts the ticket status number or string.
+      description: Status of the ticket. Each number has a corresponding value. 2
+        - Open, 3 - Pending, 4 - Resolved, 5 - Closed, 6 - Waiting on Customer, 7
+        - Waiting on Third Party. This argument accepts the ticket status number or
+        string.
       isArray: false
       name: status
       predefined:
@@ -84,25 +94,34 @@ script:
       required: false
       secret: false
     - default: false
-      description: Email address or a Twitter handle of the requesting user. If an email address is entered and no contact exists with this email address in Freshdesk, it will be added as a new contact. If a Twitter handle is entered and no contact exists with this handle in Freshdesk, it will be added as a new contact.
+      description: Email address or a Twitter handle of the requesting user. If an
+        email address is entered and no contact exists with this email address in
+        Freshdesk, it will be added as a new contact. If a Twitter handle is entered
+        and no contact exists with this handle in Freshdesk, it will be added as a
+        new contact.
       isArray: false
       name: identifier
       required: true
       secret: false
     - default: false
-      description: ID or name of the group or agent to assign the ticket to. Use the `fd-list-groups` command to find potential assignees.
+      description: ID or name of the group or agent to assign the ticket to. Use the
+        `fd-list-groups` command to find potential assignees.
       isArray: false
       name: responder
       required: false
       secret: false
     - default: false
-      description: CSV list of entry IDs of files to attach to the ticket, e.g., "468@73f988d1-bda2-4adc-8e02-926f02190070,560@73f988d1-bda2-4adc-8e02-926f02190070". The total size of these attachments cannot exceed 15MB.
+      description: CSV list of entry IDs of files to attach to the ticket, e.g., "468@73f988d1-bda2-4adc-8e02-926f02190070,560@73f988d1-bda2-4adc-8e02-926f02190070".
+        The total size of these attachments cannot exceed 15MB.
       isArray: true
       name: attachments
       required: false
       secret: false
     - default: false
-      description: Additional, optional ticket fields. Format - "field=value" where field value pairs are delimited from subsequent pairs by a semicolon symbol ';' and where values that are lists are delimited by commas ',', e.g., "name=Example Example;email=example@example.com;tags=new,attention needed,billing related"
+      description: Additional, optional ticket fields. Format - "field=value" where
+        field value pairs are delimited from subsequent pairs by a semicolon symbol
+        ';' and where values that are lists are delimited by commas ',', e.g., "name=Example
+        Example;email=example@example.com;tags=new,attention needed,billing related"
       isArray: true
       name: additional_fields
       predefined:
@@ -168,7 +187,8 @@ script:
       description: Timestamp that denotes when the first response is due
       type: Date
     - contextPath: Freshdesk.Ticket.AdditionalFields
-      description: Additional fields and values that were entered using the 'additional_fields' arguments
+      description: Additional fields and values that were entered using the 'additional_fields'
+        arguments
       type: Unknown
     - contextPath: Freshdesk.Ticket.Attachment.AttachmentURL
       description: URL to download the file attached to the ticket to your local machine
@@ -193,7 +213,11 @@ script:
       required: true
       secret: false
     - default: false
-      description: If set to `true`, the ticket requester's ID, email address, mobile number, name, and phone number will be included in the ticket's output. Note that this is not set by default because setting this to 'true' will consume an additional API credit per API call. To see more details, please turn to the Freshdesk API documentation - https://developers.freshdesk.com/api/#embedding
+      description: If set to `true`, the ticket requester's ID, email address, mobile
+        number, name, and phone number will be included in the ticket's output. Note
+        that this is not set by default because setting this to 'true' will consume
+        an additional API credit per API call. To see more details, please turn to
+        the Freshdesk API documentation - https://developers.freshdesk.com/api/#embedding
       isArray: false
       name: include_requester
       predefined:
@@ -202,7 +226,11 @@ script:
       required: false
       secret: false
     - default: false
-      description: If set to `true` then the ticket’s closed_at, resolved_at and first_responded_at time will be included in the response. Note that this is not set by default because setting this to 'true' will consume an additional API credit per API call. To see more details, please turn to the Freshdesk API documentation - https://developers.freshdesk.com/api/#embedding
+      description: If set to `true` then the ticket’s closed_at, resolved_at and first_responded_at
+        time will be included in the response. Note that this is not set by default
+        because setting this to 'true' will consume an additional API credit per API
+        call. To see more details, please turn to the Freshdesk API documentation
+        - https://developers.freshdesk.com/api/#embedding
       isArray: false
       name: include_stats
       predefined:
@@ -281,7 +309,11 @@ script:
       secret: false
     - default: false
       defaultValue: '2'
-      description: Status of the ticket. Each number has a corresponding value. 2 is Open, 3 is Pending, 4 is Resolved, 5 is Closed, 6 is Waiting on Customer, 7 is Waiting on Third Party. Acceptable values for this command argument are the digits 2,3,4,5,6,7, or their corresponding strings 'Open','Pending','Resolved','Closed','Waiting on Customer','Waiting on Third Party'.
+      description: Status of the ticket. Each number has a corresponding value. 2
+        is Open, 3 is Pending, 4 is Resolved, 5 is Closed, 6 is Waiting on Customer,
+        7 is Waiting on Third Party. Acceptable values for this command argument are
+        the digits 2,3,4,5,6,7, or their corresponding strings 'Open','Pending','Resolved','Closed','Waiting
+        on Customer','Waiting on Third Party'.
       isArray: false
       name: status
       predefined:
@@ -295,7 +327,9 @@ script:
       secret: false
     - default: false
       defaultValue: '1'
-      description: Priority of the ticket. Each number has a corresponding value. 1 is Low, 2 is Medium, 3 is High, 4 is Urgent. Acceptable values for this command argument are the digits 1,2,3,4, or their corresponding strings 'Low','Medium','High','Urgent'.
+      description: Priority of the ticket. Each number has a corresponding value.
+        1 is Low, 2 is Medium, 3 is High, 4 is Urgent. Acceptable values for this
+        command argument are the digits 1,2,3,4, or their corresponding strings 'Low','Medium','High','Urgent'.
       isArray: false
       name: priority
       predefined:
@@ -318,19 +352,25 @@ script:
       required: true
       secret: false
     - default: false
-      description: Update which agent is assigned to respond to this ticket by entering either their unique agent ID, name, or email.
+      description: Update which agent is assigned to respond to this ticket by entering
+        either their unique agent ID, name, or email.
       isArray: false
       name: assigned_agent
       required: false
       secret: false
     - default: false
-      description: Update the group assigned to respond to this ticket by entering the group's unique ID or the name of the group.
+      description: Update the group assigned to respond to this ticket by entering
+        the group's unique ID or the name of the group.
       isArray: false
       name: assigned_group
       required: false
       secret: false
     - default: false
-      description: Fields not included in the default command arguments that you wish to enter the value for. Format - "field=value" where field value pairs are delimited from subsequent pairs by a semicolon symbol ';' and where values that are lists are delimited by commas ','. E.g. - "name=Example Example;email=example@example.com;tags=new,attention needed,billing related"
+      description: Fields not included in the default command arguments that you wish
+        to enter the value for. Format - "field=value" where field value pairs are
+        delimited from subsequent pairs by a semicolon symbol ';' and where values
+        that are lists are delimited by commas ','. E.g. - "name=Example Example;email=example@example.com;tags=new,attention
+        needed,billing related"
       isArray: true
       name: additional_fields
       predefined:
@@ -397,7 +437,8 @@ script:
       description: Ticket update timestamp
       type: Date
     - contextPath: Freshdesk.Ticket.AdditionalFields
-      description: Additional fields and values that were updated using the 'additional_fields' argument
+      description: Additional fields and values that were updated using the 'additional_fields'
+        argument
       type: Unknown
     - contextPath: Freshdesk.Ticket.Attachment.AttachmentURL
       description: URL to download the file attached to the ticket to your local machine
@@ -439,13 +480,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: Return contacts that have been updated after the timestamp given as this argument value. Acceptable format is 'YYYY-MM-DDTHH:MM:SSZ' E.g. '2018-01-19T02:00:00Z'.
+      description: Return contacts that have been updated after the timestamp given
+        as this argument value. Acceptable format is 'YYYY-MM-DDTHH:MM:SSZ' E.g. '2018-01-19T02:00:00Z'.
       isArray: false
       name: updated_since
       required: false
       secret: false
     deprecated: false
-    description: List all contacts matching the specified filters. If no filters are provided then all unblocked and undeleted contacts will be returned.
+    description: List all contacts matching the specified filters. If no filters are
+      provided then all unblocked and undeleted contacts will be returned.
     execution: false
     name: fd-list-contacts
     outputs:
@@ -459,7 +502,8 @@ script:
       description: ID of the primary company to which this contact belongs
       type: Number
     - contextPath: Freshdesk.Contact.ViewAllTickets
-      description: Set to true if the contact can see all tickets that are associated with the company to which s/he belong
+      description: Set to true if the contact can see all tickets that are associated
+        with the company to which s/he belong
       type: Boolean
     - contextPath: Freshdesk.Contact.Deleted
       description: Set to true if the contact has been deleted
@@ -508,7 +552,8 @@ script:
       type: Date
   - arguments:
     - default: false
-      description: ID of the contact you wish to view the details of. To find ID numbers for your contacts try executing the 'fd-list-contacts' command.
+      description: ID of the contact you wish to view the details of. To find ID numbers
+        for your contacts try executing the 'fd-list-contacts' command.
       isArray: false
       name: id
       required: false
@@ -540,7 +585,8 @@ script:
       description: ID of the primary company to which this contact belongs
       type: Number
     - contextPath: Freshdesk.Contact.ViewAllTickets
-      description: Set to true if the contact can see all tickets that are associated with the company to which s/he belong
+      description: Set to true if the contact can see all tickets that are associated
+        with the company to which s/he belong
       type: Boolean
     - contextPath: Freshdesk.Contact.Deleted
       description: Set to true if the contact has been deleted
@@ -612,7 +658,9 @@ script:
       type: Date
   - arguments:
     - default: false
-      description: ID of the Folder containing the Canned Responses you wish to view the details of. To find ID numbers for your Canned Response folders try executing the 'fd-list-canned-response-folders' command.
+      description: ID of the Folder containing the Canned Responses you wish to view
+        the details of. To find ID numbers for your Canned Response folders try executing
+        the 'fd-list-canned-response-folders' command.
       isArray: false
       name: id
       required: true
@@ -661,7 +709,8 @@ script:
       description: Array of agent user IDs separated by commas
       type: Unknown
     - contextPath: Freshdesk.Group.AutoTicketAssign
-      description: Set to true when automatic ticket assignment was enabled. Automatic ticket assignment is only available on certain plans
+      description: Set to true when automatic ticket assignment was enabled. Automatic
+        ticket assignment is only available on certain plans
       type: Boolean
     - contextPath: Freshdesk.Group.BusinessHourID
       description: Unique ID of the business hour associated with the group
@@ -670,7 +719,8 @@ script:
       description: Description of the group
       type: String
     - contextPath: Freshdesk.Group.EscalateTo
-      description: The ID of the user that an escalation email is sent to if a ticket is unassigned
+      description: The ID of the user that an escalation email is sent to if a ticket
+        is unassigned
       type: Number
     - contextPath: Freshdesk.Group.ID
       description: Unique ID of the group
@@ -679,7 +729,8 @@ script:
       description: Name of the group
       type: String
     - contextPath: Freshdesk.Group.UnassignedFor
-      description: The time after which an escalation email is sent if a ticket remains unassigned
+      description: The time after which an escalation email is sent if a ticket remains
+        unassigned
       type: String
     - contextPath: Freshdesk.Group.CreatedAt
       description: Group creation timestamp
@@ -704,7 +755,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The email address from which the reply is sent. By default, the global support email is used.
+      description: The email address from which the reply is sent. By default, the
+        global support email is used.
       isArray: false
       name: from_email
       required: false
@@ -716,19 +768,22 @@ script:
       required: false
       secret: false
     - default: false
-      description: CSV list of email addresses to add to the 'cc' field of the outgoing ticket email, e.g., "example1@example.com,example2@example.com,example3@example.com"
+      description: CSV list of email addresses to add to the 'cc' field of the outgoing
+        ticket email, e.g., "example1@example.com,example2@example.com,example3@example.com"
       isArray: true
       name: cc_emails
       required: false
       secret: false
     - default: false
-      description: CSV list of email addresses to add to the 'bcc' field of the outgoing ticket email, e.g., "example1@example.com,example2@example.com,example3@example.com"
+      description: CSV list of email addresses to add to the 'bcc' field of the outgoing
+        ticket email, e.g., "example1@example.com,example2@example.com,example3@example.com"
       isArray: true
       name: bcc_emails
       required: false
       secret: false
     - default: false
-      description: CSV list of Entry IDs of files to attach to the reply, e.g., "468@73f988d1-bda2-4adc-8e02-926f02190070,560@73f988d1-bda2-4adc-8e02-926f02190070". The total size of these attachments cannot exceed 15MB.
+      description: CSV list of Entry IDs of files to attach to the reply, e.g., "468@73f988d1-bda2-4adc-8e02-926f02190070,560@73f988d1-bda2-4adc-8e02-926f02190070".
+        The total size of these attachments cannot exceed 15MB.
       isArray: true
       name: attachments
       required: false
@@ -748,10 +803,12 @@ script:
       description: ID of the conversation
       type: Number
     - contextPath: Freshdesk.Ticket.Conversation.Incoming
-      description: Set to true when a particular conversation should appear as being created outside of the web portal
+      description: Set to true when a particular conversation should appear as being
+        created outside of the web portal
       type: Boolean
     - contextPath: Freshdesk.Ticket.Conversation.ToEmail
-      description: Array of email addresses of agents/users who need to be notified about this conversation
+      description: Array of email addresses of agents/users who need to be notified
+        about this conversation
       type: Unknown
     - contextPath: Freshdesk.Ticket.Conversation.Private
       description: Set to true if the note is private
@@ -814,10 +871,12 @@ script:
       description: ID of the conversation
       type: Number
     - contextPath: Freshdesk.Ticket.Conversation.Incoming
-      description: Set to true when a particular conversation should appear as being created outside of the web portal
+      description: Set to true when a particular conversation should appear as being
+        created outside of the web portal
       type: Boolean
     - contextPath: Freshdesk.Ticket.Conversation.ToEmail
-      description: Array of email addresses of agents/users who need to be notified about this conversation
+      description: Array of email addresses of agents/users who need to be notified
+        about this conversation
       type: Unknown
     - contextPath: Freshdesk.Ticket.Conversation.Private
       description: Set to true if the note is private
@@ -860,13 +919,21 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: Mobile phone number to filter agents by. Enter the number without dashes or spaces between the numbers. Numbers should be entered as they appear in your Freshdesk web portal. If the number appears in your web portal with a plus sign and country code, then that is how you should enter here, e.g., '+972501231231'.
+      description: Mobile phone number to filter agents by. Enter the number without
+        dashes or spaces between the numbers. Numbers should be entered as they appear
+        in your Freshdesk web portal. If the number appears in your web portal with
+        a plus sign and country code, then that is how you should enter here, e.g.,
+        '+972501231231'.
       isArray: false
       name: mobile
       required: false
       secret: false
     - default: false
-      description: Telephone number to filter agents by. Enter the number without dashes or spaces between the numbers. Numbers should be entered as they appear in your Freshdesk web portal. If the number appears in your web portal with a plus sign and country code, then that is how you should enter it here, e.g., '+972501231231'.
+      description: Telephone number to filter agents by. Enter the number without
+        dashes or spaces between the numbers. Numbers should be entered as they appear
+        in your Freshdesk web portal. If the number appears in your web portal with
+        a plus sign and country code, then that is how you should enter it here, e.g.,
+        '+972501231231'.
       isArray: false
       name: phone
       required: false
@@ -886,10 +953,12 @@ script:
     name: fd-list-agents
     outputs:
     - contextPath: Freshdesk.Agent.Available
-      description: Set to `true` when the agent is in a group that has enabled "Automatic Ticket Assignment" and is accepting new tickets
+      description: Set to `true` when the agent is in a group that has enabled "Automatic
+        Ticket Assignment" and is accepting new tickets
       type: Boolean
     - contextPath: Freshdesk.Agent.AvailableSince
-      description: Timestamp that denotes when the agent became available/unavailable (depending on the value of the 'available' attribute)
+      description: Timestamp that denotes when the agent became available/unavailable
+        (depending on the value of the 'available' attribute)
       type: Date
     - contextPath: Freshdesk.Agent.ID
       description: User ID of the agent
@@ -976,19 +1045,22 @@ script:
       required: false
       secret: false
     - default: false
-      description: ID of the agent who is adding the note. To find agent ID numbers, run the 'fd-list-agents' command.
+      description: ID of the agent who is adding the note. To find agent ID numbers,
+        run the 'fd-list-agents' command.
       isArray: false
       name: user_id
       required: false
       secret: false
     - default: false
-      description: CSV list of agent email addresses to be notify about this note, e.g., "example1@example.com,example2@example.com,example3@example.com"
+      description: CSV list of agent email addresses to be notify about this note,
+        e.g., "example1@example.com,example2@example.com,example3@example.com"
       isArray: true
       name: notify_emails
       required: false
       secret: false
     - default: false
-      description: Set to true if a particular note should appear as being created outside of the web portal
+      description: Set to true if a particular note should appear as being created
+        outside of the web portal
       isArray: false
       name: incoming
       predefined:
@@ -997,13 +1069,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: CSV list of entry IDs of files to attach to the note, e.g., "468@73f988d1-bda2-4adc-8e02-926f02190070,560@73f988d1-bda2-4adc-8e02-926f02190070". The total size of these attachments cannot exceed 15MB.
+      description: CSV list of entry IDs of files to attach to the note, e.g., "468@73f988d1-bda2-4adc-8e02-926f02190070,560@73f988d1-bda2-4adc-8e02-926f02190070".
+        The total size of these attachments cannot exceed 15MB.
       isArray: true
       name: attachments
       required: false
       secret: false
     deprecated: false
-    description: Creates a note for a specified ticket. By default, notes are private. To make a note public, set the 'private' argument to false.
+    description: Creates a note for a specified ticket. By default, notes are private.
+      To make a note public, set the 'private' argument to false.
     execution: false
     name: fd-create-ticket-note
     outputs:
@@ -1017,10 +1091,12 @@ script:
       description: ID of the conversation
       type: Number
     - contextPath: Freshdesk.Ticket.Conversation.Incoming
-      description: Set to true when a particular conversation should appear as being created outside of the web portal
+      description: Set to true when a particular conversation should appear as being
+        created outside of the web portal
       type: Boolean
     - contextPath: Freshdesk.Ticket.Conversation.ToEmail
-      description: List of agent/user email addresses of agents/users who need to be notified about this conversation
+      description: List of agent/user email addresses of agents/users who need to
+        be notified about this conversation
       type: Unknown
     - contextPath: Freshdesk.Ticket.Conversation.Private
       description: Is the conversation private
@@ -1090,19 +1166,23 @@ script:
       required: false
       secret: false
     - default: false
-      description: Filter results by the ticket requester's email address or ID. To find your contacts' ID numbers or email addresses, run the 'fd-list-contacts' command.
+      description: Filter results by the ticket requester's email address or ID. To
+        find your contacts' ID numbers or email addresses, run the 'fd-list-contacts'
+        command.
       isArray: false
       name: requester
       required: false
       secret: false
     - default: false
-      description: By default, tickets created within the previous 30 days are returned. For older tickets, use this filter ("2015-01-19T02:00:00Z")
+      description: By default, tickets created within the previous 30 days are returned.
+        For older tickets, use this filter ("2015-01-19T02:00:00Z")
       isArray: false
       name: updated_since
       required: false
       secret: false
     - default: false
-      description: Field for ordering the list of tickets. The default sort order uses the 'created_at' field.
+      description: Field for ordering the list of tickets. The default sort order
+        uses the 'created_at' field.
       isArray: false
       name: order_by
       predefined:
@@ -1113,7 +1193,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Return list results in ascending or descending order according to the order_by value, default is descending
+      description: Return list results in ascending or descending order according
+        to the order_by value, default is descending
       isArray: false
       name: order_type
       predefined:
@@ -1122,7 +1203,10 @@ script:
       required: false
       secret: false
     - default: false
-      description: If set to 'true' then ticket’s closed_at, resolved_at and first_responded_at time will be included. Note that this is not set by default because setting this to 'true' will consume an additional 2 API credits per API call. To see more details, see the Freshdesk API documentation - https://developers.freshdesk.com/api/#embedding
+      description: If set to 'true' then ticket’s closed_at, resolved_at and first_responded_at
+        time will be included. Note that this is not set by default because setting
+        this to 'true' will consume an additional 2 API credits per API call. To see
+        more details, see the Freshdesk API documentation - https://developers.freshdesk.com/api/#embedding
       isArray: false
       name: include_stats
       predefined:
@@ -1131,7 +1215,11 @@ script:
       required: false
       secret: false
     - default: false
-      description: If set to 'true' then the ticket requester's ID, email address, mobile number, name, and phone number are included in the ticket's output for each ticket. Note that this is not set by default because setting this to 'true' will consume an additional 2 API credits per API call. To see more details, see the Freshdesk API documentation - https://developers.freshdesk.com/api/#embedding
+      description: If set to 'true' then the ticket requester's ID, email address,
+        mobile number, name, and phone number are included in the ticket's output
+        for each ticket. Note that this is not set by default because setting this
+        to 'true' will consume an additional 2 API credits per API call. To see more
+        details, see the Freshdesk API documentation - https://developers.freshdesk.com/api/#embedding
       isArray: false
       name: include_requester
       predefined:
@@ -1140,7 +1228,10 @@ script:
       required: false
       secret: false
     - default: false
-      description: If set to 'true' then the ticket's description and description_text are included the tickets' outputs. Note that this is not set by default because setting this to 'true' will consume an additional 2 API credits per API call. To see more details, see the Freshdesk API documentation - https://developers.freshdesk.com/api/#embedding
+      description: If set to 'true' then the ticket's description and description_text
+        are included the tickets' outputs. Note that this is not set by default because
+        setting this to 'true' will consume an additional 2 API credits per API call.
+        To see more details, see the Freshdesk API documentation - https://developers.freshdesk.com/api/#embedding
       isArray: false
       name: include_description
       predefined:
@@ -1226,10 +1317,14 @@ script:
     - contextPath: Freshdesk.Ticket.Attachment.Size
       description: Size of the file attached to the ticket
       type: String
-  subtype: python2
+  feed: false
   isfetch: true
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
+  subtype: python2
+  dockerimage: demisto/python:2.7.18.24066
   type: python
 tests:
 - Freshdesk-Test

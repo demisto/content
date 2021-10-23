@@ -29,7 +29,7 @@
 <li>Click the <strong>Generate API key</strong> button.</li>
 <li>Copy the API key for later use.</li>
 </ol>
-<h2>Configure the Joe Security Integration on Demisto</h2>
+<h2>Configure the Joe Security Integration on Cortex XSOAR</h2>
 <hr>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
@@ -43,14 +43,14 @@
 <li><strong>API Key</strong></li>
 <li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Do not use by default</strong></li>
-<li><strong>Demisto engine</strong></li>
+<li><strong>Cortex XSOAR engine</strong></li>
 </ul>
 </li>
 <li>Click <strong>Test</strong> to validate the URLs and connection.</li>
 </ol>
 <h2>Commands</h2>
 <hr>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_45220795871529576244617">Ping the server: joe-is-online</a></li>
 <li><a href="#h_943521905421529576252174">Submit a URL for analysis: joe-analysis-submit-url</a></li>
@@ -241,7 +241,7 @@
 <td style="width: 156px;">DBotScore.Score</td>
 <td style="width: 166px;">String</td>
 <td style="width: 494px;">
-<p>Demisto Dbot Score:</p>
+<p>Cortex XSOAR Dbot Score:</p>
 <ul>
 <li><em>Bad</em></li>
 <li><em>Suspicious</em></li>
@@ -382,7 +382,7 @@
 <td style="width: 197px;">DBotScore.Score</td>
 <td style="width: 66px;">String</td>
 <td style="width: 435px;">
-<p>Demisto Dbot Score:</p>
+<p>Cortex XSOAR Dbot Score:</p>
 <ul>
 <li><em>Bad</em></li>
 <li><em>Suspicious</em></li>
@@ -509,7 +509,7 @@
 <td style="width: 261px;">DBotScore.Score</td>
 <td style="width: 83px;">String</td>
 <td style="width: 364px;">
-<p>Demisto Dbot Score:</p>
+<p>Cortex XSOAR Dbot Score:</p>
 <ul>
 <li><em>Bad</em></li>
 <li><em>Suspicious</em></li>
@@ -711,7 +711,7 @@
 <td style="width: 261px;">DBotScore.Score</td>
 <td style="width: 90px;">String</td>
 <td style="width: 357px;">
-<p>Demisto Dbot Score:</p>
+<p>Cortex XSOAR Dbot Score:</p>
 <ul>
 <li><em>Bad</em></li>
 <li><em>Suspicious</em></li>
@@ -861,7 +861,7 @@
 <td style="width: 235px;">DBotScore.Score</td>
 <td style="width: 102px;">String</td>
 <td style="width: 371px;">
-<p>Demisto Dbot Score:</p>
+<p>Cortex XSOAR Dbot Score:</p>
 <ul>
 <li><em>Bad</em></li>
 <li><em>Suspicious</em></li>
@@ -1221,7 +1221,7 @@
 <td style="width: 260px;">DBotScore.Score</td>
 <td style="width: 88px;">String</td>
 <td style="width: 360px;">
-<p>Demisto Dbot Score:</p>
+<p>Cortex XSOAR Dbot Score:</p>
 <ul>
 <li><em>Bad</em></li>
 <li><em>Suspicious</em></li>
@@ -1413,7 +1413,7 @@
 <td style="width: 210px;">DBotScore.Score</td>
 <td style="width: 100px;">String</td>
 <td style="width: 398px;">
-<p>Demisto Dbot Score:</p>
+<p>Cortex XSOAR Dbot Score:</p>
 <ul>
 <li><em>Bad</em></li>
 <li><em>Suspicious</em></li>

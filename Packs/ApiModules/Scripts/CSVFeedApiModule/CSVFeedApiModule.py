@@ -6,13 +6,13 @@ from CommonServerUserPython import *
 import csv
 import gzip
 import urllib3
-from dateutil.parser import parse
 from typing import Optional, Pattern, Dict, Any, Tuple, Union, List
 
 # disable insecure warnings
 urllib3.disable_warnings()
 
 # Globals
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 
 class Client(BaseClient):
@@ -240,17 +240,13 @@ def module_test_command(client: Client, args):
 
 
 def date_format_parsing(date_string):
-    formatted_date = parse(date_string).isoformat()
-    if "+" in formatted_date:
-        formatted_date = formatted_date.split('+')[0]
-
-    if "." in formatted_date:
-        formatted_date = formatted_date.split('.')[0]
-
-    if not formatted_date.endswith('Z'):
-        formatted_date = formatted_date + 'Z'
-
-    return formatted_date
+    """
+    formats a datestring to the ISO-8601 format which the server expects to recieve
+    :param date_string: Date represented as a tring
+    :return: ISO-8601 date string
+    """
+    formatted_date = dateparser.parse(date_string, settings={'TIMEZONE': 'UTC'})
+    return formatted_date.strftime(DATE_FORMAT)
 
 
 def create_fields_mapping(raw_json: Dict[str, Any], mapping: Dict[str, Union[Tuple, str]]):
@@ -311,15 +307,16 @@ def fetch_indicators_command(client: Client, default_indicator_type: str, auto_d
                     indicator_type = determine_indicator_type(conf_indicator_type, default_indicator_type, auto_detect,
                                                               value)
                     raw_json['type'] = indicator_type
-                    # if relations param is True and also the url returns relations
-                    if create_relationships and config.get(url, {}).get('relation_name'):
-                        if fields_mapping.get('relation_entity_b'):
-                            relationships_lst = EntityRelation(
-                                name=config.get(url, {}).get('relation_name'),
+                    # if relationships param is True and also the url returns relationships
+                    if create_relationships and config.get(url, {}).get('relationship_name'):
+                        if fields_mapping.get('relationship_entity_b'):
+                            relationships_lst = EntityRelationship(
+                                name=config.get(url, {}).get('relationship_name'),
                                 entity_a=value,
                                 entity_a_type=indicator_type,
-                                entity_b=fields_mapping.get('relation_entity_b'),
-                                entity_b_type=config.get(url, {}).get('relation_entity_b_type'),
+                                entity_b=fields_mapping.get('relationship_entity_b'),
+                                entity_b_type=FeedIndicatorType.indicator_type_by_server_version(
+                                    config.get(url, {}).get('relationship_entity_b_type')),
                             )
                             relationships_of_indicator = [relationships_lst.to_indicator()]
 

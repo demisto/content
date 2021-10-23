@@ -1,7 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-
 from typing import Any, Tuple
 
 """ CONSTANT VARIABLES """
@@ -261,18 +260,19 @@ def main():
         elif demisto.command() == "fetch-indicators":
             if fetch_full_feed:
                 limit = -1
-            integration_ctx = demisto.getIntegrationContext() or {}
-            (indicators, integration_ctx) = fetch_indicators_command(
+
+            last_run_indicators = get_feed_last_run()
+            (indicators, last_run_indicators) = fetch_indicators_command(
                 client,
                 initial_interval,
                 limit,
-                integration_ctx,
+                last_run_indicators,
                 fetch_full_feed,
             )
             for iter_ in batch(indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
 
-            demisto.setIntegrationContext(integration_ctx)
+            set_feed_last_run(last_run_indicators)
         else:
             return_results(commands[command](client, **args))  # type: ignore[operator]
 

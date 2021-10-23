@@ -1,0 +1,40 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Splunk Notable Generic"
+    ],
+    "caseInsensitive": true,
+    "cliName": "notablestatus",
+    "closeForm": false,
+    "content": true,
+    "description": "The Splunk notable status. Can be one of the following New, In Progress, Pending, Resolved, Closed",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_notablestatus",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Notable Status",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "selectValues": [
+        "New",
+        "In Progress",
+        "Pending",
+        "Resolved",
+        "Closed"
+    ],
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "singleSelect",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

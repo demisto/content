@@ -26,17 +26,22 @@ configuration:
 - additionalinfo: If set to false, iam-create-user command will be skipped, and user
     will not be created.
   defaultvalue: 'true'
-  display: Enabled The Command iam-create-user
+  display: Allow creating users
   name: create_user_enabled
   required: false
   type: 8
 - defaultvalue: 'true'
-  display: Enabled The Command iam-update-user
+  display: Allow updating users
   name: update_user_enabled
   required: false
   type: 8
 - defaultvalue: 'true'
-  display: Enabled The Command iam-disable-user
+  display: Allow enabling users
+  name: enable_user_enabled
+  required: false
+  type: 8
+- defaultvalue: 'true'
+  display: Allow disabling users
   name: disable_user_enabled
   required: false
   type: 8
@@ -263,7 +268,7 @@ script:
       within the application. Used for outgoing-mapping through the Get Schema option.
     execution: false
     name: get-mapping-fields
-  dockerimage: demisto/python3:3.9.1.15759
+  dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: false
   longRunning: false

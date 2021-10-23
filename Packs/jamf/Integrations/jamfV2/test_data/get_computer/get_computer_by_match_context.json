@@ -1,0 +1,21 @@
+[{
+  "id": 139,
+  "name": "Test Mac",
+  "udid": "123D266C-CEDC-88B4-630F-E35FB9291C99",
+  "serial_number": "ABCF71FNMD8R",
+  "mac_address": "11:0C:29:29:1C:99",
+  "alt_mac_address": "11:66:5A:21:D5:36",
+  "asset_tag": "",
+  "bar_code_1": "",
+  "bar_code_2": "",
+  "username": "test",
+  "realname": "test test",
+  "email": "",
+  "email_address": "",
+  "room": "",
+  "position": "",
+  "building": "",
+  "building_name": "",
+  "department": "",
+  "department_name": ""
+}]

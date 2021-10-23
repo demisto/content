@@ -113,7 +113,7 @@ tags:
 - ml
 timeout: '0'
 type: python
-dockerimage: demisto/ml:1.0.0.19023
+dockerimage: demisto/ml:1.0.0.23334
 fromversion: 5.0.0
 tests:
-- No tests (auto formatted)
+- VerifyOOBV2Predictions-Test

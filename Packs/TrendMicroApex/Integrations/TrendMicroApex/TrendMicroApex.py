@@ -187,7 +187,7 @@ class Client(BaseClient):
                    'version': version,
                    'checksum': checksum}
 
-        token = jwt.encode(payload, self.api_key, algorithm=algorithm).decode('utf-8')
+        token = jwt.encode(payload, self.api_key, algorithm=algorithm)
         return token
 
     def udso_list(self, list_type="", contentfilter=""):
@@ -658,7 +658,7 @@ def udso_list_command(client: Client, args):
 
     response = client.udso_list(list_type, content_filter)
     list_data = response.get('Data', [])
-    readable_output = tableToMarkdown("Apex UDSO List", list_data)
+    readable_output = tableToMarkdown("Apex One UDSO List", list_data)
 
     context = {
         'TrendMicroApex.UDSO(val.content == obj.content)': list_data,
@@ -718,7 +718,7 @@ def prodagent_isolate_command(client: Client, args):
                                         prod=product)
     result_content = response.get('result_content', [])
     if result_content:
-        readable_output = tableToMarkdown("Apex ProductAgent Isolate", result_content)
+        readable_output = tableToMarkdown("Apex One ProductAgent Isolate", result_content)
 
     else:
         readable_output = '### No agents were affected.'
@@ -747,7 +747,7 @@ def prodagent_restore_command(client: Client, args):
                                         prod=product)
     result_content = response.get('result_content', [])
     if result_content:
-        readable_output = tableToMarkdown("Apex ProductAgent Restore", result_content)
+        readable_output = tableToMarkdown("Apex One ProductAgent Restore", result_content)
     else:
         readable_output = '### No agents were affected.'
 
@@ -772,7 +772,7 @@ def list_logs_command(client: Client, args):
     log_type = args.get('log_type')
     headers = ['EventName', 'EventID', 'CreationTime', 'LogVersion', 'ApplianceVersion', 'ApplianceProduct',
                'ApplianceVendor']
-    readable_output = tableToMarkdown(f'Trend Micro Apex - {log_type} Logs', parsed_logs_list, headers=headers,
+    readable_output = tableToMarkdown(f'Trend Micro Apex One - {log_type} Logs', parsed_logs_list, headers=headers,
                                       removeNull=True)
 
     return CommandResults(
@@ -813,7 +813,7 @@ def servers_list_command(client: Client, args):
             context = human_readable_table = response.get('result_content')
 
     headers = ['entity_id', 'product', 'host_name', 'ip_address_list', 'capabilities']
-    readable_output = tableToMarkdown('Trend Micro Apex Servers List', human_readable_table, headers,
+    readable_output = tableToMarkdown('Trend Micro Apex One Servers List', human_readable_table, headers,
                                       headerTransform=string_to_table_header, removeNull=True)
     return CommandResults(
         readable_output=readable_output,
@@ -837,7 +837,7 @@ def agents_list_command(client: Client, args):
         if response.get('result_content'):
             context = human_readable_table = response.get('result_content')
 
-    readable_output = tableToMarkdown('Trend Micro Apex Agents List', human_readable_table,
+    readable_output = tableToMarkdown('Trend Micro Apex One Agents List', human_readable_table,
                                       headerTransform=string_to_table_header,
                                       removeNull=True)
 
@@ -865,7 +865,7 @@ def endpoint_sensors_list_command(client: Client, args):
                     agent['isolateStatus'] = AGENT_ISOLATION_STATUS_NUM_TO_VALUE[agent['isolateStatus']]
                 human_readable_table.append(agent[0])
 
-    readable_output = tableToMarkdown('Trend Micro Apex Security Agents with Endpoint Sensor enabled',
+    readable_output = tableToMarkdown('Trend Micro Apex One Security Agents with Endpoint Sensor enabled',
                                       human_readable_table, removeNull=True)
 
     return CommandResults(
@@ -980,7 +980,7 @@ def main():
             return_results(investigation_result_list_command(client, demisto.args()))
 
     except ValueError as e:
-        return_error(f'Error from TrendMicro Apex integration: {str(e)}', e)
+        return_error(f'Error from TrendMicro Apex One integration: {str(e)}', e)
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:

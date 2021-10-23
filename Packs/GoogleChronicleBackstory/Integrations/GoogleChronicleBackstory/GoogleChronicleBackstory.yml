@@ -7,6 +7,17 @@ configuration:
   name: service_account_credential
   required: true
   type: 4
+- additionalinfo: Select the region based on the location of the chronicle backstory
+    instance.
+  defaultvalue: General
+  display: Region
+  name: region
+  options:
+  - General
+  - Europe
+  - Asia
+  required: false
+  type: 15
 - display: Provide comma(',') separated categories (e.g. APT-Activity, Phishing).
     Indicators belonging to these "categories" would be considered as "malicious"
     when executing reputation commands.
@@ -59,7 +70,7 @@ configuration:
     level is equal or above the configured level, it would be considered as "malicious".
     The confidence level configured should have higher precedence than the suspicious
     level. This configuration is applicable to reputation commands only. Refer the
-    "confidence score" level precedence UNKNOWN_SEVERITY < INFORMATIONAL < LOW < MEDIUM
+    "confidence score" level precedence UNKNOWN SEVERITY < INFORMATIONAL < LOW < MEDIUM
     < HIGH.
   name: override_confidence_level_malicious
   options:
@@ -70,12 +81,9 @@ configuration:
   - high
   required: false
   type: 15
-- display: Select the confidence score level. If the indicator's confidence score
-    level is equal or above the configured level, it would be considered as "suspicious".
-    The confidence level configured should have lesser precedence than the malicious
-    level. This configuration is applicable to reputation commands only. Refer the
-    "confidence score" level precedence UNKNOWN_SEVERITY < INFORMATIONAL < LOW < MEDIUM
-    < HIGH.
+- display: |-
+    Select the confidence score level. If the indicator's confidence score level is equal or above the configured level, it would be considered as "suspicious".
+    The confidence level configured should have lesser precedence than the malicious level. This configuration is applicable to reputation commands only. Refer the "confidence score" level precedence UNKNOWN SEVERITY < INFORMATIONAL < LOW < MEDIUM < HIGH.
   name: override_confidence_level_suspicious
   options:
   - unknown_severity
@@ -105,7 +113,8 @@ configuration:
   required: false
   type: 0
 - additionalinfo: Select Chronicle alert type to create actionable incident. Available
-    options are IOC Domain matches(Default), Assets with alerts, Detection alerts and User alerts.
+    options are IOC Domain matches(Default), Assets with alerts, Detection alerts
+    and User alerts.
   defaultvalue: IOC Domain matches
   display: Chronicle Alert Type (Select the type of data to consider for fetch incidents).
   hidden: false
@@ -128,21 +137,23 @@ configuration:
   required: false
   type: 15
 - additionalinfo: 'Fetches detection by either Rule ID (format: ru_{UUID}) or Version
-    ID (format: {ruleId}@v_{int64}_{int64}. Enter in comma separated format to add multiple.'
+    ID (format: {ruleId}@v_{int64}_{int64}. Enter in comma separated format to add
+    multiple.'
   display: Detections to fetch by Rule ID or Version ID
   hidden: false
   name: fetch_detection_by_ids
   required: false
   type: 0
-- additionalinfo: Fetches all detections for the latest versions of all the live rules. At max 50
-    live rules will be fetched.
+- additionalinfo: Fetches all detections for the latest versions of all the live rules.
+    At max 50 live rules will be fetched.
   display: Fetch all live rules detections
   hidden: false
   name: fetch_all_live_detections
   required: false
   type: 8
-- additionalinfo: Select the alert state to filter the detections to be fetched using fetch incidents.
-    Available options are 'ALERTING' and 'NOT_ALERTING' (Default-No Selection).
+- additionalinfo: Select the alert state to filter the detections to be fetched using
+    fetch incidents. Available options are 'ALERTING' and 'NOT_ALERTING' (Default-No
+    Selection).
   display: Filter detections by alert state
   name: fetch_detection_by_alert_state
   options:
@@ -153,7 +164,8 @@ configuration:
 - additionalinfo: Select the time window to query Chronicle. While selecting the time
     window consider the time delay for an event to appear in Chronicle after generation.
     Available options are 15 (Default), 30, 45 and 60. This parameter is not applied
-    when "IOC Domain matches" Chronicle Alert Type is selected. Don't touch unless you're missing alerts.
+    when "IOC Domain matches" Chronicle Alert Type is selected. Don't touch unless
+    you're missing alerts.
   defaultvalue: '15'
   display: Time window (in minutes)
   hidden: false
@@ -196,10 +208,11 @@ script:
       required: false
       secret: false
     - default: false
-      description: "The value of the start time for your request, in RFC 3339 format
-        (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the default is the UTC time
-        corresponding to 3 days earlier than current time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd,
-        N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours."
+      description: 'The value of the start time for your request, in RFC 3339 format
+        (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the default
+        is the UTC time corresponding to 3 days earlier than current time. Formats:
+        YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z,
+        2020-05-01, 2 days, 5 hours.'
       isArray: false
       name: start_time
       required: false
@@ -273,18 +286,19 @@ script:
       secret: false
     - default: false
       description: 'The value of the start time for your request, in RFC 3339 format
-        (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the default is the UTC time
-        corresponding to 3 days earlier than current time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd,
-        N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours.'
+        (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the default
+        is the UTC time corresponding to 3 days earlier than current time. Formats:
+        YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z,
+        2020-05-01, 2 days, 5 hours.'
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
       description: 'The value of the end time for your request, in RFC 3339 format
-        (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied,  the default is current UTC
-        time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.
-        Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours.'
+        (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied,  the default
+        is current UTC time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N
+        hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours.'
       isArray: false
       name: end_time
       required: false
@@ -535,18 +549,19 @@ script:
       secret: false
     - default: false
       description: 'The value of the start time for your request, in RFC 3339 format
-        (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the default is the UTC time
-        corresponding to 3 days earlier than current time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd,
-        N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours.'
+        (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the default
+        is the UTC time corresponding to 3 days earlier than current time. Formats:
+        YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z,
+        2020-05-01, 2 days, 5 hours.'
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
       description: 'The value of the end time for your request, in RFC 3339 format
-        (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied,  the default is current UTC
-        time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.
-        Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours.'
+        (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied,  the default
+        is current UTC time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N
+        hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours.'
       isArray: false
       name: end_time
       required: false
@@ -562,8 +577,8 @@ script:
     - auto: PREDEFINED
       default: false
       description: The severity by which to filter the returned alerts. If not supplied,
-        all alerts are fetched. This is applicable for asset alerts only. The possible values
-        are "High", "Medium", "Low", or "Unspecified".
+        all alerts are fetched. This is applicable for asset alerts only. The possible
+        values are "High", "Medium", "Low", or "Unspecified".
       isArray: false
       name: severity
       predefined:
@@ -575,13 +590,14 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: 'Asset Alerts'
-      description: Specify which type of alerts you want. The possible values are "Asset Alerts" or "User Alerts".
+      defaultValue: Asset Alerts
+      description: Specify which type of alerts you want. The possible values are
+        "Asset Alerts" or "User Alerts".
       isArray: false
       name: alert_type
       predefined:
-      - 'Asset Alerts'
-      - 'User Alerts'
+      - Asset Alerts
+      - User Alerts
       required: false
       secret: false
     deprecated: false
@@ -662,11 +678,10 @@ script:
       required: false
       secret: false
     - default: false
-      description: '
-        The value of the start time for your request. The format of Date
-        should comply with RFC 3339 (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied,
-        the product considers UTC time corresponding to 2 hours earlier than current
-        time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.
+      description: ' The value of the start time for your request. The format of Date
+        should comply with RFC 3339 (e.g. 2002-10-02T15:00:00Z) or relative time.
+        If not supplied, the product considers UTC time corresponding to 2 hours earlier
+        than current time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.
         Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours.'
       isArray: false
       name: start_time
@@ -674,9 +689,10 @@ script:
       secret: false
     - default: false
       description: 'The value of the end time for your request. The format of Date
-        should comply with RFC 3339 (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied,
-        the product considers current UTC time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.
-        Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours.'
+        should comply with RFC 3339 (e.g. 2002-10-02T15:00:00Z) or relative time.
+        If not supplied, the product considers current UTC time. Formats: YYYY-MM-ddTHH:mm:ssZ,
+        YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2
+        days, 5 hours.'
       isArray: false
       name: end_time
       required: false
@@ -691,9 +707,10 @@ script:
       secret: false
     - default: false
       description: 'Specify the reference time for the asset you are investigating,
-        in RFC 3339 format (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the product
-        considers start time as reference time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.
-        Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours.'
+        in RFC 3339 format (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied,
+        the product considers start time as reference time. Formats: YYYY-MM-ddTHH:mm:ssZ,
+        YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2
+        days, 5 hours.'
       isArray: false
       name: reference_time
       required: false
@@ -1854,17 +1871,19 @@ script:
       required: true
       secret: false
     - default: false
-      description: "Time to begin returning detections, filtering on a detection's detectionTime.
-        If not specified, the start time is treated as open-ended. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd,
-        N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours."
+      description: 'Time to begin returning detections, filtering on a detection''s
+        detectionTime. If not specified, the start time is treated as open-ended.
+        Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z,
+        2020-05-01, 2 days, 5 hours.'
       isArray: false
       name: detection_start_time
       required: false
       secret: false
     - default: false
-      description: "Time to stop returning detections, filtering on a detection's detectionTime.
-        If not specified, the end time is treated as open-ended. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd,
-        N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours."
+      description: 'Time to stop returning detections, filtering on a detection''s
+        detectionTime. If not specified, the end time is treated as open-ended. Formats:
+        YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z,
+        2020-05-01, 2 days, 5 hours.'
       isArray: false
       name: detection_end_time
       required: false
@@ -3095,7 +3114,92 @@ script:
       description: A page token that can be provided to the next call to view the
         next page of detections. Absent if this is the last page.
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.15845
+  - arguments:
+    - default: false
+      defaultValue: '100'
+      description: Specify the maximum number of Rules to return. You can specify
+        between 1 and 1,000. The default is 100.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      description: A page token, received from a previous call.  Provide this to retrieve
+        the subsequent page.
+      isArray: false
+      name: page_token
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'To filter live rules.'
+      isArray: false
+      name: live_rule
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: List the latest versions of all Rules.
+    execution: false
+    name: gcb-list-rules
+    outputs:
+    - contextPath: GoogleChronicleBackstory.Rules.ruleId
+      description: Unique identifier for a Rule.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Rules.versionId
+      description: Unique identifier for a specific version of a rule.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Rules.ruleName
+      description: Name of the rule, as parsed from ruleText.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Rules.ruleText
+      description: Source code for the rule, as defined by the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Rules.liveRuleEnabled
+      description: Whether the rule is enabled to run as a Live Rule.
+      type: Boolean
+    - contextPath: GoogleChronicleBackstory.Rules.alertingEnabled
+      description: Whether the rule is enabled to generate Alerts.
+      type: Boolean
+    - contextPath: GoogleChronicleBackstory.Rules.versionCreateTime
+      description: A string representing the time in ISO-8601 format.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Rules.compilationState
+      description: Compilation state of the rule. It can be SUCCEEDED or FAILED.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Rules.compilationError
+      description: A compilation error if compilationState is FAILED, absent if compilationState
+        is SUCCEEDED.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Rules.Metadata.severity
+      description: Severity for the rule.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Rules.Metadata.author
+      description: Name of author for the rule.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Rules.Metadata.description
+      description: Description of the rule.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Rules.Metadata.reference
+      description: Reference link for the rule.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Rules.Metadata.created
+      description: Time at which the rule is created.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Rules.Metadata.updated
+      description: Time at which the rule is updated.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Token.name
+      description: The name of the command to which the value of the nextPageToken
+        corresponds.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Token.nextPageToken
+      description: A page token that can be provided to the next call to view the
+        next page of Rules. Absent if this is the last page.
+      type: String
+  dockerimage: demisto/googleapi-python3:1.0.0.24037
   feed: false
   isfetch: true
   longRunning: false

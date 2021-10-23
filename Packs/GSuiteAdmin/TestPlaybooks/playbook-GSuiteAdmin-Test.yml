@@ -8,15 +8,14 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: cc3dbef7-3f92-4371-849e-a16af6cb79ef
+    taskid: 531c820b-c43d-42b4-8651-6221f950b859
     type: start
     task:
-      id: cc3dbef7-3f92-4371-849e-a16af6cb79ef
+      id: 531c820b-c43d-42b4-8651-6221f950b859
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -33,12 +32,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 8abd0656-72e2-4ba8-808a-47cfcac9f089
+    taskid: 070c2eba-86bb-4f36-846f-51095cec1b2b
     type: regular
     task:
-      id: 8abd0656-72e2-4ba8-808a-47cfcac9f089
+      id: 070c2eba-86bb-4f36-846f-51095cec1b2b
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -47,7 +48,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "20"
+      - "55"
     scriptarguments:
       all:
         simple: "yes"
@@ -64,12 +65,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 4287afa7-2684-4102-8071-2fe9cce69ebc
+    taskid: eef6dce2-83b1-4c0d-8c81-9350f0050591
     type: regular
     task:
-      id: 4287afa7-2684-4102-8071-2fe9cce69ebc
+      id: eef6dce2-83b1-4c0d-8c81-9350f0050591
       version: -1
       name: gsuite-user-create
       script: '|||gsuite-user-create'
@@ -80,41 +83,22 @@ tasks:
       '#none#':
       - "21"
     scriptarguments:
-      address_type: {}
       admin_email:
         simple: admin@demistodev.com
-      country: {}
-      extended_address: {}
       first_name:
         simple: XSOAR
-      gender: {}
-      is_address_primary: {}
-      is_ip_white_listed: {}
-      is_phone_number_primary: {}
       last_name:
         simple: XSOAR
-      notes_content_type: {}
-      notes_value: {}
       password:
         simple: Xsoar@111
-      phone_number: {}
-      phone_number_type: {}
-      postal_code: {}
       primary_email:
         simple: xsoar11@demistodev.com
-      recovery_email: {}
-      recovery_phone: {}
-      region: {}
-      secondary_email_address: {}
-      secondary_email_type: {}
-      street_address: {}
-      suspended: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 545
         }
       }
     note: false
@@ -122,12 +106,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 685d64c9-ae84-4f89-812b-b96be15c8315
+    taskid: 1f1c69ed-2ecc-4313-81dd-e2169779e308
     type: condition
     task:
-      id: 685d64c9-ae84-4f89-812b-b96be15c8315
+      id: 1f1c69ed-2ecc-4313-81dd-e2169779e308
       version: -1
       name: Verify Outputs
       type: condition
@@ -174,7 +160,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 720
         }
       }
     note: false
@@ -182,12 +168,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 65ac3caa-0c3f-405b-8319-cc50f764c523
+    taskid: 4a1ff324-1b83-4a38-8a3d-b12530f69b3f
     type: condition
     task:
-      id: 65ac3caa-0c3f-405b-8319-cc50f764c523
+      id: 4a1ff324-1b83-4a38-8a3d-b12530f69b3f
       version: -1
       name: Verify Outputs
       type: condition
@@ -214,7 +202,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 1070
         }
       }
     note: false
@@ -222,12 +210,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 308528a9-9652-404d-8b8a-7c7aa28e61c4
+    taskid: ac77ad91-b1b2-4bc9-83a0-238b7d66ff96
     type: regular
     task:
-      id: 308528a9-9652-404d-8b8a-7c7aa28e61c4
+      id: ac77ad91-b1b2-4bc9-83a0-238b7d66ff96
       version: -1
       name: gsuite-role-assignment-list
       script: '|||gsuite-role-assignment-list'
@@ -242,16 +232,12 @@ tasks:
         simple: admin@demistodev.com
       customer_id:
         simple: ${GSuite.User.customerId}
-      max_results: {}
-      page_token: {}
-      role_id: {}
-      user_key: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 1245
         }
       }
     note: false
@@ -259,12 +245,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 04dfa553-24d5-493e-83ce-9182af45d6bd
+    taskid: 2026bb93-9f09-414e-8612-63d2f637ad8d
     type: condition
     task:
-      id: 04dfa553-24d5-493e-83ce-9182af45d6bd
+      id: 2026bb93-9f09-414e-8612-63d2f637ad8d
       version: -1
       name: Verify Outputs
       type: condition
@@ -291,7 +279,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1420
         }
       }
     note: false
@@ -299,12 +287,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 7887bd97-7336-4edf-89e6-8eb8dba251f1
+    taskid: 7adfdc60-9177-491f-8d80-ddae400ac8dc
     type: regular
     task:
-      id: 7887bd97-7336-4edf-89e6-8eb8dba251f1
+      id: 7adfdc60-9177-491f-8d80-ddae400ac8dc
       version: -1
       name: gsuite-role-assignment-create
       script: '|||gsuite-role-assignment-create'
@@ -321,7 +311,6 @@ tasks:
         simple: ${GSuite.User.id}
       customer_id:
         simple: ${GSuite.User.customerId}
-      org_unit_id: {}
       role_id:
         complex:
           root: GSuite.RoleAssignment
@@ -335,7 +324,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1595
         }
       }
     note: false
@@ -343,12 +332,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: fedb8ea4-f750-4db7-82aa-436de4a10d84
+    taskid: 5dee4504-eb18-4a8e-84c3-38500d2cc90c
     type: condition
     task:
-      id: fedb8ea4-f750-4db7-82aa-436de4a10d84
+      id: 5dee4504-eb18-4a8e-84c3-38500d2cc90c
       version: -1
       name: Verify Outputs
       type: condition
@@ -380,7 +371,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1770
         }
       }
     note: false
@@ -388,18 +379,56 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: d293172c-284e-405d-8c80-c697bcb3f8ef
+    taskid: d9db92a1-5cbe-4e4d-8f04-8fc87f161828
     type: title
     task:
-      id: d293172c-284e-405d-8c80-c697bcb3f8ef
+      id: d9db92a1-5cbe-4e4d-8f04-8fc87f161828
       version: -1
       name: Test Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 194a349a-529c-42d5-8ea6-1068a0e6345b
+    type: regular
+    task:
+      id: 194a349a-529c-42d5-8ea6-1068a0e6345b
+      version: -1
+      name: gsuite-user-delete
+      description: Deletes a user.
+      script: '|||gsuite-user-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      admin_email:
+        simple: admin@demistodev.com
+      user_key:
+        simple: ${GSuite.User.id}
+    continueonerror: true
     separatecontext: false
     view: |-
       {
@@ -413,47 +442,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "50":
-    id: "50"
-    taskid: 2a35c86d-4f16-4602-89d5-0fe9e38ad658
-    type: regular
-    task:
-      id: 2a35c86d-4f16-4602-89d5-0fe9e38ad658
-      version: -1
-      name: gsuite-user-delete
-      description: Deletes a user.
-      script: '|||gsuite-user-delete'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "47"
-    scriptarguments:
-      admin_email:
-        simple: admin@demistodev.com
-      user_key:
-        simple: ${GSuite.User.id}
-    continueonerror: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1770
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: 6f972f11-2ceb-42cc-84f3-493bb5ca50f0
+    taskid: b8e96b64-e657-454b-8df0-3cf084db672e
     type: regular
     task:
-      id: 6f972f11-2ceb-42cc-84f3-493bb5ca50f0
+      id: b8e96b64-e657-454b-8df0-3cf084db672e
       version: -1
       name: gsuite-user-update
       description: Updates a user.
@@ -465,41 +461,20 @@ tasks:
       '#none#':
       - "25"
     scriptarguments:
-      address_type: {}
-      admin_email: {}
-      archived: {}
-      country: {}
-      extended_address: {}
+      execution-timeout:
+        simple: "120"
       first_name:
         simple: test update
-      gender: {}
-      is_address_primary: {}
-      is_ip_white_listed: {}
-      is_phone_number_primary: {}
-      last_name: {}
-      notes_content_type: {}
-      notes_value: {}
-      org_unit_path: {}
-      password: {}
-      phone_number: {}
-      phone_number_type: {}
-      postal_code: {}
-      primary_email: {}
-      recovery_email: {}
-      recovery_phone: {}
-      region: {}
-      secondary_email_address: {}
-      secondary_email_type: {}
-      street_address: {}
-      suspended: {}
+      retry-count:
+        simple: "3"
       user_key:
-        simple: ${GSuite.User.id}
+        simple: ${GSuite.User.primaryEmail}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 895
         }
       }
     note: false
@@ -507,14 +482,87 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: e0b88bb8-d321-4428-887f-48813bf01450
+    type: regular
+    task:
+      id: e0b88bb8-d321-4428-887f-48813bf01450
+      version: -1
+      name: sleep 10
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      seconds:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: 4150c4ed-a8f5-456d-888f-07d1931c7358
+    type: regular
+    task:
+      id: 4150c4ed-a8f5-456d-888f-07d1931c7358
+      version: -1
+      name: gsuite-user-delete
+      description: Deletes a user.
+      script: '|||gsuite-user-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      admin_email:
+        simple: admin@demistodev.com
+      user_key:
+        simple: xsoar11@demistodev.com
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1960,
-        "width": 380,
-        "x": 50,
+        "height": 2310,
+        "width": 390,
+        "x": 40,
         "y": 50
       }
     }

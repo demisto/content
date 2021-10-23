@@ -1,7 +1,7 @@
 <!-- HTML_DOC -->
 <p>OpsGenie is an alerting and on-call management solution for dev &amp; ops teams. It provides tools needed to design actionable alerts, manage on-call schedules &amp; escalations, and ensure that the right people are notified at the right time, using multiple notification methods.</p>
-<p>The OpsGenie-Demisto integration allows querying specific on-call schedules and determining the right resource of who is currently (or in future time) on call.</p>
-<h3>To set up OpsGenie to work with Demisto:</h3>
+<p>The OpsGenie-XSOAR integration allows querying specific on-call schedules and determining the right resource of who is currently (or in future time) on call.</p>
+<h3>To set up OpsGenie to work with Cortex XSOAR:</h3>
 <ol>
 <li>From main OpsGenie screen, go to the Integrations page, and select to add API (first box).</li>
 <li>In the new API integration, do the following:
@@ -14,17 +14,17 @@
 </ul>
 </li>
 </ol>
-<h3>To set up the integration on Demisto:</h3>
+<h3>To set up the integration on Cortex XSOAR:</h3>
 <ol>
 <li>Go to ‘Settings &gt; Integrations &gt; Servers &amp; Services’</li>
 <li>Locate the OpsGenie integration by searching for it using the search box on the top of the page.</li>
 </ol>
 <ol start="3">
-<li>Click ‘Add instance’ to create and configure a new integration. You should configure the following settings:<br><strong>Name</strong>: A textual name for the integration instance.<br> <strong>Base URL</strong>: The base OpsGenie service URL. The default value should be used (https://api.opsgenie.com/v2), unless otherwise instructed by Demisto.<br><strong>API Key</strong>: The API Key acquired from the OpsGenie interface in the previous step.<br><strong>Use system proxy configuration</strong>: Check this box in case there is a proxy server configures on the platform.<br><strong>Demisto engine</strong>: If relevant, select the engine that acts as a proxy to the server. Engines are used when you need to access a remote network segments and there are network devices such as proxies, firewalls, etc. that prevent the Demisto server from accessing the remote networks.</li>
+<li>Click ‘Add instance’ to create and configure a new integration. You should configure the following settings:<br><strong>Name</strong>: A textual name for the integration instance.<br> <strong>Base URL</strong>: The base OpsGenie service URL. The default value should be used (https://api.opsgenie.com/v2), unless otherwise instructed by Cortex XSOAR.<br><strong>API Key</strong>: The API Key acquired from the OpsGenie interface in the previous step.<br><strong>Use system proxy configuration</strong>: Check this box in case there is a proxy server configures on the platform.<br><strong>Cortex XSOAR engine</strong>: If relevant, select the engine that acts as a proxy to the server. Engines are used when you need to access a remote network segments and there are network devices such as proxies, firewalls, etc. that prevent the Cortex XSOAR server from accessing the remote networks.</li>
 </ol>
-<p class="wysiwyg-indent4">For more information on Demisto engines see:<br> <a href="https://support.demisto.com/hc/en-us/articles/226274727-Settings-Integrations-Engines">https://demisto.zendesk.com/hc/en-us/articles/226274727-Settings-Integrations-Engines</a><br> Require users to enter additional password: Select whether you’d like an additional step where users are required to authenticate themselves with a password.</p>
+<p class="wysiwyg-indent4">For more information on Cortex XSOAR engines see:<br> <a href="https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/engines">https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/engines</a><br> Require users to enter additional password: Select whether you’d like an additional step where users are required to authenticate themselves with a password.</p>
 <ol start="4">
-<li>Press the ‘Test’ button to validate connection.<br> If you are experiencing issues with the service configuration, please contact Demisto support at <a href="mailto:support@demisto.com">support@demisto.com</a>
+<li>Press the ‘Test’ button to validate connection.
 </li>
 <li>After completing the test successfully, press the ‘Done’ button.</li>
 </ol>
@@ -34,7 +34,7 @@
 Use-cases:</h3>
 <ul>
 <li>
-<strong>Assigning an analyst based on the current on-call schedule</strong><br>When an incident enters Demisto, a playbook task can get the current on-call analyst, based on the on-call schedule.<br>This can be done by using the opsgenie-get-on-call command, using the SOC analysts rotation schedule in OpsGenie.</li>
+<strong>Assigning an analyst based on the current on-call schedule</strong><br>When an incident enters Cortex XSOAR, a playbook task can get the current on-call analyst, based on the on-call schedule.<br>This can be done by using the opsgenie-get-on-call command, using the SOC analysts rotation schedule in OpsGenie.</li>
 <li>
 <strong>Setting handover path based on future on-call rotation</strong><br>As part of the incident playbook, the next shift analyst can also be queries for heads-up notification if needed, using the opsgenie-get-on-call command, using the schedule name, and the date to query based upon</li>
 </ul>

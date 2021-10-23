@@ -4,127 +4,12 @@ from CommonServerUserPython import *
 
 '''IMPORTS'''
 import re
-import boto3
 import json
 from datetime import datetime, date
-from botocore.config import Config
-from botocore.parsers import ResponseParserError
 import urllib3.util
 
 # Disable insecure warnings
 urllib3.disable_warnings()
-
-'''GLOBAL VARIABLES'''
-AWS_DEFAULT_REGION = demisto.params().get('defaultRegion')
-AWS_ROLE_ARN = demisto.params().get('roleArn')
-AWS_ROLE_SESSION_NAME = demisto.params().get('roleSessionName')
-AWS_ROLE_SESSION_DURATION = demisto.params().get('sessionDuration')
-AWS_ROLE_POLICY = None
-AWS_ACCESS_KEY_ID = demisto.params().get('access_key')
-AWS_SECRET_ACCESS_KEY = demisto.params().get('secret_key')
-VERIFY_CERTIFICATE = not demisto.params().get('insecure', True)
-proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
-config = Config(
-    connect_timeout=1,
-    retries=dict(
-        max_attempts=5
-    ),
-    proxies=proxies
-)
-
-
-def aws_session(service='acm', region=None, roleArn=None, roleSessionName=None, roleSessionDuration=None,
-                rolePolicy=None):
-    kwargs = {}
-    if roleArn and roleSessionName is not None:
-        kwargs.update({
-            'RoleArn': roleArn,
-            'RoleSessionName': roleSessionName,
-        })
-    elif AWS_ROLE_ARN and AWS_ROLE_SESSION_NAME is not None:
-        kwargs.update({
-            'RoleArn': AWS_ROLE_ARN,
-            'RoleSessionName': AWS_ROLE_SESSION_NAME,
-        })
-
-    if roleSessionDuration is not None:
-        kwargs.update({'DurationSeconds': int(roleSessionDuration)})
-    elif AWS_ROLE_SESSION_DURATION is not None:
-        kwargs.update({'DurationSeconds': int(AWS_ROLE_SESSION_DURATION)})
-
-    if rolePolicy is not None:
-        kwargs.update({'Policy': rolePolicy})
-    elif AWS_ROLE_POLICY is not None:
-        kwargs.update({'Policy': AWS_ROLE_POLICY})
-    if kwargs and not AWS_ACCESS_KEY_ID:
-
-        if not AWS_ACCESS_KEY_ID:
-            sts_client = boto3.client('sts', config=config, verify=VERIFY_CERTIFICATE,
-                                      region_name=AWS_DEFAULT_REGION)
-            sts_response = sts_client.assume_role(**kwargs)
-            if region is not None:
-                client = boto3.client(
-                    service_name=service,
-                    region_name=region,
-                    aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
-                    aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
-                    aws_session_token=sts_response['Credentials']['SessionToken'],
-                    verify=VERIFY_CERTIFICATE,
-                    config=config
-                )
-            else:
-                client = boto3.client(
-                    service_name=service,
-                    region_name=AWS_DEFAULT_REGION,
-                    aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
-                    aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
-                    aws_session_token=sts_response['Credentials']['SessionToken'],
-                    verify=VERIFY_CERTIFICATE,
-                    config=config
-                )
-    elif AWS_ACCESS_KEY_ID and AWS_ROLE_ARN:
-        sts_client = boto3.client(
-            service_name='sts',
-            aws_access_key_id=AWS_ACCESS_KEY_ID,
-            aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-            verify=VERIFY_CERTIFICATE,
-            config=config
-        )
-        kwargs.update({
-            'RoleArn': AWS_ROLE_ARN,
-            'RoleSessionName': AWS_ROLE_SESSION_NAME,
-        })
-        sts_response = sts_client.assume_role(**kwargs)
-        client = boto3.client(
-            service_name=service,
-            region_name=AWS_DEFAULT_REGION,
-            aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
-            aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
-            aws_session_token=sts_response['Credentials']['SessionToken'],
-            verify=VERIFY_CERTIFICATE,
-            config=config
-        )
-    else:
-        if region is not None:
-            client = boto3.client(
-                service_name=service,
-                region_name=region,
-                aws_access_key_id=AWS_ACCESS_KEY_ID,
-                aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-                verify=VERIFY_CERTIFICATE,
-                config=config
-            )
-        else:
-            client = boto3.client(
-                service_name=service,
-                region_name=AWS_DEFAULT_REGION,
-                aws_access_key_id=AWS_ACCESS_KEY_ID,
-                aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-                verify=VERIFY_CERTIFICATE,
-                config=config
-            )
-
-    return client
 
 
 def parse_tag_field(tags_str):
@@ -179,12 +64,13 @@ def parse_resource_ids(resource_id):
 '''MAIN FUNCTIONS'''
 
 
-def describe_certificate(args):
-    client = aws_session(
+def describe_certificate(args, aws_client):
+    client = aws_client.aws_session(
+        service='acm',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     obj = vars(client._client_config)
 
@@ -217,12 +103,13 @@ def describe_certificate(args):
     return_outputs(human_readable, ec)
 
 
-def list_certificates(args):
-    client = aws_session(
+def list_certificates(args, aws_client):
+    client = aws_client.aws_session(
+        service='acm',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     obj = vars(client._client_config)
     kwargs = {}
@@ -253,12 +140,13 @@ def list_certificates(args):
     return_outputs(human_readable, ec)
 
 
-def add_tags_to_certificate(args):
-    client = aws_session(
+def add_tags_to_certificate(args, aws_client):
+    client = aws_client.aws_session(
+        service='acm',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     kwargs = {
         'CertificateArn': args.get('certificateArn'),
@@ -269,12 +157,13 @@ def add_tags_to_certificate(args):
         demisto.results("The Certificate was Tagged successfully")
 
 
-def remove_tags_from_certificate(args):
-    client = aws_session(
+def remove_tags_from_certificate(args, aws_client):
+    client = aws_client.aws_session(
+        service='acm',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     kwargs = {
         'CertificateArn': args.get('certificateArn'),
@@ -285,12 +174,13 @@ def remove_tags_from_certificate(args):
         demisto.results("The Certificate Tags were removed successfully")
 
 
-def list_tags_for_certificate(args):
-    client = aws_session(
+def list_tags_for_certificate(args, aws_client):
+    client = aws_client.aws_session(
+        service='acm',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
 
     kwargs = {'CertificateArn': args.get('certificateArn')}
@@ -307,12 +197,13 @@ def list_tags_for_certificate(args):
     return_outputs(human_readable, ec)
 
 
-def get_certificate(args):
-    client = aws_session(
+def get_certificate(args, aws_client):
+    client = aws_client.aws_session(
+        service='acm',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
 
     kwargs = {'CertificateArn': args.get('certificateArn')}
@@ -326,35 +217,58 @@ def get_certificate(args):
     demisto.results('### Certificate files for ARN: {arn}'.format(arn=args.get('certificateArn')))
 
 
-def test_function():
-    client = aws_session()
+def test_function(aws_client):
+    client = aws_client.aws_session(service='acm')
     response = client.list_certificates()
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         demisto.results('ok')
 
 
-'''EXECUTION BLOCK'''
-try:
-    if demisto.command() == 'test-module':
-        test_function()
-    if demisto.command() == 'aws-acm-describe-certificate':
-        describe_certificate(demisto.args())
-    if demisto.command() == 'aws-acm-list-certificates':
-        list_certificates(demisto.args())
-    if demisto.command() == 'aws-acm-add-tags-to-certificate':
-        add_tags_to_certificate(demisto.args())
-    if demisto.command() == 'aws-acm-remove-tags-from-certificate':
-        remove_tags_from_certificate(demisto.args())
-    if demisto.command() == 'aws-acm-list-tags-for-certificate':
-        list_tags_for_certificate(demisto.args())
-    if demisto.command() == 'aws-acm-get-certificate':
-        get_certificate(demisto.args())
-except ResponseParserError as e:
-    return_error('Could not connect to the AWS endpoint. Please check that the region is valid.\n {error}'.format(
-        error=type(e)))
-    LOG(str(e))
+def main():
+    try:
+        params = demisto.params()
+        aws_default_region = params.get('defaultRegion')
+        aws_role_arn = params.get('roleArn')
+        aws_role_session_name = params.get('roleSessionName')
+        aws_role_session_duration = params.get('sessionDuration')
+        aws_role_policy = None
+        aws_access_key_id = params.get('access_key')
+        aws_secret_access_key = params.get('secret_key')
+        verify_certificate = not params.get('insecure', True)
+        timeout = demisto.params().get('timeout')
+        retries = demisto.params().get('retries') or 5
 
-except Exception as e:
-    LOG(str(e))
-    return_error('Error has occurred in the AWS ACM Integration: {code}\n {message}'.format(
-        code=type(e), message=str(e)))
+        validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id,
+                        aws_secret_access_key)
+
+        aws_client = AWSClient(aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
+                               aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate, timeout,
+                               retries)
+        args = demisto.args()
+        command = demisto.command()
+
+        if command == 'test-module':
+            test_function(aws_client)
+        if command == 'aws-acm-describe-certificate':
+            describe_certificate(args, aws_client)
+        if command == 'aws-acm-list-certificates':
+            list_certificates(args, aws_client)
+        if command == 'aws-acm-add-tags-to-certificate':
+            add_tags_to_certificate(args, aws_client)
+        if command == 'aws-acm-remove-tags-from-certificate':
+            remove_tags_from_certificate(args, aws_client)
+        if command == 'aws-acm-list-tags-for-certificate':
+            list_tags_for_certificate(args, aws_client)
+        if command == 'aws-acm-get-certificate':
+            get_certificate(args, aws_client)
+
+    except Exception as e:
+        LOG(str(e))
+        return_error('Error has occurred in the AWS ACM Integration: {code}\n {message}'.format(
+            code=type(e), message=str(e)))
+
+
+from AWSApiModule import *  # noqa: E402
+
+if __name__ in ('__builtin__', 'builtins', '__main__'):
+    main()

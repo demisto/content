@@ -6,3 +6,15 @@ ignore=BA101
 
 [file:layoutscontainer-Cymulate_Layout.json]
 ignore=BA101
+
+[file:Cymulate_v2.yml]
+ignore=BA108,BA109
+
+[file:classifier-mapper-incoming-Cymulate.json]
+ignore=BA101
+
+[file:classifier-mapper-incoming-Cymulate_v2.json]
+ignore=BA101
+
+[file:incidentfield-Cymulate_Cymulate_Test_Case.json]
+ignore=IF100

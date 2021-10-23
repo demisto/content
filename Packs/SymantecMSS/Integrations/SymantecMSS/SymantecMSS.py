@@ -321,8 +321,11 @@ def query_incident_cmd():
     result = query_incident(demisto.args()["number"], workflow_query=True)
 
     # Create minimal signature list
+    data = result.get("SignatureList", {}).get("Signature") or []
+    if not isinstance(data, list):
+        data = [data]
     sigs = []
-    for sig in result["SignatureList"]["Signature"]:
+    for sig in data:
         sig_dict = dict()  # type: Dict[str, Any]
         sig_dict["SourceIPString"] = sig["SourceIPString"]
         sig_dict["SignatureName"] = sig["SignatureName"]

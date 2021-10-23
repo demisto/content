@@ -1,0 +1,347 @@
+category: Messaging
+commonfields:
+  id: SendGrid
+  version: -1
+configuration:
+- display: API Key
+  name: apiKey
+  required: true
+  type: 4
+- display: From Email ID
+  name: fromEmail
+  required: true
+  type: 0
+- display: From Sender Name
+  name: fromEmailName
+  required: true
+  type: 0
+description: SendGrid provides a cloud-based service that assists businesses with
+  email delivery. It allows companies to track email opens, unsubscribes, bounces,
+  and spam reports. Our SendGrid pack utilize these SendGrid use cases to help you
+  send and manage your emails.
+display: SendGrid
+name: SendGrid
+script:
+  commands:
+  - arguments:
+    - description: A CSV list of to email recipients. Make sure To, Cc and Bcc emails
+        are unique.
+      name: ToEmails
+      required: true
+    - description: Email subject
+      name: Subject
+      required: true
+    - description: html content of email.
+      isArray: true
+      name: HtmlBody
+    - description: Raw content of email.
+      name: RawBody
+    - description: Reply To email.
+      name: ReplyTo
+    - description: 'List of categories. For example: cake,pie,baking'
+      name: Categories
+    - description: An ID representing a batch of emails to be sent at the same time.
+      name: BatchID
+    - description: 'An UTC time allowing you to specify when you want your email to
+        be delivered. Delivery cannot be scheduled more than 72 hours in advance.
+        ISO format(UTC timezone): 2021-04-23T12:07:44'
+      name: SendAt
+    - description: 'An object allowing you to specify how to handle unsubscribes.
+        For example:  {"group_id": 12345,"groups_to_display":[1,2,3]}'
+      name: Asm
+    - description: The IP Pool that you would like to send this email from.
+      name: IPPoolName
+    - description: 'Allows you to track if a recipient clicked a link in your email.
+        For ex: {"enable": "True","enable_text": True}'
+      name: ClickTracking
+    - description: 'Allows you to enable tracking provided by Google Analytics. For
+        ex: {"enable": "True","utm_campaign": "[NAME OF YOUR REFERRER SOURCE]","utm_content":
+        "[USE THIS SPACE TO DIFFERENTIATE YOUR EMAIL FROM ADS]","utm_medium": "[NAME
+        OF YOUR MARKETING MEDIUM e.g. email]","utm_name": "[NAME OF YOUR CAMPAIGN]","utm_term":
+        "[IDENTIFY PAID KEYWORDS HERE]","utm_source":"[Name of the referrer source]"}'
+      name: GAnalytics
+    - description: 'Allows you to track if the email was opened by including a single
+        pixel image in the body of the content. When the pixel is loaded, Twilio SendGrid
+        can log that the email was opened. For ex: {"enable": "True","substitution_tag":
+        "%opentrack"}'
+      name: OpenTracking
+    - description: 'Allows you to insert a subscription management link at the bottom
+        of the text and HTML bodies of your email. If you would like to specify the
+        location of the link within your email, you may use the substitution_tag.
+        For ex: {"enable": "True","html": "If you would like to unsubscribe and stop
+        receiving these emails <% clickhere %>.","substitution_tag": "<%click here%>","text":
+        "If you would like to unsubscribe and stop receiving these emails <% click
+        here %>."}'
+      name: SubscriptionTracking
+    - description: 'Bcc email settings. For ex: {"email": "ben.doe@example.com", "enable":
+        True }'
+      name: BccSettings
+    - auto: PREDEFINED
+      description: Allows you to bypass all unsubscribe groups and suppressions to
+        ensure that the email is delivered to every single recipient.
+      name: BypassListManagement
+      predefined:
+      - 'True'
+      - 'False'
+    - auto: PREDEFINED
+      description: Sandbox Mode allows you to send a test email to ensure that your
+        request body is valid and formatted correctly.
+      name: SandboxMode
+      predefined:
+      - 'True'
+      - 'False'
+    - description: 'The default footer that you would like included on every email.
+        For ex: {"enable": "True","html": "<p>Thanks</br>The SendGrid Team</p>","text":
+        "Thanks,/n The SendGrid Team"}'
+      name: Footer
+    - description: 'Spam Check allows you to test the content of your email for spam.
+        For ex: {"enable": "True","post_to_url": "http://example.com/compliance","threshold":
+        3}'
+      name: SpamCheck
+    - description: 'A collection of JSON key/value pairs allowing you to specify handling
+        instructions for your email. You may not overwrite the following headers:
+        x-sg-id, x-sg-eid, received, dkim-signature, Content-Type, Content-Transfer-Encoding,
+        To, From, Subject, Reply-To, CC, BCC. For ex: {"key1":"value1","key2":"value2","key3":"value3"}'
+      name: Headers
+    - description: An email template ID. A template that contains a subject and content
+        — either text or html — will override any subject and content values specified
+        at the personalisations or message level.
+      name: TemplateID
+    - description: 'Values that are specific to this personalization that will be
+        carried along with the email and its activity data. Substitutions will not
+        be made on custom arguments, so any string that is entered into this parameter
+        will be assumed to be the custom argument that you would like to be used.
+        This field may not exceed 10,000 bytes. For Ex: {"marketing": "true","activationAttempt":
+        "1","customerAccountNumber": "1234"}'
+      name: CustomArgs
+    - description: 'A CSV list of War Room entry IDs that contain files, and are used
+        to attach files to the outgoing email. For example: attachIDs=15@8,19@8.'
+      name: AttachIDs
+    - description: A CSV list of names of attachments to send. Should be the same
+        number of elements as attachIDs.
+      name: AttachNames
+    - description: A CSV list of to email bcc recipients. Make sure To, Cc and Bcc
+        emails are unique.
+      name: Bcc
+    - description: A CSV list of to email cc recipients. Make sure To, Cc and Bcc
+        emails are unique.
+      name: Cc
+    description: Send an email.
+    name: sg-send-email
+  - arguments:
+    - description: The number of results to return.
+      name: limit
+    - description: The point in the list to begin retrieving results.
+      name: offset
+    - auto: PREDEFINED
+      description: How to group the statistics. Must be either "day", "week", or "month".
+      name: aggregated_by
+      predefined:
+      - day
+      - week
+      - month
+    - description: The starting date of the statistics to retrieve. Must follow format
+        YYYY-MM-DD.
+      name: start_date
+      required: true
+    - description: The end date of the statistics to retrieve. Defaults to today.
+        Must follow format YYYY-MM-DD.
+      name: end_date
+    - description: 'Table headers to use the human readable output (if none provided,
+        will show all table headers). Available headers: blocks,bounce_drops,bounces,clicks,date,deferred,delivered,invalid_emails,opens,processed,requests,spam_report_drops,spam_reports,unique_clicks,unique_opens,unsubscribe_drops,unsubscribes'
+      name: headers
+    description: Retrieves all of your global email statistics between a given date
+      range.
+    name: sg-get-global-email-stats
+    outputs:
+    - contextPath: Sendgrid.GlobalEmailStats
+      description: List of email statistics day/week/month wise.
+  - arguments:
+    - description: The starting date of the statistics to retrieve. Must follow format
+        YYYY-MM-DD.
+      name: start_date
+      required: true
+    - description: The individual category that you want to retrieve statistics for.
+      name: category
+      required: true
+    - description: The end date of the statistics to retrieve. Defaults to today.
+        Must follow format YYYY-MM-DD.
+      name: end_date
+    - auto: PREDEFINED
+      description: How to group the statistics. Must be either "day", "week", or "month".
+      name: aggregated_by
+      predefined:
+      - day
+      - week
+      - month
+    - description: 'The number of results to include.  default: 500 maximum: 500'
+      name: limit
+    - description: The number of results to skip.
+      name: offset
+    - description: 'Table headers to use the human readable output (if none provided,
+        will show all table headers). Available headers: blocks,bounce_drops,bounces,clicks,date,deferred,delivered,invalid_emails,opens,processed,requests,spam_report_drops,spam_reports,unique_clicks,unique_opens,unsubscribe_drops,unsubscribes'
+      name: headers
+    description: Retrieves all of your email statistics for each of your categories.
+    name: sg-get-category-stats
+    outputs:
+    - contextPath: Sendgrid.CategoryStats
+      description: List of email category statistics day/week/month wise.
+  - arguments:
+    - description: The starting date of the statistics to retrieve. Must follow format
+        YYYY-MM-DD.
+      name: start_date
+      required: true
+    - description: The end date of the statistics to retrieve. Defaults to today.
+        Must follow format YYYY-MM-DD.
+      name: end_date
+    - auto: PREDEFINED
+      description: How to group the statistics. Must be either "day", "week", or "month".
+      name: aggregated_by
+      predefined:
+      - day
+      - week
+      - month
+    - auto: PREDEFINED
+      description: 'The metric that you want to sort by. Must be a single metric.  default:
+        delivered'
+      name: sort_by_metric
+      predefined:
+      - blocks
+      - bounce_drops
+      - bounces
+      - clicks
+      - deferred
+      - delivered
+      - invalid_emails
+      - opens
+      - processed
+      - requests
+      - spam_report_drops
+      - spam_reports
+      - unique_clicks
+      - unique_opens
+      - unsubscribe_drops
+      - unsubscribes
+    - auto: PREDEFINED
+      description: 'The direction you want to sort.  Allowed Values: desc, asc default:
+        desc'
+      name: sort_by_direction
+      predefined:
+      - asc
+      - desc
+    - description: The number of results to return.
+      name: limit
+    - description: The point in the list to begin retrieving results.
+      name: offset
+    - description: 'Table headers to use the human readable output (if none provided,
+        will show all table headers). Available headers: blocks,bounce_drops,bounces,clicks,date,deferred,delivered,invalid_emails,opens,processed,requests,spam_report_drops,spam_reports,unique_clicks,unique_opens,unsubscribe_drops,unsubscribes'
+      name: headers
+    description: Retrieves the total sum of each email statistic for every category
+      over the given date range.
+    name: sg-get-all-categories-stats
+    outputs:
+    - contextPath: Sendgrid.AllCategoriesStats
+      description: List of all email statistics day/week/month wise.
+  - arguments:
+    - description: Allows you to perform a prefix search on this particular category.
+      name: category
+    - description: 'The number of categories to display per page. Default: 50'
+      name: limit
+    - description: 'The point in the list that you would like to begin displaying
+        results. Default: 0'
+      name: offset
+    description: Retrieves a list of all of your categories.
+    name: sg-list-categories
+    outputs:
+    - contextPath: Sendgrid.CategoriesList
+      description: List of categories.
+  - arguments: []
+    description: Generates a new batch ID.
+    name: sg-create-batch-id
+    outputs:
+    - contextPath: Sendgrid.BatchId
+      description: Returns a batch id, which can be used manage scheduled sends.
+  - arguments:
+    - description: ID to manage multiple scheduled sends.
+      name: batch_id
+      required: true
+    - auto: PREDEFINED
+      description: The status of the send you would like to implement. This can be
+        pause or cancel.
+      name: status
+      predefined:
+      - pause
+      - cancel
+      required: true
+    description: Cancel or pause a scheduled send associated with a batch ID.
+    name: sg-scheduled-status-change
+    outputs:
+    - contextPath: Sendgrid.ScheduledSendStatus
+      description: The latest status of the scheduled send.
+  - arguments: []
+    description: Retrieves all cancelled and paused scheduled send information.
+    name: sg-retrieve-all-scheduled-sends
+    outputs:
+    - contextPath: Sendgrid.ScheduledSends
+      description: List of all paused/cancelled scheduled sends.
+  - arguments:
+    - description: ID to manage multiple scheduled sends.
+      name: batch_id
+      required: true
+    description: Retrieves the cancel/paused scheduled send information for a specific
+      batch id.
+    name: sg-retrieve-scheduled-send
+    outputs:
+    - contextPath: Sendgrid.ScheduledSend
+      description: List of all paused/cancelled scheduled sends associated with the
+        given batch id.
+  - arguments:
+    - description: ID to manage multiple scheduled sends.
+      name: batch_id
+      required: true
+    - auto: PREDEFINED
+      description: The status of the send you would like to implement. This can be
+        pause or cancel.
+      name: status
+      predefined:
+      - pause
+      - cancel
+      required: true
+    description: Update the status of a scheduled send for the given batch id.
+    name: sg-update-scheduled-send
+  - arguments:
+    - description: ID to manage multiple scheduled sends.
+      name: batch_id
+      required: true
+    description: Delete the cancellation/pause of a scheduled send.
+    name: sg-delete-scheduled-send
+  - arguments:
+    - defaultValue: '10'
+      description: The number of messages returned. This parameter must be greater
+        than 0 and less than or equal to 1000
+      name: limit
+      required: true
+    - description: 'Use the query syntax to filter your email activity.     For example:
+        query to get email list for category - "Last Login": query=`(Contains(categories,"Last
+        Login"))`     Document link for query samples: https://docs.sendgrid.com/for-developers/sending-email/getting-started-email-activity-api#query-reference'
+      name: query
+    - description: 'Table headers to use the human readable output (if none provided,
+        will show all table headers). Available headers: clicks_count,from_email,last_event_time,msg_id,opens_count,status,subject,to_email'
+      name: headers
+    description: "Retrieves the email activity list associated with the messages matching\
+      \ your query. If no query provided, it returns a list of most recent emails\
+      \ you've sent. NOTE: This Email Activity API returns email list up to last 30\
+      \ days."
+    name: sg-get-email-activity-list
+    outputs:
+    - contextPath: Sendgrid.EmailList
+      description: Email activity list associated with the messages matching your
+        query.
+  dockerimage: demisto/sendgrid:1.0.0.23423
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

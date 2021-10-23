@@ -419,3 +419,4 @@ inputs: []
 outputs: []
 tests:
   - no test - manual task
+deprecated: true

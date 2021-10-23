@@ -46,7 +46,7 @@ configuration:
   name: create_relationships
   required: false
   type: 8
-description: Urlscan.io reputation
+description: Use urlscan.io integration to perform scans on suspected URLs and see their reputation.
 display: urlscan.io
 name: urlscan.io
 script:
@@ -466,5 +466,6 @@ script:
   script: '-'
   subtype: python2
   type: python
+  dockerimage: demisto/python:2.7.18.24066
 defaultEnabled: false
 fromversion: 5.0.0

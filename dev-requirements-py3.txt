@@ -1,11 +1,11 @@
-flake8==3.8.3
-bandit==1.6.2
-demisto-py==2.0.22
-demisto-sdk==1.3.5
+flake8==3.9.2
+bandit==1.7.0
+demisto-py==3.0.2
+demisto-sdk==1.5.1
 pytest==6.2.1
 pytest-mock==3.4.0
 requests-mock==1.8.0
-ruamel.yaml==0.16.12
+ruamel.yaml<0.17
 pipenv==2020.11.15
 autopep8==1.5.4
 mypy==0.782
@@ -15,7 +15,7 @@ beautifulsoup4==4.9.3
 pypdf2==1.26.0
 freezegun==0.3.12
 vulture==1.5
-git+https://github.com/coyo8/parinx.git@6493798ceba8089345d970f71be4a896eb6b081d
+git+https://github.com/coyo8/parinx.git@6493798ceba8089345d970f71be4a896eb6b081d#egg=parinx
 pylint==2.6.0
 coloredlogs==15.0
 pandas==1.2.0

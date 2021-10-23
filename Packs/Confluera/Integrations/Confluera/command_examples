@@ -1,0 +1,3 @@
+!confluera-fetch detections hours="72"
+!confluera-fetch progressions hours="72"
+!confluera-fetch trail details trail_id="prod_0_11_.agent-11:17869700"

@@ -120,8 +120,15 @@ script:
       name: alert_id
       required: false
       secret: false
+    - default: false
+      description: The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscription ID is used.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
     deprecated: false
-    description: Gets an alert that is associated a resource group or a subscription.
+    description: Gets an alert that is associated with a resource group or a subscription. The subscription_id argument is
+      required in case it was not defined in the integration's configuration.
     execution: false
     name: azure-sc-get-alert
     outputs:
@@ -200,6 +207,12 @@ script:
       isArray: false
       name: alert_id
       required: true
+      secret: false
+    - default: false
+      description: The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscription ID is used.
+      isArray: false
+      name: subscription_id
+      required: false
       secret: false
     - default: false
       description: The update action type.
@@ -472,7 +485,7 @@ script:
     description: The location of the responsible ASC of the specific subscription. For each subscription there is only one responsible location.
     execution: false
     name: azure-sc-list-location
-  dockerimage: demisto/crypto:1.0.0.11650
+  dockerimage: demisto/crypto:1.0.0.24037
   isfetch: false
   longRunning: false
   longRunningPort: false

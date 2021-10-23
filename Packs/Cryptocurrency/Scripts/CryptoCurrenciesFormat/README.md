@@ -8,7 +8,7 @@ Verifies that a cryptocurrency address is valid and only returns the address if 
 | --- | --- |
 | Script Type | python3 |
 | Tags |  |
-| Demisto Version | 5.0.0 |
+| Cortex XSOAR Version | 5.0.0 |
 
 ####Supported cryptocurrencies:
 * Bitcoin

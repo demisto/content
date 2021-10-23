@@ -456,8 +456,12 @@ def format_incidents(events: list, event_offset: int, last_fetch: int, module_na
 
             # Validate API timestamp.
             if validate_timestamp(t_stamp):
-                alert_created_time = int(date_to_timestamp(t_stamp,
-                                                           date_format=CY_GENERAL_DATE_FORMAT))
+                try:
+                    alert_created_time = date_to_timestamp(t_stamp,
+                                                           date_format=CY_GENERAL_DATE_FORMAT)
+                except Exception:
+                    alert_created_time = date_to_timestamp(t_stamp,
+                                                           date_format=CY_UNIQUE_DATE_FORMAT)
 
                 # If current alert was created since last fetch time, create XS0AR incident.
                 if alert_created_time >= last_fetch:
@@ -610,7 +614,11 @@ def build_incident_dict(event: dict, module_name: str, event_timestamp=None) -> 
         event_timestamp = event.get('Timestamp') if event.get('Timestamp') \
             else event.get('Attack_Timestamp')
     if validate_timestamp(event_timestamp):
-        occurred = datetime.strptime(event_timestamp, CY_GENERAL_DATE_FORMAT).strftime(DATE_FORMAT)
+        try:
+            occurred = datetime.strptime(event_timestamp, CY_GENERAL_DATE_FORMAT).strftime(DATE_FORMAT)  # CHANGED
+        except Exception:
+            occurred = datetime.strptime(event_timestamp, CY_UNIQUE_DATE_FORMAT).strftime(DATE_FORMAT)  # CHANGED
+
         incident['occurred'] = occurred
 
     return incident

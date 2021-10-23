@@ -46,6 +46,24 @@ configuration:
   name: secret_key
   required: false
   type: 4
+- display: Timeout
+  name: timeout
+  additionalinfo: The time in seconds till a timeout exception is reached. You can
+    specify just the read timeout (for example 60) or also the connect timeout followed
+    after a comma (for example 60,10). If a connect timeout is not specified, a default
+    of 10 second will be used.
+  defaultvalue: 60,10
+  required: false
+  type: 0
+- display: Retries
+  name: retries
+  defaultvalue: 5
+  additionalinfo: "The maximum number of retry attempts when connection or throttling\
+    \ errors are encountered. Set to 0 to disable retries. The default value is 5\
+    \ and the limit is 10. Note: Increasing the number of retries will increase the\
+    \ execution time."
+  required: false
+  type: 0
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -1550,8 +1568,9 @@ script:
       type: string
     - contextPath: AWS-SecurityHub.Findings.Types
       description: 'One or more finding types in the format of namespace/category/classifier
-        that classify a finding. Valid namespace values are: Software and Configuration
-        Checks | TTPs | Effects | Unusual Behaviors | Sensitive Data Identifications'
+        that classify a finding. Valid namespace values are as follows.  Software
+        and Configuration Checks, TTPs, Effects, Unusual Behaviors, Sensitive Data
+        Identifications'
       type: Unknown
     - contextPath: AWS-SecurityHub.Findings.FirstObservedAt
       description: An ISO8601-formatted timestamp that indicates when the security-findings
@@ -3556,7 +3575,7 @@ script:
     description: Deprecated, use aws-securityhub-batch-update-findings instead.
     execution: false
     name: aws-securityhub-update-findings
-  dockerimage: demisto/boto3py3:1.0.0.19032
+  dockerimage: demisto/boto3py3:1.0.0.24037
   feed: false
   isfetch: true
   longRunning: false

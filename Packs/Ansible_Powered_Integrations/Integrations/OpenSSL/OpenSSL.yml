@@ -23,8 +23,8 @@ configuration:
   name: concurrency
   required: true
   type: 0
-description: Control OpenSSL on a remote Linux hosts
-display: OpenSSL
+description: Control OpenSSL on a remote Linux hosts. Deprecated. Use Ansible OpenSSL (in the Ansible Linux pack) instead.
+display: Ansible OpenSSL (Deprecated)
 name: OpenSSL
 script:
   commands:
@@ -1274,9 +1274,6 @@ script:
       isArray: true
       name: host
       required: true
-    - description: The host to get the cert for (IP is fine)
-      name: host
-      required: true
     - description: |-
         A PEM file containing one or more root certificates; if present, the cert will be validated against these root certs.
         Note that this only validates the certificate is signed by the chain; not that the cert is valid for the host presenting it.
@@ -1319,7 +1316,7 @@ script:
     - contextPath: OpenSSL.extensions.name
       description: The extension's name.
       type: string
-  dockerimage: demisto/ansible-runner:1.0.0.16542
+  dockerimage: demisto/ansible-runner:1.0.0.21184
   runonce: false
   script: ''
   subtype: python3
@@ -1327,3 +1324,4 @@ script:
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+deprecated: true

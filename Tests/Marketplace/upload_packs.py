@@ -14,7 +14,8 @@ from google.cloud.storage import Bucket
 from zipfile import ZipFile
 from typing import Any, Tuple, Union, Optional
 from Tests.Marketplace.marketplace_services import init_storage_client, Pack, \
-    load_json, get_content_git_client, get_recent_commits_data, store_successful_and_failed_packs_in_ci_artifacts
+    load_json, get_content_git_client, get_recent_commits_data, store_successful_and_failed_packs_in_ci_artifacts, \
+    json_write
 from Tests.Marketplace.marketplace_statistics import StatisticsHandler
 from Tests.Marketplace.marketplace_constants import PackStatus, Metadata, GCPConfig, BucketUploadFlow, \
     CONTENT_ROOT_PATH, PACKS_FOLDER, PACKS_FULL_PATH, IGNORED_FILES, IGNORED_PATHS, LANDING_PAGE_SECTIONS_PATH
@@ -78,12 +79,14 @@ def extract_packs_artifacts(packs_artifacts_path: str, extract_destination_path:
     logging.info("Finished extracting packs artifacts")
 
 
-def download_and_extract_index(storage_bucket: Any, extract_destination_path: str) -> Tuple[str, Any, int]:
+def download_and_extract_index(storage_bucket: Any, extract_destination_path: str, storage_base_path: str) \
+        -> Tuple[str, Any, int]:
     """Downloads and extracts index zip from cloud storage.
 
     Args:
         storage_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where index.zip is stored.
         extract_destination_path (str): the full path of extract folder.
+        storage_base_path (str): the source path of the index in the target bucket.
     Returns:
         str: extracted index folder full path.
         Blob: google cloud storage object that represents index.zip blob.
@@ -93,7 +96,7 @@ def download_and_extract_index(storage_bucket: Any, extract_destination_path: st
     if storage_bucket.name == GCPConfig.PRODUCTION_PRIVATE_BUCKET:
         index_storage_path = os.path.join(GCPConfig.PRIVATE_BASE_PATH, f"{GCPConfig.INDEX_NAME}.zip")
     else:
-        index_storage_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, f"{GCPConfig.INDEX_NAME}.zip")
+        index_storage_path = os.path.join(storage_base_path, f"{GCPConfig.INDEX_NAME}.zip")
     download_index_path = os.path.join(extract_destination_path, f"{GCPConfig.INDEX_NAME}.zip")
 
     index_blob = storage_bucket.blob(index_storage_path)
@@ -191,7 +194,8 @@ def update_index_folder(index_folder_path: str, pack_name: str, pack_path: str, 
         return task_status
 
 
-def clean_non_existing_packs(index_folder_path: str, private_packs: list, storage_bucket: Any) -> bool:
+def clean_non_existing_packs(index_folder_path: str, private_packs: list, storage_bucket: Any,
+                             storage_base_path: str) -> bool:
     """ Detects packs that are not part of content repo or from private packs bucket.
 
     In case such packs were detected, problematic pack is deleted from index and from content/packs/{target_pack} path.
@@ -200,13 +204,14 @@ def clean_non_existing_packs(index_folder_path: str, private_packs: list, storag
         index_folder_path (str): full path to downloaded index folder.
         private_packs (list): priced packs from private bucket.
         storage_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where index.zip is stored.
+        storage_base_path (str): the source path of the packs in the target bucket.
 
     Returns:
         bool: whether cleanup was skipped or not.
     """
     if ('CI' not in os.environ) or (
-            os.environ.get('CIRCLE_BRANCH') != 'master' and storage_bucket.name == GCPConfig.PRODUCTION_BUCKET) or (
-            os.environ.get('CIRCLE_BRANCH') == 'master' and storage_bucket.name not in
+            os.environ.get('CI_COMMIT_BRANCH') != 'master' and storage_bucket.name == GCPConfig.PRODUCTION_BUCKET) or (
+            os.environ.get('CI_COMMIT_BRANCH') == 'master' and storage_bucket.name not in
             (GCPConfig.PRODUCTION_BUCKET, GCPConfig.CI_BUILD_BUCKET)):
         logging.info("Skipping cleanup of packs in gcs.")  # skipping execution of cleanup in gcs bucket
         return True
@@ -229,7 +234,7 @@ def clean_non_existing_packs(index_folder_path: str, private_packs: list, storag
                 shutil.rmtree(invalid_pack_path)
                 logging.warning(f"Deleted {invalid_pack_name} pack from {GCPConfig.INDEX_NAME} folder")
                 # important to add trailing slash at the end of path in order to avoid packs with same prefix
-                invalid_pack_gcs_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, invalid_pack_name, "")  # by design
+                invalid_pack_gcs_path = os.path.join(storage_base_path, invalid_pack_name, "")  # by design
 
                 for invalid_blob in [b for b in storage_bucket.list_blobs(prefix=invalid_pack_gcs_path)]:
                     logging.warning(f"Deleted invalid {invalid_pack_name} pack under url {invalid_blob.public_url}")
@@ -256,7 +261,7 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
     :param index_folder_path: index folder full path.
     :param extract_destination_path: extract folder full path.
     :param index_blob: google cloud storage object that represents index.zip blob.
-    :param build_number: circleCI build number, used as an index revision.
+    :param build_number: CI build number, used as an index revision.
     :param private_packs: List of private packs and their price.
     :param current_commit_hash: last commit hash of head.
     :param index_generation: downloaded index generation.
@@ -264,7 +269,7 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
     :param force_upload: Indicates if force upload or not.
     :param previous_commit_hash: The previous commit hash to diff with.
     :param landing_page_sections: landingPage sections.
-    :param artifacts_dir: The CircleCI artifacts directory to upload the index.json to.
+    :param artifacts_dir: The CI artifacts directory to upload the index.json to.
     :param storage_bucket: The storage bucket object
     :returns None.
 
@@ -273,7 +278,7 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
         # If we force upload we don't want to update the commit in the index.json file,
         # this is to be able to identify all changed packs in the next upload
         commit = previous_commit_hash
-        logging.info('Force upload flow - Index commit hash shuould not be changed')
+        logging.info('Force upload flow - Index commit hash should not be changed')
     else:
         # Otherwise, update the index with the current commit hash (the commit of the upload)
         commit = current_commit_hash
@@ -284,6 +289,8 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
 
     logging.debug(f'commit hash is: {commit}')
     index_json_path = os.path.join(index_folder_path, f'{GCPConfig.INDEX_NAME}.json')
+    logging.info(f'index json path: {index_json_path}')
+    logging.info(f'Private packs are: {private_packs}')
     with open(index_json_path, "w+") as index_file:
         index = {
             'revision': build_number,
@@ -298,20 +305,17 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
     index_zip_path = shutil.make_archive(base_name=index_folder_path, format="zip",
                                          root_dir=extract_destination_path, base_dir=index_zip_name)
     try:
+        logging.info(f'index zip path: {index_zip_path}')
         index_blob.reload()
         current_index_generation = index_blob.generation
         index_blob.cache_control = "no-cache,max-age=0"  # disabling caching for index blob
 
         if is_private or current_index_generation == index_generation:
             # we upload both index.json and the index.zip to allow usage of index.json without having to unzip
-            if storage_bucket:
-                index_json_path_storage = os.path.join(GCPConfig.STORAGE_BASE_PATH, f'{GCPConfig.INDEX_NAME}.json')
-                storage_blob = storage_bucket.blob(index_json_path_storage)
-                storage_blob.upload_from_filename(index_json_path)
             index_blob.upload_from_filename(index_zip_path)
             logging.success(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.")
         else:
-            logging.critical(f"Failed in uploading {GCPConfig.INDEX_NAME}, mismatch in index file generation")
+            logging.critical(f"Failed in uploading {GCPConfig.INDEX_NAME}, mismatch in index file generation.")
             logging.critical(f"Downloaded index generation: {index_generation}")
             logging.critical(f"Current index generation: {current_index_generation}")
             sys.exit(0)
@@ -328,13 +332,18 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
         shutil.rmtree(index_folder_path)
 
 
-def upload_core_packs_config(storage_bucket: Any, build_number: str, index_folder_path: str):
-    """Uploads corepacks.json file configuration to bucket. Corepacks file includes core packs for server installation.
+def create_corepacks_config(storage_bucket: Any, build_number: str, index_folder_path: str,
+                            artifacts_dir: Optional[str], storage_base_path: str):
+    """Create corepacks.json file and stores it in the artifacts dir. This files contains all of the server's core packs, under
+    the key corepacks, and specifies which core packs should be upgraded upon XSOAR upgrade, under the key upgradeCorePacks.
+
 
      Args:
         storage_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where core packs config is uploaded.
         build_number (str): circleCI build number.
         index_folder_path (str): The index folder path.
+        artifacts_dir: The CI artifacts directory to upload the corepacks.json to.
+        storage_base_path (str): the source path of the core packs in the target bucket.
 
     """
     core_packs_public_urls = []
@@ -351,7 +360,7 @@ def upload_core_packs_config(storage_bucket: Any, build_number: str, index_folde
                 metadata = json.load(metadata_file)
 
             pack_current_version = metadata.get('currentVersion', Pack.PACK_INITIAL_VERSION)
-            core_pack_relative_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, pack.name,
+            core_pack_relative_path = os.path.join(storage_base_path, pack.name,
                                                    pack_current_version, f"{pack.name}.zip")
             core_pack_public_url = os.path.join(GCPConfig.GCS_PUBLIC_URL, storage_bucket.name, core_pack_relative_path)
 
@@ -369,37 +378,14 @@ def upload_core_packs_config(storage_bucket: Any, build_number: str, index_folde
         logging.critical(f"Missing core packs are: {missing_core_packs}")
         sys.exit(1)
 
-    # construct core pack data with public gcs urls
+    corepacks_json_path = os.path.join(artifacts_dir, GCPConfig.CORE_PACK_FILE_NAME)
     core_packs_data = {
         'corePacks': core_packs_public_urls,
+        'upgradeCorePacks': GCPConfig.CORE_PACKS_LIST_TO_UPDATE,
         'buildNumber': build_number
     }
-    # upload core pack json file to gcs
-    core_packs_config_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, GCPConfig.CORE_PACK_FILE_NAME)
-    blob = storage_bucket.blob(core_packs_config_path)
-    blob.upload_from_string(json.dumps(core_packs_data, indent=4))
-
-    logging.success(f"Finished uploading {GCPConfig.CORE_PACK_FILE_NAME} to storage.")
-
-
-def upload_id_set(storage_bucket: Any, id_set_local_path: str = None):
-    """
-    Uploads the id_set.json artifact to the bucket.
-
-    Args:
-        storage_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where core packs config is uploaded.
-        id_set_local_path: path to the id_set.json file
-    """
-    if not id_set_local_path:
-        logging.info("Skipping upload of id set to gcs.")
-        return
-
-    id_set_gcs_path = os.path.join(os.path.dirname(GCPConfig.STORAGE_BASE_PATH), 'id_set.json')
-    blob = storage_bucket.blob(id_set_gcs_path)
-
-    with open(id_set_local_path, mode='r') as f:
-        blob.upload_from_file(f)
-    logging.success("Finished uploading id_set.json to storage.")
+    json_write(corepacks_json_path, core_packs_data)
+    logging.success(f"Finished copying {GCPConfig.CORE_PACK_FILE_NAME} to artifacts.")
 
 
 def _build_summary_table(packs_input_list: list, include_pack_status: bool = False) -> Any:
@@ -484,14 +470,9 @@ def add_private_content_to_index(private_index_path: str, extract_destination_pa
     updated_private_packs = []
 
     try:
-        logging.info("get_private_packs")
         private_packs = get_private_packs(private_index_path, pack_names,
                                           extract_destination_path)
-
-        logging.info("get_updated_private_packs")
         updated_private_packs = get_updated_private_packs(private_packs, index_folder_path)
-
-        logging.info("add_private_packs_to_index")
         add_private_packs_to_index(index_folder_path, private_index_path)
 
     except Exception as e:
@@ -547,6 +528,7 @@ def get_private_packs(private_index_path: str, pack_names: set = set(),
     :param extract_destination_path: Path to where the files should be extracted to.
     :return: List of dicts containing pack metadata information.
     """
+    logging.info(f'getting all private packs. private_index_path: {private_index_path}')
     try:
         metadata_files = glob.glob(f"{private_index_path}/**/metadata.json")
     except Exception:
@@ -557,6 +539,7 @@ def get_private_packs(private_index_path: str, pack_names: set = set(),
         logging.warning(f'No metadata files found in [{private_index_path}]')
 
     private_packs = []
+    logging.info(f'all metadata files found: {metadata_files}')
     for metadata_file_path in metadata_files:
         try:
             with open(metadata_file_path, "r") as metadata_file:
@@ -739,11 +722,11 @@ Total number of packs: {len(successful_packs + skipped_packs + failed_packs)}
             sys.exit(1)
 
     # for external pull requests -  when there is no failed packs, add the build summary to the pull request
-    branch_name = os.environ.get('CIRCLE_BRANCH')
+    branch_name = os.environ.get('CI_COMMIT_BRANCH')
     if branch_name and branch_name.startswith('pull/'):
         successful_packs_table = build_summary_table_md(successful_packs)
 
-        build_num = os.environ['CIRCLE_BUILD_NUM']
+        build_num = os.environ['CI_BUILD_ID']
 
         bucket_path = f'https://console.cloud.google.com/storage/browser/' \
                       f'marketplace-ci-build/content/builds/{branch_name}/{build_num}'
@@ -775,7 +758,6 @@ def option_handler():
                               "For more information go to: "
                               "https://googleapis.dev/python/google-api-core/latest/auth.html"),
                         required=False)
-    parser.add_argument('-i', '--id_set_path', help="The full path of id_set.json", required=False)
     parser.add_argument('-d', '--pack_dependencies', help="Full path to pack dependencies json file.", required=False)
     parser.add_argument('-p', '--pack_names',
                         help=("Target packs to upload to gcs. Optional values are: `All`, "
@@ -794,7 +776,7 @@ def option_handler():
                         help='Should remove test playbooks from content packs or not.', default=True)
     parser.add_argument('-bu', '--bucket_upload', help='is bucket upload build?', type=str2bool, required=True)
     parser.add_argument('-pb', '--private_bucket_name', help="Private storage bucket name", required=False)
-    parser.add_argument('-c', '--circle_branch', help="CircleCi branch of current build", required=True)
+    parser.add_argument('-c', '--ci_branch', help="CI branch of current build", required=True)
     parser.add_argument('-f', '--force_upload', help="is force upload build?", type=str2bool, required=True)
     # disable-secrets-detection-end
     return parser.parse_args()
@@ -808,8 +790,8 @@ def add_pr_comment(comment: str):
 
     """
     token = os.environ['CONTENT_GITHUB_TOKEN']
-    branch_name = os.environ['CIRCLE_BRANCH']
-    sha1 = os.environ['CIRCLE_SHA1']
+    branch_name = os.environ['CI_COMMIT_BRANCH']
+    sha1 = os.environ['CI_COMMIT_SHA']
 
     query = f'?q={sha1}+repo:demisto/content+is:pr+is:open+head:{branch_name}+is:open'
     url = 'https://api.github.com/search/issues'
@@ -860,7 +842,7 @@ def get_packs_summary(packs_list):
 
 
 def handle_private_content(public_index_folder_path, private_bucket_name, extract_destination_path, storage_client,
-                           public_pack_names) -> Tuple[bool, list, list]:
+                           public_pack_names, storage_base_path: str) -> Tuple[bool, list, list]:
     """
     1. Add private packs to public index.json.
     2. Checks if there are private packs that were added/deleted/updated.
@@ -871,6 +853,7 @@ def handle_private_content(public_index_folder_path, private_bucket_name, extrac
         extract_destination_path: full path to extract directory.
         storage_client : initialized google cloud storage client.
         public_pack_names : unique collection of public packs names to upload.
+        storage_base_path (str): the source path in the target bucket.
 
     Returns:
         is_private_content_updated (bool): True if there is at least one private pack that was updated/released.
@@ -881,7 +864,7 @@ def handle_private_content(public_index_folder_path, private_bucket_name, extrac
     if private_bucket_name:
         private_storage_bucket = storage_client.bucket(private_bucket_name)
         private_index_path, _, _ = download_and_extract_index(
-            private_storage_bucket, os.path.join(extract_destination_path, "private")
+            private_storage_bucket, os.path.join(extract_destination_path, "private"), storage_base_path
         )
 
         public_index_json_file_path = os.path.join(public_index_folder_path, f"{GCPConfig.INDEX_NAME}.json")
@@ -934,21 +917,17 @@ def main():
     build_number = option.ci_build_number if option.ci_build_number else str(uuid.uuid4())
     override_all_packs = option.override_all_packs
     signature_key = option.key_string
-    id_set_path = option.id_set_path
     packs_dependencies_mapping = load_json(option.pack_dependencies) if option.pack_dependencies else {}
     storage_base_path = option.storage_base_path
     remove_test_playbooks = option.remove_test_playbooks
     is_bucket_upload_flow = option.bucket_upload
     private_bucket_name = option.private_bucket_name
-    circle_branch = option.circle_branch
+    ci_branch = option.ci_branch
     force_upload = option.force_upload
 
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
     storage_bucket = storage_client.bucket(storage_bucket_name)
-
-    if storage_base_path:
-        GCPConfig.STORAGE_BASE_PATH = storage_base_path
 
     # Relevant when triggering test upload flow
     if storage_bucket_name:
@@ -956,12 +935,13 @@ def main():
 
     # download and extract index from public bucket
     index_folder_path, index_blob, index_generation = download_and_extract_index(storage_bucket,
-                                                                                 extract_destination_path)
+                                                                                 extract_destination_path,
+                                                                                 storage_base_path)
 
     # content repo client initialized
     content_repo = get_content_git_client(CONTENT_ROOT_PATH)
     current_commit_hash, previous_commit_hash = get_recent_commits_data(content_repo, index_folder_path,
-                                                                        is_bucket_upload_flow, circle_branch)
+                                                                        is_bucket_upload_flow, ci_branch)
 
     # detect packs to upload
     pack_names = get_packs_names(target_packs, previous_commit_hash)
@@ -972,7 +952,7 @@ def main():
 
     # taking care of private packs
     is_private_content_updated, private_packs, updated_private_packs_ids = handle_private_content(
-        index_folder_path, private_bucket_name, extract_destination_path, storage_client, pack_names
+        index_folder_path, private_bucket_name, extract_destination_path, storage_client, pack_names, storage_base_path
     )
 
     if not option.override_all_packs:
@@ -980,14 +960,17 @@ def main():
                                   storage_bucket, is_private_content_updated)
 
     # initiate the statistics handler for marketplace packs
-    statistics_handler = StatisticsHandler(service_account, index_folder_path, packs_list)
+    statistics_handler = StatisticsHandler(service_account, index_folder_path)
 
     # clean index and gcs from non existing or invalid packs
-    clean_non_existing_packs(index_folder_path, private_packs, storage_bucket)
+    clean_non_existing_packs(index_folder_path, private_packs, storage_bucket, storage_base_path)
+
+    # Packages that depend on new packs that are not in the previous index.json
+    packs_missing_dependencies = []
 
     # starting iteration over packs
     for pack in packs_list:
-        task_status, user_metadata = pack.load_user_metadata()
+        task_status = pack.load_user_metadata()
         if not task_status:
             pack.status = PackStatus.FAILED_LOADING_USER_METADATA.value
             pack.cleanup()
@@ -999,33 +982,48 @@ def main():
             pack.cleanup()
             continue
 
-        task_status = pack.upload_integration_images(storage_bucket, diff_files_list, True)
+        task_status = pack.upload_integration_images(storage_bucket, storage_base_path, diff_files_list, True)
         if not task_status:
             pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name
             pack.cleanup()
             continue
 
-        task_status = pack.upload_author_image(storage_bucket, diff_files_list, True)
+        task_status = pack.upload_author_image(storage_bucket, storage_base_path, diff_files_list, True)
+
         if not task_status:
             pack.status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
             pack.cleanup()
             continue
 
-        task_status, pack_was_modified = pack.detect_modified(content_repo, index_folder_path, current_commit_hash,
-                                                              previous_commit_hash)
+        task_status, modified_rn_files_paths, pack_was_modified = pack.detect_modified(
+            content_repo, index_folder_path, current_commit_hash, previous_commit_hash)
+
         if not task_status:
             pack.status = PackStatus.FAILED_DETECTING_MODIFIED_FILES.name
             pack.cleanup()
             continue
 
-        task_status = pack.format_metadata(user_metadata, index_folder_path, packs_dependencies_mapping, build_number,
-                                           current_commit_hash, pack_was_modified, statistics_handler)
+        task_status, is_missing_dependencies = pack.format_metadata(index_folder_path,
+                                                                    packs_dependencies_mapping, build_number,
+                                                                    current_commit_hash, pack_was_modified,
+                                                                    statistics_handler, pack_names)
+
+        if is_missing_dependencies:
+            # If the pack is dependent on a new pack
+            # (which is not yet in the index.zip as it might not have been iterated yet)
+            # we will note that it is missing dependencies.
+            # And finally after updating all the packages in index.zip - i.e. the new pack exists now.
+            # We will go over the pack again to add what was missing.
+            # See issue #37290
+            packs_missing_dependencies.append(pack)
+
         if not task_status:
             pack.status = PackStatus.FAILED_METADATA_PARSING.name
             pack.cleanup()
             continue
 
-        task_status, not_updated_build = pack.prepare_release_notes(index_folder_path, build_number, pack_was_modified)
+        task_status, not_updated_build = pack.prepare_release_notes(index_folder_path, build_number, pack_was_modified,
+                                                                    modified_rn_files_paths)
         if not task_status:
             pack.status = PackStatus.FAILED_RELEASE_NOTES.name
             pack.cleanup()
@@ -1055,7 +1053,8 @@ def main():
             continue
 
         task_status, skipped_upload, _ = pack.upload_to_storage(zip_pack_path, pack.latest_version, storage_bucket,
-                                                                override_all_packs or pack_was_modified)
+                                                                override_all_packs or pack_was_modified,
+                                                                storage_base_path)
 
         if not task_status:
             pack.status = PackStatus.FAILED_UPLOADING_PACK.name
@@ -1082,15 +1081,39 @@ def main():
             continue
 
         # in case that pack already exist at cloud storage path and in index, don't show that the pack was changed
-        if skipped_upload and exists_in_index:
+        if skipped_upload and exists_in_index and pack not in packs_missing_dependencies:
             pack.status = PackStatus.PACK_ALREADY_EXISTS.name
             pack.cleanup()
             continue
 
         pack.status = PackStatus.SUCCESS.name
 
+    logging.info(f"packs_missing_dependencies: {packs_missing_dependencies}")
+
+    # Going over all packs that were marked as missing dependencies,
+    # updating them with the new data for the new packs that were added to the index.zip
+    for pack in packs_missing_dependencies:
+        task_status, _ = pack.format_metadata(index_folder_path, packs_dependencies_mapping,
+                                              build_number, current_commit_hash, False, statistics_handler,
+                                              pack_names, format_dependencies_only=True)
+
+        if not task_status:
+            pack.status = PackStatus.FAILED_METADATA_REFORMATING.name
+            pack.cleanup()
+            continue
+
+        task_status = update_index_folder(index_folder_path=index_folder_path, pack_name=pack.name, pack_path=pack.path,
+                                          pack_version=pack.latest_version, hidden_pack=pack.hidden)
+        if not task_status:
+            pack.status = PackStatus.FAILED_UPDATING_INDEX_FOLDER.name
+            pack.cleanup()
+            continue
+
+        pack.status = PackStatus.SUCCESS.name
+
     # upload core packs json to bucket
-    upload_core_packs_config(storage_bucket, build_number, index_folder_path)
+    create_corepacks_config(storage_bucket, build_number, index_folder_path,
+                            os.path.dirname(packs_artifacts_path), storage_base_path)
 
     # finished iteration over content packs
     upload_index_to_storage(index_folder_path=index_folder_path, extract_destination_path=extract_destination_path,
@@ -1101,9 +1124,6 @@ def main():
                             artifacts_dir=os.path.dirname(packs_artifacts_path),
                             storage_bucket=storage_bucket,
                             )
-
-    # upload id_set.json to bucket
-    upload_id_set(storage_bucket, id_set_path)
 
     # get the lists of packs divided by their status
     successful_packs, skipped_packs, failed_packs = get_packs_summary(packs_list)

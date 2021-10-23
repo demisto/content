@@ -2,8 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from tld import get_tld
 from validate_email import validate_email
-from urlparse import urlparse, parse_qs
-from urllib import unquote
+from urllib.parse import urlparse, parse_qs, unquote
 import re
 
 # ============================================================================================================== #
@@ -62,7 +61,7 @@ def get_fqdn(the_input):
         # get the subdomain using tld.subdomain
         subdomain = domain.subdomain
         if (subdomain):
-            fqdn = "{}.{}".format(subdomain, str(domain))
+            fqdn = "{}.{}".format(subdomain, domain.fld)
 
     return fqdn
 
@@ -97,8 +96,6 @@ def extract_fqdn(the_input):
 
     # convert None to empty string if needed
     fqdn = '' if not fqdn else fqdn
-    if type(fqdn) == unicode:
-        fqdn = fqdn.encode('utf-8', errors='ignore')
     return fqdn
 
 

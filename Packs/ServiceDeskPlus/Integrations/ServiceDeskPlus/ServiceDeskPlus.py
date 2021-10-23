@@ -40,23 +40,32 @@ class Client(BaseClient):
     Should only do requests and return data.
     """
 
-    def __init__(self, url: str, use_ssl: bool, use_proxy: bool, client_id: str, client_secret: str,
-                 refresh_token: str = None, fetch_time: str = '7 days', fetch_status: list = None,
-                 fetch_limit: int = 50, fetch_filter: str = ''):
+    def __init__(self, url: str, use_ssl: bool, use_proxy: bool, client_id: str = None, client_secret: str = None,
+                 refresh_token: str = None, technician_key: str = None, fetch_time: str = '7 days',
+                 fetch_status: list = None, fetch_limit: int = 50, fetch_filter: str = '', on_premise: bool = False):
         if fetch_status is None:
             fetch_status = []
         self.client_id = client_id
         self.client_secret = client_secret
         self.refresh_token = refresh_token
+        self.technician_key = technician_key
         self.fetch_time = fetch_time
         self.fetch_status = fetch_status
         self.fetch_limit = fetch_limit
         self.fetch_filter = fetch_filter
-        super().__init__(url, verify=use_ssl, proxy=use_proxy, headers={
-            'Accept': 'application/v3+json'
-        })
-        if self.refresh_token:
-            self.get_access_token()  # Add a valid access token to the headers
+        self.on_premise = on_premise
+        if on_premise:
+            super().__init__(url, verify=use_ssl, proxy=use_proxy, headers={
+                'Accept': 'application/v3+json',
+                'TECHNICIAN_KEY': technician_key
+            })
+        else:
+            super().__init__(url, verify=use_ssl, proxy=use_proxy, headers={
+                'Accept': 'application/v3+json'
+            })
+
+            if self.refresh_token:
+                self.get_access_token()  # Add a valid access token to the headers
 
     def get_access_token(self):
         """
@@ -110,7 +119,8 @@ class Client(BaseClient):
                                            .format(res.content), exception)
 
             if res.status_code in [401]:
-                if demisto.getIntegrationContext().get('expiry_time', 0) <= date_to_timestamp(datetime.now()):
+                if not self.on_premise and demisto.getIntegrationContext().get('expiry_time', 0)\
+                        <= date_to_timestamp(datetime.now()):
                     self.get_access_token()
                     return self.http_request(method, url_suffix, full_url=full_url, params=params)
                 try:
@@ -774,7 +784,7 @@ def test_module(client: Client):
     Returns:
         'ok' if test passed, anything else will fail the test.
     """
-    if not client.refresh_token:
+    if not client.on_premise and not client.refresh_token:
         return_error('Please enter a refresh token (see detailed instruction (?) for more information)')
     try:
         client.http_request('GET', 'requests')
@@ -800,6 +810,8 @@ def generate_refresh_token(client: Client, args: Dict) -> Tuple[str, dict, Any]:
         If the code is valid and the Refresh Token was generated successfully, the function displays the refresh token
         for the user in the war room.
     """
+    if client.on_premise:
+        return_error("The command 'service-desk-plus-generate-refresh-token' can not be executed on on-premise.")
     code = args.get('code')
     params = {
         'code': code,
@@ -820,18 +832,29 @@ def generate_refresh_token(client: Client, args: Dict) -> Tuple[str, dict, Any]:
 
 def main():
     params = demisto.params()
-    server_url = SERVER_URL[params.get('server_url')]
-
-    client = Client(url=server_url + API_VERSION,
-                    use_ssl=not params.get('insecure', False),
-                    use_proxy=params.get('proxy', False),
-                    client_id=params.get('client_id'),
-                    client_secret=params.get('client_secret'),
-                    refresh_token=params.get('refresh_token'),
-                    fetch_time=params.get('fetch_time') if params.get('fetch_time') else '7 days',
-                    fetch_status=params.get('fetch_status'),
-                    fetch_limit=int(params.get('fetch_limit')) if params.get('fetch_limit') else 50,
-                    fetch_filter=params.get('fetch_filter') if params.get('fetch_filter') else '')
+    server_url = params.get('server_url')
+    if server_url == 'On-Premise':
+        client = Client(url=params.get('server_url_on_premise') + API_VERSION,
+                        use_ssl=not params.get('insecure', False),
+                        use_proxy=params.get('proxy', False),
+                        technician_key=params.get('technician_key'),
+                        fetch_time=params.get('first_fetch') if params.get('first_fetch') else '7 days',
+                        fetch_status=params.get('fetch_status'),
+                        fetch_limit=int(params.get('max_fetch')) if params.get('max_fetch') else 50,
+                        fetch_filter=params.get('fetch_filter') if params.get('fetch_filter') else '',
+                        on_premise=True)
+    else:
+        server_url = SERVER_URL[params.get('server_url')]
+        client = Client(url=server_url + API_VERSION,
+                        use_ssl=not params.get('insecure', False),
+                        use_proxy=params.get('proxy', False),
+                        client_id=params.get('client_id'),
+                        client_secret=params.get('client_secret'),
+                        refresh_token=params.get('refresh_token'),
+                        fetch_time=params.get('fetch_time') if params.get('fetch_time') else '7 days',
+                        fetch_status=params.get('fetch_status'),
+                        fetch_limit=int(params.get('fetch_limit')) if params.get('fetch_limit') else 50,
+                        fetch_filter=params.get('fetch_filter') if params.get('fetch_filter') else '')
 
     commands = {
         'service-desk-plus-generate-refresh-token': generate_refresh_token,

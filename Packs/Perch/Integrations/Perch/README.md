@@ -2,7 +2,7 @@
 <p>Use the Perch integration to manage alerts, indicators, and communities.</p>
 <p>This integration was integrated and tested with the latest version of Perch.</p>
 <h2>
-<a id="Configure_Perch_on_Demisto_5"></a>Configure Perch on Demisto</h2>
+<a id="Configure_Perch_on_Demisto_5"></a>Configure Perch on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to<span> </span><strong>Settings</strong><span> </span>&gt;<span> </span><strong>Integrations</strong><span> </span>&gt;<span> </span><strong>Servers &amp; Services</strong>.</li>
 <li>Search for Perch.</li>
@@ -23,7 +23,7 @@
 </ol>
 <h2>
 <a id="Commands_19"></a>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_376b5b32-fb7d-4104-9f94-95c720c2cf8a" target="_self">Search for alerts: perch-search-alerts</a></li>
 <li><a href="#h_0d4a3fae-dc89-47dd-94a3-929bf3c206cc" target="_self">Get information for a community: perch-get-community</a></li>

@@ -1,9 +1,8 @@
-import os
 import logging
 import warnings
 import google.auth
 from pprint import pformat
-from pandas.core.frame import DataFrame
+from pandas.core.frame import DataFrame, Series
 from google.cloud.bigquery.client import Client
 from google.cloud import bigquery
 from datetime import timedelta
@@ -18,17 +17,38 @@ class PackStatisticsHandler:
 
     Attributes:
         pack_name (str): The pack name.
-        _pack_index_path (str): The pack's path in the index folder.
+        _packs_dc_desc (Series): A pandas Series of packs sorted descending by download count
         _packs_statistics_df (DataFrame): The pandas statistics dataframe.
         download_count (int): The pack's downloads count.
 
     """
 
-    def __init__(self, pack_name, packs_statistics_df: DataFrame, index_folder_path: str):
+    def __init__(self, pack_name, packs_statistics_df: DataFrame, packs_download_count_desc: Series,
+                 displayed_dependencies: list):
         self.pack_name: str = pack_name
         self._packs_statistics_df: DataFrame = packs_statistics_df
-        self._pack_index_path: str = os.path.join(index_folder_path, self.pack_name)
+        self._packs_dc_desc: Series = packs_download_count_desc
+        self._displayed_dependencies = displayed_dependencies
+        self.displayed_dependencies_sorted: list = self._get_pack_dependencies_sorted()
         self.download_count: int = self._get_pack_downloads_count()
+
+    def _get_pack_dependencies_sorted(self):
+        """ Filters the packs download count series by the pack dependencies
+
+        Returns:
+            list: pack names that are dependencies of the current pack by descending download count
+
+        """
+        full_series_index = self._packs_dc_desc.index
+        packs_dependencies_sorted_series = self._packs_dc_desc.loc[full_series_index.isin(self._displayed_dependencies)]
+        packs_dependencies_sorted = list(packs_dependencies_sorted_series.index.array)
+        # Adds a new packs that does not yet exist in the market place
+        for dep_pack_name in self._displayed_dependencies:
+            if dep_pack_name not in packs_dependencies_sorted:
+                packs_dependencies_sorted.append(dep_pack_name)
+
+        logging.info(f'{self.pack_name} pack sorted deps: {packs_dependencies_sorted}')
+        return packs_dependencies_sorted
 
     def _get_pack_downloads_count(self):
         """ Returns number of packs downloads from big query dataframe.
@@ -37,8 +57,8 @@ class PackStatisticsHandler:
             int: number of packs downloads.
         """
         downloads_count = 0
-        if self.pack_name in self._packs_statistics_df.index.values:
-            downloads_count = int(self._packs_statistics_df.loc[self.pack_name]['num_count'].astype('int32'))
+        if self.pack_name in self._packs_dc_desc:
+            downloads_count = int(self._packs_dc_desc[self.pack_name])
 
         return downloads_count
 
@@ -103,10 +123,12 @@ class StatisticsHandler:
     TOP_PACKS_14_DAYS_TABLE = 'oproxy-dev.shared_views.top_packs_14_days'
     BIG_QUERY_MAX_RESULTS = 2000  # big query max row results
 
-    def __init__(self, service_account: str, index_folder_path: str, packs_list: list):
+    def __init__(self, service_account: str, index_folder_path: str):
         self._bq_client: Client = init_bigquery_client(service_account)
         self._index_folder_path: str = index_folder_path
-        self.packs_statistics_df = self._get_packs_statistics_df()
+        self.packs_statistics_df: DataFrame = self._get_packs_statistics_df()
+        self.packs_download_count_desc: Series = self.packs_statistics_df.num_count.sort_values(ascending=False).\
+            astype('int32')
         self.landing_page_sections = self.get_landing_page_sections()
         self.trending_packs = self._get_trending_packs()
 

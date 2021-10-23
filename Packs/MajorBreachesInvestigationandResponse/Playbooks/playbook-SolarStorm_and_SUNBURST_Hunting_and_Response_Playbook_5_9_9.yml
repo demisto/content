@@ -232,7 +232,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
   "19":
     id: "19"
@@ -413,7 +413,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
   "31":
     id: "31"
@@ -564,7 +564,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
   "36":
     id: "36"
@@ -617,7 +617,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
   "42":
     id: "42"
@@ -788,7 +788,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
   "47":
     id: "47"
@@ -1047,7 +1047,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
   "52":
     id: "52"
@@ -1889,7 +1889,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
   "70":
     id: "70"
@@ -2019,7 +2019,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
   "77":
     id: "77"
@@ -2084,10 +2084,10 @@ tasks:
     task:
       id: 664e0282-f996-408a-81d4-7e3958b125cc
       version: -1
-      name: Azure Hunting playbook
+      name: Office 365 and Azure Hunting
       description: 'This playbook helps you collect and investigate suspicious security
         events from the Azure AD environment. '
-      playbookName: Azure Hunting playbook
+      playbookName: Office 365 and Azure Hunting
       type: playbook
       iscommand: false
       brand: ""
@@ -2110,7 +2110,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
   "79":
     id: "79"
@@ -2149,10 +2149,10 @@ tasks:
     task:
       id: 3db165c4-baa0-4aaa-88ba-3206e8797b7b
       version: -1
-      name: Azure Configuration Analysis
+      name: Office 365 and Azure Configuration Analysis
       description: This playbook helps you collect, review, and find misconfigurations
         with the Azure environment.
-      playbookName: Azure Configuration Analysis
+      playbookName: Office 365 and Azure Configuration Analysis
       type: playbook
       iscommand: false
       brand: ""
@@ -2182,7 +2182,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
   "81":
     id: "81"
@@ -2502,7 +2502,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
 view: |-
   {

@@ -1,0 +1,22 @@
+{
+    "autorun": false,
+    "color": "#536DFE",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "disabled": false,
+    "hours": 0,
+    "hoursR": 0,
+    "id": "Cyberpion Security Alert",
+    "layout": "Cyberpion - Action Item",
+    "locked": false,
+    "name": "Cyberpion Security Alert",
+    "playbookId": "Cyberpion Domain State",
+    "readonly": false,
+    "reputationCalc": 1,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.0.0"
+}

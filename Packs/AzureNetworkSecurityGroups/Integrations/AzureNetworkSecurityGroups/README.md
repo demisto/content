@@ -353,7 +353,7 @@ Update a security rule. If one does not exist, it will be created.
 
 
 #### Command Example
-```!azure-nsg-security-rules-update security_group_name=alerts-nsg security_rule_name=Demisto_Rule action=Allow description=description```
+```!azure-nsg-security-rules-update security_group_name=alerts-nsg security_rule_name=XSOAR_Rule action=Allow description=description```
 
 #### Context Example
 ```json
@@ -368,8 +368,8 @@ Update a security rule. If one does not exist, it will be created.
             "destinationPortRanges": [],
             "direction": "Outbound",
             "etag": "W/\"9fad6036-4c3a-4d60-aac9-18281dba3305\"",
-            "id": "/subscriptions/123456789/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Network/networkSecurityGroups/alerts-nsg/securityRules/Demisto_Rule",
-            "name": "Demisto_Rule",
+            "id": "/subscriptions/123456789/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Network/networkSecurityGroups/alerts-nsg/securityRules/XSOAR_Rule",
+            "name": "XSOAR_Rule",
             "priority": 100,
             "protocol": "*",
             "provisioningState": "Succeeded",
@@ -385,10 +385,10 @@ Update a security rule. If one does not exist, it will be created.
 
 #### Human Readable Output
 
->### Rules Demisto_Rule
+>### Rules XSOAR_Rule
 >|access|description|destinationAddressPrefix|destinationPortRange|direction|etag|id|name|priority|protocol|provisioningState|sourceAddressPrefix|sourcePortRange|type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| Allow | description | 11.0.0.0/8 | 8080 | Outbound | W/"9fad6036-4c3a-4d60-aac9-18281dba3305" | /subscriptions/123456789/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Network/networkSecurityGroups/alerts-nsg/securityRules/Demisto_Rule | Demisto_Rule | 100 | * | Succeeded | 10.0.0.0/8 | * | Microsoft.Network/networkSecurityGroups/securityRules |
+>| Allow | description | 11.0.0.0/8 | 8080 | Outbound | W/"9fad6036-4c3a-4d60-aac9-18281dba3305" | /subscriptions/123456789/resourceGroups/cloud-shell-storage-eastus/providers/Microsoft.Network/networkSecurityGroups/alerts-nsg/securityRules/XSOAR_Rule | XSOAR_Rule | 100 | * | Succeeded | 10.0.0.0/8 | * | Microsoft.Network/networkSecurityGroups/securityRules |
 
 
 ### azure-nsg-security-rules-get

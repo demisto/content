@@ -3,7 +3,7 @@ commonfields:
   id: AutoFocus V2
   version: -1
 configuration:
-- additionalinfo: TIM customers that upgraded to version 6.2 or above have this value pre-configured in their main account, so no additional input is needed.
+- additionalinfo: TIM customers that upgraded to version 6.2 or above, can have this value pre-configured in their main account so no additional input is needed. To use this feature, upgrade your license so it includes the license key.
   display: API Key
   name: api_key
   required: false
@@ -30,10 +30,21 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: Suppress errors for non found indicators
+  name: handle_error
+  required: false
+  defaultvalue: true
+  type: 8
 - display: Additional malicious verdicts
   name: mark_as_malicious
   required: false
   type: 0
+- additionalinfo: Create relationships between indicators as part of Enrichment.
+  defaultvalue: 'true'
+  display: Create relationships
+  name: create_relationships
+  required: false
+  type: 8
 description: Use the Palo Alto Networks AutoFocus integration to distinguish the most
   important threats from everyday commodity attacks.
 display: Palo Alto Networks AutoFocus v2
@@ -41,6 +52,14 @@ name: AutoFocus V2
 script:
   commands:
   - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Use XSOAR built-in polling to retrieve the result when it's ready.
+      isArray: false
+      name: polling
+      predefined:
+        - 'true'
+        - 'false'
     - default: false
       description: The query for which to retrieve samples. For additional information
         on how to build your query using the AF GUI, see the detailed description
@@ -49,6 +68,13 @@ script:
       name: query
       required: false
       secret: false
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+      defaultValue: '60'
     - default: false
       defaultValue: '30'
       description: The number of results to return.
@@ -91,9 +117,9 @@ script:
       isArray: false
       name: scope
       predefined:
-      - Private
-      - Public
-      - Global
+        - Private
+        - Public
+        - Global
       required: true
       secret: false
     - default: false
@@ -159,6 +185,13 @@ script:
       - 'false'
       required: false
       secret: false
+    - default: false
+      description: The AF Cookie for retrieving results of previous searches. The
+        AF Cookie expires 120 seconds after the search completes.
+      isArray: false
+      name: af_cookie
+      required: false
+      secret: false
     deprecated: false
     description: Searches for samples in AutoFocus. To view results, run the autofocus-samples-search-results
       command with the returned AF Cookie. The AF Cookie expires 120 seconds after
@@ -166,6 +199,7 @@ script:
       is recommended for querying and polling.
     execution: false
     name: autofocus-search-samples
+    polling: true
     outputs:
     - contextPath: AutoFocus.SamplesSearch.AFCookie
       description: The AutoFocus search ID. Use this ID to retrieve search results.
@@ -177,7 +211,99 @@ script:
     - contextPath: AutoFocus.SamplesSearch.SessionStart
       description: The time when the session began.
       type: Date
+    - contextPath: AutoFocus.SamplesResults.Size
+      description: The file size in bytes.
+      type: String
+    - contextPath: AutoFocus.SamplesResults.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: AutoFocus.SamplesResults.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: AutoFocus.SamplesResults.Created
+      description: The date that the file was created.
+      type: Date
+    - contextPath: AutoFocus.SamplesResults.Finished
+      description: Date finished.
+      type: Date
+    - contextPath: AutoFocus.SamplesResults.Region
+      description: Region of the sample.
+      type: String
+    - contextPath: AutoFocus.SamplesResults.FileType
+      description: The file type.
+      type: String
+    - contextPath: AutoFocus.SamplesResults.Tags
+      description: The tags attached to the sample.
+      type: String
+    - contextPath: AutoFocus.SamplesResults.Verdict
+      description: The verdict of the sample.
+      type: Number
+    - contextPath: AutoFocus.SamplesResults.TagGroups
+      description: Groups of relevant tags.
+      type: String
+    - contextPath: AutoFocus.SamplesSearch.Status
+      description: The search status. Can be "in progress" or "complete".
+      type: String
+    - contextPath: File.Size
+      description: The size of the file in bytes.
+      type: Number
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Type
+      description: The file type, as determined by libmagic (same as displayed in
+        file entries).
+      type: String
+    - contextPath: File.Tags
+      description: Tags of the file.
+      type: String
+    - contextPath: AutoFocus.SamplesResults.Artifact.b
+      description: How many set the artifact as benign.
+      type: Number
+    - contextPath: AutoFocus.SamplesResults.Artifact.g
+      description: How many set the artifact as grayware.
+      type: Number
+    - contextPath: AutoFocus.SamplesResults.Artifact.m
+      description: How many set the artifact as malicious.
+      type: Number
+    - contextPath: AutoFocus.SamplesResults.Artifact.confidence
+      description: Confidence in the decision.
+      type: String
+    - contextPath: AutoFocus.SamplesResults.Artifact.indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: AutoFocus.SamplesResults.Artifact.indicator_type
+      description: 'The indicator type, for example: Mutex, User agent, IPv4, Domain.'
+      type: String
+    - contextPath: AutoFocus.SamplesResults.ID
+      description: ID of sample search
+      type: String
   - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Use XSOAR built-in polling to retrieve the result when it's ready.
+      isArray: false
+      name: polling
+      predefined:
+        - 'true'
+        - 'false'
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+      defaultValue: '60'
+    - default: false
+      description: The AF Cookie for retrieving the results of a previous search.
+        The AF Cookie expires 120 seconds after the search completes.
+      isArray: false
+      name: af_cookie
+      required: false
+      secret: false
     - default: false
       description: The query for which to retrieve samples. For additional information
         on how to build your query using the AF GUI, see the detailed description
@@ -226,8 +352,8 @@ script:
       isArray: false
       name: order
       predefined:
-      - Ascending
-      - Descending
+        - Ascending
+        - Descending
       required: false
       secret: false
     - default: false
@@ -256,24 +382,24 @@ script:
       secret: false
     - default: false
       description: 'The date range in which to search for sessions. Format: YYYY-MM-DDTHH:MM:SS,YYYY-MM-DDTHH:MM:SS
-        where the first date is the beginning and the second is the end. Example:
-        2019-09-09T00:00:00,2019-09-09T23:01:59'
+          where the first date is the beginning and the second is the end. Example:
+          2019-09-09T00:00:00,2019-09-09T23:01:59'
       isArray: false
       name: time_range
       predefined:
-      - ''
+        - ''
       required: false
       secret: false
     - default: false
       description: 'The date after which to search for sessions. Format: YYYY-MM-DDTHH:MM:SS
-        Example: 2019-09-09T23:01:59'
+          Example: 2019-09-09T23:01:59'
       isArray: false
       name: time_after
       required: false
       secret: false
     - default: false
       description: 'The date before which to search for sessions. Format: YYYY-MM-DDTHH:MM:SS
-        Example: 2019-09-09T23:01:59'
+          Example: 2019-09-09T23:01:59'
       isArray: false
       name: time_before
       required: false
@@ -284,6 +410,7 @@ script:
       the search completes. `Autofocus Query Samples, Sessions and Tags` Playbook
       is recommended for querying and polling.
     execution: false
+    polling: true
     name: autofocus-search-sessions
     outputs:
     - contextPath: AutoFocus.SessionsSearch.AFCookie
@@ -295,6 +422,48 @@ script:
       type: String
     - contextPath: AutoFocus.SessionsSearch.SessionStart
       description: The time when the session began.
+      type: Date
+    - contextPath: AutoFocus.SessionsResults.FileName
+      description: The name of the file..
+      type: String
+    - contextPath: AutoFocus.SessionsResults.ID
+      description: The session ID. Used to get session details.
+      type: String
+    - contextPath: AutoFocus.SessionsResults.Industry
+      description: The related industry.
+      type: String
+    - contextPath: AutoFocus.SessionsResults.Region
+      description: The regions of the sessions.
+      type: String
+    - contextPath: AutoFocus.SessionsResults.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: AutoFocus.SessionsResults.UploadSource
+      description: The source of the uploaded sample.
+      type: String
+    - contextPath: AutoFocus.SessionsResults.FileURL
+      description: The URL of the file.
+      type: String
+    - contextPath: AutoFocus.SessionsResults.Tags
+      description: Relevant tags.
+      type: String
+    - contextPath: AutoFocus.SessionsSearch.Status
+      description: The search status. Can be "in progress" or "complete".
+      type: String
+    - contextPath: File.Name
+      description: The full file name (including file extension).
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.MalwareFamily
+      description: The malware family associated with the file.
+      type: String
+    - contextPath: File.Tags
+      description: Tags of the file.
+      type: String
+    - contextPath: AutoFocus.SessionsResults.Seen
+      description: Session seen.
       type: Date
   - arguments:
     - default: false
@@ -611,6 +780,28 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
+      description: Use XSOAR built-in polling to retrieve the result when it's ready.
+      isArray: false
+      name: polling
+      predefined:
+        - 'true'
+        - 'false'
+    - default: false
+      description: The AF Cookie for retrieving results of previous searches. The
+        AF Cookie expires 120 seconds after the search completes.
+      isArray: false
+      name: af_cookie
+      required: false
+      secret: false
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+      defaultValue: '40'
+    - auto: PREDEFINED
+      default: false
       description: 'Tag class. - Malware Family: group of malware that have shared
         properties or common functions. - Campaign:  targeted attack, which might
         include several incidents or sets of activities. - Actor: individual or group
@@ -682,6 +873,7 @@ script:
       Samples, Sessions and Tags` Playbook is recommended for querying and polling.
     execution: false
     name: autofocus-top-tags-search
+    polling: true
     outputs:
     - contextPath: AutoFocus.TopTagsSearch.AFCookie
       description: AutoFocus search ID. Use this ID to get search results. The AF
@@ -693,6 +885,21 @@ script:
     - contextPath: AutoFocus.SamplesSearch.SessionStart
       description: The time when the session began.
       type: Date
+    - contextPath: AutoFocus.TopTagsResults.Count
+      description: The number of samples that matched this tag.
+      type: Number
+    - contextPath: AutoFocus.TopTagsResults.PublicTagName
+      description: The public name of the tag. This is used as an ID of the tag.
+      type: String
+    - contextPath: AutoFocus.TopTagsResults.TagName
+      description: The simple name of the tag.
+      type: String
+    - contextPath: AutoFocus.TopTagsResults.Lasthit
+      description: The last encounter date of the tag.
+      type: Date
+    - contextPath: AutoFocus.TopTagsSearch.Status
+      description: The search status. Can be "in progress" or "complete".
+      type: String
   - arguments:
     - default: false
       description: 'The AF Cookie for retrieving results of previous search. Note:
@@ -749,6 +956,21 @@ script:
     - contextPath: IP.Address
       description: The IP address.
       type: String
+    - contextPath: IP.Relationships.EntityA
+      description: The source of the relationship.
+      type: string
+    - contextPath: IP.Relationships.EntityB
+      description: The destination of the relationship.
+      type: string
+    - contextPath: IP.Relationships.Relationship
+      description: The name of the relationship.
+      type: string
+    - contextPath: IP.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: string
+    - contextPath: IP.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: string
     - contextPath: AutoFocus.IP.IndicatorValue
       description: The IP address.
       type: String
@@ -826,6 +1048,21 @@ script:
     - contextPath: URL.Data
       description: The URL address.
       type: String
+    - contextPath: URL.Relationships.EntityA
+      description: The source of the relationship.
+      type: string
+    - contextPath: URL.Relationships.EntityB
+      description: The destination of the relationship.
+      type: string
+    - contextPath: URL.Relationships.Relationship
+      description: The name of the relationship.
+      type: string
+    - contextPath: URL.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: string
+    - contextPath: URL.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: string
     - contextPath: AutoFocus.URL.IndicatorValue
       description: The URL value.
       type: String
@@ -903,6 +1140,21 @@ script:
     - contextPath: File.SHA256
       description: SHA256 hash of the file.
       type: String
+    - contextPath: File.Relationships.EntityA
+      description: The source of the relationship.
+      type: string
+    - contextPath: File.Relationships.EntityB
+      description: The destination of the relationship.
+      type: string
+    - contextPath: File.Relationships.Relationship
+      description: The name of the relationship.
+      type: string
+    - contextPath: File.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: string
+    - contextPath: File.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: string
     - contextPath: File.Tags.TagGroups.TagGroupName
       description: The tag's group name.
       type: String
@@ -1061,6 +1313,21 @@ script:
     - contextPath: Domain.MalwareFamily
       description: The malware family associated with the domain.
       type: String
+    - contextPath: Domain.Relationships.EntityA
+      description: The source of the relationship.
+      type: string
+    - contextPath: Domain.Relationships.EntityB
+      description: The destination of the relationship.
+      type: string
+    - contextPath: Domain.Relationships.Relationship
+      description: The name of the relationship.
+      type: string
+    - contextPath: Domain.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: string
+    - contextPath: Domain.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: string
     - contextPath: Domain.Tags
       description: Tags that are associated with the domain.
       type: String
@@ -1118,7 +1385,7 @@ script:
     - contextPath: Domain.Name
       description: The domain name.
       type: String
-  dockerimage: demisto/python3:3.9.4.18682
+  dockerimage: demisto/python3:3.9.7.24076
   isfetch: false
   longRunning: false
   longRunningPort: false

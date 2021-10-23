@@ -14,6 +14,75 @@ INTEGRATION_NAME = "VirusTotal"
 COMMAND_PREFIX = "vt"
 INTEGRATION_ENTRY_CONTEXT = "VirusTotal"
 
+INDICATOR_TYPE = {
+    'ip': FeedIndicatorType.IP,
+    'ip_address': FeedIndicatorType.IP,
+    'domain': FeedIndicatorType.Domain,
+    'file': FeedIndicatorType.File,
+    'url': FeedIndicatorType.URL
+}
+
+
+""" RELATIONSHIP TYPE"""
+RELATIONSHIP_TYPE = {
+    'file': {
+        'carbonblack_children': EntityRelationship.Relationships.CREATES,
+        'carbonblack_parents': EntityRelationship.Relationships.CREATED_BY,
+        'compressed_parents': EntityRelationship.Relationships.BUNDLED_IN,
+        'contacted_domains': EntityRelationship.Relationships.COMMUNICATES_WITH,
+        'contacted_ips': EntityRelationship.Relationships.COMMUNICATES_WITH,
+        'contacted_urls': EntityRelationship.Relationships.COMMUNICATES_WITH,
+        'dropped_files': EntityRelationship.Relationships.DROPPED_BY,
+        'email_attachments': EntityRelationship.Relationships.ATTACHES,
+        'email_parents': EntityRelationship.Relationships.ATTACHMENT_OF,
+        'embedded_domains': EntityRelationship.Relationships.EMBEDDED_IN,
+        'embedded_ips': EntityRelationship.Relationships.EMBEDDED_IN,
+        'embedded_urls': EntityRelationship.Relationships.EMBEDDED_IN,
+        'execution_parents': EntityRelationship.Relationships.EXECUTED_BY,
+        'itw_domains': EntityRelationship.Relationships.DOWNLOADS_FROM,
+        'itw_ips': EntityRelationship.Relationships.DOWNLOADS_FROM,
+        'overlay_children': EntityRelationship.Relationships.BUNDLES,
+        'overlay_parents': EntityRelationship.Relationships.BUNDLED_IN,
+        'pcap_children': EntityRelationship.Relationships.BUNDLES,
+        'pcap_parents': EntityRelationship.Relationships.BUNDLED_IN,
+        'pe_resource_children': EntityRelationship.Relationships.EXECUTED,
+        'pe_resource_parents': EntityRelationship.Relationships.EXECUTED_BY,
+        'similar_files': EntityRelationship.Relationships.SIMILAR_TO,
+    },
+    'domain': {
+        'cname_records': EntityRelationship.Relationships.IS_ALSO,
+        'caa_records': EntityRelationship.Relationships.RELATED_TO,
+        'communicating_files': EntityRelationship.Relationships.DROPS,
+        'downloaded_files': EntityRelationship.Relationships.DROPS,
+        'immediate_parent': EntityRelationship.Relationships.SUB_DOMAIN_OF,
+        'mx_records': EntityRelationship.Relationships.RELATED_TO,
+        'ns_records': EntityRelationship.Relationships.DROPS,
+        'parent': EntityRelationship.Relationships.SUB_DOMAIN_OF,
+        'referrer_files': EntityRelationship.Relationships.RELATED_TO,
+        'resolutions': EntityRelationship.Relationships.RESOLVED_FROM,
+        'siblings': EntityRelationship.Relationships.SUPRA_DOMAIN_OF,
+        'soa_records': EntityRelationship.Relationships.IS_ALSO,
+        'subdomains': EntityRelationship.Relationships.SUPRA_DOMAIN_OF,
+        'urls': EntityRelationship.Relationships.HOSTS,
+    }, 'ip': {
+        'communicating_files': EntityRelationship.Relationships.COMMUNICATES_WITH,
+        'downloaded_files': EntityRelationship.Relationships.DROPS,
+        'referrer_files': EntityRelationship.Relationships.RELATED_TO,
+        'resolutions': EntityRelationship.Relationships.RESOLVES_TO,
+        'urls': EntityRelationship.Relationships.RELATED_TO,
+    }, 'url': {
+        'contacted_domains': EntityRelationship.Relationships.RELATED_TO,
+        'contacted_ips': EntityRelationship.Relationships.RELATED_TO,
+        'downloaded_files': EntityRelationship.Relationships.DROPS,
+        'last_serving_ip_address': EntityRelationship.Relationships.RESOLVED_FROM,
+        'network_location': EntityRelationship.Relationships.RESOLVED_FROM,
+        'redirecting_urls': EntityRelationship.Relationships.DUPLICATE_OF,
+        'redirects_to': EntityRelationship.Relationships.DUPLICATE_OF,
+        'referrer_files': EntityRelationship.Relationships.EMBEDDED_IN,
+        'referrer_urls': EntityRelationship.Relationships.RELATED_TO,
+    }
+}
+
 
 class Client(BaseClient):
     """
@@ -35,44 +104,44 @@ class Client(BaseClient):
 
     # region Reputation calls
 
-    def ip(self, ip: str) -> dict:
+    def ip(self, ip: str, relationships: str = '') -> dict:
         """
         See Also:
             https://developers.virustotal.com/v3.0/reference#ip-info
         """
         return self._http_request(
             'GET',
-            f'ip_addresses/{ip}'
+            f'ip_addresses/{ip}?relationships={relationships}'
         )
 
-    def file(self, file: str) -> dict:
+    def file(self, file: str, relationships: str = '') -> dict:
         """
         See Also:
             https://developers.virustotal.com/v3.0/reference#file
         """
         return self._http_request(
             'GET',
-            f'files/{file}'
+            f'files/{file}?relationships={relationships}'
         )
 
-    def url(self, url: str):
+    def url(self, url: str, relationships: str = ''):
         """
         See Also:
             https://developers.virustotal.com/v3.0/reference#url
         """
         return self._http_request(
             'GET',
-            f'urls/{encode_url_to_base64(url)}'
+            f'urls/{encode_url_to_base64(url)}?relationships={relationships}'
         )
 
-    def domain(self, domain: str) -> dict:
+    def domain(self, domain: str, relationships: str = '') -> dict:
         """
         See Also:
             https://developers.virustotal.com/v3.0/reference#domain-info
         """
         return self._http_request(
             'GET',
-            f'domains/{domain}'
+            f'domains/{domain}?relationships={relationships}'
         )
 
     # endregion
@@ -94,6 +163,7 @@ class Client(BaseClient):
         See Also:
             https://developers.virustotal.com/v3.0/reference#ip-comments-get
         """
+
         return self._http_request(
             'GET',
             f'ip_addresses/{ip}/comments',
@@ -572,7 +642,7 @@ class ScoreCalculator:
             self.logs.append(
                 f'The average of the ranks is {average} and the threshold is {self.domain_popularity_ranking}'
             )
-            if average >= self.domain_popularity_ranking:
+            if average <= self.domain_popularity_ranking:
                 self.logs.append('Indicator is good by popularity ranks.')
                 return True
             else:
@@ -979,6 +1049,42 @@ class ScoreCalculator:
 
 
 # region Helper functions
+
+def create_relationships(entity_a: str, entity_a_type: str, relationships_response: dict, reliability):
+    """
+    Create a list of entityRelationship object from the api result
+    entity_a: (str) - source of the relationship
+    entity_a_type: (str) - type of the source of the relationship
+    relationships_response: (dict) - the relationship response from the api
+    reliability: The reliability of the source.
+
+    Returns a list of EntityRelationship objects.
+    """
+    relationships_list: List[EntityRelationship] = []
+    for relationship_type, relationship_type_raw in relationships_response.items():
+
+        relationships_data = relationship_type_raw.get('data', [])
+        if relationships_data:
+            if isinstance(relationships_data, dict):
+                relationships_data = [relationships_data]
+
+            for relation in relationships_data:
+                name = RELATIONSHIP_TYPE.get(entity_a_type.lower(), {}).get(relationship_type)
+                entity_b = relation.get('id', '')
+                entity_b_type = INDICATOR_TYPE.get(relation.get('type', '').lower())
+                if entity_b and entity_b_type and name:
+                    if entity_b_type == FeedIndicatorType.URL:
+                        entity_b = dict_safe_get(relation, ['context_attributes', 'url'])
+                    relationships_list.append(
+                        EntityRelationship(entity_a=entity_a, entity_a_type=entity_a_type, name=name,
+                                           entity_b=entity_b, entity_b_type=entity_b_type, source_reliability=reliability,
+                                           brand=INTEGRATION_NAME))
+                else:
+                    demisto.info(
+                        f"WARNING: Relationships will not be created to entity A {entity_a} with relationship name {name}")
+    return relationships_list
+
+
 def arg_to_number_must_int(arg: Any, arg_name: Optional[str] = None, required: bool = False):
     """Wrapper of arg_to_number that must return int
     For mypy fixes.
@@ -1041,12 +1147,16 @@ def build_domain_output(
         extended_data: bool):
     data = raw_response.get('data', {})
     attributes = data.get('attributes', {})
+    relationships_response = data.get('relationships', {})
     whois: defaultdict = get_whois(attributes.get('whois', ''))
     score = score_calculator.domain_score(domain, raw_response)
     if score != Common.DBotScore.BAD and client.is_premium:
         score = score_calculator.analyze_premium_domain_score(client, domain, score)
     logs = score_calculator.get_logs()
     demisto.debug(logs)
+    relationships_list = create_relationships(entity_a=domain, entity_a_type=FeedIndicatorType.Domain,
+                                              relationships_response=relationships_response,
+                                              reliability=client.reliability)
     domain_indicator = Common.Domain(
         domain=domain,
         name_servers=whois['Name Server'],
@@ -1068,7 +1178,8 @@ def build_domain_output(
             score=score,
             malicious_description=logs,
             reliability=client.reliability
-        )
+        ),
+        relationships=relationships_list
     )
     if not extended_data:
         data = decrease_data_size(data)
@@ -1096,7 +1207,8 @@ def build_domain_output(
             headerTransform=underscoreToCamelCase
         ),
         outputs=data,
-        raw_response=raw_response
+        raw_response=raw_response,
+        relationships=relationships_list
     )
 
 
@@ -1116,13 +1228,18 @@ def build_url_output(
     # creating readable output
     attributes = data.get('attributes', {})
     last_analysis_stats = attributes.get('last_analysis_stats', {})
+    relationships_response = data.get('relationships', {})
     positive_detections = last_analysis_stats.get('malicious', 0)
     detection_engines = sum(last_analysis_stats.values())
+    relationships_list = create_relationships(entity_a=url, entity_a_type=FeedIndicatorType.URL,
+                                              relationships_response=relationships_response,
+                                              reliability=client.reliability)
     url_indicator = Common.URL(
         url,
         category=attributes.get('categories'),
         detection_engines=detection_engines,
         positive_detections=positive_detections,
+        relationships=relationships_list,
         dbot_score=Common.DBotScore(
             url,
             DBotScoreType.URL,
@@ -1160,7 +1277,8 @@ def build_url_output(
             headerTransform=underscoreToCamelCase
         ),
         outputs=data,
-        raw_response=raw_response
+        raw_response=raw_response,
+        relationships=relationships_list
     )
 
 
@@ -1173,15 +1291,20 @@ def build_ip_output(client: Client, score_calculator: ScoreCalculator, ip: str, 
     demisto.debug(logs)
     data = raw_response.get('data', {})
     attributes = data.get('attributes', {})
+    relationships_response = data.get('relationships', {})
     last_analysis_stats = attributes.get('last_analysis_stats')
     positive_engines = last_analysis_stats.get('malicious', 0)
     detection_engines = sum(last_analysis_stats.values())
+    relationships_list = create_relationships(entity_a=ip, entity_a_type=FeedIndicatorType.IP,
+                                              relationships_response=relationships_response,
+                                              reliability=client.reliability)
     ip_indicator = Common.IP(
         ip,
         asn=attributes.get('asn'),
         geo_country=attributes.get('country'),
         detection_engines=detection_engines,
         positive_engines=positive_engines,
+        relationships=relationships_list,
         dbot_score=Common.DBotScore(
             ip,
             DBotScoreType.IP,
@@ -1209,7 +1332,8 @@ def build_ip_output(client: Client, score_calculator: ScoreCalculator, ip: str, 
             headerTransform=underscoreToCamelCase
         ),
         outputs=data,
-        raw_response=raw_response
+        raw_response=raw_response,
+        relationships=relationships_list
     )
 
 
@@ -1222,11 +1346,15 @@ def build_file_output(
 ) -> CommandResults:
     data = raw_response.get('data', {})
     attributes = data.get('attributes')
+    relationships_response = data.get('relationships', {})
     score = score_calculator.file_score(file_hash, raw_response)
     logs = score_calculator.get_logs()
     demisto.debug(logs)
     signature_info = attributes.get('signature_info', {})
     exiftool = attributes.get('exiftool', {})
+    relationships_list = create_relationships(entity_a=file_hash, entity_a_type=FeedIndicatorType.File,
+                                              relationships_response=relationships_response,
+                                              reliability=client.reliability)
     file_indicator = Common.File(
         dbot_score=Common.DBotScore(
             file_hash,
@@ -1254,7 +1382,8 @@ def build_file_output(
             description=signature_info.get('description'),
             internal_name=signature_info.get('internal name'),
             original_name=signature_info.get('original name')
-        )
+        ),
+        relationships=relationships_list
     )
     if not extended_data:
         data = decrease_data_size(data)
@@ -1283,7 +1412,8 @@ def build_file_output(
             headerTransform=underscoreToCamelCase
         ),
         outputs=data,
-        raw_response=raw_response
+        raw_response=raw_response,
+        relationships=relationships_list
     )
 
 
@@ -1304,7 +1434,11 @@ def get_whois(whois_string: str) -> defaultdict:
     for line in whois_string.splitlines():
         key: str
         value: str
-        key, value = line.split(sep=':', maxsplit=1)
+        try:
+            key, value = line.split(sep=':', maxsplit=1)
+        except ValueError:
+            demisto.debug(f'Could not unpack Whois string: {line}. Skipping')
+            continue
         key = key.strip()
         value = value.strip()
         if key in whois:
@@ -1394,7 +1528,7 @@ def encode_url_to_base64(url: str) -> str:
 # region Reputation commands
 
 
-def ip_command(client: Client, score_calculator: ScoreCalculator, args: dict) -> List[CommandResults]:
+def ip_command(client: Client, score_calculator: ScoreCalculator, args: dict, relationships: str) -> List[CommandResults]:
     """
     1 API Call for regular
     1-4 API Calls for premium subscriptions
@@ -1404,7 +1538,7 @@ def ip_command(client: Client, score_calculator: ScoreCalculator, args: dict) ->
     for ip in ips:
         raise_if_ip_not_valid(ip)
         try:
-            raw_response = client.ip(ip)
+            raw_response = client.ip(ip, relationships)
         except Exception as exception:
             # If anything happens, just keep going
             demisto.debug(f'Could not process IP: "{ip}"\n {str(exception)}')
@@ -1415,7 +1549,7 @@ def ip_command(client: Client, score_calculator: ScoreCalculator, args: dict) ->
     return results
 
 
-def file_command(client: Client, score_calculator: ScoreCalculator, args: dict) -> List[CommandResults]:
+def file_command(client: Client, score_calculator: ScoreCalculator, args: dict, relationships: str) -> List[CommandResults]:
     """
     1 API Call
     """
@@ -1425,7 +1559,7 @@ def file_command(client: Client, score_calculator: ScoreCalculator, args: dict) 
     for file in files:
         raise_if_hash_not_valid(file)
         try:
-            raw_response = client.file(file)
+            raw_response = client.file(file, relationships)
             results.append(build_file_output(client, score_calculator, file, raw_response, extended_data))
         except Exception as exc:
             # If anything happens, just keep going
@@ -1434,7 +1568,7 @@ def file_command(client: Client, score_calculator: ScoreCalculator, args: dict) 
     return results
 
 
-def url_command(client: Client, score_calculator: ScoreCalculator, args: dict) -> List[CommandResults]:
+def url_command(client: Client, score_calculator: ScoreCalculator, args: dict, relationships: str) -> List[CommandResults]:
     """
     1 API Call for regular
     1-4 API Calls for premium subscriptions
@@ -1445,7 +1579,7 @@ def url_command(client: Client, score_calculator: ScoreCalculator, args: dict) -
     for url in urls:
         try:
             raw_response = client.url(
-                url
+                url, relationships
             )
         except Exception as exception:
             # If anything happens, just keep going
@@ -1455,7 +1589,7 @@ def url_command(client: Client, score_calculator: ScoreCalculator, args: dict) -
     return results
 
 
-def domain_command(client: Client, score_calculator: ScoreCalculator, args: dict) -> List[CommandResults]:
+def domain_command(client: Client, score_calculator: ScoreCalculator, args: dict, relationships: str) -> List[CommandResults]:
     """
     1 API Call for regular
     1-4 API Calls for premium subscriptions
@@ -1464,7 +1598,7 @@ def domain_command(client: Client, score_calculator: ScoreCalculator, args: dict
     results: List[CommandResults] = list()
     for domain in domains:
         try:
-            raw_response = client.domain(domain)
+            raw_response = client.domain(domain, relationships)
         except Exception as exception:
             # If anything happens, just keep going
             demisto.debug(f'Could not process domain: "{domain}"\n {str(exception)}')
@@ -1933,17 +2067,23 @@ def main(params: dict, args: dict, command: str):
     handle_proxy()
     client = Client(params)
     score_calculator = ScoreCalculator(params)
+
+    ip_relationships = (','.join(argToList(params.get('ip_relationships')))).replace('* ', '').replace(" ", "_")
+    url_relationships = (','.join(argToList(params.get('url_relationships')))).replace('* ', '').replace(" ", "_")
+    domain_relationships = (','.join(argToList(params.get('domain_relationships')))).replace('* ', '').replace(" ", "_")
+    file_relationships = (','.join(argToList(params.get('file_relationships')))).replace('* ', '').replace(" ", "_")
+
     demisto.debug(f'Command called {command}')
     if command == 'test-module':
         results = check_module(client)
     elif command == 'file':
-        results = file_command(client, score_calculator, args)
+        results = file_command(client, score_calculator, args, file_relationships)
     elif command == 'ip':
-        results = ip_command(client, score_calculator, args)
+        results = ip_command(client, score_calculator, args, ip_relationships)
     elif command == 'url':
-        results = url_command(client, score_calculator, args)
+        results = url_command(client, score_calculator, args, url_relationships)
     elif command == 'domain':
-        results = domain_command(client, score_calculator, args)
+        results = domain_command(client, score_calculator, args, domain_relationships)
     elif command == f'{COMMAND_PREFIX}-file-sandbox-report':
         results = file_sandbox_report_command(client, args)
     elif command == f'{COMMAND_PREFIX}-passive-dns-data':
@@ -1973,7 +2113,7 @@ def main(params: dict, args: dict, command: str):
     return_results(results)
 
 
-if __name__ in ('builtins', '__builtin__'):
+if __name__ in ('builtins', '__builtin__', '__main__'):
     try:
         main(demisto.params(), demisto.args(), demisto.command())
     except Exception as exception:

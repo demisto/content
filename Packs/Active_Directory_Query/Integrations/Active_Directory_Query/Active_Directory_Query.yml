@@ -45,6 +45,7 @@ configuration:
   options:
   - None
   - SSL
+  - TLS
 - display: Trust any certificate (not secure)
   name: unsecure
   defaultvalue: ""
@@ -296,6 +297,8 @@ script:
         is provided).
     - name: username
       description: Queries users by the samAccountName attribute.
+    - name: sAMAccountName
+      description: Queries users by the samAccountName attribute.
     - name: limit
       description: The maximum number of objects to return. Default is 20.
       defaultValue: "20"
@@ -394,6 +397,7 @@ script:
       predefined:
       - person
       - computer
+      - group
       description: 'The type of members to search. Can be: "Person", or "computer". Default is person.'
       defaultValue: person
     - name: attributes
@@ -417,6 +421,10 @@ script:
         - 'true'
       required: false
       secret: false
+    - name: sAMAccountName
+      description: Queries results by the samAccountName attribute.
+      required: false
+      defaultValue: '*'
     outputs:
     - contextPath: 'ActiveDirectory.Groups.dn'
       description: The DN of the group.
@@ -677,7 +685,7 @@ script:
       Used for outgoing-mapping through the Get Schema option.
     execution: false
     name: get-mapping-fields
-  dockerimage: demisto/ldap:1.0.0.17947
+  dockerimage: demisto/ldap:1.0.0.23980
   runonce: false
   ismappable: true
   isremotesyncout: true

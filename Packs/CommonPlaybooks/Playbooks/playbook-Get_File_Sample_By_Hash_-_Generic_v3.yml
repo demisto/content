@@ -259,7 +259,6 @@ tests:
 - Detonate File - Generic Test
 - test-domain-indicator
 - Account Enrichment - Generic v2.1 - Test
-- Dedup - Generic v2 - Test
 - Generic Polling Test
 - URL Enrichment - Generic v2 - Test
 - Send Investigation Summary Reports - Test

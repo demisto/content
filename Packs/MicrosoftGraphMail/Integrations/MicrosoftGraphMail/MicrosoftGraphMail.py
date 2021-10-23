@@ -63,11 +63,11 @@ class MsGraphClient:
     FILE_ATTACHMENT = '#microsoft.graph.fileAttachment'
 
     def __init__(self, self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url, use_ssl, proxy,
-                 ok_codes, mailbox_to_fetch, folder_to_fetch, first_fetch_interval, emails_fetch_limit):
+                 ok_codes, mailbox_to_fetch, folder_to_fetch, first_fetch_interval, emails_fetch_limit, timeout=10):
 
         self.ms_client = MicrosoftClient(self_deployed=self_deployed, tenant_id=tenant_id, auth_id=auth_and_token_url,
                                          enc_key=enc_key, app_name=app_name, base_url=base_url, verify=use_ssl,
-                                         proxy=proxy, ok_codes=ok_codes)
+                                         proxy=proxy, ok_codes=ok_codes, timeout=timeout)
 
         self._mailbox_to_fetch = mailbox_to_fetch
         self._folder_to_fetch = folder_to_fetch
@@ -381,7 +381,7 @@ class MsGraphClient:
                 '@odata.type': cls.FILE_ATTACHMENT,
                 'contentBytes': b64_encoded_data.decode('utf-8'),
                 'isInline': is_inline,
-                'name': attach_name if provided_names else uploaded_file_name,
+                'name': attach_name if provided_names or not uploaded_file_name else uploaded_file_name,
                 'size': file_size
             }
             file_attachments_result.append(attachment)
@@ -856,8 +856,10 @@ class MsGraphClient:
         exclude_ids = last_run.get('LAST_RUN_IDS', [])
         last_run_folder_path = last_run.get('LAST_RUN_FOLDER_PATH')
         folder_path_changed = (last_run_folder_path != self._folder_to_fetch)
+        last_run_account = last_run.get('LAST_RUN_ACCOUNT')
+        mailbox_to_fetch_changed = last_run_account != self._mailbox_to_fetch
 
-        if folder_path_changed:
+        if folder_path_changed or mailbox_to_fetch_changed:
             # detected folder path change, get new folder id
             folder_id = self._get_folder_by_path(self._mailbox_to_fetch, self._folder_to_fetch).get('id')
             demisto.info("MS-Graph-Listener: detected file path change, ignored last run.")
@@ -877,7 +879,8 @@ class MsGraphClient:
             'LAST_RUN_TIME': next_run_time,
             'LAST_RUN_IDS': fetched_emails_ids,
             'LAST_RUN_FOLDER_ID': folder_id,
-            'LAST_RUN_FOLDER_PATH': self._folder_to_fetch
+            'LAST_RUN_FOLDER_PATH': self._folder_to_fetch,
+            'LAST_RUN_ACCOUNT': self._mailbox_to_fetch,
         }
         demisto.info(f"MS-Graph-Listener: fetched {len(incidents)} incidents")
 
@@ -1038,11 +1041,14 @@ def build_mail_object(raw_response: Union[dict, list], user_id: str, get_body: b
             'Headers': 'internetMessageHeaders',
             'Flag': 'flag',
             'Importance': 'importance',
+            'InternetMessageID': 'internetMessageId',
+            'ConversationID': 'conversationId',
         }
 
         contact_properties = {
             'Sender': 'sender',
             'From': 'from',
+            'Recipients': 'toRecipients',
             'CCRecipients': 'ccRecipients',
             'BCCRecipients': 'bccRecipients',
             'ReplyTo': 'replyTo'
@@ -1154,7 +1160,7 @@ def list_mails_command(client: MsGraphClient, args):
         human_readable = tableToMarkdown(
             human_readable_header,
             mail_context,
-            headers=['Subject', 'From', 'SendTime', 'ID']
+            headers=['Subject', 'From', 'Recipients', 'SendTime', 'ID', 'InternetMessageID']
         )
     else:
         human_readable = '### No mails were found'
@@ -1240,7 +1246,7 @@ def get_message_command(client: MsGraphClient, args):
     human_readable = tableToMarkdown(
         f'Results for message ID {message_id}',
         mail_context,
-        headers=['ID', 'Subject', 'SendTime', 'Sender', 'From', 'HasAttachments', 'Body']
+        headers=['ID', 'Subject', 'SendTime', 'Sender', 'From', 'Recipients', 'HasAttachments', 'Body']
     )
     return_outputs(
         human_readable,
@@ -1570,10 +1576,11 @@ def main():
     folder_to_fetch = params.get('folder_to_fetch', 'Inbox')
     first_fetch_interval = params.get('first_fetch', '15 minutes')
     emails_fetch_limit = int(params.get('fetch_limit', '50'))
+    timeout = arg_to_number(params.get('timeout', '10') or '10')
 
     client: MsGraphClient = MsGraphClient(self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url,
                                           use_ssl, proxy, ok_codes, mailbox_to_fetch, folder_to_fetch,
-                                          first_fetch_interval, emails_fetch_limit)
+                                          first_fetch_interval, emails_fetch_limit, timeout)
 
     command = demisto.command()
     LOG(f'Command being called is {command}')

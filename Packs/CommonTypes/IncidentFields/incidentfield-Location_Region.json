@@ -24,7 +24,8 @@
   "IAM - Update User",
   "User Profile",
   "IAM - Sync User",
-  "IAM - Rehire User"
+  "IAM - Rehire User",
+  "Azure Active Directory Identity and Access"
  ],
  "associatedToAll": false,
  "unmapped": false,

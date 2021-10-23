@@ -22,7 +22,7 @@ from demisto_sdk.commands.test_content.constants import SSH_USER
 from ruamel import yaml
 
 from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies, \
-    install_all_content_packs, upload_zipped_packs, install_all_content_packs_for_nightly
+    upload_zipped_packs, install_all_content_packs_for_nightly
 from Tests.scripts.utils.log_util import install_logging
 from Tests.test_content import extract_filtered_tests, get_server_numeric_version
 from Tests.test_integration import __get_integration_config, __test_integration_instance, disable_all_integrations
@@ -60,11 +60,11 @@ MARKET_PLACE_CONFIGURATION = {
 AVOID_DOCKER_IMAGE_VALIDATION = {
     'content.validate.docker.images': 'false'
 }
-ID_SET_PATH = './Tests/id_set.json'
+ID_SET_PATH = './artifacts/id_set.json'
 
 
 class Running(IntEnum):
-    CIRCLECI_RUN = 0
+    CI_RUN = 0
     WITH_OTHER_SERVER = 1
     WITH_LOCAL_SERVER = 2
 
@@ -119,11 +119,11 @@ def get_id_set(id_set_path) -> dict:
 
 class Build:
     # START CHANGE ON LOCAL RUN #
-    content_path = '{}/project'.format(os.getenv('HOME'))
-    test_pack_target = '{}/project/Tests'.format(os.getenv('HOME'))
+    content_path = f'{os.getenv("HOME")}/project' if os.getenv('CIRCLECI') else os.getenv('CI_PROJECT_DIR')
+    test_pack_target = f'{os.getenv("HOME")}/project/Tests' if os.getenv('CIRCLECI') else f'{os.getenv("CI_PROJECT_DIR")}/Tests'  # noqa
     key_file_path = 'Use in case of running with non local server'
-    run_environment = Running.CIRCLECI_RUN
-    env_results_path = './env_results.json'
+    run_environment = Running.CI_RUN
+    env_results_path = f'{os.getenv("ARTIFACTS_FOLDER")}/env_results.json'
     DEFAULT_SERVER_VERSION = '99.99.98'
 
     #  END CHANGE ON LOCAL RUN  #
@@ -206,7 +206,7 @@ class Build:
     def get_servers(ami_env):
         env_conf = get_env_conf()
         server_to_port_mapping = map_server_to_port(env_conf, ami_env)
-        if Build.run_environment == Running.CIRCLECI_RUN:
+        if Build.run_environment == Running.CI_RUN:
             server_numeric_version = get_server_numeric_version(ami_env)
         else:
             server_numeric_version = Build.DEFAULT_SERVER_VERSION
@@ -233,9 +233,9 @@ def options_handler():
                         default='/home/runner/work/content-private/content-private/content')
     parser.add_argument('--id_set_path', help='Path to the ID set.')
     parser.add_argument('-l', '--tests_to_run', help='Path to the Test Filter.',
-                        default='./Tests/filter_file.txt')
+                        default='./artifacts/filter_file.txt')
     parser.add_argument('-pl', '--pack_ids_to_install', help='Path to the packs to install file.',
-                        default='./Tests/content_packs_to_install.txt')
+                        default='./artifacts/content_packs_to_install.txt')
     # disable-secrets-detection-start
     parser.add_argument('-sa', '--service_account',
                         help=("Path to gcloud service account, is for circleCI usage. "
@@ -357,7 +357,7 @@ def get_new_and_modified_integration_files(branch_name):
         (tuple): Returns a tuple of two lists, the file paths of the new integrations and modified integrations.
     """
     # get changed yaml files (filter only added and modified files)
-    file_validator = ValidateManager()
+    file_validator = ValidateManager(skip_dependencies=True)
     file_validator.branch_name = branch_name
     modified_files, added_files, _, _ = file_validator.get_changed_files_from_git()
 
@@ -739,7 +739,8 @@ def update_content_on_demisto_instance(client, server, ami_name):
         # check that the content installation updated
         # verify the asset id matches the circleci build number / asset_id in the content-descriptor.json
         release, asset_id = get_content_version_details(client, ami_name)
-        with open('content-descriptor.json', 'r') as cd_file:
+        logging.info(f'Content Release Version: {release}')
+        with open('./artifacts/content-descriptor.json', 'r') as cd_file:
             cd_json = json.loads(cd_file.read())
             cd_release = cd_json.get('release')
             cd_asset_id = cd_json.get('assetId')
@@ -755,7 +756,7 @@ def update_content_on_demisto_instance(client, server, ami_name):
 
 
 def report_tests_status(preupdate_fails, postupdate_fails, preupdate_success, postupdate_success,
-                        new_integrations_names):
+                        new_integrations_names, build=None):
     """Prints errors and/or warnings if there are any and returns whether whether testing was successful or not.
 
     Args:
@@ -774,6 +775,7 @@ def report_tests_status(preupdate_fails, postupdate_fails, preupdate_success, po
         new_integrations_names (list): List of the names of integrations that are new since the last official
             content release and that will only be present on the demisto instance after the content update is
             performed.
+        build: Build object
 
     Returns:
         (bool): False if there were integration instances that succeeded prior to the content update and then
@@ -824,12 +826,17 @@ def report_tests_status(preupdate_fails, postupdate_fails, preupdate_success, po
         logging.critical('Integration instances that had ("Test" Button) failures only after content was updated:\n'
                          f'{pformat(failed_only_after_update_string)}.\n'
                          f'This indicates that your updates introduced breaking changes to the integration.')
+    else:
+        # creating this file to indicates that this instance passed post update tests
+        if build:
+            with open("./Tests/is_post_update_passed_{}.txt".format(build.ami_env.replace(' ', '')), 'a'):
+                pass
 
     return testing_status
 
 
 def get_env_conf():
-    if Build.run_environment == Running.CIRCLECI_RUN:
+    if Build.run_environment == Running.CI_RUN:
         return get_json_file(Build.env_results_path)
 
     elif Build.run_environment == Running.WITH_LOCAL_SERVER:
@@ -881,6 +888,7 @@ def configure_servers_and_restart(build):
             if is_redhat_instance(server.internal_ip):
                 configurations.update(DOCKER_HARDENING_CONFIGURATION_FOR_PODMAN)
                 configurations.update(NO_PROXY_CONFIG)
+                configurations['python.pass.extra.keys'] += "##--network=slirp4netns:cidr=192.168.0.0/16"
             else:
                 configurations.update(DOCKER_HARDENING_CONFIGURATION)
             configure_types.append('docker hardening')
@@ -909,7 +917,7 @@ def get_tests(build: Build) -> List[str]:
     """
     server_numeric_version: str = build.server_numeric_version
     tests: dict = build.tests
-    if Build.run_environment == Running.CIRCLECI_RUN:
+    if Build.run_environment == Running.CI_RUN:
         filtered_tests = extract_filtered_tests()
         if build.is_nightly:
             # skip test button testing
@@ -963,8 +971,8 @@ def get_changed_integrations(build: Build) -> tuple:
 
 
 def get_pack_ids_to_install():
-    if Build.run_environment == Running.CIRCLECI_RUN:
-        with open('./Tests/content_packs_to_install.txt', 'r') as packs_stream:
+    if Build.run_environment == Running.CI_RUN:
+        with open('./artifacts/content_packs_to_install.txt', 'r') as packs_stream:
             pack_ids = packs_stream.readlines()
             return [pack_id.rstrip('\n') for pack_id in pack_ids]
     else:
@@ -975,8 +983,11 @@ def get_pack_ids_to_install():
         #  END CHANGE ON LOCAL RUN  #
 
 
-def nightly_install_packs(build, install_method=install_all_content_packs, pack_path=None, service_account=None):
+def nightly_install_packs(build, install_method=None, pack_path=None, service_account=None):
     threads_list = []
+
+    if not install_method:
+        raise Exception('Install method was not provided.')
 
     # For each server url we install pack/ packs
     for thread_index, server in enumerate(build.servers):
@@ -1102,7 +1113,8 @@ def configure_modified_and_new_integrations(build: Build,
 def instance_testing(build: Build,
                      all_module_instances: list,
                      pre_update: bool,
-                     use_mock: bool = True) -> Tuple[set, set]:
+                     use_mock: bool = True,
+                     first_call: bool = True) -> Tuple[set, set]:
     """
     Runs 'test-module' command for the instances detailed in `all_module_instances`
     Args:
@@ -1111,6 +1123,7 @@ def instance_testing(build: Build,
         pre_update: Whether this instance testing is before or after the content update on the server.
         use_mock: Whether to use mock while testing mockable integrations. Should be used mainly with
         private content build which aren't using the mocks.
+        first_call: indicates if its the first time the function is called from the same place
 
     Returns:
         A set of the successful tests containing the instance name and the integration name
@@ -1125,6 +1138,7 @@ def instance_testing(build: Build,
         logging.info(f'Start of Instance Testing ("Test" button) ({update_status}-update)')
     else:
         logging.info(f'No integrations to configure for the chosen tests. ({update_status}-update)')
+    failed_instances = []
     for instance in all_module_instances:
         integration_of_instance = instance.get('brand', '')
         instance_name = instance.get('name', '')
@@ -1136,8 +1150,15 @@ def instance_testing(build: Build,
             success, _ = __test_integration_instance(testing_client, instance)
         if not success:
             failed_tests.add((instance_name, integration_of_instance))
+            failed_instances.append(instance)
         else:
             successful_tests.add((instance_name, integration_of_instance))
+
+    # in case some tests failed post update, wait a 15 secs, runs the tests again
+    if failed_instances and not pre_update and first_call:
+        logging.info("some post-update tests failed, sleeping for 15 seconds, then running the failed tests again")
+        sleep(15)
+        succeeded, failed_tests = instance_testing(build, failed_instances, pre_update=False, first_call=False)
 
     return successful_tests, failed_tests
 
@@ -1276,6 +1297,11 @@ def get_non_added_packs_ids(build: Build):
     compare_against = 'origin/master{}'.format('' if not build.branch_name == 'master' else '~1')
     added_files = run_command(f'git diff --name-only --diff-filter=A '
                               f'{compare_against}..refs/heads/{build.branch_name} -- Packs/*/pack_metadata.json')
+    if os.getenv('CONTRIB_BRANCH'):
+        added_contrib_files = run_command(
+            'git status -uall --porcelain -- Packs/*/pack_metadata.json | grep "?? "').replace('?? ', '')
+        added_files = added_files if not added_contrib_files else '\n'.join([added_files, added_contrib_files])
+
     added_files = filter(lambda x: x, added_files.split('\n'))
     added_pack_ids = map(lambda x: x.split('/')[1], added_files)
     return set(get_pack_ids_to_install()) - set(added_pack_ids)
@@ -1383,6 +1409,7 @@ def install_packs_pre_update(build: Build) -> bool:
 def main():
     install_logging('Install_Content_And_Configure_Integrations_On_Server.log')
     build = Build(options_handler())
+    logging.info(f"Build Number: {build.ci_build_number}")
 
     configure_servers_and_restart(build)
     disable_instances(build)
@@ -1401,7 +1428,7 @@ def main():
                                                                              modified_module_instances)
 
     success = report_tests_status(failed_tests_pre, failed_tests_post, successful_tests_pre, successful_tests_post,
-                                  new_integrations)
+                                  new_integrations, build)
     if not success or not installed_content_packs_successfully:
         sys.exit(2)
 

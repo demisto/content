@@ -1,0 +1,34 @@
+{
+  "description": "",
+  "feed": false,
+  "id": "PingCastle-Report-Mapper",
+  "mapping": {
+    "PingCastle": {
+      "dontMapEventToLabels": true,
+      "internalMapping": {
+        "File Name": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "filename",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "PingCastle XML Report": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "xmlReport",
+            "transformers": []
+          },
+          "simple": ""
+        }
+      }
+    }
+  },
+  "name": "PingCastle-Report-Mapper",
+  "type": "mapping-incoming",
+  "version": -1,
+  "fromVersion": "6.0.0"
+}

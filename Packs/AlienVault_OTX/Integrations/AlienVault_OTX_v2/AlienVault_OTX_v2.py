@@ -1,7 +1,4 @@
-import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
-
 
 ''' IMPORTS '''
 from typing import Dict, Tuple, Union
@@ -28,11 +25,12 @@ INTEGRATION_CONTEXT_NAME = 'AlienVaultOTX'
 
 
 class Client(BaseClient):
-    def __init__(self, base_url, headers, verify, proxy, default_threshold, reliability):
+    def __init__(self, base_url, headers, verify, proxy, default_threshold, reliability, create_relationships=True):
 
-        BaseClient.__init__(self, base_url=base_url, headers=headers, verify=verify, proxy=proxy,)
+        BaseClient.__init__(self, base_url=base_url, headers=headers, verify=verify, proxy=proxy, )
 
         self.reliability = reliability
+        self.create_relationships = create_relationships
         self.default_threshold = default_threshold
 
     def test_module(self) -> Dict:
@@ -73,8 +71,14 @@ class Client(BaseClient):
                                         url_suffix=suffix,
                                         params=params)
         except DemistoException as e:
-            if e.res.status_code == 404:
-                result = 404
+            if hasattr(e.res, 'status_code'):
+                if e.res.status_code == 404:
+                    result = 404
+                elif e.res.status_code == 400:
+                    demisto.debug(f'{e.res.text} response received from server when trying to get api:{e.res.url}')
+                    raise Exception(f'The command could not be execute: {argument} is invalid.')
+                else:
+                    raise
             else:
                 raise
         return result
@@ -149,6 +153,32 @@ def create_pulse_by_ec(entry: dict) -> dict:
     return assign_params(**pulse_by_ec)
 
 
+def create_attack_pattern_relationships(client: Client, raw_response: dict, entity_a: str, entity_a_type: str):
+    relationships: list = []
+
+    if not client.create_relationships:
+        return relationships
+
+    # pulse_info.pulses.[0].attack_ids.display_name - can contain a list of attack_ids
+    pulses = dict_safe_get(raw_response, ['pulse_info', 'pulses'], [''])
+    if pulses and isinstance(pulses, list) and 'attack_ids' in pulses[0]:
+        display_names = [attack_id.get('display_name') for attack_id in pulses[0].get('attack_ids')]
+        if display_names:
+            relationships = [EntityRelationship(
+                name=EntityRelationship.Relationships.INDICATOR_OF,
+                entity_a=entity_a,
+                entity_a_type=entity_a_type,
+                entity_b=display_name,
+                entity_b_type=FeedIndicatorType.indicator_type_by_server_version("STIX Attack Pattern"),
+                source_reliability=client.reliability,
+                brand=INTEGRATION_NAME) for display_name in display_names]
+    return relationships
+
+
+def lowercase_protocol_callback(pattern: re.Match) -> str:
+    return pattern.group(0).lower()
+
+
 ''' COMMANDS '''
 
 
@@ -173,7 +203,7 @@ def test_module_command(client: Client, *_) -> Tuple[None, None, str]:
 
 
 @logger
-def ip_command(client: Client, ip_address: str, ip_version: str) -> Tuple[str, Dict, Union[Dict, list]]:
+def ip_command(client: Client, ip_address: str, ip_version: str) -> List[CommandResults]:
     """ Enrichment for IPv4/IPv6
 
     Args:
@@ -182,54 +212,60 @@ def ip_command(client: Client, ip_address: str, ip_version: str) -> Tuple[str, D
         ip_version: IPv4 or IPv6
 
     Returns:
-        Outputs
+        List of CommandResults
     """
-    query_args: list = argToList(ip_address)
-    raws: list = []
+    ips_list: list = argToList(ip_address)
+
     title = f'{INTEGRATION_NAME} - Results for ips query'
-    ip_ec: list = []
-    alienvault_ec: list = []
-    dbotscore_ec: list = []
-    for arg in query_args:
+    command_results: List[CommandResults] = []
+
+    for ip_ in ips_list:
         raw_response = client.query(section=ip_version,
-                                    argument=arg)
-        if raw_response:
-            raws.append(raw_response)
-            ip_ec.append({
-                'Address': raw_response.get('indicator'),
-                'ASN': raw_response.get('asn'),
-                'Geo': {
-                    'Country': raw_response.get('country_code'),
-                    'Location': f'{raw_response.get("latitude")},{raw_response.get("longitude")}'
-                }
-            })
-            alienvault_ec.append({
-                'IP': {
-                    'Reputation': raw_response.get('reputation'),
-                    'IP': arg
-                }
-            })
-            dbotscore_ec.append({
-                'Indicator': raw_response.get('indicator'),
-                'Score': calculate_dbot_score(client, raw_response.get('pulse_info', {})),
-                'Type': 'ip',
-                'Vendor': 'AlienVault OTX v2',
-                'Reliability': client.reliability
-            })
-    if not raws:
-        return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
-    context_entry: dict = {
-        outputPaths.get("ip"): ip_ec,
-        'AlienVaultOTX.IP(val.IP && val.IP === obj.IP)': alienvault_ec,
-        outputPaths.get("dbotscore"): dbotscore_ec
-    }
-    human_readable = tableToMarkdown(t=context_entry.get(outputPaths.get("ip")),
-                                     name=title)
-    return human_readable, context_entry, raws
+                                    argument=ip_)
+        if raw_response and raw_response != 404:
+            ip_version = FeedIndicatorType.IP if ip_version == 'IPv4' else FeedIndicatorType.IPv6
+            relationships = create_attack_pattern_relationships(client, raw_response=raw_response,
+                                                                entity_a=ip_, entity_a_type=ip_version)
+
+            dbot_score = Common.DBotScore(indicator=ip_, indicator_type=DBotScoreType.IP,
+                                          integration_name=INTEGRATION_NAME,
+                                          score=calculate_dbot_score(client, raw_response.get('pulse_info', {})),
+                                          reliability=client.reliability)
+
+            ip_object = Common.IP(ip=ip_, dbot_score=dbot_score, asn=raw_response.get('asn'),
+                                  geo_country=raw_response.get('country_code'),
+                                  geo_latitude=raw_response.get("latitude"),
+                                  geo_longitude=raw_response.get("longitude"),
+                                  relationships=relationships)
+
+            context = {
+                'Reputation': raw_response.get('reputation'),
+                'IP': ip_
+            }
+
+            human_readable = tableToMarkdown(
+                name=title,
+                t=ip_object.to_context().get('IP(val.Address && val.Address == obj.Address)'))
+
+            command_results.append(CommandResults(
+                readable_output=human_readable,
+                outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.IP(val.IP && val.IP === obj.IP)',
+                outputs={'IP': context},
+                indicator=ip_object,
+                raw_response=raw_response,
+                relationships=relationships
+            ))
+        else:
+            command_results.append(CommandResults(
+                readable_output=f'IP {ip_} could not be found.'))
+
+    if not command_results:
+        return [CommandResults(f'{INTEGRATION_NAME} - Could not find any results for given query.')]
+    return command_results
 
 
 @logger
-def domain_command(client: Client, domain: str) -> Tuple[str, Dict, Union[Dict, list]]:
+def domain_command(client: Client, domain: str) -> List[CommandResults]:
     """Enrichment for domain
 
     Args:
@@ -237,51 +273,53 @@ def domain_command(client: Client, domain: str) -> Tuple[str, Dict, Union[Dict, 
         domain: domains to query
 
     Returns:
-        Outputs
+        List of CommandResults
     """
-    query_args: list = argToList(domain)
+    domains_list: list = argToList(domain)
+
     title = f'{INTEGRATION_NAME} - Results for Domain query'
-    raws = []
-    domain_ec = []
-    dbotscore_ec = []
-    alienvault_ec = []
-    for args in query_args:
-        raw_response = client.query(section='domain',
-                                    argument=args)
-        if raw_response:
-            raws.append(raw_response)
-            domain_ec.append({
-                'Name': raw_response.get('indicator')
-            })
-            alienvault_ec.append({
+    command_results: List[CommandResults] = []
+
+    for domain in domains_list:
+        raw_response = client.query(section='domain', argument=domain)
+        if raw_response and raw_response != 404:
+            relationships = create_attack_pattern_relationships(client, raw_response=raw_response,
+                                                                entity_a=domain, entity_a_type=FeedIndicatorType.Domain)
+
+            dbot_score = Common.DBotScore(indicator=domain, indicator_type=DBotScoreType.DOMAIN,
+                                          integration_name=INTEGRATION_NAME,
+                                          score=calculate_dbot_score(client, raw_response.get('pulse_info', {})),
+                                          reliability=client.reliability)
+            domain_object = Common.Domain(domain=domain, dbot_score=dbot_score, relationships=relationships)
+
+            context = {
                 'Name': raw_response.get('indicator'),
                 'Alexa': raw_response.get('alexa'),
                 'Whois': raw_response.get('whois')
-            })
-            dbotscore_ec.append({
-                'Indicator': raw_response.get('indicator'),
-                'Score': calculate_dbot_score(client, raw_response.get('pulse_info')),
-                'Type': 'domain',
-                'Vendor': 'AlienVault OTX v2',
-                'Reliability': client.reliability
-            })
-    if not raws:
-        return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
-    context_entry: dict = {
-        outputPaths.get("domain"): domain_ec,
-        'AlienVaultOTX.Domain(val.Alexa && val.Alexa === obj.Alexa &&'
-        'val.Whois && val.Whois === obj.Whois)': alienvault_ec,
-        outputPaths.get("dbotscore"): dbotscore_ec
-    }
-    human_readable = tableToMarkdown(t=context_entry.get(
-        'AlienVaultOTX.Domain(val.Alexa && val.Alexa === obj.Alexa &&'
-        'val.Whois && val.Whois === obj.Whois)'),
-        name=title)
-    return human_readable, context_entry, raws
+            }
+
+            human_readable = tableToMarkdown(t=context, name=title)
+
+            command_results.append(CommandResults(
+                readable_output=human_readable,
+                outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.Domain(val.Alexa && val.Alexa === obj.Alexa &&'
+                               f' val.Whois && val.Whois === obj.Whois)',
+                outputs=context,
+                indicator=domain_object,
+                raw_response=raw_response,
+                relationships=relationships
+            ))
+        else:
+            command_results.append(CommandResults(
+                readable_output=f'Domain {domain} could not be found.'))
+    if not command_results:
+        return [CommandResults(f'{INTEGRATION_NAME} - Could not find any results for given query')]
+
+    return command_results
 
 
 @logger
-def file_command(client: Client, file: str) -> Tuple[str, Dict, Union[Dict, list]]:
+def file_command(client: Client, file: str) -> List[CommandResults]:
     """Enrichment for file hash MD5/SHA1/SHA256
 
     Args:
@@ -289,24 +327,37 @@ def file_command(client: Client, file: str) -> Tuple[str, Dict, Union[Dict, list
         file: File hash MD5/SHA1/SHA256
 
     Returns:
-        Outputs
+        List of CommandResults
     """
-    query_args: list = argToList(file)
+    hashes_list: list = argToList(file)
+
     title = f'{INTEGRATION_NAME} - Results for File hash query'
-    raws: list = []
-    file_ec: list = []
-    dbotscore_ec: list = []
-    for args in query_args:
+    command_results: List[CommandResults] = []
+
+    for hash_ in hashes_list:
         raw_response_analysis = client.query(section='file',
-                                             argument=args,
+                                             argument=hash_,
                                              sub_section='analysis')
         raw_response_general = client.query(section='file',
-                                            argument=args)
-        if raw_response_analysis and raw_response_general:
-            raws.append(raw_response_analysis)
-            raws.append(raw_response_general)
+                                            argument=hash_)
+        if raw_response_analysis and raw_response_general and \
+                raw_response_general != 404 and raw_response_analysis != 404:
+            relationships = create_attack_pattern_relationships(client, raw_response=raw_response_general,
+                                                                entity_a=hash_, entity_a_type=FeedIndicatorType.File)
+
             shortcut = dict_safe_get(raw_response_analysis, ['analysis', 'info', 'results'], {})
-            file_ec.append({
+            dbot_score = Common.DBotScore(
+                indicator=hash_, indicator_type=DBotScoreType.FILE, integration_name=INTEGRATION_NAME,
+                score=calculate_dbot_score(client, raw_response_general.get('pulse_info', {})),
+                malicious_description=raw_response_general.get('pulse_info', {}).get('pulses'),
+                reliability=client.reliability)
+
+            file_object = Common.File(md5=shortcut.get('md5'), sha1=shortcut.get('sha1'), sha256=shortcut.get('sha256'),
+                                      ssdeep=shortcut.get('ssdeep'), size=shortcut.get('filesize'),
+                                      file_type=shortcut.get('file_type'), dbot_score=dbot_score,
+                                      relationships=relationships)
+
+            context = {
                 'MD5': shortcut.get('md5'),
                 'SHA1': shortcut.get('sha1'),
                 'SHA256': shortcut.get('sha256'),
@@ -316,28 +367,29 @@ def file_command(client: Client, file: str) -> Tuple[str, Dict, Union[Dict, list
                 'Malicious': {
                     'PulseIDs': raw_response_general.get('pulse_info', {}).get('pulses')
                 }
-            })
-            dbotscore_ec.append({
-                'Indicator': raw_response_general.get('indicator'),
-                'Score': calculate_dbot_score(client, raw_response_general.get('pulse_info', {})),
-                'Type': 'file',
-                'Vendor': 'AlienVault OTX v2',
-                'Reliability': client.reliability
-            })
-    if not raws:
-        return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
-    context_entry: dict = {
-        outputPaths.get("file"): file_ec,
-        outputPaths.get("dbotscore"): dbotscore_ec
-    }
-    human_readable = tableToMarkdown(name=title,
-                                     t=context_entry.get(outputPaths.get("file")))
+            }
 
-    return human_readable, context_entry, raws
+            human_readable = tableToMarkdown(name=title, t=context)
+
+            command_results.append(CommandResults(
+                readable_output=human_readable,
+                outputs_prefix=outputPaths.get("file"),
+                outputs=context,
+                indicator=file_object,
+                raw_response=raw_response_general,
+                relationships=relationships
+            ))
+        else:
+            command_results.append(CommandResults(
+                readable_output=f'File {hash_} could not be found.'))
+    if not command_results:
+        return [CommandResults(f'{INTEGRATION_NAME} - Could not find any results for given query')]
+
+    return command_results
 
 
 @logger
-def url_command(client: Client, url: str) -> Tuple[str, Dict, Union[Dict, list]]:
+def url_command(client: Client, url: str) -> List[CommandResults]:
     """Enrichment for url
 
     Args:
@@ -345,56 +397,62 @@ def url_command(client: Client, url: str) -> Tuple[str, Dict, Union[Dict, list]]
         url:  url address
 
     Returns:
-        Outputs
+        List of CommandResults
     """
-    query_args: list = argToList(url)
-    raws: list = []
+    urls_list: list = argToList(url)
+
     title = f'{INTEGRATION_NAME} - Results for url query'
-    url_ec: list = []
-    alienvault_ec: list = []
-    dbotscore_ec: list = []
-    no_matches_url = []
-    for args in query_args:
-        raw_response = client.query(section='url',
-                                    argument=args)
+    command_results: List[CommandResults] = []
+    raws: list = []
+
+    for url in urls_list:
+        url = re.sub(r'(\w+)://', lowercase_protocol_callback, url)
+        raw_response = client.query(section='url', argument=url)
         if raw_response:
             if raw_response == 404:
-                no_matches_url.append(args)
-                continue
-            raws.append(raw_response)
-            url_ec.append({
-                'Data': raw_response.get('indicator')
-            })
-            alienvault_ec.append({
-                'Url': args,
-                'Hostname': raw_response.get('hostname'),
-                'Domain': raw_response.get('domain'),
-                'Alexa': raw_response.get('alexa'),
-                'Whois': raw_response.get('whois')
-            })
-            dbotscore_ec.append({
-                'Indicator': raw_response.get('indicator'),
-                'Score': calculate_dbot_score(client, raw_response.get('pulse_info')),
-                'Type': 'url',
-                'Vendor': 'AlienVault OTX v2',
-                'Reliability': client.reliability
-            })
+                command_results.append(CommandResults(readable_output=f'No matches for URL {url}'))
+            else:
+                raws.append(raw_response)
+
+                relationships = []
+                if client.create_relationships:
+                    relationships = create_attack_pattern_relationships(
+                        client, raw_response=raw_response, entity_a=url, entity_a_type=FeedIndicatorType.URL)
+                    domain = raw_response.get('domain')
+                    if domain:
+                        relationships.extend([EntityRelationship(
+                            name=EntityRelationship.Relationships.HOSTED_ON, entity_a=url, entity_a_type=FeedIndicatorType.URL,
+                            entity_b=domain, entity_b_type=FeedIndicatorType.Domain,
+                            source_reliability=client.reliability, brand=INTEGRATION_NAME)])
+
+                dbot_score = Common.DBotScore(
+                    indicator=url, indicator_type=DBotScoreType.URL, integration_name=INTEGRATION_NAME,
+                    score=calculate_dbot_score(client, raw_response.get('pulse_info')), reliability=client.reliability)
+
+                url_object = Common.URL(url=url, dbot_score=dbot_score, relationships=relationships)
+
+                context = {
+                    'Url': url,
+                    'Hostname': raw_response.get('hostname'),
+                    'Domain': raw_response.get('domain'),
+                    'Alexa': raw_response.get('alexa'),
+                    'Whois': raw_response.get('whois')
+                }
+
+                human_readable = tableToMarkdown(name=title, t=context)
+
+                command_results.append(CommandResults(
+                    readable_output=human_readable,
+                    outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.URL(val.Url && val.Url === obj.Url)',
+                    outputs=context,
+                    indicator=url_object,
+                    raw_response=raw_response,
+                    relationships=relationships
+                ))
+
     if not raws:
-        if no_matches_url:
-            return f"No matches for URL's {no_matches_url}", {}, {}
-        return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
-    context_entry: dict = {
-        outputPaths.get("url"): url_ec,
-        'AlienVaultOTX.URL(val.Url && val.Url === obj.Url)': alienvault_ec,
-        outputPaths.get("dbotscore"): dbotscore_ec
-    }
-    human_readable_table = tableToMarkdown(t=context_entry.get('AlienVaultOTX.URL(val.Url && val.Url === obj.Url)'),
-                                           name=title)
-    if no_matches_url:
-        human_readable = f"{human_readable_table} No matches for URL's {no_matches_url}"
-    else:
-        human_readable = human_readable_table
-    return human_readable, context_entry, raws
+        command_results.append(CommandResults(f'{INTEGRATION_NAME} - Could not find any results for given query'))
+    return command_results
 
 
 @logger
@@ -408,9 +466,8 @@ def alienvault_search_hostname_command(client: Client, hostname: str) -> Tuple[s
     Returns:
         Outputs
     """
-    raw_response = client.query(section='hostname',
-                                argument=hostname)
-    if raw_response:
+    raw_response = client.query(section='hostname', argument=hostname)
+    if raw_response and raw_response != 404:
         title = f'{INTEGRATION_NAME} - Results for Hostname query'
         context_entry: dict = {
             'Endpoint(val.Hostname && val.Hostname === obj.Hostname)': {
@@ -453,7 +510,7 @@ def alienvault_search_cve_command(client: Client, cve_id: str) -> Tuple[str, Dic
     """
     raw_response = client.query(section='cve',
                                 argument=cve_id)
-    if raw_response:
+    if raw_response and raw_response != 404:
         title = f'{INTEGRATION_NAME} - Results for Hostname query'
         context_entry: dict = {
             outputPaths.get("cve"): {
@@ -480,7 +537,7 @@ def alienvault_search_cve_command(client: Client, cve_id: str) -> Tuple[str, Dic
 
 
 @logger
-def alienvault_get_related_urls_by_indicator_command(client: Client, indicator_type: str, indicator: str)\
+def alienvault_get_related_urls_by_indicator_command(client: Client, indicator_type: str, indicator: str) \
         -> Tuple[str, Dict, Dict]:
     """Get related urls by indicator (IPv4,IPv6,domain,hostname,url)
 
@@ -495,7 +552,7 @@ def alienvault_get_related_urls_by_indicator_command(client: Client, indicator_t
     raw_response = client.query(section=indicator_type,
                                 argument=indicator,
                                 sub_section='url_list')
-    if raw_response:
+    if raw_response and raw_response != 404:
         title = f'{INTEGRATION_NAME} - Related url list to queried indicator'
         context_entry: list = create_list_by_ec(list_entries=raw_response.get('url_list', {}), list_type='url_list')
         context: dict = {
@@ -510,7 +567,7 @@ def alienvault_get_related_urls_by_indicator_command(client: Client, indicator_t
 
 
 @logger
-def alienvault_get_related_hashes_by_indicator_command(client: Client, indicator_type: str, indicator: str)\
+def alienvault_get_related_hashes_by_indicator_command(client: Client, indicator_type: str, indicator: str) \
         -> Tuple[str, Dict, Dict]:
     """Get related file hashes by indicator (IPv4,IPv6,domain,hostname)
 
@@ -525,11 +582,11 @@ def alienvault_get_related_hashes_by_indicator_command(client: Client, indicator
     raw_response = client.query(section=indicator_type,
                                 argument=indicator,
                                 sub_section='malware')
-    if raw_response:
+    if raw_response and raw_response != 404:
         title = f'{INTEGRATION_NAME} - Related malware list to queried indicator'
         context_entry: dict = {
             'AlienVaultOTX.File(val.File.Hash && val.File.Hash == obj.File.Hash)':
-            create_list_by_ec(list_entries=raw_response.get('data', {}), list_type='hash_list')
+                create_list_by_ec(list_entries=raw_response.get('data', {}), list_type='hash_list')
         }
         human_readable = tableToMarkdown(t=context_entry.get('AlienVaultOTX.File(val.File.Hash && val.File.Hash \
                                             == obj.File.Hash)'),
@@ -541,7 +598,7 @@ def alienvault_get_related_hashes_by_indicator_command(client: Client, indicator
 
 
 @logger
-def alienvault_get_passive_dns_data_by_indicator_command(client: Client, indicator_type: str, indicator: str)\
+def alienvault_get_passive_dns_data_by_indicator_command(client: Client, indicator_type: str, indicator: str) \
         -> Tuple[str, Dict, Dict]:
     """Get related file hashes by indicator (IPv4,IPv6,domain,hostname)
 
@@ -556,13 +613,13 @@ def alienvault_get_passive_dns_data_by_indicator_command(client: Client, indicat
     raw_response = client.query(section=indicator_type,
                                 argument=indicator,
                                 sub_section='passive_dns')
-    if raw_response:
+    if raw_response and raw_response != 404:
         title = f'{INTEGRATION_NAME} - Related passive dns list to queried indicator'
         context_entry: dict = {
             'AlienVaultOTX.PassiveDNS(val.PassiveDNS.Hostname && val.PassiveDNS.Hostname == obj.PassiveDNS.Hostname &&'
             'val.PassiveDNS.LastSeen && val.PassiveDNS.LastSeen == obj.PassiveDNS.LastSeen &&'
             'val.PassiveDNS.IP && val.PassiveDNS.IP == obj.PassiveDNS.IP)':
-            create_list_by_ec(list_entries=raw_response.get('passive_dns', {}), list_type='passive_dns')
+                create_list_by_ec(list_entries=raw_response.get('passive_dns', {}), list_type='passive_dns')
         }
         human_readable = tableToMarkdown(t=context_entry.get(
             'AlienVaultOTX.PassiveDNS(val.PassiveDNS.Hostname && val.PassiveDNS.Hostname == obj.PassiveDNS.Hostname &&'
@@ -588,12 +645,12 @@ def alienvault_search_pulses_command(client: Client, page: str) -> Tuple[str, Di
     raw_response = client.query(section='search',
                                 sub_section='pulses',
                                 params={'page': page})
-    if raw_response:
+    if raw_response and raw_response != 404:
         title = f'{INTEGRATION_NAME} - pulse page {page}'
         context_entry: dict = {
             'AlienVaultOTX.Pulses(val.ID && val.ID == obj.ID && '
             'val.Modified && val.Modified == obj.Modified)':
-            [create_pulse_by_ec(entry) for entry in raw_response.get('results', {})]
+                [create_pulse_by_ec(entry) for entry in raw_response.get('results', {})]
         }
         human_readable = tableToMarkdown(t=context_entry.get(
             'AlienVaultOTX.Pulses(val.ID && val.ID == obj.ID && '
@@ -618,7 +675,7 @@ def alienvault_get_pulse_details_command(client: Client, pulse_id: str) -> Tuple
     """
     raw_response = client.query(section='pulses',
                                 argument=pulse_id)
-    if raw_response:
+    if raw_response and raw_response != 404:
         title = f'{INTEGRATION_NAME} - pulse id details'
         context_entry: dict = {
             'AlienVaultOTX.Pulses(val.ID && val.ID == obj.ID)': {
@@ -667,7 +724,8 @@ def main():
         verify=verify_ssl,
         proxy=proxy,
         default_threshold=default_threshold,
-        reliability=reliability
+        reliability=reliability,
+        create_relationships=argToBoolean(params.get('create_relationships'))
     )
 
     command = demisto.command()
@@ -687,16 +745,18 @@ def main():
     }
     try:
         if command == f'{INTEGRATION_COMMAND_NAME}-search-ipv6':
-            readable_output, outputs, raw_response = ip_command(client=client,
-                                                                ip_address=demisto.args().get('ip'),
-                                                                ip_version='IPv6')
+            return_results(ip_command(client=client,
+                                      ip_address=demisto.args().get('ip'),
+                                      ip_version='IPv6'))
         elif command == 'ip':
-            readable_output, outputs, raw_response = ip_command(client=client,
-                                                                ip_address=demisto.args().get('ip'),
-                                                                ip_version='IPv4')
+            return_results(ip_command(client=client,
+                                      ip_address=demisto.args().get('ip'),
+                                      ip_version='IPv4'))
+        elif command in ['file', 'domain', 'url']:
+            return_results(commands[command](client=client, **demisto.args()))
         else:
             readable_output, outputs, raw_response = commands[command](client=client, **demisto.args())
-        return_outputs(readable_output, outputs, raw_response)
+            return_outputs(readable_output, outputs, raw_response)
     # Log exceptions
     except Exception as e:
         err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'

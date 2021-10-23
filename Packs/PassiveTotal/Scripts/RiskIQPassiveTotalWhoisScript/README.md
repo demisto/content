@@ -11,7 +11,7 @@ It can be set by following these steps:
 | --- | --- |
 | Script Type | python3 |
 | Tags | enhancement |
-| Demisto Version | 5.0.0 |
+| Cortex XSOAR Version | 5.0.0 |
 
 ## Dependencies
 ---

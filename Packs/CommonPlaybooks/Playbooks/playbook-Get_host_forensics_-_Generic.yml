@@ -1,0 +1,174 @@
+id: 'Get host forensics - Generic'
+version: -1
+name: 'Get host forensics - Generic'
+description: "This playbook retrieves forensics from hosts.\nThe available integration:\n\
+  - Illusive networks. "
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f20f2deb-51b2-43bc-8c19-ea19d795c1ce
+    type: start
+    task:
+      id: f20f2deb-51b2-43bc-8c19-ea19d795c1ce
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 44e2bef7-db14-418e-8899-05b87ce087c1
+    type: condition
+    task:
+      id: 44e2bef7-db14-418e-8899-05b87ce087c1
+      version: -1
+      name: Is illusive enabled
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "3"
+      "yes":
+      - "4"
+    scriptarguments:
+      brandname:
+        simple: IllusiveNetworks
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: a407e17a-7005-4b1a-87c0-00e1e1c2cae2
+    type: title
+    task:
+      id: a407e17a-7005-4b1a-87c0-00e1e1c2cae2
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 4e87acfb-c838-448f-8c35-a81c306b37bf
+    type: playbook
+    task:
+      id: 4e87acfb-c838-448f-8c35-a81c306b37bf
+      version: -1
+      name: Illusive-Collect-Forensics-On-Demand
+      playbookName: Illusive-Collect-Forensics-On-Demand
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      end_date:
+        simple: ${inputs.end_date}
+      fqdn_or_ip:
+        simple: ${inputs.fqdn_or_ip}
+      start_date:
+        simple: ${inputs.start_date}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "2_3_no": 0.47
+    },
+    "paper": {
+      "dimensions": {
+        "height": 685,
+        "width": 650,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: fqdn_or_ip
+  value: {}
+  required: false
+  description: 'If using the illusive integration to retrieve additional forensics,
+    provide fqdn_or_ip of the host from which to get the forensics. '
+  playbookInputQuery:
+- key: start_date
+  value: {}
+  required: false
+  description: 'Date_range must be "number date_range_unit", examples: (2 hours, 4
+    minutes,6 months, 1 day, etc.).'
+  playbookInputQuery:
+- key: end_date
+  value: {}
+  required: false
+  description: 'Date_range must be "number date_range_unit", examples: (2 hours, 4
+    minutes,6 months, 1 day, etc.).'
+  playbookInputQuery:
+outputs: []
+tests:
+- no tests
+fromversion: 6.0.0

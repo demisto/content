@@ -39,10 +39,10 @@ tasks:
       version: -1
       name: List all rules
       description: Returns a list of predefined security rules.
-      script: Panorama|||panorama-list-rules
+      script: '|||panorama-list-rules'
       type: regular
       iscommand: true
-      brand: Panorama
+      brand: ""
     nexttasks:
       '#none#':
       - "2"
@@ -212,10 +212,10 @@ tasks:
       version: -1
       name: Add new source to the rule
       description: Add the element in the input as the new source of the rule
-      script: Panorama|||panorama-edit-rule
+      script: '|||panorama-edit-rule'
       type: regular
       iscommand: true
-      brand: Panorama
+      brand: ""
     nexttasks:
       '#none#':
       - "9"
@@ -251,10 +251,10 @@ tasks:
       version: -1
       name: Add the new destination to the rule
       description: Add the element in the input as the new destination of the rule
-      script: Panorama|||panorama-edit-rule
+      script: '|||panorama-edit-rule'
       type: regular
       iscommand: true
-      brand: Panorama
+      brand: ""
     nexttasks:
       '#none#':
       - "9"
@@ -290,10 +290,10 @@ tasks:
       version: -1
       name: Create an outbound rule
       description: Add the element in the input as the new destination of the rule.
-      script: Panorama|||panorama-create-rule
+      script: '|||panorama-create-rule'
       type: regular
       iscommand: true
-      brand: Panorama
+      brand: ""
     nexttasks:
       '#none#':
       - "9"
@@ -346,10 +346,10 @@ tasks:
       version: -1
       name: Move the rule into its position
       description: Changes the location of a policy rule.
-      script: Panorama|||panorama-move-rule
+      script: '|||panorama-move-rule'
       type: regular
       iscommand: true
-      brand: Panorama
+      brand: ""
     nexttasks:
       '#none#':
       - "10"
@@ -412,10 +412,10 @@ tasks:
       version: -1
       name: Create an inbound rule
       description: Add the element in the input as the new source of the rule
-      script: Panorama|||panorama-create-rule
+      script: '|||panorama-create-rule'
       type: regular
       iscommand: true
-      brand: Panorama
+      brand: ""
     nexttasks:
       '#none#':
       - "9"

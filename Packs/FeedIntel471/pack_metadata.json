@@ -1,17 +1,17 @@
 {
     "name": "Intel471 Feed",
-    "description": "This pack fetches actors indicators and malware-related indicators from intel471",
-    "support": "xsoar",
-    "currentVersion": "1.1.3",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
+    "description": "This content pack fetches actor and malware related indicators from Intel 471.",
+    "support": "partner",
+    "currentVersion": "2.0.3",
+    "author": "Intel 471",
+    "url": "https://www.intel471.com",
+    "email": "support@intel471.com",
     "created": "2020-12-16T08:40:39Z",
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "Threat Intelligence"
+        "Threat Intelligence", "Relationship"
     ],
     "useCases": [],
     "keywords": []

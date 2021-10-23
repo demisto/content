@@ -1,5 +1,6 @@
 Use the AutoFocus Feeds integration to fetch indicators from AutoFocus.
 For more information click [here](https://docs.paloaltonetworks.com/autofocus/autofocus-admin/autofocus-feeds.html).
+TIM customers that upgraded to version 6.2 or above, can have the API Key pre-configured in their main account so no additional input is needed. To use this feature, upgrade your license so it includes the license key.
 
 ## Configure AutoFocus Feed on Cortex XSOAR
 
@@ -26,7 +27,7 @@ For more information click [here](https://docs.paloaltonetworks.com/autofocus/au
 
 
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### Get Indicators
@@ -58,7 +59,7 @@ There is no context output for this command.
 ### Indicators from AutoFocus:
 |Value|Type|
 |---|---|
-| demisto\<Span\>.com | Domain |
+| demsito\<Span\>.com | Domain |
 | {file hash} | File |
 | 8.8.8.8 | IP |
 | demsito\<Span\>.com/some/aditional/path | URL |

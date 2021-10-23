@@ -1,5 +1,6 @@
 description: This playbook test SecurityAndCompliance integration
 id: O365-SecurityAndCompliance-Test
+name: O365-SecurityAndCompliance-Test
 starttaskid: "0"
 tasks:
   "0":
@@ -628,6 +629,10 @@ tasks:
           root: inputs.kql
       preview:
         simple: "false"
+      polling_interval:
+        simple: "1"
+      polling_timeout:
+        simple: "10"
     separatecontext: true
     loop:
       iscommand: false
@@ -673,6 +678,10 @@ tasks:
         complex:
           root: O365.SecurityAndCompliance.ContentSearch.Search
           accessor: Name
+      polling_interval:
+        simple: "1"
+      polling_timeout:
+        simple: "10"
     separatecontext: true
     loop:
       iscommand: false

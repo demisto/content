@@ -19,7 +19,7 @@ function UpdateIntegrationContext([OAuth2DeviceCodeClient]$client){
         "AccessTokenCreationTime" = $client.access_token_creation_time
     }
 
-    $Demisto.setIntegrationContext($integration_context)
+    SetIntegrationContext $integration_context
     <#
         .DESCRIPTION
         Update integration context from OAuth2DeviceCodeClient client
@@ -457,7 +457,7 @@ class OAuth2DeviceCodeClient {
     }
 
     static [OAuth2DeviceCodeClient]CreateClientFromIntegrationContext([bool]$insecure, [bool]$proxy){
-        $ic = $script:Demisto.getIntegrationContext()
+        $ic = GetIntegrationContext
         $client = [OAuth2DeviceCodeClient]::new($ic.DeviceCode, $ic.DeviceCodeExpiresIn, $ic.DeviceCodeCreationTime, $ic.AccessToken, $ic.RefreshToken,
                                                 $ic.AccessTokenExpiresIn, $ic.AccessTokenCreationTime, $insecure, $proxy)
 
@@ -578,15 +578,20 @@ class OAuth2DeviceCodeClient {
         }
         catch {
             $response_body = ConvertFrom-Json $_.ErrorDetails.Message
-            if ($response_body.error -eq "invalid_grant") {
-                $error_details = "Please login to grant account permissions (After 90 days grant is expired) !$script:COMMAND_PREFIX-auth-start."
-            }
-            else {
-                $error_details = $response_body
-            }
+            $error_details = "Unable to refresh access token for your account"
 
-            throw "Unable to refresh access token for your account, $error_details"
+            # AADSTS50173 points to password change https://login.microsoftonline.com/error?code=50173.
+            # In that case, the integration context should be overwritten and the user should execute the auth process from the begining.
+            if ($response_body.error_description -like "*AADSTS50173*") {
+                $this.ClearContext()
+                $error_details = "The account password has been changed or reset. Please run !$script:COMMAND_PREFIX-auth-start to re-authenticate"
+            }
+            elseif ($response_body.error -eq "invalid_grant") {
+                $error_details = "Please login to grant account permissions (After 90 days grant is expired) !$script:COMMAND_PREFIX-auth-start"
+            }
+            throw "$error_details. Full error message: $response_body"
         }
+
         # Update object properties
         $this.access_token = $response_body.access_token
         $this.refresh_token = $response_body.refresh_token
@@ -668,6 +673,21 @@ class OAuth2DeviceCodeClient {
             .EXAMPLE
             $client.RefreshTokenIfExpired()
         #>
+    }
+    ClearContext(){
+        $this.access_token = $null
+        $this.refresh_token = $null
+        $this.access_token_expires_in = $null
+        $this.access_token_creation_time = $null
+        UpdateIntegrationContext $this
+        <#
+            .DESCRIPTION
+            Clear the token fields from the integration context on password change case.
+
+            .EXAMPLE
+            $client.ClearContext()
+        #>
+
     }
 }
 
@@ -1319,6 +1339,11 @@ function RemoveSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$k
 function ListSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
     # Raw response
     $raw_response = $client.ListSearch()
+
+    if ($raw_response.count -eq 0){
+        return "#### No compliance searches were retrieved from the Compliance Center.", @{}, $raw_response
+    }
+
     # Human readable
     $md_columns = $raw_response | Select-Object -Property Name, Description, CreatedBy, LastModifiedTime, RunBy
     $human_readable = TableToMarkdown $md_columns "$script:INTEGRATION_NAME - Search configurations"
@@ -1478,6 +1503,7 @@ function Main {
     try {
         # Creating Compliance and search client
         $oauth2_client = [OAuth2DeviceCodeClient]::CreateClientFromIntegrationContext($insecure, $no_proxy)
+
         # Refreshing tokens if expired
         $oauth2_client.RefreshTokenIfExpired()
         # Creating Compliance and search client

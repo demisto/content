@@ -13,7 +13,7 @@ tags:
 - ml
 - duplicate
 comment: |-
-  Deprecated. Please use the "PhishingDedupPreprocessingRule" script insetead.
+  Deprecated. Use the "PhishingDedupPreprocessingRule" script instead.
   Find duplicate incidents candidates.
   Using machine learning techniques with pre-defined data (can also use data from the local environment), this script takes into consideration different features such as: labels comparison, email labels (relevant for phishing), incident time difference and shared indicators, which can be customized by the arguments.
 enabled: true
@@ -87,8 +87,8 @@ outputs:
   description: Similar incident name.
   type: string
 scripttarget: 0
-runas: DBotWeakRole
+runas: DBotRole
 runonce: true
-dockerimage: demisto/machine-learning
+dockerimage: demisto/machine-learning:1.0.0.22015
 tests:
-- Dedup - Generic v2 - Test
+- No test

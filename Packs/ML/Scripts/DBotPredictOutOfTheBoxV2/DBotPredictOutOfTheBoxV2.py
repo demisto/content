@@ -8,11 +8,16 @@ THRESHOLD = 0.9
 OUT_OF_THE_BOX_MODEL_NAME = 'demisto_out_of_the_box_model_v2'
 OUT_OF_THE_BOX_MODEL_PATH = '/ml/encrypted_model.b'
 EVALUATION_PATH = '/ml/oob_evaluation.txt'
+SCRIPT_MODEL_VERSION = '3.0'
+OOB_VERSION_INFO_KEY = 'oob_version'
 
 
-def oob_model_exists():
+def oob_model_exists_and_updated():
     res_model = demisto.executeCommand("getMLModel", {"modelName": OUT_OF_THE_BOX_MODEL_NAME})[0]
-    return not is_error(res_model)
+    if is_error(res_model):
+        return False
+    existing_model_version = res_model['Contents']['model']['extra'].get(OOB_VERSION_INFO_KEY, -1)
+    return existing_model_version == SCRIPT_MODEL_VERSION
 
 
 def load_oob_model():
@@ -25,7 +30,9 @@ def load_oob_model():
                                                    'modelLabels': ['Malicious', 'Non-Malicious'],
                                                    'modelOverride': 'true',
                                                    'modelType': 'torch',
-                                                   'modelExtraInfo': {'threshold': THRESHOLD}
+                                                   'modelExtraInfo': {'threshold': THRESHOLD,
+                                                                      OOB_VERSION_INFO_KEY: SCRIPT_MODEL_VERSION
+                                                                      }
                                                    })
     if is_error(res):
         return_error(get_error(res))
@@ -65,7 +72,7 @@ def load_oob_model():
 
 
 def predict_phishing_words():
-    if not oob_model_exists():
+    if not oob_model_exists_and_updated():
         load_oob_model()
     dargs = demisto.args()
     dargs['modelName'] = OUT_OF_THE_BOX_MODEL_NAME

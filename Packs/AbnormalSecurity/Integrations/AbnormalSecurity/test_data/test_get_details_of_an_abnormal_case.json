@@ -1,0 +1,9 @@
+{
+    "caseId": "1234",
+    "severity": "Potential Account Takeover",
+    "affectedEmployee": "FirstName LastName",
+    "firstObserved": "2020-06-09T17:42:59Z",
+    "threatIds": [
+        "184712ab-6d8b-47b3-89d3-a314efef79e2"
+    ]
+}

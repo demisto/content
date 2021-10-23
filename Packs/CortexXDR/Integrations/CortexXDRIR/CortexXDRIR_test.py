@@ -3,10 +3,11 @@ import json
 import os
 import zipfile
 
-import demistomock as demisto
 import pytest
-from CommonServerPython import Common
 from freezegun import freeze_time
+
+import demistomock as demisto
+from CommonServerPython import Common
 
 XDR_URL = 'https://api.xdrurl.com'
 
@@ -312,11 +313,38 @@ def test_get_all_endpoints_using_limit(requests_mock):
         'page': 0,
         'sort_order': 'asc'
     }
-
     _, outputs, _ = get_endpoints_command(client, args)
     expected_endpoint = get_endpoints_response.get('reply')[0]
 
     assert [expected_endpoint] == outputs['PaloAltoNetworksXDR.Endpoint(val.endpoint_id == obj.endpoint_id)']
+
+
+def test_endpoint_command(requests_mock):
+    from CortexXDRIR import endpoint_command, Client
+
+    get_endpoints_response = load_test_data('./test_data/get_endpoints.json')
+    requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/get_endpoint/', json=get_endpoints_response)
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    args = {'id': 'identifier'}
+
+    outputs = endpoint_command(client, args)
+
+    get_endpoints_response = {
+        Common.Endpoint.CONTEXT_PATH: [{'ID': '1111',
+                                        'Hostname': 'ip-3.3.3.3',
+                                        'IPAddress': '3.3.3.3',
+                                        'OS': 'Linux',
+                                        'Vendor': 'Cortex XDR - IR',
+                                        'Status': 'Online',
+                                        'IsIsolated': 'No'}]}
+
+    results = outputs[0].to_context()
+    for key, val in results.get("EntryContext").items():
+        assert results.get("EntryContext")[key] == get_endpoints_response[key]
+    assert results.get("EntryContext") == get_endpoints_response
 
 
 def test_insert_parsed_alert(requests_mock):
@@ -400,7 +428,8 @@ def test_isolate_endpoint_unconnected_machine(requests_mock, mocker):
     )
 
     args = {
-        "endpoint_id": "1111"
+        "endpoint_id": "1111",
+        "suppress_disconnected_endpoint_error": False
     }
     with pytest.raises(ValueError, match='Error: Endpoint 1111 is disconnected and therefore can not be isolated.'):
         isolate_endpoint_command(client, args)
@@ -435,6 +464,36 @@ def test_unisolate_endpoint(requests_mock):
     assert readable_output == 'The un-isolation request has been submitted successfully on Endpoint 1111.\n' \
                               'To check the endpoint isolation status please run:' \
                               ' !xdr-get-endpoints endpoint_id_list=1111 and look at the [is_isolated] field.'
+
+
+def test_unisolate_endpoint_unconnected_machine(requests_mock):
+    from CortexXDRIR import unisolate_endpoint_command, Client
+
+    requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/get_endpoint/', json={
+        'reply': {
+            'endpoints': [
+                {
+                    'endpoint_id': '1111',
+                    "endpoint_status": "DISCONNECTED"
+                }
+            ]
+        }
+    })
+
+    unisolate_endpoint_response = load_test_data('./test_data/unisolate_endpoint.json')
+    requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/unisolate', json=unisolate_endpoint_response)
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+
+    args = {
+        "endpoint_id": "1111",
+        "suppress_disconnected_endpoint_error": True
+    }
+
+    readable_output, _, _ = unisolate_endpoint_command(client, args)
+    assert readable_output == 'Warning: un-isolation action is pending for the following disconnected endpoint: 1111.'
 
 
 def test_unisolate_endpoint_pending_isolation(requests_mock):
@@ -1064,8 +1123,10 @@ def test_get_mapping_fields_command():
     """
     from CortexXDRIR import get_mapping_fields_command
     expected_mapping = {"Cortex XDR Incident": {
-        "status": "Current status of the incident: \"new\",\"under_investigation\",\"resolved_threat_handled\","
-                  "\"resolved_known_issue\",\"resolved_duplicate\",\"resolved_false_positive\",\"resolved_other\"",
+        "status": "Current status of the incident: \"new\",\"under_"
+                  "investigation\",\"resolved_threat_handled\",\"resolved_known_issue\","
+                  "\"resolved_duplicate\",\"resolved_false_positive\","
+                  "\"resolved_true_positive\",\"resolved_security_testing\",\"resolved_other\"",
         "assigned_user_mail": "Email address of the assigned user.",
         "assigned_user_pretty_name": "Full name of the user assigned to the incident.",
         "resolve_comment": "Comments entered by the user when the incident was resolved.",
@@ -1210,7 +1271,7 @@ def test_get_remote_data_command_should_close_issue(requests_mock, mocker):
         'lastUpdate': 0
     }
     raw_incident = load_test_data('./test_data/get_incident_extra_data.json')
-    raw_incident['reply']['incident']['status'] = 'resolved_threat_handled'
+    raw_incident['reply']['incident']['status'] = 'resolved_true_positive'
     raw_incident['reply']['incident']['resolve_comment'] = 'Handled'
 
     expected_modified_incident = raw_incident['reply']['incident'].copy()
@@ -1331,7 +1392,7 @@ def test_get_update_args_close_incident():
         - update_args assigned_user_mail has the correct associated mail
     """
     from CortexXDRIR import get_update_args
-    delta = {'closeReason': 'Other', "closeNotes": "Not Relevant"}
+    delta = {'closeReason': 'Other', "closeNotes": "Not Relevant", 'closingUserId': 'admin'}
     update_args = get_update_args(delta, 2)
     assert update_args.get('status') == 'resolved_other'
     assert update_args.get('resolve_comment') == 'Not Relevant'
@@ -2035,7 +2096,7 @@ def test_run_script_command(requests_mock):
     """
     Given:
         - XDR client
-        - Endpoint IDs, script UID and script parameters
+        - Endpoint IDs, script UID, script parameters and incident ID
     When
         - Running run-script command
     Then
@@ -2058,7 +2119,8 @@ def test_run_script_command(requests_mock):
         'script_uid': script_uid,
         'endpoint_ids': endpoint_ids,
         'timeout': timeout,
-        'parameters': parameters
+        'parameters': parameters,
+        'incident_id': '4',
     }
 
     response = run_script_command(client, args)
@@ -2073,6 +2135,7 @@ def test_run_script_command(requests_mock):
                 'operator': 'in',
                 'value': endpoint_ids.split(',')
             }],
+            'incident_id': 4,
             'parameters_values': json.loads(parameters)
         }
     }
@@ -2082,7 +2145,7 @@ def test_run_script_command_empty_params(requests_mock):
     """
     Given:
         - XDR client
-        - Endpoint IDs, script UID and empty params
+        - Endpoint IDs, script UID, empty params and incident ID
     When
         - Running run-script command
     Then
@@ -2105,7 +2168,8 @@ def test_run_script_command_empty_params(requests_mock):
         'script_uid': script_uid,
         'endpoint_ids': endpoint_ids,
         'timeout': timeout,
-        'parameters': parameters
+        'parameters': parameters,
+        'incident_id': '4',
     }
 
     response = run_script_command(client, args)
@@ -2120,12 +2184,13 @@ def test_run_script_command_empty_params(requests_mock):
                 'operator': 'in',
                 'value': endpoint_ids.split(',')
             }],
+            'incident_id': 4,
             'parameters_values': {}
         }
     }
 
 
-def test_run_snippet_code_script_command(requests_mock):
+def test_run_snippet_code_script_command_no_incident_id(requests_mock):
     """
     Given:
         - XDR client
@@ -2150,7 +2215,7 @@ def test_run_snippet_code_script_command(requests_mock):
     args = {
         'snippet_code': snippet_code,
         'endpoint_ids': endpoint_ids,
-        'timeout': timeout
+        'timeout': timeout,
     }
 
     response = run_snippet_code_script_command(client, args)
@@ -2163,7 +2228,52 @@ def test_run_snippet_code_script_command(requests_mock):
                 'field': 'endpoint_id_list',
                 'operator': 'in',
                 'value': endpoint_ids.split(',')
-            }]
+            }],
+        }
+    }
+
+
+def test_run_snippet_code_script_command(requests_mock):
+    """
+    Given:
+        - XDR client
+        - Endpoint IDs snippet code and incident ID
+    When
+        - Running run-snippet-code-script command
+    Then
+        - Verify expected output
+        - Ensure request body sent as expected
+    """
+    from CortexXDRIR import run_snippet_code_script_command, Client
+
+    api_response = load_test_data('./test_data/run_script.json')
+    requests_mock.post(f'{XDR_URL}/public_api/v1/scripts/run_snippet_code_script', json=api_response)
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    snippet_code = 'print("hello world")'
+    endpoint_ids = 'endpoint_id1,endpoint_id2'
+    timeout = '10'
+    args = {
+        'snippet_code': snippet_code,
+        'endpoint_ids': endpoint_ids,
+        'timeout': timeout,
+        'incident_id': '4',
+    }
+
+    response = run_snippet_code_script_command(client, args)
+
+    assert response.outputs == api_response.get('reply')
+    assert requests_mock.request_history[0].json() == {
+        'request_data': {
+            'snippet_code': snippet_code,
+            'filters': [{
+                'field': 'endpoint_id_list',
+                'operator': 'in',
+                'value': endpoint_ids.split(',')
+            }],
+            'incident_id': 4
         }
     }
 
@@ -2195,7 +2305,7 @@ def test_get_script_execution_status_command(requests_mock):
     response = get_script_execution_status_command(client, args)
 
     api_response['reply']['action_id'] = int(action_id)
-    assert response.outputs == api_response.get('reply')
+    assert response[0].outputs == api_response.get('reply')
     assert requests_mock.request_history[0].json() == {
         'request_data': {
             'action_id': action_id
@@ -2233,7 +2343,7 @@ def test_get_script_execution_results_command(requests_mock):
         'action_id': int(action_id),
         'results': api_response.get('reply').get('results')
     }
-    assert response.outputs == expected_output
+    assert response[0].outputs == expected_output
     assert requests_mock.request_history[0].json() == {
         'request_data': {
             'action_id': action_id
@@ -2296,11 +2406,171 @@ def test_get_script_execution_files_command(requests_mock, mocker, request):
     assert zipfile.ZipFile(file_name).namelist() == ['your_file.txt']
 
 
+def test_decode_dict_values():
+    """
+    Given:
+        - a dict to decode
+    When
+        - Running decode_dict_values command
+    Then
+        - Verify expected output
+    """
+    from CortexXDRIR import decode_dict_values
+
+    test_dict: dict = {
+        'x': 1,
+        'y': 'test',
+        'z': '{\"a\": \"test1\", \"b\": \"test2\"}',
+        'w': {
+            't': '{\"a\": \"test1\", \"b\": \"test2\"}',
+            'm': 'test3'
+        }
+    }
+    decode_dict_values(test_dict)
+    assert test_dict == {
+        'x': 1,
+        'y': 'test',
+        'z': {"a": "test1", "b": "test2"},
+        'w': {
+            't': {"a": "test1", "b": "test2"},
+            'm': 'test3'
+        }
+    }
+
+
+def test_filter_general_fields():
+    """
+    Given:
+        - An alert dict
+    When
+        - Running filter_general_fields command
+    Then
+        - Verify expected output
+    """
+    from CortexXDRIR import filter_general_fields
+    alert = {
+        'detection_modules': 'test1',
+        "content_version": "version1",
+        "detector_id": 'ID',
+        'should_be_filtered1': 'N',
+        'should_be_filtered2': 'N',
+        'should_be_filtered3': 'N',
+        'raw_abioc': {
+            'event': {
+                'event_type': 'type',
+                'event_id': 'id',
+                'identity_sub_type': 'subtype',
+                'should_be_filtered1': 'N',
+                'should_be_filtered2': 'N',
+                'should_be_filtered3': 'N',
+            }
+        }
+    }
+    assert filter_general_fields(alert) == {
+        'detection_modules': 'test1',
+        "content_version": "version1",
+        "detector_id": 'ID',
+        'event': {
+            'event_type': 'type',
+            'event_id': 'id',
+            'identity_sub_type': 'subtype',
+        }
+    }
+
+
+def test_filter_general_fields_no_event(mocker):
+    """
+    Given:
+        - An alert dict with no event
+    When
+        - Running filter_general_fields command
+    Then
+        - Verify a warning is printed and the program exits
+    """
+    from CortexXDRIR import filter_general_fields
+    alert = {
+        'detection_modules': 'test1',
+        "content_version": "version1",
+        "detector_id": 'ID',
+        'should_be_filtered1': 'N',
+        'should_be_filtered2': 'N',
+        'should_be_filtered3': 'N',
+        'raw_abioc': {
+        }
+    }
+    err = mocker.patch('CortexXDRIR.return_warning')
+    filter_general_fields(alert)
+    assert err.call_args[0][0] == "No XDR cloud analytics event."
+
+
+def test_filter_vendor_fields():
+    """
+    Given:
+        - An alert dict to filter
+    When
+        - Running test_filter_vendor_fields command
+    Then
+        - Verify that the vendor fields were filtered properly
+    """
+    from CortexXDRIR import filter_vendor_fields
+
+    alert = {
+        'x': 1,
+        'event': {
+            'vendor': 'Amazon',
+            'raw_log': {
+                'eventSource': 'test1',
+                'requestID': 'test2',
+                'should_be_filter': 'N',
+            }
+        }
+    }
+    filter_vendor_fields(alert)
+    assert alert == {
+        'x': 1,
+        'event': {
+            'vendor': 'Amazon',
+            'raw_log': {
+                'eventSource': 'test1',
+                'requestID': 'test2',
+            }
+        }
+    }
+
+
+def test_get_original_alerts_command(requests_mock):
+    """
+    Given:
+        - XDR client
+        - Alert IDs
+    When
+        - Running get_original_alerts_command command
+    Then
+        - Verify expected output
+        - Ensure request body sent as expected
+    """
+    from CortexXDRIR import get_original_alerts_command, Client
+    api_response = load_test_data('./test_data/get_original_alerts_results.json')
+    requests_mock.post(f'{XDR_URL}/public_api/v1/alerts/get_original_alerts/', json=api_response)
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    args = {
+        'alert_ids': '2',
+    }
+
+    response = get_original_alerts_command(client, args)
+    event = response.outputs[0].get('event', {})
+    assert event.get('_time') == 'DATE'  # assert general filter is correct
+    assert event.get('cloud_provider') == 'AWS'  # assert general filter is correct
+    assert event.get('raw_log', {}).get('userIdentity', {}).get('accountId') == 'ID'  # assert vendor filter is correct
+
+
 def test_run_script_execute_commands_command(requests_mock):
     """
     Given:
         - XDR client
-        - Endpoint IDs and shell commands
+        - Endpoint IDs, shell commands and incident ID
     When
         - Running run-script-execute-commands command
     Then
@@ -2321,7 +2591,8 @@ def test_run_script_execute_commands_command(requests_mock):
     args = {
         'endpoint_ids': endpoint_ids,
         'timeout': timeout,
-        'commands': commands
+        'commands': commands,
+        'incident_id': '4',
     }
 
     response = run_script_execute_commands_command(client, args)
@@ -2336,6 +2607,7 @@ def test_run_script_execute_commands_command(requests_mock):
                 'operator': 'in',
                 'value': endpoint_ids.split(',')
             }],
+            'incident_id': 4,
             'parameters_values': {'commands_list': commands.split(',')}
         }
     }
@@ -2345,7 +2617,7 @@ def test_run_script_delete_file_command(requests_mock):
     """
     Given:
         - XDR client
-        - Endpoint IDs and file path
+        - Endpoint IDs, file path and incident ID
     When
         - Running run-script-delete-file command
     Then
@@ -2366,12 +2638,13 @@ def test_run_script_delete_file_command(requests_mock):
     args = {
         'endpoint_ids': endpoint_ids,
         'timeout': timeout,
-        'file_path': file_path
+        'file_path': file_path,
+        'incident_id': '4',
     }
 
     response = run_script_delete_file_command(client, args)
 
-    assert response.outputs == api_response.get('reply')
+    assert response[0].outputs == api_response.get('reply')
     assert requests_mock.request_history[0].json() == {
         'request_data': {
             'script_uid': '548023b6e4a01ec51a495ba6e5d2a15d',
@@ -2381,7 +2654,68 @@ def test_run_script_delete_file_command(requests_mock):
                 'operator': 'in',
                 'value': endpoint_ids.split(',')
             }],
+            'incident_id': 4,
             'parameters_values': {'file_path': args.get('file_path')}
+        }
+    }
+
+
+def test_run_script_delete_multiple_files_command(requests_mock):
+    """
+    Given:
+        - XDR client
+        - Endpoint IDs, files paths and incident ID
+    When
+        - Running run-script-delete-file command
+    Then
+        - Verify expected output
+        - Ensure request body sent as expected
+    """
+    from CortexXDRIR import run_script_delete_file_command, Client
+
+    api_response = load_test_data('./test_data/run_script_multiple_inputs_and_endpoints.json')
+    requests_mock.post(f'{XDR_URL}/public_api/v1/scripts/run_script/', json=api_response)
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    endpoint_ids = 'endpoint_id1,endpoint_id2'
+    timeout = '10'
+    file_path = 'my_file.txt,test.txt'
+    args = {
+        'endpoint_ids': endpoint_ids,
+        'timeout': timeout,
+        'file_path': file_path,
+        'incident_id': '4',
+    }
+
+    response = run_script_delete_file_command(client, args)
+
+    assert response[0].outputs == api_response.get('reply')
+    assert requests_mock.request_history[0].json() == {
+        'request_data': {
+            'script_uid': '548023b6e4a01ec51a495ba6e5d2a15d',
+            'timeout': int(timeout),
+            'filters': [{
+                'field': 'endpoint_id_list',
+                'operator': 'in',
+                'value': endpoint_ids.split(',')
+            }],
+            'incident_id': 4,
+            'parameters_values': {'file_path': 'my_file.txt'}
+        }
+    }
+    assert requests_mock.request_history[1].json() == {
+        'request_data': {
+            'script_uid': '548023b6e4a01ec51a495ba6e5d2a15d',
+            'timeout': int(timeout),
+            'filters': [{
+                'field': 'endpoint_id_list',
+                'operator': 'in',
+                'value': endpoint_ids.split(',')
+            }],
+            'incident_id': 4,
+            'parameters_values': {'file_path': 'test.txt'}
         }
     }
 
@@ -2390,7 +2724,7 @@ def test_run_script_file_exists_command(requests_mock):
     """
     Given:
         - XDR client
-        - Endpoint IDs and file path
+        - Endpoint IDs, file path and incident ID
     When
         - Running run-script-file-exists command
     Then
@@ -2411,12 +2745,13 @@ def test_run_script_file_exists_command(requests_mock):
     args = {
         'endpoint_ids': endpoint_ids,
         'timeout': timeout,
-        'file_path': file_path
+        'file_path': file_path,
+        'incident_id': '4',
     }
 
     response = run_script_file_exists_command(client, args)
 
-    assert response.outputs == api_response.get('reply')
+    assert response[0].outputs == api_response.get('reply')
     assert requests_mock.request_history[0].json() == {
         'request_data': {
             'script_uid': '414763381b5bfb7b05796c9fe690df46',
@@ -2426,7 +2761,68 @@ def test_run_script_file_exists_command(requests_mock):
                 'operator': 'in',
                 'value': endpoint_ids.split(',')
             }],
+            'incident_id': 4,
             'parameters_values': {'path': args.get('file_path')}
+        }
+    }
+
+
+def test_run_script_file_exists_multiple_files_command(requests_mock):
+    """
+    Given:
+        - XDR client
+        - Endpoint IDs, files paths and incident ID
+    When
+        - Running run-script-file-exists command
+    Then
+        - Verify expected output
+        - Ensure request body sent as expected
+    """
+    from CortexXDRIR import run_script_file_exists_command, Client
+
+    api_response = load_test_data('./test_data/run_script_multiple_inputs_and_endpoints.json')
+    requests_mock.post(f'{XDR_URL}/public_api/v1/scripts/run_script/', json=api_response)
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    endpoint_ids = 'endpoint_id1,endpoint_id2'
+    timeout = '10'
+    file_path = 'my_file.txt,test.txt'
+    args = {
+        'endpoint_ids': endpoint_ids,
+        'timeout': timeout,
+        'file_path': file_path,
+        'incident_id': '4',
+    }
+
+    response = run_script_file_exists_command(client, args)
+
+    assert response[0].outputs == api_response.get('reply')
+    assert requests_mock.request_history[0].json() == {
+        'request_data': {
+            'script_uid': '414763381b5bfb7b05796c9fe690df46',
+            'timeout': int(timeout),
+            'filters': [{
+                'field': 'endpoint_id_list',
+                'operator': 'in',
+                'value': endpoint_ids.split(',')
+            }],
+            'incident_id': 4,
+            'parameters_values': {'path': 'my_file.txt'}
+        }
+    }
+    assert requests_mock.request_history[1].json() == {
+        'request_data': {
+            'script_uid': '414763381b5bfb7b05796c9fe690df46',
+            'timeout': int(timeout),
+            'filters': [{
+                'field': 'endpoint_id_list',
+                'operator': 'in',
+                'value': endpoint_ids.split(',')
+            }],
+            'incident_id': 4,
+            'parameters_values': {'path': 'test.txt'}
         }
     }
 
@@ -2435,7 +2831,7 @@ def test_run_script_kill_process_command(requests_mock):
     """
     Given:
         - XDR client
-        - Endpoint IDs and process name
+        - Endpoint IDs, process name and incident ID
     When
         - Running run-script-kill-process command
     Then
@@ -2456,12 +2852,13 @@ def test_run_script_kill_process_command(requests_mock):
     args = {
         'endpoint_ids': endpoint_ids,
         'timeout': timeout,
-        'process_name': process_name
+        'process_name': process_name,
+        'incident_id': '4',
     }
 
     response = run_script_kill_process_command(client, args)
 
-    assert response.outputs == api_response.get('reply')
+    assert response[0].outputs == api_response.get('reply')
     assert requests_mock.request_history[0].json() == {
         'request_data': {
             'script_uid': 'fd0a544a99a9421222b4f57a11839481',
@@ -2471,6 +2868,138 @@ def test_run_script_kill_process_command(requests_mock):
                 'operator': 'in',
                 'value': endpoint_ids.split(',')
             }],
+            'incident_id': 4,
             'parameters_values': {'process_name': process_name}
         }
     }
+
+
+def test_run_script_kill_multiple_processes_command(requests_mock):
+    """
+    Given:
+        - XDR client
+        - Endpoint IDs, multiple processes names and incident ID
+    When
+        - Running run-script-kill-process command
+    Then
+        - Verify expected output
+        - Ensure request body sent as expected
+    """
+    from CortexXDRIR import run_script_kill_process_command, Client
+
+    api_response = load_test_data('./test_data/run_script_multiple_inputs_and_endpoints.json')
+    requests_mock.post(f'{XDR_URL}/public_api/v1/scripts/run_script/', json=api_response)
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    endpoint_ids = 'endpoint_id1,endpoint_id2'
+    timeout = '10'
+    processes_names = 'process1.exe,process2.exe'
+    args = {
+        'endpoint_ids': endpoint_ids,
+        'timeout': timeout,
+        'process_name': processes_names,
+        'incident_id': '4',
+    }
+
+    response = run_script_kill_process_command(client, args)
+
+    assert response[0].outputs == api_response.get('reply')
+    assert requests_mock.request_history[0].json() == {
+        'request_data': {
+            'script_uid': 'fd0a544a99a9421222b4f57a11839481',
+            'timeout': int(timeout),
+            'filters': [{
+                'field': 'endpoint_id_list',
+                'operator': 'in',
+                'value': endpoint_ids.split(',')
+            }],
+            'incident_id': 4,
+            'parameters_values': {'process_name': 'process1.exe'}
+        }
+    }
+    assert requests_mock.request_history[1].json() == {
+        'request_data': {
+            'script_uid': 'fd0a544a99a9421222b4f57a11839481',
+            'timeout': int(timeout),
+            'filters': [{
+                'field': 'endpoint_id_list',
+                'operator': 'in',
+                'value': endpoint_ids.split(',')
+            }],
+            'incident_id': 4,
+            'parameters_values': {'process_name': 'process2.exe'}
+        }
+    }
+
+
+CONNECTED_STATUS = {
+    'endpoint_status': 'Connected',
+    'is_isolated': 'Isolated',
+    'host_name': 'TEST',
+    'ip': '1.1.1.1'
+}
+
+NO_STATUS = {
+    'is_isolated': 'Isolated',
+    'host_name': 'TEST',
+    'ip': '1.1.1.1'
+}
+
+OFFLINE_STATUS = {
+    'endpoint_status': 'Offline',
+    'is_isolated': 'Isolated',
+    'host_name': 'TEST',
+    'ip': '1.1.1.1'
+}
+
+
+@pytest.mark.parametrize("endpoint, expected", [
+    (CONNECTED_STATUS, 'Online'),
+    (NO_STATUS, 'Offline'),
+    (OFFLINE_STATUS, 'Offline')
+])
+def test_get_endpoint_properties(endpoint, expected):
+    """
+    Given:
+        - Endpoint data
+    When
+        - The status of the enndpoint is 'Connected' with a capital C.
+    Then
+        - The status of the endpointn is determined to be 'Online'
+    """
+    from CortexXDRIR import get_endpoint_properties
+
+    status, is_isolated, hostname, ip = get_endpoint_properties(endpoint)
+    assert status == expected
+
+
+def test_get_update_args_when_getting_close_reason():
+    """
+    Given:
+        - closingUserId from update_remote_system
+    When
+        - An incident in XSOAR was closed with "Duplicate" as a close reason.
+    Then
+        - The status that the incident is getting to be mirrored out is "resolved_duplicate"
+    """
+    from CortexXDRIR import get_update_args
+    update_args = get_update_args({'closeReason': 'Duplicate', 'closeNote': 'Closed as Duplicate.',
+                                   'closingUserId': 'Admin'}, 2)
+    assert update_args.get('status') == 'resolved_duplicate'
+    assert update_args.get('closeNote') == 'Closed as Duplicate.'
+
+
+def test_get_update_args_when_not_getting_close_reason():
+    """
+    Given:
+        - delta from update_remote_system
+    When
+        - An incident in XSOAR was closed and update_remote_system has occurred.
+    Then
+        - Because There is no change in the "closeReason" value, the status should not change.
+    """
+    from CortexXDRIR import get_update_args
+    update_args = get_update_args({'someChange': '1234'}, 2)
+    assert update_args.get('status') is None

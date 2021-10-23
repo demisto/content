@@ -1,0 +1,159 @@
+commonfields:
+  id: Centreon
+  version: -1
+name: Centreon
+display: Centreon
+category: Case Management
+description: IT & Network Monitoring
+configuration:
+- display: Server URL (e.g. http://147.75.33.100:20016/)
+  name: server
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Username
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: ''
+  type: python
+  subtype: python2
+  commands:
+  - name: centreon-get-host-status
+    arguments:
+    - name: viewType
+      auto: PREDEFINED
+      predefined:
+      - all
+      - unhandled
+      - problems
+      description: 'select the predefined filter like in the monitoring view: all,
+        unhandled, problems'
+    - name: fields
+      description: 'the fields list that you want to get separated by a ”,”. For example:
+        fields=id,name,alias,address'
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - up
+      - down
+      - unreachable
+      - pending
+      - all
+      description: the status of hosts that you want to get (up, down, unreachable,
+        pending, all)
+    - name: hostgroup
+      description: hostgroup id filter. For example, hostgroup=2
+    - name: instance
+      description: instance id filter. For example, instance=2
+    - name: search
+      description: search pattern applied on host name. For example, search="localhost"
+    - name: criticality
+      description: a specific criticality
+    - name: sortType
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+      description: asc,desc
+    - name: limit
+      description: number of lines that you want
+    - name: number
+      description: page number
+    outputs:
+    - contextPath: Centreon.Host.Output
+      description: Host output
+      type: string
+    - contextPath: Centreon.Host.Name
+      description: Host name
+      type: string
+    - contextPath: Centreon.Host.State
+      description: Host state
+    - contextPath: Centreon.Host.Address
+      description: Host address
+      type: string
+    - contextPath: Centreon.Host.Id
+      description: Host id
+      type: number
+    description: 'All the monitoring information regarding hosts '
+  - name: centreon-get-service-status
+    arguments:
+    - name: viewType
+      auto: PREDEFINED
+      predefined:
+      - all
+      - unhandled
+      - problems
+      description: 'select the predefined filter like in the monitoring view: all,
+        unhandled, problems'
+    - name: fields
+      description: the fields list that you want to get separated by ",". For example,
+        fields=id,description,host_id
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - ok
+      - warning
+      - critical
+      - unknown
+      - pending
+      - all
+      description: the status of services that you want to get (ok, warning, critical,
+        unknown, pending, all)
+    - name: hostgroup
+      description: hostgroup id filter. For example, hostgroup=2
+    - name: servicegroup
+      description: servicegroup id filter
+    - name: instance
+      description: instance id filter. For example, instance=2
+    - name: search
+      description: search pattern applied on service
+    - name: searchHost
+      description: search pattern applied on host
+    - name: searchOutput
+      description: search pattern applied on output
+    - name: criticality
+      description: a specific criticality
+    - name: sortType
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+      description: asc or desc
+    - name: limit
+      description: the amount of lines that you want
+    - name: number
+      description: page number
+    outputs:
+    - contextPath: Centreon.Service.Output
+      description: Service output
+      type: string
+    - contextPath: Centreon.Service.Name
+      description: Service name
+      type: string
+    - contextPath: Centreon.Service.ServiceId
+      description: Service id
+      type: number
+    - contextPath: Centreon.Service.Description
+      description: Service description
+      type: string
+    - contextPath: Centreon.Service.State
+      description: Service state
+    description: All the monitoring information regarding services
+  runonce: false
+  dockerimage: demisto/python:2.7.18.24066
+tests:
+- Centreon-Test-Playbook
+fromversion: 5.0.0

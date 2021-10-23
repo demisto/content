@@ -12,13 +12,20 @@ def main():
             'url': params.get('url'),
             'extractor': params.get('extractor'),
             'indicator': params.get('indicator', 'indicator'),
+            'rawjson_include_indicator_type': params.get('rawjson_include_indicator_type'),
         }
     }
+    auto_detect = params.get('auto_detect_type')
+    indicator_type = params.get('indicator_type')
+    if demisto.command() == 'test-module':  # only fail when doing "Test" to avoid breaking an existing feed
+        if auto_detect and indicator_type:
+            return_error(f'Indicator Type (value: {indicator_type}) should not be set if "Auto detect indicator type" '
+                         'is checked. Either use Auto Detect or set manually the Indicator Type.')
 
-    if not params.get('auto_detect_type'):
-        if not params.get('indicator_type'):
+    if not auto_detect:
+        if not indicator_type:
             return_error('Indicator Type cannot be empty when Auto Detect Indicator Type is unchecked')
-        params['feed_name_to_config'].get(params.get('url'))['indicator_type'] = params.get('indicator_type')
+        params['feed_name_to_config'].get(params.get('url'))['indicator_type'] = indicator_type
 
     feed_main(params, 'JSON Feed', 'json')
 

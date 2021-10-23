@@ -1,0 +1,28 @@
+args:
+- description: War room entryID of the file to read.
+  name: entryID
+  required: true
+comment: "Extract files from log bundle - supports tar.gz & tar \n\nhandle unsupported\
+  \ use cases and unextracted files. "
+commonfields:
+  id: HealthCheckUnpack
+  version: -1
+dockerimage: demisto/python3:3.9.7.24076
+enabled: true
+name: HealthCheckUnpack
+outputs:
+- contextPath: "no"
+  description: file type is not supported.
+- contextPath: "yes"
+  description: file type is supported.
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- Condition
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

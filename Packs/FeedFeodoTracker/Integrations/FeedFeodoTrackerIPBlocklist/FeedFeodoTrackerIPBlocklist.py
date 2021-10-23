@@ -13,8 +13,8 @@ def main():
                 "regex": r"^.+,\"?(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\"?",
                 "transform": "\\1"
             },
-            'relation_name': EntityRelation.Relations.INDICATOR_OF,
-            'relation_entity_b_type': 'STIX Malware',
+            'relationship_name': EntityRelationship.Relationships.INDICATOR_OF,
+            'relationship_entity_b_type': 'STIX Malware',
             "fields": [{
                 'firstseenbysource': {
                     "regex": r"^(\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2})",
@@ -32,7 +32,7 @@ def main():
                     "regex": r"^.+,.+,.+,.+,(.+)",
                     "transform": "\\1"
                 },
-                "relation_entity_b": {
+                "relationship_entity_b": {
                     "regex": r"^.+,.+,.+,.+,\"(.+)\"",
                     "transform": "\\1"
                 }
@@ -58,7 +58,7 @@ def main():
         "port": "port",
         "lastseenbysource": "lastseenbysource",
         "malwarefamily": "malwarefamily",
-        "relation_entity_b": "relation_entity_b"
+        "relationship_entity_b": "relationship_entity_b"
     }
 
     # Call the main execution of the HTTP API module.

@@ -1,6 +1,7 @@
 import requests_mock
 from CSVFeedApiModule import *
 import io
+import pytest
 
 
 def test_get_indicators_1():
@@ -150,12 +151,20 @@ def test_get_feed_content():
             assert client.get_feed_content_divided_to_lines(url, raw_response) == expected_output
 
 
-def test_date_format_parsing():
-    formatted_date = date_format_parsing('2020-02-01 12:13:14')
-    assert formatted_date == '2020-02-01T12:13:14Z'
-
-    formatted_date = date_format_parsing('2020-02-01 12:13:14.11111')
-    assert formatted_date == '2020-02-01T12:13:14Z'
+@pytest.mark.parametrize('date_string,expected_result', [
+    ("2020-02-10 13:39:14", '2020-02-10T13:39:14Z'), ("2020-02-10T13:39:14", '2020-02-10T13:39:14Z'),
+    ("2020-02-10 13:39:14.123", '2020-02-10T13:39:14Z'), ("2020-02-10T13:39:14.123", '2020-02-10T13:39:14Z'),
+    ("2020-02-10T13:39:14Z", '2020-02-10T13:39:14Z'), ("2020-11-01T04:16:13-04:00", '2020-11-01T08:16:13Z')])
+def test_date_format_parsing(date_string, expected_result):
+    """
+    Given
+    - A string represting a date.
+    When
+    - running date_format_parsing on the date.
+    Then
+    - Ensure the datestring is converted to the ISO-8601 format.
+    """
+    assert expected_result == date_format_parsing(date_string)
 
 
 class TestTagsParam:
@@ -280,11 +289,11 @@ def test_get_indicators_with_relations():
         'https://ipstack.com': {
             'fieldnames': ['value', 'a'],
             'indicator_type': 'IP',
-            'relation_entity_b_type': 'IP',
-            'relation_name': 'resolved-from',
+            'relationship_entity_b_type': 'IP',
+            'relationship_name': 'resolved-from',
             'mapping': {
                 'AAA': 'a',
-                'relation_entity_b': ('a', r'.*used\s+by\s(.*?)\s', None),
+                'relationship_entity_b': ('a', r'.*used\s+by\s(.*?)\s', None),
             }
         }
     }
@@ -293,7 +302,7 @@ def test_get_indicators_with_relations():
                                  None: ['2021-04-22 06:03',
                                         'https://test.com/manual/test-iplist.txt'],
                                  'type': 'IP'},
-                     'fields': {'AAA': 'Domain used by Test c&c', 'relation_entity_b': 'Test',
+                     'fields': {'AAA': 'Domain used by Test c&c', 'relationship_entity_b': 'Test',
                                 'tags': []},
                      'relationships': [
                          {'name': 'resolved-from', 'reverseName': 'resolves-to', 'type': 'IndicatorToIndicator',
@@ -332,11 +341,11 @@ def test_get_indicators_without_relations():
         'https://ipstack.com': {
             'fieldnames': ['value', 'a'],
             'indicator_type': 'IP',
-            'relation_entity_b_type': 'IP',
-            'relation_name': 'resolved-from',
+            'relationship_entity_b_type': 'IP',
+            'relationship_name': 'resolved-from',
             'mapping': {
                 'AAA': 'a',
-                'relation_entity_b': ('a', r'.*used\s+by\s(.*?)\s', None),
+                'relationship_entity_b': ('a', r'.*used\s+by\s(.*?)\s', None),
             }
         }
     }
@@ -345,7 +354,7 @@ def test_get_indicators_without_relations():
                                  None: ['2021-04-22 06:03',
                                         'https://test.com/manual/test-iplist.txt'],
                                  'type': 'IP'},
-                     'fields': {'AAA': 'Domain used by Test c&c', 'relation_entity_b': 'Test',
+                     'fields': {'AAA': 'Domain used by Test c&c', 'relationship_entity_b': 'Test',
                                 'tags': []}, 'relationships': []}]
 
     ip_ranges = 'test.com,Domain used by Test c&c,2021-04-22 06:03,https://test.com/manual/test-iplist.txt'

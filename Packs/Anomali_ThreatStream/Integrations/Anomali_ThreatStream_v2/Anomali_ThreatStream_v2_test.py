@@ -2,7 +2,7 @@ import os
 import json
 import demistomock as demisto
 from tempfile import mkdtemp
-from Anomali_ThreatStream_v2 import main, file_name_to_valid_string, get_file_reputation
+from Anomali_ThreatStream_v2 import main, file_name_to_valid_string, get_file_reputation, Client
 import emoji
 import pytest
 
@@ -71,7 +71,7 @@ expected_import_json = {'objects': [{'srcip': '8.8.8.8', 'itype': 'mal_ip', 'con
 
 
 def test_ioc_approval_500_error(mocker):
-    mocker.patch('Anomali_ThreatStream_v2.http_request', side_effect=http_request_with_approval_mock)
+    mocker.patch.object(Client, 'http_request', side_effect=http_request_with_approval_mock)
     mocker.patch.object(demisto, 'args', return_value=package_500_error)
     mocker.patch.object(demisto, 'command', return_value='threatstream-import-indicator-with-approval')
     mocker.patch.object(demisto, 'results')
@@ -100,7 +100,7 @@ def test_import_ioc_without_approval(mocker):
     }
     with open(file_obj['path'], 'w') as f:
         json.dump(mock_objects, f)
-    http_mock = mocker.patch('Anomali_ThreatStream_v2.http_request', side_effect=http_request_without_approval_mock)
+    http_mock = mocker.patch.object(Client, 'http_request', side_effect=http_request_without_approval_mock)
     mocker.patch.object(demisto, 'args', return_value={'file_id': 1, 'classification': 'private',
                                                        'allow_unresolved': 'no', 'confidence': 30})
     mocker.patch.object(demisto, 'command', return_value='threatstream-import-indicator-without-approval')
@@ -133,7 +133,14 @@ def test_get_file_reputation(mocker, file_hash, expected_result_file_path, raw_r
     mocker.patch('Anomali_ThreatStream_v2.search_indicator_by_params', return_value=raw_response)
     mocker.patch.object(demisto, 'results')
 
-    get_file_reputation(file_hash)
+    client = Client(
+        base_url='',
+        use_ssl=False,
+        default_threshold='high',
+        reliability='B - Usually reliable'
+    )
+
+    get_file_reputation(client, file_hash)
     context = demisto.results.call_args_list[0][0][0].get('EntryContext')
 
     assert context == expected_result

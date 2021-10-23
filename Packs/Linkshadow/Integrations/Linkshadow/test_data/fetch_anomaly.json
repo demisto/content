@@ -1,0 +1,41 @@
+{
+    "message": "request has been successfully completed ",
+    "data": [
+        {
+            "anomaly_flag": "1",
+            "category": "Suspicious",
+            "anomaly_type": "Network Scan",
+            "sip": "172.16.4.71",
+            "score": "15",
+            "GlobalID": "162203514369924",
+            "anomaly_id": "18",
+            "data": {
+                "pcap_waiting": false,
+                "scanCount": 15,
+                "scan_type": "Undefined",
+                "scannedIPs": [
+                    "172.16.4.171",
+                    "172.16.5.129",
+                    "172.16.5.76"
+                ],
+                "pcap": "",
+                "display": {
+                    "Type of Scan": "Undefined",
+                    "Scanned IPs": "172.16.4.171, 172.16.5.129, 172.16.5.76"
+                }
+            },
+            "time_seen": "1622035143000",
+            "inserted_time": "1622035143",
+            "smac": "f0:18:98:32:34:57",
+            "bandwidth": "",
+            "action_time": "1622107326",
+            "dport": "5353",
+            "dmac": "f8:2f:a8:ed:c2:ff",
+            "sport": "5353",
+            "dip": "172.16.4.16",
+            "id": "None",
+            "desc": "172.16.4.71 scanned 3 IPs"
+        }
+    ],
+    "success": 1
+}

@@ -7,3 +7,6 @@ ignore=MP106
 [file:classifier-User_Profile_-_Salesforce_(Outgoing).json]
 ignore=MP106
 
+[file:Salesforce_IAM.yml]
+ignore=BA108,BA109
+

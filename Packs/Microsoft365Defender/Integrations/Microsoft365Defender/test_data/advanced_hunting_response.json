@@ -1,0 +1,2709 @@
+{
+  "Stats": {
+    "ExecutionTime": 0.0937517,
+    "resource_usage": {
+      "cache": {
+        "memory": {
+          "hits": 534,
+          "misses": 0,
+          "total": 534
+        },
+        "disk": {
+          "hits": 0,
+          "misses": 0,
+          "total": 0
+        }
+      },
+      "cpu": {
+        "user": "00:00:00",
+        "kernel": "00:00:00",
+        "total cpu": "00:00:00"
+      },
+      "memory": {
+        "peak_per_node": 68022512
+      }
+    },
+    "dataset_statistics": [
+      {
+        "table_row_count": 264,
+        "table_size": 44600
+      }
+    ]
+  },
+  "Schema": [
+    {
+      "Name": "Timestamp",
+      "Type": "DateTime"
+    },
+    {
+      "Name": "AlertId",
+      "Type": "String"
+    },
+    {
+      "Name": "Title",
+      "Type": "String"
+    },
+    {
+      "Name": "Category",
+      "Type": "String"
+    },
+    {
+      "Name": "Severity",
+      "Type": "String"
+    },
+    {
+      "Name": "ServiceSource",
+      "Type": "String"
+    },
+    {
+      "Name": "DetectionSource",
+      "Type": "String"
+    },
+    {
+      "Name": "AttackTechniques",
+      "Type": "String"
+    }
+  ],
+  "Results": [
+    {
+      "Timestamp": "2021-04-26T09:37:48Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-26T09:45:32Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-19T10:57:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-19T11:00:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-19T11:09:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-19T11:12:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-19T11:23:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-20T01:22:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-20T01:24:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-19T11:19:10Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-21T01:33:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-21T01:36:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-10T01:31:17Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-10T01:35:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-11T01:30:03Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-11T01:32:56Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-22T01:35:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-22T01:32:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-21T09:13:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-21T09:18:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-21T14:55:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-21T14:58:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-23T01:31:40Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-23T01:33:53Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-22T10:45:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-22T10:49:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T06:43:08Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T06:55:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T06:58:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T07:03:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T07:04:57Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T07:12:40Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T07:41:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T07:48:50Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T07:54:50Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T08:11:37Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T08:21:35Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T08:28:53Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T08:31:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T08:32:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T08:33:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T08:44:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T09:08:39Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T09:12:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T09:15:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T09:40:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T09:46:21Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T09:47:51Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T09:54:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T09:56:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T10:01:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T10:01:52Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T11:07:49Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T11:11:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T11:12:59Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T11:19:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T11:21:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T11:24:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T11:26:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T11:28:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T11:53:06Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T11:56:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T12:00:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T12:02:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T12:15:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T12:18:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T12:22:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T12:22:57Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T12:40:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T12:42:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T12:46:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T12:48:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T12:51:45Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T12:54:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T13:38:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T13:38:58Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T13:43:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T13:46:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T13:50:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T13:52:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T14:34:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T14:35:02Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T14:48:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T14:49:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T15:02:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T15:03:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T15:07:24Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T15:10:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T15:13:27Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T15:16:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T15:35:23Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T15:37:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T15:41:17Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T15:44:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T15:46:20Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T15:49:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T15:53:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T15:55:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T15:58:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T16:00:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T16:02:33Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-04T16:05:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-05T01:30:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-05T01:31:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-05T04:24:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-05T04:26:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-05T15:34:25.736Z",
+      "AlertId": "alertId",
+      "Title": "Impossible travel activity",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Cloud App Security",
+      "DetectionSource": "Cloud App Security",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-05T16:28:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-05T16:29:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-05T16:33:26Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-05T16:35:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-05T16:39:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-05T16:40:59Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-05T17:10:15Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-05T17:13:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-05T17:17:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-05T17:19:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-05T17:21:31Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-05T17:24:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-06T01:30:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-06T01:33:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-06T02:58:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-06T02:59:57Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-07T01:36:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-07T01:39:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-03-31T13:45:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-01T09:35:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-01T09:47:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-01T09:57:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-01T10:51:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-01T11:02:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-01T14:58:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-01T15:08:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-01T15:19:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-01T15:39:16Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-01T15:59:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-01T16:37:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-01T16:50:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-01T17:15:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-01T17:28:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-01T17:45:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-01T18:02:46Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-01T18:16:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-18T05:26:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-18T08:34:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-18T08:36:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-18T08:38:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-18T08:36:37Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-18T08:40:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-18T08:39:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-18T14:40:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-18T14:49:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-18T14:51:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-18T14:57:34Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-18T15:01:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-18T15:08:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-18T15:10:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-18T16:44:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-18T16:45:57Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-18T16:55:56Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-18T16:54:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-18T17:06:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-18T17:44:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-18T17:46:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-18T17:53:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-18T17:54:57Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-18T18:02:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-18T18:06:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-19T01:34:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-19T01:37:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-18T17:03:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-03-30T14:08:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-03-30T14:15:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-03-30T14:20:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-03-30T15:56:19Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-03-31T07:44:16Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-03-31T07:46:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-03-30T13:57:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-03-31T12:02:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-25T10:11:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-25T14:07:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-25T14:08:59Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-25T14:16:33Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-25T14:20:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-25T14:33:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-25T14:35:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-25T14:42:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-25T14:43:59Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-25T14:51:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-25T14:53:57Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-25T15:27:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-25T16:28:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-25T16:32:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-25T16:39:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-25T16:41:56Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-25T16:50:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-26T01:31:44Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-26T01:35:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-26T06:30:41Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-25T16:52:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-07T13:28:08Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-08T01:33:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-08T01:35:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-09T01:34:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-08T08:03:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-08T08:10:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-08T08:17:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-08T08:23:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-08T08:28:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-08T08:35:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-08T08:41:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-08T08:44:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-09T01:32:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-11T09:40:28Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-11T09:42:58Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-11T09:50:49Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-11T09:54:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-11T10:01:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-11T10:03:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-11T10:44:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-11T10:40:53Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-11T10:50:24Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-11T10:52:55Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-11T11:01:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-11T11:03:55Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-11T11:47:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-11T11:49:56Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-11T11:58:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-11T12:00:56Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-11T12:08:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-11T12:10:56Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-12T01:30:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-12T01:32:57Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-12T02:51:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-12T02:52:58Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-12T13:09:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-13T01:36:33Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-13T01:41:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-24T01:33:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-24T01:36:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-25T01:34:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-25T01:37:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-16T01:32:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-16T01:34:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-17T01:33:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-17T01:36:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-13T10:00:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-14T01:32:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-14T01:35:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-14T05:42:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-14T06:25:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-13T09:54:10Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-13T10:09:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-13T10:10:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-13T10:54:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-13T10:53:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-15T01:31:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-15T01:34:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-14T07:57:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-14T14:04:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-14T14:28:32Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-14T14:51:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-14T15:05:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    },
+    {
+      "Timestamp": "2021-04-14T15:10:00Z",
+      "AlertId": "alertId",
+      "Title": "eDiscovery search started or exported",
+      "Category": "InitialAccess",
+      "Severity": "Medium",
+      "ServiceSource": "Microsoft Defender for Office 365",
+      "DetectionSource": "Microsoft Defender for Office 365",
+      "AttackTechniques": ""
+    }
+  ]
+}

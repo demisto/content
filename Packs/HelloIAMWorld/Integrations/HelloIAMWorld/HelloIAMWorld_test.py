@@ -315,5 +315,5 @@ def test_get_mapping_fields_command(mocker):
     mapping_response = get_mapping_fields(client)
     mapping = mapping_response.extract_mapping()
 
-    assert mapping.get(IAMUserProfile.INDICATOR_TYPE, {}).get('field1') == 'desc1'
-    assert mapping.get(IAMUserProfile.INDICATOR_TYPE, {}).get('field2') == 'desc2'
+    assert mapping.get(IAMUserProfile.DEFAULT_INCIDENT_TYPE, {}).get('field1') == 'desc1'
+    assert mapping.get(IAMUserProfile.DEFAULT_INCIDENT_TYPE, {}).get('field2') == 'desc2'

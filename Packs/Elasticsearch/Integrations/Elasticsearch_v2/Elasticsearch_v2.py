@@ -38,13 +38,15 @@ HTTP_ERRORS = {
 }
 
 '''VARIABLES FOR FETCH INCIDENTS'''
-TIME_FIELD = demisto.params().get('fetch_time_field', '')
-FETCH_INDEX = demisto.params().get('fetch_index', '')
-FETCH_QUERY = demisto.params().get('fetch_query', '')
-FETCH_TIME = demisto.params().get('fetch_time', '3 days')
-FETCH_SIZE = int(demisto.params().get('fetch_size', 50))
-INSECURE = not demisto.params().get('insecure', False)
-TIME_METHOD = demisto.params().get('time_method', 'Simple-Date')
+param = demisto.params()
+TIME_FIELD = param.get('fetch_time_field', '')
+FETCH_INDEX = param.get('fetch_index', '')
+FETCH_QUERY = param.get('fetch_query', '')
+FETCH_TIME = param.get('fetch_time', '3 days')
+FETCH_SIZE = int(param.get('fetch_size', 50))
+INSECURE = not param.get('insecure', False)
+TIME_METHOD = param.get('time_method', 'Simple-Date')
+TIMEOUT = int(param.get('timeout') or 60)
 
 
 def get_timestamp_first_fetch(last_fetch):
@@ -103,19 +105,24 @@ def get_api_key_header_val(api_key):
 
 def elasticsearch_builder(proxies):
     """Builds an Elasticsearch obj with the necessary credentials, proxy settings and secure connection."""
+    connection_args = {
+        "hosts": [SERVER],
+        "connection_class": RequestsHttpConnection,
+        "proxies": proxies,
+        "verify_certs": INSECURE,
+        "timeout": TIMEOUT,
+    }
     if API_KEY_ID:
-        es = Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection, verify_certs=INSECURE,
-                           api_key=API_KEY, proxies=proxies)
-        # this should be passed as api_key via Elasticsearch init, but this code ensures it'll be set correctly
-        if hasattr(es, 'transport'):
-            es.transport.get_connection().session.headers['authorization'] = get_api_key_header_val(API_KEY)
-        return es
-    if USERNAME:
-        return Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection, verify_certs=INSECURE,
-                             http_auth=(USERNAME, PASSWORD), proxies=proxies)
-    else:
-        return Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection, verify_certs=INSECURE,
-                             proxies=proxies)
+        connection_args["api_key"] = API_KEY
+    elif USERNAME:
+        connection_args["http_auth"] = (USERNAME, PASSWORD)
+
+    es = Elasticsearch(**connection_args)
+    # this should be passed as api_key via Elasticsearch init, but this code ensures it'll be set correctly
+    if API_KEY_ID and hasattr(es, 'transport'):
+        es.transport.get_connection().session.headers['authorization'] = get_api_key_header_val(API_KEY)
+
+    return es
 
 
 def get_hit_table(hit):
@@ -662,4 +669,5 @@ def main():
         return_error("Failed executing {}.\nError message: {}".format(demisto.command(), str(e)), error=e)
 
 
-main()
+if __name__ in ('__main__', 'builtin', 'builtins'):
+    main()

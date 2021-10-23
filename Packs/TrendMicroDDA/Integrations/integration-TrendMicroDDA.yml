@@ -200,8 +200,7 @@ script:
 
 
     DEFAULT_HEADERS = {
-        'Host' : HOST,
-        'X-DTAS-ProtocolVersion' : PROTOCOL_VERSION,
+        'X-DTAS-ProtocolVersion': PROTOCOL_VERSION,
         'X-DTAS-ClientUUID': UUID,
         'X-DTAS-Time': get_epoch_time(),
         'X-DTAS-Challenge': str(uuid.uuid4()),
@@ -211,9 +210,11 @@ script:
         'X-DTAS-SourceName': 'DemistoIntegration',
     }
 
+    if HOST:
+        DEFAULT_HEADERS['Host'] = HOST
 
-    #for fetch incident
 
+    # for fetch incident
     CURRENT_TIME = datetime.utcnow()
 
 
@@ -427,7 +428,7 @@ script:
             demisto.results('No results found.')
 
     def build_report(res, threshold, status, verbose):
-        report_json = json.loads(xml2json(res.text))
+        report_json = json.loads(xml2json(res.text.encode('utf-8')))
         reports = report_json['REPORTS']
         #true if list, false if dict
         reports_type_is_list = isinstance(reports['FILE_ANALYZE_REPORT'], list)
@@ -713,11 +714,11 @@ script:
 
     def build_brief_report(res, sha1, threshold):
         report_json = json.loads(xml2json(res.text))
-        brief_report_json = report_json['REPORT']['BRIEF_REPORT']
+        brief_report_json = report_json.get('REPORT', {}).get('BRIEF_REPORT', {})
         hr = {
             'SHA1': sha1,
-            'Risk Level': brief_report_json['RiskLevel'],
-            'Status': brief_report_json['STATUS'],
+            'Risk Level': brief_report_json.get('RiskLevel'),
+            'Status': brief_report_json.get('STATUS'),
         }
         return hr
 
@@ -1084,7 +1085,7 @@ script:
       defaultValue: "1"
     description: Retrieves a brief XML report of a given submission
   runonce: false
-  dockerimage: demisto/python:2.7.17.5734
+  dockerimage: demisto/python:2.7.18.24066
 beta: true
 tests:
 - No Test - run "Test Playbook TrendMicroDDA" manually

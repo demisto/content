@@ -1,0 +1,31 @@
+{
+    "id": "es-disk-current",
+    "version": -1,
+    "fromVersion": "6.1.0",
+    "modified": "2021-01-10T13:24:20.812147Z",
+    "name": "Elasticsearch Disk Current Usage",
+    "dataType": "system",
+    "widgetType": "number",
+    "query": "es-disk.usedPercent",
+    "isPredefined": true,
+    "description": "Elasticsearch Disk Current Usage %",
+    "params": {
+        "colors": {
+            "isEnabled": true,
+            "items": {
+                "#00CD33": {
+                    "value": -1
+                },
+                "#FAC100": {
+                    "value": 60
+                },
+                "#FF1B15": {
+                    "value": 80
+                }
+            },
+            "type": "above"
+        },
+        "currencySign": "%",
+        "signAlignment": "right"
+    }
+}

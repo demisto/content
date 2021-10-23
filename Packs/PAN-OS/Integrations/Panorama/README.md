@@ -73,7 +73,7 @@ This integration was integrated and tested with version 8.1.0 and 9.0.1 of Palo 
    
 
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 1. [Run any command supported in the Panorama API: panorama](#panorama)
@@ -266,7 +266,9 @@ Commits a configuration to Palo Alto Firewall or Panorama, but does not validate
 `panorama-commit`
 #### Input
 
-There are no input arguments for this command.
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| description | Commit description. | Optional | 
 
 #### Context Output
 
@@ -301,7 +303,7 @@ There are no input arguments for this command.
 
 ### panorama-push-to-device-group
 ***
-Pushes rules from PAN-OS to the configured device group.
+Pushes rules from PAN-OS to the configured device group. In order to push the configuration to Prisma Access managed tenants (single or multi tenancy), use the device group argument with the device group which is associated with the tenant ID.  
 
 
 #### Base Command
@@ -311,7 +313,10 @@ Pushes rules from PAN-OS to the configured device group.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device-group | The device group for which to return addresses (Panorama instances). | Optional | 
+| device-group | The device group for which to return addresses (Panorama instances). | Optional |
+| validate-only | Pre policy validation. | Optional. |
+| include-template | Whether to include template changes. | Optional. |
+| description | Push description. | Optional |
 
 
 #### Context Output
@@ -1661,7 +1666,7 @@ Edit a URL filtering rule.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | Name of the URL filter to edit. | Required | 
-| element_to_change | Element to change. Can be "override_allow_list", or "override_block_list" | Required | 
+| element_to_change | Element to change. | Required | 
 | element_value | Element value. Limited to one value. | Required | 
 | add_remove_element | Add or remove an element from the Allow List or Block List fields. Default is to 'add' the element_value to the list. | Optional | 
 
@@ -2045,9 +2050,9 @@ Creates a policy rule.
 | destination_zone | A comma-separated list of destination zones. | Optional | 
 | negate_source | Whether to negate the source (address, address group). Can be "Yes" or "No". | Optional | 
 | negate_destination | Whether to negate the destination (address, address group). Can be "Yes" or "No". | Optional | 
-| service | Service object names for the rule (service object) to create. | Optional | 
+| service | A comma-separated list of service object names for the rule. | Optional | 
 | disable | Whether to disable the rule. Can be "Yes" or "No" (default is "No"). | Optional | 
-| application | A comma-separated list of application object namesfor the rule to create. | Optional | 
+| application | A comma-separated list of application object names for the rule. | Optional | 
 | source_user | Source user for the rule to create. | Optional | 
 | pre_post | Pre rule or Post rule (Panorama instances). | Optional | 
 | target | Specifies a target firewall for the rule (Panorama instances). | Optional | 
@@ -2056,7 +2061,8 @@ Creates a policy rule.
 | tags | Rule tags to create. | Optional | 
 | category | A comma-separated list of URL categories. | Optional |
 | profile_setting | A profile setting group. | Optional | 
-
+| where | Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "top" or "bottom", you need to supply the "dst" argument. | Optional | 
+| dst | Destination rule relative to the rule that you are moving. This field is only relevant if you specify "top" or "bottom" in the "where" argument. | Optional |
 
 #### Context Output
 
@@ -2123,7 +2129,8 @@ Creates a custom block policy rule.
 | log_forwarding | Log forwarding profile. | Optional | 
 | device-group | The device group for which to return addresses for the rule (Panorama instances). | Optional | 
 | tags | Tags for which to use for the custom block policy rule. | Optional | 
-
+| where | Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "top" or "bottom", you need to supply the "dst" argument. | Optional | 
+| dst | Destination rule relative to the rule that you are moving. This field is only relevant if you specify "top" or "bottom" in the "where" argument. | Optional |
 
 #### Context Output
 
@@ -3031,7 +3038,8 @@ Checks whether a session matches a specified security policy. This command is on
 | to | The to zone. | Optional | 
 | protocol | The IP protocol value. | Required | 
 | source | The source IP address. | Required | 
-| source-user | The source user. | Optional | 
+| source-user | The source user. | Optional |
+| target | Target number of the firewall. Use only on a Panorama instance. | Optional | 
 
 
 #### Context Output

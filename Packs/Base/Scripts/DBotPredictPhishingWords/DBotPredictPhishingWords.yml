@@ -103,12 +103,16 @@ args:
   secret: false
 - auto: PREDEFINED
   default: false
-  defaultValue: English
-  description: The language of the input text. Default is "English". Can be "English",
-    "German", "French", "Spanish", "Portuguese", "Italian", "Dutch", or "Other".
+  defaultValue: Any
+  description: The language of the input text. Default is "Any". Can be "Any", "English",
+    "German", "French", "Spanish", "Portuguese", "Italian", "Dutch", or "Other". If
+    "Any"  or "Other" is selected, the script preprocess the entire input, no matter
+    what its acutual language is. If a specific language is selected, the script filters
+    out any other language from the output text.
   isArray: false
   name: language
   predefined:
+  - Any
   - English
   - German
   - French
@@ -163,9 +167,9 @@ system: false
 tags:
 - ml
 - phishing
-timeout: '0'
+timeout: 60µs
 type: python
-dockerimage: demisto/ml:1.0.0.19023
+dockerimage: demisto/ml:1.0.0.23334
 runonce: true
 tests:
 - Create Phishing Classifier V2 ML Test

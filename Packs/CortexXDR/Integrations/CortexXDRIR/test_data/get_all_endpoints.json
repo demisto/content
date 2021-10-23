@@ -2,7 +2,7 @@
   "reply": [
     {
       "endpoint_id": "1111",
-      "endpoint_name": "ip-3.3.3.3.eu-central-1.compute.internal",
+      "endpoint_name": "ip-3.3.3.3",
       "endpoint_type": "AGENT_TYPE_SERVER",
       "endpoint_status": "CONNECTED",
       "os_type": "AGENT_OS_LINUX",

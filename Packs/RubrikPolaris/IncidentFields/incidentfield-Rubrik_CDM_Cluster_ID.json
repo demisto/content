@@ -1,0 +1,29 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Rubrik Radar"
+    ],
+    "caseInsensitive": true,
+    "cliName": "rubrikcdmclusterid",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_rubrikcdmclusterid",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Rubrik CDM Cluster ID",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

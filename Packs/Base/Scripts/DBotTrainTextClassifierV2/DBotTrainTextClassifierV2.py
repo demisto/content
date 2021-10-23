@@ -1,4 +1,5 @@
 # pylint: disable=no-member
+import gc
 
 import pandas as pd
 from typing import List, Dict
@@ -19,6 +20,16 @@ GENERAL_SCORES = {
 DBOT_TAG_FIELD = "dbot_internal_tag_field"
 MIN_INCIDENTS_THRESHOLD = 100
 PREDICTIONS_OUT_FILE_NAME = 'predictions_on_test_set.csv'
+
+# FROM_SCRATCH_TRAINING_ALGO is the UI equivalent of FASTTEXT_TRAINING_ALGO
+FROM_SCRATCH_TRAINING_ALGO = 'from_scratch'
+FINETUNE_TRAINING_ALGO = 'fine_tune'
+FASTTEXT_TRAINING_ALGO = 'fasttext'
+AUTO_TRAINING_ALGO = 'auto'
+
+# the following mapping need to correspond to predict_phishing_words func at DBotPredictPhishingWords
+ALGO_TO_MODEL_TYPE = {FASTTEXT_TRAINING_ALGO: 'Phishing', FINETUNE_TRAINING_ALGO: 'torch'}
+FINETUNE_LABELS = ['Malicious', 'Non-Malicious']
 
 
 def get_phishing_map_labels(comma_values):
@@ -110,29 +121,25 @@ def get_data_with_mapped_label(data, labels_mapping, tag_field):
     return new_data, dict(exist_labels_counter), dict(missing_labels_counter)
 
 
-def store_model_in_demisto(model_name, model_override, X, y, confusion_matrix, threshold, tokenizer, y_test_true,
-                           y_test_pred,
-                           y_test_pred_prob, target_accuracy):
-    PhishingModel = demisto_ml.PhishingModel(tokenizer)
-    PhishingModel.train(X, y, True)
-    model_labels = PhishingModel.get_model_labels()
-    model_data = demisto_ml.phishing_model_dumps(PhishingModel)
-
+def store_model_in_demisto(model_name, model_override, X, y, confusion_matrix, threshold, y_test_true,
+                           y_test_pred, y_test_pred_prob, target_accuracy, algorithm):
+    global ALGO_TO_MODEL_TYPE
+    phishing_model = demisto_ml.train_model_handler(X, y, algorithm=algorithm, compress=True)
+    model_labels = phishing_model.get_model_labels()
+    model_data = phishing_model.dumps()
     res = demisto.executeCommand('createMLModel', {'modelData': model_data,
                                                    'modelName': model_name,
                                                    'modelLabels': model_labels,
                                                    'modelOverride': model_override,
-                                                   'modelExtraInfo': {'threshold': threshold}
+                                                   'modelExtraInfo': {'threshold': threshold},
+                                                   'modelType': ALGO_TO_MODEL_TYPE[algorithm],
                                                    })
     if is_error(res):
         return_error(get_error(res))
-    confusion_matrix_no_all = {k: v for k, v in confusion_matrix.items() if k != 'All'}
-    confusion_matrix_no_all = {k: {sub_k: sub_v for sub_k, sub_v in v.items() if sub_k != 'All'}
-                               for k, v in confusion_matrix_no_all.items()}
 
     y_test_pred_prob = [float(x) for x in y_test_pred_prob]
     res = demisto.executeCommand('evaluateMLModel',
-                                 {'modelConfusionMatrix': confusion_matrix_no_all,
+                                 {'modelConfusionMatrix': confusion_matrix,
                                   'modelName': model_name,
                                   'modelEvaluationVectors': {'Ypred': y_test_pred,
                                                              'Ytrue': y_test_true,
@@ -211,6 +218,9 @@ def output_model_evaluation(model_name, y_test, y_pred, res, context_field, huma
         }
     }
     demisto.results(result_entry)
+    confusion_matrix_at_thresh = {k: v for k, v in confusion_matrix_at_thresh.items() if k != 'All'}
+    confusion_matrix_at_thresh = {k: {sub_k: sub_v for sub_k, sub_v in v.items() if sub_k != 'All'}
+                                  for k, v in confusion_matrix_at_thresh.items()}
     return confusion_matrix_at_thresh, metrics_df
 
 
@@ -336,9 +346,32 @@ def get_X_and_y_from_data(data, text_field):
     return X, y
 
 
+def validate_labels_and_decide_algorithm(y, algorithm):
+    labels_counter = Counter(y)  # type: Dict[str, int]
+    illegal_labels_for_fine_tune = [label for label in labels_counter if label not in FINETUNE_LABELS]
+    if algorithm == FINETUNE_TRAINING_ALGO and len(illegal_labels_for_fine_tune) > 0:
+        error = ['When trainingAlgorithm is set to {}, all labels mus be mapped to {}.\n'.format(algorithm,
+                                                                                                 ', '.join(
+                                                                                                     FINETUNE_LABELS))]
+        error += ['The following labels/verdicts need to be mapped to one of those values: ']
+        error += [', '.join(illegal_labels_for_fine_tune) + '.']
+        return_error('\n'.join(error))
+    elif algorithm == AUTO_TRAINING_ALGO:
+        return FASTTEXT_TRAINING_ALGO
+    else:
+        return algorithm
+
+
+def validate_confusion_matrix(confusion_matrix):
+    for label in confusion_matrix:
+        tp = confusion_matrix[label][label]
+        fp = sum(confusion_matrix[label_other][label] for label_other in confusion_matrix if label != label_other)
+        if tp == fp == 0:
+            return False
+    return True
+
+
 def main():
-    tokenizer_script = demisto.args().get('tokenizerScript', None)
-    phishing_model = demisto_ml.PhishingModel(tokenizer_script=tokenizer_script)
     input = demisto.args()['input']
     input_type = demisto.args()['inputType']
     model_name = demisto.args()['modelName']
@@ -351,6 +384,11 @@ def main():
     keyword_min_score = float(demisto.args()['keywordMinScore'])
     return_predictions_on_test_set = demisto.args().get('returnPredictionsOnTestSet', 'false') == 'true'
     original_text_fields = demisto.args().get('originalTextFields', '')
+    algorithm = demisto.args().get('trainingAlgorithm', AUTO_TRAINING_ALGO)
+    # FASTTEXT_TRAINING_ALGO and FROM_SCRATCH_TRAINING_ALGO are equivalent, replacement is done because ml_lib
+    # expects algorithm as one of (FASTTEXT_TRAINING_ALGO, FINETUNE_TRAINING_ALGO)
+    algorithm = FASTTEXT_TRAINING_ALGO if algorithm == FROM_SCRATCH_TRAINING_ALGO else algorithm
+
     if input_type.endswith("filename"):
         data = read_files_by_name(input, input_type.split("_")[0].strip())
     else:
@@ -378,11 +416,11 @@ def main():
         except Exception:
             pass
     X, y = get_X_and_y_from_data(data, text_field)
+    algorithm = validate_labels_and_decide_algorithm(y, algorithm)
     test_index, train_index = get_train_and_test_sets_indices(X, y)
     X_train, X_test = [X[i] for i in train_index], [X[i] for i in test_index]
     y_train, y_test = [y[i] for i in train_index], [y[i] for i in test_index]
-
-    phishing_model.train(X_train, y_train, compress=False)
+    phishing_model = demisto_ml.train_model_handler(X_train, y_train, algorithm=algorithm, compress=False)
     ft_test_predictions = phishing_model.predict(X_test)
     y_pred = [{y_tuple[0]: float(y_tuple[1])} for y_tuple in ft_test_predictions]
     if return_predictions_on_test_set:
@@ -399,14 +437,18 @@ def main():
                                                              context_field='DBotPhishingClassifier')
     actual_min_accuracy = min(v for k, v in metrics_json['Precision'].items() if k != 'All')
     if store_model:
+        del phishing_model
+        gc.collect()
+        if not validate_confusion_matrix(confusion_matrix):
+            return_error("The trained model didn't manage to predict some of the classes. This model won't be stored."
+                         "Please try to retrain the model using a different configuration.")
         y_test_pred = [y_tuple[0] for y_tuple in ft_test_predictions]
         y_test_pred_prob = [y_tuple[1] for y_tuple in ft_test_predictions]
         threshold = float(threshold_metrics_entry['Contents']['threshold'])
         store_model_in_demisto(model_name=model_name, model_override=model_override, X=X, y=y,
-                               confusion_matrix=confusion_matrix, threshold=threshold, tokenizer=tokenizer_script,
-                               y_test_true=y_test,
-                               y_test_pred=y_test_pred, y_test_pred_prob=y_test_pred_prob,
-                               target_accuracy=actual_min_accuracy)
+                               confusion_matrix=confusion_matrix, threshold=threshold,
+                               y_test_true=y_test, y_test_pred=y_test_pred, y_test_pred_prob=y_test_pred_prob,
+                               target_accuracy=actual_min_accuracy, algorithm=algorithm)
         demisto.results("Done training on {} samples model stored successfully".format(len(y)))
     else:
         demisto.results('Skip storing model')

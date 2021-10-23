@@ -1,2 +1,8 @@
 [file:layoutscontainer-Brute_Force.json]
 ignore=BA101
+
+[file:Brute_Force_Investigation_-_Generic_README.md]
+ignore=RM106
+
+[file:Brute_Force_Investigation_-_Generic.yml]
+ignore=PB110

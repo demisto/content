@@ -1,0 +1,433 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: IPQualityScore
+  version: -1
+fromversion: 5.0.0
+configuration:
+- display: API Key
+  name: apikey
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- additionalinfo: Threshold for fraud score from IP lookup to be marked as suspicious
+  defaultvalue: '75'
+  display: IP Suspicious Score Threshold
+  hidden: false
+  name: ip_suspicious_score_threshold
+  required: false
+  type: 0
+- additionalinfo: Threshold for fraud score from IP lookup to be marked as malicious
+  defaultvalue: '90'
+  display: IP Malicious Score Threshold
+  hidden: false
+  name: ip_malicious_score_threshold
+  required: false
+  type: 0
+- additionalinfo: Threshold for fraud score from Email lookup to be marked as suspicious
+  defaultvalue: '75'
+  display: Email Suspicious Score Threshold
+  hidden: false
+  name: email_suspicious_score_threshold
+  required: false
+  type: 0
+- additionalinfo: Threshold for fraud score from Email lookup to be marked as malicious
+  defaultvalue: '90'
+  display: Email Malicious Score Threshold
+  hidden: false
+  name: email_malicious_score_threshold
+  required: false
+  type: 0
+- additionalinfo: Threshold for fraud score from Url lookup to be marked as suspicious
+  defaultvalue: '75'
+  display: Url Suspicious Score Threshold
+  hidden: false
+  name: url_suspicious_score_threshold
+  required: false
+  type: 0
+- additionalinfo: Threshold for fraud score from Url lookup to be marked as malicious
+  defaultvalue: '90'
+  display: Url Malicious Score Threshold
+  hidden: false
+  name: url_malicious_score_threshold
+  required: false
+  type: 0
+- additionalinfo: Reliability of the source providing the intelligence data
+  defaultvalue: F - Reliability cannot be judged
+  display: Source Reliability
+  name: feedReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+description: Proactively Prevent Fraud
+display: IPQualityScore
+name: IPQualityScore
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: IP address to check
+      isArray: true
+      name: ip
+      required: true
+      secret: false
+    deprecated: false
+    description: Runs reputation on IPs.
+    execution: false
+    name: ip
+    outputs:
+    - contextPath: IPQualityScore.IP.success
+      type: Boolean
+      description: 'Was the request successful?'
+    - contextPath: IPQualityScore.IP.message
+      type: String
+      description: 'A generic status message, either success or some form of an error notice.'
+    - contextPath: IPQualityScore.IP.fraud_score
+      type: Number
+      description: 'The overall fraud score of the user based on the IP, user agent, language, and any other optionally passed variables. Fraud Scores >= 75 are suspicious, but not necessarily fraudulent. We recommend flagging or blocking traffic with Fraud Scores >= 85, but you may find it beneficial to use a higher or lower threshold.'
+    - contextPath: IPQualityScore.IP.country_code
+      type: String
+      description: 'Two character country code of IP address or "N/A" if unknown.'
+    - contextPath: IPQualityScore.IP.region
+      type: String
+      description: 'Region (state) of IP address if available or "N/A" if unknown.'
+    - contextPath: IPQualityScore.IP.city
+      type: String
+      description: 'City of IP address if available or "N/A" if unknown.'
+    - contextPath: IPQualityScore.IP.ISP
+      type: String
+      description: 'ISP if one is known. Otherwise "N/A".'
+    - contextPath: IPQualityScore.IP.ASN
+      type: Number
+      description: 'Autonomous System Number if one is known. Null if nonexistent.'
+    - contextPath: IPQualityScore.IP.organization
+      type: String
+      description: 'Organization if one is known. Can be parent company or sub company of the listed ISP. Otherwise "N/A".'
+    - contextPath: IPQualityScore.IP.latitude
+      type: Number
+      description: 'Latitude of IP address if available or "N/A" if unknown.'
+    - contextPath: IPQualityScore.IP.longitude
+      type: Number
+      description: 'Longitude of IP address if available or "N/A" if unknown.'
+    - contextPath: IPQualityScore.IP.is_crawler
+      type: Boolean
+      description: 'Is this IP associated with being a confirmed crawler from a mainstream search engine such as Googlebot, Bingbot, Yandex, etc. based on hostname or IP address verification.'
+    - contextPath: IPQualityScore.IP.timezone
+      type: String
+      description: 'Timezone of IP address if available or "N/A" if unknown.'
+    - contextPath: IPQualityScore.IP.mobile
+      type: Boolean
+      description: 'Is this user agent a mobile browser? (will always be false if the user agent is not passed in the API request)'
+    - contextPath: IPQualityScore.IP.host
+      type: String
+      description: 'Hostname of the IP address if one is available.'
+    - contextPath: IPQualityScore.IP.proxy
+      type: Boolean
+      description: 'Is this IP address suspected to be a proxy? (SOCKS, Elite, Anonymous, VPN, Tor, etc.)'
+    - contextPath: IPQualityScore.IP.vpn
+      type: Boolean
+      description: 'Is this IP suspected of being a VPN connection? This can include data center ranges which can become active VPNs at any time. The "proxy" status will always be true when this value is true.'
+    - contextPath: IPQualityScore.IP.tor
+      type: Boolean
+      description: 'Is this IP suspected of being a TOR connection? This can include previously active TOR nodes and exits which can become active TOR exits at any time. The "proxy" status will always be true when this value is true.'
+    - contextPath: IPQualityScore.IP.active_vpn
+      type: Boolean
+      description: 'Premium Account Feature - Identifies active VPN connections used by popular VPN services and private VPN servers.'
+    - contextPath: IPQualityScore.IP.active_tor
+      type: Boolean
+      description: 'Premium Account Feature - Identifies active TOR exits on the TOR network.'
+    - contextPath: IPQualityScore.IP.recent_abuse
+      type: Boolean
+      description: 'This value will indicate if there has been any recently verified abuse across our network for this IP address. Abuse could be a confirmed chargeback, compromised device, fake app install, or similar malicious behavior within the past few days.'
+    - contextPath: IPQualityScore.IP.bot_status
+      type: Boolean
+      description: 'Premium Account Feature - Indicates if bots or non-human traffic has recently used this IP address to engage in automated fraudulent behavior. Provides stronger confidence that the IP address is suspicious.'
+    - contextPath: IPQualityScore.IP.connection_type
+      type: String
+      description: 'Classification of the IP address connection type as "Residential", "Corporate", "Education", "Mobile", or "Data Center".'
+    - contextPath: IPQualityScore.IP.abuse_velocity
+      type: String
+      description: 'Premium Account Feature - How frequently the IP address is engaging in abuse across the IPQS threat network. Values can be "high", "medium", "low", or "none". Can be used in combination with the Fraud Score to identify bad behavior.'
+    - contextPath: IPQualityScore.IP.request_id
+      type: String
+      description: 'A unique identifier for this request that can be used to lookup the request details or send a postback conversion notice.'
+    - contextPath: IPQualityScore.IP.address
+      type: String
+      description: 'The IP address that was queried.'
+    - contextPath: DBotScore.Indicator
+      type: String
+      description: 'The indicator that was tested.'
+    - contextPath: DBotScore.Score
+      type: Number
+      description: 'The actual score.'
+    - contextPath: DBotScore.Type
+      type: String
+      description: 'The indicator type.'
+    - contextPath: DBotScore.Vendor
+      type: String
+      description: 'The vendor used to calculate the score.'
+    - contextPath: IP.Address
+      type: string
+      description: 'The IP address.'
+    - contextPath: IP.ASN
+      type: string
+      description: 'The autonomous system name for the IP address, for example: "AS8948".'
+    - contextPath: IP.Hostname
+      type: string
+      description: 'The hostname that is mapped to this IP address.'
+    - contextPath: IP.Geo.Country
+      type: string
+      description: 'The country in which the IP address is located.'
+    - contextPath: IP.Geo.Description
+      type: string
+      description: 'Additional information about the location.'
+    - contextPath: IP.Malicious.Vendor
+      type: string
+      description: 'The vendor reporting the IP address as malicious.'
+    - contextPath: IP.Malicious.Description
+      type: string
+      description: 'A description explaining why the IP address was reported as malicious.'
+  - arguments:
+    - default: true
+      description: Email address to check
+      isArray: true
+      name: email
+      required: true
+      secret: false
+    deprecated: false
+    description: Runs reputation on email addresses.
+    execution: false
+    name: email
+    outputs:
+    - contextPath: IPQualityScore.Email.message
+      type: String
+      description: 'A generic status message, either success or some form of an error notice.'
+    - contextPath: IPQualityScore.Email.success
+      type: Boolean
+      description: 'Was the request successful?'
+    - contextPath: IPQualityScore.Email.valid
+      type: Boolean
+      description: 'Does this email address appear valid?'
+    - contextPath: IPQualityScore.Email.disposable
+      type: Boolean
+      description: 'Is this email suspected of belonging to a temporary or disposable mail service? Usually associated with fraudsters and scammers.'
+    - contextPath: IPQualityScore.Email.smtp_score
+      type: Number
+      description: 'Validity score of email server''s SMTP setup. Range: "-1" - "3". Scores above "-1" can be associated with a valid email.
+                                                                                 -1 = invalid email address
+                                                                                 0 = mail server exists, but is rejecting all mail
+                                                                                 1 = mail server exists, but is showing a temporary error
+                                                                                 2 = mail server exists, but accepts all email
+                                                                                 3 = mail server exists and has verified the email address'
+    - contextPath: IPQualityScore.Email.overall_score
+      type: Number
+      description: 'Overall email validity score. Range: "0" - "4". Scores above "1" can be associated with a valid email.
+                    0 = invalid email address
+                    1 = dns valid, unreachable mail server
+                    2 = dns valid, temporary mail rejection error
+                    3 = dns valid, accepts all mail
+                    4 = dns valid, verified email exists'
+    - contextPath: IPQualityScore.Email.first_name
+      type: String
+      description: 'Suspected first name based on email. Returns "CORPORATE" if the email is suspected of being a generic company email. Returns "UNKNOWN" if the first name was not determinable.'
+    - contextPath: IPQualityScore.Email.generic
+      type: Boolean
+      description: 'Is this email suspected as being a catch all or shared email for a domain? ("admin@", "webmaster@", "newsletter@", "sales@", "contact@", etc.)'
+    - contextPath: IPQualityScore.Email.common
+      type: Boolean
+      description: 'Is this email from a common email provider? ("gmail.com", "yahoo.com", "hotmail.com", etc.)'
+    - contextPath: IPQualityScore.Email.dns_valid
+      type: Boolean
+      description: 'Does the email''s hostname have valid DNS entries? Partial indication of a valid email.'
+    - contextPath: IPQualityScore.Email.honeypot
+      type: Boolean
+      description: 'Is this email believed to be a "honeypot" or "SPAM trap"? Bulk mail sent to these emails increases your risk of being blacklisted by large ISPs & ending up in the spam folder.'
+    - contextPath: IPQualityScore.Email.deliverability
+      type: String
+      description: 'How likely is this email to be delivered to the user and land in their mailbox. Values can be "high", "medium", or "low".	'
+    - contextPath: IPQualityScore.Email.frequent_complainer
+      type: Boolean
+      description: 'Indicates if this email frequently unsubscribes from marketing lists or reports email as SPAM.'
+    - contextPath: IPQualityScore.Email.spam_trap_score
+      type: String
+      description: 'Confidence level of the email address being an active SPAM trap. Values can be "high", "medium", "low", or "none". We recommend scrubbing emails with "high" or "medium" statuses. Avoid "low" emails whenever possible for any promotional mailings.'
+    - contextPath: IPQualityScore.Email.catch_all
+      type: Boolean
+      description: 'Is this email likely to be a "catch all" where the mail server verifies all emails tested against it as valid? It is difficult to determine if the address is truly valid in these scenarios, since the email''s server will not confirm the account''s status.'
+    - contextPath: IPQualityScore.Email.timed_out
+      type: Boolean
+      description: 'Did the connection to the mail service provider timeout during the verification? If so, we recommend increasing the "timeout" variable above the default 7 second value. Lookups that timeout with a "valid" result as false are most likely false and should be not be trusted.'
+    - contextPath: IPQualityScore.Email.suspect
+      type: Boolean
+      description: 'This value indicates if the mail server is currently replying with a temporary error and unable to verify the email address. This status will also be true for "catch all" email addresses as defined below. If this value is true, then we suspect the "valid" result may be tainted and there is not a guarantee that the email address is truly valid.'
+    - contextPath: IPQualityScore.Email.recent_abuse
+      type: Boolean
+      description: 'This value will indicate if there has been any recently verified abuse across our network for this email address. Abuse could be a confirmed chargeback, fake signup, compromised device, fake app install, or similar malicious behavior within the past few days.'
+    - contextPath: IPQualityScore.Email.fraud_score
+      type: Number
+      description: 'The overall Fraud Score of the user based on the email''s reputation and recent behavior across the IPQS threat network. Fraud Scores >= 75 are suspicious, but not necessarily fraudulent.'
+    - contextPath: IPQualityScore.Email.suggested_domain
+      type: String
+      description: 'Default value is "N/A". Indicates if this email''s domain should in fact be corrected to a popular mail service. This field is useful for catching user typos. For example, an email address with "gmai.com", would display a suggested domain of "gmail.com". This feature supports all major mail service providers.'
+    - contextPath: IPQualityScore.Email.leaked
+      type: Boolean
+      description: 'Was this email address associated with a recent database leak from a third party? Leaked accounts pose a risk as they may have become compromised during a database breach.	'
+    - contextPath: IPQualityScore.Email.domain_age.human
+      type: Date
+      description: 'A human description of when this domain was registered. (Ex: 3 months ago)'
+    - contextPath: IPQualityScore.Email.domain_age.timestamp
+      type: Number
+      description: 'The unix time since epoch when this domain was first registered. (Ex: 1568061634)'
+    - contextPath: IPQualityScore.Email.domain_age.iso
+      type: Date
+      description: 'The time this domain was registered in ISO8601 format (Ex: 2019-09-09T16:40:34-04:00)'
+    - contextPath: IPQualityScore.Email.first_seen.human
+      type: Date
+      description: 'A human description of the email address age, using an estimation of the email creation date when IPQS first discovered this email address. (Ex: 3 months ago)'
+    - contextPath: IPQualityScore.Email.first_seen.timestamp
+      type: Number
+      description: 'The unix time since epoch when this email was first analyzed by IPQS. (Ex: 1568061634)'
+    - contextPath: IPQualityScore.Email.first_seen.iso
+      type: Date
+      description: 'The time this email was first analyzed by IPQS in ISO8601 format (Ex: 2019-09-09T16:40:34-04:00)'
+    - contextPath: IPQualityScore.Email.sanitized_email
+      type: String
+      description: 'Sanitized email address with all aliases and masking removed, such as multiple periods for Gmail.com.'
+    - contextPath: IPQualityScore.Email.request_id
+      type: String
+      description: 'A unique identifier for this request that can be used to lookup the request details or send a postback conversion notice.'
+    - contextPath: IPQualityScore.Email.address
+      type: String
+      description: 'The email address that was queried.'
+    - contextPath: DBotScore.Indicator
+      type: String
+      description: 'The indicator that was tested.'
+    - contextPath: DBotScore.Score
+      type: Number
+      description: 'The actual score.'
+    - contextPath: DBotScore.Type
+      type: String
+      description: 'The indicator type.'
+    - contextPath: DBotScore.Vendor
+      type: String
+      description: 'The vendor used to calculate the score.'
+  - arguments:
+    - default: true
+      description: Url address to check
+      isArray: true
+      name: url
+      required: true
+      secret: false
+    deprecated: false
+    description: Runs reputation on URLs.
+    execution: false
+    name: url
+    outputs:
+    - contextPath: IPQualityScore.Url.message
+      type: String
+      description: 'A generic status message, either success or some form of an error notice.'
+    - contextPath: IPQualityScore.Url.success
+      type: Boolean
+      description: 'Was the request successful?'
+    - contextPath: IPQualityScore.Url.unsafe
+      type: Boolean
+      description: 'Is this domain suspected of being unsafe due to phishing, malware, spamming, or abusive behavior? View the confidence level by analyzing the "risk_score".'
+    - contextPath: IPQualityScore.Url.domain
+      type: String
+      description: 'Domain name of the final destination URL of the scanned link, after following all redirects.'
+    - contextPath: IPQualityScore.Url.ip_address
+      type: String
+      description: 'The IP address corresponding to the server of the domain name.'
+    - contextPath: IPQualityScore.Url.server
+      type: String
+      description: 'The server banner of the domain''s IP address. For example: "nginx/1.16.0". Value will be "N/A" if unavailable.'
+    - contextPath: IPQualityScore.Url.content_type
+      type: String
+      description: 'MIME type of URL''s content. For example "text/html; charset=UTF-8". Value will be "N/A" if unavailable.'
+    - contextPath: IPQualityScore.Url.status_code
+      type: Number
+      description: 'HTTP Status Code of the URL''s response. This value should be "200" for a valid website. Value is "0" if URL is unreachable.'
+    - contextPath: IPQualityScore.Url.page_size
+      type: Number
+      description: 'Total number of bytes to download the URL''s content. Value is "0" if URL is unreachable.'
+    - contextPath: IPQualityScore.Url.domain_rank
+      type: Number
+      description: 'Estimated popularity rank of website globally. Value is "0" if the domain is unranked or has low traffic.'
+    - contextPath: IPQualityScore.Url.dns_valid
+      type: Boolean
+      description: 'The domain of the URL has valid DNS records.'
+    - contextPath: IPQualityScore.Url.parking
+      type: Boolean
+      description: 'Is the domain of this URL currently parked with a for sale notice?'
+    - contextPath: IPQualityScore.Url.spamming
+      type: Boolean
+      description: 'Is the domain of this URL associated with email SPAM or abusive email addresses?'
+    - contextPath: IPQualityScore.Url.malware
+      type: Boolean
+      description: 'Is this URL associated with malware or viruses?'
+    - contextPath: IPQualityScore.Url.phishing
+      type: Boolean
+      description: 'Is this URL associated with malicious phishing behavior?'
+    - contextPath: IPQualityScore.Url.suspicious
+      type: Boolean
+      description: 'Is this URL suspected of being malicious or used for phishing or abuse? Use in conjunction with the "risk_score" as a confidence level.'
+    - contextPath: IPQualityScore.Url.risk_score
+      type: Number
+      description: 'The IPQS risk score which estimates the confidence level for malicious URL detection. Risk Scores 85+ are high risk, while Risk Scores = 100 are confirmed as accurate.'
+    - contextPath: IPQualityScore.Url.request_id
+      type: String
+      description: 'A unique identifier for this request that can be used to lookup the request details or send a postback conversion notice.'
+    - contextPath: IPQualityScore.Url.url
+      type: String
+      description: 'The URL being queried.'
+    - contextPath: IPQualityScore.Url.adult
+      type: Boolean
+      description: 'Is this URL or domain hosting dating or adult content?'
+    - contextPath: IPQualityScore.Url.domain_age.human
+      type: Date
+      description: 'A human description of when this domain was registered. (Ex: 3 months ago)'
+    - contextPath: IPQualityScore.Url.domain_age.timestamp
+      type: Number
+      description: 'The unix time since epoch when this domain was first registered. (Ex: 1568061634)'
+    - contextPath: IPQualityScore.Url.domain_age.iso
+      type: Date
+      description: 'The time this domain was registered in ISO8601 format (Ex: 2019-09-09T16:40:34-04:00)'
+    - contextPath: DBotScore.Indicator
+      type: String
+      description: 'The indicator that was tested.'
+    - contextPath: DBotScore.Score
+      type: Number
+      description: 'The actual score.'
+    - contextPath: DBotScore.Type
+      type: String
+      description: 'The indicator type.'
+    - contextPath: DBotScore.Vendor
+      type: String
+      description: 'The vendor used to calculate the score.'
+    - contextPath: URL.Data
+      description: The URL
+      type: String
+    - contextPath: URL.Malicious.Vendor
+      description: The vendor reporting the URL as malicious.
+      type: String
+  dockerimage: demisto/python3:3.9.7.24076
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python

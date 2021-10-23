@@ -77,6 +77,8 @@ args:
   - greater or equal
   - greater than
   - if-then-else
+  - in
+  - in caseless
   - in caseless list
   - in list
   - in range
@@ -102,6 +104,8 @@ args:
   - matches caseless
   - matches conditions of
   - matches expressions of
+  - not in
+  - not in caseless
   - not in caseless list
   - not in list
   - 'regex: contains'
@@ -143,6 +147,7 @@ args:
   - 'wildcard: matches any string of'
   - 'wildcard: matches caseless'
   - is individually transformed with
+  - is collectively transformed with
   description: 'Filter Operation: value is filtered by,is filtered by,keeps,doesn''t
     keep,is,isn''t,equals,doesn''t equal,greater or equal,greater than,less or equal,less
     than,in range,starts with,starts with caseless,doesn''t start with,doesn''t start
@@ -186,7 +191,7 @@ args:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.9.4.18682
+dockerimage: demisto/python3:3.9.7.24076
 runas: DBotWeakRole
 fromversion: 5.0.0
 tests:

@@ -7,7 +7,7 @@ Recursively extracts specified fields from provided list of assets for Prisma Cl
 | --- | --- |
 | Script Type | python3 |
 | Tags | |
-| Demisto Version | 6.0.0 |
+| Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
 ---

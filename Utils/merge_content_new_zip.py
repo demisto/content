@@ -1,12 +1,11 @@
 import zipfile as z
 import os
-import json
 from google.cloud import storage
 import argparse
 import shutil
 
 
-ARTIFACTS_PATH = '/home/circleci/project/artifacts/'
+ARTIFACTS_PATH = os.environ.get('ARTIFACTS_FOLDER')
 STORAGE_BUCKET_NAME = 'xsoar-ci-artifacts'
 FILES_TO_REMOVE = ['content-descriptor.json', 'doc-CommonServer.json', 'doc-howto.json', 'reputations.json',
                    'tools-o365.zip', 'tools-exchange.zip', 'tools-winpmem.zip']
@@ -28,18 +27,13 @@ def download_zip_file_from_gcp(current_feature_branch_zip_file_path, zip_destina
     Returns:
         The new path of the zip file.
     """
-
-    file_path = "creds.json"
-    json_content = json.loads(os.environ.get('GCS_ARTIFACTS_KEY'))
-    with open(file_path, "w") as file:
-        json.dump(json_content, file)
+    file_path = os.environ.get('GCS_ARTIFACTS_KEY')
     os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = file_path
     storage_client = storage.Client()
 
     storage_bucket = storage_client.bucket(STORAGE_BUCKET_NAME)
 
     index_blob = storage_bucket.blob(current_feature_branch_zip_file_path)
-    os.remove(file_path)
     if not os.path.exists(zip_destination_path):
         os.mkdir(zip_destination_path)
     index_blob.download_to_filename(f'{zip_destination_path}/{zip_name}.zip')
@@ -80,7 +74,7 @@ def get_feature_branch_zip_file_path(feature_branch_build_path, zip_name):
 
     """
     current_feature_branch_zip_file_path = f'{feature_branch_build_path}/0/{zip_name}.zip'
-    zip_destination_path = f'{ARTIFACTS_PATH}feature_{zip_name}_zip'
+    zip_destination_path = f'{ARTIFACTS_PATH}/feature_{zip_name}_zip'
     feature_zip_file_path = download_zip_file_from_gcp(current_feature_branch_zip_file_path, zip_destination_path,
                                                        zip_name)
     return feature_zip_file_path, zip_destination_path

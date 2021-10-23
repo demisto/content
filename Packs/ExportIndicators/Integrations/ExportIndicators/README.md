@@ -5,14 +5,14 @@ Use the Export Indicators Service integration to provide an endpoint with a list
 1. Export a list of malicious IPs to block via a firewall.
 2. Export a list of indicators to a service such as Splunk, using a supported output format.
 
-## Configure ExportIndicators on Demisto
+## Configure ExportIndicators on Cortex XSOAR
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
 2. Search for ExportIndicators.
 3. Click __Add instance__ to create and configure a new integration instance.
     * __Name__: a textual name for the integration instance.
-    * __Indicator Query__: The query to run to update its list. To view expected results, you can run the following command from the Demisto CLI
+    * __Indicator Query__: The query to run to update its list. To view expected results, you can run the following command from the Cortex XSOAR CLI
     `!findIndicators query=<your query>`
     * __Outbound Format__: The default format of the entries in the service. Supported formats: text, json, json-seq, csv, XSOAR json, XSOAR json-seq, XSOAR csv, PAN-OS URL, Symantec ProxySG and McAfee Web Gateway.
     * __List Size__: Max amount of entries in the service instance.
@@ -45,7 +45,7 @@ Use the Export Indicators Service integration to provide an endpoint with a list
 
 To access the Export Indicators service by instance name, make sure ***Instance execute external*** is enabled. 
 
-1. In Demisto, go to **Settings > About > Troubleshooting**.
+1. In Cortex XSOAR, go to **Settings > About > Troubleshooting**.
 2. In the **Server Configuration** section, verify that the ***instance.execute.external*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external* and set the value to *true*. See [this documentation](https://xsoar.pan.dev/docs/integrations/long-running#invoking-http-integrations-via-cortex-xsoar-servers-route-handling) for further information.
 3. In a web browser, go to `https://*<demisto_address>*/instance/execute/*<instance_name>*` .
 

@@ -55,7 +55,8 @@ configuration:
   name: workday_date_format
   required: false
   type: 0
-- additionalinfo: Select the field that determines when to trigger a termination incident for deactivated employees.
+- additionalinfo: Select the field that determines when to trigger a termination incident
+    for deactivated employees.
   defaultvalue: Termination_Date
   display: Deactivation date field
   hidden: false
@@ -65,23 +66,58 @@ configuration:
   - Last_Day_of_Work
   required: false
   type: 15
-- additionalinfo: Determines when employees are synced from Workday, i.e., when are the User Profile in XSOAR, and the users in the applications, created. Set to 0 to sync hires on their hire date. Leave empty to sync the hires immediately.
+- additionalinfo: Determines when employees are synced from Workday, i.e., when are
+    the User Profile in XSOAR, and the users in the applications, created. Set to
+    0 to sync hires on their hire date. Leave empty to sync the hires immediately.
   display: Number of days before hire date to sync hires
   hidden: false
   name: days_before_hire_to_sync
   required: false
   type: 0
-- additionalinfo: Determines when to enable the Active Directory accounts of employees. Set to 0 to enable the Active Directory accounts on their hire date. Leave empty to enable the accounts immediately. Note that this is effective only when the employees are already synced to XSOAR, so you should set a number lower, or equal to, the value in the *Number of days before hire date to sync hires* parameter.
+- additionalinfo: Determines when to enable the Active Directory accounts of employees.
+    Set to 0 to enable the Active Directory accounts on their hire date. Leave empty
+    to enable the accounts immediately. Note that this is effective only when the
+    employees are already synced to XSOAR, so you should set a number lower, or equal
+    to, the value in the *Number of days before hire date to sync hires* parameter.
   display: Number of days before hire date to enable Active Directory account
   hidden: false
   name: days_before_hire_to_enable_ad
+  required: false
+  type: 0
+- additionalinfo: Events will be fetched only for User Profiles with a Source Priority
+    value less than or equal to the value of this parameter.
+  defaultvalue: '1'
+  display: Source Priority Level
+  hidden: false
+  name: source_priority
   required: false
   type: 0
 description: Use the Workday IAM Integration as part of the IAM premium pack.
 display: Workday IAM
 name: Workday IAM
 script:
-  dockerimage: demisto/python3:3.9.4.18682
+  commands:
+  - deprecated: false
+    description: Gets the report entries from Workday.
+    execution: false
+    name: workday-iam-get-full-report
+    outputs:
+    - contextPath: WorkdayIAM.ReportEntry.email
+      description: Email address of the employee in Workday.
+      type: String
+    - contextPath: WorkdayIAM.ReportEntry.employeeid
+      description: Employee ID in Workday.
+      type: String
+    - contextPath: WorkdayIAM.ReportEntry.username
+      description: Username of the employee in Workday.
+      type: String
+    - contextPath: WorkdayIAM.ReportEntry.displayname
+      description: Display name of the employee.
+      type: String
+    - contextPath: WorkdayIAM.ReportEntry.locationregion
+      description: Location of the employee in Workday.
+      type: String
+  dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: true
   longRunning: false

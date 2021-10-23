@@ -7,6 +7,7 @@ configuration:
   name: url
   required: true
   type: 0
+  additionalinfo: The Elasticsearch server to which the integration connects. Ensure that the URL includes the correct Elasticsearch port. By default this is 9200.
 - additionalinfo: Provide Username + Passoword instead of API key + API ID
   display: Username for server login
   name: credentials
@@ -51,6 +52,11 @@ configuration:
   name: fetch_size
   required: false
   type: 0
+- defaultvalue: '60'
+  display: Request timeout (in seconds).
+  name: timeout
+  required: false
+  type: 0
 - display: Incident type
   name: incidentType
   required: false
@@ -59,7 +65,8 @@ configuration:
   name: isFetch
   required: false
   type: 8
-description: "Search for and analyze data in real time. \n Supports version 6 and later."
+description: "Search for and analyze data in real time. \n Supports version 6 and\
+  \ later."
 display: Elasticsearch v2
 name: Elasticsearch v2
 script:
@@ -80,7 +87,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: A comma-separated list of document fields to fetch. If empty, the entire document is fetched.
+      description: A comma-separated list of document fields to fetch. If empty, the
+        entire document is fetched.
       isArray: true
       name: fields
       required: false
@@ -88,7 +96,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Calculates an explanation of a score for a query. Default is "false". For example, "value:1.6943597".
+      description: Calculates an explanation of a score for a query. Default is "false".
+        For example, "value:1.6943597".
       isArray: false
       name: explain
       predefined:
@@ -105,13 +114,16 @@ script:
       secret: false
     - default: false
       defaultValue: '100'
-      description: The number of documents displayed per page. Can be an integer between "1" and "10,000". The default is "100".
+      description: The number of documents displayed per page. Can be an integer between
+        "1" and "10,000". The default is "100".
       isArray: false
       name: size
       required: false
       secret: false
     - default: false
-      description: The field by which to sort the results table. The supported result types are boolean, numeric, date, and keyword fields. Keyword fields require the doc_values parameter to be set to "true" from the Elasticsearch server.
+      description: The field by which to sort the results table. The supported result
+        types are boolean, numeric, date, and keyword fields. Keyword fields require
+        the doc_values parameter to be set to "true" from the Elasticsearch server.
       isArray: false
       name: sort-field
       predefined:
@@ -121,7 +133,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: asc
-      description: The order by which to sort the results table. The results tables can only be sorted if a sort-field is defined.
+      description: The order by which to sort the results table. The results tables
+        can only be sorted if a sort-field is defined.
       isArray: false
       name: sort-order
       predefined:
@@ -189,7 +202,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: A comma-separated list of document fields to fetch. If empty, fetches the entire document.
+      description: A comma-separated list of document fields to fetch. If empty, fetches
+        the entire document.
       isArray: true
       name: fields
       required: false
@@ -197,7 +211,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Calculates an explanation of a score for a query. Default is "false". For example, "value:1.6943597".
+      description: Calculates an explanation of a score for a query. Default is "false".
+        For example, "value:1.6943597".
       isArray: false
       name: explain
       predefined:
@@ -214,13 +229,16 @@ script:
       secret: false
     - default: false
       defaultValue: '100'
-      description: The number of documents displayed per page. Can be an integer between "1" and "10,000". The default is "100".
+      description: The number of documents displayed per page. Can be an integer between
+        "1" and "10,000". The default is "100".
       isArray: false
       name: size
       required: false
       secret: false
     - default: false
-      description: The field by which to sort the results table. The supported result types are boolean, numeric, date, and keyword fields. Keyword fields require the doc_values parameter to be set to "true" from the Elasticsearch server.
+      description: The field by which to sort the results table. The supported result
+        types are boolean, numeric, date, and keyword fields. Keyword fields require
+        the doc_values parameter to be set to "true" from the Elasticsearch server.
       isArray: false
       name: sort-field
       predefined:
@@ -230,7 +248,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: asc
-      description: The order by which to sort the results table. The results tables can only be sorted if a sort-field is defined.
+      description: The order by which to sort the results table. The results tables
+        can only be sorted if a sort-field is defined.
       isArray: false
       name: sort-order
       predefined:
@@ -285,8 +304,9 @@ script:
   - deprecated: false
     execution: false
     name: get-mapping-fields
-    description: Returns the schema of the index to fetch from. This commmand should be used for debugging purposes.
-  dockerimage: demisto/elasticsearch:1.0.0.14274
+    description: Returns the schema of the index to fetch from. This commmand should
+      be used for debugging purposes.
+  dockerimage: demisto/elasticsearch:1.0.0.24037
   feed: false
   isfetch: true
   longRunning: false

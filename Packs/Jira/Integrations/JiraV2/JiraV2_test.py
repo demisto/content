@@ -1,3 +1,4 @@
+from optparse import OptionParser
 from unittest.mock import Mock
 
 import demistomock as demisto
@@ -82,10 +83,8 @@ def test_create_issue_command_before_fix_mandatory_args_summary_missing(mocker, 
         # when there are missing arguments, an Exception is raised to the user
         create_issue_command()
     assert e
-    assert (
-        demisto.results.call_args[0][0]["Contents"]
-        == "You must provide at least one of the following: project_key or project_name"
-    )
+    assert (demisto.results.call_args[0][0]["Contents"] == "You must provide at least one of the following: "
+                                                           "project_key or project_name")
 
 
 def test_issue_query_command_no_issues(mocker):
@@ -142,6 +141,7 @@ def test_fetch_incidents_no_incidents(mocker):
     mocker.patch.object(demisto, "info")
     mocker.patch.object(demisto, "debug")
     mocker.patch("JiraV2.run_query", return_value={})
+    mocker.patch.object(demisto, 'setLastRun')
     incidents = fetch_incidents(
         "status=Open AND labels=lies",
         id_offset=1,
@@ -153,6 +153,122 @@ def test_fetch_incidents_no_incidents(mocker):
         attachment_tag="",
     )
     assert incidents == []
+    assert demisto.setLastRun.call_count == 1
+    lastRun = demisto.setLastRun.call_args[0][0]
+    assert lastRun == {'idOffset': 0, 'lastCreatedTime': ''}
+
+
+def test_fetch_incidents_no_incidents_with_id_offset_in_last_run(mocker):
+    """
+    Given
+    - Jira fetch incidents command
+    - Last run is populated with idOffset but no lastCreatedTime
+
+
+    When
+    - Sending HTTP request and getting no issues from the query
+
+    Then
+    - Verify no incidents are returned
+    - Last run idOffset is not changed and an empty lastCreatedTime is added
+    """
+
+    from JiraV2 import fetch_incidents
+
+    mocker.patch.object(demisto, "info")
+    mocker.patch.object(demisto, "debug")
+    mocker.patch("JiraV2.run_query", return_value={})
+    mocker.patch.object(demisto, 'setLastRun')
+    mocker.patch.object(demisto, 'getLastRun', return_value={'idOffset': 30})
+    incidents = fetch_incidents(
+        "status=Open AND labels=lies",
+        id_offset=1,
+        should_get_attachments=False,
+        should_get_comments=False,
+        should_mirror_in=False,
+        should_mirror_out=False,
+        comment_tag="",
+        attachment_tag="",
+    )
+    assert incidents == []
+    assert demisto.setLastRun.call_count == 1
+    last_run = demisto.setLastRun.call_args[0][0]
+    assert last_run == {'idOffset': 30, 'lastCreatedTime': ''}
+
+
+def test_fetch_incidents_with_incidents_and_id_offset_in_last_run(mocker):
+    """
+    Given
+    - Jira fetch incidents command
+    - Last run is populated with idOffset but no lastCreatedTime
+
+    When
+    - Sending HTTP request and getting new issue
+
+    Then
+    - Verify last run is updated with the ticket id offset and created time
+    """
+
+    from JiraV2 import fetch_incidents
+    from test_data.raw_response import QUERY_ISSUE_RESPONSE
+
+    mocker.patch.object(demisto, "info")
+    mocker.patch.object(demisto, "debug")
+    mocker.patch("JiraV2.run_query", return_value=QUERY_ISSUE_RESPONSE)
+    mocker.patch.object(demisto, 'setLastRun')
+    mocker.patch.object(demisto, 'getLastRun', return_value={'idOffset': 30})
+    incidents = fetch_incidents(
+        "status=Open AND labels=lies",
+        id_offset=1,
+        should_get_attachments=False,
+        should_get_comments=False,
+        should_mirror_in=False,
+        should_mirror_out=False,
+        comment_tag="",
+        attachment_tag="",
+    )
+    assert len(incidents) == 1
+    assert demisto.setLastRun.call_count == 1
+    last_run = demisto.setLastRun.call_args[0][0]
+    assert last_run == {'idOffset': 12652, 'lastCreatedTime': '2019-05-04T00:44:31.743+0300'}
+
+
+def test_fetch_incidents_with_incidents_and_full_last_run(mocker):
+    """
+    Given
+    - Jira fetch incidents command
+    - Last run is populated with idOffset and lastCreatedTime
+
+    When
+    - Sending HTTP request and getting new issue
+
+    Then
+    - Verify last run is updated with the ticket id offset and are updated
+    """
+
+    from JiraV2 import fetch_incidents
+    from test_data.raw_response import QUERY_ISSUE_RESPONSE
+
+    mocker.patch.object(demisto, "info")
+    mocker.patch.object(demisto, "debug")
+    mocker.patch("JiraV2.run_query", return_value=QUERY_ISSUE_RESPONSE)
+    mocker.patch.object(demisto, 'setLastRun')
+    mocker.patch.object(demisto, 'getLastRun',
+                        return_value={'idOffset': 1000, 'lastCreatedTime': '2019-04-04T00:55:22.743+0300'})
+    incidents = fetch_incidents(
+        "status=Open AND labels=lies",
+        id_offset=1,
+        should_get_attachments=False,
+        should_get_comments=False,
+        should_mirror_in=False,
+        should_mirror_out=False,
+        comment_tag="",
+        attachment_tag="",
+    )
+    assert len(incidents) == 1
+    assert demisto.setLastRun.call_count == 1
+    last_run = demisto.setLastRun.call_args[0][0]
+    assert last_run == {'idOffset': 12652, 'lastCreatedTime': '2019-05-04T00:44:31.743+0300'}
 
 
 def test_module(mocker):
@@ -883,7 +999,6 @@ def test_get_modified_data_command(mocker):
         - Returns a list of changed incidents
     """
     from JiraV2 import get_modified_remote_data_command
-
     mocker.patch.object(demisto, "debug")
     mocker.patch.object(demisto, "info")
     mocker.patch("JiraV2.json", return_value={"timeZone": "Asia/Jerusalem"})
@@ -903,12 +1018,12 @@ def test_get_modified_data_command(mocker):
         return_value=(None, None, {"issues": [{"id": "123"}]}),
     )
 
-    modified_ids = get_modified_remote_data_command({"lastUpdate": "0"})
+    modified_ids = get_modified_remote_data_command({"lastUpdate": "1"})
     assert modified_ids.modified_incident_ids == ["123"]
 
 
 def test_get_modified_data_command_when_getting_exception_for_get_user_info_data(
-    mocker,
+        mocker,
 ):
     """
     Given:
@@ -932,7 +1047,7 @@ def test_get_modified_data_command_when_getting_exception_for_get_user_info_data
 
 
 def test_get_modified_data_command_when_getting_not_ok_status_code_for_get_user_info_data(
-    mocker,
+        mocker,
 ):
     """
     Given:
@@ -988,9 +1103,7 @@ def test_get_comments_command(mocker):
     _, outputs, context = get_comments_command(123)
     assert list(outputs.keys())[0] == "Ticket(val.Id == obj.Id)"
     assert outputs["Ticket(val.Id == obj.Id)"]["Id"] == 123
-    assert (
-        outputs["Ticket(val.Id == obj.Id)"]["Comment"][0]["Comment"] == "comment text"
-    )
+    assert (outputs["Ticket(val.Id == obj.Id)"]["Comment"][0]["Comment"] == "comment text")
     assert outputs["Ticket(val.Id == obj.Id)"]["Comment"][0]["User"] == "Test"
     assert outputs["Ticket(val.Id == obj.Id)"]["Comment"][0]["Created"] == "10.12"
     assert context == comments
@@ -1022,3 +1135,45 @@ def test_get_issue_fields_issuejson_param():
     from JiraV2 import get_issue_fields
     res = get_issue_fields(issueJson='{"description": "test"}')
     assert {'description': 'test', 'fields': {}} == res
+
+
+def test_get_issue_fields():
+    from JiraV2 import get_issue_fields
+    issue_fields = get_issue_fields(False, False,
+                                    **{"components": "Test, Test 1", "security": "Anyone", "environment": "Test"})
+    assert issue_fields == {'fields': {'components': [{'name': 'Test'}, {'name': 'Test 1'}], 'environment': 'Test',
+                                       'security': {'name': 'Anyone'}}}
+
+
+@pytest.mark.parametrize('get_attachments_arg, should_get_attachments', [
+    ('true', True), ('false', False)
+])
+def test_get_issue_and_attachments(mocker, get_attachments_arg, should_get_attachments):
+    """
+    Given:
+        - Case A: That the user has set the get_attachments to 'true' as he wants to download attachments
+        - Case B: That the user has set the get_attachments to 'false' as he does not want to download attachments
+    When
+        - Calling the get issue command
+    Then
+        - Ensure the demisto.results with file data is called
+        - Ensure the demisto.results with file data is not called
+    """
+    from test_data.raw_response import GET_ISSUE_RESPONSE
+    from JiraV2 import get_issue
+
+    def jira_req_mock(method: str, resource_url: str, body: str = '', link: bool = False, resp_type: str = 'text',
+                      headers: dict = None, files: dict = None):
+
+        if resp_type == 'json':
+            return GET_ISSUE_RESPONSE
+        else:
+            return type("RequestObjectNock", (OptionParser, object), {"content": 'Some zip data'})
+
+    mocker.patch("JiraV2.jira_req", side_effect=jira_req_mock)
+    demisto_results_mocker = mocker.patch.object(demisto, 'results')
+    get_issue('id', get_attachments=get_attachments_arg)
+    if should_get_attachments:
+        demisto_results_mocker.assert_called_once()
+    else:
+        demisto_results_mocker.assert_not_called()

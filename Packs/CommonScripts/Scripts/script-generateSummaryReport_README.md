@@ -7,7 +7,7 @@ Generates an investigation summary report in an automated way. This can be used 
 | --- | --- |
 | Script Type | javascript |
 | Tags | post-processing |
-| Demisto Version | 3.5.0+ |
+| Cortex XSOAR Version | 3.5.0+ |
 
 ## Inputs
 ---

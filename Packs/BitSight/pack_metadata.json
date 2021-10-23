@@ -1,11 +1,11 @@
 {
     "name": "BitSight",
-    "description": "Bitsight Integration will help you make more informed decisions by getting company GUIDs, details, and by fetching incidents at your desired time",
-    "support": "community",
-    "currentVersion": "1.0.2",
-    "author": "NTT Data",
-    "url": "",
-    "email": "",
+    "description": "Bitsight Integration will allow you visibility into BitSight findings for remediation in your security program.",
+    "support": "partner",
+    "currentVersion": "1.0.7",
+    "author": "BitSight",
+    "url": "https://service.bitsighttech.com/",
+    "email": "support@bitsight.com",
     "categories": [
         "IT Services"
     ],

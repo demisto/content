@@ -10,7 +10,7 @@ Supported Cortex XSOAR versions: 5.0.0 and later.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | server | Panorama Server URL \(e.g., https://192.168.0.1\) | True |
+    | server | Server URL \(either Firewall or Panorama\). e.g., https:\/\/192.168.0.1 | True |
     | key | Panorama API Key | True |
     | token | BPA Access Token | True |
     | insecure | Trust any certificate \(not secure\) | False |

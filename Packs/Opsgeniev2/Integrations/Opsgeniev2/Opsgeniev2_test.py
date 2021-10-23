@@ -75,8 +75,8 @@ def test_integration_tests(mocker, testclient):
     if os.getenv("GEN_TEST_DATA"):
         # If set, test JSON added to test_data
         for k, v in test_data.items():
-            fh = open(f"test_data/{k}.json", "w")
-            json.dump(v, fh, indent=4, sort_keys=True)
+            with open(f"test_data/{k}.json", "w") as fh:
+                json.dump(v, fh, indent=4, sort_keys=True)
 
 
 def create_alerts_tester(testclient):
@@ -155,11 +155,13 @@ def test_paging(mocker, testclient):
     Test the paging functionality works as expected
     """
     # Patch to return list_alerts json data
-    list_alerts_response = json.load(open("./test_data/list_alerts_paged.json"))
-    mocker.patch.object(Client, "_http_request", side_effect=[
-        list_alerts_response,
-        json.load(open("./test_data/list_alerts_empty.json")),
-    ])
+    with open("./test_data/list_alerts_paged.json") as list_alerts_paged:
+        list_alerts_response = json.load(list_alerts_paged)
+    with open("./test_data/list_alerts_empty.json") as list_alerts_empty:
+        mocker.patch.object(Client, "_http_request", side_effect=[
+            list_alerts_response,
+            json.load(list_alerts_empty),
+        ])
     data = testclient.get_paged(40, url_suffix="/not_real", method="GET")
 
     assert len(data) == 29

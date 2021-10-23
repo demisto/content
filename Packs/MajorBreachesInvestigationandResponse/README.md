@@ -7,6 +7,10 @@ This pack contains the response playbooks for the following breaches:
 - [FireEye Red Team Tools Investigation and Response](https://xsoar.pan.dev/docs/reference/playbooks/fire-eye-red-team-tools-investigation-and-response)
 - [HAFNIUM - Exchange 0-day Exploits](https://xsoar.pan.dev/docs/reference/playbooks/hafnium---exchange-0-day-exploits)
 - [Codecov Breach - Bash Uploader](https://xsoar.pan.dev/docs/reference/playbooks/codecov-breach---bash-uploader)
+- [CVE-2021-22893 - Pulse Connect Secure RCE](https://xsoar.pan.dev/docs/reference/playbooks/cve-2021-22893---pulse-connect-secure-rce)
+- [NOBELIUM - wide scale APT29 spear-phishing](https://xsoar.pan.dev/docs/reference/playbooks/NOBELIUM---wide-scale-APT29-spear-phishing)
+- [CVE-2021-34527 | CVE-2021-1675 - PrintNightmare](https://xsoar.pan.dev/docs/reference/playbooks/cve-2021-1675---print-nightmare)
+- [Kaseya VSA 0-day - REvil Ransomware Supply Chain Attack](https://xsoar.pan.dev/docs/reference/playbooks/kaseya-vsa--0-day---r-evil-ransomware-supply-chain-attack)
 
 ##### How to enable it?
 

@@ -3,3 +3,9 @@ ignore=PA116
 
 [file:layoutscontainer-PANW_Endpoint_Malware.json]
 ignore=BA101
+
+[file:Palo_Alto_Networks_-_Endpoint_Malware_Investigation_v3_README.md]
+ignore=RM106
+
+[file:Palo_Alto_Networks_-_Hunting_And_Threat_Detection_README.md]
+ignore=RM106

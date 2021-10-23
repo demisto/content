@@ -190,9 +190,9 @@ system: false
 tags:
 - ml
 - phishing
-timeout: '0'
+timeout: 600ns
 type: python
-dockerimage: demisto/sklearn:1.0.0.17163
+dockerimage: demisto/sklearn:1.0.0.23593
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0

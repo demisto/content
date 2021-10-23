@@ -1,7 +1,8 @@
 id: ExtraHop - Ticket Tracking
 version: -1
 name: ExtraHop - Ticket Tracking
-description: Deprecated. Links the Demisto incident back to the ExtraHop detection that created it for ticket tracking purposes.
+description: Deprecated. Use the "ExtraHop - Ticket Tracking v2" playbook instead.\
+  \ Links the Demisto incident back to the ExtraHop detection that created it for ticket tracking purposes.
 starttaskid: "0"
 hidden: true
 tasks:
@@ -733,4 +734,5 @@ inputs:
 outputs: []
 fromversion: 5.0.0
 tests:
-- ExtraHop_v2-Test
+- No test - Deprecated playbook
+deprecated: true

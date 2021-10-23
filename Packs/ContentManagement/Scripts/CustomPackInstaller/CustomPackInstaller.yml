@@ -1,0 +1,29 @@
+args:
+- default: true
+  description: The ID of the pack to install.
+  isArray: false
+  name: pack_id
+  required: true
+  secret: false
+commonfields:
+  id: CustomPackInstaller
+  version: -1
+enabled: false
+name: CustomPackInstaller
+comment: Custom Packs Installer for the Content Management pack.
+outputs:
+- contextPath: ConfigurationSetup.CustomPacks.installationstatus
+  description: The installtion status of the required pack.
+  type: Unknown
+script: '-'
+subtype: python3
+system: false
+tags:
+- configuration
+- Content Management
+timeout: '0'
+type: python
+dockerimage: demisto/xsoar-tools:1.0.0.23423
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

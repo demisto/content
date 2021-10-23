@@ -5,8 +5,8 @@ name: QRadar v3
 display: IBM QRadar v3
 category: Analytics & SIEM
 description: IBM QRadar SIEM helps security teams accurately detect and prioritize
-  threats across the enterprise, supports API versions 10.1 and above. Provides intelligent insights that enable
-  teams to respond quickly to reduce the impact of incidents.
+  threats across the enterprise, supports API versions 10.1 and above. Provides intelligent
+  insights that enable teams to respond quickly to reduce the impact of incidents.
 configuration:
 - display: Server URL
   name: server
@@ -38,15 +38,23 @@ configuration:
   required: true
   type: 15
 - defaultvalue: '20'
+  display: Maximum number of events per incident.
+  name: events_limit
+  required: false
+  type: 0
+  additionalinfo: The maximal amount of events to pull per incident.
+- defaultvalue: '20'
   display: Number of offenses to pull per API call (max 50)
   name: offenses_per_fetch
+  additionalinfo: In case of mirroring with events, this value will be used for mirroring API calls as well, and it is advised to have a small value.
   required: false
   type: 0
 - display: Query to fetch offenses
   name: query
   required: false
   type: 0
-  additionalinfo: Define a query to determine which offenses to fetch. E.g., "severity >= 4 AND id > 5 AND status=OPEN".
+  additionalinfo: Define a query to determine which offenses to fetch. E.g., "severity
+    >= 4 AND id > 5 AND status=OPEN".
 - defaultvalue: IPs And Assets
   display: Incidents Enrichment
   hidden: false
@@ -67,12 +75,13 @@ configuration:
     eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP,
     postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort, UTF8(payload),
     starttime, devicetime'
-  display: 'Event fields to return from the events query (WARNING: This parameter is
-    correlated to the incoming mapper and changing the values may adversely affect
+  display: 'Event fields to return from the events query (WARNING: This parameter
+    is correlated to the incoming mapper and changing the values may adversely affect
     mapping).'
   name: events_columns
   required: false
-  additionalinfo: "The parameter uses the AQL SELECT syntax. For more information, see: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.4/com.ibm.qradar.doc/c_aql_intro.html"
+  additionalinfo: "The parameter uses the AQL SELECT syntax. For more information,\
+    \ see: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.4/com.ibm.qradar.doc/c_aql_intro.html"
   type: 12
 - defaultvalue: No Mirroring
   display: Mirroring Options
@@ -81,9 +90,12 @@ configuration:
   options:
   - No Mirroring
   - Mirror Offense
+  - Mirror Offense and Events
   required: false
   type: 15
-  additionalinfo: How mirroring from QRadar to Cortex XSOAR should be done.
+  additionalinfo: How mirroring from QRadar to Cortex XSOAR should be done, available
+    from QRadar 7.3.3 Fix Pack 3. For further explanation on how to check your QRadar
+    version, see the integration documentation at https://xsoar.pan.dev.
 - additionalinfo: When selected, closing the QRadar offense is mirrored in Cortex
     XSOAR.
   defaultvalue: 'false'
@@ -207,7 +219,8 @@ script:
       type: String
     arguments:
     - name: offense_id
-      description: The offense ID to retrieve its details. Specify offense_id to get details about a specific offense.
+      description: The offense ID to retrieve its details. Specify offense_id to get
+        details about a specific offense.
     - name: enrichment
       defaultValue: None
       auto: PREDEFINED
@@ -221,10 +234,13 @@ script:
       description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
       defaultValue: 0-49
     - name: filter
-      description: 'Query to filter offenses, e.g., "severity >= 4 AND id > 5 AND status=OPEN". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
+      description: 'Query to filter offenses, e.g., "severity >= 4 AND id > 5 AND
+        status=OPEN". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
     - name: fields
-      description: 'Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,severity,status". Specify subfields in brackets and multiple fields in the same object separated by commas.
-      For a full list of available fields, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--siem-offenses-GET.html.'
+      description: 'Comma-separated list of fields to retrieve in the response. Fields
+        that are not explicitly named are excluded. E.g., "id,severity,status". Specify
+        subfields in brackets and multiple fields in the same object separated by
+        commas. For a full list of available fields, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--siem-offenses-GET.html.'
       isArray: true
     description: Gets offenses from QRadar.
   - name: qradar-offense-update
@@ -354,8 +370,8 @@ script:
         use the HIDDEN status. To show a previously hidden offense, use the OPEN status.
     - name: closing_reason_id
       description: The ID of a closing reason. You must provide a valid closing_reason_id
-        when you close an offense. For a full list of closing reason IDs, use the 'qradar-closing-reasons'
-        command.
+        when you close an offense. For a full list of closing reason IDs, use the
+        'qradar-closing-reasons' command.
     - default: false
       description: 'The name of a closing reason. You must provide a valid closing_reason_name
         when you close an offense. The default closing_reasons are: (1) False-Positive,
@@ -367,8 +383,10 @@ script:
     - name: assigned_to
       description: User to assign the offense to.
     - name: fields
-      description: 'Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,severity,status". Specify subfields in brackets and multiple fields in the same object separated by commas.
-      For a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--siem-offenses-offense_id-POST.html'
+      description: 'Comma-separated list of fields to retrieve in the response. Fields
+        that are not explicitly named are excluded. E.g., "id,severity,status". Specify
+        subfields in brackets and multiple fields in the same object separated by
+        commas. For a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--siem-offenses-offense_id-POST.html'
       isArray: true
     description: Updates an offense.
   - name: qradar-closing-reasons
@@ -391,8 +409,8 @@ script:
     arguments:
     - name: closing_reason_id
       required: false
-      description: The closing reason ID for which to retrieve its details. Specify closing_reason_id
-        to get details about a specific closing reason.
+      description: The closing reason ID for which to retrieve its details. Specify
+        closing_reason_id to get details about a specific closing reason.
     - name: include_reserved
       required: false
       description: If true, reserved closing reasons are included in the response.
@@ -413,11 +431,13 @@ script:
       description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
       defaultValue: 0-49
     - name: filter
-      description: 'Query to filter closing reasons, e.g. "id > 5". For reference see:
-        https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
+      description: 'Query to filter closing reasons, e.g. "id > 5". For reference
+        see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
     - name: fields
-      description: 'Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,text". Specify subfields in brackets and multiple fields in the same object separated by commas.
-      For a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--siem-offense_closing_reasons-GET.html'
+      description: 'Comma-separated list of fields to retrieve in the response. Fields
+        that are not explicitly named are excluded. E.g., "id,text". Specify subfields
+        in brackets and multiple fields in the same object separated by commas. For
+        a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--siem-offense_closing_reasons-GET.html'
       isArray: true
   - name: qradar-offense-notes-list
     outputs:
@@ -445,10 +465,13 @@ script:
       description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
       defaultValue: 0-49
     - name: filter
-      description: 'Query to filter offense notes, e.g., "username=admin". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
+      description: 'Query to filter offense notes, e.g., "username=admin". For reference,
+        see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
     - name: fields
-      description: 'Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "username,note_text". Specify subfields in brackets and multiple fields in the same object separated by commas.
-      For a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--siem-offenses-offense_id-notes-GET.html'
+      description: 'Comma-separated list of fields to retrieve in the response. Fields
+        that are not explicitly named are excluded. E.g., "username,note_text". Specify
+        subfields in brackets and multiple fields in the same object separated by
+        commas. For a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--siem-offenses-offense_id-notes-GET.html'
       isArray: true
   - name: qradar-offense-note-create
     outputs:
@@ -473,8 +496,10 @@ script:
       required: true
       description: The text of the note.
     - name: fields
-      description: 'Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "username,note_text". Specify subfields in brackets and multiple fields in the same object separated by commas.
-      For a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--siem-offenses-offense_id-notes-POST.html'
+      description: 'Comma-separated list of fields to retrieve in the response. Fields
+        that are not explicitly named are excluded. E.g., "username,note_text". Specify
+        subfields in brackets and multiple fields in the same object separated by
+        commas. For a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--siem-offenses-offense_id-notes-POST.html'
       isArray: true
   - name: qradar-rules-list
     outputs:
@@ -494,7 +519,8 @@ script:
       description: Date when rule was created.
       type: Date
     - contextPath: QRadar.Rule.Type
-      description: 'Type of the rule. Possible values: "EVENT", "FLOW", "COMMON", "USER".'
+      description: 'Type of the rule. Possible values: "EVENT", "FLOW", "COMMON",
+        "USER".'
       type: String
     - contextPath: QRadar.Rule.Enabled
       description: Whether rule is enabled.
@@ -532,10 +558,13 @@ script:
       description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
       defaultValue: 0-49
     - name: filter
-      description: 'Query by which to filter rules, e.g., "type=EVENT". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
+      description: 'Query by which to filter rules, e.g., "type=EVENT". For reference,
+        see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
     - name: fields
-      description: 'Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "owner,identifier,origin". Specify subfields in brackets and multiple fields in the same object separated by commas.
-      For a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi150.doc/15.0--analytics-rules-GET.html'
+      description: 'Comma-separated list of fields to retrieve in the response. Fields
+        that are not explicitly named are excluded. E.g., "owner,identifier,origin".
+        Specify subfields in brackets and multiple fields in the same object separated
+        by commas. For a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi150.doc/15.0--analytics-rules-GET.html'
       isArray: true
   - name: qradar-rule-groups-list
     outputs:
@@ -579,10 +608,13 @@ script:
       description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
       defaultValue: 0-49
     - name: filter
-      description: 'Query by which to filter rules, e.g., "id >= 125". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
+      description: 'Query by which to filter rules, e.g., "id >= 125". For reference,
+        see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
     - name: fields
-      description: 'Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "owner,parent_id". Specify subfields in brackets and multiple fields in the same object separated by commas.
-      For a full list of available fields, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--analytics-rule_groups-GET.html'
+      description: 'Comma-separated list of fields to retrieve in the response. Fields
+        that are not explicitly named are excluded. E.g., "owner,parent_id". Specify
+        subfields in brackets and multiple fields in the same object separated by
+        commas. For a full list of available fields, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--analytics-rule_groups-GET.html'
       isArray: true
   - name: qradar-assets-list
     description: Retrieves assets list.
@@ -621,7 +653,8 @@ script:
       description: Date when the IP address was created.
       type: Date
     - contextPath: QRadar.Asset.Interfaces.ip_addresses.first_seen_scanner
-      description: Date when the IP address was first seen during a vulnerability scan.
+      description: Date when the IP address was first seen during a vulnerability
+        scan.
       type: Date
     - contextPath: QRadar.Asset.Interfaces.ip_addresses.first_seen_profiler
       description: Date when the IP address was first seen in event or flow traffic.
@@ -631,7 +664,8 @@ script:
         scan.
       type: Date
     - contextPath: QRadar.Asset.Interfaces.ip_addresses.last_seen_profiler
-      description: Date when the IP address was most recently seen in event or flow traffic.
+      description: Date when the IP address was most recently seen in event or flow
+        traffic.
       type: Date
     - contextPath: QRadar.Asset.Products.id
       description: The ID of this software product instance in QRadar's asset model.
@@ -666,7 +700,8 @@ script:
       description: Date when the host was created.
       type: Date
     - contextPath: QRadar.Asset.Hostnames.last_seen_scanner
-      description: Date when the host was most recently seen during a vulnerability scan.
+      description: Date when the host was most recently seen during a vulnerability
+        scan.
       type: Date
     - contextPath: QRadar.Asset.Hostnames.name
       description: Name of the host.
@@ -690,7 +725,8 @@ script:
       description: Date when the user was most recently seen in event or flow traffic.
       type: Date
     - contextPath: QRadar.Asset.Users.last_seen_scanner
-      description: Date when the user was most recently seen during a vulnerability scan.
+      description: Date when the user was most recently seen during a vulnerability
+        scan.
       type: Date
     - contextPath: QRadar.Asset.Users.first_seen_scanner
       description: Date when the user was first seen during a vulnerability scan.
@@ -734,10 +770,13 @@ script:
       description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
       defaultValue: 0-49
     - name: filter
-      description: 'Query by which to filter assets, e.g., "domain_id=0". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
+      description: 'Query by which to filter assets, e.g., "domain_id=0". For reference,
+        see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
     - name: fields
-      description: 'Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,interfaces,users,properties". Specify subfields in brackets and multiple fields in the same object separated by commas.
-      For a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--asset_model-assets-GET.html'
+      description: 'Comma-separated list of fields to retrieve in the response. Fields
+        that are not explicitly named are excluded. E.g., "id,interfaces,users,properties".
+        Specify subfields in brackets and multiple fields in the same object separated
+        by commas. For a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--asset_model-assets-GET.html'
       isArray: true
   - name: qradar-saved-searches-list
     description: Retrieves a list of Ariel saved searches.
@@ -778,8 +817,8 @@ script:
     arguments:
     - name: saved_search_id
       required: false
-      description: The saved search ID for which to retrieve its details. Specify saved_search_id
-        to get details about a specific saved search.
+      description: The saved search ID for which to retrieve its details. Specify
+        saved_search_id to get details about a specific saved search.
     - name: timeout
       required: false
       defaultValue: 35
@@ -788,16 +827,18 @@ script:
       description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
       defaultValue: 0-49
     - name: filter
-      description: 'Query by which to filter saved searches, e.g., "database=EVENTS and is_dashboard=true". For reference, see:
-        https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
+      description: 'Query by which to filter saved searches, e.g., "database=EVENTS
+        and is_dashboard=true". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
     - name: fields
-      description: 'Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,owner,description". Specify subfields in brackets and multiple fields in the same object separated by commas.
-      For a full list of available fields, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--ariel-saved_searches-GET.html'
+      description: 'Comma-separated list of fields to retrieve in the response. Fields
+        that are not explicitly named are excluded. E.g., "id,owner,description".
+        Specify subfields in brackets and multiple fields in the same object separated
+        by commas. For a full list of available fields, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--ariel-saved_searches-GET.html'
       isArray: true
   - name: qradar-searches-list
     description: Retrieves the list of Ariel searches IDs. Search status and results
-      can be polled by sending the search ID to the 'qradar-search-status-get' and 'qradar-search-results-get'
-      commands.
+      can be polled by sending the search ID to the 'qradar-search-status-get' and
+      'qradar-search-results-get' commands.
     outputs:
     - contextPath: QRadar.SearchID.SearchID
       description: ID of the search.
@@ -824,7 +865,8 @@ script:
     - name: saved_search_id
       required: false
       description: Saved search ID to execute. Mutually exclusive with query_expression.
-        Saved search ID is the 'id' field returned by the 'qradar-saved-searches-list' command.
+        Saved search ID is the 'id' field returned by the 'qradar-saved-searches-list'
+        command.
   - name: qradar-search-status-get
     description: Retrieves status information for a search, based on the search ID.
     outputs:
@@ -851,8 +893,8 @@ script:
     - name: output_path
       required: false
       description: Replaces the default context output path for the query result (QRadar.Search.Result).
-        E.g., for output_path=QRadar.Correlations, the result will be under the
-        'QRadar.Correlations' key in the context data.
+        E.g., for output_path=QRadar.Correlations, the result will be under the 'QRadar.Correlations'
+        key in the context data.
     - name: range
       description: 'Range of events to return. (e.g.: 0-20, 3-5, 3-3).'
       defaultValue: 0-49
@@ -860,8 +902,8 @@ script:
     description: Retrieves a list of reference sets.
     outputs:
     - contextPath: QRadar.Reference.TimeoutType
-      description: 'Timeout type of the reference set. Possible values: "UNKNOWN", "FIRST_SEEN",
-        "LAST_SEEN".'
+      description: 'Timeout type of the reference set. Possible values: "UNKNOWN",
+        "FIRST_SEEN", "LAST_SEEN".'
       type: String
     - contextPath: QRadar.Reference.NumberOfElements
       description: Number of elements in the reference set.
@@ -893,8 +935,8 @@ script:
     arguments:
     - name: ref_name
       required: false
-      description: The reference name of the reference set for which to retrieve its details.
-        Specify ref_name to get details about a specific reference set.
+      description: The reference name of the reference set for which to retrieve its
+        details. Specify ref_name to get details about a specific reference set.
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
@@ -911,18 +953,20 @@ script:
       description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
       defaultValue: 0-49
     - name: filter
-      description: 'Query by which to filter reference sets, e.g., "timeout_type=FIRST_SEEN". For reference, see:
-        https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
+      description: 'Query by which to filter reference sets, e.g., "timeout_type=FIRST_SEEN".
+        For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
     - name: fields
-      description: 'Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "name,timeout_type". Specify subfields in brackets and multiple fields in the same object separated by commas.
-      For a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--reference_data-sets-GET.html'
+      description: 'Comma-separated list of fields to retrieve in the response. Fields
+        that are not explicitly named are excluded. E.g., "name,timeout_type". Specify
+        subfields in brackets and multiple fields in the same object separated by
+        commas. For a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--reference_data-sets-GET.html'
       isArray: true
   - name: qradar-reference-set-create
     description: Creates a new reference set.
     outputs:
     - contextPath: QRadar.Reference.TimeoutType
-      description: 'Timeout type of the reference set. Possible values: "UNKNOWN", "FIRST_SEEN",
-        "LAST_SEEN".'
+      description: 'Timeout type of the reference set. Possible values: "UNKNOWN",
+        "FIRST_SEEN", "LAST_SEEN".'
       type: String
     - contextPath: QRadar.Reference.NumberOfElements
       description: Number of elements in the reference set.
@@ -981,8 +1025,10 @@ script:
       description: "The time to live interval, time range. for example: '1 month'\
         \ or '5 minutes'"
     - name: fields
-      description: 'Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "name,timeout_type". Specify subfields in brackets and multiple fields in the same object separated by commas.
-      For a full list of available fields, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--reference_data-sets-POST.html'
+      description: 'Comma-separated list of fields to retrieve in the response. Fields
+        that are not explicitly named are excluded. E.g., "name,timeout_type". Specify
+        subfields in brackets and multiple fields in the same object separated by
+        commas. For a full list of available fields, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--reference_data-sets-POST.html'
       isArray: true
   - name: qradar-reference-set-delete
     description: Removes a reference set or purges its contents.
@@ -1005,8 +1051,8 @@ script:
     description: Adds or updates an element in a reference set.
     outputs:
     - contextPath: QRadar.Reference.TimeoutType
-      description: 'Timeout type of the reference set. Possible values: "UNKNOWN", "FIRST_SEEN",
-        "LAST_SEEN".'
+      description: 'Timeout type of the reference set. Possible values: "UNKNOWN",
+        "FIRST_SEEN", "LAST_SEEN".'
       type: String
     - contextPath: QRadar.Reference.NumberOfElements
       description: Number of elements in the reference set.
@@ -1039,7 +1085,8 @@ script:
     - name: ref_name
       required: true
       description: The name of the reference set to add or update an element in. Reference
-        names can be found by the 'Name' field in the 'qradar-reference-sets-list' command.
+        names can be found by the 'Name' field in the 'qradar-reference-sets-list'
+        command.
     - name: value
       required: true
       description: "Comma-separated list of the values to add or update in the reference\
@@ -1058,8 +1105,10 @@ script:
       - 'true'
       - 'false'
     - name: fields
-      description: 'Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "name,timeout_type". Specify subfields in brackets and multiple fields in the same object separated by commas.
-      For a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--reference_data-sets-name-POST.html'
+      description: 'Comma-separated list of fields to retrieve in the response. Fields
+        that are not explicitly named are excluded. E.g., "name,timeout_type". Specify
+        subfields in brackets and multiple fields in the same object separated by
+        commas. For a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--reference_data-sets-name-POST.html'
       isArray: true
   - name: qradar-reference-set-value-delete
     description: Removes a value from a reference set.
@@ -1067,12 +1116,13 @@ script:
     - name: ref_name
       required: true
       description: The name of the reference set from which to remove a value. Reference
-        names can be found by the 'Name' field in the 'qradar-reference-sets-list' command.
+        names can be found by the 'Name' field in the 'qradar-reference-sets-list'
+        command.
     - name: value
       required: true
-      description: "The value to remove from the reference set. If the specified value is\
-        \ date, the supported date formats are: epoch, ISO, and time range (<number> <time\
-        \ unit>, e.g., 12 hours, 7 days.)"
+      description: "The value to remove from the reference set. If the specified value\
+        \ is date, the supported date formats are: epoch, ISO, and time range (<number>\
+        \ <time unit>, e.g., 12 hours, 7 days.)"
     - name: date_value
       description: True if the specified value type was date.
       auto: PREDEFINED
@@ -1081,14 +1131,14 @@ script:
       - 'True'
       - 'False'
   - name: qradar-domains-list
-    description: Gets the list of domains. You must have System Administrator
-      or Security Administrator permissions to call this endpoint if you are trying
-      to retrieve the details of all domains. You can retrieve details of domains
-      that are assigned to your Security Profile without having the System Administrator
-      or Security Administrator permissions. If you do not have the System Administrator
-      or Security Administrator permissions, then for each domain assigned to your
-      security profile you can only view the values for the ID and name fields. All
-      other values return null.
+    description: Gets the list of domains. You must have System Administrator or Security
+      Administrator permissions to call this endpoint if you are trying to retrieve
+      the details of all domains. You can retrieve details of domains that are assigned
+      to your Security Profile without having the System Administrator or Security
+      Administrator permissions. If you do not have the System Administrator or Security
+      Administrator permissions, then for each domain assigned to your security profile
+      you can only view the values for the ID and name fields. All other values return
+      null.
     outputs:
     - contextPath: QRadar.Domains.AssetScannerIDs
       description: Asset scanner IDs that are associated with the domain.
@@ -1131,22 +1181,26 @@ script:
       type: Number
     arguments:
     - name: domain_id
-      description: The domain ID from which to retrieve its details. Specify domain_id to get details about a specific domain.
+      description: The domain ID from which to retrieve its details. Specify domain_id
+        to get details about a specific domain.
     - name: range
       description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
       defaultValue: 0-49
     - name: filter
-      description: 'Query by which to filter domains, e.g., "id > 3". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
+      description: 'Query by which to filter domains, e.g., "id > 3". For reference,
+        see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
     - name: fields
-      description: 'Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name". Specify subfields in brackets and multiple fields in the same object separated by commas.
-      For a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--config-domain_management-domains-GET.html'
+      description: 'Comma-separated list of fields to retrieve in the response. Fields
+        that are not explicitly named are excluded. E.g., "id,name". Specify subfields
+        in brackets and multiple fields in the same object separated by commas. For
+        a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--config-domain_management-domains-GET.html'
       isArray: true
   - name: qradar-indicators-upload
     description: Uploads indicators to QRadar.
     outputs:
     - contextPath: QRadar.Reference.TimeoutType
-      description: 'Timeout type of the reference set. Possible values: "UNKNOWN", "FIRST_SEEN",
-        "LAST_SEEN".'
+      description: 'Timeout type of the reference set. Possible values: "UNKNOWN",
+        "FIRST_SEEN", "LAST_SEEN".'
       type: String
     - contextPath: QRadar.Reference.NumberOfElements
       description: Number of elements in the reference set.
@@ -1188,8 +1242,10 @@ script:
     - name: page
       description: The page from which to get the indicators.
     - name: fields
-      description: 'Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "name,timeout_type". Specify subfields in brackets and multiple fields in the same object separated by commas.
-      For a full list of available fields, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--reference_data-maps-bulk_load-name-POST.html'
+      description: 'Comma-separated list of fields to retrieve in the response. Fields
+        that are not explicitly named are excluded. E.g., "name,timeout_type". Specify
+        subfields in brackets and multiple fields in the same object separated by
+        commas. For a full list of available fields, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--reference_data-maps-bulk_load-name-POST.html'
       isArray: true
   - name: qradar-geolocations-for-ip
     description: Retrieves the MaxMind GeoIP data for the specified IP address.
@@ -1288,8 +1344,10 @@ script:
       required: true
       isArray: true
     - name: fields
-      description: 'Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "continent,ip_address". Specify subfields in brackets and multiple fields in the same object separated by commas.
-      For a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--services-geolocations-GET.html'
+      description: 'Comma-separated list of fields to retrieve in the response. Fields
+        that are not explicitly named are excluded. E.g., "continent,ip_address".
+        Specify subfields in brackets and multiple fields in the same object separated
+        by commas. For a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--services-geolocations-GET.html'
       isArray: true
   - name: qradar-log-sources-list
     description: Retrieves a list of log sources.
@@ -1363,10 +1421,13 @@ script:
       description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
       defaultValue: 0-49
     - name: filter
-      description: 'Query by which to filter log sources, e.g., "auto_discovered=false". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
+      description: 'Query by which to filter log sources, e.g., "auto_discovered=false".
+        For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
     - name: fields
-      description: 'Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name,status". Specify subfields in brackets and multiple fields in the same object separated by commas.
-      For a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--config-event_sources-log_source_management-log_sources-GET.html'
+      description: 'Comma-separated list of fields to retrieve in the response. Fields
+        that are not explicitly named are excluded. E.g., "id,name,status". Specify
+        subfields in brackets and multiple fields in the same object separated by
+        commas. For a full list of available fields, see:  https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--config-event_sources-log_source_management-log_sources-GET.html'
       isArray: true
   - name: qradar-get-custom-properties
     description: Retrieves a list of event regex properties.
@@ -1381,7 +1442,8 @@ script:
       description: Date/time pattern that the event regex property matches.
       type: String
     - contextPath: QRadar.Properties.property_type
-      description: 'Property type. Possible values: "STRING", "NUMERIC", "IP", "PORT", "TIME".'
+      description: 'Property type. Possible values: "STRING", "NUMERIC", "IP", "PORT",
+        "TIME".'
       type: String
     - contextPath: QRadar.Properties.name
       description: Name of the event regex property.
@@ -1429,48 +1491,54 @@ script:
       description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
       defaultValue: 0-49
     - name: filter
-      description: 'Query by which to filter regex properties, e.g., "auto_discovered=false". For reference, see:
-        https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
+      description: 'Query by which to filter regex properties, e.g., "auto_discovered=false".
+        For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
     - name: fields
-      description: 'Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,gateway". Specify subfields in brackets and multiple fields in the same object separated by commas.
-      For a full list of available fields, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--config-event_sources-custom_properties-regex_properties-GET.html'
+      description: 'Comma-separated list of fields to retrieve in the response. Fields
+        that are not explicitly named are excluded. E.g., "id,gateway". Specify subfields
+        in brackets and multiple fields in the same object separated by commas. For
+        a full list of available fields, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi140.doc/14.0--config-event_sources-custom_properties-regex_properties-GET.html'
       isArray: true
   - name: qradar-reset-last-run
-    description: Resets the fetch incidents last run value, which resets the fetch to its
-      initial fetch state. (Will try to fetch the first available offense).
+    description: Resets the fetch incidents last run value, which resets the fetch
+      to its initial fetch state. (Will try to fetch the first available offense).
   - name: get-mapping-fields
     description: Returns the list of fields for an incident type. This command should
       be used for debugging purposes.
   - arguments:
-      - default: false
-        description: The offense ID.
-        isArray: false
-        name: id
-        required: true
-        secret: false
-      - default: false
-        description: Date string in local time representing the last time the incident was updated. The incident is only returned if it was modified after the last update time.
-        isArray: false
-        name: lastUpdate
-        required: true
-        secret: false
+    - default: false
+      description: The offense ID.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: Date string in local time representing the last time the incident
+        was updated. The incident is only returned if it was modified after the last
+        update time.
+      isArray: false
+      name: lastUpdate
+      required: true
+      secret: false
     deprecated: false
     description: Gets remote data from a remote incident. This method does not update
       the current incident, and should be used for debugging purposes.
     execution: false
     name: get-remote-data
   - arguments:
-      - default: false
-        description: Date string in local time representing the last time the incident was updated.
-          The incident is only returned if it was modified after the last update time.
-        isArray: false
-        name: lastUpdate
-        required: false
-        secret: false
+    - default: false
+      description: Date string in local time representing the last time the incident
+        was updated. The incident is only returned if it was modified after the last
+        update time.
+      isArray: false
+      name: lastUpdate
+      required: false
+      secret: false
     deprecated: false
-    description: Returns the list of incidents IDs that were modified since the last update time.
-      Note that this method is for debugging purposes. The get-modified-remote-data command
-      is used as part of the mirroring feature, which is available from version 6.1.
+    description: Returns the list of incidents IDs that were modified since the last
+      update time. Note that this method is for debugging purposes. The get-modified-remote-data
+      command is used as part of the mirroring feature, which is available from version
+      6.1.
     execution: false
     name: get-modified-remote-data
 #    Deprecated commands, to support backward compatibility for QRadar v2.
@@ -1596,7 +1664,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'Query to filter offense. For refernce please consult: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html'
+      description: 'Query to filter offense. For reference please consult: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html'
       isArray: false
       name: filter
       required: false
@@ -1952,7 +2020,7 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: 'Query to filter assets. For refernce please consult: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html'
+      description: 'Query to filter assets. For reference please consult: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html'
       isArray: false
       name: filter
       required: false
@@ -2025,7 +2093,6 @@ script:
     execution: false
     hidden: true
     name: qradar-get-asset-by-id
-    # TODO check outputs
     outputs:
     - contextPath: QRadar.Asset.ID
       description: The ID of the asset.
@@ -2123,7 +2190,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Query to filter results. For refernce, consult: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html'
+      description: 'Query to filter results. For reference, consult: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html'
       isArray: false
       name: filter
       required: false
@@ -2150,7 +2217,6 @@ script:
     execution: false
     name: qradar-get-closing-reasons
     outputs:
-    # TODO check output
     - contextPath: QRadar.Offense.ClosingReasons.ID
       description: Closing reason ID.
       type: number
@@ -2706,7 +2772,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: The timeout_type can be "FIRST_SEEN", "LAST_SEEN", or "UNKNOWN".
-        The default value is UNKNOWN. Only required for creating a new refernce set.
+        The default value is UNKNOWN. Only required for creating a new reference set.
       isArray: false
       name: timeout_type
       predefined:
@@ -2748,11 +2814,147 @@ script:
     execution: false
     hidden: true
     name: qradar-upload-indicators
+  - arguments:
+    - default: false
+      description: Comma separated list. Source IPs to retrieve their data, E.g "192.168.0.1,192.160.0.2".
+      isArray: true
+      name: source_ip
+      required: false
+      secret: false
+    - default: false
+      description: 'Query to filter IPs. E.g, filter=`source_ip="192.168.0.1"`. For
+        reference please consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
+      isArray: false
+      name: filter
+      required: false
+      secret: false
+    - default: false
+      description: "If used, will filter all fields except for the ones specified.\
+        \ Use this argument to specify which fields should be returned in the response.\
+        \ Fields that are not named are excluded. Specify subfields in brackets and\
+        \ multiple fields in the same object separated by commas. The filter uses\
+        \ QRadar's field names, for reference, consult: https://www.ibm.com/docs/en/qradar-common?topic=endpoints-get-siemsource-addresses"
+      isArray: false
+      name: fields
+      required: false
+      secret: false
+    - default: false
+      description: 'Range of results to return. e.g.: 0-20'
+      isArray: false
+      name: range
+      required: false
+      secret: false
+    deprecated: false
+    description: Get Source IPs
+    execution: false
+    hidden: false
+    name: qradar-ips-source-get
+    outputs:
+    - contextPath: QRadar.SourceIP.ID
+      description: The ID of the destination address.
+      type: Number
+    - contextPath: QRadar.SourceIP.DomainID
+      description: The ID of associated domain.
+      type: String
+    - contextPath: QRadar.SourceIP.EventFlowCount
+      description: The number of events and flows that are associated with the destination
+        address.
+      type: Number
+    - contextPath: QRadar.SourceIP.FirstEventFlowSeen
+      description: Date when the first event or flow was seen.
+      type: Date
+    - contextPath: QRadar.SourceIP.LastEventFlowSeen
+      description: Date when the last event or flow was seen.
+      type: Date
+    - contextPath: QRadar.SourceIP.SourceIP
+      description: The IP address.
+      type: String
+    - contextPath: QRadar.SourceIP.Magnitude
+      description: The magnitude of the destination address.
+      type: Number
+    - contextPath: QRadar.SourceIP.Network
+      description: The network of the destination address.
+      type: String
+    - contextPath: QRadar.SourceIP.OffenseIDs
+      description: List of offense IDs the destination address is part of.
+      type: Unknown
+    - contextPath: QRadar.SourceIP.LocalDestinationAddressIDs
+      description: List of local destination address IDs associated with the source
+        address.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Comma separated list. Local destination IPs to retrieve their data,
+        E.g "192.168.0.1,192.160.0.2".
+      isArray: true
+      name: local_destination_ip
+      required: false
+      secret: false
+    - default: false
+      description: 'Query to filter IPs. E.g, filter=`local_destination_ip="192.168.0.1"`
+        For reference please consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
+      isArray: false
+      name: filter
+      required: false
+      secret: false
+    - default: false
+      description: "If used, will filter all fields except for the ones specified.\
+        \ Use this argument to specify which fields should be returned in the response.\
+        \ Fields that are not named are excluded. Specify subfields in brackets and\
+        \ multiple fields in the same object separated by commas. The filter uses\
+        \ QRadar's field names, for reference, consult: https://www.ibm.com/docs/en/qradar-common?topic=endpoints-get-siemlocal-destination-addresses"
+      isArray: false
+      name: fields
+      required: false
+      secret: false
+    - default: false
+      description: 'Range of results to return. e.g.: 0-20'
+      isArray: false
+      name: range
+      required: false
+      secret: false
+    deprecated: false
+    description: Get Source IPs
+    execution: false
+    hidden: false
+    name: qradar-ips-local-destination-get
+    outputs:
+    - contextPath: QRadar.LocalDestinationIP.ID
+      description: The ID of the destination address.
+      type: Number
+    - contextPath: QRadar.LocalDestinationIP.DomainID
+      description: The ID of associated domain.
+      type: String
+    - contextPath: QRadar.LocalDestinationIP.EventFlowCount
+      description: The number of events and flows that are associated with the destination
+        address.
+      type: Number
+    - contextPath: QRadar.LocalDestinationIP.FirstEventFlowSeen
+      description: Date when the first event or flow was seen.
+      type: Date
+    - contextPath: QRadar.LocalDestinationIP.LastEventFlowSeen
+      description: Date when the last event or flow was seen.
+      type: Date
+    - contextPath: QRadar.LocalDestinationIP.LocalDestinationIP
+      description: The IP address.
+      type: String
+    - contextPath: QRadar.LocalDestinationIP.Magnitude
+      description: The magnitude of the destination address.
+      type: Number
+    - contextPath: QRadar.LocalDestinationIP.Network
+      description: The network of the destination address.
+      type: String
+    - contextPath: QRadar.LocalDestinationIP.OffenseIDs
+      description: List of offense IDs the destination address is part of.
+      type: Unknown
+    - contextPath: QRadar.LocalDestinationIP.SourceAddressIDs
+      description: List of source address IDs associated with the destination address.
+      type: Unknown
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.9.2.18414
+  dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: false
   isremotesyncin: true

@@ -2,7 +2,7 @@ args:
 - default: false
   defaultValue: type
   description: The name of the incident field in which the incident type is stored.
-    Default is "type". Change this arguement only if you're using a custom field for
+    Default is "type". Change this argument only if you are using a custom field for
     specifying the incident type.
   isArray: false
   name: incidentTypeFieldName
@@ -10,7 +10,7 @@ args:
   secret: false
 - default: false
   defaultValue: Phishing
-  description: A comma-separatetd list of incident types by which to filter. Specify
+  description: A comma-separated list of incident types by which to filter. Specify
     "None" to search through all incident types.
   isArray: false
   name: incidentTypes
@@ -74,8 +74,8 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: All
-  description: Whether to compare the new incident to closed incidents, non closed
-    incidents or all incidents.
+  description: Whether to compare the new incident to closed incidents, unclosed incidents,
+    or all incidents.
   isArray: false
   name: statusScope
   predefined:
@@ -86,7 +86,8 @@ args:
   secret: false
 - default: false
   defaultValue: '0.8'
-  description: Threshold to consider incident as similar. The range of values is 0-1.
+  description: Threshold by which to consider incidents as similar. The range of values
+    is 0-1.
   isArray: false
   name: threshold
   required: false
@@ -125,6 +126,16 @@ args:
   - ''
   required: false
   secret: false
+- default: false
+  defaultValue: 'false'
+  description: Include the current incident in EmailCampaign path in context.
+  isArray: false
+  name: includeSelf
+  required: false
+  secret: false
+  predefined:
+  - 'true'
+  - 'false'
 comment: Find a campaign of emails based on their textual similarity.
 commonfields:
   id: FindEmailCampaign
@@ -160,13 +171,31 @@ outputs:
     CC", "Email BCC".
   type: Unknown
 - contextPath: EmailCampaign.indicators.id
-  description: The IDs of the mututal indicators of the incidents invovled in the
+  description: The IDs of the mututal indicators of the incidents involved in the
     campaign.
   type: Unknown
 - contextPath: EmailCampaign.indicators.value
-  description: The values of the mututal indicators of the incidents invovled in the
+  description: The values of the mututal indicators of the incidents involved in the
     campaign.
   type: Unknown
+- contextPath: EmailCampaign.fieldsToDisplay
+  description: List of fields to display in the linked list table.
+  type: Unknown
+- contextPath: EmailCampaign.firstIncidentDate
+  description: The occurrence date of the oldest incident in the campaign.
+  type: unknown
+- contextPath: incident.emailcampaignsummary
+  description: Markdown table with email campaign summary.
+  type: string
+- contextPath: incident.emailcampaignsnippets
+  description: Markdown table with email content summary.
+  type: string
+- contextPath: incident.emailcampaignmutualindicators
+  description: Markdown table with relevant indicators.
+  type: string
+- contextPath: incident.emailcampaigncanvas
+  description: Link to the campaign canvas.
+  type: string
 script: '-'
 subtype: python3
 system: false
@@ -175,7 +204,7 @@ tags:
 - phishing
 timeout: '0'
 type: python
-dockerimage: demisto/sklearn:1.0.0.17983
+dockerimage: demisto/sklearn:1.0.0.23593
 tests:
 - No tests (auto formatted)
 runonce: true

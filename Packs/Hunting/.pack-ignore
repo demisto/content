@@ -1,2 +1,5 @@
 [file:Hunting]
 ignore=PA116
+
+[file:README.md]
+ignore=RM104

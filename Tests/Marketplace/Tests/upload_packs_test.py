@@ -398,7 +398,7 @@ class TestCleanPacks:
     """ Test for clean_non_existing_packs function scenarios.
     """
 
-    @patch.dict('os.environ', {'CI': 'true', 'CIRCLE_BRANCH': 'dummy_branch'})
+    @patch.dict('os.environ', {'CI': 'true', 'CI_COMMIT_BRANCH': 'dummy_branch'})
     def test_clean_non_existing_packs_skip_non_master(self, mocker):
         """
         Scenario: running clean_non_existing_packs function on CI environment but not on master branch
@@ -421,11 +421,12 @@ class TestCleanPacks:
         dummy_storage_bucket.name = GCPConfig.PRODUCTION_BUCKET
 
         skipped_cleanup = clean_non_existing_packs(index_folder_path="dummy_index_path", private_packs=[],
-                                                   storage_bucket=dummy_storage_bucket)
+                                                   storage_bucket=dummy_storage_bucket,
+                                                   storage_base_path=GCPConfig.PRODUCTION_STORAGE_BASE_PATH)
 
         assert skipped_cleanup
 
-    @patch.dict('os.environ', {'CI': 'true', 'CIRCLE_BRANCH': 'master'})
+    @patch.dict('os.environ', {'CI': 'true', 'CI_COMMIT_BRANCH': 'master'})
     def test_clean_non_existing_packs_skip_non_production_bucket(self, mocker):
         """
         Scenario: running clean_non_existing_packs function on CI environment on master branch but not on production
@@ -443,16 +444,18 @@ class TestCleanPacks:
         - Ensure that task is skipped and blob form master bucket are not deleted
         """
         from Tests.Marketplace.upload_packs import clean_non_existing_packs
+        from Tests.Marketplace.marketplace_constants import GCPConfig
 
         dummy_storage_bucket = mocker.MagicMock()
         dummy_storage_bucket.name = "dummy_bucket"
 
         skipped_cleanup = clean_non_existing_packs(index_folder_path="dummy_index_path", private_packs=[],
-                                                   storage_bucket=dummy_storage_bucket)
+                                                   storage_bucket=dummy_storage_bucket,
+                                                   storage_base_path=GCPConfig.PRODUCTION_STORAGE_BASE_PATH)
 
         assert skipped_cleanup
 
-    @patch.dict('os.environ', {'CI': 'true', 'CIRCLE_BRANCH': 'master'})
+    @patch.dict('os.environ', {'CI': 'true', 'CI_COMMIT_BRANCH': 'master'})
     def test_clean_non_existing_packs(self, mocker):
         """
          Scenario: deleting pack that is not part of content repo or paid packs from index
@@ -495,7 +498,8 @@ class TestCleanPacks:
         private_packs = [{'id': private_pack, 'price': 120}]
 
         skipped_cleanup = clean_non_existing_packs(index_folder_path=index_folder_path, private_packs=private_packs,
-                                                   storage_bucket=dummy_storage_bucket)
+                                                   storage_bucket=dummy_storage_bucket,
+                                                   storage_base_path=GCPConfig.PRODUCTION_STORAGE_BASE_PATH)
 
         assert not skipped_cleanup
         shutil.rmtree.assert_called_once_with(os.path.join(index_folder_path, invalid_pack))

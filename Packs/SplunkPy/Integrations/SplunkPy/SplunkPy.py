@@ -43,6 +43,8 @@ MIRROR_DIRECTION = {
     'Outgoing': 'Out',
     'Incoming And Outgoing': 'Both'
 }
+OUTGOING_MIRRORED_FIELDS = ['comment', 'status', 'owner', 'urgency']
+INCOMING_MIRRORED_FIELDS = ['comment', 'status', 'owner', 'urgency', 'status_label']
 
 # =========== Enrichment Mechanism Globals ===========
 ENABLED_ENRICHMENTS = params.get('enabled_enrichments', [])
@@ -110,11 +112,12 @@ def fetch_notables(service, cache_object=None, enrich_notables=False):
         start_time_for_fetch = current_time_for_fetch - timedelta(minutes=fetch_time_in_minutes)
         last_run = start_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
 
-    earliest_fetch_time_fieldname = dem_params.get("earliest_fetch_time_fieldname", "earliest_time")
-    latest_fetch_time_fieldname = dem_params.get("latest_fetch_time_fieldname", "latest_time")
-
-    kwargs_oneshot = {earliest_fetch_time_fieldname: last_run,
-                      latest_fetch_time_fieldname: now, "count": FETCH_LIMIT, 'offset': search_offset}
+    kwargs_oneshot = {
+        'earliest_time': last_run,
+        'latest_time': now,
+        'count': FETCH_LIMIT,
+        'offset': search_offset,
+    }
 
     searchquery_oneshot = dem_params['fetchQuery']
 
@@ -954,11 +957,14 @@ def get_last_update_in_splunk_time(last_update):
     """
     last_update_utc_datetime = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})
     params = demisto.params()
-    splunk_timezone = params.get('timezone')
-    if not splunk_timezone:
+
+    try:
+        splunk_timezone = int(params['timezone'])
+    except (KeyError, ValueError):
         raise Exception('Cannot mirror incidents when timezone is not configured. Please enter the '
                         'timezone of the Splunk server being used in the integration configuration.')
-    dt = last_update_utc_datetime + timedelta(minutes=int(splunk_timezone))
+
+    dt = last_update_utc_datetime + timedelta(minutes=splunk_timezone)
     return (dt - datetime(1970, 1, 1, tzinfo=pytz.utc)).total_seconds()
 
 
@@ -990,21 +996,26 @@ def get_remote_data_command(service, args, close_incident):
 
     for item in results.ResultsReader(service.jobs.oneshot(search)):
         updated_notable = parse_notable(item, to_dict=True)
+    delta = {field: updated_notable.get(field) for field in INCOMING_MIRRORED_FIELDS if updated_notable.get(field)}
 
-    demisto.debug('notable {} status: {}'.format(notable_id, updated_notable.get('status')))
-    if updated_notable.get('status') == '5' and close_incident:
-        demisto.info('Closing incident related to notable {}'.format(notable_id))
-        entries.append({
-            'Type': EntryType.NOTE,
-            'Contents': {
-                'dbotIncidentClose': True,
-                'closeReason': 'Notable event was closed on Splunk.'
-            },
-            'ContentsFormat': EntryFormat.JSON
-        })
+    if delta:
+        demisto.debug('notable {} delta: {}'.format(notable_id, delta))
+        if delta.get('status') == '5' and close_incident:
+            demisto.info('Closing incident related to notable {}'.format(notable_id))
+            entries = [{
+                'Type': EntryType.NOTE,
+                'Contents': {
+                    'dbotIncidentClose': True,
+                    'closeReason': 'Notable event was closed on Splunk.'
+                },
+                'ContentsFormat': EntryFormat.JSON
+            }]
 
-    demisto.debug('Updated notable {}'.format(notable_id))
-    return_results(GetRemoteDataResponse(mirrored_object=updated_notable, entries=entries))
+        demisto.debug('Updated notable {}'.format(notable_id))
+    else:
+        demisto.debug('no delta was found for notable {}'.format(notable_id))
+
+    return_results(GetRemoteDataResponse(mirrored_object=delta, entries=entries))
 
 
 def get_modified_remote_data_command(service, args):
@@ -1053,9 +1064,9 @@ def update_remote_system_command(args, params, service, auth_token):
     if parsed_args.incident_changed and delta:
         demisto.debug('Got the following delta keys {} to update incident corresponding to notable '
                       '{}'.format(str(list(delta.keys())), notable_id))
-        changed_data = {'comment': None, 'status': None, 'owner': None, 'urgency': None}
+        changed_data = {field: None for field in OUTGOING_MIRRORED_FIELDS}
         for field in delta:
-            if field in ('comment', 'status', 'owner', 'urgency'):
+            if field in OUTGOING_MIRRORED_FIELDS:
                 changed_data[field] = delta[field]
 
         # Close notable if relevant
@@ -1068,16 +1079,16 @@ def update_remote_system_command(args, params, service, auth_token):
             base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
             try:
                 session_key = service.token if not auth_token else None
-                response_info = updateNotableEvents(
+                response_info = update_notable_events(
                     baseurl=base_url, comment=changed_data['comment'], status=changed_data['status'],
                     urgency=changed_data['urgency'], owner=changed_data['owner'], eventIDs=[notable_id],
                     auth_token=auth_token, sessionKey=session_key
                 )
-                msg = response_info.get('message')
                 if 'success' not in response_info or not response_info['success']:
-                    demisto.error('Failed updating notable {}: {}'.format(notable_id, msg))
+                    demisto.error('Failed updating notable {}: {}'.format(notable_id, str(response_info)))
                 else:
-                    demisto.debug('update-remote-system for notable {}: {}'.format(notable_id, msg))
+                    demisto.debug('update-remote-system for notable {}: {}'.format(notable_id,
+                                                                                   response_info.get('message')))
 
             except Exception as e:
                 demisto.error('Error in Splunk outgoing mirror for incident corresponding to notable {}. '
@@ -1139,11 +1150,12 @@ def get_mapping_fields_command(service):
     start_time_for_fetch = current_time_for_fetch - timedelta(minutes=fetch_time_in_minutes)
     last_run = start_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
 
-    earliest_fetch_time_fieldname = dem_params.get("earliest_fetch_time_fieldname", "earliest_time")
-    latest_fetch_time_fieldname = dem_params.get("latest_fetch_time_fieldname", "latest_time")
-
-    kwargs_oneshot = {earliest_fetch_time_fieldname: last_run,
-                      latest_fetch_time_fieldname: now, "count": FETCH_LIMIT, 'offset': search_offset}
+    kwargs_oneshot = {
+        'earliest_time': last_run,
+        'latest_time': now,
+        'count': FETCH_LIMIT,
+        'offset': search_offset,
+    }
 
     searchquery_oneshot = dem_params['fetchQuery']
 
@@ -1381,6 +1393,8 @@ def rawToDict(raw):
             key_val_arr = raw.split(",")
             for key_val in key_val_arr:
                 single_key_val = key_val.split(":", 1)
+                if len(single_key_val) <= 1:
+                    single_key_val = key_val.split("=", 1)
                 if len(single_key_val) > 1:
                     val = single_key_val[1]
                     key = single_key_val[0].strip()
@@ -1391,8 +1405,11 @@ def rawToDict(raw):
                         result[key] = val
 
         else:
-            raw_response = re.split('(?<=\S),', raw)  # split by any non-whitespace character
-            for key_val in raw_response:
+            # search for the pattern: `key="value", `
+            # (the double quotes are optional)
+            # we append `, ` to the end of the string to catch the last value
+            raw_response = re.findall(r'(\S+=("?)[\S\s]+?\2), ', raw + ', ')
+            for key_val, _ in raw_response:
                 key_value = key_val.replace('"', '').strip()
                 if '=' in key_value:
                     key_and_val = key_value.split('=', 1)
@@ -1410,8 +1427,8 @@ def convert_to_str(obj):
     return str(obj)
 
 
-def updateNotableEvents(baseurl, comment, status=None, urgency=None, owner=None, eventIDs=None,
-                        searchID=None, auth_token=None, sessionKey=None):
+def update_notable_events(baseurl, comment, status=None, urgency=None, owner=None, eventIDs=None,
+                          searchID=None, auth_token=None, sessionKey=None):
     """
     Update some notable events.
 
@@ -1849,30 +1866,31 @@ def splunk_submit_event_hec_command():
         demisto.results('The event was sent successfully to Splunk.')
 
 
-def splunk_edit_notable_event_command(service, auth_token):
-    params = demisto.params()
-    base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
-    sessionKey = service.token if not auth_token else None
+def splunk_edit_notable_event_command(base_url, token, auth_token, args):
+    session_key = token if not auth_token else None
 
-    eventIDs = None
-    if demisto.get(demisto.args(), 'eventIDs'):
-        eventIDsStr = demisto.args()['eventIDs']
-        eventIDs = eventIDsStr.split(",")
+    event_ids = None
+    if args.get('eventIDs'):
+        event_ids_str = args['eventIDs']
+        event_ids = event_ids_str.split(",")
+
     status = None
-    if demisto.get(demisto.args(), 'status'):
-        status = int(demisto.args()['status'])
+    if args.get('status'):
+        status = int(args['status'])
 
-    response_info = updateNotableEvents(baseurl=base_url,
-                                        comment=demisto.get(demisto.args(), 'comment'), status=status,
-                                        urgency=demisto.get(demisto.args(), 'urgency'),
-                                        owner=demisto.get(demisto.args(), 'owner'), eventIDs=eventIDs,
-                                        auth_token=auth_token, sessionKey=sessionKey)
+    response_info = update_notable_events(baseurl=base_url,
+                                          comment=args.get('comment'), status=status,
+                                          urgency=args.get('urgency'),
+                                          owner=args.get('owner'), eventIDs=event_ids,
+                                          auth_token=auth_token, sessionKey=session_key)
+
     if 'success' not in response_info or not response_info['success']:
-        demisto.results({'ContentsFormat': formats['text'], 'Type': entryTypes['error'],
-                         'Contents': "Could not update notable "
-                                     "events: " + demisto.args()['eventIDs'] + ' : ' + str(response_info)})
-
-    demisto.results('Splunk ES Notable events: ' + response_info.get('message'))
+        demisto.results({
+            'ContentsFormat': formats['text'],
+            'Type': entryTypes['error'],
+            'Contents': "Could not update notable events: " + args.get('eventIDs') + ' : ' + str(response_info)})
+    else:
+        demisto.results('Splunk ES Notable events: ' + response_info.get('message'))
 
 
 def splunk_job_status(service):
@@ -1979,15 +1997,28 @@ def kv_store_collection_config(service):
     return_outputs("KV store collection {} configured successfully".format(app), {}, {})
 
 
+def batch_kv_upload(kv_data_service_client, json_data):
+    if json_data.startswith('[') and json_data.endswith(']'):
+        return json.loads(kv_data_service_client._post(
+            'batch_save', headers=client.KVStoreCollectionData.JSON_HEADER, body=json_data).body.read().decode('utf-8'))
+    elif json_data.startswith('{') and json_data.endswith('}'):
+        return kv_data_service_client.insert(json_data)
+    else:
+        raise DemistoException('kv_store_data argument should be in json format. '
+                               '(e.g. {"key": "value"} or [{"key": "value"}, {"key": "value"}]')
+
+
 def kv_store_collection_add_entries(service):
     args = demisto.args()
     kv_store_data = args.get('kv_store_data', '').encode('utf-8')
     kv_store_collection_name = args['kv_store_collection_name']
     indicator_path = args.get('indicator_path')
-    service.kvstore[kv_store_collection_name].data.insert(kv_store_data)
+    batch_kv_upload(service.kvstore[kv_store_collection_name].data, kv_store_data)
     timeline = None
     if indicator_path:
-        indicator = extract_indicator(indicator_path, [json.loads(kv_store_data)])
+        kv_store_data = json.loads(kv_store_data)
+        indicator = extract_indicator(indicator_path,
+                                      [kv_store_data] if not isinstance(kv_store_data, list) else kv_store_data)
         timeline = {
             'Value': indicator,
             'Message': 'Indicator added to {} store in Splunk'.format(kv_store_collection_name),
@@ -2147,6 +2178,7 @@ def main():
         'verify': VERIFY_CERTIFICATE
     }
 
+    base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
     auth_token = None
     username = demisto.params()['authentication']['identifier']
     password = demisto.params()['authentication']['password']
@@ -2194,7 +2226,7 @@ def main():
     elif command == 'splunk-submit-event':
         splunk_submit_event_command(service)
     elif command == 'splunk-notable-event-edit':
-        splunk_edit_notable_event_command(service, auth_token)
+        splunk_edit_notable_event_command(base_url, service and service.token, auth_token, demisto.args())
     elif command == 'splunk-submit-event-hec':
         splunk_submit_event_hec_command()
     elif command == 'splunk-job-status':

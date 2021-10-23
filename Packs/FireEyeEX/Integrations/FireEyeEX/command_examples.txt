@@ -1,0 +1,9 @@
+fireeye-ex-get-alerts start_time="2 month" sender_email="test@malicious.net" limit=4
+fireeye-ex-get-alert-details alert_id=3
+fireeye-ex-get-artifacts-by-uuid uuid=44f2a6f0-aa3f-451d-956f-25565671c4d3
+fireeye-ex-get-artifacts-metadata-by-uuid uuid=44f2a6f0-aa3f-451d-956f-25565671c4d3
+fireeye-ex-get-quarantined-emails limit=2
+fireeye-ex-release-quarantined-emails queue_ids=4G3bll2j0RzTgTh
+fireeye-ex-delete-download-emails queue_ids=4G3bll2j0RzTgTh
+fireeye-ex-download-quarantined-emails queue_id=4G3bll2j0RzTgTh
+fireeye-ex-get-reports report_type=alertDetailsReport alert_id=3

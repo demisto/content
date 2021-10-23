@@ -18,6 +18,7 @@ configuration:
   name: proxy
   required: false
   type: 8
+defaultclassifier: 'null'
 description: GreyNoise is a cybersecurity platform that collects and analyzes Internet-wide
   scan and attack traffic. With this integration, users can contextualize existing
   alerts, filter false-positives, identify compromised devices, and track emerging
@@ -26,14 +27,17 @@ display: GreyNoise
 name: GreyNoise
 script:
   commands:
-  - name: ip
-    arguments:
-    - name: ip
-      default: true
+  - arguments:
+    - default: true
       description: A comma-separated list of IPs.
       isArray: true
+      name: ip
       required: true
+      secret: false
+    deprecated: false
     description: Runs reputation on IPs.
+    execution: false
+    name: ip
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -47,7 +51,7 @@ script:
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
       type: String
-    - contextPath: IP.address
+    - contextPath: IP.Address
       description: IP address.
       type: string
     - contextPath: IP.ASN
@@ -75,6 +79,7 @@ script:
       name: ip
       required: true
       secret: false
+    deprecated: false
     description: 'Check whether a given IP address is "Internet background noise",
       or has been observed scanning or attacking devices across the Internet. Note:
       It checks against the last 60 days of Internet scanner data.'
@@ -95,35 +100,39 @@ script:
       type: string
   - arguments:
     - default: false
-      description: "The date the device was most recently observed by GreyNoise. Example: 1d, 2d, 12h, or 1m."
+      description: 'The date the device was most recently observed by GreyNoise. Example:
+        1d, 2d, 12h, or 1m.'
+      isArray: false
       name: last_seen
       required: false
       secret: false
     - default: false
-      description: "The organization that owns the network the IP address belongs to."
+      description: The organization that owns the network the IP address belongs to.
+      isArray: false
       name: organization
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: "Classification of the device. Possible values: unknown, benign, malicious."
+      description: 'Classification of the device. Possible values: unknown, benign,
+        malicious.'
       isArray: false
       name: classification
       predefined:
-        - unknown
-        - benign
-        - malicious
+      - unknown
+      - benign
+      - malicious
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: false
+      defaultValue: 'false'
       description: Whether the IP is spoofable or not.
       isArray: false
       name: spoofable
       predefined:
-        - "true"
-        - "false"
+      - 'true'
+      - 'false'
       required: false
       secret: false
     - default: false
@@ -140,12 +149,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: "GNQL query to filter records.\n
-        Note: It merges other arguments and takes higher precedence over the same argument if supplied.\n
-        Example:\n
-        malicious,\n
-        spoofable:false SSH Scanner,\n
-        spoofable:false classification:benign tags:POP3 Scanner cve:CVE-2010-0103"
+      description: |-
+        GNQL query to filter records.
+         Note: It merges other arguments and takes higher precedence over the same argument if supplied.
+         Example:
+         malicious,
+         spoofable:false SSH Scanner,
+         spoofable:false classification:benign tags:POP3 Scanner cve:CVE-2010-0103
       isArray: false
       name: advanced_query
       required: false
@@ -271,14 +281,21 @@ script:
     - contextPath: GreyNoise.Query.scroll
       description: Scroll token to paginate through results.
       type: string
+    - contextPath: GreyNoise.IP.bot
+      description: Whether the IP is associated with known bot activity or not. Common examples include credential stuffing, content scraping, or brute force attacks.
+      type: Boolean
   - arguments:
     - default: false
-      description: "The date the device was most recently observed by GreyNoise. Example: 1d, 2d, 12h, or 1m."
+      description: 'The date the device was most recently observed by GreyNoise. Example:
+        1d, 2d, 12h, or 1m.'
+      isArray: false
       name: last_seen
       required: false
       secret: false
     - default: false
-      description: "The organization that owns the network that the IP address belongs to."
+      description: The organization that owns the network that the IP address belongs
+        to.
+      isArray: false
       name: organization
       required: false
       secret: false
@@ -288,20 +305,20 @@ script:
       isArray: false
       name: classification
       predefined:
-        - unknown
-        - benign
-        - malicious
+      - unknown
+      - benign
+      - malicious
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: false
+      defaultValue: 'false'
       description: Whether the IP is spoofable or not.
       isArray: false
       name: spoofable
       predefined:
-        - "true"
-        - "false"
+      - 'true'
+      - 'false'
       required: false
       secret: false
     - default: false
@@ -318,12 +335,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: "GNQL query to filter records.\n
-        Note: It merges other arguments and takes higher precedence over the same argument if supplied.\n
-        Example:\n
-        malicious,\n
-        spoofable:false SSH Scanner,\n
-        spoofable:false classification:benign tags:POP3 Scanner cve:CVE-2010-0103"
+      description: |-
+        GNQL query to filter records.
+         Note: It merges other arguments and takes higher precedence over the same argument if supplied.
+         Example:
+         malicious,
+         spoofable:false SSH Scanner,
+         spoofable:false classification:benign tags:POP3 Scanner cve:CVE-2010-0103
       isArray: false
       name: advanced_query
       required: false
@@ -395,7 +413,47 @@ script:
     - contextPath: GreyNoise.Stats.stats.asns.count
       description: Asn count.
       type: number
-  dockerimage: demisto/greynoise:1.0.0.15264
+  - arguments:
+    - default: true
+      description: The IP address to be checked if it is potentially harmful or not
+      isArray: false
+      name: ip
+      required: true
+      secret: false
+    deprecated: false
+    description: Identifies IPs from known benign services and organizations that
+      commonly cause false positives in network security and threat intelligence products.
+      The collection of IPs in RIOT is continually curated and verified to provide
+      accurate results. These IPs are extremely unlikely to pose a threat to your
+      network.
+    execution: false
+    name: greynoise-riot
+    outputs:
+    - contextPath: GreyNoise.Riot.ip
+      description: The IP given to check riot information about.
+      type: String
+    - contextPath: GreyNoise.Riot.riot
+      description: The riot of the IP. "True" or "False"
+      type: String
+    - contextPath: GreyNoise.Riot.category
+      description: The category of the IP if riot is "True".
+      type: String
+    - contextPath: GreyNoise.Riot.name
+      description: The name of the IP if the riot is "True".
+      type: String
+    - contextPath: GreyNoise.Riot.description
+      description: The description of the IP if riot is "True".
+      type: String
+    - contextPath: GreyNoise.Riot.explanation
+      description: The explanation of the IP if riot is "True".
+      type: String
+    - contextPath: GreyNoise.Riot.last_updated
+      description: The last updated time of the IP if the riot is "True".
+      type: Date
+    - contextPath: GreyNoise.Riot.reference
+      description: The reference of the IP if riot is "True".
+      type: String
+  dockerimage: demisto/greynoise:1.0.0.24037
   feed: false
   isfetch: false
   longRunning: false
@@ -404,6 +462,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
+fromversion: 5.0.0

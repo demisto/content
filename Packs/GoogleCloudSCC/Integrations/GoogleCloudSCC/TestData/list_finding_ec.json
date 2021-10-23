@@ -1,5 +1,5 @@
 {
-  "GoogleCloudSCC.Finding(val.name == obj.name)": [
+  "GoogleCloudSCC.Finding(val.name && val.name == obj.name)": [
     {
       "resource": {
         "name": "name",
@@ -71,7 +71,7 @@
       "readTime": "2021-01-28T12:25:49.075Z"
     }
   ],
-  "GoogleCloudSCC.Token(val.name == obj.name)": {
+  "GoogleCloudSCC.Token(val.name && val.name == obj.name)": {
     "name": "google-cloud-scc-finding-list",
     "nextPageToken": "nextPageToken"
   }

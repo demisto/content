@@ -74,10 +74,11 @@ configuration:
   name: incidentType
   required: false
   type: 13
-description: Unique threat intel technology that automatically serves up relevant
+description: Deprecated. Use Recorded Future v2 from RecordedFuture pack instead. Unique threat intel technology that automatically serves up relevant
   insights in real time.
-display: Recorded Future
+display: Recorded Future (Deprecated)
 name: Recorded Future
+deprecated: true
 script:
   commands:
   - arguments:
@@ -1516,6 +1517,7 @@ script:
   script: '-'
   subtype: python2
   type: python
+  dockerimage: demisto/python:2.7.18.20958
 tests:
 - Recorded Future Test
 fromversion: 5.0.0

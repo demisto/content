@@ -1,0 +1,27 @@
+{
+  "success": {
+    "success": true,
+    "totalRecords": 2,
+    "results": [
+      {
+        "firstSeen": "2018-07-13 14:24:40",
+        "lastSeen": "2021-03-08 21:31:45",
+        "hostname": "dummy hostname",
+        "cookieName": "dummy cookie name",
+        "cookieDomain": "dummy domain"
+      },
+      {
+        "firstSeen": "2018-07-13 14:24:40",
+        "lastSeen": "2021-03-08 21:31:45",
+        "hostname": "dummy hostname",
+        "cookieName": "dummy cookie name",
+        "cookieDomain": "dummy domain"
+      }
+    ]
+  },
+  "zeroRecords": {
+    "success": true,
+    "totalRecords": 0,
+    "results": []
+  }
+}

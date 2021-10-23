@@ -33,7 +33,7 @@ subtype: python2
 tags:
 - enhancement
 - splunk
-comment: Deprecated. Run a query through Splunk and format the results as a table
+comment: Deprecated. No available replacement. Run a query through Splunk and format the results as a table.
 enabled: true
 args:
 - name: query
@@ -48,3 +48,4 @@ dependson:
   must:
   - splunk-search
 fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.24066

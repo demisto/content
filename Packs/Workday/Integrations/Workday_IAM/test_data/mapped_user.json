@@ -44,5 +44,6 @@
    "Regular_Employee_Flag":"Y",
    "Preferred_Name_-_Last_Name":"Rahardjo",
    "Cost_Center_Code":"120100",
-   "Location":"Office - USA - CA - Headquarters"
+   "Location":"Office - USA - CA - Headquarters",
+   "Source Priority": 1
 }

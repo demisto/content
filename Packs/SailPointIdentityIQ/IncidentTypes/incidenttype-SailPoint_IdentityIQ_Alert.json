@@ -18,9 +18,6 @@
     "autorun": false,
     "disabled": false,
     "reputationCalc": 0,
-    "closureScript": "",
-    "playbookId": "",
-    "preProcessingScript": "",
     "layout": "SailPoint IdentityIQ Alert",
     "fromVersion": "6.0.0"
 }

@@ -1,4 +1,4 @@
-Converts UNIX Epoch time stamp to a simplified extended ISO format string. Use tihs script to convert a time stamp to a Demisto date field.
+Converts UNIX Epoch time stamp to a simplified extended ISO format string. Use tihs script to convert a time stamp to a Cortex XSOAR date field.
 
 For example, "1525006939" will return '2018-04-29T13:02:19.000Z'.
 

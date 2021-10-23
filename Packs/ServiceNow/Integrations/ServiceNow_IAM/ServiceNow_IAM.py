@@ -129,7 +129,7 @@ def test_module(client):
 
 def get_mapping_fields_command(client):
     service_now_fields = client.get_service_now_fields()
-    incident_type_scheme = SchemeTypeMapping(type_name=IAMUserProfile.INDICATOR_TYPE)
+    incident_type_scheme = SchemeTypeMapping(type_name=IAMUserProfile.DEFAULT_INCIDENT_TYPE)
 
     for field, description in service_now_fields.items():
         incident_type_scheme.add_field(field, description)
@@ -199,7 +199,7 @@ def disable_user_command(client, args, is_command_enabled):
     return user_profile
 
 
-def create_user_command(client, args, mapper_out, is_command_enabled):
+def create_user_command(client, args, mapper_out, is_command_enabled, is_update_enabled, is_enable_enabled):
     user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
 
     if not is_command_enabled:
@@ -211,10 +211,12 @@ def create_user_command(client, args, mapper_out, is_command_enabled):
             service_now_user = client.get_user(user_profile.get_attribute('email'))
             if service_now_user:
                 # if user exists, update it
-                user_profile = update_user_command(client, args, mapper_out, True, False, False)
+                user_profile = update_user_command(client, args, mapper_out, is_update_enabled,
+                                                   is_enable_enabled, False, False)
 
             else:
-                service_now_profile = user_profile.map_object(mapper_out)
+                service_now_profile = user_profile.map_object(mapper_out,
+                                                              incident_type=IAMUserProfile.CREATE_INCIDENT_TYPE)
                 created_user = client.create_user(service_now_profile)
                 user_profile.set_result(
                     action=IAMActions.CREATE_USER,
@@ -232,7 +234,8 @@ def create_user_command(client, args, mapper_out, is_command_enabled):
     return user_profile
 
 
-def update_user_command(client, args, mapper_out, is_command_enabled, is_create_user_enabled, create_if_not_exists):
+def update_user_command(client, args, mapper_out, is_command_enabled, is_enable_enabled,
+                        is_create_user_enabled, create_if_not_exists):
     user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
     allow_enable = args.get('allow-enable') == 'true'
     if not is_command_enabled:
@@ -244,9 +247,10 @@ def update_user_command(client, args, mapper_out, is_command_enabled, is_create_
             service_now_user = client.get_user(user_profile.get_attribute('email'))
             if service_now_user:
                 user_id = service_now_user.get('sys_id')
-                service_now_profile = user_profile.map_object(mapper_out)
+                service_now_profile = user_profile.map_object(mapper_out,
+                                                              incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
 
-                if allow_enable:
+                if allow_enable and is_enable_enabled:
                     service_now_profile['active'] = True
                     service_now_profile['locked_out'] = False
 
@@ -262,7 +266,8 @@ def update_user_command(client, args, mapper_out, is_command_enabled, is_create_
                 )
             else:
                 if create_if_not_exists:
-                    user_profile = create_user_command(client, args, mapper_out, is_create_user_enabled)
+                    user_profile = create_user_command(client, args, mapper_out, is_create_user_enabled,
+                                                       False, False)
                 else:
                     _, error_message = IAMErrors.USER_DOES_NOT_EXIST
                     user_profile.set_result(action=IAMActions.UPDATE_USER,
@@ -293,6 +298,7 @@ def main():
 
     is_create_enabled = params.get("create_user_enabled")
     is_disable_enabled = params.get("disable_user_enabled")
+    is_enable_enabled = params.get("enable_user_enabled")
     is_update_enabled = demisto.params().get("update_user_enabled")
     create_if_not_exists = demisto.params().get("create_if_not_exists")
 
@@ -316,10 +322,11 @@ def main():
         user_profile = get_user_command(client, args, mapper_in)
 
     elif command == 'iam-create-user':
-        user_profile = create_user_command(client, args, mapper_out, is_create_enabled)
+        user_profile = create_user_command(client, args, mapper_out, is_create_enabled, is_update_enabled,
+                                           is_enable_enabled)
 
     elif command == 'iam-update-user':
-        user_profile = update_user_command(client, args, mapper_out, is_update_enabled,
+        user_profile = update_user_command(client, args, mapper_out, is_update_enabled, is_enable_enabled,
                                            is_create_enabled, create_if_not_exists)
 
     elif command == 'iam-disable-user':

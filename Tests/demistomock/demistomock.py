@@ -772,7 +772,9 @@ def incidents(incidents=None):
 
 
 def incident():
-    """Retrieves the current incident
+    """Retrieves the current incident and all its fields (e.g. name, type).
+    The incident custom fields will be populated as a `dict` under the CustomFields attribute
+    (for example the `filename` custom field can be retrieved using `demisto.incident()['CustomFields'].get('filename')`).
 
     Returns:
       dict: dict representing an incident object
@@ -988,12 +990,13 @@ def integrationInstance():
     return ""
 
 
-def createIndicators(indicators_batch):
+def createIndicators(indicators_batch, noUpdate=False):
     """(Integration only)
     Creates indicators from given indicator objects batch
 
     Args:
       indicators_batch (list): List of indicators objects to create
+      noUpdate (bool): No update on fetched feed (no new indicators to fetch), Available from Server version 6.5.0.
 
     Returns:
       None: No data returned
@@ -1002,8 +1005,11 @@ def createIndicators(indicators_batch):
     return ""
 
 
-def searchIndicators(fromDate='', query='', size=100, page=0, toDate='', value='', searchAfter=None):
-    """Searches for indicators according to given query
+def searchIndicators(fromDate='', query='', size=100, page=0, toDate='', value='', searchAfter=None,
+                     populateFields=None):
+    """Searches for indicators according to given query.
+    If using Elasticsearch with Cortex XSOAR 6.1 or later,
+    the searchAfter argument must be used instead of the page argument.
 
     Args:
       fromdate (str): The start date to search from (Default value = '')
@@ -1013,10 +1019,31 @@ def searchIndicators(fromDate='', query='', size=100, page=0, toDate='', value='
       todate (str): The end date to search until to (Default value = '')
       value (str): The indicator value to search (Default value = '')
       searchAfter (str): Use the last searchIndicators() outputs for search batch (Default value = None)
+      populateFields (str): Comma separated fields to filter (e.g. "value,type")
 
     Returns:
       dict: Object contains the search results
 
+    You can searchIndicators one batch at a time, without needing to load all indicators at once, by adding the argument
+    searchAfter after the demisto.executeCommand.
+    When you run a search for the query type:IP, the return value includes searchAfter
+    ```
+    >>> demisto.executeCommand(searchIndicators, "query": 'type:IP', "size" :1000})
+    {
+        "iocs": [],
+        "searchAfter": [1596106239679, dd7aa6abfcb3adf793922618005b2ad5],
+        "total": 7432
+    }
+    ```
+    You can then use the returned value of searchAfter to iterate over all batches.
+    ```
+    >>> res = demisto.executeCommand("searchIndicators", {"query" : 'type:IP', "size" : 1000})
+    >>> search_after_title = 'searchAfter'
+    >>> while search_after_title in res and res[search_after_title] is not None:
+    >>>     demisto.results(res)
+    >>>     res = demisto.executeCommand("searchIndicators",
+    >>>                                 {"query" : 'type:IP', "size" : 1000, "searchAfter" : res[search_after_title]})
+    ```
     """
     return {}
 
@@ -1049,7 +1076,7 @@ def mapObject(obj, mapper, mapper_type):
       dict: the obj after mapping
 
     """
-    return {}
+    return obj
 
 
 def getModules():

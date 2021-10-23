@@ -173,8 +173,8 @@ def ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
         outputs = {'Address': report['ip'],
                    'Score': report.get('score'),
                    'Geo': {'Country': report.get('geo', {}).get('country', '')}}
-        additional_info = {string_to_context_key(field): report[field] for field in
-                           ['reason', 'reasonDescription', 'subnets']}
+        additional_info: dict = {string_to_context_key(field): report.get(field) for field in
+                                 ['reason', 'reasonDescription', 'subnets']}
         dbot_score = {'Indicator': report['ip'], 'Type': 'ip', 'Vendor': 'XFE',
                       'Score': calculate_score(report['score'], threshold), 'Reliability': client.reliability}
 
@@ -185,9 +185,13 @@ def ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
         context[f'XFE.{outputPaths["ip"]}'].append(additional_info)
         context[DBOT_SCORE_KEY].append(dbot_score)
 
+        reason = f'{additional_info["Reason"]}:\n{additional_info["Reasondescription"]}' \
+            if additional_info["Reason"] else 'Reason not found.'
+        subnets = additional_info.get('Subnets', [])
+        subnets_list = [subnet.get('subnet') for subnet in subnets]
         table = {'Score': report['score'],
-                 'Reason': f'{additional_info["Reason"]}:\n{additional_info["Reasondescription"]}',
-                 'Subnets': ', '.join(subnet.get('subnet') for subnet in additional_info['Subnets'])}
+                 'Reason': reason,
+                 'Subnets': ', '.join(subnets_list)}
         markdown += tableToMarkdown(f'X-Force IP Reputation for: {report["ip"]}\n'
                                     f'{XFORCE_URL}/ip/{report["ip"]}', table, removeNull=True)
         reports.append(report)
@@ -405,23 +409,25 @@ def file_command(client: Client, args: Dict[str, str]) -> List[CommandResults]:
         hash_info = {**report['origins'], 'Family': family_value,
                      'FamilyMembers': report_data.get('familyMembers')}
         if client.create_relationships:
-            malware = dict_safe_get(hash_info, ['external', 'family'], [])[0]
-            if malware:
-                relationship = [EntityRelation(name=EntityRelation.Relations.RELATED_TO,
-                                               entity_a=file_hash,
-                                               entity_a_type=FeedIndicatorType.File,
-                                               entity_b=malware,
-                                               entity_b_type="STIX Malware",
-                                               source_reliability=client.reliability,
-                                               brand='XFE')]
+            malware = dict_safe_get(hash_info, ['external', 'family'], [])
+            if malware and isinstance(malware, list):
+                malware = malware[0]
+                relationship = [EntityRelationship(name=EntityRelationship.Relationships.RELATED_TO,
+                                                   entity_a=file_hash,
+                                                   entity_a_type=FeedIndicatorType.File,
+                                                   entity_b=malware,
+                                                   entity_b_type=FeedIndicatorType.indicator_type_by_server_version(
+                                                       "STIX Malware"),
+                                                   source_reliability=client.reliability,
+                                                   brand='XFE')]
 
         hash_type = get_hash_type(file_hash)  # if file_hash found, has to be md5, sha1 or sha256
         if hash_type == 'md5':
-            file = Common.File(md5=file_hash, dbot_score=dbot_score, relations=relationship)
+            file = Common.File(md5=file_hash, dbot_score=dbot_score, relationships=relationship)
         elif hash_type == 'sha1':
-            file = Common.File(sha1=file_hash, dbot_score=dbot_score, relations=relationship)
+            file = Common.File(sha1=file_hash, dbot_score=dbot_score, relationships=relationship)
         elif hash_type == 'sha256':
-            file = Common.File(sha256=file_hash, dbot_score=dbot_score, relations=relationship)
+            file = Common.File(sha256=file_hash, dbot_score=dbot_score, relationships=relationship)
 
         context[f'XFE.{outputPaths["file"]}'] = hash_info
 
@@ -439,7 +445,7 @@ def file_command(client: Client, args: Dict[str, str]) -> List[CommandResults]:
             outputs=context,
             indicator=file,
             raw_response=report,
-            relations=relationship
+            relationships=relationship
         ))
     return command_results
 
@@ -524,7 +530,7 @@ def main():
         if command == 'test-module':
             return_results(test_module(client))
         elif command == 'file':
-            return_results(*commands[command](client, demisto.args()))
+            return_results(commands[command](client, demisto.args()))
         elif command in commands:
             return_outputs(*commands[command](client, demisto.args()))
         else:

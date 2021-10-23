@@ -1,0 +1,17 @@
+{
+  "Incident name": "Automated investigation started manually on one endpoint",
+  "Tags": "test1, test2",
+  "Severity": "Informational",
+  "Incident ID": 263,
+  "Categories": "SuspiciousActivity",
+  "Impacted entities": "",
+  "Active alerts": "0 / 12",
+  "Service sources": "MicrosoftDefenderForEndpoint",
+  "Detection sources": "AutomatedInvestigation",
+  "First activity": "2021-03-22T12:34:31.8123759Z",
+  "Last activity": "2021-03-22T12:59:07.526847Z",
+  "Status": "Resolved",
+  "Assigned to": "assignedTo",
+  "Classification": "Unknown",
+  "Device groups": "deviceDnsName"
+}

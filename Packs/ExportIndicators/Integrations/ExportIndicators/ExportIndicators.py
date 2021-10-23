@@ -1,30 +1,19 @@
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
 import re
-import json
-import traceback
 from base64 import b64decode
-from multiprocessing import Process
-from gevent.pywsgi import WSGIServer
-from tempfile import NamedTemporaryFile
 from flask import Flask, Response, request
 from netaddr import IPAddress, IPSet
-from ssl import SSLContext, SSLError, PROTOCOL_TLSv1_2
-from typing import Callable, List, Any, cast, Dict, Tuple
-
-
-class Handler:
-    @staticmethod
-    def write(msg: str):
-        demisto.info(msg)
-
+from typing import Callable, Any, cast, Dict, Tuple
+from math import ceil
+import dateparser
 
 ''' GLOBAL VARIABLES '''
 INTEGRATION_NAME: str = 'Export Indicators Service'
 PAGE_SIZE: int = 200
-DEMISTO_LOGGER: Handler = Handler()
 APP: Flask = Flask('demisto-export_iocs')
 CTX_VALUES_KEY: str = 'dmst_export_iocs_values'
 CTX_MIMETYPE_KEY: str = 'dmst_export_iocs_mimetype'
@@ -76,6 +65,7 @@ _PROTOCOL_REMOVAL = re.compile(r'^(?:[a-z]+:)*//')
 _PORT_REMOVAL = re.compile(r'^([a-z0-9\-\.]+)(?:\:[0-9]+)*')
 _INVALID_TOKEN_REMOVAL = re.compile(r'(?:[^\./+=\?&]+\*[^\./+=\?&]*)|(?:[^\./+=\?&]*\*[^\./+=\?&]+)')
 _BROAD_PATTERN = re.compile(r'^(?:\*\.)+[a-zA-Z]+(?::[0-9]+)?$')
+
 
 '''Request Arguments Class'''
 
@@ -163,24 +153,6 @@ def list_to_str(inp_list: list, delimiter: str = ',', map_func: Callable = str) 
     return str_res
 
 
-def get_params_port(params: dict) -> int:
-    """
-    Gets port from the integration parameters
-    """
-    port_mapping: str = params.get('longRunningPort', '')
-    err_msg: str
-    port: int
-    if port_mapping:
-        err_msg = f'Listen Port must be an integer. {port_mapping} is not valid.'
-        if ':' in port_mapping:
-            port = try_parse_integer(port_mapping.split(':')[1], err_msg)
-        else:
-            port = try_parse_integer(port_mapping, err_msg)
-    else:
-        raise ValueError('Please provide a Listen Port.')
-    return port
-
-
 def sort_iocs(request_args: RequestArguments, iocs: list) -> list:
     """
     Sorts the IoCs according to the sort field and order.
@@ -201,43 +173,37 @@ def sort_iocs(request_args: RequestArguments, iocs: list) -> list:
     return iocs
 
 
-def refresh_outbound_context(request_args: RequestArguments) -> str:
+def refresh_outbound_context(request_args: RequestArguments, on_demand: bool = False) -> str:
     """
-    Refresh the cache values and format using an indicator_query to call demisto.searchIndicators
+    Refresh the values and format using an indicator_query to call demisto.searchIndicators
+    Update integration cache only in case of running on demand
     Returns: List(IoCs in output format)
     """
     now = datetime.now()
     # poll indicators into list from demisto
-    iocs = find_indicators_with_limit(request_args.query, request_args.limit, request_args.offset)
-    iocs = sort_iocs(request_args, iocs)
-    out_dict, actual_indicator_amount = create_values_for_returned_dict(iocs, request_args)
-
-    # if in CSV format - the "indicator" header
-    if request_args.out_format in [FORMAT_CSV, FORMAT_XSOAR_CSV]:
-        actual_indicator_amount = actual_indicator_amount - 1
-
-    # re-polling in case formatting or ip collapse caused a lack in results
-    while actual_indicator_amount < request_args.limit:
-        # from where to start the new poll and how many results should be fetched
-        new_offset = len(iocs) + request_args.offset + actual_indicator_amount - 1
-        new_limit = request_args.limit - actual_indicator_amount
-
-        # poll additional indicators into list from demisto
-        new_iocs = find_indicators_with_limit(request_args.query, new_limit, new_offset)
-
-        # in case no additional indicators exist - exit
-        if len(new_iocs) == 0:
+    iocs = []
+    out_dict: dict = {}
+    limit = request_args.offset + request_args.limit
+    indicator_searcher = IndicatorsSearcher(
+        query=request_args.query,
+        size=PAGE_SIZE
+    )
+    while True:
+        indicator_searcher.limit = limit + 100  # fetch more indicators to reduce chances of search after truncation
+        new_iocs = find_indicators_with_limit(indicator_searcher)[request_args.offset:limit]
+        if not new_iocs:
             break
-
-        # add the new results to the existing results
         iocs += new_iocs
         iocs = sort_iocs(request_args, iocs)
-
         # reformat the output
         out_dict, actual_indicator_amount = create_values_for_returned_dict(iocs, request_args)
-
-        if request_args.out_format == FORMAT_CSV:
+        if request_args.out_format in [FORMAT_CSV, FORMAT_XSOAR_CSV]:
             actual_indicator_amount = actual_indicator_amount - 1
+        if actual_indicator_amount >= len(iocs) or (indicator_searcher.total and indicator_searcher.total <= limit):
+            # continue searching iocs if 1) iocs was truncated or 2) got all available iocs
+            break
+        # advance search window with gap size
+        limit += (limit - actual_indicator_amount)
 
     if request_args.out_format == FORMAT_JSON:
         out_dict[CTX_MIMETYPE_KEY] = MIMETYPE_JSON
@@ -255,67 +221,37 @@ def refresh_outbound_context(request_args: RequestArguments) -> str:
     else:
         out_dict[CTX_MIMETYPE_KEY] = MIMETYPE_TEXT
 
-    set_integration_context({
-        "last_output": out_dict,
-        'last_run': date_to_timestamp(now),
-        'last_limit': request_args.limit,
-        'last_offset': request_args.offset,
-        'last_format': request_args.out_format,
-        'last_query': request_args.query,
-        'current_iocs': iocs,
-        'mwg_type': request_args.mwg_type,
-        'drop_invalids': request_args.drop_invalids,
-        'strip_port': request_args.strip_port,
-        'category_default': request_args.category_default,
-        'category_attribute': request_args.category_attribute,
-        'collapse_ips': request_args.collapse_ips,
-        'csv_text': request_args.csv_text,
-        'sort_field': request_args.sort_field,
-        'sort_order': request_args.sort_order,
-    })
-    return out_dict[CTX_VALUES_KEY]
+    if on_demand:
+        set_integration_context({
+            "last_output": out_dict,
+            'last_run': date_to_timestamp(now),
+            'last_limit': request_args.limit,
+            'last_offset': request_args.offset,
+            'last_format': request_args.out_format,
+            'last_query': request_args.query,
+            'current_iocs': iocs,
+            'mwg_type': request_args.mwg_type,
+            'drop_invalids': request_args.drop_invalids,
+            'strip_port': request_args.strip_port,
+            'category_default': request_args.category_default,
+            'category_attribute': request_args.category_attribute,
+            'collapse_ips': request_args.collapse_ips,
+            'csv_text': request_args.csv_text,
+            'sort_field': request_args.sort_field,
+            'sort_order': request_args.sort_order,
+        })
+    return out_dict[CTX_VALUES_KEY] if CTX_VALUES_KEY in out_dict else []
 
 
-def find_indicators_with_limit(indicator_query: str, limit: int, offset: int) -> list:
+def find_indicators_with_limit(indicator_searcher: IndicatorsSearcher) -> list:
     """
     Finds indicators using demisto.searchIndicators
     """
-    # calculate the starting page (each page holds 200 entries)
-    if offset:
-        next_page = int(offset / PAGE_SIZE)
-
-        # set the offset from the starting page
-        offset_in_page = offset - (PAGE_SIZE * next_page)
-
-    else:
-        next_page = 0
-        offset_in_page = 0
-
-    iocs, _ = find_indicators_with_limit_loop(indicator_query, limit, next_page=next_page)
-
-    # if offset in page is bigger than the amount of results returned return empty list
-    if len(iocs) <= offset_in_page:
-        return []
-
-    return iocs[offset_in_page:limit + offset_in_page]
-
-
-def find_indicators_with_limit_loop(indicator_query: str, limit: int, total_fetched: int = 0, next_page: int = 0,
-                                    last_found_len: int = PAGE_SIZE):
-    """
-    Finds indicators using while loop with demisto.searchIndicators, and returns result and last page
-    """
     iocs: List[dict] = []
-    if not last_found_len:
-        last_found_len = total_fetched
-    search_indicators = IndicatorsSearcher(page=next_page)
-
-    while last_found_len == PAGE_SIZE and limit and total_fetched < limit:
-        fetched_iocs = search_indicators.search_indicators_by_version(query=indicator_query, size=PAGE_SIZE).get('iocs')
+    for ioc_res in indicator_searcher:
+        fetched_iocs = ioc_res.get('iocs') or []
         iocs.extend(fetched_iocs)
-        last_found_len = len(fetched_iocs)
-        total_fetched += last_found_len
-    return iocs, search_indicators.page
+    return iocs
 
 
 def ip_groups_to_cidrs(ip_range_groups: list):
@@ -466,17 +402,18 @@ def create_proxysg_out_format(iocs: list, category_attribute: list, category_def
 
     for indicator in iocs:
         if indicator.get('indicator_type') in ['URL', 'Domain', 'DomainGlob'] and indicator.get('value'):
+            stripped_indicator = _PROTOCOL_REMOVAL.sub('', indicator.get('value'))
             indicator_proxysg_category = indicator.get('proxysgcategory')
             # if a ProxySG Category is set and it is in the category_attribute list or that the attribute list is empty
             # than list add the indicator to it's category list
             if indicator_proxysg_category is not None and \
                     (indicator_proxysg_category in category_attribute or len(category_attribute) == 0):
-                category_dict = add_indicator_to_category(indicator.get('value'), indicator_proxysg_category,
+                category_dict = add_indicator_to_category(stripped_indicator, indicator_proxysg_category,
                                                           category_dict)
 
             else:
                 # if ProxySG Category is not set or does not exist in the category_attribute list
-                category_dict = add_indicator_to_category(indicator.get('value'), category_default, category_dict)
+                category_dict = add_indicator_to_category(stripped_indicator, category_default, category_dict)
 
     for category, indicator_list in category_dict.items():
         sub_output_string = f"define category {category}\n"
@@ -773,16 +710,21 @@ def route_list_values() -> Response:
             if not validate_basic_authentication(headers, username, password):
                 err_msg: str = 'Basic authentication failed. Make sure you are using the right credentials.'
                 demisto.debug(err_msg)
-                return Response(err_msg, status=401)
+                return Response(err_msg, status=401, mimetype='text/plain', headers=[
+                    ('WWW-Authenticate', 'Basic realm="Login Required"'),
+                ])
 
         request_args = get_request_args(params)
+        created = datetime.now(timezone.utc)
+        cache_refresh_rate = params.get('cache_refresh_rate')
 
         values = get_outbound_ioc_values(
             on_demand=params.get('on_demand'),
             last_update_data=get_integration_context(),
-            cache_refresh_rate=params.get('cache_refresh_rate'),
+            cache_refresh_rate=cache_refresh_rate,
             request_args=request_args
         )
+        query_time = (datetime.now(timezone.utc) - created).total_seconds()
 
         if not get_integration_context() and params.get('on_demand'):
             values = 'You are running in On-Demand mode - please run !eis-update command to initialize the ' \
@@ -791,8 +733,34 @@ def route_list_values() -> Response:
         elif not values:
             values = "No Results Found For the Query"
 
+        # if the case there are strings to add to the EDL, add them if the output type is text
+        if request_args.out_format == FORMAT_TEXT:
+            append_str = params.get("append_string")
+            prepend_str = params.get("prepend_string")
+            if append_str:
+                append_str = append_str.replace("\\n", "\n")
+                values = f"{values}{append_str}"
+            if prepend_str:
+                prepend_str = prepend_str.replace("\\n", "\n")
+                values = f"{prepend_str}\n{values}"
+
         mimetype = get_outbound_mimetype()
-        return Response(values, status=200, mimetype=mimetype)
+
+        list_size = 0
+        if values.strip():
+            list_size = values.count('\n') + 1  # add 1 as last line doesn't have a \n
+        max_age = ceil((datetime.now() - dateparser.parse(cache_refresh_rate)).total_seconds())  # type: ignore[operator]
+        demisto.debug(f'Returning exported indicators list of size: [{list_size}], created: [{created}], '
+                      f'query time seconds: [{query_time}], max age: [{max_age}]')
+        resp = Response(values, status=200, mimetype=mimetype, headers=[
+            ('X-ExportIndicators-Created', created.isoformat()),
+            ('X-ExportIndicators-Query-Time-Secs', "{:.3f}".format(query_time)),
+            ('X-ExportIndicators-Size', str(list_size))
+        ])
+        resp.cache_control.max_age = max_age
+        resp.cache_control[
+            'stale-if-error'] = '600'  # number of seconds we are willing to serve stale content when there is an error
+        return resp
 
     except Exception:
         return Response(traceback.format_exc(), status=400, mimetype='text/plain')
@@ -811,9 +779,6 @@ def test_module(args, params):
     on_demand = params.get('on_demand', None)
     if not on_demand:
         try_parse_integer(params.get('list_size'), CTX_LIMIT_ERR_MSG)  # validate export_iocs Size was set
-        query = params.get('indicators_query')  # validate indicators_query isn't empty
-        if not query:
-            raise ValueError('"Indicator Query" is required. Provide a valid query.')
         cache_refresh_rate = params.get('cache_refresh_rate', '')
         if not cache_refresh_rate:
             raise ValueError(CTX_MISSING_REFRESH_ERR_MSG)
@@ -829,65 +794,6 @@ def test_module(args, params):
         parse_date_range(cache_refresh_rate, to_timestamp=True)
     run_long_running(params, is_test=True)
     return 'ok'
-
-
-def run_long_running(params, is_test=False):
-    """
-    Start the long running server
-    :param params: Demisto params
-    :param is_test: Indicates whether it's test-module run or regular run
-    :return: None
-    """
-    certificate: str = params.get('certificate', '')
-    private_key: str = params.get('key', '')
-
-    certificate_path = str()
-    private_key_path = str()
-
-    try:
-        port = get_params_port(params)
-        ssl_args = dict()
-
-        if (certificate and not private_key) or (private_key and not certificate):
-            raise DemistoException('If using HTTPS connection, both certificate and private key should be provided.')
-
-        if certificate and private_key:
-            certificate_file = NamedTemporaryFile(delete=False)
-            certificate_path = certificate_file.name
-            certificate_file.write(bytes(certificate, 'utf-8'))
-            certificate_file.close()
-
-            private_key_file = NamedTemporaryFile(delete=False)
-            private_key_path = private_key_file.name
-            private_key_file.write(bytes(private_key, 'utf-8'))
-            private_key_file.close()
-            context = SSLContext(PROTOCOL_TLSv1_2)
-            context.load_cert_chain(certificate_path, private_key_path)
-            ssl_args['ssl_context'] = context
-            demisto.debug('Starting HTTPS Server')
-        else:
-            demisto.debug('Starting HTTP Server')
-
-        server = WSGIServer(('', port), APP, **ssl_args, log=DEMISTO_LOGGER)
-        if is_test:
-            server_process = Process(target=server.serve_forever)
-            server_process.start()
-            time.sleep(5)
-            server_process.terminate()
-        else:
-            server.serve_forever()
-    except SSLError as e:
-        ssl_err_message = f'Failed to validate certificate and/or private key: {str(e)}'
-        demisto.error(ssl_err_message)
-        raise ValueError(ssl_err_message)
-    except Exception as e:
-        demisto.error(f'An error occurred in long running loop: {str(e)}')
-        raise ValueError(str(e))
-    finally:
-        if certificate_path:
-            os.unlink(certificate_path)
-        if private_key_path:
-            os.unlink(private_key_path)
 
 
 def update_outbound_command(args, params):
@@ -921,7 +827,7 @@ def update_outbound_command(args, params):
     request_args = RequestArguments(query, out_format, limit, offset, mwg_type, strip_port, drop_invalids,
                                     category_default, category_attribute, collapse_ips, csv_text, sort_field, sort_order)
 
-    indicators = refresh_outbound_context(request_args)
+    indicators = refresh_outbound_context(request_args, on_demand=on_demand)
     if indicators:
         hr = tableToMarkdown('List was updated successfully with the following values', indicators,
                              ['Indicators']) if print_indicators == 'true' else 'List was updated successfully'
@@ -961,8 +867,12 @@ def main():
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
     except Exception as e:
+        demisto.error(traceback.format_exc())
         err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
         return_error(err_msg)
+
+
+from NGINXApiModule import *  # noqa: E402
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:

@@ -1,0 +1,183 @@
+category: Vulnerability Management
+commonfields:
+  id: Cyberpion
+  version: -1
+configuration:
+- display: Server URL (e.g. https://api.example.com/security/api)
+  name: url
+  required: true
+  type: 0
+- display: API Key
+  name: apikey
+  required: true
+  type: 4
+- additionalinfo: Allowed values are integers between 1 to 500.
+  defaultvalue: '200'
+  display: Maximum number of incidents per fetch
+  name: max_fetch
+  required: false
+  type: 0
+- additionalinfo: 'Allowed values: "DNS", "PKI", "Cloud", "Vulnerabilities".'
+  defaultvalue: DNS,PKI,Cloud,Vulnerabilities
+  display: Action items category to fetch as incidents.
+  name: categories
+  options:
+  - DNS
+  - PKI
+  - Cloud
+  - Vulnerabilities
+  required: true
+  type: 16
+- additionalinfo: |-
+    Allowed values are integers between 1 to 10.
+    1 will fetch all incidents.
+  defaultvalue: '7'
+  display: Minimum Action items severity level to fetch incidents from.
+  name: minSeverity
+  options:
+  - '1'
+  - '2'
+  - '3'
+  - '4'
+  - '5'
+  - '6'
+  - '7'
+  - '8'
+  - '9'
+  - '10'
+  required: true
+  type: 15
+- defaultvalue: 7 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
+  required: false
+  type: 0
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: 'true'
+  display: Show only active issues
+  name: ShowOnlyActive
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  hidden: false
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  hidden: false
+  name: proxy
+  required: false
+  type: 8
+description: The Cyberpion integration allows you to seamlessly receive all your Cyberpion security solution Action Items and supportive information to your Cortex XSOAR.
+display: Cyberpion
+name: Cyberpion
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Get action items for this domain
+      isArray: false
+      name: domain
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves domain's action items
+    execution: false
+    name: cyberpion-get-domain-action-items
+    outputs:
+    - contextPath: Cyberpion.DomainData.Vulnerabilities.id
+      description: Action item ID
+      type: String
+    - contextPath: Cyberpion.DomainData.Domain
+      description: Domain to get action items that are related to
+      type: String
+    - contextPath: Cyberpion.DomainData.Vulnerabilities.category
+      description: Category of action item. can be DNS, PKI, Cloud, Vulnerability
+      type: String
+    - contextPath: Cyberpion.DomainData.Vulnerabilities.urgency
+      description: Action item urgency
+      type: Number
+    - contextPath: Cyberpion.DomainData.Vulnerabilities.is_open
+      description: Is action item still relevant (open)
+      type: Boolean
+    - contextPath: Cyberpion.DomainData.Vulnerabilities.creation_time
+      description: Action item's creation time
+      type: Date
+    - contextPath: Cyberpion.DomainData.Vulnerabilities.link
+      description: Link to the action item in Cyberpion's portal
+      type: String
+    - contextPath: Cyberpion.DomainData.Vulnerabilities.title
+      description: Action item's title
+      type: String
+    - contextPath: Cyberpion.DomainData.Vulnerabilities.impact
+      description: Action item's potential impact from a security perspective
+      type: String
+    - contextPath: Cyberpion.DomainData.Vulnerabilities.summary
+      description: Action item summary
+      type: String
+    - contextPath: Cyberpion.DomainData.Vulnerabilities.solution
+      description: The necessary course of action needed to remediate the threat
+      type: String
+    - contextPath: Cyberpion.DomainData.Vulnerabilities.description
+      description: Description of the source of the issue that was detected
+      type: String
+    - contextPath: Cyberpion.DomainData.Vulnerabilities.technical_details
+      description: Technical details of the issue
+      type: String
+  - arguments:
+    - default: false
+      description: Get info and current state of this domain
+      isArray: false
+      name: domain
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves domain's info and current state
+    execution: false
+    name: cyberpion-get-domain-state
+    outputs:
+    - contextPath: Cyberpion.DomainState.id
+      description: Domain State ID
+      type: String
+    - contextPath: Cyberpion.DomainState.domain
+      description: The Domain
+      type: String
+    - contextPath: Cyberpion.DomainState.ips
+      description: Reverse Ip's of domain's ips
+      type: String
+    - contextPath: Cyberpion.DomainState.risk_rank
+      description: Domain's risk rank
+      type: Number
+    - contextPath: Cyberpion.DomainState.vuln_count
+      description: Number of vulnerabilities associated with domain
+      type: Number
+    - contextPath: Cyberpion.DomainState.cname_chain
+      description: 'Domain''s CName chain (DNS record) '
+      type: String
+    - contextPath: Cyberpion.DomainState.domain_types
+      description: Domain's infrastructure info (provider etc.)
+      type: String
+    - contextPath: Cyberpion.DomainState.discovery_date
+      description: The Date domain was discovered
+      type: Date
+  dockerimage: demisto/python3:3.9.7.24076
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+defaultmapperin: Cyberpion-Mapper
+defaultclassifier: Cyberpion-Classifier
+fromversion: 6.0.0

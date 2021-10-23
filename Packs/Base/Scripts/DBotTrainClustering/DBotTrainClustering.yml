@@ -1,0 +1,197 @@
+args:
+- default: false
+  description: Comma-separated list of incident fields to take into account when training
+    the clustering.
+  isArray: false
+  name: fieldsForClustering
+  required: false
+  secret: false
+- default: false
+  description: Incident field that represents the family name for each cluster created.
+    The model determines how many incidents in the cluster have the same value in
+    the fieldForClusterName field. The largest numbers of incidents with the same
+    value, determine the cluster name.
+  isArray: true
+  name: fieldForClusterName
+  required: false
+  secret: false
+- default: false
+  defaultValue: 1 month ago
+  description: The start date by which to filter incidents. Date format will be the
+    same as in the incidents query page, for example, "3 days ago", ""2019-01-01T00:00:00
+    +0200").
+  isArray: false
+  name: fromDate
+  predefined:
+  - ''
+  required: false
+  secret: false
+- default: false
+  description: The end date by which to filter incidents. Date format will be the
+    same as in the incidents query page, for example, "3 days ago", ""2019-01-01T00:00:00
+    +0200").
+  isArray: false
+  name: toDate
+  required: false
+  secret: false
+- default: false
+  defaultValue: '3000'
+  description: The maximum number of incidents to query.
+  isArray: false
+  name: limit
+  required: false
+  secret: false
+- default: false
+  description: Argument for the query.
+  isArray: false
+  name: query
+  required: false
+  secret: false
+- default: false
+  defaultValue: '2'
+  description: Minimum number of incidents a cluster should contain for it to be retained.
+  isArray: false
+  name: minNumberofIncidentPerCluster
+  required: false
+  secret: false
+- default: false
+  description: Name of the model.
+  isArray: false
+  name: modelName
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'False'
+  description: Whether to store the model in the system.
+  isArray: false
+  name: storeModel
+  predefined:
+  - 'True'
+  - 'False'
+  required: false
+  secret: false
+- default: false
+  defaultValue: '0.4'
+  description: Keep samples in the cluster when the family ratio is above this number.
+    Will be effective only if fieldForClusterName is given.
+  isArray: false
+  name: minHomogeneityCluster
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  description: Whether to override the existing model if a model with the same name
+    exists. Default is "False".
+  isArray: false
+  name: overrideExistingModel
+  predefined:
+  - 'True'
+  - 'False'
+  required: false
+  secret: false
+- default: false
+  description: Type of incident to train the model on. If empty, will consider all
+    types.
+  isArray: false
+  name: type
+  required: false
+  secret: false
+- default: false
+  defaultValue: '0.3'
+  description: If a field has a higher missing value than this ratio it will be removed.
+  isArray: false
+  name: maxRatioOfMissingValue
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'False'
+  description: Whether to return more information about the clustering. Default is
+    "False".
+  isArray: false
+  name: debug
+  predefined:
+  - 'False'
+  - 'True'
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'False'
+  description: Whether to re-train the model in any cases. Default is "False".
+  isArray: false
+  name: forceRetrain
+  predefined:
+  - 'True'
+  - 'False'
+  required: false
+  secret: false
+- default: false
+  defaultValue: '24'
+  description: Period of time (in hours) before retraining the model. Default is "24".
+  isArray: false
+  name: modelExpiration
+  predefined:
+  - ''
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'True'
+  description: Whether to hide the model in the ML page.
+  isArray: false
+  name: modelHidden
+  predefined:
+  - 'True'
+  - 'False'
+  required: false
+  secret: false
+- default: false
+  description: Search query input from the dashboard.
+  isArray: false
+  name: searchQuery
+  required: false
+  secret: false
+- default: false
+  description: Comma-separated list of additional incident fields to display, but
+    which will not be taken into account when computing similarity.
+  isArray: false
+  name: fieldsToDisplay
+  required: false
+  secret: false
+- default: false
+  defaultValue: '500'
+  description: Number of features per field.
+  isArray: false
+  name: numberOfFeaturesPerField
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: char
+  description: 'Whether the feature should be made of word or character n-grams. Possible values: "char" and "word".'
+  isArray: false
+  name: analyzer
+  predefined:
+  - char
+  - word
+  required: false
+  secret: false
+comment: Train clustering model on any incident type.
+commonfields:
+  id: DBotTrainClustering
+  version: -1
+enabled: false
+name: DBotTrainClustering
+script: '-'
+subtype: python3
+system: false
+tags:
+- ml
+timeout: 3.6µs
+type: python
+dockerimage: demisto/mlclustering:1.0.0.23151
+tests:
+- No tests (auto formatted)
+fromversion: 6.2.0

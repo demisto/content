@@ -1,6 +1,5 @@
 id: AWS-securityhub Test
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: AWS-securityhub Test
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -525,6 +525,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -589,3 +590,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+description: ''

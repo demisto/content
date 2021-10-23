@@ -181,7 +181,8 @@ def last_run_data():
         'LAST_RUN_TIME': '2019-11-12T15:00:00Z',
         'LAST_RUN_IDS': [],
         'LAST_RUN_FOLDER_ID': 'last_run_dummy_folder_id',
-        'LAST_RUN_FOLDER_PATH': "Phishing"
+        'LAST_RUN_FOLDER_PATH': "Phishing",
+        'LAST_RUN_ACCOUNT': 'dummy@mailbox.com',
     }
 
     return last_run
@@ -218,6 +219,19 @@ def test_fetch_incidents_changed_folder(mocker, client, emails_data, last_run_da
     client.fetch_incidents(last_run_data)
 
     mocker_folder_by_path.assert_called_once_with('dummy@mailbox.com', changed_folder)
+
+
+@pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
+def test_fetch_incidents_changed_account(mocker, client, emails_data, last_run_data):
+    changed_account = "Changed_Account"
+    client._mailbox_to_fetch = changed_account
+    mocker_folder_by_path = mocker.patch.object(client, '_get_folder_by_path',
+                                                return_value={'id': 'some_dummy_folder_id'})
+    mocker.patch.object(client.ms_client, 'http_request', return_value=emails_data)
+    mocker.patch.object(demisto, "info")
+    client.fetch_incidents(last_run_data)
+
+    mocker_folder_by_path.assert_called_once_with(changed_account, last_run_data['LAST_RUN_FOLDER_PATH'])
 
 
 @pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
@@ -319,7 +333,7 @@ def test_get_attachment(client):
         - Validate that the message object created successfully
 
     """
-    output_prefix = 'MSGraphMail(val.ID == obj.ID)'
+    output_prefix = 'MSGraphMail(val.ID && val.ID == obj.ID)'
     with open('test_data/mail_with_attachment') as mail_json:
         user_id = 'ex@example.com'
         raw_response = json.load(mail_json)

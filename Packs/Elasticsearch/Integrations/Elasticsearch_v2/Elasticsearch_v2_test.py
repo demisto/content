@@ -677,7 +677,7 @@ class TestIncidentLabelMaker(unittest.TestCase):
         ]
 
         labels = incident_label_maker(sources)
-        self.assertEquals(labels, expected_labels)
+        self.assertEqual(labels, expected_labels)
 
     def test_complex_value(self):
         from Elasticsearch_v2 import incident_label_maker
@@ -703,4 +703,4 @@ class TestIncidentLabelMaker(unittest.TestCase):
         ]
 
         labels = incident_label_maker(sources)
-        self.assertEquals(labels, expected_labels)
+        self.assertEqual(labels, expected_labels)

@@ -1,11 +1,11 @@
+import itertools
+import time
+from datetime import datetime, timedelta
 from typing import Dict, List, Tuple, Optional, Callable
 
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from urllib3 import disable_warnings
-from CommonServerPython import *
-import demistomock as demisto
-from datetime import timedelta, datetime
-import time
-import itertools
 
 disable_warnings()
 
@@ -40,11 +40,12 @@ class McAfeeESMClient(BaseClient):
 
     def __del__(self):
         self.__logout()
+        super().__del__()
 
     def _is_status_code_valid(self, *_other):  # noqa
         return True
 
-    def __request(self, mcafee_command, data=None, params=None):
+    def __request(self, mcafee_command: str, data: Union[str, Dict] = None, params: Dict = None):
         if data:
             data = json.dumps(data)
         result = self._http_request('POST', mcafee_command, data=data,
@@ -73,9 +74,9 @@ class McAfeeESMClient(BaseClient):
     def __logout(self):
         self._http_request('DELETE', 'logout', resp_type='response')
 
-    def test_module(self) -> Tuple[str, Dict, Dict]:
+    def test_module(self) -> Tuple[str, Dict, str]:
         self.get_organization_list(raw=True)
-        return 'ok', {}, {}
+        return 'ok', {}, 'ok'
 
     def __username_and_id(self, user_name: str = None, user_id: str = None) -> Dict:
         """
@@ -105,7 +106,7 @@ class McAfeeESMClient(BaseClient):
                     'name': user.get('username')
                 }
 
-        demisto.log(f'{looking_for} is not a {looking_in}(user).')
+        demisto.debug(f'{looking_for} is not a {looking_in}(user).')
         return {}
 
     def __org_and_id(self, org_name: str = None, org_id: str = None) -> Dict:
@@ -129,7 +130,7 @@ class McAfeeESMClient(BaseClient):
         for org in self.__cache['org']:
             if org.get(looking_in) == looking_for:
                 return org
-        demisto.log(f'{looking_for} is not a {looking_in}(org).')
+        demisto.debug(f'{looking_for} is not a {looking_in}(org).')
         return {}
 
     def __status_and_id(self, status_name: str = None, status_id: str = None) -> Dict:
@@ -146,7 +147,7 @@ class McAfeeESMClient(BaseClient):
             looking_for = status_id
             looking_in = 'id'
         if not self.__cache['status']:
-            def filter_statuses_data(status_dict):
+            def filter_statuses_data(status_dict: Dict):
                 try:
                     status_dict.pop('showInCasePane')
                     status_dict.pop('default')
@@ -158,7 +159,7 @@ class McAfeeESMClient(BaseClient):
         for status in self.__cache['status']:
             if status.get(looking_in) == looking_for:
                 return status
-        demisto.log(f'{looking_for} is not a {looking_in}(status).')
+        demisto.debug(f'{looking_for} is not a {looking_in}(status).')
         return {}
 
     def get_user_list(self, raw: bool = False) -> Tuple[str, Dict, Dict]:
@@ -186,8 +187,8 @@ class McAfeeESMClient(BaseClient):
                     context_entry[i]['Groups'] = ''.join(str(result[i]['groups']))
 
             human_readable = tableToMarkdown(name='User list', t=context_entry, headers=headers)
-        return human_readable, {f'{CONTEXT_INTEGRATION_NAME}User(val.ID && val.ID == obj.ID)': context_entry},\
-            raw_response
+        returned_context_entry = {f'{CONTEXT_INTEGRATION_NAME}User(val.ID && val.ID == obj.ID)': context_entry}
+        return human_readable, returned_context_entry, raw_response
 
     def get_organization_list(self, raw: bool = False) -> Tuple[str, Dict, List[Dict]]:
         """
@@ -241,8 +242,8 @@ class McAfeeESMClient(BaseClient):
                 context_entry.append(temp_case)
         if not raw:
             human_readable = tableToMarkdown(name=f'cases since {since}', t=context_entry)
-        return human_readable, {f'{CONTEXT_INTEGRATION_NAME}Case(val.ID && val.ID == obj.ID)': context_entry},\
-            raw_response
+        returned_context_entry = {f'{CONTEXT_INTEGRATION_NAME}Case(val.ID && val.ID == obj.ID)': context_entry}
+        return human_readable, returned_context_entry, raw_response
 
     def get_case_event_list(self) -> Tuple[str, Dict, List[Dict]]:
         path = 'caseGetCaseEventsDetail'
@@ -287,8 +288,8 @@ class McAfeeESMClient(BaseClient):
         del readable_outputs['EventList']
         if not raw:
             human_readable = tableToMarkdown(name='Case', t=readable_outputs)
-        return human_readable, {f'{CONTEXT_INTEGRATION_NAME}Case(val.ID && val.ID == obj.ID)': context_entry}, \
-            raw_response
+        returned_context_entry = {f'{CONTEXT_INTEGRATION_NAME}Case(val.ID && val.ID == obj.ID)': context_entry}
+        return human_readable, returned_context_entry, raw_response
 
     def get_case_statuses(self, raw: bool = False) -> Tuple[str, Dict, Dict]:
         path = 'caseGetCaseStatusList'
@@ -320,27 +321,20 @@ class McAfeeESMClient(BaseClient):
     def edit_case(self) -> Tuple[str, Dict, Dict]:
         path = 'caseEditCase'
         _, _, result = self.get_case_detail(case_id=self.args.get('id'))
-        case_details: Dict = {
-            'id': result.get('id'),
-            'orgId': result.get('orgId'),
-            'summary': result.get('summary'),
-            'assignedTo': result.get('assignedTo'),
-            'severity': result.get('severity'),
-            'statusId': result.get('statusId')
-        }
-
         if 'organization' in self.args:
-            case_details['orgId'] = self.__org_and_id(org_name=self.args.get('organization')).get('id')
+            result['orgId'] = self.__org_and_id(org_name=self.args.get('organization')).get('id')
         if 'summary' in self.args:
-            case_details['summary'] = self.args['summary']
+            result['summary'] = self.args['summary']
         if 'assignee' in self.args:
-            case_details['assignedTo'] = self.args['assignee']
+            result['assignedTo'] = self.args['assignee']
         if 'severity' in self.args:
-            case_details['severity'] = self.args['severity']
+            result['severity'] = self.args['severity']
         if 'status' in self.args:
-            case_details['statusId'] = {'value': self.__status_and_id(status_name=self.args['status']).get('id')}
+            result['statusId'] = {'value': self.__status_and_id(status_name=self.args['status']).get('id')}
+        if 'notes' in self.args:
+            result['notes'] = self.args['notes']
 
-        self.__request(path, data={'caseDetail': case_details})
+        self.__request(path, data={'caseDetail': result})
         return self.get_case_detail(case_id=self.args.get('id'))
 
     def add_case_status(self) -> Tuple[str, Dict, Dict]:
@@ -396,9 +390,6 @@ class McAfeeESMClient(BaseClient):
         since = since if since else self.args.get('timeRange')
         start_time = start_time if start_time else self.args.get('customStart')
         end_time = end_time if end_time else self.args.get('customEnd')
-        assigned_user = self.args.get('assignedUser')
-        if not assigned_user or assigned_user.lower() == 'me':
-            assigned_user = self.__user_name
 
         since, start_time, end_time = set_query_times(since, start_time, end_time, self.difference)
         params = {
@@ -408,12 +399,17 @@ class McAfeeESMClient(BaseClient):
             params['customStart'] = start_time
             params['customEnd'] = end_time
 
-        data = {
-            'assignedUser': {
-                'username': assigned_user,
-                'id': self.__username_and_id(user_name=assigned_user).get('id')
+        data = {}
+        if assigned_user := self.args.get('assignedUser'):
+            if assigned_user.lower() == 'me':
+                assigned_user = self.__user_name
+            data = {
+                'assignedUser': {
+                    'username': assigned_user,
+                    'id': self.__username_and_id(user_name=assigned_user).get('id')
+                }
             }
-        }
+
         raw_response = self.__request(path, data=data, params=params)
         result = raw_response
 
@@ -438,8 +434,8 @@ class McAfeeESMClient(BaseClient):
             table_headers = ['id', 'acknowledgedDate', 'acknowledgedUsername', 'alarmName', 'assignee', 'conditionType',
                              'severity', 'summary', 'triggeredDate']
             human_readable = tableToMarkdown(name='Alarms', t=result, headers=table_headers)
-        return human_readable, {f'{CONTEXT_INTEGRATION_NAME}Alarm(val.ID && val.ID == obj.ID)': context_entry},\
-            raw_response
+        returned_context_entry = {f'{CONTEXT_INTEGRATION_NAME}Alarm(val.ID && val.ID == obj.ID)': context_entry}
+        return human_readable, returned_context_entry, raw_response
 
     def acknowledge_alarms(self) -> Tuple[str, Dict, Dict]:
         try:
@@ -542,7 +538,7 @@ class McAfeeESMClient(BaseClient):
         result = self.__request(path, data={'config': config}, params=params)
         return result.get('resultID')
 
-    def __generic_polling(self, search_id: int) -> bool:
+    def __generic_polling(self, search_id: Union[str, int]) -> bool:
         if not search_id:
             search_id = self.args.get('SearchID')
         path = 'qryGetStatus'
@@ -665,7 +661,7 @@ class McAfeeESMClient(BaseClient):
         all_cases = create_incident(all_cases, alarms=False)
         return all_cases, current_run
 
-    def __get_watchlists(self, args):
+    def __get_watchlists(self, args: Dict):
         command = 'sysGetWatchlists'
         params = {
             'hidden': args.get('hidden', True),
@@ -675,7 +671,7 @@ class McAfeeESMClient(BaseClient):
         }
         return self.__request(command, params=params)
 
-    def __get_watchlist_id(self, watchlist_name):
+    def __get_watchlist_id(self, watchlist_name: str):
         try:
             return list(filter(lambda x: x.get('name') == watchlist_name, self.__get_watchlists(dict())))[0].get('id')
         except IndexError:
@@ -745,7 +741,7 @@ class McAfeeESMClient(BaseClient):
         human_readable = 'Watchlist successfully updated.'
         return human_readable, {}, {}
 
-    def __get_watchlist_file_id(self, watchlist_id):
+    def __get_watchlist_file_id(self, watchlist_id: int):
         command = 'sysGetWatchlistDetails'
         result = self.__request(command, data={'id': watchlist_id})
         # v10.x uses 'valueCount' while v11.x uses 'recordCount'.
@@ -781,7 +777,7 @@ class McAfeeESMClient(BaseClient):
             context_entry = {f'{CONTEXT_INTEGRATION_NAME}Watchlist': {'data': file_data, 'name': watchlist_name}}
             return human_readable, context_entry, file_data
 
-    def watchlist_values(self, file_token, buff_size=400):
+    def watchlist_values(self, file_token: str, buff_size=400):
         """
 
         :param file_token: the token file (McAfee API call needed for the file creation)
@@ -834,9 +830,9 @@ def expected_errors(error: DemistoException) -> bool:
     :return: if the error is not real error
     """
     expected_error: List[str] = [
-        'qryGetResults failed with error[Error deserializing EsmQueryResults, see logs for more information ' +  # noqa: W504
-        '(Error deserializing EsmQueryResults, see logs for more information ' +  # noqa: W504
-        '(Internal communication error, see logs for more details))].',
+        'qryGetResults failed with error[Error deserializing EsmQueryResults, see logs for more information '  # noqa: W504
+        + '(Error deserializing EsmQueryResults, see logs for more information '  # noqa: W504
+        + '(Internal communication error, see logs for more details))].',
         'alarmUnacknowledgeTriggeredAlarm failed with error[ERROR_BadRequest (60)].',
         'alarmAcknowledgeTriggeredAlarm failed with error[ERROR_BadRequest (60)].'
     ]
@@ -856,14 +852,20 @@ def time_format(current_time: str, difference: int = 0) -> str:
     except ValueError as error:
         if str(error) != f'time data \'{current_time}\' does not match format \'%Y/%m/%d %H:%M:%S\'':
             raise error
-        else:
+
+        try:
+            to_return = convert_time_format(current_time, difference=difference, mcafee_format='%m/%d/%Y %H:%M:%S')
+        except ValueError as error_2:
+            if str(error_2) != f'time data \'{current_time}\' does not match format \'%m/%d/%Y %H:%M:%S\'':
+                raise error_2
+
             try:
-                to_return = convert_time_format(current_time, difference=difference, mcafee_format='%m/%d/%Y %H:%M:%S')
-            except ValueError as error_2:
-                if str(error_2) == f'time data \'{current_time}\' does not match format \'%m/%d/%Y %H:%M:%S\'':
-                    raise ValueError(f'time data \'{current_time}\' does not match the time format.')
+                to_return = convert_time_format(current_time, difference=difference, mcafee_format='%d-%m-%Y %H:%M:%S')
+            except ValueError as error_3:
+                if str(error_3) != f'time data \'{current_time}\' does not match format \'%d-%m-%Y %H:%M:%S\'':
+                    raise error_3
                 else:
-                    raise error_2
+                    raise ValueError(f'time data \'{current_time}\' does not match the time format.')
     return to_return
 
 
@@ -1031,7 +1033,7 @@ def mcafee_severity_to_demisto(severity: int) -> int:
         return 0
 
 
-def format_watchlist_params(raw_watchlist_params):
+def format_watchlist_params(raw_watchlist_params: Dict):
     return {
         'id': raw_watchlist_params.get('id'),
         'name': raw_watchlist_params.get('name'),
@@ -1040,8 +1042,7 @@ def format_watchlist_params(raw_watchlist_params):
 
 
 def main():
-    params = demisto.params()
-    client = McAfeeESMClient(params)
+    client = McAfeeESMClient(demisto.params())
     command = demisto.command()
     commands: Dict[str, Callable] = {
         'test-module': client.test_module,
@@ -1073,12 +1074,13 @@ def main():
     }
     try:
         if command == 'fetch-incidents':
-            client.fetch_incidents(params)
+            client.fetch_incidents(demisto.params())
         elif command in commands:
             human_readable, context_entry, raw_response = commands[command]()
-            return_outputs(human_readable, context_entry, raw_response)
+            return_results(CommandResults(readable_output=human_readable,
+                                          outputs=context_entry, raw_response=raw_response))
         else:
-            raise DemistoException(f'{command} is not a command.')
+            raise NotImplementedError(f'{command} is not a demisto command.')
 
     except Exception as error:
         return_error(str(error), error)

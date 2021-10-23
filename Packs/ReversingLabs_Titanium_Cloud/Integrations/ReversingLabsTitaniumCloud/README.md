@@ -14,14 +14,14 @@
 <li>
 <strong>Base URL for malware presence</strong> :
 <ul>
-<li>Preconfigured on Demisto - https://ticloud-aws1-api.reversinglabs.com
+<li>Preconfigured on Cortex XSOAR - https://ticloud-aws1-api.reversinglabs.com
 </li>
 </ul>
 </li>
 <li>
 <strong>Base URL for extended RL Data</strong> :
 <ul>
-<li>Preconfigured on Demisto - https://ticloud-cdn-api.reversinglabs.com
+<li>Preconfigured on Cortex XSOAR - https://ticloud-cdn-api.reversinglabs.com
 </li>
 </ul>
 </li>
@@ -34,7 +34,7 @@
 </li>
 </ul>
 <hr>
-<h2>Configure ReversingLabs Titanium Cloud on Demisto</h2>
+<h2>Configure ReversingLabs Titanium Cloud on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for ReversingLabs Titanium Cloud.</li>
@@ -56,7 +56,7 @@
 </ol>
 <hr>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ul>
 <li>Retrieve malware presence status of a sample: file</li>
 </ul>

@@ -32,7 +32,7 @@ This integration was integrated and tested with version 7.3.2 of QRadar.
 This section provides information for troubleshooting performance and fetching issues.
 
 ### Performance Issues
-In some cases, you might encounter performance issues when running QRadar AQL queries from Demisto. This issue is caused by QRadar API limitations. We recommend that you test the QRadar API performance by running several cURL scripts.
+In some cases, you might encounter performance issues when running QRadar AQL queries from Cortex XSOAR. This issue is caused by QRadar API limitations. We recommend that you test the QRadar API performance by running several cURL scripts.
 #### 1. Creating a search
 Run the following command to use the QRadar API to create a new search.Save the QUERY ID that is attached to the response for the next step.
 ```
@@ -78,7 +78,7 @@ To reset fetch incidents, run `qradar-reset-last-run` - this will reset the fetc
 * References (Read) - View Reference Data
 
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### qradar-offenses
 ***
@@ -280,7 +280,7 @@ Searches in QRadar using AQL. It is highly recommended to use the playbook 'QRad
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query_expression | The query expressions in AQL (for more information about Ariel Query Language please review "https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.0/com.ibm.qradar.doc/c_aql_intro.html") | Required | 
+| query_expression | The query expressions in AQL (for more information about Ariel Query Language please review: https://www.ibm.com/docs/en/qsip/7.3.2?topic=qradar-ariel-query-language-aql ) | Required | 
 | headers | Table headers to use the human readable output (if none provided, will show all table headers) | Optional | 
 
 
@@ -1299,7 +1299,7 @@ Retrieves Domain information By ID
 
 ### qradar-upload-indicators
 ***
-Uploads indicators from Demisto to Qradar.
+Uploads indicators from Cortex XSOAR to Qradar.
 
 
 #### Base Command

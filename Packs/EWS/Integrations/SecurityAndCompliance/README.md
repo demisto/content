@@ -17,7 +17,7 @@ This integration was integrated and tested with [Security & Compliance Center](h
 
 ## Permissions in the Security & Compliance Center
 
-To access the Security & Compliance Center, you need to be a global administrator or a member of one or more Security & Compliance Center role groups.
+To access the Security & Compliance Center, the user account needs to be a global administrator or needs to be assigned the Role Management role (a role is assigned only to the Organization Management role group). The Role Management role allows users to view, create, and modify role groups.
 
 1. Login into the [Security & Compliance Center](https://ps.compliance.protection.outlook.com):
 
@@ -25,9 +25,7 @@ To access the Security & Compliance Center, you need to be a global administrato
 
    ![side-menu](../../doc_imgs/security-and-compliance-side-menu.png)
 
-2. Search for and select the **Compliance Administrator** role.
-
-   ![image-20201129135216851](../../doc_imgs/security-and-compliance-roles.png)
+2. Search for and select the **Data Investigator** role.
 
 3. Click **Edit role group**. 
 
@@ -46,7 +44,7 @@ To access the Security & Compliance Center, you need to be a global administrato
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 
-2. Search for SecurityAndCompliance.
+2. Search for O365 - Security And Compliance - Content Search.
 
 3. Authentication / Authorization methods:
 
@@ -179,7 +177,8 @@ Create compliance search in the Security & Compliance Center.
 | --- | --- | --- |
 | search_name | The name of the compliance search. If not specified, will have the prefix "XSOAR-" followed by the GUID e.g., XSOAR-d6228fd0-756b-4e4b-8721-76776df91526. | Required |
 | case | The name of a Core eDiscovery case to associate with the new compliance search. | Optional |
-| kql | Text search string or a query that is formatted using the Keyword Query Language (KQL). | Optional |
+| kql | Text search string or a query that is formatted using the Keyword Query Language (KQL). [Tips for finding messages to remove using KQL](#tips-for-finding-messages-to-remove)
+| Optional |
 | description | Description of the compliance search. | Optional |
 | allow_not_found_exchange_locations | Whether to include mailboxes other than regular user mailboxes in the compliance search. Default is "false". | Optional |
 | exchange_location | Comma-separated list of mailboxes/distribution groups to include, or you can use the value "All" to include all. | Optional |
@@ -1103,12 +1102,19 @@ Gets compliance search action from the Security & Compliance Center.
 >| Preview | 11/29/2020 7:24:05 AM | 11/29/2020 7:23:50 AM | example\_Preview | XSOAR-user | example | Completed
 
 
-
+## Tips for finding messages to remove
+* Keyword Query Language (KQL)
+    * If you know the exact text or phrase used in the subject line of the message, use the Subject property in the search query, e.g., `(subject:give me all ur money)`.
+    * If you know that exact date (or date range) of the message, include the Received property in the search query, e.g., `(received:6/13/2021..6/16/2021)`.
+    * If you know who sent the message, include the From property in the search query, e.g., `(from:user1@demistodev.onmicrosoft.com)`.
+    * For all the available search properties see: [Keyword queries and search conditions for eDiscovery.](https://docs.microsoft.com/en-us/microsoft-365/compliance/keyword-queries-and-search-conditions?view=o365-worldwide)
+* Preview the search results to verify that the search returned only the message (or messages) that you want to delete.
+* Use the search estimate statistics (displayed by using the `o365-sc-get-search` command) to get a count of the total number of emails.
 ## Known Limitations
 
-* Security and compliance integrations do not support Security and compliance on-premise .
+* Security and compliance integrations do not support Security and compliance on-premise.
 * Each security and compliance command creates a PSSession (PowerShell session). The security and compliance PowerShell limits the number of concurrent sessions to 3. Since this affects the behavior of multiple playbooks running concurrently it we recommend that you retry failed tasks when using the integration commands in playbooks.
 * Proxies are not supported due to a Microsoft [limitation](https://github.com/PowerShell/PowerShell/issues/9721).
-
-
-
+* Due to a Microsoft limitation, you can perform a search and purge operation on a maximum of 50,000 mailboxes. To work around this limitation, configure multiple instances of the integration each with different permission filtering so that the number of mailboxes in each instance does not exceed 50,000.
+* A maximum of 10 items per mailbox can be removed at one time, due to a Microsoft [limitiation](https://docs.microsoft.com/en-us/microsoft-365/compliance/search-for-and-delete-messages-in-your-organization?view=o365-worldwide#before-you-begin).
+* For more Microsoft known limitations see [Limits for eDiscovery search](https://docs.microsoft.com/en-us/microsoft-365/compliance/limits-for-content-search?view=o365-worldwide).

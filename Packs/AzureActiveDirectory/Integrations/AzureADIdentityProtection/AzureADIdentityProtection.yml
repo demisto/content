@@ -1,0 +1,478 @@
+category: IT Services
+commonfields:
+  id: Azure Active Directory Identity Protection
+  version: -1
+configuration:
+- display: Application ID
+  hidden: false
+  name: app_id
+  required: true
+  defaultvalue: 4ffef4a4-601f-4393-a789-432f3f3b8470
+  type: 0
+- display: Subscription ID
+  hidden: false
+  additionalinfo: Azure Active Directory subscription ID.
+  name: subscription_id
+  required: true
+  type: 0
+- additionalinfo: Azure Active Directory endpoint associated with a national cloud.
+  defaultvalue: https://login.microsoftonline.com
+  display: Azure Active Directory endpoint
+  hidden: false
+  name: azure_ad_endpoint
+  options:
+  - https://login.microsoftonline.com
+  - https://login.microsoftonline.us
+  - https://login.microsoftonline.de
+  - https://login.chinacloudapi.cn
+  required: true
+  type: 15
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- name: isFetch
+  display: Fetch incidents
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- name: first_fetch
+  display: First Fetch Time Interval
+  required: false
+  defaultvalue: 1 days
+  type: 0
+  additionalinfo: The time range to consider for the initial data fetch in the format
+    <number> <unit>. For example, 1 hour, 2 hours, 6 hours, 12 hours, 24 hours, 48 hours, etc.
+- defaultvalue: '50'
+  display: Max fetch interval
+  additionalinfo: The maximum number of incidents per request from the Azure Active Directory. Default is 50.
+  name: max_fetch
+  required: false
+  type: 0
+- display: Fetch filter expression
+  name: fetch_filter_expression
+  required: false
+  type: 0
+- display: Fetch User ID
+  additionalinfo: Comma separated User IDs
+  name: fetch_user_id
+  required: false
+  type: 0
+- display: Fetch User Principal Name
+  name: fetch_user_principal_name
+  required: false
+  type: 0
+description: Returns information from the Azure Active Directory Identity Protection service.
+display: Azure Active Directory Identity Protection (Beta)
+name: Azure Active Directory Identity Protection
+script:
+  commands:
+  - deprecated: false
+    description: Tests the connectivity to Azure.
+    execution: false
+    name: azure-ad-auth-test
+  - deprecated: false
+    description: Run this command to start the authorization process. Follow the instructions shown.
+    execution: true
+    name: azure-ad-auth-start
+  - deprecated: false
+    description: Run this command to complete the authorization process. This should be
+      used after running the azure-ad-auth-start command.
+    execution: false
+    name: azure-ad-auth-complete
+  - deprecated: false
+    description: Run this command to rerun the authentication
+      process.
+    execution: false
+    name: azure-ad-auth-reset
+  - arguments:
+    - default: false
+      description: The unique ID of the risk detection.
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - default: false
+      description: The unique ID of the user.
+      isArray: false
+      name: user_id
+      required: false
+      secret: false
+    - default: false
+      description: The user principal name (UPN) of the user.
+      isArray: false
+      name: user_principal_name
+      required: false
+      secret: false
+    - default: false
+      description: The country or region of the activity. For example, `US` or `UK`. For
+        more information, see https://docs.microsoft.com/en-us/graph/api/resources/user?view=graph-rest-beta.
+      isArray: false
+      name: country
+      required: false
+      secret: false
+    - default: false
+      description: A custom query in OData syntax. Using this overrides all
+        arguments, except for next_link. For more information, see https://docs.microsoft.com/en-us/graph/query-parameters.
+      isArray: false
+      name: filter_expression
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of results to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: A link that specifies a starting point for subsequent calls.
+        Using this argument overrides all other arguments.
+      isArray: false
+      name: next_link
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves the properties of a collection of riskDetection objects.
+    execution: false
+    name: azure-ad-identity-protection-risks-list
+    outputs:
+    - contextPath: AADIdentityProtection.Risks.id
+      description: The unique ID of the risk detection.
+      type: string
+    - contextPath: AADIdentityProtection.Risks.requestId
+      description: Requests the ID of the sign-in associated with the risk detection. This
+        property is null if the risk detection is not associated with a sign-in.
+      type: string
+    - contextPath: AADIdentityProtection.Risks.correlationId
+      description: Correlation ID of the sign-in associated with the risk detection.
+        This property is null if the risk detection is not associated with a sign-in.
+      type: string
+    - contextPath: AADIdentityProtection.Risks.riskEventType
+      description: 'The type of risk event detected. Can be: "unlikelyTravel",
+        "anonymizedIPAddress", "maliciousIPAddress", "unfamiliarFeatures", "malwareInfectedIPAddress",
+        "suspiciousIPAddress", "leakedCredentials", "investigationsThreatIntelligence",
+        "generic","adminConfirmedUserCompromised", "mcasImpossibleTravel", "mcasSuspiciousInboxManipulationRules",
+        "investigationsThreatIntelligenceSigninLinked", "maliciousIPAddressValidCredentialsBlockedIP",
+        and "unknownFutureValue".'
+      type: string
+    - contextPath: AADIdentityProtection.Risks.riskType
+      description: Deprecated. Use riskEventType instead. List of risk event types.
+      type: string
+    - contextPath: AADIdentityProtection.Risks.riskLevel
+      description: 'The risk level of the detected risky user. Can be: "low",
+        "medium", "high", "hidden", "none", and "unknownFutureValue".'
+      type: string
+    - contextPath: AADIdentityProtection.Risks.riskState
+      description: 'State of the users risk. Can be: "none", "confirmedSafe",
+        "remediated", "dismissed", "atRisk", "confirmedCompromised", and "unknownFutureValue".'
+      type: string
+    - contextPath: AADIdentityProtection.Risks.riskDetail
+      description: 'Reason why the user is considered a risky user. Can be: "none", "adminGeneratedTemporaryPassword",
+        "userPerformedSecuredPasswordChange", "userPerformedSecuredPasswordReset", "adminConfirmedSigninSafe",
+        "aiConfirmedSigninSafe", "userPassedMFADrivenByRiskBasedPolicy", "adminDismissedAllRiskForUser",
+        "adminConfirmedSigninCompromised", "hidden", "adminConfirmedUserCompromised", and "unknownFutureValue".'
+      type: string
+    - contextPath: AADIdentityProtection.Risks.source
+      description: Source of the risk detection. For example, `activeDirectory`.
+      type: string
+    - contextPath: AADIdentityProtection.Risks.detectionTimingType
+      description: 'Timing of the detected risk (real-time/offline). Can be:
+        "notDefined", "realtime", "nearRealtime", "offline", and "unknownFutureValue".'
+      type: string
+    - contextPath: AADIdentityProtection.Risks.activity
+      description: 'Indicates the activity type that the detected risk is linked. Can be:
+        "signin", "user", and "unknownFutureValue".'
+      type: string
+    - contextPath: AADIdentityProtection.Risks.tokenIssuerType
+      description: 'Indicates the type of token issuer for the detected sign-in risk.
+        Can be: "AzureAD", "ADFederationServices", and "unknownFutureValue".'
+      type: string
+    - contextPath: AADIdentityProtection.Risks.ipAddress
+      description: Provides the IP address of the client from where the risk occurred.
+      type: string
+    - contextPath: AADIdentityProtection.Risks.location.city
+      description: The city of the sign-in.
+      type: string
+    - contextPath: AADIdentityProtection.Risks.location.countryOrRegion
+      description: The country or region of the sign-in.
+      type: string
+    - contextPath: AADIdentityProtection.Risks.location.geoCoordinates.latitude
+      description: The latitude of the sign-in.
+      type: string
+    - contextPath: AADIdentityProtection.Risks.location.geoCoordinates.longitude
+      description: The longitude of the sign-in.
+      type: string
+    - contextPath: AADIdentityProtection.Risks.location.state
+      description: The state of the sign-in.
+      type: string
+    - contextPath: AADIdentityProtection.Risks.activityDateTime
+      description: The date and time that the risky activity occurred. The DateTimeOffset
+        type represents date and time information using the ISO 8601 format 
+        in UTC time.
+      type: string
+    - contextPath: AADIdentityProtection.Risks.detectedDateTime
+      description: The date and time that the risk was detected. The DateTimeOffset type
+        represents date and time information using the ISO 8601 format in
+        UTC time.
+      type: string
+    - contextPath: AADIdentityProtection.Risks.lastUpdatedDateTime
+      description: The date and time that the risk detection was last updated. The DateTimeOffset
+        type represents date and time information using the ISO 8601 format 
+        in UTC time.
+      type: string
+    - contextPath: AADIdentityProtection.Risks.userId
+      description: The unique ID of the user.
+      type: string
+    - contextPath: AADIdentityProtection.Risks.userDisplayName
+      description: The risky user display name.
+      type: string
+    - contextPath: AADIdentityProtection.Risks.userPrincipalName
+      description: The risky user principal name.
+      type: string
+    - contextPath: AADIdentityProtection.Risks.additionalInfo
+      description: Additional information associated with the risk detection in JSON
+        format.
+      type: string
+  - arguments:
+    - default: false
+      description: The date and time that the risky user was last updated, formatted as `<number> <time unit>`. For example, `12 hours`, `7 days`, etc.
+      isArray: false
+      name: updated_time
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The risk level of the detected risky user. Can be: "low",
+        "medium", "high", "hidden", "none", and "unknownFutureValue".'
+      isArray: false
+      name: risk_level
+      predefined:
+      - low
+      - medium
+      - high
+      - hidden
+      - none
+      - unknownFeatureValue
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The state of the users risk. Can be: "none", "confirmedSafe",
+        "remediated", "dismissed", "atRisk", "confirmedCompromised", and "unknownFutureValue".'
+      isArray: false
+      name: risk_state
+      predefined:
+      - none
+      - confirmedSafe
+      - remediated
+      - dismissed
+      - atRisk
+      - confirmedCompromised
+      - unknownFutureValue
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Details of the detected risk. Can be: "none", "adminGeneratedTemporaryPassword",
+        "userPerformedSecuredPasswordChange", "userPerformedSecuredPasswordReset", "adminConfirmedSigninSafe",
+        "aiConfirmedSigninSafe", "userPassedMFADrivenByRiskBasedPolicy", "adminDismissedAllRiskForUser",
+        "adminConfirmedSigninCompromised", "hidden", "adminConfirmedUserCompromised", and "unknownFutureValue".'
+      isArray: false
+      name: risk_detail
+      predefined:
+      - none
+      - adminGeneratedTemporaryPassword
+      - userPerformedSecuredPasswordChange
+      - userPerformedSecuredPasswordReset
+      - adminConfirmedSigninSafe
+      - aiConfirmedSigninSafe
+      - userPassedMFADrivenByRiskBasedPolicy
+      - adminDismissedAllRiskForUser
+      - adminConfirmedSigninCompromised
+      - hidden
+      - adminConfirmedUserCompromised
+      - unknownFutureValue
+      required: false
+      secret: false
+    - default: false
+      description: A custom query in OData syntax. Using this overrides all
+        arguments, except for next_link. For more information, see https://docs.microsoft.com/en-us/graph/query-parameters.
+      isArray: false
+      name: filter_expression
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Number of results to provide.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: A link that specifies a starting point for subsequent calls.
+        Using this argument overrides all other arguments.
+      isArray: false
+      name: next_link
+      required: false
+      secret: false
+    - default: false
+      description: Risky user principal name.
+      isArray: false
+      name: user_name
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves the properties of a collection of riskDetection objects.
+    execution: false
+    name: azure-ad-identity-protection-risky-user-list
+    outputs:
+    - contextPath: AADIdentityProtection.RiskyUsers.id
+      description: Unique ID of the risky user.
+      type: string
+    - contextPath: AADIdentityProtection.RiskyUsers.isDeleted
+      description: Indicates whether the user is deleted.
+      type: Boolean
+    - contextPath: AADIdentityProtection.RiskyUsers.isProcessing
+      description: Indicates whether a user's risky state is being processed by the
+        backend.
+      type: Boolean
+    - contextPath: AADIdentityProtection.RiskyUsers.riskLastUpdatedDateTime
+      description: The date and time that the risky user was last updated. The DateTimeOffset
+        type represents date and time information using the ISO 8601 format 
+        in UTC time.
+      type: DateTime
+    - contextPath: AADIdentityProtection.RiskyUsers.riskLevel
+      description: 'Risk level of the detected risky user. Can be: "low",
+        "medium", "high", "hidden", "none", and "unknownFutureValue".'
+      type: string
+    - contextPath: AADIdentityProtection.RiskyUsers.riskState
+      description: 'State of the users risk. Can be: "none", "confirmedSafe",
+        "remediated", "dismissed", "atRisk", "confirmedCompromised", and "unknownFutureValue".'
+      type: string
+    - contextPath: AADIdentityProtection.RiskyUsers.riskDetail
+      description: 'Reason why the user is considered a risky user. Can be: "none", "adminGeneratedTemporaryPassword",
+        "userPerformedSecuredPasswordChange", "userPerformedSecuredPasswordReset", "adminConfirmedSigninSafe",
+        "aiConfirmedSigninSafe", "userPassedMFADrivenByRiskBasedPolicy", "adminDismissedAllRiskForUser",
+        "adminConfirmedSigninCompromised", "hidden", "adminConfirmedUserCompromised", and "unknownFutureValue".'
+      type: string
+    - contextPath: AADIdentityProtection.RiskyUsers.userDisplayName
+      description: The risky user's display name.
+      type: string
+    - contextPath: AADIdentityProtection.RiskyUsers.userPrincipalName
+      description: The risky user's principal name.
+      type: string
+  - arguments:
+    - default: true
+      description: The unique ID of the user.
+      isArray: false
+      name: user_id
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The number of results to provide.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: A custom query in OData syntax. Using this overrides all
+        arguments, except for next_link. For more information, see https://docs.microsoft.com/en-us/graph/query-parameters.
+      isArray: false
+      name: filter_expression
+      required: false
+      secret: false
+    - default: false
+      description: A link that specifies a starting point for subsequent calls.
+        Using this argument overrides all other arguments.
+      isArray: false
+      name: next_link
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets the risk history of a riskyUser resource.
+    execution: false
+    name: azure-ad-identity-protection-risky-user-history-list
+    outputs:
+    - contextPath: AADIdentityProtection.RiskyUserHistory.id
+      description: The unique ID of the risky user.
+      type: string
+    - contextPath: AADIdentityProtection.RiskyUserHistory.isDeleted
+      description: Indicates whether the user is deleted.
+      type: Boolean
+    - contextPath: AADIdentityProtection.RiskyUserHistory.isProcessing
+      description: Indicates whether a user's risky state is being processed by the
+        backend.
+      type: Boolean
+    - contextPath: AADIdentityProtection.RiskyUserHistory.riskLastUpdatedDateTime
+      description: The date and time that the risky user was last updated. The DateTimeOffset
+        type represents date and time information using the ISO 8601 format 
+        in UTC time.
+      type: DateTime
+    - contextPath: AADIdentityProtection.RiskyUserHistory.riskLevel
+      description: 'The risk level of the detected risky user. Can be: "low",
+        "medium", "high", "hidden", "none", and "unknownFutureValue".'
+      type: string
+    - contextPath: AADIdentityProtection.RiskyUserHistory.riskState
+      description: 'The state of the users risk. Can be: "none", "confirmedSafe",
+        "remediated", "dismissed", "atRisk", "confirmedCompromised", and "unknownFutureValue".'
+      type: string
+    - contextPath: AADIdentityProtection.RiskyUserHistory.riskDetail
+      description: 'The reason why the user is considered a risky user. Can be: "none", "adminGeneratedTemporaryPassword",
+        "userPerformedSecuredPasswordChange", "userPerformedSecuredPasswordReset", "adminConfirmedSigninSafe",
+        "aiConfirmedSigninSafe", "userPassedMFADrivenByRiskBasedPolicy", "adminDismissedAllRiskForUser",
+        "adminConfirmedSigninCompromised", "hidden", "adminConfirmedUserCompromised", and "unknownFutureValue".'
+      type: string
+    - contextPath: AADIdentityProtection.RiskyUserHistory.userDisplayName
+      description: The risky user's display name.
+      type: string
+    - contextPath: AADIdentityProtection.RiskyUserHistory.userPrincipalName
+      description: The risky user's principal name.
+      type: string
+  - arguments:
+    - default: true
+      description: Comma-separated one or more user IDs.
+      isArray: true
+      name: user_ids
+      required: true
+      secret: false
+    deprecated: false
+    description: Confirms one or more of the risky user's objects as compromised. This action
+      sets the targeted user's risk level to high.
+    execution: true
+    name: azure-ad-identity-protection-risky-user-confirm-compromised
+  - arguments:
+    - default: true
+      description: Comma-separated one or more user IDs.
+      isArray: true
+      name: user_ids
+      required: true
+      secret: false
+    deprecated: false
+    description: Dismisses the risk of one or more of the risky user's objects. This action sets
+      the targeted user's risk level to none.
+    execution: false
+    name: azure-ad-identity-protection-risky-user-dismiss
+  dockerimage: demisto/crypto:1.0.0.24037
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+beta: true
+defaultmapperin: Azure Active Directory Identity and Access Incoming Mapper
+defaultclassifier: Azure Active Directory Identity and Access
+tests:
+-  AzureADTest

@@ -1,18 +1,47 @@
 args:
-- name: pwdGenerationScript
-  description: The password generator script.
+- default: false
   defaultValue: GeneratePassword
-- name: sAMAccountName
-  required: true
+  description: The password generator script.
+  isArray: false
+  name: pwdGenerationScript
+  required: false
+  secret: false
+- default: false
   description: The sAMAccountName of the employee.
-- name: email
+  isArray: false
+  name: sAMAccountName
   required: true
+  secret: false
+- default: false
   description: The email of the employee.
-- name: displayname
-  description: The display name of the employee.
-- name: to_email
+  isArray: false
+  name: email
   required: true
+  secret: false
+- default: false
+  description: The display name of the employee.
+  isArray: false
+  name: displayname
+  required: false
+  secret: false
+- default: false
   description: The email address that the password will send to.
+  isArray: false
+  name: to_email
+  required: true
+  secret: false
+- default: false
+  description: The incident ID.
+  isArray: false
+  name: inc_id
+  required: false
+  secret: false
+- default: false
+  description: The subject of the email sent to IT.
+  isArray: false
+  name: email_subject
+  required: false
+  secret: false
 comment: |-
   Generates password,
   Set an AD user account with this password.
@@ -24,6 +53,21 @@ commonfields:
   version: -1
 enabled: true
 name: IAMInitADUser
+outputs:
+- contextPath: IAM.InitADUser.success
+  description: True if the Active Directory user was successfully activated, false
+    otherwise.
+  type: Boolean
+- contextPath: IAM.InitADUser.sentMail
+  description: True if the mail containing the information about the user activation
+    and its auto-generated password was successfully sent to IT, false otherwise.
+  type: Boolean
+- contextPath: IAM.InitADUser.errorDetails
+  description: The error details, if exists.
+  type: String
+- contextPath: IAM.InitADUser.sendMailError
+  description: The error received from send-mail command, if exists.
+  type: String
 script: '-'
 subtype: python3
 system: false
@@ -33,7 +77,7 @@ tags:
 - Utility
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.9.2.17957
+dockerimage: demisto/python3:3.9.7.24076
 runas: DBotWeakRole
 runonce: false
 tests:

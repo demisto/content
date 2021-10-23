@@ -1,0 +1,450 @@
+id: Carbon Black Endpoint Standard Find Processes
+version: -1
+name: Carbon Black Endpoint Standard Find Processes
+description: Find processes using a search query (or device_id, etc.). One of the
+  parameters is required. Returns a list of processes.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b13c0c89-2aaf-4376-88df-1620c70ea7e9
+    type: start
+    task:
+      id: b13c0c89-2aaf-4376-88df-1620c70ea7e9
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: cc9b2e2c-b59a-420c-8840-2a0c81f63a8e
+    type: regular
+    task:
+      id: cc9b2e2c-b59a-420c-8840-2a0c81f63a8e
+      version: -1
+      name: cbd-find-process
+      description: Creates a process search job. The results for the search job may
+        be requested using the returned job ID.
+      script: '|||cbd-find-processes'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      alert_category:
+        complex:
+          root: inputs.alert_category
+      blocked_hash:
+        complex:
+          root: inputs.blocked_hash
+      device_external_ip:
+        complex:
+          root: inputs.device_external_ip
+      device_id:
+        complex:
+          root: inputs.device_id
+      device_internal_ip:
+        complex:
+          root: inputs.device_internal_ip
+      device_name:
+        complex:
+          root: inputs.device_name
+      device_os:
+        complex:
+          root: inputs.device_os
+      device_timestamp:
+        complex:
+          root: inputs.device_timestamp
+      event_type:
+        complex:
+          root: inputs.event_type
+      parent_hash:
+        complex:
+          root: inputs.parent_hash
+      parent_name:
+        complex:
+          root: inputs.parent_name
+      parent_reputation:
+        complex:
+          root: inputs.process_reputation
+      process_cmdline:
+        complex:
+          root: inputs.process_cmdline
+      process_guid:
+        complex:
+          root: inputs.process_guid
+      process_hash:
+        complex:
+          root: inputs.process_hash
+      process_name:
+        complex:
+          root: inputs.process_name
+      process_pid:
+        complex:
+          root: inputs.process_pid
+      process_reputation:
+        complex:
+          root: inputs.parent_reputation
+      process_start_time:
+        complex:
+          root: inputs.process_start_time
+      process_terminated:
+        complex:
+          root: inputs.process_terminated
+      process_username:
+        complex:
+          root: inputs.process_username
+      query:
+        complex:
+          root: inputs.query
+      rows:
+        complex:
+          root: inputs.rows
+      sensor_action:
+        complex:
+          root: inputs.sensor_action
+      start:
+        complex:
+          root: inputs.start
+      time_range:
+        complex:
+          root: inputs.time_range
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 30f34daf-e6c1-4f9a-80e9-aff52d84945a
+    type: playbook
+    task:
+      id: 30f34daf-e6c1-4f9a-80e9-aff52d84945a
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        simple: ${CarbonBlackDefense.Process.Search.job_id}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: job_id
+      PollingCommandName:
+        simple: cbd-find-processes-results
+      Timeout:
+        simple: "10"
+      dt:
+        simple: CarbonBlackDefense.Process.Results(val.completed !=  val.contacted)
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: a309c790-a937-47ba-8d7b-85e7103b384c
+    type: regular
+    task:
+      id: a309c790-a937-47ba-8d7b-85e7103b384c
+      version: -1
+      name: cbd-find-processes-results
+      description: Retrieves the results of a process search identified by a job ID.
+      script: '|||cbd-find-processes-results'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      job_id:
+        complex:
+          root: CarbonBlackDefense.Process.Search
+          accessor: job_id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: a3423859-ffb4-428b-8a23-5c9891ca47ea
+    type: title
+    task:
+      id: a3423859-ffb4-428b-8a23-5c9891ca47ea
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: query
+  value:
+    simple: chrome
+  required: false
+  description: |
+    The query in Lucene syntax and/or value searches.
+  playbookInputQuery:
+- key: alert_category
+  value: {}
+  required: false
+  description: A Carbon Black Cloud classification for events tagged to an alert indicating
+    whether the event is a “threat” or “observed”.
+  playbookInputQuery:
+- key: blocked_hash
+  value: {}
+  required: false
+  description: SHA-256 hash(es) of the child process(es) binary. For any process(es)
+    terminated by the sensor.
+  playbookInputQuery:
+- key: device_external_ip
+  value: {}
+  required: false
+  description: The IP address of the endpoint according to Carbon Black Cloud. This
+    IP address can differ from the device_internal_ip due to network proxy or NAT.
+    Can be either IPv4 or IPv6 format.
+  playbookInputQuery:
+- key: device_id
+  value: {}
+  required: false
+  description: The ID assigned to the endpoint by Carbon Black Cloud; unique across
+    all Carbon Black Cloud environments.
+  playbookInputQuery:
+- key: device_internal_ip
+  value: {}
+  required: false
+  description: The IP address of the endpoint reported by the sensor. Can be either
+    IPv4 or IPv6 format.
+  playbookInputQuery:
+- key: device_name
+  value: {}
+  required: false
+  description: The hostname of the endpoint recorded by the sensor when last initialized.
+  playbookInputQuery:
+- key: device_os
+  value: {}
+  required: false
+  description: The operating system of the endpoint.
+  playbookInputQuery:
+- key: device_timestamp
+  value: {}
+  required: false
+  description: The sensor-reported timestamp of the batch of events in which this
+    record was submitted to Carbon Black Cloud.
+  playbookInputQuery:
+- key: event_type
+  value: {}
+  required: false
+  description: The type of enriched event observed.
+  playbookInputQuery:
+- key: parent_hash
+  value: {}
+  required: false
+  description: |
+    The MD5 and/or SHA-256 hash of the parent process binary.
+  playbookInputQuery:
+- key: parent_name
+  value: {}
+  required: false
+  description: The file system path of the parent process binary.
+  playbookInputQuery:
+- key: parent_reputation
+  value: {}
+  required: false
+  description: |
+    The reputation of the parent process applied by Carbon Black
+    Cloud when the event is initially processed.
+  playbookInputQuery:
+- key: process_cmdline
+  value: {}
+  required: false
+  description: |
+    The command line executed by the actor process.
+  playbookInputQuery:
+- key: process_guid
+  value: {}
+  required: false
+  description: |
+    The unique process identifier for the actor process.
+  playbookInputQuery:
+- key: process_hash
+  value: {}
+  required: false
+  description: The MD5 and/or SHA-256 hash of the actor process binary. The order
+    may vary when two hashes are reported.
+  playbookInputQuery:
+- key: process_name
+  value: {}
+  required: false
+  description: |
+    The file system path of the actor process binary.
+  playbookInputQuery:
+- key: process_pid
+  value: {}
+  required: false
+  description: |
+    The Process identifier assigned by the operating system; can be multi-valued in case of fork() or exec() process operations on Linux and macOS.
+  playbookInputQuery:
+- key: process_reputation
+  value: {}
+  required: false
+  description: |
+    The Reputation of the actor process; applied when event is processed by the Carbon Black Cloud.
+  playbookInputQuery:
+- key: process_start_time
+  value: {}
+  required: false
+  description: |
+    The Sensor reported timestamp of when the process started; not available for processes running before the sensor starts.
+  playbookInputQuery:
+- key: process_terminated
+  value: {}
+  required: false
+  description: |
+    “True” indicates the process has terminated; always “false” for enriched events (process termination not recorded).
+  playbookInputQuery:
+- key: process_username
+  value: {}
+  required: false
+  description: |
+    The User context in which the actor process was executed.
+    MacOS - all users for the PID for fork() and exec() transitions,
+    Linux - process user for exec() events, but in a future sensor release can be multi-valued due to setuid().
+  playbookInputQuery:
+- key: rows
+  value: {}
+  required: false
+  description: |
+    The Number of rows to request, can be paginated.
+  playbookInputQuery:
+- key: sensor_action
+  value: {}
+  required: false
+  description: |
+    The action performed by the sensor on the process.
+  playbookInputQuery:
+- key: start
+  value: {}
+  required: false
+  description: |
+    The first row to use for pagination.
+  playbookInputQuery:
+- key: time_range
+  value: {}
+  required: false
+  description: |
+    The time window to restrict the search to match using device_timestamp as the reference. Window will take priority over start and end if provided.
+  playbookInputQuery:
+outputs:
+- contextPath: CarbonBlackDefense.Process.Results.approximate_unaggregated
+  description: The approximate number of unaggregated results.
+- contextPath: CarbonBlackDefense.Process.Results.completed
+  description: The number of completed results.
+- contextPath: CarbonBlackDefense.Process.Results.contacted
+  description: The number of contacted results.
+- contextPath: CarbonBlackDefense.Process.Results.num_aggregated
+  description: The number of aggregated results.
+- contextPath: CarbonBlackDefense.Process.Results.num_available
+  description: The number of processes available in this search.
+- contextPath: CarbonBlackDefense.Process.Results.num_found
+  description: The number of processes found in this search.
+- contextPath: CarbonBlackDefense.Process.Results.results
+  description: The lists that contains the data of the results for this search.
+- contextPath: CarbonBlackDefense.Process.Results.job_id
+  description: The job ID of the process search.
+- contextPath: CarbonBlackDefense.Process.Search.job_id
+  description: The job ID of the process search.
+tests:
+- carbonBlackEndpointStandardTestPlaybook
+fromversion: 5.5.0

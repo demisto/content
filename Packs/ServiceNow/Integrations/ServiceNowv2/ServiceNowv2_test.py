@@ -17,7 +17,8 @@ from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICK
     RESPONSE_CREATE_ITEM_ORDER, RESPONSE_DOCUMENT_ROUTE, RESPONSE_FETCH, RESPONSE_FETCH_ATTACHMENTS_FILE, \
     RESPONSE_FETCH_ATTACHMENTS_TICKET, RESPONSE_TICKET_MIRROR, MIRROR_COMMENTS_RESPONSE, RESPONSE_MIRROR_FILE_ENTRY, \
     RESPONSE_ASSIGNMENT_GROUP, RESPONSE_MIRROR_FILE_ENTRY_FROM_XSOAR, MIRROR_COMMENTS_RESPONSE_FROM_XSOAR, \
-    MIRROR_ENTRIES, RESPONSE_CLOSING_TICKET_MIRROR, RESPONSE_TICKET_ASSIGNED, OAUTH_PARAMS
+    MIRROR_ENTRIES, RESPONSE_CLOSING_TICKET_MIRROR, RESPONSE_TICKET_ASSIGNED, OAUTH_PARAMS, \
+    RESPONSE_QUERY_TICKETS_EXCLUDE_REFERENCE_LINK, MIRROR_ENTRIES_WITH_EMPTY_USERNAME
 from test_data.result_constants import EXPECTED_TICKET_CONTEXT, EXPECTED_MULTIPLE_TICKET_CONTEXT, \
     EXPECTED_TICKET_HR, EXPECTED_MULTIPLE_TICKET_HR, EXPECTED_UPDATE_TICKET, EXPECTED_UPDATE_TICKET_SC_REQ, \
     EXPECTED_CREATE_TICKET, EXPECTED_CREATE_TICKET_WITH_OUT_JSON, EXPECTED_QUERY_TICKETS, EXPECTED_ADD_LINK_HR, \
@@ -26,7 +27,7 @@ from test_data.result_constants import EXPECTED_TICKET_CONTEXT, EXPECTED_MULTIPL
     EXPECTED_QUERY_COMPUTERS, EXPECTED_GET_TABLE_NAME, EXPECTED_UPDATE_TICKET_ADDITIONAL, \
     EXPECTED_QUERY_TABLE_SYS_PARAMS, EXPECTED_ADD_TAG, EXPECTED_QUERY_ITEMS, EXPECTED_ITEM_DETAILS, \
     EXPECTED_CREATE_ITEM_ORDER, EXPECTED_DOCUMENT_ROUTE, EXPECTED_MAPPING, \
-    EXPECTED_TICKET_CONTEXT_WITH_ADDITIONAL_FIELDS
+    EXPECTED_TICKET_CONTEXT_WITH_ADDITIONAL_FIELDS, EXPECTED_QUERY_TICKETS_EXCLUDE_REFERENCE_LINK
 
 import demistomock as demisto
 from urllib.parse import urlencode
@@ -132,6 +133,9 @@ def test_split_fields_with_special_delimiter():
      EXPECTED_CREATE_TICKET_WITH_OUT_JSON, True),
     (query_tickets_command, {'limit': "3", 'query': "impact<2^short_descriptionISNOTEMPTY", 'ticket_type': "incident"},
      RESPONSE_QUERY_TICKETS, EXPECTED_QUERY_TICKETS, True),
+    (query_tickets_command,
+     {"ticket_type": "incident", "query": "number=INC0000001", "system_params": "sysparm_exclude_reference_link=true"},
+     RESPONSE_QUERY_TICKETS_EXCLUDE_REFERENCE_LINK, EXPECTED_QUERY_TICKETS_EXCLUDE_REFERENCE_LINK, True),
     (upload_file_command, {'id': "sys_id", 'file_id': "entry_id", 'file_name': 'test_file'}, RESPONSE_UPLOAD_FILE,
      EXPECTED_UPLOAD_FILE, True),
     (get_ticket_notes_command, {'id': "sys_id"}, RESPONSE_GET_TICKET_NOTES, EXPECTED_GET_TICKET_NOTES, True),
@@ -758,7 +762,8 @@ def add_comment_request(*args):
     return {'id': "1234", 'comment': "This is a comment"}
 
 
-def test_upload_entries_update_remote_system_command(mocker):
+@pytest.mark.parametrize('mirror_entries', [MIRROR_ENTRIES, MIRROR_ENTRIES_WITH_EMPTY_USERNAME])
+def test_upload_entries_update_remote_system_command(mocker, mirror_entries):
     """
     Given:
         -  ServiceNow client
@@ -773,7 +778,7 @@ def test_upload_entries_update_remote_system_command(mocker):
                     sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
                     ticket_type='incident', get_attachments=False, incident_name='description')
     params = {}
-    args = {'remoteId': '1234', 'data': {}, 'entries': MIRROR_ENTRIES, 'incidentChanged': False, 'delta': {}}
+    args = {'remoteId': '1234', 'data': {}, 'entries': mirror_entries, 'incidentChanged': False, 'delta': {}}
     mocker.patch.object(client, 'upload_file', side_effect=upload_file_request)
     mocker.patch.object(client, 'add_comment', side_effect=add_comment_request)
 

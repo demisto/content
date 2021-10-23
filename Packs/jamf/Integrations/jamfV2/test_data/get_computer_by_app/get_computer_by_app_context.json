@@ -1,0 +1,19 @@
+{
+  "Application": "safar*",
+  "Computer": [
+    {
+      "id": 138,
+      "mac_address": "00:18:98:3F:DB:8E",
+      "name": "test1",
+      "serial_number": "A02X94LZJHD3",
+      "udid": "12EAC1E5-43E7-57BE-BAD7-06922C177BDC"
+    },
+    {
+      "id": 139,
+      "mac_address": "00:0C:29:29:1C:99",
+      "name": "test2",
+      "serial_number": "A02F71FNMD8R",
+      "udid": "124D266C-CEDC-88B4-630F-E35FB9291C99"
+    }
+  ]
+}

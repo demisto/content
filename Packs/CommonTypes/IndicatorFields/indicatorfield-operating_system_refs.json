@@ -1,0 +1,32 @@
+{
+    "id": "indicator_operatingsystemrefs",
+    "version": -1,
+    "modified": "2021-04-28T11:01:32.961855+03:00",
+    "name": "Operating System Refs",
+    "ownerOnly": false,
+    "cliName": "operatingsystemrefs",
+    "type": "tagsSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 2,
+    "hidden": false,
+    "associatedTypes": [
+        "Tool",
+        "Attack Pattern",
+        "Malware"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.5.0"
+}

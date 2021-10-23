@@ -4,7 +4,7 @@
 <p>This integration does not support NTLM authentication. If you are using Exchange as the SMTP server for sending mail and receive the error message: <code>No suitable authentication method found.</code> make sure that you enable <strong>Basic Authentication</strong> for SMTP authentication in your Exchange environment.</p>
 <p><span> This example shows </span>Basic Authentication on Exchange 2010:</p>
 <p><a href="https://user-images.githubusercontent.com/1395797/58482464-14ace300-8167-11e9-86c5-fa389b49a99c.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/1395797/58482464-14ace300-8167-11e9-86c5-fa389b49a99c.png" alt="image"></a></p>
-<h2>Configure Mail Sender on Demisto</h2>
+<h2>Configure Mail Sender on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for Mail Sender (New).</li>
@@ -145,14 +145,14 @@
 </table>
 <p> </p>
 <h5>Command Example</h5>
-<pre>!send-mail to="name@company.com" cc="test@company.com" bcc="admin@company.com" subject="Topic of the day" replyTo="replymail@company.com" attachIDs="111@02a9cf84-c76f-4b2e-8840-c6b2a85c53cf,129@02a9cf84-c86f-4b2e-8840-c6c2a89c53cf" attachNames="notcookie.png,cookie.jpg" attachCIDs="notcookie,mycookie" transientFile="friendly_note.txt" transientFileContent="this is some text" htmlBody="&lt;html&gt;<br> &lt;body&gt;<br>&lt;p&gt;HELLO&lt;/p&gt;<br> &lt;img src=\"cid:mycookie\"/&gt;<br> &lt;/body&gt;<br>&lt;/html&gt;"</pre>
+<pre>!send-mail to="name@example.com" cc="test@example.com" bcc="admin@example.com" subject="Topic of the day" replyTo="replymail@example.com" attachIDs="111@02a9cf84-c76f-4b2e-8840-c6b2a85c53cf,129@02a9cf84-c86f-4b2e-8840-c6c2a89c53cf" attachNames="notcookie.png,cookie.jpg" attachCIDs="notcookie,mycookie" transientFile="friendly_note.txt" transientFileContent="this is some text" htmlBody="&lt;html&gt;<br> &lt;body&gt;<br>&lt;p&gt;HELLO&lt;/p&gt;<br> &lt;img src=\"cid:mycookie\"/&gt;<br> &lt;/body&gt;<br>&lt;/html&gt;"</pre>
 <p> </p>
 <h2>About CIDs</h2>
 <p>CIDs work by attaching the image to the email you are sending, and then using standard HTML image tags that reference that image to embed it in the email when the user opens it.</p>
 <h5> Example:</h5>
 <pre>&lt;html&gt;
   &lt;body&gt;
-    &lt;img src="cid:radomimagecid"/&gt;
+    &lt;img src=\"cid:radomimagecid\"/&gt;
   &lt;/body&gt;
 &lt;/html&gt;</pre>
 <h3>CID Limitations</h3>

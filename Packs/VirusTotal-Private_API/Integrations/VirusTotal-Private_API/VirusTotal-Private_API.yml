@@ -622,6 +622,7 @@ script:
   script: '-'
   subtype: python2
   type: python
+  dockerimage: demisto/python:2.7.18.24066
 tests:
 - virusTotalPrivateAPI-test-playbook
 - File Enrichment - Virus Total Private API Test

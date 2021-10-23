@@ -23,8 +23,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Trend Micro Apex central automation to manage agents and User-Defined Suspicious Objects
-display: Trend Micro Apex
+description: Trend Micro Apex One central automation to manage agents and User-Defined Suspicious Objects
+display: Trend Micro Apex One
 name: Trend Micro Apex
 script:
   commands:
@@ -49,7 +49,7 @@ script:
       required: false
       secret: false
     deprecated: true
-    description: Retrieve a list of User-Defined Suspicious Objects from the Apex Central server.
+    description: Retrieve a list of User-Defined Suspicious Objects from the Apex One Central server.
     execution: false
     name: trendmicro-apex-usdo-list
     outputs:
@@ -159,7 +159,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Retrieve a list of User-Defined Suspicious Objects from the Apex Central server.
+    description: Retrieve a list of User-Defined Suspicious Objects from the Apex One Central server.
     execution: false
     name: trendmicro-apex-udso-list
     outputs:
@@ -483,7 +483,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Retrieves a list of managed product servers reporting to Apex Central.
+    description: Retrieves a list of managed product servers reporting to Apex One Central.
     execution: false
     name: trendmicro-apex-managed-servers-list
     outputs:
@@ -982,7 +982,7 @@ script:
     - contextPath: TrendMicroApex.InvestigationResult.errorServers
       description: Error response if server communication is unsuccessful.
       type: String
-  dockerimage: demisto/pycef:1.0.0.10664
+  dockerimage: demisto/pycef:1.0.0.23290
   feed: false
   isfetch: false
   longRunning: false

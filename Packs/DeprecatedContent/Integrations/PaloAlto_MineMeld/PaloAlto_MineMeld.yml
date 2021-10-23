@@ -516,6 +516,7 @@ script:
   script: '-'
   subtype: python2
   type: python
+  dockerimage: demisto/python:2.7.18.20958
 tests:
 - No tests
 fromversion: 5.0.0

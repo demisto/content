@@ -1,0 +1,19 @@
+{
+    "name": "Confluera",
+    "description": "This content pack uses the Confluera integration to fetch detections & progressions from confluera's Iq-Hub portal",
+    "support": "partner",
+    "currentVersion": "1.0.6",
+    "author": "confluera",
+    "url": "https://www.confluera.com",
+    "email": "support@confluera.com",
+    "created": "2021-01-01T10:21:07Z",
+    "categories": [
+        "Network Security"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "shubhamyadav-coditas"
+    ]
+}
