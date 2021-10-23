@@ -33,4 +33,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Block File - Cybereason](https://raw.githubusercontent.com/demisto/content/54a1993f8d18984c583ecfcc96fff031325314f0/Packs/Cybereason/doc_files/Block_File_-_Cybereason.png)
+![Block File - Cybereason](../doc_files/Block_File_-_Cybereason.png)
