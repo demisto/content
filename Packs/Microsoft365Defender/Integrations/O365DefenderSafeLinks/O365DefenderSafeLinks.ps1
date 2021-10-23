@@ -1,8 +1,8 @@
 Import-Module ExchangeOnlineManagement
 
 
-$COMMAND_PREFIX = "o365-atp-safe-links"
-$INTEGRATION_ENTRY_CONTEXT = "O365ATP.SafeLinks"
+$COMMAND_PREFIX = "o365-defender-safelinks"
+$INTEGRATION_ENTRY_CONTEXT = "O365Defender.SafeLinks"
 
 
 function EncloseArgWithQuotes {
@@ -25,7 +25,7 @@ function EncloseArgWithQuotes {
     $return_value = $arrayed_value -join ","
 
     return $return_value
-    
+
     <#
     .DESCRIPTION
     Encloses the value of an argument with double quotes and trim it. In the case it's a CSV value
@@ -116,7 +116,7 @@ class ExchangeOnlinePowershellV2Client {
         https://docs.microsoft.com/en-us/powershell/module/exchange/get-safelinkspolicy?view=exchange-ps
         #>
     }
-    
+
     [PSObject]
     CreateUpdatePolicy(
         [string]$command_type,
@@ -134,7 +134,7 @@ class ExchangeOnlinePowershellV2Client {
         [bool]$scan_urls,
         [bool]$use_translated_notification_text
     ) {
-        $cmd_params = @{ 
+        $cmd_params = @{
             Name = $name
         }
         if ($admin_display_name) {
@@ -173,16 +173,16 @@ class ExchangeOnlinePowershellV2Client {
         if ($use_translated_notification_text) {
             $cmd_params.UseTranslatedNotificationText = $use_translated_notification_text
         }
-        
+
         $this.CreateSession()
-        
-        if (command_type -e "create") {
+
+        if ($command_type -eq "create") {
             $results = New-SafeLinksPolicy @cmd_params
         }
         else {
             $results = Set-SafeLinksPolicy @cmd_params
         }
-        
+
         $this.DisconnectSession()
         return $results
 
@@ -242,11 +242,15 @@ class ExchangeOnlinePowershellV2Client {
 
     [PSObject]
     GetRules(
-        [string]$identity
+        [string]$identity,
+        [string]$state
     ) {
         $cmd_params = @{ }
         if ($identity) {
             $cmd_params.Identity = $identity
+        }
+        if ($state) {
+            $cmd_params.State = $state
         }
         $this.CreateSession()
         $results = Get-SafeLinksRule @cmd_params
@@ -270,7 +274,7 @@ class ExchangeOnlinePowershellV2Client {
         GetRules("1254y894-feae-9yn7-a3e1-f2483a154tft")
 
         .OUTPUTS
-        PSObject - Raw response
+         PSObject- Raw response
 
         .LINK
         https://docs.microsoft.com/en-us/powershell/module/exchange/get-safelinksrule?view=exchange-ps
@@ -293,7 +297,7 @@ class ExchangeOnlinePowershellV2Client {
         [string]$sent_to_member_of
 
     ) {
-        $cmd_params = @{ 
+        $cmd_params = @{
             Name = $name
         }
         if ($safe_links_policy) {
@@ -326,16 +330,16 @@ class ExchangeOnlinePowershellV2Client {
         if ($sent_to_member_of) {
             $cmd_params.SentToMemberOf = $sent_to_member_of
         }
-        
+
         $this.CreateSession()
-        
-        if (command_type -e "create") {
+
+        if ($command_type -eq "create") {
             $results = New-SafeLinksRule @cmd_params
         }
         else {
             $results = Set-SafeLinksRule @cmd_params
         }
-        
+
         $this.DisconnectSession()
         return $results
 
@@ -369,7 +373,7 @@ function GetPolicyListCommand {
         $identity
     )
     $human_readable = TableToMarkdown $raw_response "Results of $command"
-    $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.PolicyList(obj.Guid === val.Guid)" = $raw_response }
+    $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.Policy(obj.Guid === val.Guid)" = $raw_response }
     Write-Output $human_readable, $entry_context, $raw_response
 }
 
@@ -437,11 +441,9 @@ function GetRulesCommand {
         [hashtable]$kwargs
     )
     $identity = EncloseArgWithQuotes($kwargs.identity)
-    $raw_response = $client.GetRules(
-        $identity
-    )
+    $raw_response = $client.GetRules($identity, $kwargs.state)
     $human_readable = TableToMarkdown $raw_response "Results of $command"
-    $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.Policy(obj.Guid === val.Guid)" = $raw_response }
+    $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.Rule(obj.Guid === val.Guid)" = $raw_response }
     Write-Output $human_readable, $entry_context, $raw_response
 }
 
@@ -541,27 +543,25 @@ function Main {
             "$script:COMMAND_PREFIX-rule-update" {
                 ($human_readable, $entry_context, $raw_response) = CreateUpdateRuleCommand $exo_client "update" $command_arguments
             }
-            
+
             default {
                 ReturnError "Could not recognize $command"
             }
         }
         # Return results to Demisto Server
-        ReturnOutputs $human_readable $entry_context $raw_response | Out-Null
+        ReturnOutputs $human_readable $entry_context $raw_response
     }
     catch {
-        $Demisto.debug(
-            "Integration: $script:INTEGRATION_NAME
+        $Demisto.debug("Integration: $script:INTEGRATION_NAME
         Command: $command
-        Arguments: $( $command_arguments | ConvertTo-Json )
-        Error: $( $_.Exception.Message )"
-        )
+        Arguments: $($command_arguments | ConvertTo-Json)
+        Error: $($_.Exception.Message)")
         if ($command -ne "test-module") {
             ReturnError "Error:
             Integration: $script:INTEGRATION_NAME
             Command: $command
-            Arguments: $( $command_arguments | ConvertTo-Json )
-            Error: $( $_.Exception )"
+            Arguments: $($command_arguments | ConvertTo-Json)
+            Error: $($_.Exception)" | Out-Null
         }
         else {
             ReturnError $_.Exception.Message
