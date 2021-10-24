@@ -1,13 +1,13 @@
-G Suite Auditor is an integration that receives Audit logs from G Suite's different applications - admin, drive, calender, and more.
+G Suite Auditor is an integration that receives audit logs from G Suite's different applications - admin, drive, calendar, and more.
 This integration was integrated and tested with version xx of GSuiteAuditor
 
-###For more information about the integrations arguments-
+###For more information about the integration arguments:
 * [Command arguments documentation](https://developers.google.com/admin-sdk/reports/reference/rest/v1/activities/list?apix_params=%7B%22userKey%22%3A%22all%22%2C%22applicationName%22%3A%22admin%22%2C%22eventName%22%3A%22DELETE_USER%22%2C%22filters%22%3A%22USER_EMAIL%3D%3Dxsoar11%40demistodev.com%22%7D#query-parameters) in Google's API.
 * [Application to event names table](https://developers.google.com/admin-sdk/reports/reference/rest/v1/activities/list#applicationname) by Google's API.
 
 ##Google's lag time information
-This integration relies on Google's audit logs which are prone to some data delays. Please note that some results may be partial as data has yet to arrive due to lag times. Lag time changes depending on the used audit log (between near real-time up to 3 days).
-for more information - https://support.google.com/a/answer/7061566?hl=en
+This integration relies on Google's audit logs which are prone to some data delays. Some results may be partial if data had not arrived due to lag times. The lag time changes depending on the used audit log (from near real-time up to 3 days).
+For more information - https://support.google.com/a/answer/7061566?hl=en
 
 ## Configure G Suite Auditor on Cortex XSOAR
 
@@ -43,10 +43,10 @@ Retrieves a list of activities for a specific customer's account and application
 | event_name | The name of the event being queried. For a list of event names for each application, see the integration documentation. | Optional | 
 | filters | A comma-separated list of event parameters and relational operators. For example-<br/>'API_CLIENT_NAME==111,API_SCOPES=aaa'.<br/>The relevant 'event name' argument must be supplied to use this argument. | Optional | 
 | org_unit_id | ID of the organizational unit to report on. Activity records will be shown only for users who belong to the specified organizational unit. | Optional | 
-| group_id | Comma-separated group IDs on which user activities are filtered. <br/>The response will contain activities for only those users who are a part of <br/>at least one of the group IDs mentioned here. For example: "id:abc123,id:xyz456".<br/>To retrieve a group ID, use the 'gsuite-get-group' command in the 'G Suite Admin' Pack. | Optional | 
+| group_id | Comma-separated group IDs on which user activities are filtered. <br/>The response will contain activities for only those users who are a part of <br/>at least one of the group IDs mentioned here. For example: "id:abc123,id:xyz456".<br/>To retrieve a group ID, use the 'gsuite-get-group' command in the 'G Suite Admin' pack. | Optional | 
 | actor_ip_address | IP address of the host where the event was performed. | Optional | 
-| start_time | Sets the beginning of the time range shown in the report. For example - 2010-10-28T10:26:35.000Z. | Optional | 
-| end_time | Sets the end of the time range shown in the report. For example - 2010-10-28T10:26:35.000Z. | Optional | 
+| start_time | The beginning of the time range shown in the report. For example - 2010-10-28T10:26:35.000Z. | Optional | 
+| end_time | The end of the time range shown in the report. For example - 2010-10-28T10:26:35.000Z. | Optional | 
 | max_results | Maximum number of results to return. Default is 50. | Optional | 
 | page_token | The token to specify the next page. | Optional | 
 | admin_email | Email address of the G Suite domain admin. The request is preformed based on this user's permissions. | Optional | 
@@ -63,7 +63,7 @@ Retrieves a list of activities for a specific customer's account and application
 | GSuite.ActivitySearch.items.actor.callerType | String | The type of actor. | 
 | GSuite.ActivitySearch.items.actor.key | String | Can be the consumer_key of the requestor for OAuth 2LO API requests or an identifier for robot accounts. | 
 | GSuite.ActivitySearch.items.events.type | String | Type of event. | 
-| GSuite.ActivitySearch.items.events.name | String | Name of the event | 
+| GSuite.ActivitySearch.items.events.name | String | Name of the event. | 
 | GSuite.ActivitySearch.items.events.parameters.name | String | The name of the parameter. | 
 | GSuite.ActivitySearch.items.events.parameters.value | String | String value of the parameter. | 
 | GSuite.ActivitySearch.items.actor.email | String | The primary email address of the actor. | 
