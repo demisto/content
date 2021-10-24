@@ -139,7 +139,8 @@ def get_mapping_fields_command(client):
 
 
 def get_user_command(client, args, mapper_in, mapper_out):
-    user_profile = IAMUserProfile(user_profile=args.get('user-profile'), mapper=mapper_out)
+    user_profile = IAMUserProfile(user_profile=args.get('user-profile'), mapper=mapper_out,
+                                  incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
     try:
         iam_attr, iam_attr_value = user_profile.get_first_available_iam_user_attr(IAM_GET_USER_ATTRIBUTES)
         service_now_filter_name: str = 'sys_id' if iam_attr == 'id' else iam_attr
@@ -169,7 +170,8 @@ def get_user_command(client, args, mapper_in, mapper_out):
 
 
 def disable_user_command(client, args, is_command_enabled, mapper_out):
-    user_profile = IAMUserProfile(user_profile=args.get('user-profile'), mapper=mapper_out)
+    user_profile = IAMUserProfile(user_profile=args.get('user-profile'), mapper=mapper_out,
+                                  incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
     if not is_command_enabled:
         user_profile.set_result(action=IAMActions.DISABLE_USER,
                                 skip=True,
@@ -205,7 +207,8 @@ def disable_user_command(client, args, is_command_enabled, mapper_out):
 
 
 def create_user_command(client, args, mapper_out, is_command_enabled, is_update_enabled, is_enable_enabled):
-    user_profile = IAMUserProfile(user_profile=args.get('user-profile'), mapper=mapper_out)
+    user_profile = IAMUserProfile(user_profile=args.get('user-profile'), mapper=mapper_out,
+                                  incident_type=IAMUserProfile.CREATE_INCIDENT_TYPE)
 
     if not is_command_enabled:
         user_profile.set_result(action=IAMActions.CREATE_USER,
@@ -243,7 +246,8 @@ def create_user_command(client, args, mapper_out, is_command_enabled, is_update_
 
 def update_user_command(client, args, mapper_out, is_command_enabled, is_enable_enabled,
                         is_create_user_enabled, create_if_not_exists):
-    user_profile = IAMUserProfile(user_profile=args.get('user-profile'), mapper=mapper_out)
+    user_profile = IAMUserProfile(user_profile=args.get('user-profile'), mapper=mapper_out,
+                                  incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
     allow_enable = args.get('allow-enable') == 'true'
     if not is_command_enabled:
         user_profile.set_result(action=IAMActions.UPDATE_USER,

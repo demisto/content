@@ -40,7 +40,7 @@
 				},
 				"Name": {
 					"complex": null,
-					"simple": "displayname"
+					"simple": "username"
 				}
 			}
 		},
@@ -81,7 +81,7 @@
 				},
 				"Name": {
 					"complex": null,
-					"simple": "displayname"
+					"simple": "username"
 				}
 			}
 		}

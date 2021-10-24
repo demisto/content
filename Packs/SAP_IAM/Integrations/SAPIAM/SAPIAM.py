@@ -208,7 +208,9 @@ def main():
     # get-user When get-user is not supported by the api. So get-user here just returns the fields to allow disable
     # Command to work as expected.
     if args.get('user-profile'):
-        user_profile = IAMUserProfile(args.get('user-profile'), mapper=mapper_out)
+        incident_type: str = IAMUserProfile.CREATE_INCIDENT_TYPE if command == 'iam-create-user' else \
+            IAMUserProfile.UPDATE_INCIDENT_TYPE
+        user_profile = IAMUserProfile(args.get('user-profile'), mapper=mapper_out, incident_type=incident_type)
         user_id = user_profile.get_attribute('id')
         email = user_profile.get_attribute('email')
         user_name = user_profile.get_attribute('username')

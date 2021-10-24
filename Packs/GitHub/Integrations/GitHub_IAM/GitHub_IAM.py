@@ -104,7 +104,8 @@ def test_module(client):
 
 
 def get_user_command(client, args, mapper_in, mapper_out):
-    iam_user_profile = IAMUserProfile(user_profile=args.get("user-profile"), mapper=mapper_out)
+    iam_user_profile = IAMUserProfile(user_profile=args.get("user-profile"), mapper=mapper_out,
+                                      incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
     try:
         iam_attr, iam_attr_value = iam_user_profile.get_first_available_iam_user_attr(IAM_GET_USER_ATTRIBUTES)
         res = client.get_user(iam_attr, iam_attr_value)
@@ -148,7 +149,8 @@ def get_user_command(client, args, mapper_in, mapper_out):
 
 def create_user_command(client, args, mapper_out, is_create_enabled, is_update_enabled):
     try:
-        iam_user_profile = IAMUserProfile(user_profile=args.get("user-profile"), mapper=mapper_out)
+        iam_user_profile = IAMUserProfile(user_profile=args.get("user-profile"), mapper=mapper_out,
+                                          incident_type=IAMUserProfile.CREATE_INCIDENT_TYPE)
 
         if not is_create_enabled:
             iam_user_profile.set_result(action=IAMActions.CREATE_USER,
@@ -197,7 +199,8 @@ def create_user_command(client, args, mapper_out, is_create_enabled, is_update_e
 
 def update_user_command(client, args, mapper_out, is_update_enabled, is_create_enabled, create_if_not_exists):
     try:
-        iam_user_profile = IAMUserProfile(user_profile=args.get("user-profile"), mapper=mapper_out)
+        iam_user_profile = IAMUserProfile(user_profile=args.get("user-profile"), mapper=mapper_out,
+                                          incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
 
         if not is_update_enabled:
             iam_user_profile.set_result(action=IAMActions.UPDATE_USER,
@@ -249,7 +252,8 @@ def update_user_command(client, args, mapper_out, is_update_enabled, is_create_e
 
 def disable_user_command(client, args, mapper_out, is_disable_enabled):
     try:
-        iam_user_profile = IAMUserProfile(user_profile=args.get("user-profile"), mapper=mapper_out)
+        iam_user_profile = IAMUserProfile(user_profile=args.get("user-profile"), mapper=mapper_out,
+                                          incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
 
         if not is_disable_enabled:
             iam_user_profile.set_result(action=IAMActions.DISABLE_USER,

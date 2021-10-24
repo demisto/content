@@ -323,9 +323,13 @@ def main():
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     command = demisto.command()
+    incident_type: str = IAMUserProfile.CREATE_INCIDENT_TYPE if command == 'iam-get-user' else \
+        IAMUserProfile.UPDATE_INCIDENT_TYPE
     args = demisto.args()
     if 'user-profile' in args:
-        manager_email = IAMUserProfile(args.get('user-profile', {})).get_attribute('manageremailaddress')
+        manager_email = IAMUserProfile(args.get('user-profile', {}),
+                                       mapper=mapper_out,
+                                       incident_type=incident_type).get_attribute('manageremailaddress')
 
     is_create_enabled = params.get("create_user_enabled")
     is_enable_enabled = params.get("enable_user_enabled")

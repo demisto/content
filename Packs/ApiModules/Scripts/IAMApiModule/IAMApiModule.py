@@ -130,11 +130,12 @@ class IAMUserProfile:
     DEFAULT_INCIDENT_TYPE = 'User Profile'
     CREATE_INCIDENT_TYPE = 'User Profile - Create'
     UPDATE_INCIDENT_TYPE = 'User Profile - Update'
+    DISABLE_INCIDENT_TYPE = 'User Profile - Disable'
 
-    def __init__(self, user_profile, mapper, user_profile_delta=None):
+    def __init__(self, user_profile, mapper: str, incident_type: str, user_profile_delta=None):
         self._user_profile = safe_load_json(user_profile)
         # Mapping is added here for GET USER commands, where we need to map Cortex XSOAR fields to the given app fields.
-        self.mapped_user_profile = self.map_object(mapper, self.UPDATE_INCIDENT_TYPE) if mapper else self._user_profile
+        self.mapped_user_profile = self.map_object(mapper, incident_type) if mapper else self._user_profile
         self._user_profile_delta = safe_load_json(user_profile_delta) if user_profile_delta else {}
         self._vendor_action_results = []
 
@@ -230,6 +231,8 @@ class IAMUserProfile:
         :return: the user data, in the app data format.
         :rtype: ``dict``
         """
+        if self.mapped_user_profile:
+            return self.mapped_user_profile
         if incident_type not in [IAMUserProfile.CREATE_INCIDENT_TYPE, IAMUserProfile.UPDATE_INCIDENT_TYPE]:
             raise DemistoException('You must provide a valid incident type to the map_object function.')
         if not self._user_profile:
@@ -277,9 +280,8 @@ class IAMUserProfile:
                                           attr_value[0].get('value', ''))
                 return iam_attr, attr_value
 
-        raise DemistoException('Could not find any of the needed attributes. Please make sure you send one of the '
-                               f'following attributes: {iam_attrs}, or have the outgoing mapper configured to map to'
-                               'one of the listed attributes.')
+        raise DemistoException('Your user profile argument must contain at least one attribute that is mapped into one'
+                               f' of the following attributes in the outgoing mapper: {iam_attrs}')
 
 
 class IAMUserAppData:
@@ -359,7 +361,8 @@ class IAMCommand:
         :param args: (dict) The `iam-get-user` command arguments
         :return: (IAMUserProfile) The user profile object.
         """
-        user_profile = IAMUserProfile(user_profile=args.get('user-profile'), mapper=self.mapper_out)
+        user_profile = IAMUserProfile(user_profile=args.get('user-profile'), mapper=self.mapper_out,
+                                      incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
         try:
             iam_attribute, iam_attribute_val = user_profile.get_first_available_iam_user_attr(self.get_user_iam_attrs)
             user_app_data = client.get_user(iam_attribute, iam_attribute_val)
@@ -393,7 +396,8 @@ class IAMCommand:
         :param args: (dict) The `iam-disable-user` command arguments
         :return: (IAMUserProfile) The user profile object.
         """
-        user_profile = IAMUserProfile(user_profile=args.get('user-profile'), mapper=self.mapper_out)
+        user_profile = IAMUserProfile(user_profile=args.get('user-profile'), mapper=self.mapper_out,
+                                      incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
         if not self.is_disable_enabled:
             user_profile.set_result(action=IAMActions.DISABLE_USER,
                                     skip=True,
@@ -434,7 +438,8 @@ class IAMCommand:
         :param args: (dict) The `iam-create-user` command arguments
         :return: (IAMUserProfile) The user profile object.
         """
-        user_profile = IAMUserProfile(user_profile=args.get('user-profile'), mapper=self.mapper_out)
+        user_profile = IAMUserProfile(user_profile=args.get('user-profile'), mapper=self.mapper_out,
+                                      incident_type=IAMUserProfile.CREATE_INCIDENT_TYPE)
 
         if not self.is_create_enabled:
             user_profile.set_result(action=IAMActions.CREATE_USER,
@@ -475,7 +480,8 @@ class IAMCommand:
         :param args: (dict) The `iam-update-user` command arguments
         :return: (IAMUserProfile) The user profile object.
         """
-        user_profile = IAMUserProfile(user_profile=args.get('user-profile'), mapper=self.mapper_out)
+        user_profile = IAMUserProfile(user_profile=args.get('user-profile'), mapper=self.mapper_out,
+                                      incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
         allow_enable = args.get('allow-enable') == 'true' and self.is_enable_enabled
         if not self.is_update_enabled:
             user_profile.set_result(action=IAMActions.UPDATE_USER,
