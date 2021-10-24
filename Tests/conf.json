@@ -2253,7 +2253,8 @@
             "playbookID": "ParseWordDoc-Test"
         },
         {
-            "playbookID": "PDFUnlocker-Test"
+            "playbookID": "PDFUnlocker-Test",
+            "fromversion": "6.0.0"
         },
         {
             "playbookID": "Active Directory Test",
