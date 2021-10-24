@@ -151,7 +151,7 @@
         "shortdescription": null,
         "stixindicatordescription": "Target Users via Email by adding a malicious URL",
         "stixttptitle": "Email Emmbedded URL",
-        "stixmalwaretypes": null,
+        "score": 2,
         "fields": {},
         "rawJSON": {
             "stix_ttp_title": "Email Emmbedded URL",
