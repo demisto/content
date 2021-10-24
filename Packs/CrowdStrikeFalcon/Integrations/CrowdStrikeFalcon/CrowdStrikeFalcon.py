@@ -71,12 +71,17 @@ IOC_KEY_MAP = {
     'policy': 'Policy',
     'source': 'Source',
     'share_level': 'ShareLevel',
-    'expiration_timestamp': 'Expiration',
+    'expiration': 'Expiration',
     'description': 'Description',
-    'created_timestamp': 'CreatedTime',
+    'created_on': 'CreatedTime',
     'created_by': 'CreatedBy',
-    'modified_timestamp': 'ModifiedTime',
-    'modified_by': 'ModifiedBy'
+    'modified_on': 'ModifiedTime',
+    'modified_by': 'ModifiedBy',
+    'id': 'ID',
+    'platforms': 'Platforms',
+    'action': 'Action',
+    'severity': 'Severity',
+    'tags': 'Tags',
 }
 
 IOC_DEVICE_COUNT_MAP = {
@@ -1091,49 +1096,6 @@ def search_iocs(types=None, values=None, policies=None, sources=None, expiration
     return http_request('GET', '/indicators/entities/iocs/v1', params=payload)
 
 
-def search_custom_iocs(
-    types: Optional[Union[list, str]] = None,
-    values: Optional[Union[list, str]] = None,
-    policies: Optional[Union[list, str]] = None,
-    sources: Optional[Union[list, str]] = None,
-    expiration_from: Optional[str] = None,
-    expiration_to: Optional[str] = None,
-    limit: Optional[str] = None,
-    share_levels: Optional[Union[list, str]] = None,
-    ids=None,
-    sort: Optional[str] = None,
-    offset: Optional[str] = None,
-):
-    """
-    :param types: A list of indicator types. Separate multiple types by comma.
-    :param values: Comma-separated list of indicator values
-    :param policies: Comma-separated list of indicator policies
-    :param sources: Comma-separated list of IOC sources
-    :param expiration_from: Start of date range to search (YYYY-MM-DD format).
-    :param expiration_to: End of date range to search (YYYY-MM-DD format).
-    :param share_levels: A list of share levels. Only red is supported.
-    :param limit: The maximum number of records to return. The minimum is 1 and the maximum is 500. Default is 100.
-    :param sort: The order of the results. Format
-    :param offset: The offset to begin the list from
-    """
-    payload = assign_params(
-        types=argToList(types),
-        values=argToList(values),
-        policies=argToList(policies),
-        sources=argToList(sources),
-        share_levels=argToList(share_levels),
-        sort=sort,
-        offset=offset,
-        limit=limit or '50',
-    )
-    if expiration_from:
-        payload['from.expiration_timestamp'] = expiration_from
-    if expiration_to:
-        payload['to.expiration_timestamp'] = expiration_to
-
-    return http_request('GET', '/iocs/combined/indicators/v1', params=payload)
-
-
 def enrich_ioc_dict_with_ids(ioc_dict):
     """
         Enriches the provided ioc_dict with IOC ID
@@ -1154,6 +1116,69 @@ def delete_ioc(ioc_type, value):
         value=value
     )
     return http_request('DELETE', '/indicators/entities/iocs/v1', payload)
+
+
+def search_custom_iocs(
+    types: Optional[Union[list, str]] = None,
+    values: Optional[Union[list, str]] = None,
+    sources: Optional[Union[list, str]] = None,
+    expiration: Optional[str] = None,
+    limit: str = '50',
+    ids=None,
+    sort: Optional[str] = None,
+    offset: Optional[str] = None,
+) -> dict:
+    """
+    :param types: A list of indicator types. Separate multiple types by comma.
+    :param values: Comma-separated list of indicator values
+    :param sources: Comma-separated list of IOC sources
+    :param expiration: The date on which the indicator will become inactive. (YYYY-MM-DD format).
+    :param limit: The maximum number of records to return. The minimum is 1 and the maximum is 500. Default is 100.
+    :param sort: The order of the results. Format
+    :param offset: The offset to begin the list from
+    """
+    params = {
+        'filter': {
+            'type': types,
+            'value': values,
+            'source': sources,
+            'expiration': expiration,
+        },
+        'sort': sort,
+        'offset': offset,
+        'limit': limit,
+    }
+
+    return http_request('GET', '/iocs/combined/indicators/v1', params=params)
+
+
+def upload_custom_ioc(
+    ioc_type: str,
+    value: str,
+    action: str,
+    platforms: str,
+    severity: Optional[str] = None,
+    source: Optional[str] = None,
+    description: Optional[str] = None,
+    expiration: Optional[str] = None,
+) -> dict:
+    """
+    Create a new IOC (or replace an existing one)
+    """
+    payload = {
+        'indicators': [assign_params(
+            type=ioc_type,
+            value=value,
+            action=action,
+            platforms=platforms,
+            severity=severity,
+            source=source,
+            description=description,
+            expiration=expiration,
+        )]
+    }
+
+    return http_request('POST', '/iocs/entities/indicators/v1', json=payload)
 
 
 def get_ioc_device_count(ioc_type, value):
@@ -1638,37 +1663,28 @@ def delete_ioc_command(ioc_type, value):
 def search_custom_iocs_command(
     types: Optional[Union[list, str]] = None,
     values: Optional[Union[list, str]] = None,
-    policies: Optional[Union[list, str]] = None,
     sources: Optional[Union[list, str]] = None,
-    from_expiration_date: Optional[str] = None,
-    to_expiration_date: Optional[str] = None,
-    share_levels: Optional[Union[list, str]] = None,
-    limit: Optional[str] = None,
+    expiration: Optional[str] = None,
+    limit: str = '50',
     sort: Optional[str] = None,
     offset: Optional[str] = None,
-):
+) -> dict:
     """
     :param types: A list of indicator types. Separate multiple types by comma.
     :param values: Comma-separated list of indicator values
-    :param policies: Comma-separated list of indicator policies
     :param sources: Comma-separated list of IOC sources
-    :param from_expiration_date: Start of date range to search (YYYY-MM-DD format).
-    :param to_expiration_date: End of date range to search (YYYY-MM-DD format).
-    :param share_levels: A list of share levels. Only red is supported.
+    :param expiration: The date on which the indicator will become inactive. (YYYY-MM-DD format).
     :param limit: The maximum number of records to return. The minimum is 1 and the maximum is 500. Default is 100.
     :param sort: The order of the results. Format
     :param offset: The offset to begin the list from
     """
     raw_res = search_custom_iocs(
-        types=types,
-        values=values,
-        policies=policies,
-        sources=sources,
+        types=argToList(types),
+        values=argToList(values),
+        sources=argToList(sources),
         sort=sort,
         offset=offset,
-        expiration_from=from_expiration_date,
-        expiration_to=to_expiration_date,
-        share_levels=share_levels,
+        expiration=expiration,
         limit=limit,
     )
     iocs = raw_res.get('resources')
@@ -1676,11 +1692,54 @@ def search_custom_iocs_command(
         return create_entry_object(hr='Could not find any Indicators of Compromise.')
     handle_response_errors(raw_res)
     ec = [get_trasnformed_dict(ioc, IOC_KEY_MAP) for ioc in iocs]
-    enrich_ioc_dict_with_ids(ec)
+    # enrich_ioc_dict_with_ids(ec) TODO: check if needed
     return create_entry_object(
-        contents=raw_res, 
+        contents=raw_res,
         ec={'CrowdStrike.IOC(val.ID === obj.ID)': ec},
         hr=tableToMarkdown('Indicators of Compromise', ec),
+    )
+
+
+def upload_custom_ioc_command(
+    ioc_type: str,
+    value: str,
+    action: str,
+    platforms: str,
+    severity: Optional[str] = None,
+    source: Optional[str] = None,
+    description: Optional[str] = None,
+    expiration: Optional[str] = None,
+) -> dict:
+    """
+    :param ioc_type: The type of the indicator.
+    :param value: The string representation of the indicator.
+    :param action: Action to take when a host observes the custom IOC.
+    :param platforms: The platforms that the indicator applies to.
+    :param severity: The severity level to apply to this indicator.
+    :param source: The source where this indicator originated.
+    :param description: A meaningful description of the indicator.
+    :param expiration: The date on which the indicator will become inactive.
+    """
+    if action in {'prevent', 'detect'} and not severity:
+        raise ValueError(f'Severity is required for action {action}.')
+    raw_res = upload_custom_ioc(
+        ioc_type,
+        value,
+        action,
+        platforms,
+        severity,
+        source,
+        description,
+        expiration,
+    )
+    handle_response_errors(raw_res)
+    iocs = raw_res.get('resources', [])
+    ec = [get_trasnformed_dict(iocs[0], IOC_KEY_MAP)]
+    # enrich_ioc_dict_with_ids(ec) TODO: check if needed
+    return create_entry_object(
+        contents=raw_res,
+        ec={'CrowdStrike.IOC(val.ID === obj.ID)': ec},
+        hr=tableToMarkdown('Custom IOC was created successfully', ec),
     )
 
 
@@ -2851,6 +2910,8 @@ def main():
             return_results(delete_ioc_command(ioc_type=args.get('type'), value=args.get('value')))
         elif command == 'cs-falcon-search-custom-iocs':
             return_results(search_custom_iocs_command(**args))
+        elif command == 'cs-falcon-upload-custom-ioc':
+            return_results(upload_custom_ioc_command(**args))
         elif command == 'cs-falcon-device-count-ioc':
             return_results(get_ioc_device_count_command(ioc_type=args.get('type'), value=args.get('value')))
         elif command == 'cs-falcon-process-details':

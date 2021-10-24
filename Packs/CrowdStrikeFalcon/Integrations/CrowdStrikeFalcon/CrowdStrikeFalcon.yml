@@ -1318,8 +1318,8 @@ script:
       name: description
       required: false
       secret: false
-    deprecated: false
-    description: Uploads an indicator for CrowdStrike to monitor.
+    deprecated: true
+    description: Deprecated. Use the cs-falcon-upload-custom-ioc command instead.
     execution: false
     name: cs-falcon-upload-ioc
     outputs:
@@ -1507,44 +1507,25 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of indicator policies.
-      isArray: true
-      name: policies
-      required: false
-      secret: false
-    - default: false
-      description: The level at which the indicator will be shared. Only "red" share
-        level (not shared) is supported, which indicates that the IOC is not shared
-        with other Falcon Host customers.
-      isArray: true
-      name: share_levels
-      required: false
-      secret: false
-    - default: false
       description: A comma-separated list of IOC sources.
       isArray: true
       name: sources
       required: false
       secret: false
     - default: false
-      description: Start of date range in which to search (YYYY-MM-DD format).
+      description: The date on which the indicator will become inactive. (YYYY-MM-DD format).
       isArray: false
-      name: from_expiration_date
-      required: false
-      secret: false
-    - default: false
-      description: End of date range in which to search (YYYY-MM-DD format).
-      isArray: false
-      name: to_expiration_date
+      name: expiration
       required: false
       secret: false
     - default: false
       description: The maximum number of records to return. The minimum is 1 and the
-        maximum is 500. Default is 100.
+        maximum is 500.
       isArray: false
       name: limit
       required: false
       secret: false
+      defaultValue: 50
     - auto: PREDEFINED
       default: false
       description: 'The order in which the results are returned. Possible values are:
@@ -1584,16 +1565,16 @@ script:
       description: The string representation of the indicator.
       type: string
     - contextPath: CrowdStrike.IOC.ID
-      description: The full ID of the indicator (type:value).
+      description: The full ID of the indicator.
       type: string
-    - contextPath: CrowdStrike.IOC.Policy
-      description: The policy of the indicator.
+    - contextPath: CrowdStrike.IOC.Severity
+      description: The severity level to apply to this indicator.
       type: string
     - contextPath: CrowdStrike.IOC.Source
       description: The source of the IOC.
       type: string
-    - contextPath: CrowdStrike.IOC.ShareLevel
-      description: The level at which the indicator will be shared.
+    - contextPath: CrowdStrike.IOC.Action
+      description: Action to take when a host observes the custom IOC.
       type: string
     - contextPath: CrowdStrike.IOC.Expiration
       description: The datetime when the indicator will expire.
@@ -1603,13 +1584,139 @@ script:
       type: string
     - contextPath: CrowdStrike.IOC.CreatedTime
       description: The datetime the IOC was created.
-      type: string
+      type: date
     - contextPath: CrowdStrike.IOC.CreatedBy
       description: The identity of the user/process who created the IOC.
       type: string
     - contextPath: CrowdStrike.IOC.ModifiedTime
       description: The datetime the indicator was last modified.
+      type: date
+    - contextPath: CrowdStrike.IOC.ModifiedBy
+      description: The identity of the user/process who last updated the IOC.
       type: string
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: 'The type of the indicator. Possible values are: "sha256", "md5",
+        "domain", "ipv4", and "ipv6".'
+      isArray: false
+      name: ioc_type
+      predefined:
+      - sha256
+      - md5
+      - domain
+      - ipv4
+      - ipv6
+      required: true
+      secret: false
+    - default: false
+      description: The string representation of the indicator.
+      isArray: false
+      name: value
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Action to take when a host observes the custom IOC. Possible
+        values are: no_action - Save the indicator for future use, but take no action. No severity required.
+        allow - Applies to hashes only. Allow the indicator and do not detect it. Severity does not apply and should not be provided.
+        prevent_no_ui - Applies to hashes only. Block and detect the indicator, but hide it from Activity > Detections. Has a default severity value.
+        prevent - Applies to hashes only. Block the indicator and show it as a detection at the selected severity.
+        detect - Enable detections for the indicator at the selected severity.'
+      isArray: false
+      name: action
+      predefined:
+      - no_action
+      - allow
+      - prevent_no_ui
+      - prevent
+      - detect
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The platforms that the indicator applies to. You can enter multiple platform names, separated by commas.
+      Possible values are: mac, windows and linux.' 
+      isArray: false
+      name: platforms
+      predefined:
+      - mac
+      - windows
+      - linux
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The severity level to apply to this indicator. 
+      Required for the prevent and detect actions. Optional for no_action.
+      Possible values are: informational, low, medium, high and critical.' 
+      isArray: false
+      name: severity
+      predefined:
+      - informational
+      - low
+      - medium
+      - high
+      - critical
+      required: false
+      secret: false
+    - default: false
+      description: The date on which the indicator will become inactive. (YYYY-MM-DD format).
+      isArray: false
+      name: expiration
+      required: false
+      secret: false
+    - default: false
+      description: The source where this indicator originated. This can be used for
+        tracking where this indicator was defined. Limited to 200 characters.
+      isArray: false
+      name: source
+      required: false
+      secret: false
+    - default: false
+      description: A meaningful description of the indicator. Limited to 200 characters.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    deprecated: false
+    description: Uploads an indicator for CrowdStrike to monitor.
+    execution: false
+    name: cs-falcon-upload-custom-ioc
+    outputs:
+    - contextPath: CrowdStrike.IOC.Type
+      description: The type of the IOC.
+      type: string
+    - contextPath: CrowdStrike.IOC.Value
+      description: The string representation of the indicator.
+      type: string
+    - contextPath: CrowdStrike.IOC.ID
+      description: The full ID of the indicator.
+      type: string
+    - contextPath: CrowdStrike.IOC.Severity
+      description: The severity level to apply to this indicator.
+      type: string
+    - contextPath: CrowdStrike.IOC.Source
+      description: The source of the IOC.
+      type: string
+    - contextPath: CrowdStrike.IOC.Action
+      description: Action to take when a host observes the custom IOC.
+      type: string
+    - contextPath: CrowdStrike.IOC.Expiration
+      description: The datetime when the indicator will expire.
+      type: string
+    - contextPath: CrowdStrike.IOC.Description
+      description: The description of the IOC.
+      type: string
+    - contextPath: CrowdStrike.IOC.CreatedTime
+      description: The datetime the IOC was created.
+      type: date
+    - contextPath: CrowdStrike.IOC.CreatedBy
+      description: The identity of the user/process who created the IOC.
+      type: string
+    - contextPath: CrowdStrike.IOC.ModifiedTime
+      description: The datetime the indicator was last modified.
+      type: date
     - contextPath: CrowdStrike.IOC.ModifiedBy
       description: The identity of the user/process who last updated the IOC.
       type: string
