@@ -45,23 +45,15 @@ def set_incident_with_count(all_tasks: List[Dict[str, str]]):
     number_of_completed_remediation_tasks = len(remediation_completed_tasks)
     number_of_completed_eradication_tasks = len(eradication_completed_tasks)
 
-    incident = demisto.incident()
-    incident['CustomFields']['totaltaskcount'] = number_of_total_tasks
-    incident['CustomFields']['completedtaskcount'] = number_of_completed_tasks
-    incident['CustomFields']['remainingtaskcount'] = number_of_remaining_tasks
+    incident_id = demisto.incident().get('id')
 
-    incident['CustomFields']['eradicationtaskcount'] = number_of_completed_eradication_tasks
-    incident['CustomFields']['huntingtaskcount'] = number_of_completed_hunting_tasks
-    incident['CustomFields']['mitigationtaskcount'] = number_of_completed_mitigation_tasks
-    incident['CustomFields']['remediationtaskcount'] = number_of_completed_remediation_tasks
-
-    incident = {'id': incident.get('id'), 'customFields': {'totaltaskcount': number_of_total_tasks,
-                                                           'completedtaskcount': number_of_completed_tasks,
-                                                           'remainingtaskcount': number_of_remaining_tasks,
-                                                           'eradicationtaskcount': number_of_completed_eradication_tasks,
-                                                           'huntingtaskcount': number_of_completed_hunting_tasks,
-                                                           'mitigationtaskcount': number_of_completed_mitigation_tasks,
-                                                           'remediationtaskcount': number_of_completed_remediation_tasks}}
+    incident = {'id': incident_id, 'customFields': {'totaltaskcount': number_of_total_tasks,
+                                                    'completedtaskcount': number_of_completed_tasks,
+                                                    'remainingtaskcount': number_of_remaining_tasks,
+                                                    'eradicationtaskcount': number_of_completed_eradication_tasks,
+                                                    'huntingtaskcount': number_of_completed_hunting_tasks,
+                                                    'mitigationtaskcount': number_of_completed_mitigation_tasks,
+                                                    'remediationtaskcount': number_of_completed_remediation_tasks}}
 
     res = demisto.executeCommand('setIncident', incident)
 
@@ -88,7 +80,8 @@ def create_markdown_tasks() -> CommandResults:
             tasks = list(v1.values())[0]
             all_tasks.extend(tasks)
             tasks = add_url_to_tasks(tasks, workplan_url)
-            md_lst.append(tableToMarkdown(k1, tasks, headers=headers, headerTransform=lambda x: HEADER_TRANSFORM.get(x))[1:]) # in order to trim the first # to make the header bigger
+            md_lst.append(tableToMarkdown(k1, tasks, headers=headers, headerTransform=lambda x: HEADER_TRANSFORM.get(x))[
+                          1:])  # in order to trim the first # to make the header bigger
         else:
             md_lst.append(f'## {k1}')
             for k2, v2 in v1.items():
