@@ -37,7 +37,7 @@ class Client(BaseClient):
         self.login()
         return 'ok'
 
-    def get_user(self, email: str) -> Optional[IAMUserAppData]:
+    def get_user(self, _, email: str) -> Optional[IAMUserAppData]:
         """ Queries the user in the application using REST API by its email, and returns an IAMUserAppData object
         that holds the user_id, username, is_active and app_data attributes given in the query response.
 
@@ -59,7 +59,7 @@ class Client(BaseClient):
         if user_app_data:
             user_id = email
             is_active = user_app_data.get('enabled')
-            return IAMUserAppData(user_id, None, is_active, user_app_data)
+            return IAMUserAppData(user_id, user_id, is_active, user_app_data)
 
         return None
 
@@ -102,7 +102,11 @@ class Client(BaseClient):
             return_empty_response=True,
             empty_valid_codes=[200]
         )
-        return self.get_user(user_id)  # type: ignore
+        # Because the update api also enables the user, we should disable if we don't want to enable.
+        if demisto.args().get('allow-enable', 'true') == 'false' or not demisto.params().get("enable_user_enabled", True):
+            self.disable_user(user_id)
+
+        return self.get_user('id', user_id)  # type: ignore
 
     def enable_user(self, user_id: str) -> IAMUserAppData:
         """ Enables a user in the application using REST API.
@@ -147,7 +151,7 @@ class Client(BaseClient):
             return_empty_response=True,
             empty_valid_codes=[200]
         )
-        return IAMUserAppData(user_id=None, username=None, is_active=enable, app_data=None)
+        return IAMUserAppData(user_id=user_id, username=user_id, is_active=enable, app_data=None)
 
     def get_app_fields(self) -> Dict[str, Any]:
         """ Gets a dictionary of the user schema fields in the application and their description.
@@ -214,7 +218,7 @@ class Client(BaseClient):
         user_profile.set_result(action=action,
                                 success=False,
                                 error_code=error_code,
-                                error_message=error_message)
+                                error_message=f'{error_message}\n{traceback.format_exc()}')
 
         demisto.error(traceback.format_exc())
 
@@ -304,7 +308,8 @@ def main():
     create_if_not_exists = params.get("create_if_not_exists")
 
     iam_command = IAMCommand(is_create_enabled, is_enable_enabled, is_disable_enabled, is_update_enabled,
-                             create_if_not_exists, mapper_in, mapper_out)
+                             create_if_not_exists, mapper_in, mapper_out,
+                             get_user_iam_attrs=['id', 'username', 'email'])
 
     headers = {
         'Content-Type': 'application/json',
