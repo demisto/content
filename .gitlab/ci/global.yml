@@ -181,7 +181,7 @@
         echo "vulture py2 version: $(python2 -m vulture --version 2>&1)"
         echo "vulture py3 version: $(python3 -m vulture --version 2>&1)"
         SHOULD_LINT_ALL=$(./Tests/scripts/should_lint_all.sh)
-        mkdir ./unit-tests
+       mkdir ./unit-tests
         if [ -n "$SHOULD_LINT_ALL" ]; then
           echo -e  "----------\nLinting all because:\n${SHOULD_LINT_ALL}\n----------"
           demisto-sdk lint -p 8 -a -q --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report
@@ -189,7 +189,18 @@
             python3 Utils/upload_code_coverage_report.py --service_account $GCS_MARKET_KEY --source_file_name $ARTIFACTS_FOLDER/coverage_report/coverage.json --minimal_file_name $ARTIFACTS_FOLDER/coverage_report/coverage_data.json -cov $ARTIFACTS_FOLDER/coverage_report/.coverage
           fi
         else
-          demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report
+          if [[ -n $BUCKET_UPLOAD ]]
+            gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
+            gsutil cp "https://storage.cloud.google.com/marketplace-dist/content/packs/index.json" "$ARTIFACTS_FOLDER/previous_index.json"
+            $COMMIT_HASH_COMPARE_TO=$(cat $ARTIFACTS_FOLDER/previous_index.json | jq ".\"commit\"")
+
+            echo "Auth loaded successfully."
+
+            $COMMIT_HASH_COMPARE_TO=$(curl -sS https://storage.cloud.google.com/marketplace-dist/content/packs/index.json -H "Authorization: token ${GITHUB_TOKEN}")
+
+            demisto-sdk lint -p 8 -g --prev-ver $COMMIT_HASH_COMPARE_TO -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report
+          else
+            demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report
         fi
       fi
     - section_end "Run Unit Testing and Lint"
