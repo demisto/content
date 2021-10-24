@@ -1,0 +1,312 @@
+{
+    "fromDate": "0001-01-01T00:00:00Z",
+    "fromDateLicense": "0001-01-01T00:00:00Z",
+    "id": "Threat Intelligence Feeds",
+    "layout": [
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "505644a0-063f-11ec-9030-2b9d876f1d88",
+            "id": "505644a0-063f-11ec-9030-2b9d876f1d88",
+            "reflectDimensions": true,
+            "w": 2,
+            "widget": {
+                "Cache": null,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "indicators",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "058c56ef-b78f-4318-8ec9-a20a3c298c44",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-08-26T07:29:12.966374674Z",
+                "name": "Active Indicators by Verdict",
+                "packID": "",
+                "params": {
+                    "groupBy": [
+                        "score"
+                    ],
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "Active Indicators by Verdict",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "(expirationStatus:active or expirationStatus:\"\")",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "pie"
+            },
+            "x": 0,
+            "y": 0
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "f635f3c0-063f-11ec-9030-2b9d876f1d88",
+            "id": "f635f3c0-063f-11ec-9030-2b9d876f1d88",
+            "reflectDimensions": true,
+            "w": 2,
+            "widget": {
+                "Cache": null,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "indicators",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "7036f5f4-1471-4a27-8b7c-f2bbcd7fba42",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-08-26T07:33:51.797954848Z",
+                "name": "Active vs Expired Indicators",
+                "packID": "",
+                "params": {
+                    "groupBy": [
+                        "expirationStatus"
+                    ],
+                    "hideLegend": false,
+                    "showGraphValues": false,
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "Active vs Expired Indicators",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "pie"
+            },
+            "x": 2,
+            "y": 0
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "30313a60-0b29-11ec-a456-41112c9b874e",
+            "id": "30313a60-0b29-11ec-a456-41112c9b874e",
+            "reflectDimensions": true,
+            "w": 8,
+            "widget": {
+                "Cache": null,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "indicators",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "8166df3f-d62e-4f33-8930-ef665ab33d65",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-09-01T13:33:26.135854232Z",
+                "name": "Active Indicators Volumes by Feed",
+                "packID": "",
+                "params": {
+                    "groupBy": [
+                        "firstSeen(d)",
+                        "sourceBrands"
+                    ],
+                    "timeFrame": "days",
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "Active Indicators Volumes by Feed",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "(expirationStatus:active or expirationStatus:\"\") and -sourceBrands:\"\"",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 3,
+                "widgetType": "line"
+            },
+            "x": 4,
+            "y": 0
+        },
+        {
+            "forceRange": false,
+            "h": 5,
+            "i": "6f3ddf50-2132-11ec-8dc1-bd0b05ddfaf9",
+            "id": "6f3ddf50-2132-11ec-8dc1-bd0b05ddfaf9",
+            "reflectDimensions": true,
+            "w": 3,
+            "widget": {
+                "Cache": null,
+                "category": "",
+                "commitMessage": "Widget imported",
+                "dataType": "relationships",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 3,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "Relationship Generating Integrations",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-09-29T14:35:03.596285284Z",
+                "name": "Relationship Generating Integrations",
+                "packID": "",
+                "params": {
+                    "groupBy": [
+                        "sources.brand"
+                    ]
+                },
+                "prevName": "Relationship Generating Integrations",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "column"
+            },
+            "x": 0,
+            "y": 3
+        },
+        {
+            "forceRange": false,
+            "h": 5,
+            "i": "881bf4c0-31c3-11ec-a5d0-15cb59072678",
+            "id": "881bf4c0-31c3-11ec-a5d0-15cb59072678",
+            "reflectDimensions": true,
+            "w": 9,
+            "widget": {
+                "Cache": null,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "scripts",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "26bd7fe1-5ef1-45bf-809f-14048f89f917",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-10-20T16:33:59.462727881Z",
+                "name": "Feeds Errors",
+                "packID": "",
+                "params": {
+                    "tableColumns": [
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "Brand"
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "Instance"
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "Instance Last Modified Time"
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "Error Information"
+                        }
+                    ]
+                },
+                "prevName": "Feeds Errors",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "FeedIntegrationErrorWidget",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "table"
+            },
+            "x": 3,
+            "y": 3
+        }
+    ],
+    "name": "Threat Intelligence Feeds",
+    "period": {
+        "by": "",
+        "byFrom": "days",
+        "byTo": "",
+        "field": "",
+        "fromValue": 30,
+        "toValue": null
+    },
+    "toDate": "0001-01-01T00:00:00Z",
+    "version": -1,
+    "fromVersion": "6.2.0",
+    "description": "",
+    "isPredefined": true
+}
