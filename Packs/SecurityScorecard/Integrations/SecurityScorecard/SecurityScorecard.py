@@ -319,16 +319,6 @@ def incidents_to_import(alerts: List[Dict[str, Any]], last_run: datetime = get_l
         most_recent_alert_created_date = most_recent_alert.get("created_at")
 
         most_recent_alert_datetime = arg_to_datetime(most_recent_alert_created_date).replace(tzinfo=None)  # type: ignore
-        demisto.debug(f"most_recent_alert_datetime: {most_recent_alert_datetime}")
-        demisto.debug(
-            f"Setting last runtime as alert most recent: \
-                {most_recent_alert_datetime.strftime(format=DATE_FORMAT)}"  # type: ignore
-        )
-
-        demisto.setLastRun({
-            'last_run': most_recent_alert_datetime.strftime(format=DATE_FORMAT)  # type: ignore
-        })
-        demisto.debug("Finished setLastRun")
 
         for alert in alerts:
 
@@ -355,6 +345,17 @@ def incidents_to_import(alerts: List[Dict[str, Any]], last_run: datetime = get_l
                 incident["occurred"] = alert_datetime.strftime(format=DATE_FORMAT)  # type: ignore
                 incident["rawJSON"] = json.dumps(alert)
                 incidents_to_import.append(incident)
+
+                demisto.debug(
+                    f"Setting setLastRun as alert most recent: \
+                        {most_recent_alert_datetime.strftime(format=DATE_FORMAT)}"  # type: ignore
+                )
+
+                demisto.setLastRun({
+                    'last_run': most_recent_alert_datetime.strftime(format=DATE_FORMAT)  # type: ignore
+                })
+                demisto.debug("Finished setLastRun")
+
     # If there are no alerts then we can't use the most recent alert timestamp
     # So we'll use the last run timestamp (last alert fetch modified date)
     else:
