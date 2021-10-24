@@ -84,7 +84,7 @@ tasks:
       - "3"
     scriptarguments:
       filename:
-        simple: samle.pdf
+        simple: sample.pdf
       method:
         simple: GET
       saveAsFile:
@@ -168,7 +168,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: UNLOCKED_samle.pdf
+              simple: UNLOCKED_sample.pdf
     view: |-
       {
         "position": {
