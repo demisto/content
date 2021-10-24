@@ -291,8 +291,8 @@ Returns a list of all alerts.
         "Alert": [
             {
                 "AlertedAt": "2019-09-22T14:01:31.000Z",
-                "ComputerIpAddress": "172.31.38.159",
-                "ComputerName": "EC2AMAZ-KGMRO60",
+                "ComputerIpAddress": "1.1.1.1",
+                "ComputerName": "host0",
                 "CreatedAt": "2019-09-22T14:01:59.768Z",
                 "GUID": "a33e3482-556e-4e9d-bbbd-2fdbe330d492",
                 "ID": 1,
@@ -305,8 +305,8 @@ Returns a list of all alerts.
             },
             {
                 "AlertedAt": "2020-02-29T15:29:59.000Z",
-                "ComputerIpAddress": "172.31.38.159",
-                "ComputerName": "EC2AMAZ-KGMRO60",
+                "ComputerIpAddress": "1.1.1.1",
+                "ComputerName": "host0",
                 "CreatedAt": "2020-02-29T15:30:29.893Z",
                 "GUID": "626821e1-6b0a-4afb-a1f9-8fb7ef741736",
                 "ID": 2,
@@ -327,8 +327,8 @@ Returns a list of all alerts.
 >### Alerts
 >|ID|Type|Severity|Priority|Alerted At|Created At|Updated At|Computer Ip Address|Computer Name|GUID|State|Intel Doc Id|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
->| 1 | detect.match | info | high | 2019-09-22T14:01:31.000Z | 2019-09-22T14:01:59.768Z | 2021-10-24T01:28:04.275Z | 172.31.38.159 | EC2AMAZ-KGMRO60 | a33e3482-556e-4e9d-bbbd-2fdbe330d492 | Unresolved | 64 |
->| 2 | detect.match | info | high | 2020-02-29T15:29:59.000Z | 2020-02-29T15:30:29.893Z | 2021-10-24T01:28:04.275Z | 172.31.38.159 | EC2AMAZ-KGMRO60 | 626821e1-6b0a-4afb-a1f9-8fb7ef741736 | Unresolved | 17 |
+>| 1 | detect.match | info | high | 2019-09-22T14:01:31.000Z | 2019-09-22T14:01:59.768Z | 2021-10-24T01:28:04.275Z | 1.1.1.1 | host0 | a33e3482-556e-4e9d-bbbd-2fdbe330d492 | Unresolved | 64 |
+>| 2 | detect.match | info | high | 2020-02-29T15:29:59.000Z | 2020-02-29T15:30:29.893Z | 2021-10-24T01:28:04.275Z | 1.1.1.1 | host0 | 626821e1-6b0a-4afb-a1f9-8fb7ef741736 | Unresolved | 17 |
 
 
 ### tanium-tr-get-alert-by-id
@@ -373,8 +373,8 @@ Returns an alert object based on alert ID.
     "Tanium": {
         "Alert": {
             "AlertedAt": "2019-09-22T14:01:31.000Z",
-            "ComputerIpAddress": "172.31.38.159",
-            "ComputerName": "EC2AMAZ-KGMRO60",
+            "ComputerIpAddress": "1.1.1.1",
+            "ComputerName": "host0",
             "CreatedAt": "2019-09-22T14:01:59.768Z",
             "GUID": "a33e3482-556e-4e9d-bbbd-2fdbe330d492",
             "ID": 1,
@@ -394,7 +394,7 @@ Returns an alert object based on alert ID.
 >### Alert information
 >|ID|Type|Severity|Priority|Alerted At|Created At|Updated At|Computer Ip Address|Computer Name|GUID|State|Intel Doc Id|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
->| 1 | detect.match | info | high | 2019-09-22T14:01:31.000Z | 2019-09-22T14:01:59.768Z | 2021-10-24T01:28:04.275Z | 172.31.38.159 | EC2AMAZ-KGMRO60 | a33e3482-556e-4e9d-bbbd-2fdbe330d492 | Unresolved | 64 |
+>| 1 | detect.match | info | high | 2019-09-22T14:01:31.000Z | 2019-09-22T14:01:59.768Z | 2021-10-24T01:28:04.275Z | 1.1.1.1 | host0 | a33e3482-556e-4e9d-bbbd-2fdbe330d492 | Unresolved | 64 |
 
 
 ### tanium-tr-alert-update-state
@@ -450,7 +450,7 @@ Captures a new snapshot by connection id.
 
 
 #### Command Example
-```!tanium-tr-create-snapshot connection_id=remote:ec2amaz-kgmro60:9065264:```
+```!tanium-tr-create-snapshot connection_id=remote:hostname:123:```
 
 #### Context Example
 ```json
@@ -596,7 +596,7 @@ Deletes a local snapshot by connection id.
 There is no context output for this command.
 
 #### Command Example
-```!tanium-tr-delete-local-snapshot connection_id=remote:ec2amaz-kgmro60:9065264:```
+```!tanium-tr-delete-local-snapshot connection_id=remote:hostname:123:```
 
 #### Human Readable Output
 
