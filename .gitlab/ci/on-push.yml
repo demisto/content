@@ -29,6 +29,12 @@ run-unittests-and-lint:
   rules:
     - if: '$NIGHTLY'
 
+generate-coverage-report:
+  extends:
+    - .generate-coverage-report
+  rules:
+    - if: '$NIGHTLY'
+
 
 run-validations:
   extends:
