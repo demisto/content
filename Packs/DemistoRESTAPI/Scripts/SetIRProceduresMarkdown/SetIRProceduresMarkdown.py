@@ -13,7 +13,10 @@ from CommonServerPython import *
 
 import traceback
 
-SECTIONS_TO_KEEY = {'Mitigation', 'Remediation', 'Eradication', 'Threat Hunting'}
+SECTIONS_TO_KEEP = ['Threat Hunting', 'Mitigation', 'Remediation', 'Eradication']
+
+HEADER_TRANSFORM = {'id': 'Task ID', 'name': 'Task Name', 'state': 'Task State', 'completedDate': 'Completion Time'}
+
 
 ''' COMMAND FUNCTION '''
 
@@ -52,7 +55,18 @@ def set_incident_with_count(all_tasks: List[Dict[str, str]]):
     incident['CustomFields']['mitigationtaskcount'] = number_of_completed_mitigation_tasks
     incident['CustomFields']['remediationtaskcount'] = number_of_completed_remediation_tasks
 
-    demisto.executeCommand('setIncident', incident)
+    incident = {'id': incident.get('id'), 'customFields': {'totaltaskcount': number_of_total_tasks,
+                                                           'completedtaskcount': number_of_completed_tasks,
+                                                           'remainingtaskcount': number_of_remaining_tasks,
+                                                           'eradicationtaskcount': number_of_completed_eradication_tasks,
+                                                           'huntingtaskcount': number_of_completed_hunting_tasks,
+                                                           'mitigationtaskcount': number_of_completed_mitigation_tasks,
+                                                           'remediationtaskcount': number_of_completed_remediation_tasks}}
+
+    res = demisto.executeCommand('setIncident', incident)
+
+    if isError(res[0]):
+        raise DemistoException('Command setIncident was not successful')
 
 
 def create_markdown_tasks() -> CommandResults:
@@ -62,25 +76,26 @@ def create_markdown_tasks() -> CommandResults:
     if isError(res[0]):
         raise DemistoException('Command GetIncidentsTasksById was not successful')
 
-    all_tasks = []
     tasks_nested_results = demisto.get(res[0], 'Contents')
+    tasks_nested_results = {key: value for key, value in tasks_nested_results.items() if key in SECTIONS_TO_KEEP}
+    tasks_nested_results = {key: value for key, value in sorted(
+        tasks_nested_results.items(), key=lambda x: SECTIONS_TO_KEEP.index(x[0]))}
+    all_tasks = []
     headers = ['id', 'name', 'state', 'completedDate']
     md_lst = []
     for k1, v1 in tasks_nested_results.items():
-        if k1 not in SECTIONS_TO_KEEY:
-            continue
         if 'tasks' in v1.keys():
             tasks = list(v1.values())[0]
             all_tasks.extend(tasks)
             tasks = add_url_to_tasks(tasks, workplan_url)
-            md_lst.append(tableToMarkdown(k1, tasks, headers=headers)[1:])
+            md_lst.append(tableToMarkdown(k1, tasks, headers=headers, headerTransform=lambda x: HEADER_TRANSFORM.get(x))[1:]) # in order to trim the first # to make the header bigger
         else:
             md_lst.append(f'## {k1}')
             for k2, v2 in v1.items():
                 tasks = list(v2.values())[0]
                 all_tasks.extend(tasks)
                 tasks = add_url_to_tasks(tasks, workplan_url)
-                md_lst.append(tableToMarkdown(k2, tasks, headers=headers))
+                md_lst.append(tableToMarkdown(k2, tasks, headers=headers, headerTransform=lambda x: HEADER_TRANSFORM.get(x)))
 
     set_incident_with_count(all_tasks)
 

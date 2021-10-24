@@ -24,6 +24,7 @@ def traverse_tasks(tasks: Dict[str, Dict],
 
     task_id = current_task.get('id')
     task_type = current_task.get('type')
+    task_state = current_task.get('state')
     if task_id not in visited:
         visited.add(task_id)
         if task_type == 'start' or task_type == 'title':
@@ -31,8 +32,13 @@ def traverse_tasks(tasks: Dict[str, Dict],
             if not title:
                 title = 'Start'
             new_path = path + [title] if prev_task and prev_task.get('type') == 'title' else [title]
+        elif task_type == 'condition' or  task_state == 'WillNotBeExecuted':
+            new_path = path
         else:
             task = assign_task_output(current_task, path)
+            if task.get('type') == 'condition' or task.get('state') == 'WillNotBeExecuted':
+                pass
+        
             dct = results
             for p in path:
                 dct.setdefault(p, {})
