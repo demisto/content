@@ -325,7 +325,7 @@ def main():
     command = demisto.command()
     args = demisto.args()
     if 'user-profile' in args:
-        manager_email = IAMUserProfile(args.get('user-profile')), {}).get('manageremailaddress')
+        manager_email = IAMUserProfile(args.get('user-profile', {})).get_attribute('manageremailaddress')
 
     is_create_enabled = params.get("create_user_enabled")
     is_enable_enabled = params.get("enable_user_enabled")
