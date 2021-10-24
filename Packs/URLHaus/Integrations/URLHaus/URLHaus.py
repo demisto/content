@@ -73,7 +73,7 @@ def query_payload_information(hash_type, api_url, use_ssl, hash):
 
 
 def download_malware_sample(sha256, api_url, use_ssl):
-    return http_request('GET', f'download/{sha256}', api_url=api_url, use_ssl=use_ssl, )
+    return http_request('GET', f'download/{sha256}', api_url=api_url, use_ssl=use_ssl)
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -200,11 +200,11 @@ def url_command(**kwargs):
         ec['DBotScore']['Score'] = 0
 
         human_readable = f'## URLhaus reputation for {url}\n' \
-                         f'No results!'
+            f'No results!'
 
     elif url_information['query_status'] == 'invalid_url':
         human_readable = f'## URLhaus reputation for {url}\n' \
-                         f'Invalid URL!'
+            f'Invalid URL!'
 
     else:
         raise DemistoException(f'Query results = {url_information["query_status"]}', res=url_information)
@@ -281,7 +281,7 @@ def domain_command(**kwargs):
             ec['DBotScore']['Score'] = 0
 
             human_readable = f'## URLhaus reputation for {domain}\n' \
-                             f'No results!'
+                f'No results!'
 
             demisto.results({
                 'Type': entryTypes['note'],
@@ -293,7 +293,7 @@ def domain_command(**kwargs):
             })
         elif domain_information['query_status'] == 'invalid_host':
             human_readable = f'## URLhaus reputation for {domain}\n' \
-                             f'Invalid domain!'
+                f'Invalid domain!'
 
             demisto.results({
                 'Type': entryTypes['note'],
@@ -325,8 +325,7 @@ def file_command(**kwargs):
         return_error('Only accepting MD5 (32 bytes) or SHA256 (64 bytes) hash types')
 
     try:
-        file_information = query_payload_information(hash_type, kwargs.get('api_url'), kwargs.get('use_ssl'),
-                                                     hash).json()
+        file_information = query_payload_information(hash_type, kwargs.get('api_url'), kwargs.get('use_ssl'), hash).json()
 
         if file_information['query_status'] == 'ok' and file_information['md5_hash']:
             # URLhaus output
@@ -381,7 +380,7 @@ def file_command(**kwargs):
         elif (file_information['query_status'] == 'ok' and not file_information['md5_hash']) or \
                 file_information['query_status'] == 'no_results':
             human_readable = f'## URLhaus reputation for {hash_type.upper()} : {hash}\n' \
-                             f'No results!'
+                f'No results!'
 
             demisto.results({
                 'Type': entryTypes['note'],
@@ -392,7 +391,7 @@ def file_command(**kwargs):
             })
         elif file_information['query_status'] in ['invalid_md5', 'invalid_sha256']:
             human_readable = f'## URLhaus reputation for {hash_type.upper()} : {hash}\n' \
-                             f'Invalid {file_information["query_status"].lstrip("invalid_").upper()}!'
+                f'Invalid {file_information["query_status"].lstrip("invalid_").upper()}!'
 
             demisto.results({
                 'Type': entryTypes['note'],
