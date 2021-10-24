@@ -26,13 +26,18 @@ class Client(BaseClient):
         query_params = {
             'filter': f'{filter_name} eq "{filter_value}"'
         }
+
+        if filter_name == 'id':
+            uri += f'/{filter_value}'
+            query_params = {}
+
         res = self._http_request(
             method='GET',
             url_suffix=uri,
             params=query_params
         )
-        if res and res.get('totalResults') == 1:
-            user_app_data = res.get('Resources')[0]
+        if res:
+            user_app_data = res.get('Resources')[0] if res.get('totalResults') == 1 else res
             user_id = user_app_data.get('id')
             is_active = user_app_data.get('active')
             username = user_app_data.get('userName')
@@ -181,7 +186,7 @@ def main():
 
     iam_command = IAMCommand(is_create_enabled, is_enable_enabled, is_disable_enabled, is_update_enabled,
                              create_if_not_exists, mapper_in, mapper_out,
-                             get_user_iam_attrs=['username', 'userName', 'externalId'])
+                             get_user_iam_attrs=['id', 'userName', 'emails'])
 
     headers = {
         'Content-Type': 'application/json',
