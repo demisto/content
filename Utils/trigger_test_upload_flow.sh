@@ -36,11 +36,11 @@ while [[ "$#" -gt 0 ]]; do
     shift;;
 
   -gb|--bucket)
-  if [ "$(echo "$2" | tr '[:upper:]' '[:lower:]')" == "marketplace-dist" ]; then
-    echo "Only test buckets are allowed to use. Using marketplace-dist-dev instead."
-  else
+  #if [ "$(echo "$2" | tr '[:upper:]' '[:lower:]')" == "marketplace-dist" ]; then
+    #echo "Only test buckets are allowed to use. Using marketplace-dist-dev instead."
+  #else
     _bucket=$2
-  fi
+  #fi
     shift
     shift;;
 

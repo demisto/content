@@ -191,13 +191,10 @@
         else
           if [[ -n $BUCKET_UPLOAD ]]
             gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
+            echo "$$$gcloud auth"
             gsutil cp "https://storage.cloud.google.com/marketplace-dist/content/packs/index.json" "$ARTIFACTS_FOLDER/previous_index.json"
-            $COMMIT_HASH_COMPARE_TO=$(cat $ARTIFACTS_FOLDER/previous_index.json | jq ".\"commit\"")
-
-            echo "Auth loaded successfully."
-
-            $COMMIT_HASH_COMPARE_TO=$(curl -sS https://storage.cloud.google.com/marketplace-dist/content/packs/index.json -H "Authorization: token ${GITHUB_TOKEN}")
-
+            $COMMIT_HASH_COMPARE_TO=$(cat $ARTIFACTS_FOLDER/previous_index.json | jq ".\"commit\"")            echo "$$$gcloud auth"
+            echo "$$$commit hash $COMMIT_HASH_COMPARE_TO"
             demisto-sdk lint -p 8 -g --prev-ver $COMMIT_HASH_COMPARE_TO -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report
           else
             demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report

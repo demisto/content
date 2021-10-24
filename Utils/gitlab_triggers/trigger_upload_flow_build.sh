@@ -70,7 +70,6 @@ if [ -n "$_force" ]; then
 fi
 
 source Utils/gitlab_triggers/trigger_build_url.sh
-
 curl -k -v --request POST \
   --form token="${_ci_token}" \
   --form ref="${_branch}" \
