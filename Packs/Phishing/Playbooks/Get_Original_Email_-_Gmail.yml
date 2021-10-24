@@ -116,8 +116,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 2300
+          "x": 50,
+          "y": 2620
         }
       }
     note: false
@@ -129,10 +129,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 810c068d-4e12-4731-8107-83c030751df1
+    taskid: c9618262-b2ae-4c68-8985-c15ccd1cddcc
     type: regular
     task:
-      id: 810c068d-4e12-4731-8107-83c030751df1
+      id: c9618262-b2ae-4c68-8985-c15ccd1cddcc
       version: -1
       name: Retrieve the forwarded email from Gmail
       description: Get the data and metadata of the forwarded email from the Gmail
@@ -178,10 +178,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 18de5315-16b2-4d5c-8a81-2c50623ea89d
+    taskid: ea7b5d02-8ad9-435f-849b-d8aa29f18cdc
     type: condition
     task:
-      id: 18de5315-16b2-4d5c-8a81-2c50623ea89d
+      id: ea7b5d02-8ad9-435f-849b-d8aa29f18cdc
       version: -1
       name: Was the original email retrieved?
       description: Verify that there is a Gmail email object in the context.
@@ -220,10 +220,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: c09ebecb-9dc8-4e00-8fe4-0dbf0cd27d32
+    taskid: d991707f-7216-470f-8fe1-789296389e46
     type: condition
     task:
-      id: c09ebecb-9dc8-4e00-8fe4-0dbf0cd27d32
+      id: d991707f-7216-470f-8fe1-789296389e46
       version: -1
       name: Was the forwarded email data retrieved?
       description: Verify that the InReplyTo and Subject fields are in context.
@@ -234,7 +234,7 @@ tasks:
       '#default#':
       - "3"
       "yes":
-      - "19"
+      - "18"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -266,10 +266,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: ea86d0cc-f9dc-4496-812c-bd3f5c52d08c
+    taskid: 51f995a7-86c8-41d8-8c3a-1640f2eae3a1
     type: regular
     task:
-      id: ea86d0cc-f9dc-4496-812c-bd3f5c52d08c
+      id: 51f995a7-86c8-41d8-8c3a-1640f2eae3a1
       version: -1
       name: Set context
       description: Set the InReplyTo field to context.
@@ -303,10 +303,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: ead0502f-8bdf-4d43-849d-4de4023c7052
+    taskid: f29c9b52-e600-4055-8643-ae2dbf053c0d
     type: regular
     task:
-      id: ead0502f-8bdf-4d43-849d-4de4023c7052
+      id: f29c9b52-e600-4055-8643-ae2dbf053c0d
       version: -1
       name: Search for original email
       description: Search Gmail for the original email.
@@ -318,9 +318,6 @@ tasks:
       '#none#':
       - "14"
     scriptarguments:
-      after:
-        complex:
-          root: AfterDate
       subject:
         complex:
           root: GmailSubject
@@ -330,13 +327,12 @@ tasks:
       user-key:
         complex:
           root: inputs.From
-    reputationcalc: 2
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1600
+          "x": 490,
+          "y": 1920
         }
       }
     note: false
@@ -348,10 +344,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 4bf99d41-0f5c-4f08-8c98-785cb0e5503d
+    taskid: 0d98eed8-9fa5-416d-8027-ecb0179377a2
     type: regular
     task:
-      id: 4bf99d41-0f5c-4f08-8c98-785cb0e5503d
+      id: 0d98eed8-9fa5-416d-8027-ecb0179377a2
       version: -1
       name: Set context
       description: Set the Subject field to context stripped of all prefixes.
@@ -394,10 +390,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 4dbd3cc6-ae7c-4de5-89d2-b3e1b47acec5
+    taskid: bde00ff1-57ae-4fca-889e-fa28e6785f83
     type: regular
     task:
-      id: 4dbd3cc6-ae7c-4de5-89d2-b3e1b47acec5
+      id: bde00ff1-57ae-4fca-889e-fa28e6785f83
       version: -1
       name: Delete old context
       description: Delete the forwarded Gmail email object from context.
@@ -431,10 +427,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 7e75aef4-9998-407c-8ace-b342f3ef812f
+    taskid: a36b43f8-9e58-464e-81ce-724ed667baad
     type: regular
     task:
-      id: 7e75aef4-9998-407c-8ace-b342f3ef812f
+      id: a36b43f8-9e58-464e-81ce-724ed667baad
       version: -1
       name: Set context
       description: Set the original email to context.
@@ -457,8 +453,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 590,
-          "y": 1950
+          "x": 600,
+          "y": 2270
         }
       }
     note: false
@@ -470,10 +466,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 29868c31-fc31-4b25-8523-5a9c937af420
+    taskid: 934fbada-6a8c-44f9-89bf-071e1dc62be6
     type: regular
     task:
-      id: 29868c31-fc31-4b25-8523-5a9c937af420
+      id: 934fbada-6a8c-44f9-89bf-071e1dc62be6
       version: -1
       name: Get attachments of the original email
       description: Retrieve the attachments of the original email from Gmail.
@@ -502,8 +498,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 2125
+          "x": 387.5,
+          "y": 2445
         }
       }
     note: false
@@ -515,10 +511,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 0ce28338-abb6-4b8d-8155-3444a9df6ca9
+    taskid: 6f9d14e3-46ad-4d79-827c-65594858cc30
     type: condition
     task:
-      id: 0ce28338-abb6-4b8d-8155-3444a9df6ca9
+      id: 6f9d14e3-46ad-4d79-827c-65594858cc30
       version: -1
       name: Was the original email retrieved?
       description: Verify that the original email is in context (matched by the InReplyTo
@@ -543,8 +539,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1775
+          "x": 490,
+          "y": 2095
         }
       }
     note: false
@@ -556,10 +552,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 8992e96c-4684-4e30-8b83-8a84274b9e7d
+    taskid: 70478489-d4d3-4fba-80d3-66e8069a0830
     type: regular
     task:
-      id: 8992e96c-4684-4e30-8b83-8a84274b9e7d
+      id: 70478489-d4d3-4fba-80d3-66e8069a0830
       version: -1
       name: Set output
       description: Set the playbook outputs to context.
@@ -582,8 +578,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 807.5,
-          "y": 2125
+          "x": 817.5,
+          "y": 2445
         }
       }
     note: false
@@ -646,69 +642,131 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 9b6942f3-9537-4d45-8716-8617aea888f8
+    type: condition
+    task:
+      id: 9b6942f3-9537-4d45-8716-8617aea888f8
+      version: -1
+      name: Search within last 7 days?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.SearchThisWeek
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 5c2fab18-f852-4293-8e48-91df60ba1b76
+    taskid: 7679f93e-d9a5-4a63-896a-c8a46e65ba0b
     type: regular
     task:
-      id: 5c2fab18-f852-4293-8e48-91df60ba1b76
+      id: 7679f93e-d9a5-4a63-896a-c8a46e65ba0b
       version: -1
-      name: Set AfterDate
-      description: Set a value in context under the key you entered.
-      scriptName: Set
+      name: Set time range
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+      - "20"
     scriptarguments:
-      key:
-        simple: AfterDate
-      value:
-        complex:
-          root: incident
-          accessor: autime
-          transformers:
-          - operator: substring
-            args:
-              from:
-                value:
-                  simple: "0"
-              to:
-                value:
-                  simple: "10"
-          - operator: TimeStampToDate
-          - operator: ModifyDateTime
-            args:
-              variation:
-                value:
-                  simple: inputs.SearchDays
-                iscontext: true
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: '-'
-          - operator: Cut
-            args:
-              delimiter:
-                value:
-                  simple: T
-              fields:
-                value:
-                  simple: "1"
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: /
+      daysAgo:
+        simple: "7"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1430
+          "x": 930,
+          "y": 1690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 79692545-86af-45c8-8906-7b5ead7a6d32
+    type: regular
+    task:
+      id: 79692545-86af-45c8-8906-7b5ead7a6d32
+      version: -1
+      name: Search for original email (last 7 days)
+      description: Search Gmail for the original email.
+      script: Gmail|||gmail-search
+      type: regular
+      iscommand: true
+      brand: Gmail
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      after:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: TimeStampToDate
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: ^[^T]+
+      subject:
+        complex:
+          root: GmailSubject
+      user-id:
+        complex:
+          root: inputs.From
+      user-key:
+        complex:
+          root: inputs.From
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 1920
         }
       }
     note: false
@@ -721,14 +779,12 @@ tasks:
 system: true
 view: |-
   {
-    "linkLabelsPosition": {
-      "6_19_yes": 0.55
-    },
+    "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2605,
-        "width": 1147.5,
-        "x": 40,
+        "height": 2925,
+        "width": 1260,
+        "x": 50,
         "y": -240
       }
     }
@@ -776,11 +832,11 @@ inputs:
   required: false
   description: Email address of the thread originator.
   playbookInputQuery:
-- key: SearchDays
+- key: SearchThisWeek
   value:
-    simple: 7 Days
+    simple: "true"
   required: true
-  description: The number of days included in the email search.
+  description: Limit the search to the current week (true/false).
   playbookInputQuery:
 outputs:
 - contextPath: Email
