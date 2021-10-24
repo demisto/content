@@ -3,7 +3,7 @@ from CommonServerPython import Common
 
 
 def _get_mock_url(ip_address):
-    return f'https://api.perimeterx.com/v1/bot-defender/investigate/mock?search=ip:{ip_address}&tops=user-agent,path,socket_ip_classification'
+    return f'https://api.perimeterx.com/v1/bot-defender/investigate/mock?search=ip:{ip_address}&tops=user-agent'
 
 
 HEADERS = {
