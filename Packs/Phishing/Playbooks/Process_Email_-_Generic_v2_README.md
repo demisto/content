@@ -56,4 +56,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![Process Email - Generic v2](Insert the link to your image here)
+![Process Email - Generic v2](../doc_files/Process_Email_-_Generic_v2.png)
