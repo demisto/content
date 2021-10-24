@@ -188,7 +188,55 @@ Returns a list of all intel documents.
 >|ID|Name|Type|Alert Count|Unresolved Alert Count|Created At|Updated At|Label Ids|
 >|---|---|---|---|---|---|---|---|
 >| 538 | file.None | yara | 0 | 0 | 2021-09-26T20:42:12.761Z | 2021-09-26T20:42:12.761Z |  |
->| 537 | 111-72ad-40cc-abbf-90846fa4af123 | openioc | 0 | 0 | 2021-09-26T15:40:18.967Z | 2021-09-26T20:47:53.586Z |  |
+>| 537 | 111-72ad-40cc-abbf-90846fa4afec | openioc | 0 | 0 | 2021-09-26T15:40:18.967Z | 2021-09-26T20:47:53.586Z |  |
+>| 536 | CybOX-represented Indicator Created from OpenIOC File | stix | 0 | 0 | 2021-09-26T08:18:57.462Z | 2021-09-26T08:18:57.462Z |  |
+>| 535 | CybOX-represented Indicator Created from OpenIOC File | stix | 0 | 0 | 2021-09-26T08:11:30.717Z | 2021-09-26T08:11:30.717Z |  |
+>| 534 | CybOX-represented Indicator Created from OpenIOC File | stix | 0 | 0 | 2021-09-26T08:11:25.484Z | 2021-09-26T08:11:25.484Z |  |
+>| 533 | CybOX-represented Indicator Created from OpenIOC File | stix | 0 | 0 | 2021-09-26T08:11:20.802Z | 2021-09-26T08:11:20.802Z |  |
+>| 532 | file.yaraaaaaa | yara | 0 | 0 | 2021-09-26T08:09:54.927Z | 2021-09-26T08:09:54.927Z |  |
+>| 531 | file.yaraa | yara | 0 | 0 | 2021-09-26T08:09:52.564Z | 2021-09-26T08:09:52.564Z |  |
+>| 530 | yar | yara | 0 | 0 | 2021-09-26T08:09:28.253Z | 2021-09-26T08:09:28.253Z |  |
+>| 529 | file.yar | yara | 0 | 0 | 2021-09-23T15:35:01.784Z | 2021-09-23T15:35:01.784Z |  |
+>| 528 | file.stix | yara | 0 | 0 | 2021-09-23T15:33:49.920Z | 2021-09-23T15:33:49.920Z |  |
+>| 527 | file.stix | yara | 0 | 0 | 2021-09-23T15:32:25.580Z | 2021-09-23T15:32:25.580Z |  |
+>| 526 | CybOX-represented Indicator Created from OpenIOC File | stix | 0 | 0 | 2021-09-23T15:00:32.350Z | 2021-09-23T15:00:32.350Z |  |
+>| 525 | CybOX-represented Indicator Created from OpenIOC File | stix | 0 | 0 | 2021-09-23T14:41:32.831Z | 2021-09-23T14:41:32.831Z |  |
+>| 524 | CybOX-represented Indicator Created from OpenIOC File | stix | 0 | 0 | 2021-09-23T14:41:07.857Z | 2021-09-23T14:41:07.857Z |  |
+>| 523 | CybOX-represented Indicator Created from OpenIOC File | stix | 0 | 0 | 2021-09-23T14:32:26.310Z | 2021-09-23T14:32:26.310Z |  |
+>| 522 | CybOX-represented Indicator Created from OpenIOC File | stix | 0 | 0 | 2021-09-23T13:47:31.088Z | 2021-09-23T13:47:31.088Z |  |
+>| 521 | STUXNET VIRUS (METHODOLOGY) | openioc | 0 | 0 | 2021-09-23T12:18:03.865Z | 2021-09-23T12:18:03.865Z |  |
+>| 520 | CybOX-represented Indicator Created from OpenIOC File | stix | 0 | 0 | 2021-09-23T12:04:08.473Z | 2021-09-23T12:04:08.473Z |  |
+>| 519 | CybOX-represented Indicator Created from OpenIOC File | stix | 0 | 0 | 2021-09-23T12:03:50.295Z | 2021-09-23T12:03:50.295Z |  |
+>| 518 | New Test5 | openioc | 0 | 0 | 2021-09-23T12:03:10.503Z | 2021-09-23T12:03:10.503Z |  |
+>| 517 | New Test5 | openioc | 0 | 0 | 2021-09-23T07:21:07.201Z | 2021-09-23T07:21:07.201Z |  |
+>| 516 | New Test5 | openioc | 0 | 0 | 2021-09-22T16:27:09.399Z | 2021-09-22T16:27:09.399Z |  |
+>| 515 | New Test5 | openioc | 0 | 0 | 2021-09-22T07:52:58.242Z | 2021-09-22T07:52:58.242Z |  |
+>| 514 | New Test5 | openioc | 0 | 0 | 2021-09-22T07:47:43.503Z | 2021-09-22T07:47:43.503Z |  |
+>| 513 | RDP Enabled via Registry Modification | tanium-signal | 0 | 0 | 2021-09-22T07:47:02.110Z | 2021-09-22T07:47:02.110Z |  |
+>| 512 | New Test5 | openioc | 0 | 0 | 2021-09-22T07:17:26.951Z | 2021-09-22T07:17:26.951Z |  |
+>| 511 | New Test5 | openioc | 0 | 0 | 2021-09-19T06:33:12.579Z | 2021-09-19T06:33:12.579Z |  |
+>| 510 | file.yar | yara | 0 | 0 | 2021-09-12T14:02:03.769Z | 2021-09-12T14:02:03.769Z |  |
+>| 509 | Zipfldr Library Proxy Execution via RouteTheCall | tanium-signal | 0 | 0 | 2021-08-31T21:06:02.932Z | 2021-08-31T21:06:02.932Z | 2, 7, 11, 16 |
+>| 508 | Url Library Proxy Execution via OpenURL | tanium-signal | 0 | 0 | 2021-08-31T21:06:02.639Z | 2021-08-31T21:06:02.639Z | 2, 7, 11, 16 |
+>| 507 | Url Library Proxy Execution via FileProtocolHandler | tanium-signal | 0 | 0 | 2021-08-31T21:06:02.611Z | 2021-08-31T21:06:02.611Z | 2, 7, 11, 16 |
+>| 506 | Shell32 Library Proxy Execution via ShellExec_RunDLL | tanium-signal | 0 | 0 | 2021-08-31T21:06:02.140Z | 2021-08-31T21:06:02.140Z | 2, 7, 11, 16 |
+>| 505 | Shdocvw Library Proxy Execution via OpenURL | tanium-signal | 0 | 0 | 2021-08-31T21:06:02.116Z | 2021-08-31T21:06:02.116Z | 2, 7, 11, 16 |
+>| 504 | Pcwutl Library Proxy Execution via LaunchApplication | tanium-signal | 0 | 0 | 2021-08-31T21:06:01.540Z | 2021-08-31T21:06:01.540Z | 2, 7, 11, 16 |
+>| 503 | Ieframe Library Proxy Execution via OpenURL | tanium-signal | 0 | 0 | 2021-08-31T21:06:00.862Z | 2021-08-31T21:06:00.862Z | 2, 7, 11, 16 |
+>| 502 | Reputation Malicious Hashes | reputation | 0 | 0 | 2021-08-19T06:54:59.350Z | 2021-08-19T06:57:47.882Z |  |
+>| 501 | file.yar | yara | 0 | 0 | 2021-07-28T12:37:29.611Z | 2021-07-28T12:37:29.611Z |  |
+>| 500 | file.yar | yara | 0 | 0 | 2021-07-28T12:35:41.367Z | 2021-07-28T12:35:41.367Z |  |
+>| 499 | file.yar | yara | 0 | 0 | 2021-07-28T12:35:39.670Z | 2021-07-28T12:35:39.670Z |  |
+>| 498 | Vssadmin Create Shadow Copy | tanium-signal | 0 | 0 | 2021-07-27T21:56:02.320Z | 2021-07-27T21:56:02.320Z | 2, 8, 16 |
+>| 497 | Volume Shadow Copy Creation | tanium-signal | 0 | 0 | 2021-07-27T21:56:02.295Z | 2021-07-27T21:56:02.295Z | 2, 8, 16 |
+>| 496 | Remote Proxy Execution | tanium-signal | 0 | 0 | 2021-07-27T21:56:01.712Z | 2021-07-27T21:56:01.712Z | 2, 7, 11, 16 |
+>| 495 | Non-Ssms Spawned SQL Client Tools PowerShell Session | tanium-signal | 0 | 0 | 2021-07-27T21:56:01.246Z | 2021-07-27T21:56:01.246Z | 2, 7, 11, 16 |
+>| 494 | Non-Microsoft Signed Print Spooler Driver | tanium-signal | 0 | 0 | 2021-07-27T21:56:01.227Z | 2021-07-27T21:56:01.227Z | 2, 6, 16 |
+>| 493 | file.yar | yara | 0 | 0 | 2021-07-27T14:44:32.182Z | 2021-07-27T14:44:32.182Z |  |
+>| 492 | file.yar | yara | 0 | 0 | 2021-07-27T14:44:19.862Z | 2021-07-27T14:44:19.862Z |  |
+>| 491 | file.yar | yara | 0 | 0 | 2021-07-27T14:44:15.595Z | 2021-07-27T14:44:15.595Z |  |
+>| 490 | file.yar | yara | 0 | 0 | 2021-07-27T14:44:13.294Z | 2021-07-27T14:44:13.294Z |  |
+>| 489 | CybOX-re presented Indicator Created from OpenIOC File | stix | 0 | 0 | 2021-07-27T14:42:43.888Z | 2021-07-27T14:42:43.888Z |  |
 
 
 ### tanium-tr-list-alerts
@@ -203,7 +251,7 @@ Returns a list of all alerts.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of alerts to return. The default value is 5. Default is 5. | Optional | 
+| limit | The maximum number of alerts to return. Default is 5. | Optional | 
 | offset | The offset number to begin listing alerts. | Optional | 
 | computer_ip_address | Filter alerts by the specified computer IP addresses. | Optional | 
 | computer_name | Filter alerts by the specified computer name. | Optional | 
@@ -243,8 +291,8 @@ Returns a list of all alerts.
         "Alert": [
             {
                 "AlertedAt": "2019-09-22T14:01:31.000Z",
-                "ComputerIpAddress": "1.1.1.1",
-                "ComputerName": "hostname1",
+                "ComputerIpAddress": "172.31.38.159",
+                "ComputerName": "EC2AMAZ-KGMRO60",
                 "CreatedAt": "2019-09-22T14:01:59.768Z",
                 "GUID": "a33e3482-556e-4e9d-bbbd-2fdbe330d492",
                 "ID": 1,
@@ -253,12 +301,12 @@ Returns a list of all alerts.
                 "Severity": "info",
                 "State": "Unresolved",
                 "Type": "detect.match",
-                "UpdatedAt": "2021-10-07T00:55:59.988Z"
+                "UpdatedAt": "2021-10-24T01:28:04.275Z"
             },
             {
                 "AlertedAt": "2020-02-29T15:29:59.000Z",
-                "ComputerIpAddress": "1.1.1.1",
-                "ComputerName": "hostname2",
+                "ComputerIpAddress": "172.31.38.159",
+                "ComputerName": "EC2AMAZ-KGMRO60",
                 "CreatedAt": "2020-02-29T15:30:29.893Z",
                 "GUID": "626821e1-6b0a-4afb-a1f9-8fb7ef741736",
                 "ID": 2,
@@ -267,7 +315,7 @@ Returns a list of all alerts.
                 "Severity": "info",
                 "State": "Unresolved",
                 "Type": "detect.match",
-                "UpdatedAt": "2021-10-05T12:06:18.929Z"
+                "UpdatedAt": "2021-10-24T01:28:04.275Z"
             }
         ]
     }
@@ -279,8 +327,8 @@ Returns a list of all alerts.
 >### Alerts
 >|ID|Type|Severity|Priority|Alerted At|Created At|Updated At|Computer Ip Address|Computer Name|GUID|State|Intel Doc Id|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
->| 1 | detect.match | info | high | 2019-09-22T14:01:31.000Z | 2019-09-22T14:01:59.768Z | 2021-10-07T00:55:59.988Z | 1.1.1.1 | hostname1 | a33e3482-556e-4e9d-bbbd-2fdbe330d492 | Unresolved | 64 |
->| 2 | detect.match | info | high | 2020-02-29T15:29:59.000Z | 2020-02-29T15:30:29.893Z | 2021-10-05T12:06:18.929Z | 1.1.1.1 | hostname2 | 626821e1-6b0a-4afb-a1f9-8fb7ef741736 | Unresolved | 17 |
+>| 1 | detect.match | info | high | 2019-09-22T14:01:31.000Z | 2019-09-22T14:01:59.768Z | 2021-10-24T01:28:04.275Z | 172.31.38.159 | EC2AMAZ-KGMRO60 | a33e3482-556e-4e9d-bbbd-2fdbe330d492 | Unresolved | 64 |
+>| 2 | detect.match | info | high | 2020-02-29T15:29:59.000Z | 2020-02-29T15:30:29.893Z | 2021-10-24T01:28:04.275Z | 172.31.38.159 | EC2AMAZ-KGMRO60 | 626821e1-6b0a-4afb-a1f9-8fb7ef741736 | Unresolved | 17 |
 
 
 ### tanium-tr-get-alert-by-id
@@ -325,8 +373,8 @@ Returns an alert object based on alert ID.
     "Tanium": {
         "Alert": {
             "AlertedAt": "2019-09-22T14:01:31.000Z",
-            "ComputerIpAddress": "1.1.1.1",
-            "ComputerName": "hostname1",
+            "ComputerIpAddress": "172.31.38.159",
+            "ComputerName": "EC2AMAZ-KGMRO60",
             "CreatedAt": "2019-09-22T14:01:59.768Z",
             "GUID": "a33e3482-556e-4e9d-bbbd-2fdbe330d492",
             "ID": 1,
@@ -335,7 +383,7 @@ Returns an alert object based on alert ID.
             "Severity": "info",
             "State": "Unresolved",
             "Type": "detect.match",
-            "UpdatedAt": "2021-10-07T00:55:59.988Z"
+            "UpdatedAt": "2021-10-24T01:28:04.275Z"
         }
     }
 }
@@ -346,12 +394,12 @@ Returns an alert object based on alert ID.
 >### Alert information
 >|ID|Type|Severity|Priority|Alerted At|Created At|Updated At|Computer Ip Address|Computer Name|GUID|State|Intel Doc Id|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
->| 1 | detect.match | info | high | 2019-09-22T14:01:31.000Z | 2019-09-22T14:01:59.768Z | 2021-10-07T00:55:59.988Z | 1.1.1.1 | hostname | a33e3482-556e-4e9d-bbbd-2fdbe330d492 | Unresolved | 64 |
+>| 1 | detect.match | info | high | 2019-09-22T14:01:31.000Z | 2019-09-22T14:01:59.768Z | 2021-10-24T01:28:04.275Z | 172.31.38.159 | EC2AMAZ-KGMRO60 | a33e3482-556e-4e9d-bbbd-2fdbe330d492 | Unresolved | 64 |
 
 
 ### tanium-tr-alert-update-state
 ***
-Updates the state of a single alert.
+Updates the state of the specified alerts.
 
 
 #### Base Command
@@ -361,8 +409,8 @@ Updates the state of a single alert.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_ids | The ID's of the alerts to update. | Required | 
-| state | The new state for the alert. Can be "Unresolved", "In Progress", "Dismissed", "Ignored", or "Resolved". Possible values are: dismissed, unresolved, inprogress, ignored, resolved. | Required | 
+| alert_ids | A comma-separated list of alert IDs to update. | Required | 
+| state | The new state for the alerts. Can be "Unresolved", "In Progress", "Dismissed", "Ignored", or "Resolved". Possible values are: dismissed, unresolved, inprogress, ignored, resolved. | Required | 
 
 
 #### Context Output
@@ -460,7 +508,7 @@ Returns all local snapshots of a single connection.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of local snapshots to return. The default value is 50. Default is 50. | Optional | 
+| limit | The maximum number of local snapshots to return. Default is 50. | Optional | 
 | offset | The offset number to begin listing local snapshots. Default is 0. | Optional | 
 
 
@@ -548,7 +596,7 @@ Deletes a local snapshot by connection id.
 There is no context output for this command.
 
 #### Command Example
-```!tanium-tr-delete-local-snapshot connection_id=remote:hostname:123:```
+```!tanium-tr-delete-local-snapshot connection_id=remote:ec2amaz-kgmro60:9065264:```
 
 #### Human Readable Output
 
@@ -578,14 +626,14 @@ Returns all connections.
 | Tanium.Connection.initiatedAt | Date | Time when the connection was first created. | 
 | Tanium.Connection.hostname | String | The connection hostname. | 
 | Tanium.Connection.status | String | Current connection state. | 
-| Tanium.Connection.platform | String | The connection's operating system. | 
-| Tanium.Connection.ip | String | The connection's ip. | 
+| Tanium.Connection.platform | String | The connection operating system. | 
+| Tanium.Connection.ip | String | The connection ip. | 
 | Tanium.Connection.connectedAt | String | Time when the connection was connected. | 
-| Tanium.Connection.message | String | The connection's message descriding the status. | 
-| Tanium.Connection.personaId | String | The connection's persona Id. | 
+| Tanium.Connection.message | String | The connection message describing the status. | 
+| Tanium.Connection.personaId | String | The connection persona Id. | 
 | Tanium.Connection.clientId | String | The client id. | 
-| Tanium.Connection.userId | String | The connection's user id. | 
-| Tanium.Connection.eid | String | The connection's eid. | 
+| Tanium.Connection.userId | String | The connection user id. | 
+| Tanium.Connection.eid | String | The connection eid. | 
 | Tanium.Connection.hasTools | Boolean | Has connection tools. | 
 
 
@@ -870,8 +918,8 @@ Returns all downloaded files in the system.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of files to return. The default value is 50. Default is 50. | Optional | 
-| offset | Offset to start getting file downloads. The default is 0. Default is 0. | Optional | 
+| limit | The maximum number of files to return. Default is 50. | Optional | 
+| offset | Offset to start getting file downloads. Default is 0. | Optional | 
 | sort | Column which to sort by. | Optional | 
 
 
@@ -1010,8 +1058,8 @@ Queries events for a connection.
 | --- | --- | --- |
 | connection_id | The connection id. | Required | 
 | type | The type of event. Can be "File", "Network", "Registry", "Process", "Driver", "Combined", "DNS", or "Image". The default is "Combined". Possible values are: File, Network, Registry, Process, Driver, Combined, DNS, Image. Default is combined. | Required | 
-| limit | The maximum number of events to return. The default value is 50. Default is 50. | Optional | 
-| offset | Offset to start getting the result set. The default is 0. Default is 0. | Optional | 
+| limit | The maximum number of events to return. Default is 50. | Optional | 
+| offset | Offset to start getting the result set. Default is 0. | Optional | 
 | filter | Advanced search that filters according to event fields. For example: [['process_id', 'gt', '30'], ['username', 'ne', 'administrator']]. Optional fields: process_id, process_name, process_hash, process_command_line, username, process_name, create_time (UTC). Optional operators: eq (equals), ne (does not equal); for integers/date: gt (greater than), gte (greater than or equals), ls (less than), lse (less than or equals); for strings: co (contains), nc (does not contain). . | Optional | 
 | match | Whether the results should fit all filters or at least one filter. Possible values are: all, any. Default is all. | Optional | 
 | sort | A comma-separated list of fields to sort on prefixed by +/- for ascending or descending and ordered by priority left to right. Optional fields: process_id, process_name, process_hash, process_command_line, username, process_name, create_time (UTC). | Optional | 
@@ -1056,7 +1104,7 @@ Queries events for a connection.
 | TaniumEvent.createTime | Date | The process creation time | 
 | TaniumEvent.endTime | Date | The process end time. | 
 | TaniumEvent.eventTaskName | String | The name of the event task. | 
-| TaniumEvent.hashe | String | The process hash. | 
+| TaniumEvent.hash | String | The process hash. | 
 
 
 #### Command Example
@@ -1674,8 +1722,8 @@ Returns a list of all available evidence in the system.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of evidences to return. The default value is 50. Default is 50. | Optional | 
-| offset | Offset to start getting the events result set. The default is 0. Default is 0. | Optional | 
+| limit | The maximum number of evidences to return. Default is 50. | Optional | 
+| offset | Offset to start getting the events result set. Default is 0. | Optional | 
 | sort | A comma-separated list of fields by which to sort, using +/- prefixes for ascending/descending, in order of priority (left to right). | Optional | 
 
 
@@ -2036,15 +2084,15 @@ Gets a list of files in the given directory.
 | --- | --- | --- |
 | path | Path to the directory. | Required | 
 | connection_id | Connection id. | Required | 
-| limit | The maximum number of files to return. The default value is 50. Default is 50. | Optional | 
-| offset | Offset to start getting files. The default is 0. Default is 0. | Optional | 
+| limit | The maximum number of files to return. Default is 50. | Optional | 
+| offset | Offset to start getting files. Default is 0. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Tanium.File.connectionId | String | Connection id. | 
+| Tanium.File.connectionId | String | Connection ID. | 
 | Tanium.File.createdDate | Date | Time the file was created. | 
 | Tanium.File.modifiedDate | Date | The date that the file was last modified. | 
 | Tanium.File.name | String | The file name. | 
@@ -2108,7 +2156,7 @@ Gets information about a file from a remote connection.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| connection_id | The id of the connection. Default is Connection id.. | Required | 
+| connection_id | The ID of the connection. Default is Connection id.. | Required | 
 | path | The path to the file. Default is Path to file.. | Required | 
 
 
@@ -2118,7 +2166,7 @@ Gets information about a file from a remote connection.
 | --- | --- | --- |
 | Tanium.File.canonicalPath | String | The file path. | 
 | Tanium.File.cid | String | Cid. | 
-| Tanium.File.connectionId | String | Connection id. | 
+| Tanium.File.connectionId | String | Connection ID. | 
 | Tanium.File.createdDate | Date | Time the file was created. | 
 | Tanium.File.modifiedDate | Date | The date that the file was last modified. | 
 | Tanium.File.name | String | The file name. | 
@@ -2126,7 +2174,7 @@ Gets information about a file from a remote connection.
 | Tanium.File.permissions | Number | The file permissions. | 
 | Tanium.File.size | Number | The file size. | 
 | Tanium.File.type | String | The file type. | 
-| Tanium.File.sessionId | String | Session id. | 
+| Tanium.File.sessionId | String | Session ID. | 
 
 
 #### Command Example
@@ -2173,7 +2221,7 @@ Deletes a file from the given endpoint.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| connection_id | Connection id. | Required | 
+| connection_id | Connection ID. | Required | 
 | path | Path to file. | Required | 
 
 
@@ -2207,7 +2255,7 @@ List all labels for the identified intel document.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Tanium.IntelDocLabel.IntelDocID | String | The requested intel doc id. | 
+| Tanium.IntelDocLabel.IntelDocID | String | The requested intel doc ID. | 
 | Tanium.IntelDocLabel.LabelsList.ID | Number | The unique identifier for this label. | 
 | Tanium.IntelDocLabel.LabelsList.Name | String | The display name of the label. | 
 | Tanium.IntelDocLabel.LabelsList.Description | String | An extended description of the label. | 
@@ -2310,7 +2358,7 @@ Create a new label association for the identified intel document.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Tanium.IntelDocLabel.IntelDocID | String | The requested intel doc id. | 
+| Tanium.IntelDocLabel.IntelDocID | String | The requested intel doc ID. | 
 | Tanium.IntelDocLabel.LabelsList.ID | Number | The unique identifier for this label. | 
 | Tanium.IntelDocLabel.LabelsList.Name | String | The display name of the label. | 
 | Tanium.IntelDocLabel.LabelsList.Description | String | An extended description of the label. | 
@@ -2416,7 +2464,7 @@ Delete a label association for the identified intel document.
 | Tanium.IntelDocLabel.IntelDocID | String | Requested doc ID. | 
 | Tanium.IntelDocLabel.LabelsList.CreatedAt | Date | Date when label was created. | 
 | Tanium.IntelDocLabel.LabelsList.Description | String | Label description. | 
-| Tanium.IntelDocLabel.LabelsList.ID | Number | Label id. | 
+| Tanium.IntelDocLabel.LabelsList.ID | Number | Label ID. | 
 | Tanium.IntelDocLabel.LabelsList.IndicatorCount | Number | Number of related indicators. | 
 | Tanium.IntelDocLabel.LabelsList.Name | String | Label name. | 
 | Tanium.IntelDocLabel.LabelsList.SignalCount | Number | Number of related signal counts. | 
@@ -2554,7 +2602,7 @@ Add a new intel document to the system by providing its document contents.
 >### Intel Doc information
 >|ID|Name|Type|Alert Count|Unresolved Alert Count|Created At|Updated At|
 >|---|---|---|---|---|---|---|
->| 438 | file.yara | yara | 0 | 0 | 2021-07-18T10:27:41.742Z | 2021-10-07T12:23:35.947Z |
+>| 438 | file.yara | yara | 0 | 0 | 2021-07-18T10:27:41.742Z | 2021-10-24T09:00:52.609Z |
 
 
 ### tanium-tr-intel-doc-update
@@ -2701,7 +2749,7 @@ There are no input arguments for this command.
 
 ### tanium-tr-get-task-by-id
 ***
-Get task by id.
+Get task by ID.
 
 
 #### Base Command
@@ -2786,7 +2834,7 @@ Get task by id.
 
 ### tanium-tr-get-system-status
 ***
-Get system status, to retrive all possible connection's client ids, hostnames, ips.
+Get system status, to retrieve all possible connection's client ids, hostnames, ips.
 
 
 #### Base Command
@@ -2807,8 +2855,8 @@ Get system status, to retrive all possible connection's client ids, hostnames, i
 | Tanium.SystemStatus.clientId | Number | Client id to use when creating new connection. | 
 | Tanium.SystemStatus.computerId | Number | Computer ID. | 
 | Tanium.SystemStatus.hostName | String | Hostname to connect. | 
-| Tanium.SystemStatus.ipaddressClient | String | Client IP adress. | 
-| Tanium.SystemStatus.ipaddressServer | String | Server IP adress. | 
+| Tanium.SystemStatus.ipaddressClient | String | Client IP address. | 
+| Tanium.SystemStatus.ipaddressServer | String | Server IP address. | 
 | Tanium.SystemStatus.lastRegistration | Date | Host last registration time. | 
 | Tanium.SystemStatus.portNumber | Number | Connection port number. | 
 | Tanium.SystemStatus.protocolVersion | Number | Connection protocol version. | 
