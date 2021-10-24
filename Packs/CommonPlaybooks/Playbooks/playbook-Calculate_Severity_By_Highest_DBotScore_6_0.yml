@@ -3,8 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Calculate Severity By Highest DBotScore
-description: Calculates the incident severity level according to the highest indicator
-  DBotScore.
+description: Calculates the incident severity level according to the highest DBotScore.
 starttaskid: "0"
 tasks:
   "0":
