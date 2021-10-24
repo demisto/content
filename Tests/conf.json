@@ -2245,6 +2245,9 @@
             "playbookID": "Ping Test Playbook"
         },
         {
+            "playbookID": "ParseWordDoc-Test"
+        },
+        {
             "playbookID": "Active Directory Test",
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_ninja"
