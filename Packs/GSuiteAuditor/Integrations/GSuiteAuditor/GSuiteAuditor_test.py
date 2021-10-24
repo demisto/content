@@ -3,7 +3,7 @@ import io
 
 import pytest
 
-from GsuiteAuditor import GSuiteClient, activities_list_command
+from GSuiteAuditor import GSuiteClient, activities_list_command
 
 MOCKER_HTTP_METHOD = 'GSuiteApiModule.GSuiteClient.http_request'
 
