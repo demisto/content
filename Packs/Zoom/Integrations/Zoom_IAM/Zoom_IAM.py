@@ -193,8 +193,13 @@ def test_module(client: Client):
         client.test()
     except Exception as e:
         error_message_index = str(e).find('"message":')
-        return_results(str(e)[error_message_index:])
-    return_results('ok')
+        error_message = str(e)[error_message_index:]
+        if 'Invalid access token' in error_message:
+            error_message = 'Invalid API Key. Please verify that your API key is valid.'
+        if "The Token's Signature resulted invalid" in error_message:
+            error_message = 'Invalid API Secret. Please verify that your API Secret is valid.'
+        return error_message
+    return 'ok'
 
 
 def main():
@@ -243,7 +248,7 @@ def main():
 
     try:
         if command == 'test-module':
-            test_module(client)
+            return_results(test_module(client))
     except Exception:
         # For any other integration command exception, return an error
         return_error(f'Failed to execute {command} command. Traceback: {traceback.format_exc()}')
