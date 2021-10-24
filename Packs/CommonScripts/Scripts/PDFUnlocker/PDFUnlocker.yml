@@ -19,5 +19,7 @@ args:
   secret: true
   description: Password of PDF file
 scripttarget: 0
-dockerimage: devdemisto/pypdf2:1.0.0.24259
+dockerimage: demisto/pypdf2:1.0.0.24277
 fromversion: 5.0.0
+tests:
+  - PDFUnlocker-Test
