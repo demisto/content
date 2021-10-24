@@ -3,6 +3,7 @@
     "feed": false,
     "id": "Group-IB Threat Intelligence & Attribution",
     "keyTypeMap": {
+        "bp/domain": "GIB Brand Protection Domain",
         "bp/phishing": "GIB Brand Protection Phishing",
         "bp/phishing_kit": "GIB Brand Protection Phishing Kit",
         "compromised/account": "GIB Compromised Account",
