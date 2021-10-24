@@ -86,11 +86,14 @@ class Client(BaseClient):
         uri = '/data/findUserQuery'
         data = {filter_name: filter_value}
 
-        res = self._http_request(
-            method='POST',
-            url_suffix=uri,
-            json_data=data,
-        )
+        if filter_name == 'id':
+            res = self.get_user_by_id(filter_value)
+        else:
+            res = self._http_request(
+                method='POST',
+                url_suffix=uri,
+                json_data=data,
+            )
 
         entities = res.get('entities')
 
@@ -321,6 +324,7 @@ def test_module(client: Client, username: str, password: str):
     client.test(username, password)
     return 'ok'
 
+
 def get_mapping_fields(client: Client) -> GetMappingFieldsResponse:
     """ Creates and returns a GetMappingFieldsResponse object of the user schema in the application
 
@@ -339,7 +343,7 @@ def get_mapping_fields(client: Client) -> GetMappingFieldsResponse:
 def main():
     user_profile = None
     params = demisto.params()
-    base_url = params.get('url', '').strip('/')
+    base_url = urljoin(params.get('url', '').strip('/'), '/V2.0/services')
     username = params.get('credentials', {}).get('identifier')
     password = params.get('credentials', {}).get('password')
     mapper_in = params.get('mapper_in')
@@ -348,7 +352,7 @@ def main():
     proxy = params.get('proxy', False)
     command = demisto.command()
     args = demisto.args()
-    manager_email = args.get('user-profile', {}).get('manageremailaddress')
+    manager_email = safe_load_json(args.get('user-profile', {})).get('manageremailaddress')
 
     is_create_enabled = params.get("create_user_enabled")
     is_enable_enabled = params.get("enable_user_enabled")
@@ -357,7 +361,8 @@ def main():
     create_if_not_exists = params.get("create_if_not_exists")
 
     iam_command = IAMCommand(is_create_enabled, is_enable_enabled, is_disable_enabled, is_update_enabled,
-                             create_if_not_exists, mapper_in, mapper_out, get_user_iam_attrs=[EMAIL_ATTRIBUTE])
+                             create_if_not_exists, mapper_in, mapper_out,
+                             get_user_iam_attrs=['id', 'username', 'email'])
 
     headers = {
         'Content-Type': 'application/json',
