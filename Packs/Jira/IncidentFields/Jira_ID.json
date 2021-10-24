@@ -18,7 +18,8 @@
     "group": 0,
     "hidden": false,
     "associatedTypes": [
-        "Jira Incident"
+        "Jira Incident",
+        "Jira Create Issue and Mirror"
     ],
     "associatedToAll": false,
     "unmapped": false,
