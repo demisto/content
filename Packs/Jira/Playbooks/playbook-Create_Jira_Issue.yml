@@ -41,10 +41,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 0ed04187-71c6-44bf-83e4-fa8d14a4042f
+    taskid: 1a9a07a3-5cf6-45e3-84fb-f47b34bf8560
     type: regular
     task:
-      id: 0ed04187-71c6-44bf-83e4-fa8d14a4042f
+      id: 1a9a07a3-5cf6-45e3-84fb-f47b34bf8560
       version: -1
       name: Create Jira issue
       description: Creates a new issue in Jira.
@@ -75,7 +75,7 @@ tasks:
       {
         "position": {
           "x": 740,
-          "y": 0
+          "y": 30
         }
       }
     note: false
@@ -223,10 +223,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 44cc852b-4da9-4339-8979-47c0969b75e2
+    taskid: 47223d45-3ae4-4e01-8302-7fb617629ca2
     type: playbook
     task:
-      id: 44cc852b-4da9-4339-8979-47c0969b75e2
+      id: 47223d45-3ae4-4e01-8302-7fb617629ca2
       version: -1
       name: Jira Ticket State Polling
       description: |-
@@ -276,10 +276,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: bd672c46-0ca1-456b-8c9a-790cb8006f44
+    taskid: 5467787d-f46a-44d4-86b3-63a86d124439
     type: regular
     task:
-      id: bd672c46-0ca1-456b-8c9a-790cb8006f44
+      id: 5467787d-f46a-44d4-86b3-63a86d124439
       version: -1
       name: Initial Update Incident with Jira Information
       description: Fetches an issue from Jira.
@@ -289,7 +289,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "17"
+      - "9"
     scriptarguments:
       issueId:
         complex:
@@ -302,7 +302,7 @@ tasks:
       {
         "position": {
           "x": 740,
-          "y": 200
+          "y": 300
         }
       }
     note: false
@@ -359,6 +359,11 @@ tasks:
         complex:
           root: Ticket
           accessor: Id
+    - incidentfield: Jira Issue Key
+      output:
+        complex:
+          root: Ticket
+          accessor: Key
     skipunavailable: false
     quietmode: 0
   "16":
@@ -398,38 +403,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "17":
-    id: "17"
-    taskid: dbd7ea78-1832-4b3a-8d59-6c3b7943f1c1
-    type: regular
-    task:
-      id: dbd7ea78-1832-4b3a-8d59-6c3b7943f1c1
-      version: -1
-      name: Set  fields to layout
-      description: commands.local.cmd.set.incident
-      script: Builtin|||setIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "9"
-    scriptarguments:
-      jiraissuekey:
-        simple: ${Ticket.Key}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 740,
-          "y": 400
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -522,7 +496,8 @@ inputs:
     \ attachment for attachments mirroring. "
   playbookInputQuery:
 - key: FieldPolling
-  value: {}
+  value:
+    simple: "true"
   required: false
   description: |-
     Set the value to true or false to determine if the paybook will execute the FieldPolling sub playbook.
