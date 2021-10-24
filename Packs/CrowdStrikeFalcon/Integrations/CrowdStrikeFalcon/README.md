@@ -3125,7 +3125,7 @@ Returns a list of your uploaded IOCs that match the search criteria
 >### Indicators of Compromise
 >|CreatedTime|Expiration|ID|ModifiedTime|Severity|Action|Type|Value|
 >|---|---|---|---|---|---|---|---|
->| 2020-09-30T10:59:37Z | 2020-10-30T00:00:00Z | domain:value | 2020-09-30T10:59:37Z | high | prevent | domain | value |
+>| 2020-09-30T10:59:37Z | 2020-10-30T00:00:00Z | 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | 2020-09-30T10:59:37Z | high | prevent | domain | value |
 
 ### cs-falcon-upload-custom-ioc
 ***
@@ -3178,7 +3178,7 @@ Uploads an indicator for CrowdStrike to monitor.
             "CreatedTime": "2020-10-02T13:55:26Z",
             "Description": "Test ioc",
             "Expiration": "2020-11-01T00:00:00Z",
-            "ID": "domain:test.domain.com",
+            "ID": "4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r",
             "ModifiedTime": "2020-10-02T13:55:26Z",
             "Action": "prevent",
             "Severity": "high",
@@ -3195,4 +3195,4 @@ Uploads an indicator for CrowdStrike to monitor.
 >### Custom IOC was created successfully
 >|CreatedTime|Description|Expiration|ID|ModifiedTime|Action|Severity|Source|Type|Value|
 >|---|---|---|---|---|---|---|---|---|---|
->| 2020-10-02T13:55:26Z | Test ioc | 2020-11-01T00:00:00Z | domain:test.domain.com | 2020-10-02T13:55:26Z | prevent | high | Demisto playbook | domain | test.domain.com |
+>| 2020-10-02T13:55:26Z | Test ioc | 2020-11-01T00:00:00Z | 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | 2020-10-02T13:55:26Z | prevent | high | Demisto playbook | domain | test.domain.com |
