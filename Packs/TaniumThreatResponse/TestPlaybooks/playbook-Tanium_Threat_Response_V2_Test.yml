@@ -1544,11 +1544,6 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: TaniumEvent.exitCode
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
               simple: TaniumEvent.createTime
             iscontext: true
       - - operator: isNotEmpty
@@ -2048,21 +2043,6 @@ tasks:
           left:
             value:
               simple: Tanium.ProcessChildren.driverEventsCount
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.ProcessChildren.endTime
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.ProcessChildren.endTimeRaw
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.ProcessChildren.exitCode
             iscontext: true
       - - operator: isNotEmpty
           left:
