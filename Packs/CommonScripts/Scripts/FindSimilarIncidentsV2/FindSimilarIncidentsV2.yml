@@ -147,7 +147,6 @@ tags:
 timeout: 300ns
 type: python
 dockerimage: demisto/python:2.7.18.24066
-runas: DBotRole
 runonce: false
 tests:
 - No test

@@ -62,7 +62,6 @@ outputs:
   description: Indicator that was found in other incidents
 - contextPath: IncidentsWithIndicator.incidentIDs
   description: Incident IDs that the indicator was found in
-runas: DBotRole
 scripttarget: 0
 tests:
 - No test

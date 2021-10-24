@@ -87,7 +87,6 @@ outputs:
   description: Similar incident name.
   type: string
 scripttarget: 0
-runas: DBotRole
 runonce: true
 dockerimage: demisto/machine-learning:1.0.0.22015
 tests:

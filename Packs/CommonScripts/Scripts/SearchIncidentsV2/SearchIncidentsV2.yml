@@ -168,5 +168,4 @@ tags:
 timeout: '0'
 type: python
 dockerimage: demisto/python3:3.9.7.24076
-runas: DBotRole
 fromversion: 5.0.0

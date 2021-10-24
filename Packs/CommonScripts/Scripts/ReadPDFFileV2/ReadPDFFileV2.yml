@@ -127,7 +127,6 @@ tags:
 timeout: '0'
 type: python
 dockerimage: demisto/readpdf:1.0.0.19258
-runas: DBotRole
 runonce: false
 tests:
 - Extract Indicators From File - Generic v2 - Test
