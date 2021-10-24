@@ -1156,7 +1156,7 @@ def tc_update_indicator_command():
     security_label = args.get('securityLabel')
     threat_assess_confidence = int(args.get('threatAssessConfidence', -1))
     threat_assess_rating = int(args.get('threatAssessRating', -1))
-    owner = args.get('owner', demisto.params()['defaultOrg'])
+    owner = args.get('owner', demisto.params().get('defaultOrg'))
 
     raw_indicators = tc_update_indicator(indicator, rating=rating, confidence=confidence, size=size,
                                          dns_active=dns_active, whois_active=whois_active,
@@ -1184,7 +1184,8 @@ def tc_update_indicator(indicator, rating=None, confidence=None, size=None, dns_
     indicators = tc.indicators()
     filter1 = indicators.add_filter()
     filter1.add_indicator(indicator)
-    filter1.add_owner(owner)
+    if owner:
+        filter1.add_owner(owner)
 
     raw_indicators = []
     for ind in indicators.retrieve():
