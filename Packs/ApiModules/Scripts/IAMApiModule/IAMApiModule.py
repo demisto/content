@@ -135,6 +135,7 @@ class IAMUserProfile:
     def __init__(self, user_profile, mapper: str, incident_type: str, user_profile_delta=None):
         self._user_profile = safe_load_json(user_profile)
         # Mapping is added here for GET USER commands, where we need to map Cortex XSOAR fields to the given app fields.
+        self.mapped_user_profile = None
         self.mapped_user_profile = self.map_object(mapper, incident_type) if mapper else self._user_profile
         self._user_profile_delta = safe_load_json(user_profile_delta) if user_profile_delta else {}
         self._vendor_action_results = []
