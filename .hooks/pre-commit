@@ -39,7 +39,7 @@ if [[ -n "$CONTENT_PRECOMMIT_RUN_DEV_TASKS" ]]; then
     fi
     demisto-sdk lint -g
     if [[ -f "coverage_report/.coverage" ]]; then
-        demisto-sdk coverage-analyze
+        demisto-sdk coverage-analyze --no-min-coverage-enforcement
     fi
     
     RES=$(($RES + $?))
