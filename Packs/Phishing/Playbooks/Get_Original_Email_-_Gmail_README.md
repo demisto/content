@@ -13,13 +13,14 @@ This playbook does not use any sub-playbooks.
 * Gmail
 
 ### Scripts
-* DeleteContext
+* GetTime
 * Set
+* DeleteContext
 
 ### Commands
-* gmail-get-mail
-* gmail-get-attachments
 * gmail-search
+* gmail-get-attachments
+* gmail-get-mail
 
 ## Playbook Inputs
 ---
@@ -29,7 +30,7 @@ This playbook does not use any sub-playbooks.
 | EmailID | Email ID of the forwarded message. | incident.emailmessageid | Optional |
 | User | Email address of the reporting user. | incident.emailto | Optional |
 | From | Email address of the thread originator. | incident.emailfrom | Optional |
-| SearchDays | The number of days included in the email search. | 7 Days | Required |
+| SearchThisWeek | Limit the search to the current week \(true/false\). | true | Required |
 
 ## Playbook Outputs
 ---
