@@ -7,7 +7,7 @@ configuration:
   hidden: false
   displaypassword: User's Service Account JSON
   name: credentials
-  required: true
+  required: false
   type: 9
 - display: Use system proxy settings
   name: proxy
