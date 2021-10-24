@@ -30,6 +30,12 @@ run-unittests-and-lint:
   rules:
     - if: '$NIGHTLY'
 
+generate-coverage-report:
+  extends:
+    - .generate-coverage-report
+  rules:
+    - if: '$NIGHTLY'
+
 
 # runs in circle for the on-push flow (because we need to run it there for contributors anyways)
 run-validations:
