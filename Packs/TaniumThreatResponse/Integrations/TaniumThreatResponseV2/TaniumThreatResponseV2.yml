@@ -1419,7 +1419,7 @@ script:
       description: Hash type.
       type: String
     - contextPath: Tanium.ProcessTree.id
-      description: Process id at the tunium system.
+      description: Process id at the tanium system.
       type: String
     - contextPath: Tanium.ProcessTree.imageEventsCount
       description: Number of Image events in the process.

@@ -1625,7 +1625,7 @@ Gets the process tree for the process instance.
 | Tanium.ProcessTree.fileEventsCount | Number | Number of File events in the process. | 
 | Tanium.ProcessTree.groupName | String | Process group name. | 
 | Tanium.ProcessTree.hashTypeName | String | Hash type. | 
-| Tanium.ProcessTree.id | String | Process id at the tunium system. | 
+| Tanium.ProcessTree.id | String | Process id at the tanium system. | 
 | Tanium.ProcessTree.imageEventsCount | Number | Number of Image events in the process. | 
 | Tanium.ProcessTree.networkEventsCount | Number | Number of network events in the process. | 
 | Tanium.ProcessTree.parentProcessTableId | String | Parent process table id. | 
