@@ -417,6 +417,13 @@ references:
         else
           demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report
         fi
+
+  generate_coverage_reports: &generate_coverage_reports
+    run:
+      name: Generate coverage reports
+      when: always
+      no_output_timeout: 1h
+      command: |
         if [[ -f $ARTIFACTS_FOLDER/coverage_report/.coverage ]]; then
           demisto-sdk coverage-analyze -i $ARTIFACTS_FOLDER/coverage_report/.coverage --report-dir $ARTIFACTS_FOLDER/coverage_report --report-type all
         fi
@@ -695,6 +702,7 @@ jobs:
       - *trigger_private_build
       - *infrastructure_testing
       - *run_unit_testing_and_lint
+      - *generate_coverage_reports
       - *get_private_build_status
       - store_test_results:
           path: ./unit-tests
