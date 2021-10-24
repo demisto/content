@@ -110,7 +110,7 @@ class Client(BaseClient):
         
         return self._http_request(
             method='GET',
-            url_suffix='/investigate?search=ip:1.1.1.1&tops=path',
+            url_suffix='?search=ip:1.1.1.1&tops=path',
             headers=headers
         )
 
@@ -145,7 +145,7 @@ class Client(BaseClient):
 
         return self._http_request(
             method='GET',
-            url_suffix = f'/investigate?{request_params["ip_address"]}&tops=user-agent,path,socket_ip_classification',
+            url_suffix = f'?{request_params["ip_address"]}&tops=user-agent,path,socket_ip_classification',
             headers=headers
         )
 
@@ -174,7 +174,7 @@ class Client(BaseClient):
 
         return self._http_request(
             method='POST',
-            url_suffix='/investigate',
+            url_suffix='',
             json_data=request_params
         )
 
