@@ -26,23 +26,8 @@ import traceback
 def get_image_from_alerts() -> CommandResults:
     incident = demisto.incident()
     xdr_alerts = incident.get('CustomFields').get('xdralerts')
-    cloud_providers = set([alert.get('cloudprovider') for alert in xdr_alerts])
-    file_results = []
-    if 'GCP' in cloud_providers:
-        gcp_file = requests.get(
-            'https://user-images.githubusercontent.com/88267954/137717374-79a61096-ec0c-4712-91e6-2338243b0b6b.png',
-            verify=False).content
-
-        file_results.append(fileResult('GCP', gcp_file, file_type=EntryType.IMAGE))
-    if 'Azure' in cloud_providers:
-        azure_file = requests.get(
-            'https://user-images.githubusercontent.com/88267954/137730231-6cd195d2-6e79-4969-b625-26e62fcb88a9.png', verify=False).content
-        file_results.append(fileResult('Azure', azure_file, file_type=EntryType.IMAGE))
-    if 'AWS' in cloud_providers:
-        aws_file = requests.get(
-            'https://user-images.githubusercontent.com/88267954/137717493-921017d2-e13a-48b0-a2f6-e559cfe8ac8e.png', verify=False).content
-        file_results.append(fileResult('AWS', aws_file, file_type=EntryType.IMAGE))
-    return file_results
+    cloud_providers = list(set([alert.get('cloudprovider') for alert in xdr_alerts]))
+    return CommandResults(readable_output='\n'.join(cloud_providers))
 
 
 ''' MAIN FUNCTION '''

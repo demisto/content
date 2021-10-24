@@ -1,0 +1,16 @@
+comment: '[Enter a description of the script, including what function it performs
+  and any important information users need to know, for example required permissions.]'
+commonfields:
+  id: RemediationActionsWidget
+  version: -1
+enabled: false
+name: RemediationActionsWidget
+script: '-'
+system: false
+tags:
+- basescript
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.9.7.24076
+fromversion: 5.5.0
