@@ -2595,6 +2595,87 @@ def test_upload_ioc_command_successful(requests_mock):
     assert results["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == 'testmd5'
 
 
+def test_search_custom_iocs_command_does_not_exist(requests_mock):
+    """
+    Test cs-falcon-search-custom-iocs when no ioc is found
+
+    Given:
+     - There is no ioc in the system
+    When:
+     - Searching for iocs using cs-falcon-search-custom-iocs command
+    Then:
+     - Return a human readable result with appropriate message
+     - Do not populate the entry context
+    """
+    from CrowdStrikeFalcon import search_custom_iocs_command
+    response = {'resources': []}
+    requests_mock.get(
+        f'{SERVER_URL}/iocs/combined/indicators/v1',
+        json=response,
+        status_code=200
+    )
+    results = search_custom_iocs_command()
+    assert results["HumanReadable"] == 'Could not find any Indicators of Compromise.'
+    assert results["EntryContext"] is None
+
+
+def test_search_custom_iocs_command_exists(requests_mock):
+    """
+    Test cs-falcon-search-custom-iocs when an ioc is found
+
+    Given:
+     - There is a single md5 ioc in the system
+    When:
+     - Searching for iocs using cs-falcon-search-custom-iocs command
+    Then:
+     - Return a human readable result with appropriate message
+     - Do populate the entry context with the right value
+    """
+    from CrowdStrikeFalcon import search_custom_iocs_command
+    ioc_response = {
+        'resources': [{
+            'type': 'md5',
+            'value': 'testmd5',
+            'policy': 'detect',
+            'share_level': 'red',
+            'description': 'Eicar file',
+            'created_timestamp': '2020-10-01T09:09:04Z',
+            'modified_timestamp': '2020-10-01T09:09:04Z'
+        }]
+    }
+    requests_mock.get(
+        f'{SERVER_URL}/iocs/combined/indicators/v1',
+        json=ioc_response,
+        status_code=200
+    )
+    results = search_custom_iocs_command()
+    assert '| 2020-10-01T09:09:04Z | Eicar file | md5:testmd5 |' in results["HumanReadable"]
+    assert results["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == 'testmd5'
+
+
+def test_search_custom_iocs_command_error(requests_mock, mocker):
+    """
+    Test cs-falcon-search-custom-iocs when encountering an error
+
+    Given:
+     - Call to API is bound to fail with 404
+    When:
+     - Searching for iocs using cs-falcon-search-custom-iocs command
+    Then:
+     - Display an appropriate error via return_error
+    """
+    from CrowdStrikeFalcon import search_custom_iocs_command
+    requests_mock.get(
+        f'{SERVER_URL}/iocs/combined/indicators/v1',
+        json={},
+        status_code=404
+    )
+    mocker.patch.object(demisto, 'results')
+    mocker.patch(RETURN_ERROR_TARGET)
+    res = search_custom_iocs_command()
+    assert 'Could not find any Indicators of Compromise.' in res['HumanReadable']
+
+
 def test_get_ioc_device_count_command_does_not_exist(requests_mock, mocker):
     """
     Test cs-falcon-device-count-ioc with an unsuccessful query (doesn't exist)

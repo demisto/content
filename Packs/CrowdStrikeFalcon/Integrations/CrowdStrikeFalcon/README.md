@@ -1207,7 +1207,7 @@ CrowdStrike Session Refreshed: fdd6408f-6688-441b-8659-41bcad25441c
 
 ### 23. cs-falcon-search-iocs
 ***
-Returns a list of your uploaded IOCs that match the search criteria
+Deprecated. Use the cs-falcon-search-custom-iocs command instead.
 
 
 #### Base Command
@@ -3056,3 +3056,76 @@ There is no context output for this command.
 
 >host group id 29ae859b9a01409d83bf7fb7f7a04c69 deleted successfully
 >host group id 9a7291431c3046ccb7b750240f924854 deleted successfully
+
+
+### cs-falcon-search-custom-iocs
+***
+Returns a list of your uploaded IOCs that match the search criteria
+
+
+#### Base Command
+
+`cs-falcon-search-custom-iocs`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| types | A comma-separated list of indicator types. Valid types are: "sha256", "sha1", "md5", "domain", "ipv4", "ipv6". | Optional | 
+| values | A comma-separated list of indicator values. | Optional | 
+| policies | A comma-separated list of indicator policies. | Optional | 
+| share_levels | The level at which the indicator will be shared. Only "red" share level (not shared) is supported, which indicates that the IOC is not shared with other Falcon Host customers. | Optional | 
+| sources | A comma-separated list of IOC sources. | Optional | 
+| from_expiration_date | Start of date range in which to search (YYYY-MM-DD format). | Optional | 
+| to_expiration_date | End of date range in which to search (YYYY-MM-DD format). | Optional | 
+| limit | The maximum number of records to return. The minimum is 1 and the maximum is 500. Default is 100. | Optional | 
+| sort | The order in which the results are returned. Possible values are: "type.asc", "type.desc", "value.asc", "value.desc", "policy.asc", "policy.desc", "share_level.asc", "share_level.desc", "expiration_timestamp.asc", and "expiration_timestamp.desc". | Optional | 
+| offset | The offset to begin the list from. For example, start from the 10th record and return the list. Default is 0. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.IOC.Type | string | The type of the IOC. | 
+| CrowdStrike.IOC.Value | string | The string representation of the indicator. | 
+| <span>CrowdStrike.IOC.ID</span> | string | The full ID of the indicator \(type:value\). | 
+| CrowdStrike.IOC.Policy | string | The policy of the indicator. | 
+| CrowdStrike.IOC.Source | string | The source of the IOC. | 
+| CrowdStrike.IOC.ShareLevel | string | The level at which the indicator will be shared. | 
+| CrowdStrike.IOC.Expiration | string | The datetime when the indicator will expire. | 
+| CrowdStrike.IOC.Description | string | The description of the IOC. | 
+| CrowdStrike.IOC.CreatedTime | string | The datetime the IOC was created. | 
+| CrowdStrike.IOC.CreatedBy | string | The identity of the user/process who created the IOC. | 
+| CrowdStrike.IOC.ModifiedTime | string | The datetime the indicator was last modified. | 
+| CrowdStrike.IOC.ModifiedBy | string | The identity of the user/process who last updated the IOC. | 
+
+
+#### Command Example
+```!cs-falcon-search-custom-iocs types="domain"```
+
+#### Context Example
+```json
+{
+    "CrowdStrike": {
+        "IOC": [
+            {
+                "CreatedTime": "2020-09-30T10:59:37Z",
+                "Expiration": "2020-10-30T00:00:00Z",
+                "ID": "domain:value",
+                "ModifiedTime": "2020-09-30T10:59:37Z",
+                "Policy": "none",
+                "ShareLevel": "red",
+                "Type": "domain",
+                "Value": "value"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Indicators of Compromise
+>|CreatedTime|Expiration|ID|ModifiedTime|Policy|ShareLevel|Type|Value|
+>|---|---|---|---|---|---|---|---|
+>| 2020-09-30T10:59:37Z | 2020-10-30T00:00:00Z | domain:value | 2020-09-30T10:59:37Z | none | red | domain | value |

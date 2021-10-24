@@ -1091,6 +1091,49 @@ def search_iocs(types=None, values=None, policies=None, sources=None, expiration
     return http_request('GET', '/indicators/entities/iocs/v1', params=payload)
 
 
+def search_custom_iocs(
+    types: Optional[Union[list, str]] = None,
+    values: Optional[Union[list, str]] = None,
+    policies: Optional[Union[list, str]] = None,
+    sources: Optional[Union[list, str]] = None,
+    expiration_from: Optional[str] = None,
+    expiration_to: Optional[str] = None,
+    limit: Optional[str] = None,
+    share_levels: Optional[Union[list, str]] = None,
+    ids=None,
+    sort: Optional[str] = None,
+    offset: Optional[str] = None,
+):
+    """
+    :param types: A list of indicator types. Separate multiple types by comma.
+    :param values: Comma-separated list of indicator values
+    :param policies: Comma-separated list of indicator policies
+    :param sources: Comma-separated list of IOC sources
+    :param expiration_from: Start of date range to search (YYYY-MM-DD format).
+    :param expiration_to: End of date range to search (YYYY-MM-DD format).
+    :param share_levels: A list of share levels. Only red is supported.
+    :param limit: The maximum number of records to return. The minimum is 1 and the maximum is 500. Default is 100.
+    :param sort: The order of the results. Format
+    :param offset: The offset to begin the list from
+    """
+    payload = assign_params(
+        types=argToList(types),
+        values=argToList(values),
+        policies=argToList(policies),
+        sources=argToList(sources),
+        share_levels=argToList(share_levels),
+        sort=sort,
+        offset=offset,
+        limit=limit or '50',
+    )
+    if expiration_from:
+        payload['from.expiration_timestamp'] = expiration_from
+    if expiration_to:
+        payload['to.expiration_timestamp'] = expiration_to
+
+    return http_request('GET', '/iocs/combined/indicators/v1', params=payload)
+
+
 def enrich_ioc_dict_with_ids(ioc_dict):
     """
         Enriches the provided ioc_dict with IOC ID
@@ -1590,6 +1633,55 @@ def delete_ioc_command(ioc_type, value):
     handle_response_errors(raw_res, "The server has not confirmed deletion, please manually confirm deletion.")
     ids = f"{ioc_type}:{value}"
     return create_entry_object(contents=raw_res, hr=f"Custom IOC {ids} was successfully deleted.")
+
+
+def search_custom_iocs_command(
+    types: Optional[Union[list, str]] = None,
+    values: Optional[Union[list, str]] = None,
+    policies: Optional[Union[list, str]] = None,
+    sources: Optional[Union[list, str]] = None,
+    from_expiration_date: Optional[str] = None,
+    to_expiration_date: Optional[str] = None,
+    share_levels: Optional[Union[list, str]] = None,
+    limit: Optional[str] = None,
+    sort: Optional[str] = None,
+    offset: Optional[str] = None,
+):
+    """
+    :param types: A list of indicator types. Separate multiple types by comma.
+    :param values: Comma-separated list of indicator values
+    :param policies: Comma-separated list of indicator policies
+    :param sources: Comma-separated list of IOC sources
+    :param from_expiration_date: Start of date range to search (YYYY-MM-DD format).
+    :param to_expiration_date: End of date range to search (YYYY-MM-DD format).
+    :param share_levels: A list of share levels. Only red is supported.
+    :param limit: The maximum number of records to return. The minimum is 1 and the maximum is 500. Default is 100.
+    :param sort: The order of the results. Format
+    :param offset: The offset to begin the list from
+    """
+    raw_res = search_custom_iocs(
+        types=types,
+        values=values,
+        policies=policies,
+        sources=sources,
+        sort=sort,
+        offset=offset,
+        expiration_from=from_expiration_date,
+        expiration_to=to_expiration_date,
+        share_levels=share_levels,
+        limit=limit,
+    )
+    iocs = raw_res.get('resources')
+    if not iocs:
+        return create_entry_object(hr='Could not find any Indicators of Compromise.')
+    handle_response_errors(raw_res)
+    ec = [get_trasnformed_dict(ioc, IOC_KEY_MAP) for ioc in iocs]
+    enrich_ioc_dict_with_ids(ec)
+    return create_entry_object(
+        contents=raw_res, 
+        ec={'CrowdStrike.IOC(val.ID === obj.ID)': ec},
+        hr=tableToMarkdown('Indicators of Compromise', ec),
+    )
 
 
 def get_ioc_device_count_command(ioc_type: str, value: str):
@@ -2757,6 +2849,8 @@ def main():
             return_results(update_ioc_command(**args))
         elif command == 'cs-falcon-delete-ioc':
             return_results(delete_ioc_command(ioc_type=args.get('type'), value=args.get('value')))
+        elif command == 'cs-falcon-search-custom-iocs':
+            return_results(search_custom_iocs_command(**args))
         elif command == 'cs-falcon-device-count-ioc':
             return_results(get_ioc_device_count_command(ioc_type=args.get('type'), value=args.get('value')))
         elif command == 'cs-falcon-process-details':
