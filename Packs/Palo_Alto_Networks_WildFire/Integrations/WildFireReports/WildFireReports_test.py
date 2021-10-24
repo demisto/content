@@ -1,5 +1,7 @@
 import base64
 
+import pytest
+
 import demistomock as demisto
 from WildFireReports import main
 import requests_mock
@@ -77,3 +79,50 @@ def test_incorrect_sha256(mocker):
     main()
 
     assert demisto_mock.call_args_list[0].args[0].get('error', {}).get('description') == expected_description_error
+
+
+def test_incorrect_authorization(mocker):
+    """
+    Given:
+        An incorrect API token.
+    When:
+        test-module command is running.
+    Then:
+        Ensure that the command is running as expected.
+    """
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch.object(demisto, 'params', return_value={'server': 'https://test.com/', 'token': 'incorrect api token'})
+    demisto_mock = mocker.patch.object(demisto, 'results')
+    expected_description_error = 'Authorization Error: make sure API Key is correctly set'
+
+    url = 'https://test.com/publicapi/get/report'
+    params = '?apikey=incorrect+api+token&format=pdf&hash=dca86121cc7427e375fd24fe5871d727'
+
+    with requests_mock.Mocker() as m:
+        m.post(url+params, status_code=401)
+
+        main()
+
+    assert demisto_mock.call_args_list[0].args[0] == expected_description_error
+
+
+def test_empty_api_token(mocker):
+    """
+    Given:
+        An empty API token.
+    When:
+        test-module command is running.
+    Then:
+        Ensure that the command is running as expected.
+    """
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch.object(demisto, 'params', return_value={'server': 'https://test.com/', 'token': ''})
+    demisto_mock = mocker.patch('WildFireReports.return_error')
+
+    expected_description_error = 'Authorization Error: It\'s seems that the token is empty and you have not a ' \
+                                 'TIM license that is up-to-date, Please fill the token or update your TIM license ' \
+                                 'and try again.'
+
+    main()
+
+    assert demisto_mock.call_args_list[0].args[0] == expected_description_error
