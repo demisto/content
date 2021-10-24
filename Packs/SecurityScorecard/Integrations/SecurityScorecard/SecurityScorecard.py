@@ -308,7 +308,7 @@ def incidents_to_import(alerts: List[Dict[str, Any]], last_run: datetime = get_l
         ``List[Dict[str, Any]]``: Alerts to import
     """
 
-    incidents_to_import: List[Dict[str, Any]] = []
+    incidents: List[Dict[str, Any]] = []
 
     # Check if there are more than 0 alerts
     if alerts:
@@ -344,7 +344,7 @@ def incidents_to_import(alerts: List[Dict[str, Any]], last_run: datetime = get_l
                 incident["name"] = f"{company_name} {change_type.replace('_', ' ').title()}"
                 incident["occurred"] = alert_datetime.strftime(format=DATE_FORMAT)  # type: ignore
                 incident["rawJSON"] = json.dumps(alert)
-                incidents_to_import.append(incident)
+                incidents.append(incident)
 
                 demisto.debug(
                     f"Setting setLastRun as alert most recent: \
@@ -362,7 +362,7 @@ def incidents_to_import(alerts: List[Dict[str, Any]], last_run: datetime = get_l
         demisto.debug(f"No alerts retrieved, setting last_run to last modified time ({last_run})")
         demisto.setLastRun(last_run)
 
-    return incidents_to_import
+    return incidents
 
 
 """ COMMAND FUNCTIONS """
