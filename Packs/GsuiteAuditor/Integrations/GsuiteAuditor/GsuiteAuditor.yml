@@ -1,6 +1,6 @@
 category: IT Services
 commonfields:
-  id: GSuiteAuditor
+  id: GsuiteAuditor
   version: -1
 configuration:
 - display: Admin email
