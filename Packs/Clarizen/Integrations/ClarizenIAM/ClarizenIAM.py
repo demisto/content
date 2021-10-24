@@ -34,7 +34,7 @@ class Client(BaseClient):
             "userName": username,
             "Password": password
         }
-        res = self._http_request('POST', auth_uri, params=params)
+        res = self._http_request('POST', auth_uri, params=params, headers=self.headers)
         return res.get('sessionId')
 
     def get_manager_id(self, manager_email: Optional[str]) -> str:
@@ -68,6 +68,7 @@ class Client(BaseClient):
             method='GET',
             url_suffix=uri,
             params=params,
+            headers=self.headers
         )
 
     def get_user(self, filter_name: str, filter_value: str) -> Optional[IAMUserAppData]:
@@ -84,23 +85,26 @@ class Client(BaseClient):
         :rtype: ``Optional[IAMUserAppData]``
         """
         uri = '/data/findUserQuery'
-        data = {filter_name: filter_value}
+        data = {'email': filter_value,
+                'includeSuspendedUsers': True}
 
         if filter_name == 'id':
-            res = self.get_user_by_id(filter_value)
+            res = self.get_user_by_id(f'/User/{filter_value}')
+            user_app_data = res
         else:
             res = self._http_request(
                 method='POST',
                 url_suffix=uri,
                 json_data=data,
+                headers=self.headers
             )
+            if entities := res.get('entities'):
+                user_id = entities[0].get('id')
+                user_app_data = self.get_user_by_id(user_id)
+            else:
+                user_app_data = None
 
-        entities = res.get('entities')
-
-        if entities:
-            user_id = entities[0].get('id')
-            user_app_data = self.get_user_by_id(user_id)
-
+        if user_app_data:
             user_id = user_app_data.get('id').replace('/User/', '')
             user_name = user_app_data.get('username')
             active = user_app_data.get('state', {}).get('id').replace('/State/', '')
@@ -126,6 +130,7 @@ class Client(BaseClient):
             method='PUT',
             url_suffix=uri,
             json_data=user_data,
+            headers=self.headers
         )
 
         user_id = res.get('id')
@@ -157,6 +162,7 @@ class Client(BaseClient):
             method='POST',
             url_suffix=uri,
             json_data=user_data,
+            headers=self.headers
         )
 
         user_app_data = self.get_user_by_id(f'/User/{user_id}')
@@ -187,6 +193,7 @@ class Client(BaseClient):
             method='POST',
             url_suffix=uri,
             json_data=user_data,
+            headers=self.headers
         )
 
         user_app_data = self.get_user_by_id(f'/User/{user_id}')
@@ -216,6 +223,7 @@ class Client(BaseClient):
             method='POST',
             url_suffix=uri,
             json_data=user_data,
+            headers=self.headers
         )
 
         user_app_data = self.get_user_by_id(f'/User/{user_id}')
@@ -241,6 +249,7 @@ class Client(BaseClient):
             method='GET',
             url_suffix=uri,
             params=params,
+            headers=self.headers
         )
 
         fields = res.get('entityDescriptions', {}).get('fields', [])
@@ -362,7 +371,7 @@ def main():
 
     iam_command = IAMCommand(is_create_enabled, is_enable_enabled, is_disable_enabled, is_update_enabled,
                              create_if_not_exists, mapper_in, mapper_out,
-                             get_user_iam_attrs=['id', 'username', 'email'])
+                             get_user_iam_attrs=['id', 'Username', 'Email'])
 
     headers = {
         'Content-Type': 'application/json',

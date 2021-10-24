@@ -441,7 +441,6 @@ class IAMCommand:
         """
         user_profile = IAMUserProfile(user_profile=args.get('user-profile'), mapper=self.mapper_out,
                                       incident_type=IAMUserProfile.CREATE_INCIDENT_TYPE)
-
         if not self.is_create_enabled:
             user_profile.set_result(action=IAMActions.CREATE_USER,
                                     skip=True,
