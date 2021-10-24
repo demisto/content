@@ -42,6 +42,11 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: Fields to fetch
+  hidden: false
+  name: fetch_fields
+  required: false
+  type: 0
 description: Fetch SMAX cases and automate  differen SMAX case management actions
 display: MicroFocus SMAX
 name: MicroFocusSMAX

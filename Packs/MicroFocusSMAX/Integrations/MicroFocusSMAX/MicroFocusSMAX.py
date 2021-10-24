@@ -67,31 +67,28 @@ def login(server: str, tenant:  str, username: str, password: str, verify_certif
 
 
 def test_module(client: Client, username) -> str:
-    try:
-        client.query_entities(entity_type="Person", query_filter=f"Name startswith ('{username}')", order_by=None,
-                              entity_fields="Id", size=None, skip=None)
-    except DemistoException as exception:
-        if 'Authorization Required' in str(exception) or 'Authentication failed' in str(exception):
-            return_error(f'Authorization Error: please check your credentials.\n\nError:\n{exception}')
-
-        if 'HTTPSConnectionPool' in str(exception):
-            return_error(f'Connection Error: please check your server ip address.\n\nError: {exception}')
-        raise
+    client.query_entities(entity_type="Person", query_filter=f"Name startswith ('{username}')", order_by=None,
+                          entity_fields="Id", size=None, skip=None)
     return 'ok'
 
 
-def fetch_incidents_command(client: Client, username) -> str:
-    try:
-        client.query_entities(entity_type="Person", query_filter=f"Name startswith ('{username}')", order_by=None,
-                              entity_fields="Id", size=None, skip=None)
-    except DemistoException as exception:
-        if 'Authorization Required' in str(exception) or 'Authentication failed' in str(exception):
-            return_error(f'Authorization Error: please check your credentials.\n\nError:\n{exception}')
+def fetch_incidents_command(client: Client, object_to_fetch="Incident", fetch_query_filter=None, fetch_fields=None):
 
-        if 'HTTPSConnectionPool' in str(exception):
-            return_error(f'Connection Error: please check your server ip address.\n\nError: {exception}')
-        raise
-    return 'ok'
+    if fetch_fields:
+        fetch_fields = 'Name,Id,' + fetch_fields
+    else:
+        fetch_fields = 'Name,Id'
+
+    entities = []
+
+    results = client.query_entities(entity_type=object_to_fetch, query_filter=fetch_query_filter,
+                                    order_by="EmsCreationTime desc", entity_fields=fetch_fields, size=None, skip=None)
+
+    total_count = int(results.get("meta")["total_count"])
+
+    
+
+
 
 def get_entity_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
@@ -145,17 +142,17 @@ def query_entities_command(client: Client, args: Dict[str, Any]):
     else:
         entity_fields = 'Name,Id'
 
-    result = client.query_entities(entity_type=entity_type, entity_fields=entity_fields, query_filter=query_filter,
+    results = client.query_entities(entity_type=entity_type, entity_fields=entity_fields, query_filter=query_filter,
                                    order_by=order_by, size=size, skip=skip)
 
-    for entity in result.get('entities'):
+    for entity in results.get('entities'):
         readable_entity = {'Type': entity.get('entity_type')}
         readable_entity.update(entity.get('properties'))
         readable_entities.append(readable_entity)
 
     count_readable_output = tableToMarkdown('Result Total Count:', {
-        "Query Time": result.get("meta")["query_time"],
-        "Total Count": result.get("meta")["total_count"]
+        "Query Time": results.get("meta")["query_time"],
+        "Total Count": results.get("meta")["total_count"]
     })
 
     results_readable_output = tableToMarkdown('Result Details:', readable_entities)
@@ -176,7 +173,6 @@ def query_entities_command(client: Client, args: Dict[str, Any]):
     ]
 
 
-
 ''' MAIN FUNCTION '''
 
 
@@ -185,6 +181,9 @@ def main() -> None:
     params = demisto.params()
     base_url = params.get('url')
     tenant_id = params.get('tenant_id')
+    object_to_fetch = params.get('object_to_fetch')
+    fetch_query_filter = params.get('fetch_query_filter')
+    fetch_fields = params.get('fetch_fields')
     verify_certificate = not params.get('insecure', False)
     proxy = not params.get('insecure', False)
     username = params.get('credentials', {}).get('identifier')
@@ -209,7 +208,7 @@ def main() -> None:
             return_results(result)
 
         if demisto.command() == 'fetch-incidents':
-            fetch_incidents_command(client, args)
+            fetch_incidents_command(client, object_to_fetch, fetch_query_filter, fetch_fields)
 
         elif demisto.command() == 'microfocus-smax-get-entity':
             return_results(get_entity_command(client, args))
