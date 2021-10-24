@@ -1,7 +1,5 @@
 import base64
 
-import pytest
-
 import demistomock as demisto
 from WildFireReports import main
 import requests_mock
@@ -99,7 +97,7 @@ def test_incorrect_authorization(mocker):
     params = '?apikey=incorrect+api+token&format=pdf&hash=dca86121cc7427e375fd24fe5871d727'
 
     with requests_mock.Mocker() as m:
-        m.post(url+params, status_code=401)
+        m.post(url + params, status_code=401)
 
         main()
 
@@ -117,6 +115,7 @@ def test_empty_api_token(mocker):
     """
     mocker.patch.object(demisto, 'command', return_value='test-module')
     mocker.patch.object(demisto, 'params', return_value={'server': 'https://test.com/', 'token': ''})
+    mocker.patch.object(demisto, 'getLicenseCustomField', return_value=None)
     demisto_mock = mocker.patch('WildFireReports.return_error')
 
     expected_description_error = 'Authorization Error: It\'s seems that the token is empty and you have not a ' \

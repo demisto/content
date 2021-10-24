@@ -104,42 +104,42 @@ def main():
                                 "or update your TIM license."
                 }
             })
-    else:
-        verify_certificate = not params.get('insecure', False)
-        proxy = params.get('proxy', False)
+            sys.exit()
+    verify_certificate = not params.get('insecure', False)
+    proxy = params.get('proxy', False)
 
-        headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+    headers = {'Content-Type': 'application/x-www-form-urlencoded'}
 
-        demisto.debug(f'Command being called is {command}')
+    demisto.debug(f'Command being called is {command}')
 
-        try:
-            client = Client(
-                base_url=base_url,
-                token=token,
-                headers=headers,
-                verify=verify_certificate,
-                proxy=proxy,
-            )
+    try:
+        client = Client(
+            base_url=base_url,
+            token=token,
+            headers=headers,
+            verify=verify_certificate,
+            proxy=proxy,
+        )
 
-            if command == 'test-module':
-                result = test_module(client)
-                return_results(result)
+        if command == 'test-module':
+            result = test_module(client)
+            return_results(result)
 
-            elif command == 'internal-wildfire-get-report':
-                wildfire_get_report_command(client, args)
+        elif command == 'internal-wildfire-get-report':
+            wildfire_get_report_command(client, args)
 
-        # Log exceptions and return errors
-        except Exception as e:
-            # Its not an error because it's not return to the warroom
-            return_results({
-                'status': 'error',
-                'error': {
-                    'title': "Couldn't fetch the Wildfire report.",
-                    'description': f'Failed to download report.\nError:\n{str(e)}',
-                    'techInfo': f'Failed to execute command {demisto.command()}.\nError:\n{str(e)}\n'
-                                f'Trace back:\n{traceback.format_exc()}'
-                }
-            })
+    # Log exceptions and return errors
+    except Exception as e:
+        # Its not an error because it's not return to the warroom
+        return_results({
+            'status': 'error',
+            'error': {
+                'title': "Couldn't fetch the Wildfire report.",
+                'description': f'Failed to download report.\nError:\n{str(e)}',
+                'techInfo': f'Failed to execute command {demisto.command()}.\nError:\n{str(e)}\n'
+                            f'Trace back:\n{traceback.format_exc()}'
+            }
+        })
 
 
 ''' ENTRY POINT '''
