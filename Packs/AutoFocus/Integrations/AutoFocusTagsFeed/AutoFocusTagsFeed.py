@@ -183,7 +183,6 @@ def incremental_level_fetch(client: Client) -> list:
             set_integration_context(context)
             return results
 
-    #
     list_of_all_updated_tags = get_all_updated_tags_since_last_fetch(client,
                                                                      list_of_all_updated_tags,
                                                                      time_from_last_update)
@@ -292,7 +291,7 @@ def create_publications(refs: list) -> list:
     """
     Creates the publications list of the indicator
     Args:
-        refs: a list of all
+        refs: a list of all publications
     Returns:
         A list of publications of the indicator
     """
@@ -508,7 +507,7 @@ def get_indicators_command(client: Client,
 
     limit = arg_to_number(args.get('limit', '10'))
     if limit > PAGE_SIZE:
-        demisto.debug(f'AutoFocus Tags Feed: limit must be under {PAGE_SIZE}. Setting limit to the max.')
+        demisto.debug(f'AutoFocus Tags Feed: limit must be under {PAGE_SIZE}. Setting limit to {PAGE_SIZE}.')
         limit = PAGE_SIZE
     tlp_color = params.get('tlp_color')
     feed_tags = argToList(params.get('feedTags', ''))
