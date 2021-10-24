@@ -32,7 +32,7 @@ Retrieves URL information from URLhaus.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | URL to query. | Required | 
+| url | URL to query. Vendor does not support non-latin characters. | Required | 
 
 
 #### Context Output

@@ -66,7 +66,7 @@ script:
     name: url
     outputs:
     - contextPath: URL.Data
-      description: The URL. Cannot contain non-latin characters.
+      description: The URL. Vendor does not support non-latin characters.
       type: string
     - contextPath: URL.Malicious.Vendor
       description: Vendor that reported the URL as malicious.
