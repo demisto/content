@@ -66,7 +66,7 @@ def create_markdown_tasks() -> CommandResults:
     workplan_url = urls.get('workPlan')
     res = demisto.executeCommand('GetTasksWithSections', {})
     if isError(res[0]):
-        raise DemistoException('Command GetIncidentsTasksById was not successful')
+        raise DemistoException('Command GetTasksWithSections was not successful')
 
     tasks_nested_results = demisto.get(res[0], 'Contents')
     tasks_nested_results = {key: value for key, value in tasks_nested_results.items() if key in SECTIONS_TO_KEEP}
