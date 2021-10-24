@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict
 
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 
@@ -242,8 +242,6 @@ def perimeterx_get_investigate_details(client: Client, args: Dict[str, Any],
         Generate an error because the search type is not supported
         """
         raise ValueError('Invalid search_type provided')
-
-    readable_output = f'{result}'
 
     return CommandResults(
         outputs_prefix='PerimeterX',

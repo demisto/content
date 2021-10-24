@@ -95,27 +95,6 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score
       type: Number
-  - arguments:
-    - default: false
-      description: The custom parameter value or IP address for which the report is requested
-      isArray: false
-      name: search_term
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: The field to search against for the query (socket_ip, true_ip, name)
-      isArray: false
-      name: search_type
-      predefined:
-      - true_ip
-      - socket_ip
-      required: false
-      secret: false
-    deprecated: false
-    description: Gets the PerimeterX related details for a particular IP
-    name: investigate_by_name
-    execution: false
   isfetch: true
   runonce: false
   script: '-'

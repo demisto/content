@@ -80,7 +80,7 @@ Gets the PerimeterX DBotScore decision for a particular IP
                 "name": "TAG DCIP"
             }
         ],
-        "maxRiskScore": 100,
+        "max_risk_score": 100,
         "pageTypeDistributions": [
             {
                 "count": 1228,
