@@ -33,8 +33,8 @@ class Client(BaseClient):
             url_suffix=uri,
             params=query_params
         )
-        if res:
-            user_app_data = res.get('Resources')[0] if res.get('totalResults') == 1 else res
+        if res and res.get('totalResults') != 0:
+            user_app_data = res.get('Resources')[0] if 'totalResults' in res and res.get('totalResults') == 1 else res
             user_id = user_app_data.get('id')
             is_active = user_app_data.get('active')
             username = user_app_data.get('userName')
