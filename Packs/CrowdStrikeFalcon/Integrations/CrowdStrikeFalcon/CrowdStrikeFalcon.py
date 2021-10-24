@@ -1181,6 +1181,14 @@ def upload_custom_ioc(
     return http_request('POST', '/iocs/entities/indicators/v1', json=payload)
 
 
+def delete_custom_ioc(ids: str) -> dict:
+    """
+    Delete an IOC
+    """
+    params = {'ids': ids}
+    return http_request('DELETE', '/iocs/entities/indicators/v1', params=params)
+
+
 def get_ioc_device_count(ioc_type, value):
     """
     Gets the devices that encountered the IOC
@@ -1741,6 +1749,15 @@ def upload_custom_ioc_command(
         ec={'CrowdStrike.IOC(val.ID === obj.ID)': ec},
         hr=tableToMarkdown('Custom IOC was created successfully', ec),
     )
+
+
+def delete_custom_ioc_command(ioc_id: str) -> dict:
+    """
+    :param ioc_id: The ID of indicator to delete.
+    """
+    raw_res = delete_custom_ioc(ioc_id)
+    handle_response_errors(raw_res, "The server has not confirmed deletion, please manually confirm deletion.")
+    return create_entry_object(contents=raw_res, hr=f"Custom IOC {ioc_id} was successfully deleted.")
 
 
 def get_ioc_device_count_command(ioc_type: str, value: str):
@@ -2912,6 +2929,8 @@ def main():
             return_results(search_custom_iocs_command(**args))
         elif command == 'cs-falcon-upload-custom-ioc':
             return_results(upload_custom_ioc_command(**args))
+        elif command == 'cs-falcon-delete-custom-ioc':
+            return_results(delete_custom_ioc_command(ioc_id=args.get('ioc_id')))
         elif command == 'cs-falcon-device-count-ioc':
             return_results(get_ioc_device_count_command(ioc_type=args.get('type'), value=args.get('value')))
         elif command == 'cs-falcon-process-details':

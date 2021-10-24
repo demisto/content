@@ -1488,8 +1488,8 @@ script:
       name: value
       required: true
       secret: false
-    deprecated: false
-    description: Deletes a monitored indicator.
+    deprecated: true
+    description: Deprecated. Use the cs-falcon-delete-custom-ioc command instead.
     execution: false
     name: cs-falcon-delete-ioc
   - arguments:
@@ -1720,6 +1720,17 @@ script:
     - contextPath: CrowdStrike.IOC.ModifiedBy
       description: The identity of the user/process who last updated the IOC.
       type: string
+  - arguments:
+    - default: false
+      description: The ID of the IOC to delete. Can be retrieved by running the cs-falcon-search-custom-iocs command.
+      isArray: false
+      name: ioc_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Deletes a monitored indicator.
+    execution: false
+    name: cs-falcon-delete-custom-ioc
   - arguments:
     - auto: PREDEFINED
       default: false

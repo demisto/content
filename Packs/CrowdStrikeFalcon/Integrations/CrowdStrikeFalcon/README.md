@@ -1484,7 +1484,7 @@ Updates an indicator for CrowdStrike to monitor.
 
 ### 27. cs-falcon-delete-ioc
 ***
-Deletes a monitored indicator.
+Deprecated. Use the cs-falcon-delete-custom-ioc command instead.
 
 
 #### Base Command
@@ -3196,3 +3196,30 @@ Uploads an indicator for CrowdStrike to monitor.
 >|CreatedTime|Description|Expiration|ID|ModifiedTime|Action|Severity|Source|Type|Value|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 2020-10-02T13:55:26Z | Test ioc | 2020-11-01T00:00:00Z | 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | 2020-10-02T13:55:26Z | prevent | high | Demisto playbook | domain | test.domain.com |
+
+### cs-falcon-delete-custom-ioc
+***
+Deletes a monitored indicator.
+
+
+#### Base Command
+
+`cs-falcon-delete-custom-ioc`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ioc_id | The ID of the IOC to delete. Can be retrieved by running the cs-falcon-search-custom-iocs command. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!cs-falcon-delete-custom-ioc ioc_id="4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r"```
+
+
+#### Human Readable Output
+
+>Custom IOC 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r was successfully deleted.

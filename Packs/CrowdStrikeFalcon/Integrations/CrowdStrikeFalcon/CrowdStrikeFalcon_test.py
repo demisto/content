@@ -2717,7 +2717,7 @@ def test_upload_custom_ioc_command_successful(requests_mock):
     assert results["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == 'testmd5'
 
 
-def test_upload_custom_ioc_command_fail(requests_mock, mocker):
+def test_upload_custom_ioc_command_fail(requests_mock):
     """
     Test cs-falcon-upload-custom-ioc where it fails to create the ioc
 
@@ -2754,6 +2754,32 @@ def test_upload_custom_ioc_command_fail(requests_mock, mocker):
             platforms='mac,linux',
         )
     assert response['errors'] == excinfo.value.args[0]
+
+
+def test_delete_custom_ioc_command(requests_mock):
+    """
+    Test cs-falcon-delete-custom-ioc where it deletes IOC successfully
+
+    Given:
+     - The user tries to delete an IOC
+    When:
+     - Running the command to delete an IOC
+    Then:
+     - Ensure expected output is returned
+    """
+    from CrowdStrikeFalcon import delete_custom_ioc_command
+    ioc_id = '4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r'
+    response = {
+        'resources': [ioc_id],
+        'errors': []
+    }
+    requests_mock.delete(
+        f'{SERVER_URL}/iocs/entities/indicators/v1?ids={ioc_id}',
+        json=response,
+        status_code=200
+    )
+    command_res = delete_custom_ioc_command(ioc_id)
+    assert f'Custom IOC {ioc_id} was successfully deleted.' in command_res['HumanReadable']
 
 
 def test_get_ioc_device_count_command_does_not_exist(requests_mock, mocker):
