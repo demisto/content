@@ -188,32 +188,14 @@
         else
           demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report
         fi
-      fi
-    - section_end "Run Unit Testing and Lint"
-
-.generate-coverage-report:
-  tags:
-    - gce
-  needs: [.run-unittests-and-lint]
-  stage: unittests-and-validations
-  artifacts:
-    expire_in: 30 days
-    paths:
-      - /builds/xsoar/content/artifacts/*
-    when: always
-  extends:
-    - .default-job-settings
-  script:
-    - |
-      if [[ -f $ARTIFACTS_FOLDER/coverage_report/.coverage ]]; then
-        section_start "Generate coverage report"  --collapsed
-        demisto-sdk coverage-analyze -i $ARTIFACTS_FOLDER/coverage_report/.coverage --report-dir $ARTIFACTS_FOLDER/coverage_report --report-type all
-        section_start "Generate coverage report"
+        if [[ -f $ARTIFACTS_FOLDER/coverage_report/.coverage ]]; then
+          demisto-sdk coverage-analyze -i $ARTIFACTS_FOLDER/coverage_report/.coverage --report-dir $ARTIFACTS_FOLDER/coverage_report --report-type all
+        fi
         if [ -n "${NIGHTLY}" ]; then
           python3 Utils/upload_code_coverage_report.py --service_account $GCS_MARKET_KEY --source_file_name $ARTIFACTS_FOLDER/coverage_report/coverage.json --minimal_file_name $ARTIFACTS_FOLDER/coverage_report/coverage_data.json
         fi
       fi
-
+    - section_end "Run Unit Testing and Lint"
 
 .run-validations:
   stage: unittests-and-validations
