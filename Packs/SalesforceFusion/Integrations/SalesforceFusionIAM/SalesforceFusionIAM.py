@@ -40,7 +40,7 @@ class Client(BaseClient):
         # Get manager ID.
         manager_id = ''
         if manager_email:
-            res = self.get_user(manager_email)
+            res = self.get_user('Work_Email__c', manager_email)
             if res is not None:
                 manager_id = res.id
         return manager_id
@@ -93,23 +93,17 @@ class Client(BaseClient):
             return IAMUserAppData(user_id, username, is_active, res)
         return None
 
-    def get_user(self, email: str) -> Optional['IAMUserAppData']:
-        """ Queries the user in the application using REST API by its email, and returns an IAMUserAppData object
-        that holds the user_id, username, is_active and app_data attributes given in the query response.
-
-        :type email: ``str``
-        :param email: Email address of the user
-
-        :return: An IAMUserAppData object if user exists, None otherwise.
-        :rtype: ``Optional[IAMUserAppData]``
-        """
-        uri = f'{URI_PREFIX}parameterizedSearch'
-        params = {
-            "q": email,
-            "sobject": "FF__Key_Contact__c",
-            "FF__Key_Contact__c.where": f"Work_Email__c='{email}'",
-            "FF__Key_Contact__c.fields": "Id, FF__First_Name__c, FF__Last_Name__c, Work_Email__c, Name",
-        }
+    def get_user(self, filter_name: str, filter_value: str) -> Optional['IAMUserAppData']:
+        if filter_name == 'id':
+            return self.get_user_by_id(filter_value)
+        else:
+            uri = f'{URI_PREFIX}parameterizedSearch'
+            params = {
+                "q": filter_value,
+                "sobject": "FF__Key_Contact__c",
+                "FF__Key_Contact__c.where": f"Work_Email__c='{filter_value}'",
+                "FF__Key_Contact__c.fields": "Id, FF__First_Name__c, FF__Last_Name__c, Work_Email__c, Name",
+            }
 
         res = self._http_request(
             method='GET',
@@ -330,7 +324,8 @@ def main():
     proxy = params.get('proxy', False)
     command = demisto.command()
     args = demisto.args()
-    manager_email = args.get('user-profile', {}).get('manageremailaddress')
+    if 'user-profile' in args:
+        manager_email = IAMUserProfile(args.get('user-profile')), {}).get('manageremailaddress')
 
     is_create_enabled = params.get("create_user_enabled")
     is_enable_enabled = params.get("enable_user_enabled")
@@ -339,7 +334,8 @@ def main():
     create_if_not_exists = params.get("create_if_not_exists")
 
     iam_command = IAMCommand(is_create_enabled, is_enable_enabled, is_disable_enabled, is_update_enabled,
-                             create_if_not_exists, mapper_in, mapper_out)
+                             create_if_not_exists, mapper_in, mapper_out,
+                             get_user_iam_attrs=['id', 'Name', 'Work_Email__c'])
 
     headers = {
         'Content-Type': 'application/json',

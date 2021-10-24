@@ -192,7 +192,6 @@ def get_mapping_fields(client: Client) -> GetMappingFieldsResponse:
 
 
 def main():
-    user_profile = None
     params = demisto.params()
     base_url = params.get('url').strip('/')
     deactivate_uri = params.get('deactivate_uri')
@@ -204,13 +203,23 @@ def main():
     proxy = params.get('proxy', False)
     command = demisto.command()
     args = demisto.args()
-    user_id = args.get('user-profile').get('id')
-    email = args.get('user-profile').get('email')
-    user_name = args.get('user-profile').get('username')
+
+    # Extracting the user ID, email and username to pass to Client. This is needed because IAM Command uses the client
+    # get-user When get-user is not supported by the api. So get-user here just returns the fields to allow disable
+    # Command to work as expected.
+    if args.get('user-profile'):
+        user_profile = IAMUserProfile(args.get('user-profile'), mapper=mapper_out)
+        user_id = user_profile.get_attribute('id')
+        email = user_profile.get_attribute('email')
+        user_name = user_profile.get_attribute('username')
+    else:
+        user_profile = None
+        user_id, email, user_name = '', '', ''
 
     is_disable_enabled = params.get("disable_user_enabled")
 
-    iam_command = IAMCommand(is_disable_enabled=is_disable_enabled, mapper_in=mapper_in, mapper_out=mapper_out, attr='username')
+    iam_command = IAMCommand(is_disable_enabled=is_disable_enabled, mapper_in=mapper_in, mapper_out=mapper_out,
+                             get_user_iam_attrs=['username'])
 
     headers = {
         'Content-Type': 'application/json',

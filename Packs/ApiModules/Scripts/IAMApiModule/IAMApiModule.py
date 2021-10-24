@@ -266,6 +266,9 @@ class IAMUserProfile:
                 if attr_value := self.get_attribute(iam_attr, use_old_user_data):
                     return iam_attr, attr_value
             if attr_value := self.get_attribute(iam_attr, use_old_user_data, self.mapped_user_profile):
+                # Special treatment for emails, as mapper maps it to a list object.
+                if iam_attr == 'emails' and 'value' in attr_value:
+                    return iam_attr, attr_value['value']
                 return iam_attr, attr_value
         raise DemistoException('Could not find any of the needed attributes. Please make sure you send one of the '
                                f'following attributes: {iam_attrs}, or have the outgoing mapper configured to map to'

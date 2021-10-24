@@ -120,7 +120,8 @@ def get_user_command(client, args, mapper_in, mapper_out):
 
         else:
             github_user = res.get('Resources')[0]
-            email_result = iam_user_profile.get_attribute('email')
+            email_result = iam_user_profile.get_attribute('emails',
+                                                          user_profile_data=iam_user_profile.mapped_user_profile)
             if (emails := github_user.get('emails')) and not email_result:
                 first_email = emails[0].get('value')
                 email_result = next((email.get('value') for email in emails if email.get('primary')), first_email)

@@ -7,6 +7,10 @@ configuration:
   name: url
   required: true
   type: 0
+- display: Deactive User URL
+  name: deactivate_uri
+  required: false
+  type: 0
 - display: Username
   name: credentials
   required: true
