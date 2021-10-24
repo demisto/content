@@ -884,6 +884,34 @@ Adds a comment to an incident in Azure Sentinel.
 >| 231020399272240422047777436922721687523 | 8a44b7bb-c8ae-4941-9fa0-3aecc8ef1742 | test messages | 2021-08-23T13:30:42Z |
 
 
+### azure-sentinel-incident-delete-comment
+***
+Deletes a comment from incident in Azure Sentinel.
+
+
+#### Base Command
+
+`azure-sentinel-incident-delete-comment`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | The incident ID. | Required | 
+| comment_id | The comment ID. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!azure-sentinel-incident-delete-comment incident_id=8a44b7bb-c8ae-4941-9fa0-3aecc8ef1742 comment_id="296745069631925005023508651351426"```
+
+#### Human Readable Output
+
+>Comment 296745069631925005023508651351426 was deleted successfully.
+
+
 ### azure-sentinel-list-incident-relations
 ***
 Gets a list of an incident's related entities from Azure Sentinel.
