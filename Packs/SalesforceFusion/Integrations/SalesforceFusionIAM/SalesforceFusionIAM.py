@@ -330,6 +330,8 @@ def main():
         manager_email = IAMUserProfile(args.get('user-profile', {}),
                                        mapper=mapper_out,
                                        incident_type=incident_type).get_attribute('manageremailaddress')
+    else:
+        manager_email = None
 
     is_create_enabled = params.get("create_user_enabled")
     is_enable_enabled = params.get("enable_user_enabled")
