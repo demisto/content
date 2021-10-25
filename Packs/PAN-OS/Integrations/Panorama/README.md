@@ -303,7 +303,7 @@ Commits a configuration to Palo Alto Firewall or Panorama, but does not validate
 
 ### panorama-push-to-device-group
 ***
-Pushes rules from PAN-OS to the configured device group.
+Pushes rules from PAN-OS to the configured device group. In order to push the configuration to Prisma Access managed tenants (single or multi tenancy), use the device group argument with the device group which is associated with the tenant ID.  
 
 
 #### Base Command
@@ -1666,7 +1666,7 @@ Edit a URL filtering rule.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | Name of the URL filter to edit. | Required | 
-| element_to_change | Element to change. Can be "override_allow_list", or "override_block_list" | Required | 
+| element_to_change | Element to change. | Required | 
 | element_value | Element value. Limited to one value. | Required | 
 | add_remove_element | Add or remove an element from the Allow List or Block List fields. Default is to 'add' the element_value to the list. | Optional | 
 

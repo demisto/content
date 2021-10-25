@@ -23,6 +23,7 @@ trigger-private-build:
     - python3 Utils/get_private_build_status.py --github-token $GITHUB_TOKEN
 
 
+# runs in circle for the on-push flow (because we need to run it there for contributors anyways)
 run-unittests-and-lint:
   extends:
     - .run-unittests-and-lint
@@ -30,6 +31,7 @@ run-unittests-and-lint:
     - if: '$NIGHTLY'
 
 
+# runs in circle for the on-push flow (because we need to run it there for contributors anyways)
 run-validations:
   extends:
     - .run-validations
@@ -82,7 +84,7 @@ create-instances:
     - python3 ./Tests/Marketplace/packs_dependencies.py -i ./Tests/id_set.json -o $ARTIFACTS_FOLDER/packs_dependencies.json
     - section_end "Calculate Packs Dependencies"
     - section_start "Prepare Content Packs for Testing"
-    - ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_BUCKET"
+    - ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_BUCKET" "$STORAGE_BASE_PATH"
     - section_end "Prepare Content Packs for Testing"
     - section_start "Create Instances"
     - |

@@ -1026,9 +1026,9 @@ script:
   - arguments:
     - default: true
       description: The MD5 hash of the file.
-      isArray: false
+      isArray: true
       name: file
-      required: false
+      required: true
       secret: false
     outputs:
       - contextPath: DBotScore.Vendor
