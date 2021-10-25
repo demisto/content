@@ -1,5 +1,2 @@
 [file:Blueliv.yml]
-ignore=IN109,IN110
-
-[file:Blueliv.yml]
-ignore=IN145
+ignore=IN109,IN110,IN145

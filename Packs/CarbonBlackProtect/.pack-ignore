@@ -5,10 +5,7 @@ ignore=BA101
 ignore=BA101
 
 [file:CarbonBlackProtect.yml]
-ignore=IN126
+ignore=IN126,IN145
 
 [file:README.md]
 ignore=RM104
-
-[file:CarbonBlackProtect.yml]
-ignore=IN145

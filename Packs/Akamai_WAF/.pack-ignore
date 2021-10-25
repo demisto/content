@@ -2,7 +2,4 @@
 ignore=RM102,RM104
 
 [file:Akamai_WAF.yml]
-ignore=BA108,BA109
-
-[file:Akamai_WAF.yml]
-ignore=IN145
+ignore=BA108,BA109,IN145

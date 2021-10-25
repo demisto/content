@@ -1,11 +1,7 @@
 [file:CrowdStrikeFalcon.yml]
-ignore=IN126,IN136,IN144
-
+ignore=IN126,IN136,IN144,IN145
 [file:README.md]
 ignore=RM102,RM104,RM106
 
 [file:classifier-CrowdStrike_Falcon_Mapper.json]
 ignore=BA101
-
-[file:CrowdStrikeFalcon.yml]
-ignore=IN145

@@ -1,5 +1,2 @@
 [file:AzureSentinel.yml]
-ignore=IN126
-
-[file:AzureSentinel.yml]
-ignore=IN145
+ignore=IN126,IN145
