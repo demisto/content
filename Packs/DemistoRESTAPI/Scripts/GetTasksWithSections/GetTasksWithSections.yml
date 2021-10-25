@@ -61,4 +61,4 @@ runonce: false
 sensitive: true
 tests:
 - No test
-fromversion: 5.0.0
+fromversion: 6.0.0
