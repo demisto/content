@@ -1663,6 +1663,17 @@ def test_extract_decode_encode(context_data):
      True),
 ])
 def test_change_ctx_to_be_compatible(mocker, context_data, retry_compatible):
+    """Test changing the context data to be compatible with set_to_integration_context_with_retries.
+
+    Given:
+        Context data in the old or new format.
+
+    When:
+        Executing any command.
+
+    Then:
+        Ensure the context_data is transformed to the new format if needed.
+    """
     mocker.patch.object(QRadar_v3, 'get_integration_context', return_value=context_data)
     encoded_context = context_data
     mocker.patch.object(QRadar_v3, 'set_to_integration_context_with_retries')
