@@ -1,7 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from confluent_kafka.admin import AdminClient
-from confluent_kafka import Consumer, TopicPartition
+from confluent_kafka import Consumer, TopicPartition, Producer, KafkaError, KafkaException
 
 ''' IMPORTS '''
 import requests
@@ -32,21 +32,50 @@ class KafkaCommunicator:
         try:
             AdminClient(self.conf_admin)  # doesn't work!
             Consumer(self.conf_consumer)
+            Producer(self.conf_admin)
+            self.get_topics(AdminClient(self.conf_admin))
+            self.get_topics(Consumer(self.conf_consumer))
+            self.get_topics(Producer(self.conf_admin))
 
         except Exception as e:
             raise DemistoException(f'Error connecting to kafka: {str(e)}\n{traceback.format_exc()}')
 
         return 'ok'
 
-    def get_topics(self):
-        kafka_admin = AdminClient(self.conf_admin)
-        cluster_metadata = kafka_admin.list_topics()
+    @staticmethod
+    def delivery_report(err, msg):
+        if err is not None:
+            demisto.debug(f'Kafka v3 - Message {msg} delivery failed: {err}')
+            raise DemistoException(f'Message delivery failed: {err}')
+        else:
+            return_results(f'Message was successfully produced to '
+                            f'topic \'{msg.topic()}\', partition {msg.partition()}')
+
+    def get_topics(self, client=None):
+        if not client:
+            client = AdminClient(self.conf_admin)
+        cluster_metadata = client.list_topics()
         return cluster_metadata.topics
 
     def get_partition_offsets(self, topic, partition):
         kafka_consumer = Consumer(self.conf_consumer)
         partition = TopicPartition(topic=topic, partition=partition)
         return kafka_consumer.get_watermark_offsets(partition=partition)
+
+    def produce(self, topic, value, partition):
+        kafka_producer = Producer(self.conf_admin)
+        if partition:
+            kafka_producer.produce(topic=topic, value=value, partition=partition,
+                                   on_delivery=self.delivery_report)
+        else:
+            kafka_producer.produce(topic=topic, value=value,
+                                   on_delivery=self.delivery_report)
+        kafka_producer.flush()
+
+    def consume(self, topic, partition, offset):
+        kafka_consumer = Consumer(self.conf_consumer)
+        kafka_consumer.assign([TopicPartition(topic=topic, partition=partition, offset=offset)])
+        return kafka_consumer.consume(timeout=60)
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -72,8 +101,12 @@ def print_topics(kafka):
             for partition in topic.partitions.values():
                 partition_output = {'ID': partition.id}
                 if include_offsets:
-                    partition_output['EarliestOffset'], partition_output['OldestOffset'] = kafka.get_partition_offsets(
-                        topic=topic.topic, partition=partition.id)
+                    try:
+                        partition_output['EarliestOffset'], partition_output['OldestOffset'] = kafka.get_partition_offsets(
+                            topic=topic.topic, partition=partition.id)
+                    except KafkaException as e:
+                        if 'Unknown partition' not in str(e):
+                            raise e
                 partitions.append(partition_output)
 
             topics.append({
@@ -99,6 +132,74 @@ def print_topics(kafka):
         demisto.results('No topics found.')
 
 
+def produce_message(kafka):
+    """
+    Producing message to kafka topic
+    """
+    topic = demisto.args().get('topic')
+    value = demisto.args().get('value')
+    partitioning_key = demisto.args().get('partitioning_key')
+
+    partitioning_key = str(partitioning_key)
+    if partitioning_key.isdigit():
+        partitioning_key = int(partitioning_key)  # type: ignore
+    else:
+        partitioning_key = None  # type: ignore
+
+    kafka.produce(
+        value=str(value),
+        topic=topic,
+        partition=partitioning_key
+    )
+
+
+def consume_message(kafka):
+    """
+    Consuming one message from topic
+    """
+    topic = demisto.args().get('topic')
+    offset = demisto.args().get('offset')
+
+    kafka_topics = kafka.get_topics().values()
+    partitions = topic.partitions.values()
+
+    message = kafka.consume(topic=topic, offset=offset)
+    if not message:
+        return_results('No message was consumed.')
+    else:
+        markdown = tableToMarkdown(
+            name=f'Message consumed from topic \'{topic}\'',
+            t={
+                'Offset': message.offset(),
+                'Message': message.value()
+            },
+            headers=[
+                'Offset',
+                'Message'
+            ]
+        )
+        entry_context = {
+            'Kafka.Topic(val.Name === obj.Name)': {
+                'Name': topic,
+                'Message': {
+                    'Value': message.value(),
+                    'Offset': message.offset()
+                }
+            }
+        }
+        demisto.results({
+            'Type': EntryType.NOTE,
+            'Contents': {
+                'Message': message.value(),
+                'Offset': message.offset()
+            },
+            'ContentsFormat': formats['json'],
+            'HumanReadable': markdown,
+            'ReadableContentsFormat': formats['markdown'],
+            'EntryContext': entry_context
+        })
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -107,6 +208,7 @@ def main():
     demisto_params = demisto.params()
     demisto.debug(f'Command being called is {command}')
     brokers = demisto_params.get('brokers')
+    offset = demisto.args().get('offset', 'earliest')
 
     # Should we use SSL
     use_ssl = demisto_params.get('use_ssl', False)
@@ -117,7 +219,7 @@ def main():
     client_cert_key = demisto_params.get('client_cert_key', None)
     password = demisto_params.get('additional_password', None)
 
-    kafka = KafkaCommunicator(brokers=brokers)
+    kafka = KafkaCommunicator(brokers=brokers, offset=offset)
 
     try:
         if demisto.command() == 'test-module':
@@ -125,10 +227,10 @@ def main():
             test_module(kafka)
         elif demisto.command() == 'kafka-print-topics':
             print_topics(kafka)
-        # elif demisto.command() == 'kafka-publish-msg':
-        #     produce_message(client)
-        # elif demisto.command() == 'kafka-consume-msg':
-        #     consume_message(client)
+        elif demisto.command() == 'kafka-publish-msg':
+            produce_message(kafka)
+        elif demisto.command() == 'kafka-consume-msg':
+            consume_message(kafka)
         # elif demisto.command() == 'kafka-fetch-partitions':
         #     fetch_partitions(client)
         # elif demisto.command() == 'fetch-incidents':
