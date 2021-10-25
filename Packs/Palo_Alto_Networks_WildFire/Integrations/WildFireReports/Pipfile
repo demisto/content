@@ -5,17 +5,14 @@ verify_ssl = true
 
 [dev-packages]
 pylint = "*"
-pytest = "*"
+pytest = "==5.0.1"
 pytest-mock = "*"
 requests-mock = "*"
-flake8 = "*"
+pytest-asyncio = "*"
 
 [packages]
-ipaddress = "==1.0.22"
-python-dateutil = "==2.7.5"
-six = "==1.12.0"
-text-unidecode = "==1.2"
-Faker = "==1.0.1"
+pytest = "*"
+requests = "*"
 
 [requires]
 python_version = "3.7"
