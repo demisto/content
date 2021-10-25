@@ -1,7 +1,7 @@
 {
     "description": "Jira V2 mirror in classifier.",
     "feed": false,
-    "id": "87902084-8b90-4891-8d62-919f29c0a66b",
+    "id": "classifier-mapper-incoming-JiraV2",
     "mapping": {
         "Jira Create Issue and Mirror": {
             "dontMapEventToLabels": false,
