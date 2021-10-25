@@ -172,7 +172,6 @@
       if [[ -n $FORCE_BUCKET_UPLOAD || -n $BUCKET_UPLOAD ]] && [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "marketplace-dist" ]] && [[ $CI_COMMIT_BRANCH != "master" ]]; then
         echo "Skipping validations when uploading to a test bucket."
       else
-
         echo "demisto-sdk version: $(demisto-sdk --version)"
         echo "mypy version: $(mypy --version)"
         echo "flake8 py2 version: $(python2 -m flake8 --version)"
@@ -194,7 +193,7 @@
             gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
             echo "$$$gcloud auth"
             gsutil cp "https://storage.cloud.google.com/marketplace-dist/content/packs/index.json" "$ARTIFACTS_FOLDER/previous_index.json"
-            $COMMIT_HASH_COMPARE_TO=$(cat $ARTIFACTS_FOLDER/previous_index.json | jq ".\"commit\"")            echo "$$$gcloud auth"
+            $COMMIT_HASH_COMPARE_TO=$(cat $ARTIFACTS_FOLDER/previous_index.json | jq ".\"commit\"")
             echo "$$$commit hash $COMMIT_HASH_COMPARE_TO"
             demisto-sdk lint -p 8 -g --prev-ver $COMMIT_HASH_COMPARE_TO -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report
           else
