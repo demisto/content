@@ -41,10 +41,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 1a9a07a3-5cf6-45e3-84fb-f47b34bf8560
+    taskid: 0b3b2175-cb09-4e1e-8dcd-dde5ee1e6459
     type: regular
     task:
-      id: 1a9a07a3-5cf6-45e3-84fb-f47b34bf8560
+      id: 0b3b2175-cb09-4e1e-8dcd-dde5ee1e6459
       version: -1
       name: Create Jira issue
       description: Creates a new issue in Jira.
@@ -62,6 +62,9 @@ tasks:
       issueTypeName:
         complex:
           root: inputs.IssueTypeName
+      labels:
+        complex:
+          root: 'inputs.IssueLabel '
       projectKey:
         complex:
           root: inputs.ProjectKey
@@ -74,8 +77,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 740,
-          "y": 30
+          "x": 750,
+          "y": 40
         }
       }
     note: false
@@ -85,10 +88,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: a05e6684-ad69-49c6-8e65-e4cdd3eee5cd
+    taskid: 50ecfc72-0d3f-4d2e-8f12-d5c7b5627d76
     type: title
     task:
-      id: a05e6684-ad69-49c6-8e65-e4cdd3eee5cd
+      id: 50ecfc72-0d3f-4d2e-8f12-d5c7b5627d76
       version: -1
       name: Done
       type: title
@@ -154,8 +157,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 740,
-          "y": 595
+          "x": 750,
+          "y": 585
         }
       }
     note: false
@@ -165,10 +168,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 57149749-f162-4300-842d-26ec90df6fee
+    taskid: 473aeae4-a375-461d-8642-bf786340dd20
     type: playbook
     task:
-      id: 57149749-f162-4300-842d-26ec90df6fee
+      id: 473aeae4-a375-461d-8642-bf786340dd20
       version: -1
       name: Mirror Jira Ticket
       description: Mirror Jira Ticket is designed to serve as a sub-playbook, which
@@ -223,10 +226,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 47223d45-3ae4-4e01-8302-7fb617629ca2
+    taskid: 89c9fc9f-d231-4bfa-8bf1-0423568ad0c8
     type: playbook
     task:
-      id: 47223d45-3ae4-4e01-8302-7fb617629ca2
+      id: 89c9fc9f-d231-4bfa-8bf1-0423568ad0c8
       version: -1
       name: Jira Ticket State Polling
       description: |-
@@ -301,8 +304,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 740,
-          "y": 300
+          "x": 750,
+          "y": 320
         }
       }
     note: false
@@ -496,15 +499,20 @@ inputs:
     \ attachment for attachments mirroring. "
   playbookInputQuery:
 - key: FieldPolling
-  value:
-    simple: "true"
+  value: {}
   required: false
   description: |-
-    Set the value to true or false to determine if the paybook will execute the FieldPolling sub playbook.
-    It is useful when it is needed to wait for the Jira ticket to be resolved and continue the parent playbook.
-    FieldPolling will run until the ticket state is either resolved or closed.
+    Set the value to true or false to determine if the playbook will execute the FieldPolling sub playbook.
+    This is useful when a playbook needs to wait for the Jira ticket to be resolved before continuing the parent playbook.
+    FieldPolling will run until the ticket state is either resolved or closed
+  playbookInputQuery:
+- key: IssueLabel
+  value: {}
+  required: false
+  description: |
+    Add labels to the issue.
   playbookInputQuery:
 outputs: []
 tests:
-- No test
+- no test
 fromversion: 6.0.0

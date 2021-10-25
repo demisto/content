@@ -9,8 +9,8 @@ Alternatively, you can select to mirror the Jira issue and incident fields.  To 
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Mirror Jira Ticket
 * Jira Ticket State Polling
+* Mirror Jira Ticket
 
 ### Integrations
 * JiraV2
@@ -38,7 +38,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | InstanceName | Set the Jira Instance that will be used for mirroring/running polling commands.<br/> |  | Optional |
 | MirrorDirection | Set the mirror direction, should be one of the following: <br/>1. In<br/>2. Out<br/>3. Both | Both | Optional |
 | MirrorTags | Set tags for mirror comments and files to Jira.<br/>As defined in the instance settings, by default it will be comment for comments mirroring and attachment for attachments mirroring.  | comment,attachment | Optional |
-| FieldPolling | Set the value to true or false to determine if the paybook will execute the FieldPolling sub playbook.<br/>It is useful when it is needed to wait for the Jira ticket to be resolved and continue the parent playbook.<br/>FieldPolling will run until the ticket state is either resolved or closed. | true | Optional |
+| FieldPolling | Set the value to true or false to determine if the playbook will execute the FieldPolling sub playbook.<br/>This is useful when a playbook needs to wait for the Jira ticket to be resolved before continuing the parent playbook.<br/>FieldPolling will run until the ticket state is either resolved or closed |  | Optional |
+| IssueLabel | Add labels to the issue.<br/> |  | Optional |
 
 ## Playbook Outputs
 ---
