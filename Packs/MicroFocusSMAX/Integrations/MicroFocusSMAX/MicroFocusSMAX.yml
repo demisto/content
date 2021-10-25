@@ -9,7 +9,7 @@ configuration:
   name: object_to_fetch
   options:
   - Incident
-  - Service Request
+  - Request
   required: false
   type: 15
 - defaultvalue: https://us1-smax.saas.microfocus.com
@@ -29,9 +29,33 @@ configuration:
   name: credentials
   required: true
   type: 9
-- display: Fetch Filter
+- additionalinfo: 'Fetch filter , example:  Status = ''Ready''" for Incident queries,
+    see "REST API collection query protocol" in SMAX documentation to know how to
+    use the filter'
+  display: Fetch Filter
   hidden: false
   name: fetch_query_filter
+  required: false
+  type: 0
+- additionalinfo: 'Fields to return, for example: "Priority,Category" for an entity
+    of type "Incident'
+  display: Fields To Fetch
+  hidden: false
+  name: fetch_fields
+  required: false
+  type: 0
+- additionalinfo: The maximum number of incidents to fetch per fetch command
+  defaultvalue: '100'
+  display: Fetch Limit
+  hidden: false
+  name: fetch_limit
+  required: false
+  type: 0
+- additionalinfo: Fetch start in days
+  defaultvalue: '1'
+  display: Fetch Start
+  hidden: false
+  name: fetch_start
   required: false
   type: 0
 - display: Trust any certificate (not secure)
@@ -42,11 +66,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: Fields to fetch
-  hidden: false
-  name: fetch_fields
-  required: false
-  type: 0
 description: Fetch SMAX cases and automate  differen SMAX case management actions
 display: MicroFocus SMAX
 name: MicroFocusSMAX
@@ -147,6 +166,30 @@ script:
     - contextPath: MicroFocus.SMAX.Query.completion_status
       description: Query result status
       type: String
+  - arguments:
+    - default: false
+      description: A list of new entity objects to creates, please review the Bulk
+        API documentation for more information
+      isArray: false
+      name: entities
+      required: true
+      secret: false
+    deprecated: false
+    description: Create new entities
+    execution: false
+    name: microfocus-smax-create-entities
+  - arguments:
+    - default: false
+      description: A list of entity objects to update, please review the Bulk API
+        documentation for more information
+      isArray: false
+      name: entities
+      required: true
+      secret: false
+    deprecated: false
+    description: Update entities
+    execution: false
+    name: microfocus-smax-update-entities
   dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: true

@@ -63,31 +63,72 @@ def login(server: str, tenant:  str, username: str, password: str, verify_certif
     return token
 
 
+def validate_fetch_params(fetch_limit: str, fetch_start:  str):
+    try:
+        fetch_limit = int(fetch_limit)
+    except:
+        raise DemistoException(f'Fetch limit has to be a number')
+    if not fetch_limit or fetch_limit > 200:
+        raise DemistoException(f'Fetch limit has to be in a range between 1 and 200')
+
+    try:
+        fetch_start = int(fetch_start)
+    except:
+        raise DemistoException(f'Fetch start has to be a number')
+    if not fetch_start:
+        raise DemistoException(f'Fetch start is not specified')
+
+
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client, username) -> str:
+def test_module(client: Client, username, fetch_limit, fetch_start) -> str:
     client.query_entities(entity_type="Person", query_filter=f"Name startswith ('{username}')", order_by=None,
                           entity_fields="Id", size=None, skip=None)
+    validate_fetch_params(fetch_limit=fetch_limit, fetch_start=fetch_start)
     return 'ok'
 
 
-def fetch_incidents_command(client: Client, object_to_fetch="Incident", fetch_query_filter=None, fetch_fields=None):
-
+def fetch_incidents_command(client: Client, object_to_fetch="Incident", fetch_query_filter=None, fetch_fields=None,
+                            fetch_limit='100', fetch_start='1'):
+    incidents = []
+    validate_fetch_params(fetch_limit=fetch_limit, fetch_start=fetch_start)
     if fetch_fields:
-        fetch_fields = 'Name,Id,' + fetch_fields
+        fetch_fields = 'Name,Id,EmsCreationTime' + fetch_fields
     else:
-        fetch_fields = 'Name,Id'
+        fetch_fields = 'Name,Id,EmsCreationTime'
 
-    entities = []
+    last_run = demisto.getLastRun()
+    if last_run and 'start_time' in last_run:
+        start_time = last_run.get('start_time')+1
+    else:
+        start_time = round((datetime.now() - timedelta(days=int(fetch_start))).timestamp() * 1000)
+    if fetch_query_filter:
+        fetch_query_filter = f'EmsCreationTime btw ({start_time},{round((datetime.now().timestamp() * 1000))})'\
+                             + fetch_query_filter
+    else:
+        fetch_query_filter = f'EmsCreationTime btw ({start_time},{round((datetime.now().timestamp() * 1000))})'
 
     results = client.query_entities(entity_type=object_to_fetch, query_filter=fetch_query_filter,
-                                    order_by="EmsCreationTime desc", entity_fields=fetch_fields, size=None, skip=None)
-
-    total_count = int(results.get("meta")["total_count"])
-
-    
-
+                                    order_by="Id desc", entity_fields=fetch_fields,
+                                    size=fetch_limit, skip=None)
+    for entity in results.get('entities'):
+        created_at_epoch = int(entity.get('properties')['EmsCreationTime'])
+        created_at_date = datetime.fromtimestamp(round(created_at_epoch/1000), timezone.utc)
+        Id = entity.get('properties')['Id']
+        raw_json = {'Type': entity.get('entity_type')}
+        raw_json.update(entity.get('properties'))
+        inc = {
+            'name': f'SMAX {object_to_fetch}: {Id}',
+            'occurred': created_at_date.isoformat(),
+            'rawJSON': json.dumps(raw_json)
+        }
+        incidents.append(inc)
+        if created_at_epoch > start_time:
+            start_time = created_at_epoch
+    incidents.reverse()
+    demisto.setLastRun({'start_time': start_time})
+    demisto.incidents(incidents)
 
 
 def get_entity_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -143,7 +184,7 @@ def query_entities_command(client: Client, args: Dict[str, Any]):
         entity_fields = 'Name,Id'
 
     results = client.query_entities(entity_type=entity_type, entity_fields=entity_fields, query_filter=query_filter,
-                                   order_by=order_by, size=size, skip=skip)
+                                    order_by=order_by, size=size, skip=skip)
 
     for entity in results.get('entities'):
         readable_entity = {'Type': entity.get('entity_type')}
@@ -162,13 +203,13 @@ def query_entities_command(client: Client, args: Dict[str, Any]):
             outputs_prefix='MicroFocus.SMAX.Query',
             outputs_key_field='query_time',
             readable_output=count_readable_output,
-            outputs=result.get('meta'),
+            outputs=results.get('meta'),
         ),
         CommandResults(
             outputs_prefix='MicroFocus.SMAX.Entities',
             outputs_key_field='properties.Id',
             readable_output=results_readable_output,
-            outputs=result.get('entities'),
+            outputs=results.get('entities'),
         )
     ]
 
@@ -184,6 +225,8 @@ def main() -> None:
     object_to_fetch = params.get('object_to_fetch')
     fetch_query_filter = params.get('fetch_query_filter')
     fetch_fields = params.get('fetch_fields')
+    fetch_start = params.get('fetch_start')
+    fetch_limit = params.get('fetch_limit')
     verify_certificate = not params.get('insecure', False)
     proxy = not params.get('insecure', False)
     username = params.get('credentials', {}).get('identifier')
@@ -204,11 +247,12 @@ def main() -> None:
         )
 
         if demisto.command() == 'test-module':
-            result = test_module(client, username)
+            result = test_module(client, username, fetch_start=fetch_start, fetch_limit=fetch_limit)
             return_results(result)
 
         if demisto.command() == 'fetch-incidents':
-            fetch_incidents_command(client, object_to_fetch, fetch_query_filter, fetch_fields)
+            fetch_incidents_command(client, object_to_fetch=object_to_fetch, fetch_query_filter=fetch_query_filter,
+                                    fetch_fields=fetch_fields, fetch_limit=fetch_limit, fetch_start=fetch_start)
 
         elif demisto.command() == 'microfocus-smax-get-entity':
             return_results(get_entity_command(client, args))
