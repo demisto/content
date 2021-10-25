@@ -495,9 +495,9 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
                 'type': INCIDENT_TYPE,  # Map to a specific XSOAR incident Type
                 'severity': convert_to_demisto_severity(alert.get('severity', 'Medium')),
                 'CustomFields': {
-                    'intel471feedtitanurl': titan_url,
-                    'intel471feedtitanwatchergroup': watcher_group_description,
-                    'intel471feedtitanwatcher': watcher_description
+                    'titanurl': titan_url,
+                    'titanwatchergroup': watcher_group_description,
+                    'titanwatcher': watcher_description
                 }
             }
 
