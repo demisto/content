@@ -111,7 +111,7 @@ class Client(BaseClient):
             A list of objects, containing the indicators.
         """
 
-        results = []
+        results: list = []
         if is_get_command:
             # since get-indicators command is used mostly for debug,
             # getting the tags from the first page is sufficient
@@ -505,7 +505,7 @@ def get_indicators_command(client: Client,
         CommandResults object containing a human readable output for war-room representation.
     """
 
-    limit = arg_to_number(args.get('limit', '10'))
+    limit = arg_to_number(args.get('limit', '10')) or 10
     if limit > PAGE_SIZE:
         demisto.debug(f'AutoFocus Tags Feed: limit must be under {PAGE_SIZE}. Setting limit to {PAGE_SIZE}.')
         limit = PAGE_SIZE
@@ -529,7 +529,7 @@ def get_indicators_command(client: Client,
     )
 
 
-def fetch_indicators_command(client: Client, params: Dict[str, str]) -> List[Dict]:
+def fetch_indicators_command(client: Client, params: Dict[str, Any]) -> List[Dict]:
     """
     Wrapper for fetching indicators from the feed to the Indicators tab.
     Args:
@@ -542,7 +542,12 @@ def fetch_indicators_command(client: Client, params: Dict[str, str]) -> List[Dic
     feed_tags = argToList(params.get('feedTags', ''))
     tlp_color = params.get('tlp_color')
     create_relationships = params.get('create_relationships', True)
-    indicators = fetch_indicators(client, False, tlp_color, feed_tags, create_relationships)
+    indicators = fetch_indicators(client=client,
+                                  is_get_command=False,
+                                  tlp_color=tlp_color,
+                                  feed_tags=feed_tags,
+                                  create_relationships=create_relationships,
+                                  )
     return indicators
 
 
