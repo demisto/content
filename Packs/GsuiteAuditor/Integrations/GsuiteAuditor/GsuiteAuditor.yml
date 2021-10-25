@@ -17,8 +17,8 @@ configuration:
   name: insecure
   required: false
   type: 8
-description: G Suite Auditor is an integration to receive Audit logs from  G Suite
-  different applications - admin,drive,calender and more.
+description: G Suite Auditor is an integration that receives Audit logs from G Suite's
+  different applications - admin, drive, calender, and more.
 display: G Suite Auditor
 name: GSuiteAuditor
 script:
@@ -62,17 +62,17 @@ script:
       required: true
       secret: false
     - default: false
-      description: The name of the event being queried. for a list of event names
-        for each application, see integration documentation.
+      description: The name of the event being queried. For a list of event names
+        for each application, see the integration documentation.
       isArray: false
       name: event_name
       required: false
       secret: false
     - default: false
       description: |-
-        a comma-separated list composed of event parameters and relational operators. for example-
+        A comma-separated list of event parameters and relational operators. For example-
         'API_CLIENT_NAME==111,API_SCOPES=aaa'.
-        relevent 'event name' argument must be supplied to use this argument.
+        The relevant 'event name' argument must be supplied to use this argument.
       isArray: false
       name: filters
       required: false
@@ -85,68 +85,69 @@ script:
       required: false
       secret: false
     - default: false
-      description: |-
-        Comma separated group ids on which user activities are filtered. the response will contain activities for only those users that are a part of at least one of the group ids mentioned here. example: "id:abc123,id:xyz456".
-
-        to retrieve a group id use the 'gsuite-get-group' coomand in 'G Suite Admin' Pack
+      description: "Comma-separated group IDs on which user activities are filtered.\
+        \ \nThe response will contain activities for only those users who are a part\
+        \ of \nat least one of the group IDs mentioned here. For example: \"id:abc123,id:xyz456\"\
+        .\nTo retrieve a group ID, use the 'gsuite-get-group' command in the 'G Suite\
+        \ Admin' Pack."
       isArray: false
       name: group_id
       required: false
       secret: false
     - default: false
-      description: IP Address of host where the event was performed.
+      description: IP address of the host where the event was performed.
       isArray: false
       name: actor_ip_address
       required: false
       secret: false
     - default: false
-      description: Sets the beginning of the range of time shown in the report. example
-        - 2010-10-28T10:26:35.000Z
+      description: Sets the beginning of the time range shown in the report. For example
+        - 2010-10-28T10:26:35.000Z.
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: Sets the end of the range of time shown in the report. example
-        - 2010-10-28T10:26:35.000Z
+      description: Sets the end of the time range shown in the report. For example
+        - 2010-10-28T10:26:35.000Z.
       isArray: false
       name: end_time
       required: false
       secret: false
     - default: false
       defaultValue: '50'
-      description: 'Maximum number of results to return. '
+      description: Maximum number of results to return.
       isArray: false
       name: max_results
       required: false
       secret: false
     - default: false
-      description: The token to specify next page.
+      description: The token to specify the next page.
       isArray: false
       name: page_token
       required: false
       secret: false
     - default: false
-      description: Email address of the G Suite domain admin. we will preform the
-        request based on this users permissions
+      description: Email address of the G Suite domain admin. The request is preformed
+        based on this user's permissions.
       isArray: false
       name: admin_email
       required: false
       secret: false
     deprecated: false
     description: Retrieves a list of activities for a specific customer's account
-      and application
+      and application.
     execution: false
     name: gsuite-activity-search
     outputs:
     - contextPath: GSuite.ActivitySearch.items.id.time
-      description: Time of occurrence of the activity
+      description: Time the activity occurred.
       type: Date
     - contextPath: GSuite.ActivitySearch.items.id.uniqueQualifier
       description: Unique qualifier if multiple events have the same time.
       type: String
     - contextPath: GSuite.ActivitySearch.items.id.applicationName
-      description: Application name to which the event belongs
+      description: Application name to which the event belongs.
       type: String
     - contextPath: GSuite.ActivitySearch.items.id.customerId
       description: The unique identifier for a Google Workspace account.
@@ -177,7 +178,7 @@ script:
       description: The unique Google Workspace profile ID of the actor.
       type: String
     - contextPath: GSuite.ActivitySearch.items.ipAddress
-      description: IP address of the user doing the action.
+      description: IP address of the user performing the action.
       type: String
     - contextPath: GSuite.ActivitySearch.items.events.parameters.boolValue
       description: Boolean value of the parameter.
