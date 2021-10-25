@@ -1,0 +1,169 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 7119046a-28de-4f8e-865f-accc8ad83cb5
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: 2cd2511e-e313-49a9-83b0-9a2c77ff8fec
+inputs:
+- description: Specific message to an analyst. This will be printed to Slack.
+  key: MessageToAnalyst
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: ':404owl: Custom message not defined for this alert'
+name: Assign and Notify Analyst
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ea9f843e-8497-48c2-82fb-1d57bde2c10c
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: ea9f843e-8497-48c2-82fb-1d57bde2c10c
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      roles:
+        simple: demisto-prod-analyst
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Assign analyst to incident.
+        By default,  the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
+        Otherwise, the analyst will be picked according to the 'assignBy' arguments.
+        machine-learning: DBot will calculated and decide who is the best analyst for the job.
+        top-user: The user that is most commonly owns this type of incident
+        less-busy-user: The less busy analyst will be picked to be the incident owner.
+        online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
+        current: The user that executed the command
+      id: 6d0ed04b-bf83-4b22-8ed9-c16a41802db4
+      iscommand: false
+      name: Assign Analyst
+      scriptName: AssignAnalystToIncident
+      type: regular
+      version: -1
+    taskid: 6d0ed04b-bf83-4b22-8ed9-c16a41802db4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1af3c7af-1b20-413a-8f1a-9de6465fbfdd
+      iscommand: false
+      name: Playbook Complete
+      type: title
+      version: -1
+    taskid: 1af3c7af-1b20-413a-8f1a-9de6465fbfdd
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ignoreAddURL:
+        simple: "true"
+      message:
+        simple: ":xsoar: *${incident.name}* has been assigned to you.\n\nhttps://rugornas.demisto.live/#/Custom/caseinfoid/${incident.investigationId}\n\nIf
+          there is a specific message about this type of incident, it is included
+          below: \n\n${inputs.MessageToAnalyst}"
+      to:
+        simple: ${incident.owner}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: SlackV2
+      description: Sends a message to a user, group, or channel.
+      id: ad8c03d0-f76c-4659-8a50-3885d0d8b71f
+      iscommand: true
+      name: Send owner incident details in Slack
+      script: SlackV2|||send-notification
+      type: regular
+      version: -1
+    taskid: ad8c03d0-f76c-4659-8a50-3885d0d8b71f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

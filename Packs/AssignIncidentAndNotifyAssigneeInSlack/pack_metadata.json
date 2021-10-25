@@ -1,0 +1,17 @@
+{
+    "name": "Assign Incident and Notify Assignee in Slack",
+    "description": "Simple playbook to assign an incident to an analyst and notify them with a custom direct message from dbot using the Slackv2 integration. ",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Laura Farvour",
+    "url": "",
+    "email": "",
+    "created": "2021-10-25T14:26:21Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "lfarvour"
+    ]
+}
