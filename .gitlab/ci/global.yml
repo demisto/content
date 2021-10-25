@@ -189,7 +189,7 @@
             python3 Utils/upload_code_coverage_report.py --service_account $GCS_MARKET_KEY --source_file_name $ARTIFACTS_FOLDER/coverage_report/coverage.json --minimal_file_name $ARTIFACTS_FOLDER/coverage_report/coverage_data.json -cov $ARTIFACTS_FOLDER/coverage_report/.coverage
           fi
         else
-          if [[ -n $BUCKET_UPLOAD ]]
+          if [[ -n $BUCKET_UPLOAD ]]; then
             gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
             echo "$$$gcloud auth"
             gsutil cp "https://storage.cloud.google.com/marketplace-dist/content/packs/index.json" "$ARTIFACTS_FOLDER/previous_index.json"
