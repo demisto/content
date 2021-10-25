@@ -1279,7 +1279,7 @@ Deprecated. Use the cs-falcon-search-custom-iocs command instead.
 
 ### 24. cs-falcon-get-ioc
 ***
-Get the full definition of one or more indicators that you are watching
+Deprecated. Use the cs-falcon-get-custom-ioc command instead.
 
 
 #### Base Command
@@ -3126,6 +3126,71 @@ Returns a list of your uploaded IOCs that match the search criteria
 >|CreatedTime|Expiration|ID|ModifiedTime|Severity|Action|Type|Value|
 >|---|---|---|---|---|---|---|---|
 >| 2020-09-30T10:59:37Z | 2020-10-30T00:00:00Z | 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | 2020-09-30T10:59:37Z | high | prevent | domain | value |
+
+### cs-falcon-get-custom-ioc
+***
+Gets the full definition of one or more indicators that you are watching.
+
+
+#### Base Command
+
+`cs-falcon-get-custom-ioc`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| type | The IOC type to retrieve. Possible values are: "sha256", "sha1", "md5", "domain", "ipv4", and "ipv6". | Required | 
+| value | The IOC value to retrieve. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.IOC.Type | string | The type of the IOC. | 
+| CrowdStrike.IOC.Value | string | The string representation of the indicator. | 
+| <span>CrowdStrike.IOC.ID</span> | string | The full ID of the indicator. | 
+| CrowdStrike.IOC.Severity | string | The severity level to apply to this indicator. | 
+| CrowdStrike.IOC.Source | string | The source of the IOC. | 
+| CrowdStrike.IOC.Action | string | Action to take when a host observes the custom IOC. | 
+| CrowdStrike.IOC.Expiration | date | The datetime when the indicator will expire. | 
+| CrowdStrike.IOC.Description | string | The description of the IOC. | 
+| CrowdStrike.IOC.CreatedTime | date | The datetime the IOC was created. | 
+| CrowdStrike.IOC.CreatedBy | string | The identity of the user/process who created the IOC. | 
+| CrowdStrike.IOC.ModifiedTime | date | The datetime the indicator was last modified. | 
+| CrowdStrike.IOC.ModifiedBy | string | The identity of the user/process who last updated the IOC. | 
+
+
+#### Command Example
+```!cs-falcon-get-custom-ioc type="domain" value="test.domain.com"```
+
+#### Context Example
+```json
+{
+    "CrowdStrike": {
+        "IOC": [
+            {
+                "CreatedTime": "2020-09-30T10:59:37Z",
+                "Expiration": "2020-10-30T00:00:00Z",
+                "ID": "4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r",
+                "ModifiedTime": "2020-09-30T10:59:37Z",
+                "Severity": "high",
+                "Action": "prevent",
+                "Source": "Demisto playbook",
+                "Type": "domain",
+                "Value": "test.domain.com"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Indicator of Compromise
+>|CreatedTime|Description|Expiration|ID|ModifiedTime|Severity|Action|Source|Type|Value|
+>|---|---|---|---|---|---|---|---|---|---|
+>| 2020-10-02T13:55:26Z | Test ioc | 2020-11-01T00:00:00Z | 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | 2020-10-02T13:55:26Z | high | prevent | Demisto playbook | domain | test.domain.com |
 
 ### cs-falcon-upload-custom-ioc
 ***

@@ -1124,7 +1124,6 @@ def search_custom_iocs(
     sources: Optional[Union[list, str]] = None,
     expiration: Optional[str] = None,
     limit: str = '50',
-    ids=None,
     sort: Optional[str] = None,
     offset: Optional[str] = None,
 ) -> dict:
@@ -1137,13 +1136,17 @@ def search_custom_iocs(
     :param sort: The order of the results. Format
     :param offset: The offset to begin the list from
     """
+    filter_str = ''
+    if types:
+        filter_str += f'type:"{types}" '
+    if values:
+        filter_str += f'value:"{values}" '
+    if sources:
+        filter_str += f'source:"{sources}" '
+    if expiration:
+        filter_str += f'expiration:"{expiration}" '
     params = {
-        'filter': {
-            'type': types,
-            'value': values,
-            'source': sources,
-            'expiration': expiration,
-        },
+        'filter': filter_str.rstrip(),
         'sort': sort,
         'offset': offset,
         'limit': limit,
@@ -1728,11 +1731,34 @@ def search_custom_iocs_command(
         return create_entry_object(hr='Could not find any Indicators of Compromise.')
     handle_response_errors(raw_res)
     ec = [get_trasnformed_dict(ioc, IOC_KEY_MAP) for ioc in iocs]
-    # enrich_ioc_dict_with_ids(ec) TODO: check if needed
     return create_entry_object(
         contents=raw_res,
         ec={'CrowdStrike.IOC(val.ID === obj.ID)': ec},
         hr=tableToMarkdown('Indicators of Compromise', ec),
+    )
+
+
+def get_custom_ioc_command(
+    ioc_type: str,
+    value: str,
+) -> dict:
+    """
+    :param ioc_type: IOC type
+    :param value: IOC value
+    """
+    raw_res = search_custom_iocs(
+        types=ioc_type,
+        values=value,
+    )
+    iocs = raw_res.get('resources')
+    handle_response_errors(raw_res)
+    if not iocs:
+        return create_entry_object(hr='Could not find any Indicators of Compromise.')
+    ec = [get_trasnformed_dict(ioc, IOC_KEY_MAP) for ioc in iocs]
+    return create_entry_object(
+        contents=raw_res,
+        ec={'CrowdStrike.IOC(val.ID === obj.ID)': ec},
+        hr=tableToMarkdown('Indicator of Compromise', ec),
     )
 
 
@@ -1771,7 +1797,6 @@ def upload_custom_ioc_command(
     handle_response_errors(raw_res)
     iocs = raw_res.get('resources', [])
     ec = [get_trasnformed_dict(iocs[0], IOC_KEY_MAP)]
-    # enrich_ioc_dict_with_ids(ec) TODO: check if needed
     return create_entry_object(
         contents=raw_res,
         ec={'CrowdStrike.IOC(val.ID === obj.ID)': ec},
@@ -1810,7 +1835,6 @@ def update_custom_ioc_command(
     handle_response_errors(raw_res)
     iocs = raw_res.get('resources', [])
     ec = [get_trasnformed_dict(iocs[0], IOC_KEY_MAP)]
-    # enrich_ioc_dict_with_ids(ec) TODO: check if needed
     return create_entry_object(
         contents=raw_res,
         ec={'CrowdStrike.IOC(val.ID === obj.ID)': ec},
@@ -2994,6 +3018,8 @@ def main():
             return_results(delete_ioc_command(ioc_type=args.get('type'), value=args.get('value')))
         elif command == 'cs-falcon-search-custom-iocs':
             return_results(search_custom_iocs_command(**args))
+        elif command == 'cs-falcon-get-custom-ioc':
+            return_results(get_custom_ioc_command(ioc_type=args.get('type'), value=args.get('value')))
         elif command == 'cs-falcon-upload-custom-ioc':
             return_results(upload_custom_ioc_command(**args))
         elif command == 'cs-falcon-update-custom-ioc':

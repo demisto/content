@@ -2675,6 +2675,67 @@ def test_search_custom_iocs_command_error(requests_mock, mocker):
     assert 'Could not find any Indicators of Compromise.' in res['HumanReadable']
 
 
+def test_get_custom_ioc_command_exists(requests_mock):
+    """
+    Test cs-falcon-get-custom-ioc when an ioc is found
+
+    Given:
+     - There is a single md5 ioc in the system
+    When:
+     - Looking for iocs using cs-falcon-get-custom-ioc command
+    Then:
+     - Return a human readable result with appropriate message
+     - Do populate the entry context with the right value
+    """
+    from CrowdStrikeFalcon import get_custom_ioc_command
+    ioc_type = 'md5'
+    ioc_value = 'testmd5'
+    ioc_response = {
+        'resources': [{
+            'id': '4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r',
+            'type': ioc_type,
+            'value': ioc_value,
+            'action': 'prevent',
+            'severity': 'high',
+            'description': 'Eicar file',
+            'created_on': '2020-10-01T09:09:04Z',
+            'modified_on': '2020-10-01T09:09:04Z',
+        }]
+    }
+
+    requests_mock.get(
+        f'{SERVER_URL}/iocs/combined/indicators/v1?filter=type%3A%22{ioc_type}%22+value%3A%22{ioc_value}%22&limit=50',
+        json=ioc_response,
+        status_code=200,
+    )
+    results = get_custom_ioc_command(ioc_type=ioc_type, value=ioc_value)
+    assert results["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == ioc_value
+
+
+def test_get_custom_ioc_command_does_not_exist(requests_mock):
+    """
+    Test cs-falcon-get-custom-ioc when no ioc is found
+
+    Given:
+     - There is no ioc in the system
+    When:
+     - Searching for iocs using cs-falcon-get-custom-ioc command
+     - The server returns an error
+    Then:
+     - Raise the error back from the server
+    """
+    from CrowdStrikeFalcon import get_custom_ioc_command
+    response = {'resources': [], 'errors': [{'code': 404, 'message': 'md5:testmd5 - Resource Not Found'}]}
+    requests_mock.get(
+        f'{SERVER_URL}/iocs/combined/indicators/v1',
+        json=response,
+        status_code=200
+    )
+    with pytest.raises(DemistoException) as excinfo:
+        get_custom_ioc_command(ioc_type='md5', value='testmd5')
+    assert [{'code': 404, 'message': 'md5:testmd5 - Resource Not Found'}] == excinfo.value.args[0]
+
+
 def test_upload_custom_ioc_command_successful(requests_mock):
     """
     Test cs-falcon-upload-custom-ioc when an upload is successful
