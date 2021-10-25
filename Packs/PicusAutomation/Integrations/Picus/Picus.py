@@ -16,7 +16,7 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
-
+VALID_VARIANTS = ["HTTP","HTTPS"]
 verify_certificate = not demisto.params().get('insecure', False)
 
 def test_module() -> str:
@@ -213,6 +213,8 @@ def runAttacks():
     attacker_peer = demisto.args().get('attacker_peer')
     victim_peer = demisto.args().get('victim_peer')
     variant = demisto.args().get('variant')
+    if variant not in VALID_VARIANTS:
+        return_error("Unknown variant type - "+variant)
 
     threat_ids = list(threat_ids.split(","))
 
@@ -260,6 +262,8 @@ def getThreatResults():
     attacker_peer = demisto.args().get('attacker_peer')
     victim_peer = demisto.args().get('victim_peer')
     variant = demisto.args().get('variant')
+    if variant not in VALID_VARIANTS:
+        return_error("Unknown variant type - "+variant)
 
     threat_ids = list(threat_ids.split(","))
     for threat_id in threat_ids:
@@ -417,6 +421,9 @@ def setParamPB():
     attacker_peer = demisto.args().get('attacker_peer')
     victim_peer = demisto.args().get('victim_peer')
     variant = demisto.args().get('variant')
+    if variant not in VALID_VARIANTS:
+        return_error("Unknown variant type - "+variant)
+
     mitigation_product = demisto.args().get('mitigation_product')
     days = int(demisto.args().get('days'))
     param_data = {"attacker_peer":attacker_peer,"victim_peer":victim_peer,"variant":variant,"mitigation_product":mitigation_product,"days":days}

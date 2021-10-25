@@ -104,10 +104,14 @@ script:
       name: victim_peer
       required: true
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: This parameter can be HTTP or HTTPS. Example variant=HTTP
       isArray: false
       name: variant
+      predefined:
+      - HTTP
+      - HTTPS
       required: true
       secret: false
     deprecated: false
@@ -133,10 +137,14 @@ script:
       name: victim_peer
       required: true
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: This parameter can be HTTP or HTTPS. Example variant=HTTP
       isArray: false
       name: variant
+      predefined:
+      - HTTP
+      - HTTPS
       required: true
       secret: false
     deprecated: false
@@ -157,10 +165,14 @@ script:
       name: victim_peer
       required: true
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: This parameter can be HTTP or HTTPS. Example variant=HTTP
       isArray: false
       name: variant
+      predefined:
+      - HTTP
+      - HTTPS
       required: true
       secret: false
     - default: false
@@ -300,11 +312,16 @@ script:
       name: days
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       defaultValue: all
       description: This setting can only be insecure,secure and all.
       isArray: false
       name: result
+      predefined:
+      - All
+      - Secure
+      - Insecure
       required: false
       secret: false
     deprecated: true
