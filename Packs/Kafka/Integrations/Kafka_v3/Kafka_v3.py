@@ -72,9 +72,18 @@ class KafkaCommunicator:
                                    on_delivery=self.delivery_report)
         kafka_producer.flush()
 
-    def consume(self, topic, partition, offset):
+    def consume(self, topic, partition=-1, offset='earliest'):
         kafka_consumer = Consumer(self.conf_consumer)
-        kafka_consumer.assign([TopicPartition(topic=topic, partition=partition, offset=offset)])
+        topic_partitions = []
+        if partition != -1:
+            topic_partitions = [TopicPartition(topic=topic, partition=partition, offset=0)]
+        else:
+            topics = self.get_topics(client=kafka_consumer)
+            topic_metadata = topics[topic]
+            for metadata_partition in topic_metadata.partitions.values():
+                topic_partitions += [TopicPartition(topic=topic, partition=metadata_partition.id, offset=0)]
+
+        kafka_consumer.assign(topic_partitions)
         return kafka_consumer.consume(timeout=60)
 
 
@@ -158,12 +167,13 @@ def consume_message(kafka):
     Consuming one message from topic
     """
     topic = demisto.args().get('topic')
-    offset = demisto.args().get('offset')
+    offset = demisto.args().get('offset', 0)
+    partition = int(demisto.args().get('partition', -1))
 
-    kafka_topics = kafka.get_topics().values()
-    partitions = topic.partitions.values()
+    #kafka_topics = kafka.get_topics().values()
+    #partitions = topic.partitions.values()
 
-    message = kafka.consume(topic=topic, offset=offset)
+    message = kafka.consume(topic=topic, partition=partition, offset=offset)
     if not message:
         return_results('No message was consumed.')
     else:
