@@ -222,9 +222,6 @@ def _create_filter(client, column, comparator, value):
     # if not exists, raise error
     if not attr:
         raise ValueError(f"Cannot find attribute of name ({column}).")
-    # if datatype is int, convert value
-    ##if attr["dataType"] & AttributeType.INT_ALL == attr["dataType"]:
-    ##    value = int(value)
     # try get comparison method
     has_comp = hasattr(attr, comp)
     if not has_comp:
