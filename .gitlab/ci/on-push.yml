@@ -18,6 +18,7 @@ trigger-private-build:
   script:
     - echo "====Trigger Private Build===="
     - python3 Utils/trigger_private_build.py --github-token $GITHUB_TOKEN
+    - sleep 60
     - python3 Utils/get_private_build_status.py --github-token $GITHUB_TOKEN
 
 
