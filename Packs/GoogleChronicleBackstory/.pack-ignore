@@ -57,3 +57,6 @@ ignore=IF100
 
 [file:playbook-ChronicleAssets_Investigation_And_Remediation_-_Chronicle.yml]
 ignore=PB114
+
+[file:GoogleChronicleBackstory.yml]
+ignore=IN145

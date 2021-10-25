@@ -6,3 +6,6 @@ ignore=RM104
 
 [file:classifier-mapper-incoming-Zimperium.json]
 ignore=BA101
+
+[file:Zimperium.yml]
+ignore=IN145

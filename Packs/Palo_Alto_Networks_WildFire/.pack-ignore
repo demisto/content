@@ -6,3 +6,6 @@ ignore=BA108,BA109
 
 [file:README.md]
 ignore=RM104
+
+[file:Palo_Alto_Networks_WildFire_v2.yml]
+ignore=IN145

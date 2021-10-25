@@ -1,2 +1,5 @@
 [file:RedCanary.yml]
 ignore=IN126
+
+[file:RedCanary.yml]
+ignore=IN145

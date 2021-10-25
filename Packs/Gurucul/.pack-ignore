@@ -12,3 +12,6 @@ ignore=BA101
 
 [file:incidentfield-Gra_Case_Id.json]
 ignore=IF100
+
+[file:GuruculGRA.yml]
+ignore=IN145

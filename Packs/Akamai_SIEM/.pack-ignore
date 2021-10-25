@@ -1,2 +1,5 @@
 [file:Akamai_SIEM.yml]
 ignore=IN126,BA108,BA109
+
+[file:Akamai_SIEM.yml]
+ignore=IN145

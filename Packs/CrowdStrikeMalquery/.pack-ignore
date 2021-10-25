@@ -3,3 +3,6 @@ ignore=IN136
 
 [file:README.md]
 ignore=RM102,RM104
+
+[file:CrowdStrikeMalquery.yml]
+ignore=IN145

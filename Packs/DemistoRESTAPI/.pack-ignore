@@ -33,3 +33,6 @@ ignore=RM106
 
 [file:script-DemistoUploadFileToIncident_README.md]
 ignore=RM106
+
+[file:integration-DemistoRESTAPI.yml]
+ignore=IN145

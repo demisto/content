@@ -3,3 +3,6 @@ ignore=RM104
 
 [file:classifier-mapper-incoming-Google_Drive.json]
 ignore=BA101
+
+[file:GoogleDrive.yml]
+ignore=IN145

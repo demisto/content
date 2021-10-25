@@ -1,2 +1,5 @@
 [file:integration-ProtectWise.yml]
 ignore=IN126
+
+[file:integration-ProtectWise.yml]
+ignore=IN145

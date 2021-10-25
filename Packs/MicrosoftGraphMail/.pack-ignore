@@ -6,3 +6,6 @@ ignore=auto-test
 
 [file:README.md]
 ignore=RM106
+
+[file:MicrosoftGraphMail.yml]
+ignore=IN145

@@ -6,3 +6,6 @@ ignore=RM104,RM106
 
 [file:McAfee_Advanced_Threat_Defense.yml]
 ignore=BA108,BA109
+
+[file:McAfee_Advanced_Threat_Defense.yml]
+ignore=IN145

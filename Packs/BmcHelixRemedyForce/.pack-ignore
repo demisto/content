@@ -6,3 +6,6 @@ ignore=RM104
 
 [file:classifier-mapper-incoming-BMCHelixRemedyforce.json]
 ignore=BA101
+
+[file:BMCHelixRemedyforce.yml]
+ignore=IN145

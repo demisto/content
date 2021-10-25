@@ -3,3 +3,6 @@ ignore=IN136
 
 [file:README.md]
 ignore=RM102
+
+[file:RecordedFuture.yml]
+ignore=IN145

@@ -6,3 +6,6 @@ ignore=RM102,RM104,RM106
 
 [file:playbook-Microsoft_Defender_Advanced_Threat_Protection-Test.yml]
 ignore=auto-test
+
+[file:MicrosoftDefenderAdvancedThreatProtection.yml]
+ignore=IN145

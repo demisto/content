@@ -1,2 +1,5 @@
 [file:Symantec_Deepsight.yml]
 ignore=BA108,BA109,IN144
+
+[file:Symantec_Deepsight.yml]
+ignore=IN145

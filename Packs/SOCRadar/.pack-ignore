@@ -1,0 +1,5 @@
+[file:SOCRadarIncidents.yml]
+ignore=IN145
+
+[file:SOCRadarThreatFusion.yml]
+ignore=IN145

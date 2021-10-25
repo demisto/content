@@ -1,2 +1,5 @@
 [file:Telegram.yml]
 ignore=IN110,IN109
+
+[file:Telegram.yml]
+ignore=IN145

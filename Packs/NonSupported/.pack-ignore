@@ -132,3 +132,9 @@ ignore=BA108,BA109
 
 [file:script-CommonUserServer.yml]
 ignore=BA108,BA109
+
+[file:integration-VirusTotal.yml]
+ignore=IN145
+
+[file:QRadar_5_4_9.yml]
+ignore=IN145

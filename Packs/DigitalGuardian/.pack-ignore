@@ -9,3 +9,6 @@ ignore=BA110
 
 [file:incidentfield-Digital_Guardian_Computer_Name.json]
 ignore=BA113
+
+[file:DigitalGuardian.yml]
+ignore=IN145

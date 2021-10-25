@@ -3,3 +3,6 @@ ignore=RM104
 
 [file:Threat_Vault.yml]
 ignore=BA108,BA109
+
+[file:Threat_Vault.yml]
+ignore=IN145

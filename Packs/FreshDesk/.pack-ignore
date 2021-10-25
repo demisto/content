@@ -3,3 +3,6 @@ ignore=IN126
 
 [file:README.md]
 ignore=RM106
+
+[file:FreshDesk.yml]
+ignore=IN145

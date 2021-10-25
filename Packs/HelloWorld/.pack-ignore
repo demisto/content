@@ -9,3 +9,6 @@ ignore=BA101
 
 [file:HelloWorld.yml]
 ignore=BA111
+
+[file:HelloWorld.yml]
+ignore=IN145

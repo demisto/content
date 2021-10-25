@@ -1,2 +1,8 @@
 [file:Zoom_IAM.yml]
 ignore=BA108,BA109
+
+[file:Zoom_IAM.yml]
+ignore=IN145
+
+[file:Zoom.yml]
+ignore=IN145

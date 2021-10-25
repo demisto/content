@@ -1,2 +1,5 @@
 [file:AWS-CloudTrail.yml]
 ignore=BA108,BA109
+
+[file:AWS-CloudTrail.yml]
+ignore=IN145

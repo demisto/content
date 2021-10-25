@@ -1,2 +1,5 @@
 [file:integration-isight.yml]
 ignore=IN144
+
+[file:integration-isight.yml]
+ignore=IN145

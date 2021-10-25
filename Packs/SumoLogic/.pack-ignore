@@ -1,2 +1,5 @@
 [file:integration-SumoLogic.yml]
 ignore=IN126
+
+[file:integration-SumoLogic.yml]
+ignore=IN145

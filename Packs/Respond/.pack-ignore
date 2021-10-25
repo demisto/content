@@ -13,3 +13,6 @@ ignore=IF100
 
 [file:classifier-Mandiant_Automated_Defense_Incoming_mapper.json]
 ignore=BA101
+
+[file:RespondAnalyst.yml]
+ignore=IN145

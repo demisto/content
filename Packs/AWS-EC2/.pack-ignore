@@ -6,3 +6,6 @@ ignore=RM106
 
 [file:playbook-IP_Whitelist_-_AWS_Security_Group.yml]
 ignore=PB114
+
+[file:AWS-EC2.yml]
+ignore=IN145

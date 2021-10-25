@@ -9,3 +9,6 @@ ignore=BA108,BA109
 
 [file:README.md]
 ignore=RM104
+
+[file:PaloAlto_TrapsESM_Beta.yml]
+ignore=IN145

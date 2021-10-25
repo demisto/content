@@ -3,3 +3,6 @@ ignore=RM104
 
 [file:SlashNextPhishingIncidentResponse.yml]
 ignore=IN144
+
+[file:SlashNextPhishingIncidentResponse.yml]
+ignore=IN145

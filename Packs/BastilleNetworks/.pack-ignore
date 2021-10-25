@@ -1,2 +1,5 @@
 [file:BastilleNetworks.yml]
 ignore=IN126
+
+[file:BastilleNetworks.yml]
+ignore=IN145

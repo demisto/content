@@ -18,3 +18,9 @@ ignore=BA101
 
 [file:incidentfield-Cymulate_Cymulate_Test_Case.json]
 ignore=IF100
+
+[file:Cymulate.yml]
+ignore=IN145
+
+[file:Cymulate_v2.yml]
+ignore=IN145

@@ -1,2 +1,5 @@
 [file:remedy_SR.yml]
 ignore=IN109,IN110,BA108,BA109,IN135
+
+[file:remedy_SR.yml]
+ignore=IN145

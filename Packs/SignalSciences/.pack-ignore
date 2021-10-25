@@ -3,3 +3,6 @@ ignore=IN126,IN135
 
 [file:README.md]
 ignore=RM106
+
+[file:SignalSciences.yml]
+ignore=IN145

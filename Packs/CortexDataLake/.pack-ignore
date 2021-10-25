@@ -3,3 +3,6 @@ ignore=IN126,IN136
 
 [file:README.md]
 ignore=RM102,RM106
+
+[file:CortexDataLake.yml]
+ignore=IN145

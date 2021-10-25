@@ -15,3 +15,6 @@ ignore=RM106
 
 [file:playbook-PAN-OS_Create_Or_Edit_Rule_Test.yml]
 ignore=auto-test
+
+[file:Panorama.yml]
+ignore=IN145

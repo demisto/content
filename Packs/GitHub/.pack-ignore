@@ -6,3 +6,9 @@ ignore=BA108,BA109
 
 [file:README.md]
 ignore=RM106
+
+[file:GitHub.yml]
+ignore=IN145
+
+[file:GitHub_IAM.yml]
+ignore=IN145

@@ -9,3 +9,6 @@ ignore=BA108,BA109,BA110
 
 [file:Playbook-LogPoint_SIEM_Playbook.yml]
 ignore=BA110
+
+[file:LogPoint_SIEM_Integration.yml]
+ignore=IN145

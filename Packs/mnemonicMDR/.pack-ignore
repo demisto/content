@@ -36,3 +36,6 @@ ignore=IF100
 
 [file:incidentfield-Argus_Event_Type.json]
 ignore=IF100
+
+[file:ArgusManagedDefence.yml]
+ignore=IN145

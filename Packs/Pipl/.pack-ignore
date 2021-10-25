@@ -1,2 +1,5 @@
 [file:integration-Pipl.yml]
 ignore=IN144
+
+[file:integration-Pipl.yml]
+ignore=IN145

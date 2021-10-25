@@ -15,3 +15,6 @@ ignore=RM102,RM106
 
 [file:classifier-mapper-incoming-EWS_v2.json]
 ignore=BA101
+
+[file:EWSO365.yml]
+ignore=IN145

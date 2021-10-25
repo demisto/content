@@ -1,2 +1,5 @@
 [file:AWS-IAM.yml]
 ignore=BA108,BA109
+
+[file:AWS-IAM.yml]
+ignore=IN145

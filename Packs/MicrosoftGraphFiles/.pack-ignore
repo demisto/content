@@ -3,3 +3,6 @@ ignore=auto-test
 
 [file:MicrosoftGraphFiles.yml]
 ignore=DS107
+
+[file:MicrosoftGraphFiles.yml]
+ignore=IN145

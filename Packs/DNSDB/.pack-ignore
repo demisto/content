@@ -6,3 +6,6 @@ ignore=RM102
 
 [file:playbook-DNSDB-Hostname_from_IP.yml]
 ignore=PB114
+
+[file:DNSDB_v2.yml]
+ignore=IN145

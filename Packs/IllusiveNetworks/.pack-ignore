@@ -7,3 +7,6 @@ ignore=BA101
 
 [file:incidentfield-Illusive_Networks_Events_Number.json]
 ignore=IF100
+
+[file:IllusiveNetworks.yml]
+ignore=IN145

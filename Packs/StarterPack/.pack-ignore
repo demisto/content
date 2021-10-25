@@ -6,3 +6,6 @@ ignore=BA110
 
 [file:BaseScript.yml]
 ignore=BA110
+
+[file:BaseIntegration.yml]
+ignore=IN145

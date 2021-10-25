@@ -1,2 +1,5 @@
 [file:integration-opswat-metadefender-v2.yml]
 ignore=IN126,IN135
+
+[file:integration-opswat-metadefender-v2.yml]
+ignore=IN145

@@ -10,3 +10,8 @@ ignore=MP106
 [file:Salesforce_IAM.yml]
 ignore=BA108,BA109
 
+[file:Salesforce_IAM.yml]
+ignore=IN145
+
+[file:integration-Salesforce.yml]
+ignore=IN145

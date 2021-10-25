@@ -3,3 +3,6 @@ ignore=IN126,IN135,DS107
 
 [file:playbook-Microsoft_Graph_Test.yml]
 ignore=auto-test
+
+[file:MicrosoftGraphSecurity.yml]
+ignore=IN145

@@ -1,2 +1,5 @@
 [file:SymantecMSS.yml]
 ignore=IN126
+
+[file:SymantecMSS.yml]
+ignore=IN145

@@ -3,3 +3,6 @@ ignore=IN110,IN109
 
 [file:README.md]
 ignore=RM104
+
+[file:integration-TrendMicroDDA.yml]
+ignore=IN145

@@ -6,5 +6,9 @@ ignore=RM104
 
 [file:classifier-mapper-incoming-GoogleCloudSCC.json]
 ignore=BA101
+
 [file:incidentfield-GoogleCloudSCC_Finding_SourceProperties_Alert.json]
 ignore=IF100
+
+[file:GoogleCloudSCC.yml]
+ignore=IN145

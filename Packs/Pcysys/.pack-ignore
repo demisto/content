@@ -3,3 +3,6 @@ ignore=RM102,RM104
 
 [file:Pcysys.yml]
 ignore=IN136
+
+[file:Pcysys.yml]
+ignore=IN145

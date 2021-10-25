@@ -3,3 +3,6 @@ ignore=RM102
 
 [file:acalvioapp.yml]
 ignore=IN136
+
+[file:acalvioapp.yml]
+ignore=IN145
