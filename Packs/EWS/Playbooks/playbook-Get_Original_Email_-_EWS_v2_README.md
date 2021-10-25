@@ -33,7 +33,7 @@ This playbook does not use any sub-playbooks.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| File | Original attachments | unknown |
+| File | The original email as eml file. | unknown |
 
 ## Playbook Image
 ---
