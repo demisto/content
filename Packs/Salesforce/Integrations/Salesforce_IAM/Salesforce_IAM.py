@@ -8,6 +8,7 @@ requests.packages.urllib3.disable_warnings()
 DEFAULT_OUTGOING_MAPPER = "User Profile - Salesforce (Outgoing)"
 DEFAULT_INCOMING_MAPPER = "User Profile - Salesforce (Incoming)"
 URI_PREFIX = '/services/data/v44.0/'
+GET_USER_ATTRIBUTES = ['id', 'Username', 'Email']
 
 # setting defaults for mandatory fields
 DEFAULT_FIELDS = [
@@ -68,12 +69,20 @@ class Client(BaseClient):
         self._headers = headers
         return token
 
-    def get_user(self, user_term):
-        uri = URI_PREFIX + f'sobjects/User/{user_term}'
-        return self._http_request(
-            method='GET',
-            url_suffix=uri
-        )
+    def get_user(self, iam_attr, iam_attr_value):
+        if iam_attr != 'id':
+            term = f"{iam_attr}='{iam_attr_value}'"
+            user_id, _ = self.get_user_id_and_activity(iam_attr_value, term)
+        else:
+            user_id = iam_attr_value
+
+        if user_id:
+            uri = URI_PREFIX + f'sobjects/User/{user_id}'
+            return self._http_request(
+                method='GET',
+                url_suffix=uri
+            )
+        return None
 
     def search_user_profile(self, user_term, user_where):
         uri = URI_PREFIX + 'parameterizedSearch/'
@@ -276,19 +285,14 @@ def test_module(client):
     return 'ok'
 
 
-def get_user_command(client, args, mapper_in):
+def get_user_command(client, args, mapper_in, mapper_out):
     try:
         user_profile = args.get("user-profile")
-        iam_user_profile = IAMUserProfile(user_profile=user_profile)
-
-        user_term = iam_user_profile.get_attribute('username')
-        term = f"Username='{user_term}'"
-        if not user_term:
-            user_term = iam_user_profile.get_attribute('email')
-            term = f"Email='{user_term}'"
-        user_id, _ = client.get_user_id_and_activity(user_term, term)
-
-        if not user_id:
+        iam_user_profile = IAMUserProfile(user_profile=user_profile, mapper=mapper_out,
+                                          incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
+        iam_attr, iam_attr_value = user_profile.get_first_available_iam_user_attr(GET_USER_ATTRIBUTES)
+        salesforce_user = client.get_user(iam_attr, iam_attr_value)
+        if not salesforce_user:
             error_code, error_message = IAMErrors.USER_DOES_NOT_EXIST
             iam_user_profile.set_result(success=False,
                                         error_message=error_message,
@@ -296,7 +300,6 @@ def get_user_command(client, args, mapper_in):
                                         action=IAMActions.GET_USER)
         else:
             # unlike query with email, getting a user by id will bring back all the attributes
-            salesforce_user = client.get_user(user_id)
             iam_user_profile.update_with_app_data(salesforce_user, mapper_in)
 
             iam_user_profile.set_result(success=True,
@@ -323,7 +326,8 @@ def get_user_command(client, args, mapper_in):
 def create_user_command(client, args, mapper_out, is_create_enabled, is_update_enabled, is_enable_enabled):
     try:
         user_profile = args.get("user-profile")
-        iam_user_profile = IAMUserProfile(user_profile=user_profile)
+        iam_user_profile = IAMUserProfile(user_profile=user_profile, mapper=mapper_out,
+                                          incident_type=IAMUserProfile.CREATE_INCIDENT_TYPE)
 
         if not is_create_enabled:
             iam_user_profile.set_result(action=IAMActions.CREATE_USER,
@@ -331,11 +335,9 @@ def create_user_command(client, args, mapper_out, is_create_enabled, is_update_e
                                         skip_reason='Command is disabled.')
 
         else:
-            email = iam_user_profile.get_attribute('email')
-            term = f"Email='{email}'"
-            user_id, _ = client.get_user_id_and_activity(email, term)
-
-            if user_id:
+            iam_attr, iam_attr_value = user_profile.get_first_available_iam_user_attr(GET_USER_ATTRIBUTES)
+            salesforce_user = client.get_user(iam_attr, iam_attr_value)
+            if salesforce_user:
                 create_if_not_exists = False
                 iam_user_profile = update_user_command(client, args, mapper_out, is_update_enabled, is_enable_enabled,
                                                        is_create_enabled, create_if_not_exists)
@@ -370,7 +372,8 @@ def create_user_command(client, args, mapper_out, is_create_enabled, is_update_e
 def update_user_command(client, args, mapper_out, is_command_enabled, is_enable_enabled,
                         is_create_user_enabled, create_if_not_exists):
     try:
-        iam_user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
+        iam_user_profile = IAMUserProfile(user_profile=args.get('user-profile'), mapper=mapper_out,
+                                          incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
         allow_enable = args.get('allow-enable') == 'true'
 
         if not is_command_enabled:
@@ -378,9 +381,9 @@ def update_user_command(client, args, mapper_out, is_command_enabled, is_enable_
                                         skip=True,
                                         skip_reason='Command is disabled.')
         else:
-            email = iam_user_profile.get_attribute('email')
-            term = f"Email='{email}'"
-            user_id, active = client.get_user_id_and_activity(email, term)
+            iam_attr, iam_attr_value = iam_user_profile.get_first_available_iam_user_attr(GET_USER_ATTRIBUTES)
+            salesforce_user = client.get_user(iam_attr, iam_attr_value)
+            user_id = salesforce_user.get('Id') if salesforce_user else None
 
             if not user_id:
                 # user doesn't exists
@@ -430,7 +433,8 @@ def update_user_command(client, args, mapper_out, is_command_enabled, is_enable_
 def disable_user_command(client, args, mapper_out, is_command_enabled):
     try:
         user_profile = args.get("user-profile")
-        iam_user_profile = IAMUserProfile(user_profile=user_profile)
+        iam_user_profile = IAMUserProfile(user_profile=user_profile, mapper=mapper_out,
+                                          incident_type=IAMUserProfile.DISABLE_INCIDENT_TYPE)
 
         if not is_command_enabled:
             user_profile.set_result(action=IAMActions.DISABLE_USER,
@@ -438,9 +442,9 @@ def disable_user_command(client, args, mapper_out, is_command_enabled):
                                     skip_reason='Command is disabled.')
 
         else:
-            email = iam_user_profile.get_attribute('email')
-            term = f"Email='{email}'"
-            user_id, _ = client.get_user_id_and_activity(email, term)
+            iam_attr, iam_attr_value = iam_user_profile.get_first_available_iam_user_attr(GET_USER_ATTRIBUTES)
+            salesforce_user = client.get_user(iam_attr, iam_attr_value)
+            user_id = salesforce_user.get('Id') if salesforce_user else None
 
             if not user_id:
                 error_code, error_message = IAMErrors.USER_DOES_NOT_EXIST
@@ -449,12 +453,8 @@ def disable_user_command(client, args, mapper_out, is_command_enabled):
                                             skip=True,
                                             skip_reason=error_message)
             else:
-                # temporarily not using IAMUserProfile.map_object() until we add the `User Profile - Disable`
-                # incident type as a valid mapping type
-
-                # salesforce_user = iam_user_profile.map_object(mapper_name=mapper_out,
-                #                                               incident_type='User Profile - Disable')
-                salesforce_user = demisto.mapObject(user_profile, mapper_out, 'User Profile - Disable')
+                salesforce_user = iam_user_profile.map_object(mapper_name=mapper_out,
+                                                              IAMUserProfile.DISABLE_INCIDENT_TYPE)
                 salesforce_user['IsActive'] = False
                 salesforce_user = {key: value for key, value in salesforce_user.items() if value is not None}
                 res = client.update_user(user_term=user_id, data=salesforce_user)
@@ -494,7 +494,7 @@ def get_all_user_attributes(client):
         user_id = user.get("Id")
 
     if user_id:
-        user_data = client.get_user(user_id)
+        user_data = client.get_user('id', user_id)
         user_data.pop('IsActive')  # hard-coded in the CRUD commands
         attributes = list(user_data.keys())
     return attributes
@@ -834,7 +834,7 @@ def main():
             return_results(test_module(client))
 
         elif command == 'iam-get-user':
-            user_profile = get_user_command(client, args, mapper_in)
+            user_profile = get_user_command(client, args, mapper_in, mapper_out)
             return_results(user_profile)
 
         elif command == 'iam-create-user':
