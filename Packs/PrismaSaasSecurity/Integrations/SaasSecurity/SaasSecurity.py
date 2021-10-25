@@ -248,48 +248,6 @@ def convert_to_xsoar_incident(inc) -> dict:
     }
 
 
-def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> int:
-    """
-    Converts an XSOAR argument to a timestamp (seconds from epoch).
-    This function is used to quickly validate an argument provided to XSOAR
-    via ``demisto.args()`` into an ``int`` containing a timestamp (seconds
-    since epoch). It will throw a ValueError if the input is invalid.
-    If the input is None, it will throw a ValueError if required is ``True``,
-    or ``None`` if required is ``False``.
-
-    Args:
-        arg: argument to convert
-        arg_name: argument name.
-        required: throws exception if ``True`` and argument provided is None
-
-    Returns:
-        returns an ``int`` containing a timestamp (seconds from epoch) if conversion works
-        returns ``None`` if arg is ``None`` and required is set to ``False``
-        otherwise throws an Exception
-    """
-    if arg is None:
-        if required is True:
-            raise ValueError(f'Missing "{arg_name}"')
-
-    if isinstance(arg, str) and arg.isdigit():
-        # timestamp is a str containing digits - we just convert it to int
-        return int(arg)
-    if isinstance(arg, str):
-        # we use dateparser to handle strings either in ISO8601 format, or
-        # relative time stamps.
-        # For example: format 2019-10-23T00:00:00 or "3 days", etc
-        date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})
-        if date is None:
-            # if d is None it means dateparser failed to parse it
-            raise ValueError(f'Invalid date: {arg_name}')
-
-        return int(date.timestamp())
-    if isinstance(arg, (int, float)):
-        # Convert to int if the input is a float
-        return int(arg)
-    raise ValueError(f'Invalid date: "{arg_name}"')
-
-
 ''' COMMAND FUNCTIONS '''
 
 
@@ -460,7 +418,7 @@ def get_remediation_status_command(client: Client, args: dict) -> CommandResults
 
 
 def fetch_incidents(client: Client, first_fetch_time, fetch_limit, fetch_state, fetch_severity, fetch_status,
-                    fetch_app_ids):
+                    fetch_app_ids, mirror_direction=None, integration_instance=''):
     last_run = demisto.getLastRun()
     last_fetch = last_run.get('last_run_time')
 
@@ -474,8 +432,8 @@ def fetch_incidents(client: Client, first_fetch_time, fetch_limit, fetch_state, 
     incidents = list()
     for inc in results:
 
-        inc['mirror_direction'] = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction', 'None'), None)
-        inc['mirror_instance'] = demisto.integrationInstance()
+        inc['mirror_direction'] = mirror_direction
+        inc['mirror_instance'] = integration_instance
         inc['last_mirrored_in'] = int(datetime.now().timestamp() * 1000)
 
         incident = convert_to_xsoar_incident(inc)
@@ -512,8 +470,8 @@ def get_remote_data_command(client, args):
         incident_data = client.get_incident_by_id(remote_args.remote_incident_id)
         delta = {field: incident_data.get(field) for field in INCOMING_MIRRORED_FIELDS if incident_data.get(field)}
 
-        if not delta or arg_to_timestamp(incident_data.get('updated_at'), 'updated_at') \
-                <= arg_to_timestamp(remote_args.last_update, 'last_update'):
+        if not delta or date_to_timestamp(incident_data.get('updated_at'), '%Y-%m-%dT%H:%M:%S.%fZ') \
+                <= int(dateparser.parse(remote_args.last_update, settings={'TIMEZONE': 'UTC'}).timestamp()):
             demisto.debug("Nothing new in the incident.")
             delta = {
                 'id': remote_args.remote_incident_id,
@@ -688,6 +646,9 @@ def main() -> None:
     fetch_status = ','.join(STATUS_MAP.get(x) for x in argToList(params.get('status', [])))  # type: ignore[misc]
     fetch_app_ids = ','.join(argToList(params.get('app_ids', [])))
 
+    mirror_direction = MIRROR_DIRECTION.get(params.get('mirror_direction', 'None'), None)
+    instance = demisto.integrationInstance()
+
     commands = {
         'saas-security-incidents-get': get_incidents_command,
         'saas-security-incident-get-by-id': get_incident_by_id_command,
@@ -700,7 +661,7 @@ def main() -> None:
         'update-remote-system': update_remote_system_command,
     }
     command = demisto.command()
-    demisto.info(f'Command being called is {command}')
+    demisto.debug(f'Command being called is {command}')
 
     try:
         client = Client(
@@ -716,7 +677,7 @@ def main() -> None:
                                        fetch_status, fetch_app_ids))
         elif command == 'fetch-incidents':
             fetch_incidents(client, first_fetch_time, fetch_limit, fetch_state, fetch_severity, fetch_status,
-                            fetch_app_ids)
+                            fetch_app_ids, mirror_direction, instance)
         elif command == 'get-mapping-fields':
             return_results(get_mapping_fields_command())
 

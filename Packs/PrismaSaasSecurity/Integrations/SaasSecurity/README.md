@@ -14,17 +14,54 @@ Use the SaaS Security integration to protect against cloud‑based threats by sc
     | Fetch incidents | Whether to fetch incidents from the SaaS Security platform | False |
     | Incidents Fetch Interval |  | False |
     | Incident type |  | False |
-    | Number of incidents per fetch | Minimum is 10 | True |
+    | Number of incidents per fetch | Minimum is 10, Maximum is 1000. | True |
     | First fetch timestamp | (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False |
     | Fetch only incidents with matching state |  | False |
     | Fetch only incidents with matching severity | If nothing is selected, all severities will be used. | False |
     | Fetch only incidents with matching status | If nothing is selected, all statuses will be used. | False |
     | Fetch only incidents with matching App IDs | Comma-separated list of Application IDs. Run the 'saas-security-get-apps'
     command to return the Application ID, Name, and Type for all applications. | False |
+    | Incident Mirroring Direction | Choose whenever to mirror the incident. You can mirror only In (from SaasSecurity to XSOAR), only out (from XSOAR to SaasSecurity), or both directions. | False | 
+    | Close Mirrored XSOAR Incident | When selected, closing the SaasSecurity incident is mirrored in Cortex XSOAR. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+## SaaS Security Incident Mirroring
+**Note this feature is available from Cortex XSOAR version 6.0.0**
+
+You can enable incident mirroring between Cortex XSOAR incidents and SaaS Security notables.
+To setup the mirroring follow these instructions:
+1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
+2. Search for SaaS Security and select your integration instance.
+3. Enable **Fetches incidents**.
+4. In the *Incident Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
+    - Incoming - Any changes in SaaS Security incidents following fields (*state*, *category*, *status*, *assigned_to*, *resolved_by*, *asset_sha256*) will be reflected in XSOAR incidents.
+    - Outgoing - Any changes in XSOAR incidents following fields (*state*, *category*) will be reflected in SaaS Security incidents.
+    - Incoming And Outgoing - Changes in XSOAR incidents and SaaS Security incidents will be reflected in both directions.
+    - None - Turns off incident mirroring.
+5. Optional: Check the *Close Mirrored XSOAR Incident* integration parameter to close the Cortex XSOAR incident when the corresponding incident is closed on SaaS Security side.
+Newly fetched incidents will be mirrored in the chosen direction.
+Note: This will not effect existing incidents.
+   
+**Imporatnt Notes*** 
+ - In order for the mirroring to work, the *Incident Mirroring Direction* parameter needs to be set before the incident is fetched.
+ - In order to ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and SaaS Security. 
+ - The only fields that can be mirrored in from SaaS Security to XSOAR are:
+    - *state*
+    - *category* 
+    - *status*
+    - *assigned_to*
+    - *resolved_by*
+    - *asset_sha256*
+ - The only fields that can be mirror out from XSOAR to SaaS Security are:
+    - *state*
+    - *category*
+
+**Note that the categories that can be mirrored out are only for closed incident due to an API limitation.**
+
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -395,7 +432,7 @@ Remediate an asset.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | asset_id | The ID of the asset to remediate. | Required | 
-| remediation_type | 'The remediation action to take. Possible values: "Remove public sharing", "Quarantine", and "Restore".' | Required | 
+| remediation_type | 'The remediation action to take. Possible values: "Remove public sharing" (Only for google drive apps), "Quarantine", and "Restore" (Can be used only after the item is system quarantined).' | Required | 
 | remove_inherited_sharing | 'Used when the remediation type is “Remove public sharing”. When set
         to true, all the parent folders with a shared URL will be removed. Possible values: "True" and "False"' | Optional | 
 
@@ -487,3 +524,56 @@ Get the remediation status for a given asset ID.
 >|---|---|---|---|---|---|
 >| 2021-08-25T21:18:37.148+0000 | api | 61099dc46b544e38fa3ce89a | SP0605 copy.java | system_quarantine | success |
 
+
+### get-mapping-fields
+***
+Returns the list of fields for an incident type. This command is for debugging purposes.
+
+
+#### Base Command
+
+`get-mapping-fields`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+
+
+### get-remote-data
+***
+Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes.
+
+
+#### Base Command
+
+`get-remote-data`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The ticket ID. | Required | 
+| lastUpdate | Retrieve entries that were created after lastUpdate. | Required | 
+
+
+### get-modified-remote-data
+***
+Get the list of incidents that were modified since the last update. This method does not update the current incident, and should be used for debugging purposes.
+
+
+#### Base Command
+
+`get-modified-remote-data`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| lastUpdate | Retrieve entries that were created after lastUpdate. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.

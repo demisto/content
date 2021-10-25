@@ -28,7 +28,8 @@ configuration:
   required: false
 - additionalinfo: 'Choose the direction to mirror the incident: Incoming (from SaasSecurity
     to XSOAR), Outgoing (from XSOAR to SaasSecurity), or Incoming and Outgoing (from/to
-    XSOAR and SaasSecurity).'
+    XSOAR and SaasSecurity). Note that the outgoing is to mirror out the status only for closed XSOAR incidents,
+    because the API limitation does not allow to update the status for open incidents.'
   defaultvalue: None
   display: Incident Mirroring Direction
   hidden: false
@@ -45,7 +46,7 @@ configuration:
   defaultvalue: "20"
   type: 0
   required: true
-  additionalinfo: Minimum is 10.
+  additionalinfo: Minimum is 10, Maximum is 1000.
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   defaultvalue: 3 days
@@ -508,6 +509,9 @@ script:
   type: python
   subtype: python3
   dockerimage: demisto/python3:3.9.7.24076
+defaultmapperin: Saas Security - Incoming Mapper
+defaultclassifier: Saas Security
+defaultmapperout: Saas Security - Outgoing Mapper
 fromversion: 6.0.0
 tests:
 - SaasSecurity-Test

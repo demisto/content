@@ -1,20 +1,16 @@
 {
     "id": "incident_saassecurityremoveinheritedsharing",
     "version": -1,
-    "modified": "2021-10-13T18:23:53.515037+03:00",
+    "modified": "2021-10-25T10:28:58.670203+03:00",
     "name": "Saas Security Remove Inherited Sharing",
     "ownerOnly": false,
     "cliName": "saassecurityremoveinheritedsharing",
-    "type": "singleSelect",
+    "type": "boolean",
     "closeForm": false,
     "editForm": true,
     "required": false,
     "neverSetAsRequired": false,
     "isReadOnly": false,
-    "selectValues": [
-        "false",
-        "true"
-    ],
     "useAsKpi": false,
     "locked": false,
     "system": false,
