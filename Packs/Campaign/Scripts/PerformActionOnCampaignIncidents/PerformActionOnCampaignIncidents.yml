@@ -4,7 +4,6 @@ commonfields:
 dockerimage: demisto/python3:3.9.7.24076
 enabled: true
 name: PerformActionOnCampaignIncidents
-runas: DBotRole
 runonce: false
 script: ''
 comment: Perform user actions such as link, close, etc., on selected incidents from a
