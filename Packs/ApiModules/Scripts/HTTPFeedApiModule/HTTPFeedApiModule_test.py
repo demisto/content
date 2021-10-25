@@ -352,7 +352,7 @@ def test_get_indicators_with_relations():
             }],
         }
     }
-    expected_res = [{'value': '127.0.0.1', 'type': 'IP',
+    expected_res = ([{'value': '127.0.0.1', 'type': 'IP',
                      'rawJSON': {'malwarefamily': '"Test"', 'relationship_entity_b': 'Test', 'value': '127.0.0.1',
                                  'type': 'IP', 'tags': []},
                      'relationships': [
@@ -360,7 +360,7 @@ def test_get_indicators_with_relations():
                           'entityA': '127.0.0.1', 'entityAFamily': 'Indicator', 'entityAType': 'IP',
                           'entityB': 'Test',
                           'entityBFamily': 'Indicator', 'entityBType': 'STIX Malware', 'fields': {}}],
-                     'fields': {'tags': []}}]
+                     'fields': {'tags': []}}], False)
 
     asn_ranges = '"2021-01-17 07:44:49","127.0.0.1","3889","online","2021-04-22","Test"'
     with requests_mock.Mocker() as m:
@@ -422,10 +422,10 @@ def test_get_indicators_without_relations():
             }],
         }
     }
-    expected_res = [{'value': '127.0.0.1', 'type': 'IP',
+    expected_res = ([{'value': '127.0.0.1', 'type': 'IP',
                      'rawJSON': {'malwarefamily': '"Test"', 'relationship_entity_b': 'Test', 'value': '127.0.0.1',
                                  'type': 'IP', 'tags': []},
-                     'fields': {'tags': []}}]
+                     'fields': {'tags': []}}], False)
 
     asn_ranges = '"2021-01-17 07:44:49","127.0.0.1","3889","online","2021-04-22","Test"'
     with requests_mock.Mocker() as m:
@@ -475,7 +475,7 @@ def test_build_iterator_not_modified_header(mocker):
     - Running build_iterator method.
 
     Then
-    - Ensure that the results are empty.
+    - Ensure that the results are empty and No_update value is True.
     """
     mocker.patch.object(demisto, 'debug')
     with requests_mock.Mocker() as m:
@@ -487,7 +487,8 @@ def test_build_iterator_not_modified_header(mocker):
         result = client.build_iterator()
         assert result
         assert result[0]['https://api.github.com/meta']
-        assert list(result[0]['https://api.github.com/meta']) == []
+        assert list(result[0]['https://api.github.com/meta']['result']) == []
+        assert result[0]['https://api.github.com/meta']['no_update']
         assert demisto.debug.call_args[0][0] == 'No new indicators fetched, ' \
                                                 'createIndicators will be executed with noUpdate=True.'
 
