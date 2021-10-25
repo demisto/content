@@ -1,4 +1,4 @@
-comment: 'Creates a markdown table based on te info of the GetTasksWithSection command'
+comment: Creates a markdown table based on the information of the GetTasksWithSection command.
 commonfields:
   id: SetIRProceduresMarkdown
   version: -1

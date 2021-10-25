@@ -147,5 +147,5 @@ def main():
         return_error(traceback.format_exc())
 
 
-if __name__ in ['__main__', 'builtin', 'builtins']:
+if __name__ in ('__main__', 'builtin', 'builtins'):
     main()

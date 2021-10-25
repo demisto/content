@@ -15,7 +15,7 @@ subtype: python3
 dockerimage: demisto/python3:3.9.7.24076
 tags:
 - Utility
-comment: Get all tasks for specific incident by the given state.
+comment: Get all tasks for a specific incident by its given state.
 enabled: true
 outputs:
 - contextPath: Tasks
