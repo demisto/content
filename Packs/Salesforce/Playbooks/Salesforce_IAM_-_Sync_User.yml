@@ -178,7 +178,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: ""
+      description: ''
       id: 8e7aa1c8-b274-452a-8321-b673d05765f5
       iscommand: false
       name: Is Org Unit configured for provisioning?
@@ -219,7 +219,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: ""
+      description: ''
       id: b5291cb2-02da-4d37-80db-cf360eb21d6b
       iscommand: false
       name: Should the user be terminated?
@@ -649,7 +649,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: ""
+      description: ''
       id: 2b75a0b7-af42-4d6e-8b85-0e212bdd71c5
       iscommand: false
       name: Is Org Unit Sales?
@@ -761,7 +761,7 @@ tasks:
     ignoreworker: false
     nexttasks:
       '#none#':
-      - "108"
+      - "89"
     note: false
     quietmode: 0
     scriptarguments:
@@ -793,8 +793,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1765,
-          "y": 1770
+          "x": 1755,
+          "y": 1850
         }
       }
   "99":
@@ -1036,46 +1036,6 @@ tasks:
           "y": 1420
         }
       }
-  "108":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              complex:
-                accessor: success
-                root: IAM.Vendor
-          operator: isTrue
-      label: "Yes"
-    id: "108"
-    ignoreworker: false
-    nexttasks:
-      '#default#':
-      - "20"
-      "Yes":
-      - "89"
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: ""
-      id: 131f34db-2e4e-413b-8ddf-f95e63e5f845
-      iscommand: false
-      name: Success?
-      type: condition
-      version: -1
-    taskid: 131f34db-2e4e-413b-8ddf-f95e63e5f845
-    timertriggers: []
-    type: condition
-    view: |-
-      {
-        "position": {
-          "x": 1765,
-          "y": 1945
-        }
-      }
   "109":
     conditions:
     - condition:
@@ -1309,7 +1269,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: ""
+      description: ''
       id: af1e7297-c27f-4294-887d-34531560da13
       iscommand: false
       name: What is the status of the user?
