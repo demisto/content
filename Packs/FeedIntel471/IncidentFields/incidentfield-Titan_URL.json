@@ -5,7 +5,7 @@
     "name": "Titan URL",
     "ownerOnly": true,
     "description": "URL of the source object in Intel 471's Titan Portal",
-    "cliName": "intel471feedtitanurl",
+    "cliName": "titanurl",
     "type": "url",
     "closeForm": false,
     "editForm": true,
