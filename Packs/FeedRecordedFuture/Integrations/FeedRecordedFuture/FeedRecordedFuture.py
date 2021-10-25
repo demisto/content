@@ -10,6 +10,8 @@ import traceback
 import urllib.parse
 from typing import Tuple, Optional, List, Dict
 
+import demistomock as demisto
+
 # Disable insecure warnings
 urllib3.disable_warnings()
 BATCH_SIZE = 2000
@@ -158,21 +160,26 @@ class Client(BaseClient):
 
     def get_batches_from_file(self, limit):
 
-        file_stream = open("response.txt", 'rt')
-        columns = file_stream.readline()  # get the headers from the csv file.
-        columns = columns.replace("\"", "").strip().split(",")  # '"a","b"\n' -> ["a", "b"]
+        try:
+            with open("response.txt", 'rt') as f:
+                yield json.load(f)
+        except json.JSONDecodeError:
+            file_stream = open("response.txt", 'rt')
 
-        batch_size = limit if limit else BATCH_SIZE
-        while True:
+            columns = file_stream.readline()  # get the headers from the csv file.
+            columns = columns.replace("\"", "").strip().split(",")  # '"a","b"\n' -> ["a", "b"]
 
-            feed_batch = [feed for _, feed in zip(range(batch_size + 1), file_stream) if feed]
+            batch_size = limit if limit else BATCH_SIZE
+            while True:
 
-            if not feed_batch:
-                file_stream.close()
-                os.remove("response.txt")
-                return
+                feed_batch = [feed for _, feed in zip(range(batch_size + 1), file_stream) if feed]
 
-            yield csv.DictReader(feed_batch, fieldnames=columns)
+                if not feed_batch:
+                    file_stream.close()
+                    os.remove("response.txt")
+                    return
+
+                yield csv.DictReader(feed_batch, fieldnames=columns)
 
     def calculate_indicator_score(self, risk_from_feed):
         """Calculates the Dbot score of an indicator based on its Risk value from the feed.
@@ -339,7 +346,7 @@ def fetch_indicators_command(client, indicator_type, limit: Optional[int] = None
             indicators = []
             for item in feed_dicts:
                 raw_json = dict(item)
-                raw_json['value'] = value = item.get('Name')
+                raw_json['value'] = value = item.get('Name', item.get('name'))
                 if value in indicators_value_set:
                     continue
                 indicators_value_set.add(value)
