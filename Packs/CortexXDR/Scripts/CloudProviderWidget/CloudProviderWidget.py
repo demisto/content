@@ -17,9 +17,6 @@ from CommonServerPython import *
 from typing import Dict, Any
 import traceback
 
-''' STANDALONE FUNCTION '''
-
-
 ''' COMMAND FUNCTION '''
 
 
@@ -42,7 +39,6 @@ def main():
 
 
 ''' ENTRY POINT '''
-
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
