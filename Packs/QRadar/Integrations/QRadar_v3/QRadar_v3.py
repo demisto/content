@@ -3345,6 +3345,7 @@ def change_ctx_to_be_compatible_with_retry() -> None:
         (None): Modifies context to be compatible.
     """
     ctx = get_integration_context()
+    new_ctx = ctx.copy()
     try:
         extract_context_data(ctx)
         print_debug_msg("ctx was found to be compatible with retries")
@@ -3353,11 +3354,16 @@ def change_ctx_to_be_compatible_with_retry() -> None:
         print_debug_msg(f"extracting ctx {ctx} failed, trying to make it retry compatible. Error was: {str(e)}")
         extract_works = False
 
+    # The following is done to fix issued in upgrading from 2.0.27/28 to 2.1.0 was incompatible
+    if not extract_works and ctx.get('samples') and type(ctx.get('samples')) is str:
+        new_ctx['samples'] = json.loads(ctx.get('samples'))
+        new_ctx['last_mirror_update'] = json.loads(ctx.get('last_mirror_update', '0'))
+
     if not extract_works:
-        ctx = encode_context_data(ctx)
+        encoded_ctx = encode_context_data(new_ctx)
         print_debug_msg(f"Change ctx context data is {ctx}")
-        set_to_integration_context_with_retries(ctx)
-        print_debug_msg(f"Change ctx context data was changed to {ctx}")
+        set_to_integration_context_with_retries(encoded_ctx)
+        print_debug_msg(f"Change ctx context data was changed to {encoded_ctx}")
 
 
 ''' MAIN FUNCTION '''
