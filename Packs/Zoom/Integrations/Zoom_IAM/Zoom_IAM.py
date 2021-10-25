@@ -16,7 +16,6 @@ ERROR_CODES_TO_SKIP = [
 ]
 BASE_URL = 'https://api.zoom.us/v2/'
 
-
 '''CLIENT CLASS'''
 
 
@@ -202,6 +201,52 @@ def test_module(client: Client):
     return 'ok'
 
 
+def get_mapping_fields():
+    mapping = {
+        "id": "string",
+        "meta": {
+            "resourceType": "User",
+            "location": "https://api.zoom.us/scim2/Users/{id}",
+            "version": "1.0.0"
+        },
+        "schemas": [
+            "urn:ietf:params:scim:schemas:core:2.0:User",
+            "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User",
+            "urn:us:zoom:scim:schemas:extension:1.0:ZoomUser"
+        ],
+        "name": {
+            "givenName": "string",
+            "familyName": "string"
+        },
+        "emails": [
+            {
+                "type": "string",
+                "value": "string",
+                "primary": "boolean"
+            }
+        ],
+        "displayName": "string",
+        "userName": "string",
+        "active": "boolean",
+        "userType": "string",
+        "department": "string",
+        "phoneNumbers": [],
+        "roles": [],
+        "groups": [],
+        "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User": {
+            "department": "string"
+        },
+        "urn:us:zoom:scim:schemas:extension:1.0:ZoomUser": {
+            "loginType": {
+                "workEmail": "boolean",
+                "sso": "boolean"
+            }
+        }
+    }
+    incident_type_scheme = SchemeTypeMapping(type_name=IAMUserProfile.DEFAULT_INCIDENT_TYPE, fields=mapping)
+    return GetMappingFieldsResponse([incident_type_scheme])
+
+
 def main():
     user_profile = None
     params = demisto.params()
@@ -249,6 +294,8 @@ def main():
     try:
         if command == 'test-module':
             return_results(test_module(client))
+        elif command == 'get-mapping-fields':
+            return_results(get_mapping_fields())
     except Exception:
         # For any other integration command exception, return an error
         return_error(f'Failed to execute {command} command. Traceback: {traceback.format_exc()}')
