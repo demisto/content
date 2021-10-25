@@ -278,6 +278,16 @@ def _or_filter(client, filter_json1, filter_json2):
         readable_output=tableToMarkdown("Filter", filter_json)
     )
 
+@wrap_demisto_command("test-module")
+def _test_module(client):
+    # test the client can reach the case list
+    try:
+        cases = client.cases
+    except:
+        raise ValueError("Client cannot reach the server with the current configuration.")
+
+    return "ok"
+
 """ define entry """
 
 def main():
