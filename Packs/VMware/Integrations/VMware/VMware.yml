@@ -244,7 +244,7 @@ script:
     - contextPath: VMWare.NICState
       description: VM NIC state (i.e., connected, disconnected, delete).
       type: String
-  dockerimage: devdemisto/vmware:1.0.0.24282
+  dockerimage: demisto/vmware:1.0.0.24293
   runonce: false
   script: ''
   subtype: python2
