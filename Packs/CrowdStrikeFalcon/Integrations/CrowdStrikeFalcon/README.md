@@ -1414,7 +1414,7 @@ Deprecated. Use the cs-falcon-upload-custom-ioc command instead.
 
 ### 26. cs-falcon-update-ioc
 ***
-Updates an indicator for CrowdStrike to monitor.
+Deprecated. Use the cs-falcon-update-custom-ioc command instead.
 
 
 #### Base Command
@@ -3193,6 +3193,75 @@ Uploads an indicator for CrowdStrike to monitor.
 #### Human Readable Output
 
 >### Custom IOC was created successfully
+>|CreatedTime|Description|Expiration|ID|ModifiedTime|Action|Severity|Source|Type|Value|
+>|---|---|---|---|---|---|---|---|---|---|
+>| 2020-10-02T13:55:26Z | Test ioc | 2020-11-01T00:00:00Z | 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | 2020-10-02T13:55:26Z | prevent | high | Demisto playbook | domain | test.domain.com |
+
+### cs-falcon-update-custom-ioc
+***
+Updates an indicator for CrowdStrike to monitor.
+
+
+#### Base Command
+
+`cs-falcon-update-custom-ioc`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ioc_id | The ID of the IOC to delete. Can be retrieved by running the cs-falcon-search-custom-iocs command. | Required | 
+| action | Action to take when a host observes the custom IOC. Possible values are: no_action - Save the indicator for future use, but take no action. No severity required. allow - Applies to hashes only. Allow the indicator and do not detect it. Severity does not apply and should not be provided. prevent_no_ui - Applies to hashes only. Block and detect the indicator, but hide it from Activity > Detections. Has a default severity value. prevent - Applies to hashes only. Block the indicator and show it as a detection at the selected severity. detect - Enable detections for the indicator at the selected severity. | Required | 
+| platforms | The platforms that the indicator applies to. You can enter multiple platform names, separated by commas. Possible values are: mac, windows and linux. | Required | 
+| severity | The severity level to apply to this indicator. Possible values are: informational, low, medium, high and critical. | Required for the prevent and detect actions. Optional for no_action. | 
+| expiration | The date on which the indicator will become inactive. (YYYY-MM-DD format). | Optional | 
+| source | The source where this indicator originated. This can be used for tracking where this indicator was defined. Limited to 200 characters. | Optional | 
+| description | A meaningful description of the indicator. Limited to 200 characters. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.IOC.Type | string | The type of the IOC. | 
+| CrowdStrike.IOC.Value | string | The string representation of the indicator. | 
+| <span>CrowdStrike.IOC.ID</span> | string | The full ID of the indicator \(type:value\). | 
+| CrowdStrike.IOC.Policy | string | The policy of the indicator. | 
+| CrowdStrike.IOC.Source | string | The source of the IOC. | 
+| CrowdStrike.IOC.ShareLevel | string | The level at which the indicator will be shared. | 
+| CrowdStrike.IOC.Expiration | string | The datetime when the indicator will expire. | 
+| CrowdStrike.IOC.Description | string | The description of the IOC. | 
+| CrowdStrike.IOC.CreatedTime | string | The datetime the IOC was created. | 
+| CrowdStrike.IOC.CreatedBy | string | The identity of the user/process who created the IOC. | 
+| CrowdStrike.IOC.ModifiedTime | string | The date and time the indicator was last modified. | 
+| CrowdStrike.IOC.ModifiedBy | string | The identity of the user/process who last updated the IOC. | 
+
+
+#### Command Example
+```!cs-falcon-update-custom-ioc  ioc_id="4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r" severity="high"```
+
+#### Context Example
+```json
+{
+    "CrowdStrike": {
+        "IOC": {
+            "CreatedTime": "2020-10-02T13:55:26Z",
+            "Description": "Test ioc",
+            "Expiration": "2020-11-01T00:00:00Z",
+            "ID": "4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r",
+            "ModifiedTime": "2020-10-02T13:55:26Z",
+            "Action": "prevent",
+            "Severity": "high",
+            "Source": "Demisto playbook",
+            "Type": "domain",
+            "Value": "test.domain.com"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Custom IOC was updated successfully
 >|CreatedTime|Description|Expiration|ID|ModifiedTime|Action|Severity|Source|Type|Value|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 2020-10-02T13:55:26Z | Test ioc | 2020-11-01T00:00:00Z | 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | 2020-10-02T13:55:26Z | prevent | high | Demisto playbook | domain | test.domain.com |

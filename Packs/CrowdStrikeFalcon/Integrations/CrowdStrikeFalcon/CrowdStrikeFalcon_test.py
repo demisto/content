@@ -2756,6 +2756,55 @@ def test_upload_custom_ioc_command_fail(requests_mock):
     assert response['errors'] == excinfo.value.args[0]
 
 
+def test_update_custom_ioc_command(requests_mock):
+    """
+    Test cs-falcon-update-custom-ioc when an upload is successful
+
+    Given:
+     - The user tries to update an IOC
+    When:
+     - The server updates an IOC
+    Then:
+     - Ensure the request is sent as expected
+     - Return a human readable result with appropriate message
+     - Do populate the entry context with the right value
+    """
+    from CrowdStrikeFalcon import update_custom_ioc_command
+    ioc_id = '4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r'
+    ioc_response = {
+        'resources': [{
+            'id': ioc_id,
+            'type': 'md5',
+            'value': 'testmd5',
+            'action': 'prevent',
+            'severity': 'high',
+            'description': 'Eicar file',
+            'created_on': '2020-10-01T09:09:04Z',
+            'modified_on': '2020-10-01T09:09:04Z',
+        }]
+    }
+    updated_severity = 'medium'
+
+    def match_req_body(request):
+        if request.json() == {
+            'indicators': [{'id': ioc_id, 'severity': updated_severity}]
+        }:
+            return True
+    requests_mock.patch(
+        f'{SERVER_URL}/iocs/entities/indicators/v1',
+        json=ioc_response,
+        status_code=200,
+        additional_matcher=match_req_body,
+    )
+
+    results = update_custom_ioc_command(
+        ioc_id=ioc_id,
+        severity=updated_severity,
+    )
+    assert 'Custom IOC was updated successfully' in results["HumanReadable"]
+    assert results["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == 'testmd5'
+
+
 def test_delete_custom_ioc_command(requests_mock):
     """
     Test cs-falcon-delete-custom-ioc where it deletes IOC successfully

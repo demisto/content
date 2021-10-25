@@ -1181,6 +1181,34 @@ def upload_custom_ioc(
     return http_request('POST', '/iocs/entities/indicators/v1', json=payload)
 
 
+def update_custom_ioc(
+    ioc_id: str,
+    action: Optional[str] = None,
+    platforms: Optional[str] = None,
+    severity: Optional[str] = None,
+    source: Optional[str] = None,
+    description: Optional[str] = None,
+    expiration: Optional[str] = None,
+) -> dict:
+    """
+    Update an IOC
+    """
+    payload = {
+        'indicators': [{
+            'id': ioc_id,
+        } | assign_params(
+            action=action,
+            platforms=platforms,
+            severity=severity,
+            source=source,
+            description=description,
+            expiration=expiration,
+        )]
+    }
+
+    return http_request('PATCH', '/iocs/entities/indicators/v1', json=payload)
+
+
 def delete_custom_ioc(ids: str) -> dict:
     """
     Delete an IOC
@@ -1748,6 +1776,45 @@ def upload_custom_ioc_command(
         contents=raw_res,
         ec={'CrowdStrike.IOC(val.ID === obj.ID)': ec},
         hr=tableToMarkdown('Custom IOC was created successfully', ec),
+    )
+
+
+def update_custom_ioc_command(
+    ioc_id: str,
+    action: Optional[str] = None,
+    platforms: Optional[str] = None,
+    severity: Optional[str] = None,
+    source: Optional[str] = None,
+    description: Optional[str] = None,
+    expiration: Optional[str] = None,
+) -> dict:
+    """
+    :param ioc_id: The ID of the indicator to update.
+    :param action: Action to take when a host observes the custom IOC.
+    :param platforms: The platforms that the indicator applies to.
+    :param severity: The severity level to apply to this indicator.
+    :param source: The source where this indicator originated.
+    :param description: A meaningful description of the indicator.
+    :param expiration: The date on which the indicator will become inactive.
+    """
+
+    raw_res = update_custom_ioc(
+        ioc_id,
+        action,
+        platforms,
+        severity,
+        source,
+        description,
+        expiration,
+    )
+    handle_response_errors(raw_res)
+    iocs = raw_res.get('resources', [])
+    ec = [get_trasnformed_dict(iocs[0], IOC_KEY_MAP)]
+    # enrich_ioc_dict_with_ids(ec) TODO: check if needed
+    return create_entry_object(
+        contents=raw_res,
+        ec={'CrowdStrike.IOC(val.ID === obj.ID)': ec},
+        hr=tableToMarkdown('Custom IOC was updated successfully', ec),
     )
 
 
@@ -2929,6 +2996,8 @@ def main():
             return_results(search_custom_iocs_command(**args))
         elif command == 'cs-falcon-upload-custom-ioc':
             return_results(upload_custom_ioc_command(**args))
+        elif command == 'cs-falcon-update-custom-ioc':
+            return_results(update_custom_ioc_command(**args))
         elif command == 'cs-falcon-delete-custom-ioc':
             return_results(delete_custom_ioc_command(ioc_id=args.get('ioc_id')))
         elif command == 'cs-falcon-device-count-ioc':
