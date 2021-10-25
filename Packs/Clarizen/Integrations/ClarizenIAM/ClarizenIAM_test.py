@@ -1,7 +1,7 @@
 import requests_mock
 from ClarizenIAM import Client, main
 from IAMApiModule import *
-
+import pytest
 APP_USER_OUTPUT = {
     'id': '/User/1234',
     'username': 'mock_user_name',
@@ -20,10 +20,7 @@ APP_DISABLED_USER_OUTPUT = {
     'email': 'emploee@paloaltonetworks.com',
 }
 
-
-def mock_client():
-    client = Client(base_url='https://test.com', auth=('testdemisto', '123456'))
-    return client
+BASE_URL = 'https://test.com'
 
 
 def get_outputs_from_user_profile(user_profile):
@@ -33,6 +30,12 @@ def get_outputs_from_user_profile(user_profile):
 
 
 class TestGetUserCommand:
+    @pytest.fixture(autouse=True)
+    def setup(self, mocker) -> None:
+        mocker.patch.object(Client, 'get_session_id', return_value='SessionID')
+        mocker.patch.object(Client, 'get_manager_id')
+        self.client = Client(base_url=BASE_URL, headers={})
+
     def test_existing_user(self):
         """
         Given:
@@ -44,7 +47,6 @@ class TestGetUserCommand:
         Then:
             - Ensure the resulted User Profile object holds the correct user details
         """
-        client = mock_client()
         args = {
             'user-profile': {
                 'email': 'emploee@paloaltonetworks.com',
@@ -53,10 +55,10 @@ class TestGetUserCommand:
         }
 
         with requests_mock.Mocker() as m:
-            m.post('/data/findUserQuery', json={'entities': [{'id': '/User/1234'}]})
-            m.get('/data/objects/User/1234', json=APP_USER_OUTPUT)
+            m.post(f'{BASE_URL}/data/findUserQuery', json={'entities': [{'id': '/User/1234'}]})
+            m.get(f'{BASE_URL}/data/objects/User/1234', json=APP_USER_OUTPUT)
 
-            user_profile = IAMCommand().get_user(client, args)
+            user_profile = IAMCommand().get_user(self.client, args)
 
         outputs = get_outputs_from_user_profile(user_profile)
 
@@ -79,7 +81,6 @@ class TestGetUserCommand:
         Then:
             - Ensure the resulted User Profile object holds information about an unsuccessful result.
         """
-        client = mock_client()
         args = {
             'user-profile': {
                 'email': 'emploee@paloaltonetworks.com',
@@ -90,7 +91,7 @@ class TestGetUserCommand:
         with requests_mock.Mocker() as m:
             m.post('/data/findUserQuery', json={})
 
-            user_profile = IAMCommand().get_user(client, args)
+            user_profile = IAMCommand().get_user(self.client, args)
 
         outputs = get_outputs_from_user_profile(user_profile)
 
@@ -110,10 +111,8 @@ class TestGetUserCommand:
         Then:
             - Ensure the resulted User Profile object holds information about the bad response.
         """
-        import demistomock as demisto
         mocker.patch.object(demisto, 'error')
 
-        client = mock_client()
         args = {
             'user-profile': {
                 'email': 'emploee@paloaltonetworks.com',
@@ -124,7 +123,7 @@ class TestGetUserCommand:
         with requests_mock.Mocker() as m:
             m.post('/data/findUserQuery', status_code=500, json={'error': {'message': 'INTERNAL SERVER ERROR'}})
 
-            user_profile = IAMCommand().get_user(client, args)
+            user_profile = IAMCommand().get_user(self.client, args)
 
         outputs = get_outputs_from_user_profile(user_profile)
 
@@ -135,6 +134,12 @@ class TestGetUserCommand:
 
 
 class TestCreateUserCommand:
+    @pytest.fixture(autouse=True)
+    def setup(self, mocker) -> None:
+        mocker.patch.object(Client, 'get_session_id', return_value='SessionID')
+        mocker.patch.object(Client, 'get_manager_id')
+        self.client = Client(base_url=BASE_URL, headers={})
+
     def test_success(self):
         """
         Given:
@@ -145,7 +150,6 @@ class TestCreateUserCommand:
         Then:
             - Ensure a User Profile object with the user data is returned
         """
-        client = mock_client()
         args = {
             'user-profile': {
                 'email': 'emploee@paloaltonetworks.com',
@@ -158,7 +162,7 @@ class TestCreateUserCommand:
             m.put('/data/objects/User', json={'id': '/User/1234'})  # Create user
             m.get('/data/objects/User/1234', json=APP_USER_OUTPUT)  # Get user by id (after creating the user)
 
-            user_profile = IAMCommand().create_user(client, args)
+            user_profile = IAMCommand().create_user(self.client, args)
 
         outputs = get_outputs_from_user_profile(user_profile)
 
@@ -182,7 +186,6 @@ class TestCreateUserCommand:
         Then:
             - Ensure the command is considered successful and the user is still disabled
         """
-        client = mock_client()
         args = {
             'user-profile': {
                 'email': 'emploee@paloaltonetworks.com',
@@ -196,7 +199,7 @@ class TestCreateUserCommand:
             m.get('/data/objects/User/1234', json=APP_DISABLED_USER_OUTPUT)
             m.post('/data/objects/User/1234', json=APP_DISABLED_USER_OUTPUT)
 
-            user_profile = IAMCommand().create_user(client, args)
+            user_profile = IAMCommand().create_user(self.client, args)
 
         outputs = get_outputs_from_user_profile(user_profile)
 
@@ -210,6 +213,12 @@ class TestCreateUserCommand:
 
 
 class TestUpdateUserCommand:
+    @pytest.fixture(autouse=True)
+    def setup(self, mocker) -> None:
+        mocker.patch.object(Client, 'get_session_id', return_value='SessionID')
+        mocker.patch.object(Client, 'get_manager_id')
+        self.client = Client(base_url=BASE_URL, headers={})
+
     def test_non_existing_user(self):
         """
         Given:
@@ -224,7 +233,6 @@ class TestUpdateUserCommand:
             - Ensure the create action is executed
             - Ensure a User Profile object with the user data is returned
         """
-        client = mock_client()
         args = {'user-profile': {'email': 'emploee@paloaltonetworks.com', 'givenname': 'mock_first_name'}}
 
         with requests_mock.Mocker() as m:
@@ -232,7 +240,7 @@ class TestUpdateUserCommand:
             m.put('/data/objects/User', json={'id': '/User/1234'})
             m.get('/data/objects/User/1234', json=APP_USER_OUTPUT)
 
-            user_profile = IAMCommand(create_if_not_exists=True).update_user(client, args)
+            user_profile = IAMCommand(create_if_not_exists=True).update_user(self.client, args)
 
         outputs = get_outputs_from_user_profile(user_profile)
 
@@ -255,10 +263,9 @@ class TestUpdateUserCommand:
         Then:
             - Ensure the command is considered successful and skipped
         """
-        client = mock_client()
         args = {'user-profile': {'email': 'emploee@paloaltonetworks.com', 'givenname': 'mock_first_name'}}
 
-        user_profile = IAMCommand(is_update_enabled=False).update_user(client, args)
+        user_profile = IAMCommand(is_update_enabled=False).update_user(self.client, args)
 
         outputs = get_outputs_from_user_profile(user_profile)
 
@@ -279,7 +286,6 @@ class TestUpdateUserCommand:
         Then:
             - Ensure the user is enabled at the end of the command execution.
         """
-        client = mock_client()
         args = {
             'user-profile': {
                 'email': 'emploee@paloaltonetworks.com',
@@ -293,7 +299,7 @@ class TestUpdateUserCommand:
             m.get('/data/objects/User/1234', json=APP_USER_OUTPUT)
             m.post('/data/objects/User/1234', json=APP_USER_OUTPUT)
 
-            user_profile = IAMCommand().update_user(client, args)
+            user_profile = IAMCommand().update_user(self.client, args)
 
         outputs = get_outputs_from_user_profile(user_profile)
 
@@ -307,6 +313,12 @@ class TestUpdateUserCommand:
 
 
 class TestDisableUserCommand:
+    @pytest.fixture(autouse=True)
+    def setup(self, mocker) -> None:
+        mocker.patch.object(Client, 'get_session_id', return_value='SessionID')
+        mocker.patch.object(Client, 'get_manager_id')
+        self.client = Client(base_url=BASE_URL, headers={})
+
     def test_success(self):
         """
         Given:
@@ -317,7 +329,6 @@ class TestDisableUserCommand:
         Then:
             - Ensure that the command is successful and the user is disabled
         """
-        client = mock_client()
         args = {
             'user-profile': {
                 'email': 'emploee@paloaltonetworks.com',
@@ -330,7 +341,7 @@ class TestDisableUserCommand:
             m.get('/data/objects/User/1234', json=APP_DISABLED_USER_OUTPUT)
             m.post('/data/lifecycle', json={})
 
-            user_profile = IAMCommand().disable_user(client, args)
+            user_profile = IAMCommand().disable_user(self.client, args)
 
         outputs = get_outputs_from_user_profile(user_profile)
 
@@ -354,7 +365,6 @@ class TestDisableUserCommand:
         Then:
             - Ensure the command is considered successful and skipped
         """
-        client = mock_client()
         args = {
             'user-profile': {
                 'email': 'emploee@paloaltonetworks.com',
@@ -365,7 +375,7 @@ class TestDisableUserCommand:
         with requests_mock.Mocker() as m:
             m.post('/data/findUserQuery', json={})
 
-            user_profile = IAMCommand().disable_user(client, args)
+            user_profile = IAMCommand().disable_user(self.client, args)
 
         outputs = get_outputs_from_user_profile(user_profile)
 
@@ -385,7 +395,6 @@ def test_get_mapping_fields_command(mocker):
     Then:
         - Ensure a GetMappingFieldsResponse object that contains the application fields is returned
     """
-    import demistomock as demisto
     mocker.patch.object(demisto, 'params', return_value={'url': 'https://test.com'})
     mocker.patch.object(demisto, 'command', return_value='get-mapping-fields')
     mock_result = mocker.patch('ClarizenIAM.return_results')
