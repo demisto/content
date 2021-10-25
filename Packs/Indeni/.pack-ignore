@@ -1,11 +1,8 @@
 [file:Indeni.yml]
-ignore=IN126
+ignore=IN126,IN145
 
 [file:README.md]
 ignore=RM104,RM106
 
 [file:classifier-mapper-incoming-indeni.json]
 ignore=BA101
-
-[file:Indeni.yml]
-ignore=IN145

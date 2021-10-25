@@ -1,5 +1,5 @@
 [file:GoogleCloudSCC.yml]
-ignore=IN126
+ignore=IN126,IN145
 
 [file:README.md]
 ignore=RM104
@@ -9,6 +9,3 @@ ignore=BA101
 
 [file:incidentfield-GoogleCloudSCC_Finding_SourceProperties_Alert.json]
 ignore=IF100
-
-[file:GoogleCloudSCC.yml]
-ignore=IN145

@@ -2,7 +2,4 @@
 ignore=RM104
 
 [file:integration-DomainTools.yml]
-ignore=IN144
-
-[file:integration-DomainTools.yml]
-ignore=IN145
+ignore=IN144,IN145

@@ -1,8 +1,5 @@
 [file:FeedCrowdstrikeFalconIntel.yml]
-ignore=IN135,IN122
+ignore=IN135,IN122,IN145
 
 [file:CrowdStrikeIndicatorFeed.yml]
 ignore=IN122
-
-[file:FeedCrowdstrikeFalconIntel.yml]
-ignore=IN145

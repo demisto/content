@@ -1,5 +1,2 @@
 [file:Ipstack.yml]
-ignore=IN144
-
-[file:Ipstack.yml]
-ignore=IN145
+ignore=IN144,IN145

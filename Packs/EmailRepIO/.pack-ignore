@@ -1,5 +1,2 @@
 [file:EmailRepIO.yml]
-ignore=IN144
-
-[file:EmailRepIO.yml]
-ignore=IN145
+ignore=IN144,IN145

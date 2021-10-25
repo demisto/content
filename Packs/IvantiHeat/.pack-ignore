@@ -1,5 +1,2 @@
 [file:IvantiHeat.yml]
-ignore=IN126
-
-[file:IvantiHeat.yml]
-ignore=IN145
+ignore=IN126,IN145

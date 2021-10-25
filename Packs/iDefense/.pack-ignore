@@ -2,10 +2,7 @@
 ignore=PA125
 
 [file:iDefense_v2.yml]
-ignore=BA108,BA109
+ignore=BA108,BA109,IN145
 
 [file:FeediDefense.yml]
-ignore=IN145
-
-[file:iDefense_v2.yml]
 ignore=IN145

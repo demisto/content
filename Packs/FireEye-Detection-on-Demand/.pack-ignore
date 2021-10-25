@@ -1,5 +1,2 @@
 [file:FireEye-Detection-on-Demand.yml]
-ignore=BA108,BA109
-
-[file:FireEye-Detection-on-Demand.yml]
-ignore=IN145
+ignore=BA108,BA109,IN145
