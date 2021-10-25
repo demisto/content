@@ -5,7 +5,7 @@ ignore=BA101
 ignore=BA101
 
 [file:EWSO365.yml]
-ignore=IN126,DS107
+ignore=IN126,DS107,IN145
 
 [file:EWSv2.yml]
 ignore=IN126,IN135
@@ -15,6 +15,3 @@ ignore=RM102,RM106
 
 [file:classifier-mapper-incoming-EWS_v2.json]
 ignore=BA101
-
-[file:EWSO365.yml]
-ignore=IN145
