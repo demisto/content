@@ -4,7 +4,6 @@ from CommonServerPython import *
 import urllib3
 import jmespath
 from typing import List, Dict, Union, Optional, Callable, Tuple
-from distutils.version import LooseVersion
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -111,11 +110,13 @@ class Client:
         url = feed.get('url', self.url)
 
         # Set the If-None-Match and If-Modified-Since headers if we have etag or last_modified values in the context.
-        etag = get_integration_context().get('etag')
+        last_run = demisto.getLastRun()
+        etag = last_run.get('etag')
+        last_modified = last_run.get('last_modified')
+
         if etag:
             self.headers['If-None-Match'] = etag
 
-        last_modified = get_integration_context().get('last_modified')
         if last_modified:
             self.headers['If-Modified-Since'] = last_modified
 
@@ -141,16 +142,15 @@ class Client:
             )
 
         try:
-            no_update = get_no_update_value(r)
-            if not no_update:
-                r.raise_for_status()
+            r.raise_for_status()
+            if r.content:
                 data = r.json()
                 result = jmespath.search(expression=feed.get('extractor'), data=data)
 
         except ValueError as VE:
             raise ValueError(f'Could not parse returned data to Json. \n\nError massage: {VE}')
 
-        return result, no_update
+        return result, get_no_update_value(r)
 
 
 def get_no_update_value(response: requests.Response) -> bool:
@@ -179,7 +179,11 @@ def get_no_update_value(response: requests.Response) -> bool:
                       'createIndicators will be executed with noUpdate=False.')
         return False
 
-    set_integration_context({'last_modified': last_modified, 'etag': etag})
+    last_run = demisto.getLastRun()
+    last_run['last_modified'] = last_modified
+    last_run['etag'] = etag
+    demisto.setLastRun(last_run)
+
     demisto.debug('New indicators fetched - the Last-Modified value has been updated,'
                   ' createIndicators will be executed with noUpdate=False.')
     return False
@@ -386,19 +390,18 @@ def feed_main(params, feed_name, prefix):
             indicators, no_update = fetch_indicators_command(client, indicator_type, feedTags, auto_detect,
                                                              create_relationships)
 
-            # get demisto version
-            demisto_version = get_demisto_version().get('version', '5.5.0')
-
             # check if the version is higher than 6.5.0 so we can use noUpdate parameter
-            if LooseVersion(demisto_version) >= LooseVersion('6.5.0'):
-                if not len(indicators):
-                    demisto.createIndicators([], noUpdate=no_update)
+            if is_demisto_version_ge('6.5.0'):
+                if not indicators:
+                    demisto.createIndicators(indicators, noUpdate=no_update)
                 else:
                     for b in batch(indicators, batch_size=2000):
                         demisto.createIndicators(b, noUpdate=no_update)
+
             else:
-                if not len(indicators):
-                    demisto.createIndicators([])
+                # call createIndicators without noUpdate arg
+                if not indicators:
+                    demisto.createIndicators(indicators)
                 else:
                     for b in batch(indicators, batch_size=2000):
                         demisto.createIndicators(b)
