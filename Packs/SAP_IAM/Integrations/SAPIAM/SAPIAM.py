@@ -204,19 +204,19 @@ def main():
     command = demisto.command()
     args = demisto.args()
 
+    user_profile: Optional[IAMUserProfile] = None
+    user_id, email, user_name = '', '', ''
+
     # Extracting the user ID, email and username to pass to Client. This is needed because IAM Command uses the client
     # get-user When get-user is not supported by the api. So get-user here just returns the fields to allow disable
     # Command to work as expected.
     if args.get('user-profile'):
         incident_type: str = IAMUserProfile.CREATE_INCIDENT_TYPE if command == 'iam-create-user' else \
             IAMUserProfile.UPDATE_INCIDENT_TYPE
-        user_profile = IAMUserProfile(args.get('user-profile'), mapper=mapper_out, incident_type=incident_type)
-        user_id = user_profile.get_attribute('id')
-        email = user_profile.get_attribute('email')
-        user_name = user_profile.get_attribute('username')
-    else:
-        user_profile = None
-        user_id, email, user_name = '', '', ''
+        if user_profile := IAMUserProfile(args.get('user-profile'), mapper=mapper_out, incident_type=incident_type):
+            user_id = user_profile.get_attribute('id')
+            email = user_profile.get_attribute('email')
+            user_name = user_profile.get_attribute('username')
 
     is_disable_enabled = params.get("disable_user_enabled")
 

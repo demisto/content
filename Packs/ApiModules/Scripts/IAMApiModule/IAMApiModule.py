@@ -138,7 +138,7 @@ class IAMUserProfile:
         self.mapped_user_profile = None
         self.mapped_user_profile = self.map_object(mapper, incident_type) if mapper else self._user_profile
         self._user_profile_delta = safe_load_json(user_profile_delta) if user_profile_delta else {}
-        self._vendor_action_results = []
+        self._vendor_action_results: List = []
 
     def get_attribute(self, item, use_old_user_data=False, user_profile_data: Optional[Dict] = None):
         user_profile = user_profile_data if user_profile_data else self._user_profile

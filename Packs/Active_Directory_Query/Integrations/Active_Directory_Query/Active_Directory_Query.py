@@ -613,6 +613,7 @@ def get_user_iam(default_base_dn, args, mapper_in, mapper_out):
         default_attribute = "sAMAccountName"
 
         iam_user_profile = IAMUserProfile(user_profile=user_profile, user_profile_delta=user_profile_delta,
+                                          mapper=mapper_out,
                                           incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
 
         # we use the outgoing mapper to get all the AD attributes which will be later passed to search_with_paging()
