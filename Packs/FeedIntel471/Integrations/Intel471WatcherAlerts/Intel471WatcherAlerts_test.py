@@ -53,11 +53,11 @@ def test_fetch_incidents(requests_mock):
 
     mock_response = util_load_json('test_data/search_alerts.json')
     requests_mock.get(
-        'https://test.com/api/v1/get_alerts?showRead=true&markAsRead=false&displayWatchers=true&count=1'
-        , json=mock_response['alerts'])
+        'https://api.test.com/v1/get_alerts?showRead=true&markAsRead=false&displayWatchers=true&count=1',
+        json=mock_response['alerts'])
 
     client = Client(
-        base_url='https://test.com/api/v1',
+        base_url='https://api.test.com/v1',
         verify=False,
         headers={
             'Authentication': 'Bearer some_api_key'
