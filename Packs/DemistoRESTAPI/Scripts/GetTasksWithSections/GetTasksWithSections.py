@@ -1,6 +1,7 @@
 from CommonServerPython import *
 import copy
 
+
 def find_start_task(tasks: Dict):
     for task in tasks.values():
         if task.get('type') == 'start':
@@ -32,13 +33,13 @@ def traverse_tasks(tasks: Dict[str, Dict],
             if not title:
                 title = 'Start'
             new_path = path + [title] if prev_task and prev_task.get('type') == 'title' else [title]
-        elif task_type == 'condition' or  task_state == 'WillNotBeExecuted':
+        elif task_type == 'condition' or task_state == 'WillNotBeExecuted':
             new_path = path
         else:
             task = assign_task_output(current_task, path)
             if task.get('type') == 'condition' or task.get('state') == 'WillNotBeExecuted':
                 pass
-        
+
             dct = results
             for p in path:
                 dct.setdefault(p, {})
@@ -75,16 +76,16 @@ def assign_task_output(task: Dict, path: List[str]):
                          completedBy=task.get('completedBy'))
 
 
-def add_url_to_tasks(tasks, workplan_url):
+def add_url_to_tasks(tasks: List[Dict[str, str]], workplan_url: str):
     tasks = copy.deepcopy(tasks)
     for task in tasks:
-        task_id = task.get('id')
+        task_id = task['id']
         task_url = os.path.join(workplan_url, task_id)
         task['id'] = f"[{task_id}]({task_url})"
     return tasks
 
 
-def get_tasks_command(incident_id):
+def get_tasks_command(incident_id: str):
     urls = demisto.demistoUrls()
     workplan_url = urls.get('workPlan')
 
