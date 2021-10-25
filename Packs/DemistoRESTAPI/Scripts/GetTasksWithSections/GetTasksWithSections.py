@@ -58,11 +58,11 @@ def traverse_tasks(tasks: Dict[str, Dict],
                 dct = dct[p]
             dct.setdefault('tasks', []).append(task)
             new_path = path
-
-        next_tasks_ids: Set = set().union(*demisto.get(current_task, 'nextTasks').values())
-        next_tasks: List[Dict] = [tasks.get(task_id) for task_id in next_tasks_ids]  # type: ignore
-        for next_task in next_tasks:
-            traverse_tasks(tasks, next_task, results, current_task, new_path, visited)
+        if current_task.get('nextTasks'):
+            next_tasks_ids: Set = set().union(*demisto.get(current_task, 'nextTasks').values())
+            next_tasks: List[Dict] = [tasks.get(task_id) for task_id in next_tasks_ids]  # type: ignore
+            for next_task in next_tasks:
+                traverse_tasks(tasks, next_task, results, current_task, new_path, visited)
 
 
 def assign_task_output(task: Dict, path: List[str]):
