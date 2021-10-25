@@ -18,7 +18,7 @@
  "default": false,
  "autorun": false,
  "disabled": false,
- "reputationCalc": 1,
+ "reputationCalc": 2,
  "onChangeRepAlg": 2,
  "fromVersion": "6.1.0",
  "layout": "Phishing",
