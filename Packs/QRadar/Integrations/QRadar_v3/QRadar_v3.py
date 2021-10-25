@@ -3348,7 +3348,7 @@ def change_ctx_to_be_compatible_with_retry() -> None:
     new_ctx = ctx.copy()
     try:
         extract_context_data(ctx)
-        print_debug_msg("ctx was found to be compatible with retries")
+        print_debug_msg(f"ctx {ctx} was found to be compatible with retries")
         extract_works = True
     except TypeError as e:
         print_debug_msg(f"extracting ctx {ctx} failed, trying to make it retry compatible. Error was: {str(e)}")
