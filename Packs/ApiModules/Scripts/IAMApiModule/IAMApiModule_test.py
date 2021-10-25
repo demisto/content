@@ -39,9 +39,6 @@ class MockCLient():
     def disable_user(self):
         return None
 
-    # def handle_exception(self, user_profile, e, IAMActions.CREATE_USER):
-    #     pass
-
 
 def get_outputs_from_user_profile(user_profile):
     entry_context = user_profile.to_entry()
