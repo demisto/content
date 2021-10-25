@@ -32,7 +32,7 @@ class Client(BaseClient):
         uri = params.get('deactivate_uri')
         return self._http_request(method='GET', url_suffix=uri, resp_type='response')
 
-    def get_user(self, user_name: str) -> Optional[IAMUserAppData]:
+    def get_user(self, _, user_name: str) -> Optional[IAMUserAppData]:
         """ Returns an IAMUserAppData object
         that holds the user_id, username, is_active and app_data attributes given in the query response.
 
