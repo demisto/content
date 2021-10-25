@@ -29,7 +29,7 @@ def basescript_dummy_command(args: Dict[str, Any]) -> CommandResults:
            'Sub Type': alert_event.get('identity_sub_type'),
            'Uuid': alert_event.get('identity_uuid'),
            'Provider': alert_event.get('cloud_provider'),
-           'Access Keys': alert_event.get('userIdentity').get('accessKeyId')}
+           'Access Keys': alert_event.get('identity_orig').get('accessKeyId')}
 
     return CommandResults(readable_output=tableToMarkdown('Identity Information', res, headers=res.keys()))
 
