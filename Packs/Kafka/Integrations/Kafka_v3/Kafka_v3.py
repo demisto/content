@@ -84,7 +84,7 @@ class KafkaCommunicator:
                 topic_partitions += [TopicPartition(topic=topic, partition=metadata_partition.id, offset=0)]
 
         kafka_consumer.assign(topic_partitions)
-        return kafka_consumer.consume(timeout=60)
+        return kafka_consumer.poll(1.0)
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -168,7 +168,7 @@ def consume_message(kafka):
     """
     topic = demisto.args().get('topic')
     offset = demisto.args().get('offset', 0)
-    partition = int(demisto.args().get('partition', -1))
+    partition = demisto.args().get('partition', '-1')
 
     #kafka_topics = kafka.get_topics().values()
     #partitions = topic.partitions.values()
@@ -177,37 +177,35 @@ def consume_message(kafka):
     if not message:
         return_results('No message was consumed.')
     else:
-        markdown = tableToMarkdown(
-            name=f'Message consumed from topic \'{topic}\'',
-            t={
-                'Offset': message.offset(),
-                'Message': message.value()
-            },
-            headers=[
-                'Offset',
-                'Message'
-            ]
-        )
-        entry_context = {
-            'Kafka.Topic(val.Name === obj.Name)': {
-                'Name': topic,
-                'Message': {
-                    'Value': message.value(),
-                    'Offset': message.offset()
-                }
-            }
-        }
-        demisto.results({
-            'Type': EntryType.NOTE,
-            'Contents': {
-                'Message': message.value(),
-                'Offset': message.offset()
-            },
-            'ContentsFormat': formats['json'],
-            'HumanReadable': markdown,
-            'ReadableContentsFormat': formats['markdown'],
-            'EntryContext': entry_context
-        })
+        #markdown = tableToMarkdown(f'Message consumed from topic *{topic}*',
+        #                           [{'Offset': message.offset(), 'Message': message.value()}])
+        #return_results(f'Message was successfully produced to '
+        #               f'topic \'{message.offset()}\', partition {message.value()}')
+        demisto.debug([{'Offset': message.offset(), 'Message': message.value()}])
+        message_value = message.value()
+        readable_output = tableToMarkdown(f'Message consumed from topic {topic}',
+                                          [{'Offset': message.offset(), 'Message': message_value.decode("utf-8")}])
+        return_results(f"{message.offset()} {message_value.decode('utf-8')}")
+        # entry_context = {
+        #     'Kafka.Topic(val.Name === obj.Name)': {
+        #         'Name': topic,
+        #         'Message': {
+        #             'Value': message.value(),
+        #             'Offset': message.offset()
+        #         }
+        #     }
+        # }
+        # demisto.results({
+        #     'Type': EntryType.NOTE,
+        #     'Contents': {
+        #         'Message': message.value(),
+        #         'Offset': message.offset()
+        #     },
+        #     'ContentsFormat': formats['json'],
+        #     'HumanReadable': readable_output,
+        #     'ReadableContentsFormat': formats['markdown'],
+        #     'EntryContext': entry_context
+        # })
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
