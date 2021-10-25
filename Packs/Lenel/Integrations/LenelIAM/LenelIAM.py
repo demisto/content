@@ -136,7 +136,7 @@ class Client(BaseClient):
         username = property_value_map.get('USERNAME')
         return IAMUserAppData(user_id, username, is_active=True, app_data=res)
 
-    def update_user(self, user_id: str, user_data: Dict[str, Any]) -> IAMUserAppData:
+    def update_user(self, user_id: str, user_data: Dict[str, Any]) -> Optional[IAMUserAppData]:
         """ Updates a user in the application using REST API.
 
         :type user_id: ``str``
@@ -186,7 +186,7 @@ class Client(BaseClient):
         }
         return self.update_user(user_id, lenel_user)
 
-    def disable_user(self, user_id: str) -> IAMUserAppData:
+    def disable_user(self, user_id: str) -> Optional[IAMUserAppData]:
         """ Disables a user in the application using REST API.
 
         :type user_id: ``str``

@@ -77,7 +77,7 @@
 			}
 		}
 	},
-	"name": "User Profile - Lenel (Incoming)",
+	"name": "User Profile - IAM Lenel (Incoming)",
 	"type": "mapping-incoming",
 	"version": -1,
 	"fromVersion": "6.0.0"

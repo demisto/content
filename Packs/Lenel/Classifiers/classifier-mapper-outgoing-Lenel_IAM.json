@@ -150,7 +150,7 @@
 			}
 		}
 	},
-	"name": "User Profile - Lenel (Outgoing)",
+	"name": "User Profile - IAM Lenel (Outgoing)",
 	"type": "mapping-outgoing",
 	"version": -1,
 	"fromVersion": "6.0.0"
