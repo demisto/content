@@ -11,7 +11,6 @@ scripttarget: 0
 runonce: false
 dockerimage: demisto/python3:3.9.7.24076
 subtype: python3
-runas: DBotRole
 tests:
 - No Tests
 fromversion: 5.0.0

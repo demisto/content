@@ -27,7 +27,6 @@ outputs:
 - contextPath: cyrenSimilarIncidentCsv
   description: comma separated raw ids
   type: Unknown
-runas: DBotRole
 runonce: false
 script: ''
 scripttarget: 0
