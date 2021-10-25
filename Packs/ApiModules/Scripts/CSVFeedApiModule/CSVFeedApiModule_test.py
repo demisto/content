@@ -297,18 +297,18 @@ def test_get_indicators_with_relations():
             }
         }
     }
-    expected_res = [{'value': 'test.com', 'type': 'IP',
+    expected_res = ([{'value': 'test.com', 'type': 'IP',
                      'rawJSON': {'value': 'test.com', 'a': 'Domain used by Test c&c',
                                  None: ['2021-04-22 06:03',
                                         'https://test.com/manual/test-iplist.txt'],
                                  'type': 'IP'},
-                     'fields': {'AAA': 'Domain used by Test c&c', 'relationship_entity_b': 'Test',
-                                'tags': []},
-                     'relationships': [
+                      'fields': {'AAA': 'Domain used by Test c&c', 'relationship_entity_b': 'Test',
+                                 'tags': []},
+                      'relationships': [
                          {'name': 'resolved-from', 'reverseName': 'resolves-to', 'type': 'IndicatorToIndicator',
                           'entityA': 'test.com', 'entityAFamily': 'Indicator', 'entityAType': 'IP',
                           'entityB': 'Test', 'entityBFamily': 'Indicator', 'entityBType': 'IP',
-                          'fields': {}}]}]
+                          'fields': {}}]}], False)
 
     ip_ranges = 'test.com,Domain used by Test c&c,2021-04-22 06:03,https://test.com/manual/test-iplist.txt'
 

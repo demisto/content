@@ -355,12 +355,12 @@ def test_get_indicators_with_relations():
     expected_res = ([{'value': '127.0.0.1', 'type': 'IP',
                      'rawJSON': {'malwarefamily': '"Test"', 'relationship_entity_b': 'Test', 'value': '127.0.0.1',
                                  'type': 'IP', 'tags': []},
-                     'relationships': [
+                      'relationships': [
                          {'name': 'indicator-of', 'reverseName': 'indicated-by', 'type': 'IndicatorToIndicator',
                           'entityA': '127.0.0.1', 'entityAFamily': 'Indicator', 'entityAType': 'IP',
                           'entityB': 'Test',
                           'entityBFamily': 'Indicator', 'entityBType': 'STIX Malware', 'fields': {}}],
-                     'fields': {'tags': []}}], False)
+                      'fields': {'tags': []}}], False)
 
     asn_ranges = '"2021-01-17 07:44:49","127.0.0.1","3889","online","2021-04-22","Test"'
     with requests_mock.Mocker() as m:
@@ -425,7 +425,7 @@ def test_get_indicators_without_relations():
     expected_res = ([{'value': '127.0.0.1', 'type': 'IP',
                      'rawJSON': {'malwarefamily': '"Test"', 'relationship_entity_b': 'Test', 'value': '127.0.0.1',
                                  'type': 'IP', 'tags': []},
-                     'fields': {'tags': []}}], False)
+                      'fields': {'tags': []}}], False)
 
     asn_ranges = '"2021-01-17 07:44:49","127.0.0.1","3889","online","2021-04-22","Test"'
     with requests_mock.Mocker() as m:
