@@ -1594,69 +1594,69 @@ script:
     - contextPath: CrowdStrike.IOC.ModifiedBy
       description: The identity of the user/process who last updated the IOC.
       type: string
-- arguments:
-  - auto: PREDEFINED
-    default: false
-    description: 'The IOC type to retrieve. Possible values are: "sha256", "sha1",
-      "md5", "domain", "ipv4", and "ipv6".'
-    isArray: false
-    name: type
-    predefined:
-    - sha256
-    - sha1
-    - md5
-    - domain
-    - ipv4
-    - ipv6
-    required: true
-    secret: false
-  - default: false
-    description: The IOC value to retrieve.
-    isArray: false
-    name: value
-    required: true
-    secret: false
-  deprecated: false
-  description: Gets the full definition of one or more indicators that you are watching.
-  execution: false
-  name: cs-falcon-get-custom-ioc
-  outputs:
-  - contextPath: CrowdStrike.IOC.Type
-    description: The type of the IOC.
-    type: string
-  - contextPath: CrowdStrike.IOC.Value
-    description: The string representation of the indicator.
-    type: string
-  - contextPath: CrowdStrike.IOC.ID
-    description: The full ID of the indicator.
-    type: string
-  - contextPath: CrowdStrike.IOC.Severity
-    description: The severity level to apply to this indicator.
-    type: string
-  - contextPath: CrowdStrike.IOC.Source
-    description: The source of the IOC.
-    type: string
-  - contextPath: CrowdStrike.IOC.Action
-    description: Action to take when a host observes the custom IOC.
-    type: string
-  - contextPath: CrowdStrike.IOC.Expiration
-    description: The datetime when the indicator will expire.
-    type: string
-  - contextPath: CrowdStrike.IOC.Description
-    description: The description of the IOC.
-    type: string
-  - contextPath: CrowdStrike.IOC.CreatedTime
-    description: The datetime the IOC was created.
-    type: date
-  - contextPath: CrowdStrike.IOC.CreatedBy
-    description: The identity of the user/process who created the IOC.
-    type: string
-  - contextPath: CrowdStrike.IOC.ModifiedTime
-    description: The datetime the indicator was last modified.
-    type: date
-  - contextPath: CrowdStrike.IOC.ModifiedBy
-    description: The identity of the user/process who last updated the IOC.
-    type: string
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: 'The IOC type to retrieve. Possible values are: "sha256", "sha1",
+        "md5", "domain", "ipv4", and "ipv6".'
+      isArray: false
+      name: type
+      predefined:
+      - sha256
+      - sha1
+      - md5
+      - domain
+      - ipv4
+      - ipv6
+      required: true
+      secret: false
+    - default: false
+      description: The IOC value to retrieve.
+      isArray: false
+      name: value
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets the full definition of one or more indicators that you are watching.
+    execution: false
+    name: cs-falcon-get-custom-ioc
+    outputs:
+    - contextPath: CrowdStrike.IOC.Type
+      description: The type of the IOC.
+      type: string
+    - contextPath: CrowdStrike.IOC.Value
+      description: The string representation of the indicator.
+      type: string
+    - contextPath: CrowdStrike.IOC.ID
+      description: The full ID of the indicator.
+      type: string
+    - contextPath: CrowdStrike.IOC.Severity
+      description: The severity level to apply to this indicator.
+      type: string
+    - contextPath: CrowdStrike.IOC.Source
+      description: The source of the IOC.
+      type: string
+    - contextPath: CrowdStrike.IOC.Action
+      description: Action to take when a host observes the custom IOC.
+      type: string
+    - contextPath: CrowdStrike.IOC.Expiration
+      description: The datetime when the indicator will expire.
+      type: string
+    - contextPath: CrowdStrike.IOC.Description
+      description: The description of the IOC.
+      type: string
+    - contextPath: CrowdStrike.IOC.CreatedTime
+      description: The datetime the IOC was created.
+      type: date
+    - contextPath: CrowdStrike.IOC.CreatedBy
+      description: The identity of the user/process who created the IOC.
+      type: string
+    - contextPath: CrowdStrike.IOC.ModifiedTime
+      description: The datetime the indicator was last modified.
+      type: date
+    - contextPath: CrowdStrike.IOC.ModifiedBy
+      description: The identity of the user/process who last updated the IOC.
+      type: string
   - arguments:
     - auto: PREDEFINED
       default: false
