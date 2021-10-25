@@ -422,7 +422,7 @@ tasks:
       id: 838d6965-463c-4fd4-8bcb-1453148e9705
       version: -1
       name: 'Investigate collected data '
-      description: "To decide if this is a true positive event,  you are needed to\
+      description: "To determine if this is a true positive event, \
         \ review the results of the XQL queries from the previous steps.\nThe queries\
         \ search for the operations performed by the access key and the user in the\
         \ recent time frame.\nGo over the results of the queries and search for the\
@@ -436,7 +436,7 @@ tasks:
         \ on which resource, and the operation status.\nLook at any lateral movement\
         \ operations. For example, an operation can be = AsumeRole.\n\n4. As an extra\
         \ validation step it is recommended to query the user and/or the user's manager\
-        \ regarding the investigated suspicious activity. "
+        \ regarding the investigated suspicious activity."
       type: regular
       iscommand: false
       brand: ""
@@ -811,10 +811,10 @@ tasks:
       id: 94e599f9-c3db-4452-8db3-17033ecda3af
       version: -1
       name: Check user AWS login profile
-      description: "Check user AWS login profile configuration.\nIf a login profile\
-        \ is configured, it needs to be deleted. \n\nUser login profile configuration\
+      description: "Check the user AWS login profile configuration.\nIf a login profile\
+        \ is configured, it needs to be deleted. \n\nThe user login profile configuration\
         \ can be found under https://console.aws.amazon.com/iam/home#/users/[username]\
-        \ and under security credentials tab"
+        \ under the security credentials tab."
       type: condition
       iscommand: false
       brand: ""
@@ -883,8 +883,8 @@ tasks:
     task:
       id: a5d7d95e-13d9-41ca-8c7a-a6a0cbbc7e0c
       version: -1
-      name: New IP addresses were found on the XQL query results?
-      description: New IP addresses were found on the XQL query results?
+      name: New IP addresses were found in the XQL query results?
+      description: New IP addresses were found in the XQL query results?
       type: condition
       iscommand: false
       brand: ""
@@ -976,7 +976,7 @@ tasks:
       id: 9ad170ca-8536-4964-851e-0263282b3488
       version: -1
       name: Check for supported xcloud alerts
-      description: Check for supported xcloud alerts
+      description: Check for supported xcloud alerts.
       type: condition
       iscommand: false
       brand: ""
@@ -1174,7 +1174,7 @@ tasks:
       id: 56f29a78-77e6-4bd7-8f91-3298a9d39e3c
       version: -1
       name: Block IP  - Manual
-      description: Block IP Address according to IP enrichment and reputation results
+      description: Block IP address according to IP enrichment and reputation results.
       type: regular
       iscommand: false
       brand: ""
@@ -1393,7 +1393,7 @@ inputs:
   description: |
     Tag name for bad reputation IP addresses investigated in the incident.
     Use it when the EDL service is configured to add indicators to block in PANW PAN-OS.
-    If indicator verdict(Malicious/Bad) is used to add indicators to XSOAR EDL you don't need to use the tag. Indicators will be set as malicious automatically in the incident.
+    If indicator verdict (Malicious/Bad) is used to add indicators to XSOAR EDL you don't need to use the tag. Indicators will be set as malicious automatically in the incident.
   playbookInputQuery:
 - key: DAG
   value: {}
