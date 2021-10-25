@@ -44,7 +44,9 @@ def _get_case_by_name(client, name):
             "ID": case["id"],
             "Name": name,
             "CaseFolder": case["ftkcasefolderpath"]
-        }
+        },
+        outputs_key_field="ID",
+        readable_output=tableToMarkdown("Case", dict(case))
     )
 
 @wrap_demisto_command("accessdata-api-create-case")
@@ -59,7 +61,9 @@ def _create_case(client, **kwargs):
             "ID": case["id"],
             "Name": case["name"],
             "CaseFolder": case["ftkcasefolderpath"]
-        }
+        },
+        outputs_key_field="ID",
+        readable_output=tableToMarkdown("Case", dict(case))
     )
 
 @wrap_demisto_command("accessdata-api-process-evidence")
@@ -84,7 +88,9 @@ def _process_evidence(client, caseid, evidence_path, evidence_type, options):
             outputs_prefix="Accessdata.Case.Jobs",
             outputs=[
                 {"ID": job["id"]} for job in jobs
-            ]
+            ],
+            outputs_key_field="ID",
+            readable_output=tableToMarkdown("Job", list(map(lambda x: dict(x), jobs)))
         )
     elif options_type is dict:
         jobs = case.evidence.process(evidence_path, evidence_type,
@@ -93,7 +99,9 @@ def _process_evidence(client, caseid, evidence_path, evidence_type, options):
             outputs_prefix="Accessdata.Case.Jobs",
             outputs=[
                 {"ID": job["id"]} for job in jobs
-            ]
+            ],
+            outputs_key_field="ID",
+            readable_output=tableToMarkdown("Job", list(map(lambda x: dict(x), jobs)))
         )
     # if bad, raise error
     else:
@@ -112,7 +120,9 @@ def _export_natives(client, caseid, path, filter_json):
         outputs_prefix="Accessdata.Case.Job",
         outputs={
             "ID": job["id"],
-        }
+        },
+        outputs_key_field="ID",
+        readable_output=tableToMarkdown("Job", dict(job))
     )
 
 @wrap_demisto_command("accessdata-api-get-job-status")
@@ -133,7 +143,9 @@ def _get_job_status(client, caseid, jobid):
             "ID": job["id"],
             "State": str(job["state"]),
             "ResultData": dumps(job["resultData"])
-        }
+        },
+        outputs_key_field="ID",
+        readable_output=tableToMarkdown("Job", dict(job))
     )
 
 @wrap_demisto_command("accessdata-api-endpoint-volatile-analysis")
@@ -150,7 +162,9 @@ def _run_volatile_analysis(client, caseid, target):
         outputs_prefix="Accessdata.Case.Job",
         outputs={
             "ID": job["id"],
-        }
+        },
+        outputs_key_field="ID",
+        readable_output=tableToMarkdown("Job", dict(job))
     )
 
 @wrap_demisto_command("accessdata-api-endpoint-memory-collect")
@@ -167,7 +181,9 @@ def _run_memory_acquisition(client, caseid, target):
         outputs_prefix="Accessdata.Case.Job",
         outputs={
             "ID": job["id"],
-        }
+        },
+        outputs_key_field="ID",
+        readable_output=tableToMarkdown("Job", dict(job))
     )
 
 @wrap_demisto_command("accessdata-api-endpoint-disk-collect")
@@ -184,7 +200,9 @@ def _run_disk_acquisition(client, caseid, target, **kwargs):
         outputs_prefix="Accessdata.Case.Job",
         outputs={
             "ID": job["id"],
-        }
+        },
+        outputs_key_field="ID",
+        readable_output=tableToMarkdown("Job", dict(job))
     )
 
 _comparator_mapping = {
@@ -217,7 +235,9 @@ def _create_filter(client, column, comparator, value):
         outputs_prefix="Accessdata",
         outputs={
             "Filter": dumps(filter_json)
-        }
+        },
+        outputs_key_field="Filter",
+        readable_output=tableToMarkdown("Filter", filter_json)
     )
 
 @wrap_demisto_command("accessdata-api-combine-filter-and")
@@ -234,7 +254,9 @@ def _and_filter(client, filter_json1, filter_json2):
         outputs_prefix="Accessdata",
         outputs={
             "Filter": dumps(filter_json)
-        }
+        },
+        outputs_key_field="Filter",
+        readable_output=tableToMarkdown("Filter", filter_json)
     )
 
 @wrap_demisto_command("accessdata-api-combine-filter-or")
@@ -251,7 +273,9 @@ def _or_filter(client, filter_json1, filter_json2):
         outputs_prefix="Accessdata",
         outputs={
             "Filter": dumps(filter_json)
-        }
+        },
+        outputs_key_field="Filter",
+        readable_output=tableToMarkdown("Filter", filter_json)
     )
 
 """ define entry """
