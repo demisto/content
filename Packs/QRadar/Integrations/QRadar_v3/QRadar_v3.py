@@ -1247,7 +1247,7 @@ def is_reset_triggered(handle_reset: bool = False):
             if ctx and RESET_KEY in ctx:
                 if handle_reset:
                     print_debug_msg('Reset fetch-incidents.')
-                    set_integration_context({'retry_compatible': True, 'samples': ctx.get('samples', '[]')})
+                    set_integration_context({'samples': ctx.get('samples', '[]')})
                 return True
         finally:
             lock.release()
@@ -2846,7 +2846,6 @@ def qradar_reset_last_run_command() -> str:
     """
     ctx = get_integration_context()
     ctx[RESET_KEY] = True
-    ctx['retry_compatible'] = True
     set_integration_context(ctx)
     return 'fetch-incidents was reset successfully.'
 
@@ -3346,10 +3345,17 @@ def change_ctx_to_be_compatible_with_retry() -> None:
         (None): Modifies context to be compatible.
     """
     ctx = get_integration_context()
-    if not ctx.get('retry_compatible', False):
+    try:
+        extract_context_data(ctx)
+        print_debug_msg("ctx was found to be compatible with retries")
+        extract_works = True
+    except TypeError as e:
+        print_debug_msg(f"extracting ctx {ctx} failed, trying to make it retry compatible. Error was: {str(e)}")
+        extract_works = False
+
+    if not extract_works:
         ctx = encode_context_data(ctx)
         print_debug_msg(f"Change ctx context data is {ctx}")
-        set_integration_context({'retry_compatible': True})
         set_to_integration_context_with_retries(ctx)
         print_debug_msg(f"Change ctx context data was changed to {ctx}")
 
