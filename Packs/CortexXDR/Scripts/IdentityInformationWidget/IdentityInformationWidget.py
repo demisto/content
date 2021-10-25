@@ -16,22 +16,34 @@ from CommonServerPython import *
 
 from typing import Dict, Any
 import traceback
+from itertools import chain
 
 ''' COMMAND FUNCTION '''
 
 
 # TODO: REMOVE the following dummy command function
-def basescript_dummy_command(args: Dict[str, Any]) -> CommandResults:
-
-    alert_event = demisto.get(demisto.context(), 'PaloAltoNetworksXDR.OriginalAlert.event')
-    res = {'Name': alert_event.get('identity_name'),
-           'Type': alert_event.get('identity_type'),
-           'Sub Type': alert_event.get('identity_sub_type'),
-           'Uuid': alert_event.get('identity_uuid'),
-           'Provider': alert_event.get('cloud_provider'),
-           'Access Keys': alert_event.get('identity_orig').get('accessKeyId')}
-
-    return CommandResults(readable_output=tableToMarkdown('Identity Information', res, headers=res.keys()))
+def get_identity_info() -> CommandResults:
+    context = demisto.context()
+    alerts = demisto.get(context, 'PaloAltoNetworksXDR.OriginalAlert')
+    users = demisto.get(context, 'AWS.IAM.Users')
+    if not isinstance(alerts, list):
+        alerts = [alerts]
+    results = []
+    for alert in alerts:
+        alert_event = alert.get('event')
+        username = alert_event.get('identity_orig').get('userName')
+        access_keys = [user.get('AccessKeys', []) for user in users if user.get('UserName') == username]
+        access_keys = list(chain(*access_keys))
+        res = {'Name': alert_event.get('identity_name'),
+               'Type': alert_event.get('identity_type'),
+               'Sub Type': alert_event.get('identity_sub_type'),
+               'Uuid': alert_event.get('identity_uuid'),
+               'Provider': alert_event.get('cloud_provider'),
+               'Access Keys': access_keys}
+        results.append(res)
+    return CommandResults(
+        readable_output=tableToMarkdown('Identity Information', results,
+                                        headers=list(results[0].keys()) if results else None))
 
 
 ''' MAIN FUNCTION '''
@@ -39,15 +51,13 @@ def basescript_dummy_command(args: Dict[str, Any]) -> CommandResults:
 
 def main():
     try:
-        # TODO: replace the invoked command function with yours
-        return_results(basescript_dummy_command(demisto.args()))
+        return_results(get_identity_info())
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute IdentityInformationWidget. Error: {str(ex)}')
 
 
 ''' ENTRY POINT '''
-
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

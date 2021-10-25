@@ -16,31 +16,34 @@ from CommonServerPython import *
 
 import traceback
 
-
 ''' COMMAND FUNCTION '''
 
 
-# TODO: REMOVE the following dummy command function
 def get_additonal_info() -> CommandResults:
-    alert = demisto.get(demisto.context(), 'PaloAltoNetworksXDR.OriginalAlert')
-    res = {'Alert Full Description': alert.get('alert_full_description'),
-           'Detection Module': alert.get('detection_modules'),
-           'Vendor': alert.get('event').get('vendor'),
-           'Provider': alert.get('event').get('cloud_provider'),
-           'Log Name': alert.get('event').get('log_name'),
-           'Event Type': alert.get('event').get('event_type'),
-           'Caller IP': alert.get('event').get('caller_ip'),
-           'Caller IP Geo Location': alert.get('event').get('caller_ip_geolocation'),
-           'Resource Type': alert.get('event').get('resource_type'),
-           'Identity Name': alert.get('event').get('identity_name'),
-           'Operation Name': alert.get('event').get('operation_name'),
-           'Operation Status': alert.get('event').get('operation_status'),
-           'User Agent': alert.get('event').get('user_agent')}
-    
-    return CommandResults(readable_output=tableToMarkdown('Original Alert Additional Information', res, headers=res.keys()))
+    alerts = demisto.get(demisto.context(), 'PaloAltoNetworksXDR.OriginalAlert')
+    if not isinstance(alerts, list):
+        alerts = [alerts]
 
+    results = []
+    for alert in alerts:
+        res = {'Alert Full Description': alert.get('alert_full_description'),
+               'Detection Module': alert.get('detection_modules'),
+               'Vendor': alert.get('event').get('vendor'),
+               'Provider': alert.get('event').get('cloud_provider'),
+               'Log Name': alert.get('event').get('log_name'),
+               'Event Type': alert.get('event').get('event_type'),
+               'Caller IP': alert.get('event').get('caller_ip'),
+               'Caller IP Geo Location': alert.get('event').get('caller_ip_geolocation'),
+               'Resource Type': alert.get('event').get('resource_type'),
+               'Identity Name': alert.get('event').get('identity_name'),
+               'Operation Name': alert.get('event').get('operation_name'),
+               'Operation Status': alert.get('event').get('operation_status'),
+               'User Agent': alert.get('event').get('user_agent')}
+        results.append(res)
 
-# TODO: ADD additional command functions that translate XSOAR inputs/outputs
+    return CommandResults(readable_output=tableToMarkdown('Original Alert Additional Information', results,
+                                                          headers=list(results[0].keys()) if results else None))
+
 
 ''' MAIN FUNCTION '''
 
@@ -54,7 +57,6 @@ def main():
 
 
 ''' ENTRY POINT '''
-
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
