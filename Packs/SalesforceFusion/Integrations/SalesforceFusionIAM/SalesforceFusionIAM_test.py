@@ -387,7 +387,6 @@ class TestSalesforceFusionIAM:
         Then:
             - Ensure a GetMappingFieldsResponse object that contains the application fields is returned
         """
-        import demistomock as demisto
         mocker.patch.object(demisto, 'command', return_value='get-mapping-fields')
         mocker.patch.object(demisto, 'params', return_value={'url': 'https://test.com', 'secret_token': '123456'})
         mock_result = mocker.patch('SalesforceFusionIAM.return_results')

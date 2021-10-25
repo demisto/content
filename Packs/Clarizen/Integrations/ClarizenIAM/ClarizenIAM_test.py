@@ -408,9 +408,10 @@ def test_get_mapping_fields_command(mocker):
         }
     }
 
+    mocker.patch.object(Client, 'get_session_id', return_value='SessionID')
+    mocker.patch.object(Client, 'get_manager_id')
     with requests_mock.Mocker() as m:
         m.get('https://test.com/V2.0/services/metadata/describeEntities', json=schema)
-
         main()
 
     mapping = mock_result.call_args.args[0].extract_mapping()
