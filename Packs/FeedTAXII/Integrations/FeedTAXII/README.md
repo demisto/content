@@ -64,6 +64,7 @@ Gets indicators from the the feed.
 | TAXII.Indicator.stixttptitle | String | The ttp title. | 
 | TAXII.Indicator.stixmalwaretypes | String | The stix malware type. | 
 | TAXII.Indicator.confidence | String | The indicator confidence. | 
+| TAXII.Indicator.score | String | The indicator DBot score. | 
 | TAXII.Indicator.fields | Unknown | The indicator value. | 
 | TAXII.Indicator.Rawjson | Unknown | The indicator rawJSON value. | 
 
