@@ -246,22 +246,6 @@ class Client(BaseClient):
             resp_type='response',
         )
 
-    def get_app_fields(self) -> Dict[str, Any]:
-        """ Gets a dictionary of the user schema fields in the application and their description.
-
-        :return: The user schema fields dictionary
-        :rtype: ``Dict[str, str]``
-        """
-
-        uri = '/schema'
-        res = self._http_request(
-            method='GET',
-            url_suffix=uri,
-        )
-
-        fields = res.get('result', [])
-        return {field.get('name'): field.get('description') for field in fields}
-
     @staticmethod
     def handle_exception(user_profile, e, action):
         """ Handles failed responses from the application API by setting the User Profile object with the result.
@@ -581,17 +565,53 @@ def delete_group_command(client, args):
     )
 
 
-def get_mapping_fields(client: Client) -> GetMappingFieldsResponse:
+def get_mapping_fields() -> GetMappingFieldsResponse:
     """ Creates and returns a GetMappingFieldsResponse object of the user schema in the application
 
-    :param client: (Client) The integration Client object that implements a get_app_fields() method
     :return: (GetMappingFieldsResponse) An object that represents the user schema
     """
-    app_fields = client.get_app_fields()
-    incident_type_scheme = SchemeTypeMapping(type_name=IAMUserProfile.DEFAULT_INCIDENT_TYPE)
-
-    for field, description in app_fields.items():
-        incident_type_scheme.add_field(field, description)
+    mapping = {
+        'id': 'id',
+        'userName': 'userName',
+        'name': {
+            'formatted': 'formatted',
+            'familyName': 'familyName',
+            'givenName': 'givenName',
+            'middleName': 'middleName',
+            'honorificPrefix': 'honorificPrefix',
+            'honorificSuffix': 'honorificSuffix'
+        },
+        'displayName': 'displayName',
+        'nickName': 'nickName',
+        'profileUrl': 'profileUrl',
+        'title': 'title',
+        'userType': 'userType',
+        'preferredLanguage': 'preferredLanguage',
+        'locale': 'locale',
+        'timezone': 'timezone',
+        'active': 'active',
+        'password': 'password',
+        'emails': [{
+            'type': 'type',
+            'value': 'value',
+            'primary': 'primary'
+        }],
+        'phoneNumbers': [{
+            'type': 'type',
+            'value': 'value'
+        }],
+        'addresses': [{
+            'formatted': 'formatted',
+            'streetAddress': 'streetAddress',
+            'locality': 'locality',
+            'region': 'region',
+            'postalCode': 'postalCode',
+            'Country': 'Country'
+        }],
+        'groups': ['group'],
+        'roles': ['role']
+    }
+    incident_type_scheme = SchemeTypeMapping(type_name=IAMUserProfile.DEFAULT_INCIDENT_TYPE, fields=mapping)
 
     return GetMappingFieldsResponse([incident_type_scheme])
 
@@ -672,7 +692,7 @@ def main():
             return_results(delete_group_command(client, args))
 
         elif command == 'get-mapping-fields':
-            return_results(get_mapping_fields(client))
+            return_results(get_mapping_fields())
 
     except Exception as exc:
         # For any other integration command exception, return an error
