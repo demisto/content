@@ -1,0 +1,20 @@
+commonfields:
+  id: CrowdStrikeStreamingPreProcessing
+  version: -1
+name: CrowdStrikeStreamingPreProcessing
+script: ''
+type: python
+subtype: python2
+tags:
+- preProcessing
+- crowdStrike
+- crowdStrikeStreaming
+comment: |
+  Pre processing script for CrowdStrike Streaming, will not duplicate incidents(detection events) that have same Host.
+  Will add entry to duplicate(older) incident notifying a duplicate incident was ignored.
+enabled: true
+scripttarget: 0
+tests:
+- No test - this is a preprocessing script
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.24066
