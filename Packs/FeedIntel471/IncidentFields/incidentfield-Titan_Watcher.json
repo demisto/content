@@ -5,7 +5,7 @@
     "name": "Titan Watcher",
     "ownerOnly": true,
     "description": "Name of the Titan watcher that triggered the alert",
-    "cliName": "intel471feedtitanwatcher",
+    "cliName": "titanwatcher",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
