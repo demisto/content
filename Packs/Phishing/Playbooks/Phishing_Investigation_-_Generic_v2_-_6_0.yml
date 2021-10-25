@@ -906,11 +906,6 @@ tasks:
       '#none#':
       - "13"
     scriptarguments:
-      Domain:
-        complex:
-          root: Domain
-          transformers:
-          - operator: uniq
       Email:
         complex:
           root: ReporterAddress
