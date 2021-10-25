@@ -24,7 +24,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### xdr-xql-generic-query
 ***
-Execute an XQL query and retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised. When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file.
+Execute an XQL query and retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised. When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file, unless the argument 'parse_result_file_to_context' is set to true and then the results will be extracted to the context.
 
 
 
@@ -160,7 +160,7 @@ There are no input arguments for this command.
 
 ### xdr-xql-get-query-results
 ***
-Retrieve results of an executed XQL query API. When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file.
+Retrieve results of an executed XQL query API. When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file, unless the argument 'parse_result_file_to_context' is set to true and then the results will be extracted to the context.
 
 
 
