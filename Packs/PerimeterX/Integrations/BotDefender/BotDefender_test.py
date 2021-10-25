@@ -11,6 +11,7 @@ HEADERS = {
     'Authorization': 'Bearer ebfb7ff0-b2f6-41c8-bef3-4fba17be410c',
     'Content-Type': 'application/json'
 }
+
 MOCK_BASE_URL = "https://api.perimeterx.com/v1/bot-defender/investigate/mock"
 
 
