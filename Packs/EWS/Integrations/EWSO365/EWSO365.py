@@ -3,7 +3,6 @@ import string
 from typing import Dict
 
 import dateparser
-import chardet
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -56,6 +55,8 @@ from exchangelib import (
 from oauthlib.oauth2 import OAuth2Token
 from exchangelib.version import EXCHANGE_O365
 from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter
+
+from charset_normalizer import from_bytes
 
 # Ignore warnings print to stdout
 warnings.filterwarnings("ignore")
@@ -1964,6 +1965,8 @@ def get_item_as_eml(client: EWSClient, item_id, target_mailbox=None):
 
 
 def parse_incident_from_item(item):
+    warnings.simplefilter("default")
+
     """
     Parses an incident from an item
     :param item: item to parse
@@ -2070,16 +2073,14 @@ def parse_incident_from_item(item):
                             ):
                                 attached_email.add_header(header.name, header.value)
                     attached_email_bytes = attached_email.as_bytes()
-                    chardet_detection = chardet.detect(attached_email_bytes)
-                    encoding = chardet_detection.get('encoding', 'utf-8') or 'utf-8'
-                    try:
-                        # Trying to decode using the detected encoding
-                        data = attached_email_bytes.decode(encoding)
-                    except UnicodeDecodeError:
-                        # In case the detected encoding fails apply the default encoding
-                        demisto.info(f'Could not decode attached email using detected encoding:{encoding}, retrying '
-                                     f'using utf-8.\nAttached email:\n{attached_email}')
-                        data = attached_email_bytes.decode('utf-8')
+                    with warnings.catch_warnings(record=True) as e:
+                        charset_match = from_bytes(attached_email_bytes)
+                        data = str(charset_match[0]) if len(charset_match) else ''
+                        if e:
+                            demisto.info(
+                                f'Encoding detection ended with warning :{e[0].message}, retrying '
+                                f'using utf-8.\nAttached email:\n{attached_email}')
+                            data = attached_email_bytes.decode('utf-8')
 
                     file_result = fileResult(
                         get_attachment_name(attachment.name) + ".eml",
