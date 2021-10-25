@@ -1,5 +1,2 @@
 [file:Securonix.yml]
-ignore=IN126
-
-[file:Securonix.yml]
-ignore=IN145
+ignore=IN126,IN145

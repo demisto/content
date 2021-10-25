@@ -1,5 +1,5 @@
 [file:SplunkPy.yml]
-ignore=IN126,IN135
+ignore=IN126,IN135,IN145
 
 [file:README.md]
 ignore=RM106
@@ -21,6 +21,3 @@ ignore=auto-test
 
 [file:playbook-SplunkPy-Test-V2.yml]
 ignore=auto-test
-
-[file:SplunkPy.yml]
-ignore=IN145

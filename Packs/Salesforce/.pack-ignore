@@ -1,5 +1,5 @@
 [file:integration-Salesforce.yml]
-ignore=IN126
+ignore=IN126,IN145
 
 [file:classifier-User_Profile_-_Salesforce_(Incoming).json]
 ignore=MP106
@@ -8,10 +8,4 @@ ignore=MP106
 ignore=MP106
 
 [file:Salesforce_IAM.yml]
-ignore=BA108,BA109
-
-[file:Salesforce_IAM.yml]
-ignore=IN145
-
-[file:integration-Salesforce.yml]
-ignore=IN145
+ignore=BA108,BA109,IN145

@@ -1,5 +1,5 @@
 [file:PaloAltoNetworks_IoT.yml]
-ignore=IN126,BA108,BA109
+ignore=IN126,BA108,BA109,IN145
 
 [file:iot_alert_post_processing.yml]
 ignore=BA108,BA109
@@ -15,6 +15,3 @@ ignore=BA108,BA109
 
 [file:iot_incident_url.json]
 ignore=IF100
-
-[file:PaloAltoNetworks_IoT.yml]
-ignore=IN145

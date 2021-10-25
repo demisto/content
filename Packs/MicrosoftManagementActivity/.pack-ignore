@@ -1,5 +1,2 @@
 [file:MicrosoftManagementActivity.yml]
-ignore=IN126
-
-[file:MicrosoftManagementActivity.yml]
-ignore=IN145
+ignore=IN126,IN145

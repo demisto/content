@@ -2,7 +2,4 @@
 ignore=RM104
 
 [file:PolySwarmV2.yml]
-ignore=IN144
-
-[file:PolySwarmV2.yml]
-ignore=IN145
+ignore=IN144,IN145

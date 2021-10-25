@@ -1,5 +1,2 @@
 [file:WootCloud.yml]
-ignore=IN126
-
-[file:WootCloud.yml]
-ignore=IN145
+ignore=IN126,IN145

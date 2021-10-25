@@ -1,5 +1,2 @@
 [file:RedCanary.yml]
-ignore=IN126
-
-[file:RedCanary.yml]
-ignore=IN145
+ignore=IN126,IN145

@@ -2,7 +2,4 @@
 ignore=RM104
 
 [file:TruSTAR_V2.yml]
-ignore=BA108,BA109
-
-[file:TruSTAR_V2.yml]
-ignore=IN145
+ignore=BA108,BA109,IN145

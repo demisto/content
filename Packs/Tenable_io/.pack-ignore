@@ -2,7 +2,4 @@
 ignore=RM104
 
 [file:Tenable_io.yml]
-ignore=BA108,BA109
-
-[file:Tenable_io.yml]
-ignore=IN145
+ignore=BA108,BA109,IN145

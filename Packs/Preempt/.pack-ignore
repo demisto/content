@@ -1,5 +1,2 @@
 [file:integration-Preempt.yml]
-ignore=IN126
-
-[file:integration-Preempt.yml]
-ignore=IN145
+ignore=IN126,IN145
