@@ -477,14 +477,11 @@ def run_polling_command(args: dict, cmd: str, search_function: Callable, query_f
 
     ScheduledCommand.raise_error_if_not_supported()
 
-    # Create a new job if there is no job_id
-    if not job_id:
-
+    if not job_id:  # Create a new job if there is no job_id
         result = search_function()
 
         # If the job was started successfully
         if 'result' in result.get('response', None) and result.get('response', {}).get('result', {}).get('job', None):
-
             job_id = result.get('response', {}).get('result', {}).get('job', None)
             output = {
                 'JobID': job_id,
@@ -494,13 +491,11 @@ def run_polling_command(args: dict, cmd: str, search_function: Callable, query_f
             if additional_paths:
                 for k, v in additional_paths.items():
                     output[k] = v
-
             polling_args = {
                 'job_id': job_id,
                 'polling': True,
                 **args
             }
-
             scheduled_command = ScheduledCommand(
                 command=cmd,
                 next_run_in_seconds=interval_in_seconds,
@@ -508,7 +503,6 @@ def run_polling_command(args: dict, cmd: str, search_function: Callable, query_f
                 timeout_in_seconds=timeout
             )
             readable_output = f"Running {cmd} (Job ID: {job_id})"
-
             polling_results.append(CommandResults(
                 outputs_prefix=outputs_prefix,
                 outputs_key_field='JobID',
@@ -517,9 +511,7 @@ def run_polling_command(args: dict, cmd: str, search_function: Callable, query_f
                 scheduled_command=scheduled_command,
                 ignore_auto_extract=True
             ))
-
-        # Otherwise return the error information
-        else:
+        else:  # Otherwise return the error information
             if error_path:
                 error = result
                 for key in error_path:
@@ -528,19 +520,15 @@ def run_polling_command(args: dict, cmd: str, search_function: Callable, query_f
                 error = 'Unknown'
             polling_results.append(CommandResults(f"{exit_string} - {error}"))
 
-    # Check existing job
-    else:
-
+    else:  # Check existing job
         result = query_function()
 
-        # Reschedule job if it's not complete
-        if result['response']['result']['job']['status'] != 'FIN':
+        if result['response']['result']['job']['status'] != 'FIN':  # Reschedule job if it's not complete
             polling_args = {
                 'job_id': job_id,
                 'polling': True,
                 **args
             }
-
             scheduled_command = ScheduledCommand(
                 command=cmd,
                 next_run_in_seconds=interval_in_seconds,
@@ -552,23 +540,17 @@ def run_polling_command(args: dict, cmd: str, search_function: Callable, query_f
                     scheduled_command=scheduled_command
                 )
             )
-
-        # Check the status of a completed job
-        else:
+        else:  # Check the status of a completed job
             status_output: Dict[str, Any] = {'JobID': job_id}
             if additional_paths:
                 for k, v in additional_paths.items():
                     status_output[k] = v
-
             status = dict_safe_get(result, success_path[0], default_return_value={})
 
-            # If the job is successful
-            if status == success_path[1]:
-
+            if status == success_path[1]:  # If the job is successful
                 results = results_function()
 
-            # Otherwise return an error in the results
-            else:
+            else:  # Otherwise return an error in the results
                 if error_path:
                     details = dict_safe_get(result, error_path, default_return_value={})
                 else:
@@ -578,9 +560,8 @@ def run_polling_command(args: dict, cmd: str, search_function: Callable, query_f
 
                 status_warnings = []
                 if result.get("response", {}).get('result', {}).get('job', {}).get('warnings'):
-                    status_warnings = result.get("response", {}).get('result', {}).get('job', {}).get('warnings', {}).get(
-                        'line',
-                        [])
+                    status_warnings = result.get("response", {}).get('result', {}).\
+                        get('job', {}).get('warnings', {}).get('line', [])
                 ignored_error = ['configured with no certificate profile']
                 status_output["Warnings"] = [item for item in status_warnings if item not in ignored_error]
 
@@ -650,7 +631,6 @@ def panorama_commit_command(args: dict):
     script_results = []
 
     if polling:
-
         script_results = run_polling_command(
             args=args,
             cmd=cmd,
@@ -7407,7 +7387,6 @@ def main():
 
         # Remove proxy if not set to true in params
         handle_proxy()
-
 
         if demisto.command() == 'test-module':
             panorama_test()
