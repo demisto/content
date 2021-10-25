@@ -6,7 +6,9 @@ name: Get Original Email - Microsoft Graph Mail
 description: |-
   Use this playbook to retrieve the original email in the thread as eml file when the reporting user forwarded the original email not as an attachment.
 
-  You must have the necessary permissions in the Microsoft Graph Mail integration to execute global search: eDiscovery
+  You must have the necessary permissions in the Microsoft Graph Mail integration as described here:
+        * https://docs.microsoft.com/en-us/graph/api/message-get
+        * https://docs.microsoft.com/en-us/graph/api/user-list-messages
 starttaskid: "0"
 tasks:
   "0":
@@ -396,35 +398,8 @@ inputs:
     will be retrieved based on its value.
   playbookInputQuery:
 outputs:
-- contextPath: Email
-  description: The email object
-  type: unknown
-- contextPath: Email.To
-  description: The recipient of the email
-  type: string
-- contextPath: Email.From
-  description: The sender of the email
-  type: string
-- contextPath: Email.HTML
-  description: The email HTML
-  type: string
-- contextPath: Email.Body
-  description: The email text body
-  type: string
-- contextPath: Email.Headers
-  description: The email headers
-  type: unknown
-- contextPath: Email.Subject
-  description: The email subject
-  type: string
 - contextPath: File
-  description: Original attachments
-  type: unknown
-- contextPath: Email.HeadersMap
-  description: The headers of the email.
-- contextPath: reportedemailentryid
-  description: In case the original eml was retrieved, this field will hold the File's
-    Entry ID.
+  description: The original email as eml file.
   type: unknown
 tests:
 - No tests (auto formatted)

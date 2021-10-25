@@ -454,7 +454,7 @@ inputs:
   playbookInputQuery:
 outputs:
 - contextPath: File
-  description: Original attachments
+  description: The original email as eml file.
   type: unknown
 tests:
 - No tests (auto formatted)
