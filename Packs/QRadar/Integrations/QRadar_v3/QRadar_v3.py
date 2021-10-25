@@ -1213,8 +1213,11 @@ def reset_mirroring_events_variables(mirror_options: str):
     Returns: None
     """
     ctx = extract_context_data(get_integration_context().copy())
-    print_mirror_events_stats(ctx, f"New Long Running Container - Before Mirroring Variables Reset, "
-                                   f"Mirror Option {mirror_options}")
+    try:
+        print_mirror_events_stats(ctx, f"New Long Running Container - Before Mirroring Variables Reset, "
+                                       f"Mirror Option {mirror_options}")
+    except Exception as e:
+        print_debug_msg(f'Could not print mirror_events_stats due to error: {str(e)} \n Continuing')
 
     if mirror_options != MIRROR_OFFENSE_AND_EVENTS:
         ctx[UPDATED_MIRRORED_OFFENSES_CTX_KEY] = []
