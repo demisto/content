@@ -454,7 +454,7 @@ def disable_user_command(client, args, mapper_out, is_command_enabled):
                                             skip_reason=error_message)
             else:
                 salesforce_user = iam_user_profile.map_object(mapper_name=mapper_out,
-                                                              IAMUserProfile.DISABLE_INCIDENT_TYPE)
+                                                              incident_type=IAMUserProfile.DISABLE_INCIDENT_TYPE)
                 salesforce_user['IsActive'] = False
                 salesforce_user = {key: value for key, value in salesforce_user.items() if value is not None}
                 res = client.update_user(user_term=user_id, data=salesforce_user)
