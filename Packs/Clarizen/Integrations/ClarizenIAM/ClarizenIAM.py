@@ -329,7 +329,6 @@ def get_error_details(res: Dict[str, Any]) -> str:
 
 def test_module(client: Client, username: str, password: str):
     """ Tests connectivity with the client. """
-    
     client.test(username, password)
     return 'ok'
 

@@ -33,7 +33,7 @@ class TestGetUserCommand:
     @pytest.fixture(autouse=True)
     def setup(self, mocker) -> None:
         mocker.patch.object(Client, 'get_session_id', return_value='SessionID')
-        mocker.patch.object(Client, 'get_manager_id')
+        mocker.patch.object(Client, 'get_manager_id', return_value='')
         self.client = Client(base_url=BASE_URL, headers={})
 
     def test_existing_user(self):
@@ -137,7 +137,7 @@ class TestCreateUserCommand:
     @pytest.fixture(autouse=True)
     def setup(self, mocker) -> None:
         mocker.patch.object(Client, 'get_session_id', return_value='SessionID')
-        mocker.patch.object(Client, 'get_manager_id')
+        mocker.patch.object(Client, 'get_manager_id', return_value='')
         self.client = Client(base_url=BASE_URL, headers={})
 
     def test_success(self):
@@ -216,7 +216,7 @@ class TestUpdateUserCommand:
     @pytest.fixture(autouse=True)
     def setup(self, mocker) -> None:
         mocker.patch.object(Client, 'get_session_id', return_value='SessionID')
-        mocker.patch.object(Client, 'get_manager_id')
+        mocker.patch.object(Client, 'get_manager_id', return_value='')
         self.client = Client(base_url=BASE_URL, headers={})
 
     def test_non_existing_user(self):
@@ -316,7 +316,7 @@ class TestDisableUserCommand:
     @pytest.fixture(autouse=True)
     def setup(self, mocker) -> None:
         mocker.patch.object(Client, 'get_session_id', return_value='SessionID')
-        mocker.patch.object(Client, 'get_manager_id')
+        mocker.patch.object(Client, 'get_manager_id', return_value='')
         self.client = Client(base_url=BASE_URL, headers={})
 
     def test_success(self):
@@ -409,7 +409,7 @@ def test_get_mapping_fields_command(mocker):
     }
 
     mocker.patch.object(Client, 'get_session_id', return_value='SessionID')
-    mocker.patch.object(Client, 'get_manager_id')
+    mocker.patch.object(Client, 'get_manager_id', return_value='')
     with requests_mock.Mocker() as m:
         m.get('https://test.com/V2.0/services/metadata/describeEntities', json=schema)
         main()
