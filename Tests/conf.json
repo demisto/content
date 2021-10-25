@@ -45,6 +45,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "GSuiteAuditor",
+            "playbookID": "GSuiteAuditor-Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "AzureWAF",
             "instance_names": "azure_waf_prod",
             "playbookID": "Azure WAF - Test",
@@ -1156,6 +1161,11 @@
             "playbookID": "TestEditServerConfig"
         },
         {
+            "playbookID": "MarketplacePackInstaller_Test",
+            "integrations": "Demisto REST API",
+            "fromversion": "6.0.0"
+        },
+        {
             "playbookID": "Default - Test",
             "integrations": [
                 "ThreatQ v2",
@@ -2238,6 +2248,13 @@
         },
         {
             "playbookID": "Ping Test Playbook"
+        },
+        {
+            "playbookID": "ParseWordDoc-Test"
+        },
+        {
+            "playbookID": "PDFUnlocker-Test",
+            "fromversion": "6.0.0"
         },
         {
             "playbookID": "Active Directory Test",
@@ -3559,6 +3576,11 @@
             "playbookID": "SOCRadarThreatFusion-Test"
         },
         {
+            "integrations": "TheHive Project",
+            "playbookID": "Playbook_TheHiveProject_Test",
+            "fromversion": "6.0.0"
+        },
+        {
             "integrations": [
                 "ServiceNow v2",
                 "Demisto REST API"
@@ -4560,7 +4582,37 @@
         },
         {
             "integrations": "Azure Sentinel",
+            "fromversion": "5.5.0",
+            "is_mockable": false,
             "playbookID": "TestAzureSentinelPlaybookV2"
+        },
+        {
+            "playbookID": "Tanium Threat Response V2 Test",
+            "integrations": ["Tanium Threat Response v2", "Demisto REST API"],
+            "fromversion": "6.0.0",
+            "timeout": 3000
+        },
+        {
+            "playbookID": "IndicatorMaliciousRatioCalculation_test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "playbookID": "MISPfeed Test",
+            "fromversion": "5.5.0",
+            "integrations": [
+                "MISP Feed"
+            ]
+        },
+        {
+            "integrations": [
+                "MISP Feed",
+                "Demisto REST API"
+            ],
+            "playbookID": "Fetch Indicators Test",
+            "fromversion": "6.0.0",
+            "is_mockable": false,
+            "instance_names": "MISP_feed_instance",
+            "timeout": 2400
         }
     ],
     "skipped_tests": {
@@ -4667,7 +4719,7 @@
         "LogRhythm REST test": "Issue 40654"
     },
     "skipped_integrations": {
-        
+
         "_comment1": "~~~ NO INSTANCE ~~~",
         "Ipstack": "Usage limit reached (Issue 38063)",
         "AnsibleAlibabaCloud": "No instance - issue 40447",
@@ -4760,29 +4812,26 @@
         "FraudWatch": "Issue 34299",
         "Cisco Stealthwatch": "No instance - developed by Qmasters",
         "Armis": "No instance - developed by SOAR Experts",
-        
+
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
-        
+
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
-        
+
         "_comment4": "~~~ OTHER ~~~",
         "AlienVault OTX TAXII Feed": "Issue 29197",
         "EclecticIQ Platform": "Issue 8821",
-        "Zoom": "Issue 19832",
         "Forescout": "Can only be run from within PANW network. Look in keeper for - Demisto in the LAB",
         "FortiManager": "Can only be run within PANW network",
         "HelloWorldSimple": "This is just an example integration - no need for test",
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
         "AttackIQFireDrill": "License issues #29774",
-        "SentinelOne V2": "License expired issue #24933",
-        "G Suite Security Alert Center": "Developed by crest, need to add permissions to our instance issue #40988",
-        "Azure Sentinel": "issue with the tenant_id parameter"
+        "SentinelOne V2": "License expired issue #24933"
     },
     "nightly_integrations": [
         "Laline v2",
@@ -4863,6 +4912,7 @@
         "Gmail Single User": "googleclient sdk has time based challenge exchange",
         "Gmail": "googleclient sdk has time based challenge exchange",
         "GSuiteAdmin": "googleclient sdk has time based challenge exchange",
+        "GSuiteAuditor": "googleclient sdk has time based challenge exchange",
         "GoogleCloudTranslate": "google translate sdk does not support proxy",
         "Google Chronicle Backstory": "SDK",
         "Google Vision AI": "SDK",
@@ -4873,11 +4923,13 @@
         "Google Resource Manager": "googleclient sdk has time based challenge exchange",
         "Google Cloud Storage": "SDK",
         "GoogleCalendar": "googleclient sdk has time based challenge exchange",
+        "G Suite Security Alert Center": "googleclient sdk has time based challenge exchange",
         "GoogleDrive": "googleclient sdk has time based challenge exchange",
         "Syslog Sender": "syslog",
         "syslog": "syslog",
         "MongoDB Log": "Our instance not using SSL",
         "MongoDB Key Value Store": "Our instance not using SSL",
+        "Zoom": "Uses dynamic token",
         "GoogleKubernetesEngine": "SDK",
         "TAXIIFeed": "Cannot use proxy",
         "EWSO365": "oproxy dependent",
@@ -4947,14 +4999,11 @@
         "HelloWorldPremium-Test"
     ],
     "docker_thresholds": {
-        
+
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {
                 "pid_threshold": 11
-            },
-            "demisto/powershell-ubuntu": {
-                "memory_threshold": 250
             },
             "demisto/py-ews:2.0": {
                 "memory_threshold": 150
@@ -4988,7 +5037,7 @@
             },
             "demisto/powershell-ubuntu": {
                 "pid_threshold": 45,
-                "memory_threshold": 200
+                "memory_threshold": 250
             },
             "demisto/boto3": {
                 "memory_threshold": 90
