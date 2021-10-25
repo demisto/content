@@ -182,7 +182,7 @@
                 },
                 "Email Headers": {
                     "complex": null,
-                    "simple": "headers"
+                    "simple": null
                 },
                 "Email Message ID": {
                     "complex": null,
@@ -351,6 +351,10 @@
                         ]
                     },
                     "simple": ""
+                },
+                "Phishing Reporter Email Headers": {
+                    "complex": null,
+                    "simple": "headers"
                 }
             }
         }

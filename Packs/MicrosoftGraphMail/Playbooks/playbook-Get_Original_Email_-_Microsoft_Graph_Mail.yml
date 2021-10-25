@@ -1,0 +1,431 @@
+id: Get Original Email - Microsoft Graph Mail
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Get Original Email - Microsoft Graph Mail
+description: |-
+  Use this playbook to retrieve the original email in the thread as eml file when the reporting user forwarded the original email not as an attachment.
+
+  You must have the necessary permissions in the Microsoft Graph Mail integration to execute global search: eDiscovery
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5607d1c6-85b0-4181-8b10-bb3a5b113c6f
+    type: start
+    task:
+      id: 5607d1c6-85b0-4181-8b10-bb3a5b113c6f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: d2eca123-db35-4b27-88d8-a8b77ffd6784
+    type: title
+    task:
+      id: d2eca123-db35-4b27-88d8-a8b77ffd6784
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 1590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 4751dd19-fad1-4c8b-8e3a-506709139824
+    type: condition
+    task:
+      id: 4751dd19-fad1-4c8b-8e3a-506709139824
+      version: -1
+      name: Is Microsoft Graph Mail enabled?
+      description: |
+        Verifies that there is an active instance of the EWS v2 integration enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: MicrosoftGraphMail
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: bcb6d3f9-0fa0-4145-886f-e713a9f83984
+    type: regular
+    task:
+      id: bcb6d3f9-0fa0-4145-886f-e713a9f83984
+      version: -1
+      name: Search for messages by Thread-Topic
+      description: Gets the properties of returned emails. Typically shows partial
+        results, use the "page_size" and "pages_to_pull" arguments to get all results.
+      script: MicrosoftGraphMail|||msgraph-mail-list-emails
+      type: regular
+      iscommand: true
+      brand: MicrosoftGraphMail
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      search:
+        complex:
+          root: inputs.ThreadTopic
+      user_id:
+        complex:
+          root: inputs.Mailbox
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 785
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: aa78d353-c421-42ad-8d15-9fdc6be6a902
+    type: condition
+    task:
+      id: aa78d353-c421-42ad-8d15-9fdc6be6a902
+      version: -1
+      name: Was a matching email found?
+      description: Verify that an email object with a Message-Id that matches the
+        InReplyTo ID of the forwarded email was found.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MSGraphMail.InternetMessageID
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: MSGraphMail.InternetMessageID
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.InReplyTo
+                      iscontext: true
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 1e1d761e-423b-4eaf-87d0-85b064bf7327
+    type: regular
+    task:
+      id: 1e1d761e-423b-4eaf-87d0-85b064bf7327
+      version: -1
+      name: Get original email
+      description: Retrieves an email message by message ID and uploads the content
+        as an EML file.
+      script: MicrosoftGraphMail|||msgraph-mail-get-email-as-eml
+      type: regular
+      iscommand: true
+      brand: MicrosoftGraphMail
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      message_id:
+        complex:
+          root: MSGraphMail
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: MSGraphMail.InternetMessageID
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.InReplyTo
+                iscontext: true
+          accessor: ID
+          transformers:
+          - operator: StripChars
+            args:
+              chars:
+                value:
+                  simple: <>
+          - operator: uniq
+      user_id:
+        complex:
+          root: inputs.Mailbox
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: cf07b584-cecf-47e9-8eb1-3e0da9dbc07a
+    type: condition
+    task:
+      id: cf07b584-cecf-47e9-8eb1-3e0da9dbc07a
+      version: -1
+      name: Verify required inputs
+      description: Verify that the required input values for retrieving the original
+        email exists.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.InReplyTo
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.ThreadTopic
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.Mailbox
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "12_13_yes": 0.58,
+      "14_11_yes": 0.59
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1545,
+        "width": 820,
+        "x": -240,
+        "y": 110
+      }
+    }
+  }
+inputs:
+- key: Mailbox
+  value:
+    complex:
+      root: incident
+      accessor: emailfrom
+  required: false
+  description: Email address of the reporting user.
+  playbookInputQuery:
+- key: InReplyTo
+  value:
+    complex:
+      root: incident.phishingreporteremailheaders
+      filters:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.phishingreporteremailheaders.headername
+            iscontext: true
+          right:
+            value:
+              simple: In-Reply-To
+      accessor: headervalue
+  required: false
+  description: The InReplyTo header in the forwarded email.
+  playbookInputQuery:
+- key: ThreadTopic
+  value:
+    complex:
+      root: incident.phishingreporteremailheaders
+      filters:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.phishingreporteremailheaders.headername
+            iscontext: true
+          right:
+            value:
+              simple: Thread-Topic
+      accessor: headervalue
+  required: false
+  description: The ThreadTopic header in the forwarded email.
+  playbookInputQuery:
+- key: OriginalMessageID
+  value: {}
+  required: false
+  description: The original message id. In case it is provided, the original email
+    will be retrieved based on its value.
+  playbookInputQuery:
+outputs:
+- contextPath: Email
+  description: The email object
+  type: unknown
+- contextPath: Email.To
+  description: The recipient of the email
+  type: string
+- contextPath: Email.From
+  description: The sender of the email
+  type: string
+- contextPath: Email.HTML
+  description: The email HTML
+  type: string
+- contextPath: Email.Body
+  description: The email text body
+  type: string
+- contextPath: Email.Headers
+  description: The email headers
+  type: unknown
+- contextPath: Email.Subject
+  description: The email subject
+  type: string
+- contextPath: File
+  description: Original attachments
+  type: unknown
+- contextPath: Email.HeadersMap
+  description: The headers of the email.
+- contextPath: reportedemailentryid
+  description: In case the original eml was retrieved, this field will hold the File's
+    Entry ID.
+  type: unknown
+tests:
+- No tests (auto formatted)
+fromversion: 6.1.0
