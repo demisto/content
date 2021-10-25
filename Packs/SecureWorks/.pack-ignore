@@ -1,2 +1,14 @@
-[file:integration-SecureWorks.yml]
-ignore=IN126,IN135
+[file:SecureWorks.yml]
+ignore=IN126
+
+[file:pack_metadata.json]
+ignore=PA114
+
+[file:README.md]
+ignore=RM104
+
+[file:Author_image.png]
+ignore=IM109
+
+[file:pack_metadata.json]
+ignore=RN106
