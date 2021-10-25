@@ -1,47 +1,151 @@
 {
 	"defaultIncidentType": "",
 	"description": "Maps a User Profile data to the Lenel IAM user data.",
-	"id": "User Profile - Lenel (Outgoing)",
+	"id": "User Profile - IAM Lenel (Outgoing)",
 	"mapping": {
 		"User Profile - Create": {
 			"dontMapEventToLabels": true,
 			"internalMapping": {
-				"email": {
+				"USERNAME": {
 					"complex": null,
-					"simple": "email"
+					"simple": "username"
 				},
-				"firstName": {
+				"FIRSTNAME": {
 					"complex": null,
 					"simple": "givenname"
 				},
-				"lastName": {
+				"LASTNAME": {
 					"complex": null,
 					"simple": "surname"
 				},
-				"displayName": {
+				"EMAIL": {
 					"complex": null,
-					"simple": "displayname"
+					"simple": "email"
+				},
+				"TITLE": {
+					"complex": null,
+					"simple": "title"
+				},
+				"CITY": {
+					"complex": null,
+					"simple": "city"
+				},
+				"MOBILEPHONE": {
+					"complex": null,
+					"simple": "mobilephone"
+				},
+				"OPHONE": {
+					"complex": null,
+					"simple": "workphone"
+				},
+				"STATE": {
+					"complex": null,
+					"simple": "state"
+				},
+				"ADDRESS": {
+					"complex": null,
+					"simple": "streetaddress"
+				},
+				"ZIPCODE": {
+					"complex": null,
+					"simple": "zipcode"
+				},
+				"COUNTRYCODE__XR": {
+					"complex": null,
+					"simple": "countrycode"
+				},
+				"COUNTRY__XR": {
+					"complex": null,
+					"simple": "countryname"
+				},
+				"DEPARTMENT": {
+					"complex": null,
+					"simple": "department"
+				},
+				"SSNO": {
+					"complex": null,
+					"simple": "employeeid"
+				},
+				"TYPE__XR": {
+					"complex": null,
+					"simple": "employeetype"
+				},
+				"HIREDATE": {
+					"complex": null,
+					"simple": "hiredate"
 				}
 			}
 		},
 		"User Profile - Update": {
 			"dontMapEventToLabels": true,
 			"internalMapping": {
-				"email": {
+				"USERNAME": {
 					"complex": null,
-					"simple": "email"
+					"simple": "username"
 				},
-				"firstName": {
+				"FIRSTNAME": {
 					"complex": null,
 					"simple": "givenname"
 				},
-				"lastName": {
+				"LASTNAME": {
 					"complex": null,
 					"simple": "surname"
 				},
-				"displayName": {
+				"EMAIL": {
 					"complex": null,
-					"simple": "displayname"
+					"simple": "email"
+				},
+				"TITLE": {
+					"complex": null,
+					"simple": "title"
+				},
+				"CITY": {
+					"complex": null,
+					"simple": "city"
+				},
+				"MOBILEPHONE": {
+					"complex": null,
+					"simple": "mobilephone"
+				},
+				"OPHONE": {
+					"complex": null,
+					"simple": "workphone"
+				},
+				"STATE": {
+					"complex": null,
+					"simple": "state"
+				},
+				"ADDRESS": {
+					"complex": null,
+					"simple": "streetaddress"
+				},
+				"ZIPCODE": {
+					"complex": null,
+					"simple": "zipcode"
+				},
+				"COUNTRYCODE__XR": {
+					"complex": null,
+					"simple": "countrycode"
+				},
+				"COUNTRY__XR": {
+					"complex": null,
+					"simple": "countryname"
+				},
+				"DEPARTMENT": {
+					"complex": null,
+					"simple": "department"
+				},
+				"SSNO": {
+					"complex": null,
+					"simple": "employeeid"
+				},
+				"TYPE__XR": {
+					"complex": null,
+					"simple": "employeetype"
+				},
+				"HIREDATE": {
+					"complex": null,
+					"simple": "hiredate"
 				}
 			}
 		}

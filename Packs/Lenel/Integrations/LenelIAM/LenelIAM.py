@@ -38,11 +38,10 @@ class Client(BaseClient):
         params = {
             "version": self.version
         }
-        res = self._http_request(method='POST', url_suffix=uri, data=data, params=params)
+        res = self._http_request(method='POST', url_suffix=uri, json_data=data, params=params)
         try:
-            res_json = res.json()
-            if res_json.get("session_token") is not None:
-                self._headers['Session-Token'] = res_json.get("session_token")
+            if res.get("session_token") is not None:
+                self._headers['Session-Token'] = res.get("session_token")
             else:
                 demisto.error("No session token has been found.")
         except ValueError:
@@ -59,7 +58,7 @@ class Client(BaseClient):
         query_params = {
             "version": self.version
         }
-        self._http_request(method='POST', url_suffix=uri, data=data, params=query_params)
+        self._http_request(method='POST', url_suffix=uri, json_data=data, params=query_params)
 
     @staticmethod
     def get_cardholder(iam_attribute, iam_attribute_val) -> Optional[str]:
@@ -84,11 +83,12 @@ class Client(BaseClient):
         :return: An IAMUserAppData object if user exists, None otherwise.
         :rtype: ``Optional[IAMUserAppData]``
         """
-        uri = '/cardholders'
+        uri = '/instances'
         cardholder_filter = self.get_cardholder(iam_attribute, iam_attribute_val)
         query_params = {
-                'cardholder_filter': cardholder_filter,
-                'version': self.version
+                'filter': cardholder_filter,
+                'version': self.version,
+                'type_name': 'Lnl_Cardholder'
             }
 
         res = self._http_request(
@@ -96,9 +96,8 @@ class Client(BaseClient):
             url_suffix=uri,
             params=query_params
         )
-        res_json = res.json()
-        result = res_json.get('item_list')
-        count = res_json.get('count')
+        result = res.get('item_list')
+        count = res.get('count')
 
         if result and count and count == 1:
             result = result[0]
@@ -119,22 +118,23 @@ class Client(BaseClient):
         :return: An IAMUserAppData object that contains the data of the created user in the application.
         :rtype: ``IAMUserAppData``
         """
+        lenel_user = {}
         uri = '/instances'
         query_params = {
             'type_name': 'Lnl_Cardholder',
             'version': self.version
         }
+        lenel_user['property_value_map'] = user_data
         res = self._http_request(
             method='POST',
             url_suffix=uri,
-            data=user_data,
+            json_data=lenel_user,
             params=query_params
         )
-        res_json = res.json()
-        property_value_map = res_json['property_value_map']
+        property_value_map = res['property_value_map']
         user_id = property_value_map.get('ID')
         username = property_value_map.get('USERNAME')
-        return IAMUserAppData(user_id, username, is_active=True, app_data=res_json)
+        return IAMUserAppData(user_id, username, is_active=True, app_data=res)
 
     def update_user(self, user_id: str, user_data: Dict[str, Any]) -> IAMUserAppData:
         """ Updates a user in the application using REST API.
@@ -148,15 +148,18 @@ class Client(BaseClient):
         :return: An IAMUserAppData object that contains the data of the updated user in the application.
         :rtype: ``IAMUserAppData``
         """
+        lenel_user = {}
         uri = '/instances'
         query_params = {
             'type_name': 'Lnl_Cardholder',
             'version': self.version
         }
+        lenel_user['property_value_map'] = user_data
+        return_warning(lenel_user)
         self._http_request(
             method='PUT',
             url_suffix=uri,
-            json_data=user_data,
+            json_data=lenel_user,
             params=query_params
         )
 
@@ -377,7 +380,7 @@ def main():
     mapper_in = params.get('mapper_in')
     mapper_out = params.get('mapper_out')
     application_id = params.get('application_id')
-    api_version = params.get('api_version', None)
+    api_version = params.get('api_version', '1.0')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     command = demisto.command()
@@ -400,12 +403,14 @@ def main():
 
     client = Client(
         base_url=base_url,
+        username=username,
+        version=api_version,
+        password=password,
         verify=verify_certificate,
         proxy=proxy,
         headers=headers,
-        ok_codes=(200, 201),
         auth=(username, password),
-        version=api_version
+        ok_codes=(200, 201),
     )
 
     demisto.debug(f'Command being called is {command}')

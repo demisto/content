@@ -55,12 +55,12 @@ configuration:
   defaultvalue: f71524e0-2b15-42b8-bb3d-34403695d417
   type: 0
   required: true
-- defaultvalue: User Profile - IAM Template (Incoming)
+- defaultvalue: User Profile - IAM Lenel (Incoming)
   display: Incoming Mapper
   name: mapper_in
   required: true
   type: 0
-- defaultvalue: User Profile - IAM Template (Outgoing)
+- defaultvalue: User Profile - IAM Lenel (Outgoing)
   display: Outgoing Mapper
   name: mapper_out
   required: true

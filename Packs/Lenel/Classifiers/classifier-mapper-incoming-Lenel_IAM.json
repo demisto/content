@@ -1,26 +1,78 @@
 {
 	"defaultIncidentType": "",
 	"description": "Maps a user data to a User Profile data.",
-	"id": "User Profile - Lenel (Incoming)",
+	"id": "User Profile - IAM Lenel (Incoming)",
 	"mapping": {
 		"User Profile": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
-				"Display Name": {
+				"Username": {
 					"complex": null,
-					"simple": "displayName"
-				},
-				"Email": {
-					"complex": null,
-					"simple": "email"
+					"simple": "USERNAME"
 				},
 				"Given Name": {
 					"complex": null,
-					"simple": "firstName"
+					"simple": "FIRSTNAME"
 				},
 				"Surname": {
 					"complex": null,
-					"simple": "lastName"
+					"simple": "LASTNAME"
+				},
+				"Email": {
+					"complex": null,
+					"simple": "EMAIL"
+				},
+				"Title": {
+					"complex": null,
+					"simple": "TITLE"
+				},
+				"City": {
+					"complex": null,
+					"simple": "CITY"
+				},
+				"Mobile Phone": {
+					"complex": null,
+					"simple": "MOBILEPHONE"
+				},
+				"Work Phone": {
+					"complex": null,
+					"simple": "OPHONE"
+				},
+				"State": {
+					"complex": null,
+					"simple": "STATE"
+				},
+				"Street Address": {
+					"complex": null,
+					"simple": "ADDRESS"
+				},
+				"Zip Code": {
+					"complex": null,
+					"simple": "ZIPCODE"
+				},
+				"Country Code": {
+					"complex": null,
+					"simple": "COUNTRYCODE__XR"
+				},
+				"Country Name": {
+					"complex": null,
+					"simple": "COUNTRY__XR"
+				},
+				"Department": {
+					"complex": null,
+					"simple": "DEPARTMENT"
+				},
+				"Employee Id": {
+					"complex": null,
+					"simple": "SSNO"
+				},
+				"Employee Type": {
+					"complex": null,
+					"simple": "TYPE__XR"
+				},
+				"Hire Date": {
+					"complex": null,
+					"simple": "HIREDATE"
 				}
 			}
 		}
