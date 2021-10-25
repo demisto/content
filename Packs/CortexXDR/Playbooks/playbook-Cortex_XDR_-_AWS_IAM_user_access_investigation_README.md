@@ -37,7 +37,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | --- | --- | --- | --- |
 | IndicatorTag | Tag name for bad reputation IP addresses investigated in the incident.<br/>Use it when the EDL service is configured to add indicators to block in PANW PAN-OS.<br/>If indicator verdict\(Malicious/Bad\) is used to add indicators to XSOAR EDL you don't need to use the tag. Indicators will be set as malicious automatically in the incident.<br/> |  | Optional |
 | DAG | This input determines whether Palo Alto Networks Panorama or Firewall Dynamic Address Groups are used.<br/>Specify the Dynamic Address Group tag name for IP handling. |  | Optional |
-| AutoBlockIP | True/False to initiate block IP playbook automatically  | False | Optional |
+| AutoBlockIP | True/False to initiate Block IP playbook automatically.  | False | Optional |
 
 ## Playbook Outputs
 ---
