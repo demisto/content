@@ -874,7 +874,7 @@ def create_user_iam(default_base_dn, args, mapper_out, disabled_users_group_cn):
         user_profile = args.get("user-profile")
         user_profile_delta = args.get('user-profile-delta')
         iam_user_profile = IAMUserProfile(user_profile=user_profile, user_profile_delta=user_profile_delta,
-                                          incident_type=IAMUserProfile.CREATE_INCIDENT_TYPE)
+                                          mapper=mapper_out, incident_type=IAMUserProfile.CREATE_INCIDENT_TYPE)
         ad_user = iam_user_profile.map_object(mapper_name=mapper_out, incident_type=IAMUserProfile.CREATE_INCIDENT_TYPE)
 
         sam_account_name = ad_user.get("sAMAccountName")
@@ -929,13 +929,14 @@ def create_user_iam(default_base_dn, args, mapper_out, disabled_users_group_cn):
 
 
 def get_iam_user_profile(user_profile, mapper_out):
-    iam_user_profile = IAMUserProfile(user_profile=user_profile, incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
+    iam_user_profile = IAMUserProfile(user_profile=user_profile, mapper=mapper_out,
+                                      incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
     ad_user = iam_user_profile.map_object(mapper_name=mapper_out, incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
     sam_account_name = ad_user.get("sAMAccountName")
 
     old_user_data = iam_user_profile.get_attribute('olduserdata')
     if old_user_data:
-        iam_old_user_profile = IAMUserProfile(user_profile=old_user_data,
+        iam_old_user_profile = IAMUserProfile(user_profile=old_user_data, mapper=mapper_out,
                                               incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
         ad_old_user = iam_old_user_profile.map_object(mapper_name=mapper_out,
                                                       incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
@@ -1310,7 +1311,7 @@ def disable_user_iam(default_base_dn, disabled_users_group_cn, args, mapper_out)
         user_profile = args.get("user-profile")
         user_profile_delta = args.get('user-profile-delta')
         iam_user_profile = IAMUserProfile(user_profile=user_profile, user_profile_delta=user_profile_delta,
-                                          incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
+                                          mapper=mapper_out, incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
         ad_user = iam_user_profile.map_object(mapper_name=mapper_out, incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
 
         sam_account_name = ad_user.get("sAMAccountName")
