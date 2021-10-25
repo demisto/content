@@ -1217,7 +1217,8 @@ def reset_mirroring_events_variables(mirror_options: str):
         print_mirror_events_stats(ctx, f"New Long Running Container - Before Mirroring Variables Reset, "
                                        f"Mirror Option {mirror_options}")
     except Exception as e:
-        print_debug_msg(f'Could not print mirror_events_stats due to error: {str(e)} \n Continuing')
+        print_debug_msg(f'Could not print mirror_events_stats due to error: {str(e)} \n '
+                        f'Reseting mirroring vars')
         mirror_options = 'needs reset to mirroring vars'
 
     if mirror_options != MIRROR_OFFENSE_AND_EVENTS:
