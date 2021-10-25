@@ -53,7 +53,7 @@ def _get_case_by_name(client, name):
 def _create_case(client, **kwargs):
     case = client.cases.create(**kwargs)
     if not case:
-        raise ValueError(f"Failed to create case.")
+        raise ValueError("Failed to create case.")
 
     return CommandResults(
         outputs_prefix="Accessdata.Case",
