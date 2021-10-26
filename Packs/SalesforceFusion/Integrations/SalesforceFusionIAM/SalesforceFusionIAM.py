@@ -87,7 +87,6 @@ class Client(BaseClient):
             url_suffix=uri,
             headers=self.headers
         )
-
         if res:
             username = res.get('Work_Email__c')
             is_active = True
@@ -221,7 +220,7 @@ class Client(BaseClient):
             headers=self.headers
         )
 
-        fields = res.get('result', [])
+        fields = res.get('fields', [])
         return {field.get('name'): field.get('label') for field in fields}
 
     @staticmethod
