@@ -6,4 +6,4 @@ Together, DomainTools and Cortex XSOAR automate and orchestrate the incident res
 - Gathers email addresses extracted from DNS SOA records.
 - Provides DomainTools Risk Score with components and evidence.
 
-For more information, visit [DomainTools App for Cortex XSOAR](https://www.domaintools.com/resources/blog/domaintools-app-for-demisto-comprehensive-contextual-and-automated-incident)
+For more information, visit [DomainTools Iris App for Cortex XSOAR](https://www.domaintools.com/resources/blog/domaintools-app-for-demisto-comprehensive-contextual-and-automated-incident)
