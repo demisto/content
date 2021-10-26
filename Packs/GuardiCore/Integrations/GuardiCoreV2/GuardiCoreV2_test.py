@@ -342,6 +342,7 @@ def test_get_incidents(mocker, requests_mock):
     assert response.raw_response == mock_response.get('objects')
 
 
+@freeze_time("2021-10-26 10:12:03")
 def test_fetch_incidents_no_first(mocker, requests_mock):
     """Unit test
     Given
