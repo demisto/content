@@ -1,0 +1,490 @@
+id: Druva-Ransomware-Response
+version: -1
+name: Druva-Ransomware-Response
+description: |
+  Automate response actions like quarantining effected resources or snapshots to stop the spread of ransomware and avoid reinfection or contamination spread.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 524e259d-9dcc-4033-85e2-0db13c1b01f0
+    type: start
+    task:
+      id: 524e259d-9dcc-4033-85e2-0db13c1b01f0
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: b94369c6-df9f-4a6a-8085-6baed743022e
+    type: regular
+    task:
+      id: b94369c6-df9f-4a6a-8085-6baed743022e
+      version: -1
+      name: druva-find-device
+      description: Finds Druva Device ID for the associated hostname
+      script: Druva Ransomware Response|||druva-find-device
+      type: regular
+      iscommand: true
+      brand: Druva Ransomware Response
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      search_string:
+        complex:
+          root: inputs.ComputerName
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 7be34dd3-885c-412f-8915-a589edf69839
+    type: regular
+    task:
+      id: 7be34dd3-885c-412f-8915-a589edf69839
+      version: -1
+      name: druva-quarantine-resource
+      description: Quarantine the infected resource
+      script: Druva Ransomware Response|||druva-quarantine-resource
+      type: regular
+      iscommand: true
+      brand: Druva Ransomware Response
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      execution-timeout:
+        simple: "600"
+      extend-context:
+        simple: Druva.custom.quarantineResourceOutput=
+      from_date:
+        complex:
+          root: inputs.OccuredTime
+      resource_id:
+        complex:
+          root: Druva
+          accessor: Resource.resourceID
+          transformers:
+          - operator: Stringify
+      resource_type:
+        complex:
+          root: Druva
+          accessor: Resource.resourceType
+      to_date: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: f58ca4eb-947e-4cfb-8f86-68ac8e19008a
+    type: regular
+    task:
+      id: f58ca4eb-947e-4cfb-8f86-68ac8e19008a
+      version: -1
+      name: druva-view-quarantine-range
+      description: View Quarantine Range Details
+      script: Druva Ransomware Response|||druva-view-quarantine-range
+      type: regular
+      iscommand: true
+      brand: Druva Ransomware Response
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      range_id:
+        complex:
+          root: Druva
+          accessor: QuarantinedRangeID
+          transformers:
+          - operator: Stringify
+      resource_id:
+        complex:
+          root: Druva
+          accessor: Resource.resourceID
+          transformers:
+          - operator: Stringify
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: d74c2fcc-bb76-4367-8c7f-3b96d40d0598
+    type: regular
+    task:
+      id: d74c2fcc-bb76-4367-8c7f-3b96d40d0598
+      version: -1
+      name: druva-find-sha1
+      description: Searches or file across endpoint backups in Druva using the SHA1
+        checksum.
+      script: Druva Ransomware Response|||druva-endpoint-search-file-hash
+      type: regular
+      iscommand: true
+      brand: Druva Ransomware Response
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      sha1_checksum:
+        complex:
+          root: File
+          accessor: SHA1
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 88b526c1-4117-439a-8914-36bd92051187
+    type: title
+    task:
+      id: 88b526c1-4117-439a-8914-36bd92051187
+      version: -1
+      name: done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: e9380e19-b3b9-4994-8f80-9fd5e4ab3eb8
+    type: condition
+    task:
+      id: e9380e19-b3b9-4994-8f80-9fd5e4ab3eb8
+      version: -1
+      name: DruvaHostnameExist?
+      description: Check if a hostname is associated with the incident.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "18"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: hostname
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: b33a2e23-acd5-4c7a-87ae-bd8b275da54d
+    type: condition
+    task:
+      id: b33a2e23-acd5-4c7a-87ae-bd8b275da54d
+      version: -1
+      name: DruvaSHA1Exist?
+      description: Check is a file hash is associated with the incident.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: File
+                accessor: SHA1
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 04b331df-4f69-44fc-876f-2c233a721d9a
+    type: regular
+    task:
+      id: 04b331df-4f69-44fc-876f-2c233a721d9a
+      version: -1
+      name: Delete PastContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: Druva
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 2a7fd28b-3895-4e1b-82b7-71fad6aa2146
+    type: condition
+    task:
+      id: 2a7fd28b-3895-4e1b-82b7-71fad6aa2146
+      version: -1
+      name: QuarantineRangeCreated?
+      description: Check if the snapshots were quarantined in Druva.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "18"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Druva
+                accessor: QuarantinedRangeID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 1e19b5cd-324a-4405-83d5-7d1cbee7af67
+    type: regular
+    task:
+      id: 1e19b5cd-324a-4405-83d5-7d1cbee7af67
+      version: -1
+      name: druva-quarantine-resource-from-search-results
+      description: Quarantine a resource
+      script: Druva Ransomware Response|||druva-quarantine-resource
+      type: regular
+      iscommand: true
+      brand: Druva Ransomware Response
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      execution-timeout:
+        simple: "600"
+      extend-context:
+        simple: Druva.custom.quarantineResourceOutput=
+      from_date:
+        complex:
+          root: inputs.OccuredTime
+      resource_id:
+        complex:
+          root: Druva.searchEndpointsFileHashResults.deviceID
+          filters:
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: Druva.searchEndpointsFileHashResults.deviceID
+                iscontext: true
+              right:
+                value:
+                  simple: Druva.Resource.resourceID
+                iscontext: true
+          transformers:
+          - operator: Stringify
+          - operator: uniq
+      resource_type:
+        simple: Endpoint
+      to_date: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "17_18_#default#": 0.9
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1785,
+        "width": 605,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: OccuredTime
+  value:
+    complex:
+      root: incident
+      accessor: datetimeofthebreach
+      transformers:
+      - operator: Cut
+        args:
+          delimiter:
+            value:
+              simple: T
+          fields:
+            value:
+              simple: "1"
+  required: true
+  description: |-
+    Date when incident occurred. This field will be used as the start date for Druva snapshot quarantine.
+    Format: YYYY-MM-DD
+  playbookInputQuery:
+- key: ComputerName
+  value:
+    complex:
+      root: incident
+      accessor: hostname
+  required: true
+  description: ComputerName is used to search Druva for resourceID
+  playbookInputQuery:
+- key: SHA1
+  value:
+    complex:
+      root: File
+      accessor: SHA1
+  required: false
+  description: FIle Hash of ransomware Detected
+  playbookInputQuery:
+outputs:
+- contextPath: Druva.viewedQuarantineRange
+  description: Druva Range Output
+  type: unknown
+tests:
+- Druva-Test
+fromversion: 5.5.0
