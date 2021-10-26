@@ -136,7 +136,8 @@ class IAMUserProfile:
         self._user_profile = safe_load_json(user_profile)
         # Mapping is added here for GET USER commands, where we need to map Cortex XSOAR fields to the given app fields.
         self.mapped_user_profile = None
-        self.mapped_user_profile = self.map_object(mapper, incident_type) if mapper else self._user_profile
+        self.mapped_user_profile = self.map_object(mapper, incident_type, map_old_data=True) if \
+            mapper else self._user_profile
         self._user_profile_delta = safe_load_json(user_profile_delta) if user_profile_delta else {}
         self._vendor_action_results: List = []
 
@@ -220,7 +221,7 @@ class IAMUserProfile:
 
         self._vendor_action_results.append(vendor_action_result)
 
-    def map_object(self, mapper_name, incident_type):
+    def map_object(self, mapper_name, incident_type, map_old_data: bool = False):
         """ Returns the user data, in an application data format.
 
         :type mapper_name: ``str``
@@ -229,17 +230,23 @@ class IAMUserProfile:
         :type incident_type: ``str``
         :param incident_type: The incident type used.
 
+        :type map_old_data ``bool``
+        :param map_old_data: Whether to map old data as well.
+
         :return: the user data, in the app data format.
         :rtype: ``dict``
         """
         if self.mapped_user_profile:
+            if not map_old_data:
+                return {k: v for k, v in self.mapped_user_profile.items() if k != 'olduserdata'}
             return self.mapped_user_profile
-        if incident_type not in [IAMUserProfile.CREATE_INCIDENT_TYPE, IAMUserProfile.UPDATE_INCIDENT_TYPE]:
+        if incident_type not in [IAMUserProfile.CREATE_INCIDENT_TYPE, IAMUserProfile.UPDATE_INCIDENT_TYPE,
+                                 IAMUserProfile.DISABLE_INCIDENT_TYPE]:
             raise DemistoException('You must provide a valid incident type to the map_object function.')
         if not self._user_profile:
             raise DemistoException('You must provide the user profile data.')
         app_data = demisto.mapObject(self._user_profile, mapper_name, incident_type)
-        if 'olduserdata' in self._user_profile:
+        if map_old_data and 'olduserdata' in self._user_profile:
             app_data['olduserdata'] = demisto.mapObject(self._user_profile.get('olduserdata', {}), mapper_name,
                                                         incident_type)
         return app_data

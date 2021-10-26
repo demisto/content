@@ -21,13 +21,13 @@ class Client(BaseClient):
     def __init__(self, base_url, verify=True, proxy=False, ok_codes=(), headers=None, auth=None, client_id=None,
                  username=None, password=None, client_secret=None, manager_email=None):
         super().__init__(base_url, verify, proxy, ok_codes, headers, auth)
-        self.manager_id = self.get_manager_id(manager_email)
         self.client_id = client_id
         self.client_secret = client_secret
         self.username = username
         self.password = password
         self.headers = headers if headers else {}
         self.headers['Authorization'] = f'Bearer {self.create_login()}'
+        # self.manager_id = self.get_manager_id(manager_email)
 
     def get_manager_id(self, manager_email: Optional[str]) -> str:
         """ Gets the user's manager ID from manager email.
@@ -59,6 +59,7 @@ class Client(BaseClient):
             method='POST',
             url_suffix=uri,
             params=params,
+            headers=self.headers
         )
 
         return res.get('access_token')
@@ -67,7 +68,7 @@ class Client(BaseClient):
         """ Tests connectivity with the application. """
 
         uri = URI_PREFIX + 'sobjects/User/testid'
-        self._http_request(method='GET', url_suffix=uri, ok_codes=(200, 404))
+        self._http_request(method='GET', url_suffix=uri, ok_codes=(200, 404), headers=self.headers)
 
     def get_user_by_id(self, user_id: str) -> Optional['IAMUserAppData']:
         """ Queries the user in the application using REST API by its ID, and returns an IAMUserAppData object
@@ -84,6 +85,7 @@ class Client(BaseClient):
         res = self._http_request(
             method='GET',
             url_suffix=uri,
+            headers=self.headers
         )
 
         if res:
@@ -109,6 +111,7 @@ class Client(BaseClient):
             method='GET',
             url_suffix=uri,
             params=params,
+            headers=self.headers
         )
 
         user_app_data = res.get('searchRecords', [])
@@ -128,15 +131,14 @@ class Client(BaseClient):
         :rtype: ``IAMUserAppData``
         """
         uri = f'{URI_PREFIX}sobjects/FF__Key_Contact__c'
-        if self.manager_id:
-            user_data['manager_id'] = self.manager_id
-
+        # if self.manager_id:
+        #     user_data['manager_id'] = self.manager_id
         res = self._http_request(
             method='POST',
             url_suffix=uri,
             json_data=user_data,
+            headers=self.headers
         )
-
         user_id = res.get('id')
         username = res.get('userName')
         is_active = True
@@ -156,8 +158,8 @@ class Client(BaseClient):
         :rtype: ``IAMUserAppData``
         """
         uri = f'{URI_PREFIX}sobjects/FF__Key_Contact__c/{user_id}'
-        if self.manager_id:
-            user_data['manager_id'] = self.manager_id
+        # if self.manager_id:
+        #     user_data['manager_id'] = self.manager_id
         params = {"_HttpMethod": "PATCH"}
 
         self._http_request(
@@ -165,6 +167,7 @@ class Client(BaseClient):
             url_suffix=uri,
             params=params,
             json_data=user_data,
+            headers=self.headers
         )
 
         return self.get_user_by_id(user_id)
@@ -197,6 +200,7 @@ class Client(BaseClient):
         self._http_request(
             method='DELETE',
             url_suffix=uri,
+            headers=self.headers
         )
 
         return IAMUserAppData(user_id, "", False, {})
@@ -212,6 +216,7 @@ class Client(BaseClient):
         res = self._http_request(
             method='GET',
             url_suffix=uri,
+            headers=self.headers
         )
 
         fields = res.get('result', [])
