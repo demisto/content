@@ -42,10 +42,11 @@ To setup the mirroring follow these instructions:
     - Incoming And Outgoing - Changes in XSOAR incidents and SaaS Security incidents will be reflected in both directions.
     - None - Turns off incident mirroring.
 5. Optional: Check the *Close Mirrored XSOAR Incident* integration parameter to close the Cortex XSOAR incident when the corresponding incident is closed on SaaS Security side.
+    - Note that we don't have a closing parameter for the opposite direction (to close incident in SaaS Security which were closed in XSOAR) as this is the only use case we have in the mirror out, when we update the state and category.
 Newly fetched incidents will be mirrored in the chosen direction.
 Note: This will not effect existing incidents.
    
-**Imporatnt Notes*** 
+**Imporatnt Notes** 
  - In order for the mirroring to work, the *Incident Mirroring Direction* parameter needs to be set before the incident is fetched.
  - In order to ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and SaaS Security. 
  - The only fields that can be mirrored in from SaaS Security to XSOAR are:

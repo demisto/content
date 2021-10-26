@@ -153,7 +153,7 @@
                         "type": "linkedIncidents",
                         "w": 1,
                         "x": 1,
-                        "y": 9
+                        "y": 10
                     },
                     {
                         "displayType": "ROW",
@@ -208,7 +208,7 @@
                         "type": "indicators",
                         "w": 2,
                         "x": 0,
-                        "y": 7
+                        "y": 8
                     },
                     {
                         "displayType": "CARD",
@@ -267,7 +267,7 @@
                         "static": false,
                         "w": 1,
                         "x": 1,
-                        "y": 3
+                        "y": 6
                     },
                     {
                         "displayType": "ROW",
@@ -309,7 +309,7 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 9
+                        "y": 10
                     },
                     {
                         "displayType": "CARD",
@@ -382,8 +382,8 @@
                         "name": "Policy Information",
                         "static": false,
                         "w": 1,
-                        "x": 1,
-                        "y": 5
+                        "x": 0,
+                        "y": 6
                     },
                     {
                         "displayType": "ROW",
@@ -435,15 +435,6 @@
                                 "index": 4,
                                 "sectionItemType": "field",
                                 "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "outgoingmirrorerror",
-                                "height": 22,
-                                "id": "854da6f0-2b8b-11ec-a22a-850748d0ef51",
-                                "index": 5,
-                                "sectionItemType": "field",
-                                "startCol": 0
                             }
                         ],
                         "maxW": 3,
@@ -457,15 +448,15 @@
                         "y": 8
                     },
                     {
-                        "displayType": "ROW",
-                        "h": 2,
+                        "displayType": "CARD",
+                        "h": 3,
                         "hideName": false,
                         "i": "caseinfoid-48f1fa50-2c01-11ec-abe9-ff04fcb691b4",
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "state",
-                                "height": 22,
+                                "fieldId": "saassecuritystate",
+                                "height": 53,
                                 "id": "52166290-2b8b-11ec-a22a-850748d0ef51",
                                 "index": 0,
                                 "sectionItemType": "field",
@@ -474,7 +465,7 @@
                             {
                                 "endCol": 2,
                                 "fieldId": "saassecuritycategory",
-                                "height": 22,
+                                "height": 53,
                                 "id": "5756fd50-2b8b-11ec-a22a-850748d0ef51",
                                 "index": 1,
                                 "sectionItemType": "field",
@@ -483,7 +474,7 @@
                             {
                                 "endCol": 2,
                                 "fieldId": "saassecuritystatus",
-                                "height": 22,
+                                "height": 53,
                                 "id": "6e1d34c0-2c01-11ec-abe9-ff04fcb691b4",
                                 "index": 2,
                                 "sectionItemType": "field",
@@ -492,7 +483,7 @@
                             {
                                 "endCol": 2,
                                 "fieldId": "saassecurityassignedto",
-                                "height": 22,
+                                "height": 53,
                                 "id": "685abfd0-2c01-11ec-abe9-ff04fcb691b4",
                                 "index": 3,
                                 "sectionItemType": "field",
@@ -501,9 +492,18 @@
                             {
                                 "endCol": 2,
                                 "fieldId": "saassecurityresolvedby",
-                                "height": 22,
+                                "height": 53,
                                 "id": "6ce0bd20-2c01-11ec-abe9-ff04fcb691b4",
                                 "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sha256",
+                                "height": 22,
+                                "id": "31435ed0-3638-11ec-89f9-7f3391e8f889",
+                                "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -519,8 +519,8 @@
                         "y": 3
                     },
                     {
-                        "displayType": "ROW",
-                        "h": 2,
+                        "displayType": "CARD",
+                        "h": 3,
                         "hideName": false,
                         "i": "caseinfoid-56502550-2c33-11ec-890f-9fd8e3babc6e",
                         "items": [
@@ -581,8 +581,8 @@
                         "name": "Remidiation Action",
                         "static": false,
                         "w": 1,
-                        "x": 0,
-                        "y": 5
+                        "x": 1,
+                        "y": 3
                     }
                 ],
                 "type": "custom"

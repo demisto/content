@@ -440,10 +440,10 @@ def fetch_incidents(client: Client, first_fetch_time, fetch_limit, fetch_state, 
         incidents.append(incident)
 
         date_updated = inc.get('updated_at')
-        date_updated_dt = datetime.strptime(date_updated, SAAS_SECURITY_DATE_FORMAT)
+        date_updated_dt = datetime.strptime(date_updated, SAAS_SECURITY_DATE_FORMAT) + timedelta(milliseconds=1)
 
         if date_updated_dt > datetime.strptime(current_fetch, SAAS_SECURITY_DATE_FORMAT):
-            current_fetch = date_updated
+            current_fetch = date_updated_dt.strftime(SAAS_SECURITY_DATE_FORMAT)[:-4] + 'Z'
 
     demisto.setLastRun({'last_run_time': current_fetch})
     demisto.incidents(incidents)

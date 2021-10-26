@@ -58,6 +58,10 @@
           "complex": null,
           "simple": "category"
         },
+        "Saas Security State": {
+          "complex": null,
+          "simple": "state"
+        },
         "Saas Security Category": {
           "complex": null,
           "simple": "category"
@@ -123,10 +127,6 @@
         "IncomingMirrorError": {
             "complex": null,
             "simple": "in_mirror_error"
-        },
-        "OutgoingMirrorError": {
-            "complex": null,
-            "simple": "out_mirror_error"
         }
       }
     }
