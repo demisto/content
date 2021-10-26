@@ -143,10 +143,12 @@ configuration:
   name: incidentFetchInterval
   required: false
   type: 19
-- display: ''
+- display: Custom Fields
   name: custom_fields
   required: false
   type: 12
+- additionalinfo: Custom (user defined) fields in the format: u_fieldname1,u_fieldname2
+        custom fields start with a 'u_'. These fields will be included in the mirroring capabilities, if added here.
 description: "Use The ServiceNow IT Service Management (ITSM) solution to modernize\
   \ the way you manage and deliver services to your users. \n\nIncludes Mirroring\
   \ on Custom ServiceNow Fields"
