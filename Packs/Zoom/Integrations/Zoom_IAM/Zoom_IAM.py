@@ -102,7 +102,9 @@ class Client(BaseClient):
 
     def get_app_fields(self):
         user_app_data = self.get_user('', 'me')
-        return {k: underscoreToCamelCase(k) for k, _ in user_app_data.full_data.items()}
+        if user_app_data:
+            return {k: underscoreToCamelCase(k) for k, _ in user_app_data.full_data.items()}
+        raise DemistoException('Could not retrieve fields for mapping')
 
     @staticmethod
     def handle_exception(user_profile: IAMUserProfile,
@@ -217,7 +219,7 @@ def main():
     api_key = params.get('api_key')
     api_secret = params.get('api_secret')
     mapper_in = params.get('mapper_in', DEFAULT_INCOMING_MAPPER)
-    mapper_out = params.get('mapper_out', DEFAULT_OUTGOING_MAPPER)
+    # mapper_out = params.get('mapper_out', DEFAULT_OUTGOING_MAPPER)
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     command = demisto.command()
