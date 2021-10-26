@@ -139,9 +139,9 @@ def test_list_attached_group_polices(mocker):
                                      t=ATTACHED_POLICIES)
 
     ec = {'AWS.IAM.AttachedGroupPolicies(val.PolicyArn && val.GroupName && val.PolicyArn === obj.PolicyArn && '
-          'val.GroupName === obj.GroupName)': [
-        {'GroupName': 'test', 'PolicyName': policy_name, 'PolicyArn': policy_arn}],
-        'AWS.IAM.Groups(val.GroupName === \'{}\').AttachedPoliciesMarker'.format('test'): '111'}
+          'val.GroupName === obj.GroupName)':
+              [{'GroupName': 'test', 'PolicyName': policy_name, 'PolicyArn': policy_arn}],
+          'AWS.IAM.Groups(val.GroupName === \'{}\').AttachedPoliciesMarker'.format('test'): '111'}
 
     assert contents.get('HumanReadable') == human_readable
     assert contents.get('EntryContext') == ec
