@@ -1213,8 +1213,13 @@ def reset_mirroring_events_variables(mirror_options: str):
     Returns: None
     """
     ctx = extract_context_data(get_integration_context().copy())
-    print_mirror_events_stats(ctx, f"New Long Running Container - Before Mirroring Variables Reset, "
-                                   f"Mirror Option {mirror_options}")
+    try:
+        print_mirror_events_stats(ctx, f"New Long Running Container - Before Mirroring Variables Reset, "
+                                       f"Mirror Option {mirror_options}")
+    except Exception as e:
+        print_debug_msg(f'Could not print mirror_events_stats due to error: {str(e)} \n '
+                        f'Reseting mirroring vars')
+        mirror_options = 'needs reset to mirroring vars'
 
     if mirror_options != MIRROR_OFFENSE_AND_EVENTS:
         ctx[UPDATED_MIRRORED_OFFENSES_CTX_KEY] = []
@@ -1247,7 +1252,7 @@ def is_reset_triggered(handle_reset: bool = False):
             if ctx and RESET_KEY in ctx:
                 if handle_reset:
                     print_debug_msg('Reset fetch-incidents.')
-                    set_integration_context({'retry_compatible': True, 'samples': ctx.get('samples', '[]')})
+                    set_integration_context({'samples': ctx.get('samples', '[]')})
                 return True
         finally:
             lock.release()
@@ -2846,7 +2851,6 @@ def qradar_reset_last_run_command() -> str:
     """
     ctx = get_integration_context()
     ctx[RESET_KEY] = True
-    ctx['retry_compatible'] = True
     set_integration_context(ctx)
     return 'fetch-incidents was reset successfully.'
 
@@ -3346,12 +3350,25 @@ def change_ctx_to_be_compatible_with_retry() -> None:
         (None): Modifies context to be compatible.
     """
     ctx = get_integration_context()
-    if not ctx.get('retry_compatible', False):
-        ctx = encode_context_data(ctx)
+    new_ctx = ctx.copy()
+    try:
+        extract_context_data(ctx)
+        print_debug_msg(f"ctx {ctx} was found to be compatible with retries")
+        extract_works = True
+    except TypeError as e:
+        print_debug_msg(f"extracting ctx {ctx} failed, trying to make it retry compatible. Error was: {str(e)}")
+        extract_works = False
+
+    # The following is done to fix issued in upgrading from 2.0.27/28 to 2.1.0 was incompatible
+    if not extract_works and ctx.get('samples') and type(ctx.get('samples')) is str:
+        new_ctx['samples'] = json.loads(ctx.get('samples'))
+        new_ctx['last_mirror_update'] = json.loads(ctx.get('last_mirror_update', '0'))
+
+    if not extract_works:
+        encoded_ctx = encode_context_data(new_ctx)
         print_debug_msg(f"Change ctx context data is {ctx}")
-        set_integration_context({'retry_compatible': True})
-        set_to_integration_context_with_retries(ctx)
-        print_debug_msg(f"Change ctx context data was changed to {ctx}")
+        set_to_integration_context_with_retries(encoded_ctx)
+        print_debug_msg(f"Change ctx context data was changed to {encoded_ctx}")
 
 
 ''' MAIN FUNCTION '''
