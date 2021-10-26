@@ -6,7 +6,6 @@ SECTIONS_TO_KEEP = ['Threat Hunting', 'Mitigation', 'Remediation', 'Eradication'
 
 HEADER_TRANSFORM = {'id': 'Task ID', 'name': 'Task Name', 'state': 'Task State', 'completedDate': 'Completion Time'}
 
-
 ''' COMMAND FUNCTION '''
 
 
@@ -66,18 +65,20 @@ def create_markdown_tasks() -> CommandResults:
     md_lst = []
     for k1, v1 in tasks_nested_results.items():
         if 'tasks' in v1.keys():
-            tasks = list(v1.values())[0]
+            tasks = v1.get('tasks')
             all_tasks.extend(tasks)
             tasks = add_url_to_tasks(tasks, workplan_url)
-            md_lst.append(tableToMarkdown(k1, tasks, headers=headers, headerTransform=lambda x: HEADER_TRANSFORM.get(x))[
-                          1:])  # in order to trim the first # to make the header bigger
+            md_lst.append(
+                tableToMarkdown(k1, tasks, headers=headers, headerTransform=lambda x: HEADER_TRANSFORM.get(x))[
+                1:])  # in order to trim the first # to make the header bigger
         else:
             md_lst.append(f'## {k1}')
             for k2, v2 in v1.items():
-                tasks = list(v2.values())[0]
+                tasks = v2.get('tasks')
                 all_tasks.extend(tasks)
                 tasks = add_url_to_tasks(tasks, workplan_url)
-                md_lst.append(tableToMarkdown(k2, tasks, headers=headers, headerTransform=lambda x: HEADER_TRANSFORM.get(x)))
+                md_lst.append(
+                    tableToMarkdown(k2, tasks, headers=headers, headerTransform=lambda x: HEADER_TRANSFORM.get(x)))
 
     set_incident_with_count(all_tasks)
 

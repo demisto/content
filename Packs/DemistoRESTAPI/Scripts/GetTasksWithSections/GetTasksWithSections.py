@@ -117,14 +117,14 @@ def get_tasks_command(incident_id: str):
     headers = ['id', 'name', 'state', 'completedDate']
     for k1, v1 in tasks_nested_results.items():
         if 'tasks' in v1.keys():
-            tasks = list(v1.get('tasks'))
+            tasks = v1.get('tasks')
             task_results.extend(tasks)
             tasks = add_url_to_tasks(tasks, workplan_url)
             md_lst.append(tableToMarkdown(k1, tasks, headers=headers)[1:])  # this is for making the title bigger
         else:
             md_lst.append(f'## {k1}')
             for k2, v2 in v1.items():
-                tasks = list(v2.get('tasks'))
+                tasks = v2.get('tasks')
                 task_results.extend(tasks)
                 tasks = add_url_to_tasks(tasks, workplan_url)
                 md_lst.append(tableToMarkdown(k2, tasks, headers=headers))
