@@ -1161,6 +1161,11 @@
             "playbookID": "TestEditServerConfig"
         },
         {
+            "playbookID": "MarketplacePackInstaller_Test",
+            "integrations": "Demisto REST API",
+            "fromversion": "6.0.0"
+        },
+        {
             "playbookID": "Default - Test",
             "integrations": [
                 "ThreatQ v2",
@@ -1829,7 +1834,6 @@
         {
             "integrations": "Tanium",
             "playbookID": "Tanium Test Playbook",
-            "nightly": true,
             "timeout": 1200,
             "pid_threshold": 10
         },
@@ -2243,6 +2247,13 @@
         },
         {
             "playbookID": "Ping Test Playbook"
+        },
+        {
+            "playbookID": "ParseWordDoc-Test"
+        },
+        {
+            "playbookID": "PDFUnlocker-Test",
+            "fromversion": "6.0.0"
         },
         {
             "playbookID": "Active Directory Test",

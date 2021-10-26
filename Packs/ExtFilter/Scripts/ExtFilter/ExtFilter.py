@@ -10,13 +10,13 @@ from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-PATALG_BINARY = 0
+PATALG_BINARY: int = 0
 PATALG_WILDCARD: int = 1
-PATALG_REGEX = 2
+PATALG_REGEX: int = 2
 
-ITERATE_NODE = 0
-ITERATE_VALUE = 1
-ITERATE_KEY = 2
+ITERATE_NODE: int = 0
+ITERATE_VALUE: int = 1
+ITERATE_KEY: int = 2
 
 
 class Value:
@@ -76,14 +76,15 @@ class Ddict:
     @staticmethod
     def get_value(node: Dict[str, Any], path: str) -> Optional[Value]:
         val = None
+        key = None
         comps = path.split('.')
         while comps:
             res = Ddict.__search(node if val is None else val, comps)
             if res is None:
                 return None
-            _, val, comps = res
+            key, val, comps = res
 
-        return None if val is None else Value(val)
+        return None if key is None else Value(val)
 
     @staticmethod
     def get(node: Dict[str, Any], path: str) -> Any:
@@ -873,11 +874,17 @@ class ExtFilter:
 
             for x in self.__conds_items(conds, root):
                 coptype, cconds = x
-                child = self.filter_value(
-                    child, coptype, cconds, None, inlist and parent is None)
-                if not child:
-                    return None
-                child = child.value
+
+                if coptype in ("is", "isn't") and \
+                   isinstance(cconds, str) and cconds == "existing key":
+                    if (coptype == "is") != bool(path and Ddict.get_value(root, path)):
+                        return None
+                else:
+                    child = self.filter_value(
+                        child, coptype, cconds, None, inlist and parent is None)
+                    if not child:
+                        return None
+                    child = child.value
 
                 if parent:
                     if isinstance(parent, dict):
@@ -1118,15 +1125,11 @@ class ExtFilter:
             if not inlist and isinstance(root, list):
                 return self.filter_values(root, optype, conds, path)
 
-            filstr = conds
-            if isinstance(filstr, str) and filstr == "existing key":
-                if optype == "is":
-                    if path and Ddict.get_value(root, path):
-                        return Value(root)
-                else:  # isn't
-                    if not path or not Ddict.get_value(root, path):
-                        return Value(root)
+            if isinstance(conds, str) and conds == "existing key":
+                if (optype == "is") == bool(path and Ddict.get_value(root, path)):
+                    return Value(root)
                 return None
+
         if path:
             if not inlist and isinstance(root, list):
                 return self.filter_values(root, optype, conds, path)
@@ -1718,7 +1721,11 @@ class ExtFilter:
         """
         if only_parse_for_string and not isinstance(jstr, str):
             return jstr
-        return json.loads(jstr)
+
+        try:
+            return json.loads(jstr)
+        except json.JSONDecodeError:
+            return jstr
 
     def parse_and_extract_conds_json(
             self,
