@@ -4,8 +4,8 @@ contentitemexportablefields:
   contentitemfields: {}
 name: Get Original Email - EWS v2
 description: |-
-  Use this playbook to retrieve the original email in the thread (as eml file), when the reporting user forwarded the original email not as an attachment.
-
+  This v2 playbook retrieves the original email in the thread (as eml file) by using the EWS v2 integration.
+  The main difference between this playbook and its previous version is that this playbook will retrieve the email as eml and not as an Email object. This version also reduces the amount of tasks needed to perform the fetch action.
   You must have the necessary permissions in the EWS integration to execute global search: eDiscovery
 starttaskid: "0"
 tasks:
@@ -28,7 +28,7 @@ tasks:
       {
         "position": {
           "x": 122.5,
-          "y": 0
+          "y": 280
         }
       }
     note: false
@@ -40,14 +40,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 03f2c080-1995-42fc-82ce-16d474fb5438
+    taskid: 43203523-8fe7-4403-8c1b-ba175d568d59
     type: condition
     task:
-      id: 03f2c080-1995-42fc-82ce-16d474fb5438
+      id: 43203523-8fe7-4403-8c1b-ba175d568d59
       version: -1
       name: Is EWS v2 enabled?
-      description: |
-        Verifies that there is an active instance of the EWS v2 integration enabled.
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
       brand: ""
@@ -56,41 +57,17 @@ tasks:
       - "2"
       "yes":
       - "3"
+    scriptarguments:
+      brandname:
+        simple: EWS v2
+    results:
+    - brandInstances
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: EWS v2
-                    ignorecase: true
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                    ignorecase: true
-                accessor: brand
-            iscontext: true
     view: |-
       {
         "position": {
-          "x": 380,
-          "y": 140
+          "x": 122.5,
+          "y": 430
         }
       }
     note: false
@@ -116,8 +93,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 130,
-          "y": 1560
+          "x": 122.5,
+          "y": 1570
         }
       }
     note: false
@@ -129,10 +106,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: b2617aaf-5e54-43f5-89fe-82fc78cd099b
+    taskid: 15ad973f-06c8-417d-8f63-9fcb9dfc7bef
     type: condition
     task:
-      id: b2617aaf-5e54-43f5-89fe-82fc78cd099b
+      id: 15ad973f-06c8-417d-8f63-9fcb9dfc7bef
       version: -1
       name: Verify required inputs
       description: Verify that the required input values for retrieving the original
@@ -143,35 +120,29 @@ tasks:
     nexttasks:
       '#default#':
       - "2"
-      "yes":
+      Inputs-Exist:
       - "4"
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: Inputs-Exist
       condition:
       - - operator: isExists
           left:
             value:
               complex:
-                root: inputs.InReplyTo
+                root: inputs.TargetMailbox
             iscontext: true
       - - operator: isExists
           left:
             value:
               complex:
-                root: inputs.ThreadTopic
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: inputs.Mailbox
+                root: inputs.MessageID
             iscontext: true
     view: |-
       {
         "position": {
-          "x": -90,
-          "y": 370
+          "x": 122.5,
+          "y": 640
         }
       }
     note: false
@@ -183,12 +154,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 73922583-8522-44e5-8184-ec87d2d885f8
+    taskid: f5a63cbd-d9d6-49ca-8812-88c74426bb82
     type: regular
     task:
-      id: 73922583-8522-44e5-8184-ec87d2d885f8
+      id: f5a63cbd-d9d6-49ca-8812-88c74426bb82
       version: -1
-      name: Search for messages by Thread-Topic
+      name: Search for messages by MessageID
       description: Retrieve all messages found in the thread of the forwarded email.
       script: EWS v2|||ews-search-mailbox
       type: regular
@@ -196,21 +167,22 @@ tasks:
       brand: EWS v2
     nexttasks:
       '#none#':
-      - "6"
+      - "5"
     scriptarguments:
-      query:
-        simple: subject:"${inputs.ThreadTopic}"
+      message-id:
+        complex:
+          root: inputs.MessageID
       selected-fields:
-        simple: in_reply_to
+        simple: item_id
       target-mailbox:
         complex:
-          root: inputs.Mailbox
+          root: inputs.TargetMailbox
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 545
+          "x": 122.5,
+          "y": 885
         }
       }
     note: false
@@ -222,14 +194,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 25f6439f-778f-45a5-841a-53efe77d590c
+    taskid: 2c433705-840b-4ad0-8214-ed8db8588d35
     type: condition
     task:
-      id: 25f6439f-778f-45a5-841a-53efe77d590c
+      id: 2c433705-840b-4ad0-8214-ed8db8588d35
       version: -1
       name: Was a matching email found?
       description: Verify that an email object with a Message-Id that matches the
-        InReplyTo ID of the forwarded email was found.
+        InReplayTo ID of the forwarded email was found.
       type: condition
       iscommand: false
       brand: ""
@@ -242,66 +214,18 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
               complex:
-                root: EWSItem
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: EWSItem.messageId
-                      iscontext: true
-                    right:
-                      value:
-                        simple: inputs.InReplyTo
-                      iscontext: true
-                accessor: messageId
+                root: EWS.Items
+                accessor: itemId
             iscontext: true
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1080
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "6":
-    id: "6"
-    taskid: e1d0343e-4065-4023-8e1d-83574c7bffbf
-    type: regular
-    task:
-      id: e1d0343e-4065-4023-8e1d-83574c7bffbf
-      version: -1
-      name: Set context
-      description: Set email object to context.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      key:
-        simple: EWSItem
-      value:
-        complex:
-          root: EWS
-          accessor: Items
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 720
+          "x": 122.5,
+          "y": 1090
         }
       }
     note: false
@@ -313,10 +237,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 505dea9c-4e0f-404d-858c-3a090e4f6df0
+    taskid: 095d6baa-7a84-4f34-87d1-5b2d5a4287f2
     type: regular
     task:
-      id: 505dea9c-4e0f-404d-858c-3a090e4f6df0
+      id: 095d6baa-7a84-4f34-87d1-5b2d5a4287f2
       version: -1
       name: Get original email as eml
       description: Retrieves items by item ID and uploads it's content as eml file.
@@ -330,27 +254,17 @@ tasks:
     scriptarguments:
       item-id:
         complex:
-          root: EWSItem
-          filters:
-          - - operator: containsGeneral
-              left:
-                value:
-                  simple: EWSItem.messageId
-                iscontext: true
-              right:
-                value:
-                  simple: inputs.InReplyTo
-                iscontext: true
+          root: EWS.Items
           accessor: itemId
       target-mailbox:
         complex:
-          root: inputs.Mailbox
+          root: inputs.TargetMailbox
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -230,
-          "y": 1300
+          "x": 122.5,
+          "y": 1360
         }
       }
     note: false
@@ -360,97 +274,29 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "8":
-    id: "8"
-    taskid: 8764cbb0-dd56-4095-8df2-e77035713e2e
-    type: regular
-    task:
-      id: 8764cbb0-dd56-4095-8df2-e77035713e2e
-      version: -1
-      name: Delete old context
-      description: Delete the email objects from context.
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      key:
-        simple: EWS
-      subplaybook:
-        simple: "yes"
-    reputationcalc: 1
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1625,
-        "width": 990,
-        "x": -230,
-        "y": 0
+        "height": 1355,
+        "width": 380,
+        "x": 122.5,
+        "y": 280
       }
     }
   }
 inputs:
-- key: Mailbox
-  value:
-    complex:
-      root: incident
-      accessor: emailfrom
+- key: TargetMailbox
+  value: {}
   required: false
-  description: Email address of the reporting user.
+  description: The target mailbox to retrieve the eml file from.
   playbookInputQuery:
-- key: InReplyTo
-  value:
-    complex:
-      root: incident.phishingreporteremailheaders
-      filters:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: incident.phishingreporteremailheaders.headername
-            iscontext: true
-          right:
-            value:
-              simple: In-Reply-To
-      accessor: headervalue
+- key: MessageID
+  value: {}
   required: false
   description: The InReplyTo header in the forwarded email.
-  playbookInputQuery:
-- key: ThreadTopic
-  value:
-    complex:
-      root: incident.phishingreporteremailheaders
-      filters:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: incident.phishingreporteremailheaders.headername
-            iscontext: true
-          right:
-            value:
-              simple: Thread-Topic
-      accessor: headervalue
-  required: false
-  description: The ThreadTopic header in the forwarded email.
   playbookInputQuery:
 outputs:
 - contextPath: File

@@ -1,5 +1,5 @@
-Use this playbook to retrieve the original email in the thread (as eml file), when the reporting user forwarded the original email not as an attachment.
-
+This v2 playbook retrieves the original email in the thread (as eml file) by using the EWS v2 integration.
+The main difference between this playbook and its previous version is that this playbook will retrieve the email as eml and not as an Email object. This version also reduces the amount of tasks needed to perform the fetch action.
 You must have the necessary permissions in the EWS integration to execute global search: eDiscovery
 
 ## Dependencies
@@ -12,21 +12,19 @@ This playbook does not use any sub-playbooks.
 * EWS v2
 
 ### Scripts
-* DeleteContext
-* Set
+* IsIntegrationAvailable
 
 ### Commands
-* ews-get-items-as-eml
 * ews-search-mailbox
+* ews-get-items-as-eml
 
 ## Playbook Inputs
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Mailbox | Email address of the reporting user. | incident.emailfrom | Optional |
-| InReplyTo | The InReplyTo header in the forwarded email. | incident.phishingreporteremailheaders.headervalue | Optional |
-| ThreadTopic | The ThreadTopic header in the forwarded email. | incident.phishingreporteremailheaders.headervalue | Optional |
+| TargetMailbox | The target mailbox to retrieve the eml file from. |  | Optional |
+| MessageID | The InReplyTo header in the forwarded email. |  | Optional |
 
 ## Playbook Outputs
 ---

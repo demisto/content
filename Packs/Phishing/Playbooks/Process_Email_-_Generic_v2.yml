@@ -3,8 +3,13 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Process Email - Generic v2
-description: Add email details to the relevant context entities and handle the case
-  where original emails are attached.
+description: |
+  Add email details to the relevant context entities and handle the case where original emails are attached.
+
+  Added on this v2 playbook:
+  - Use incident fields and not incident labels
+  - Provide separate paths to "Phishing Alerts"
+  - Uses the new "Get Original Email - Generic v2" playbook in order to retrieve original emails as eml files for both EWS v2 and Microsoft Graph Mail integration. This will assist with parsing the email artifacts in a more efficient way.
 starttaskid: "0"
 tasks:
   "0":
@@ -25,7 +30,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
+          "x": 367.5,
           "y": -510
         }
       }
@@ -68,7 +73,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
+          "x": 367.5,
           "y": 15
         }
       }
@@ -147,7 +152,7 @@ tasks:
       {
         "position": {
           "x": 600,
-          "y": 1150
+          "y": 1180
         }
       }
     note: false
@@ -328,10 +333,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 8b361d38-acc9-4af5-88f4-6fb07915df54
+    taskid: 6d65c30c-731e-4eeb-84d3-fcf30b3cd04c
     type: condition
     task:
-      id: 8b361d38-acc9-4af5-88f4-6fb07915df54
+      id: 6d65c30c-731e-4eeb-84d3-fcf30b3cd04c
       version: -1
       name: Should the original email be retrieved?
       description: If True, retrieve the original email in the thread
@@ -341,25 +346,46 @@ tasks:
     nexttasks:
       '#default#':
       - "2"
-      "yes":
+      Yes-Alerts:
+      - "34"
+      Yes-Forwarded:
       - "33"
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: Yes-Forwarded
       condition:
       - - operator: isEqualString
           left:
             value:
-              simple: inputs.GetOriginalEmail
+              complex:
+                root: inputs.GetOriginalEmail
             iscontext: true
           right:
             value:
               simple: "True"
           ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: phishingreporteremailheaders
+            iscontext: true
+    - label: Yes-Alerts
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.GetOriginalEmail
+            iscontext: true
+          right:
+            value:
+              simple: "True"
     view: |-
       {
         "position": {
-          "x": -260,
+          "x": -270,
           "y": 190
         }
       }
@@ -400,8 +426,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 140,
-          "y": 1150
+          "x": 100,
+          "y": 1170
         }
       }
     note: false
@@ -762,7 +788,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
+          "x": 367.5,
           "y": -360
         }
       }
@@ -801,7 +827,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
+          "x": 367.5,
           "y": -170
         }
       }
@@ -1189,7 +1215,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "34"
+      - "38"
     scriptarguments:
       columns:
         simple: headername,headervalue
@@ -1208,7 +1234,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 140,
+          "x": 300,
           "y": 530
         }
       }
@@ -1247,7 +1273,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 140,
+          "x": 300,
           "y": 365
         }
       }
@@ -1260,72 +1286,39 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: d59c63ee-9372-4348-88c3-c4c62bf020a1
+    taskid: d9b2f7bd-fa99-4fea-8655-8e859fa2cd0a
     type: playbook
     task:
-      id: d59c63ee-9372-4348-88c3-c4c62bf020a1
+      id: d9b2f7bd-fa99-4fea-8655-8e859fa2cd0a
       version: -1
       name: Get Original Email - Generic v2
+      description: |-
+        Use this playbook to retrieve the original email in the thread, including headers and attahcments, when the reporting user forwarded the original email not as an attachment.
+
+        You must have the necessary permissions in your email service to execute global search.
+
+        - EWS: eDiscovery
+        - Gmail: Google Apps Domain-Wide Delegation of Authority
+        - MSGraph: As described here:
+            * https://docs.microsoft.com/en-us/graph/api/message-get
+            * https://docs.microsoft.com/en-us/graph/api/user-list-messages
       playbookName: Get Original Email - Generic v2
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "36"
     scriptarguments:
-      EmailFrom:
+      EmailSubject:
         complex:
-          root: incident
-          accessor: emailfrom
-      EmailTo:
+          root: inputs.Thread-Topic
+      MessgaeID:
         complex:
-          root: incident
-          accessor: emailto
-      InReplyTo:
+          root: inputs.MessageID
+      UserID:
         complex:
-          root: incident.phishingreporteremailheaders
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: incident.phishingreporteremailheaders.headername
-                iscontext: true
-              right:
-                value:
-                  simple: In-Reply-To
-          accessor: headervalue
-      MessageID:
-        complex:
-          root: incident
-          accessor: apdinternalmessageid
-          transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: incident.emailmessageid
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: incident.uuid
-                iscontext: true
-      ThreadTopic:
-        complex:
-          root: incident.phishingreporteremailheaders
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: incident.phishingreporteremailheaders.headername
-                iscontext: true
-              right:
-                value:
-                  simple: Thread-Topic
-          accessor: headervalue
+          root: inputs.UserID
     separatecontext: true
     loop:
       iscommand: false
@@ -1335,8 +1328,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 140,
-          "y": 690
+          "x": -110,
+          "y": 715
         }
       }
     note: false
@@ -1378,8 +1371,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 140,
-          "y": 885
+          "x": 100,
+          "y": 935
         }
       }
     note: false
@@ -1435,11 +1428,87 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: e6ace7ad-4c0d-40dc-8b57-86086b1c2394
+    type: playbook
+    task:
+      id: e6ace7ad-4c0d-40dc-8b57-86086b1c2394
+      version: -1
+      name: Get Original Email - Generic v2
+      description: |-
+        Use this playbook to retrieve the original email in the thread, including headers and attahcments, when the reporting user forwarded the original email not as an attachment.
+
+        You must have the necessary permissions in your email service to execute global search.
+
+        - EWS: eDiscovery
+        - Gmail: Google Apps Domain-Wide Delegation of Authority
+        - MSGraph: As described here:
+            * https://docs.microsoft.com/en-us/graph/api/message-get
+            * https://docs.microsoft.com/en-us/graph/api/user-list-messages
+      playbookName: Get Original Email - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      EmailSubject:
+        complex:
+          root: incident.phishingreporteremailheaders
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: incident.phishingreporteremailheaders.headername
+                iscontext: true
+              right:
+                value:
+                  simple: Thread-Topic
+          accessor: headervalue
+      MessgaeID:
+        complex:
+          root: incident.phishingreporteremailheaders
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: incident.phishingreporteremailheaders.headername
+                iscontext: true
+              right:
+                value:
+                  simple: In-Reply-To
+          accessor: headervalue
+      UserID:
+        complex:
+          root: inputs.UserID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 715
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 system: true
 view: |-
   {
     "linkLabelsPosition": {
       "16_2_#default#": 0.28,
+      "16_34_Yes-Alerts": 0.45,
       "23_24_yes": 0.49,
       "4_5_yes": 0.57
     },
@@ -1538,6 +1607,40 @@ inputs:
     - MSGraph: As described here:
       * https://docs.microsoft.com/en-us/graph/api/message-get
       * https://docs.microsoft.com/en-us/graph/api/user-list-messages
+  playbookInputQuery:
+- key: MessageID
+  value: {}
+  required: false
+  description: The original email message id to retrieve. This should hold the value
+    of the "Message-ID" header of the original email. This value will be passed as
+    an input to the playbook "Get Original Email - Generic v2"
+  playbookInputQuery:
+- key: UserID
+  value:
+    complex:
+      root: incident
+      accessor: emailfrom
+      transformers:
+      - operator: replaceMatch
+        args:
+          regex:
+            value:
+              simple: (?i).*<([A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,})>
+          replaceWith:
+            value:
+              simple: $1
+  required: false
+  description: The user's email address which we want to retrieve the original email
+    from. This value will be passed as an input to the playbook "Get Original Email
+    - Generic v2".
+  playbookInputQuery:
+- key: Thread-Topic
+  value: {}
+  required: false
+  description: The value of the "Thread-Topic" header which holds the original email
+    subject. This is necessary for forwarded emails scenarios. It will be passed as
+    an input to the "Get Original Email - Generic v2" playbook in order to be used
+    in the relevant sub-playbooks.
   playbookInputQuery:
 outputs:
 - contextPath: Email.HTML

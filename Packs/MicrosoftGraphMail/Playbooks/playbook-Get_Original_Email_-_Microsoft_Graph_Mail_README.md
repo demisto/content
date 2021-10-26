@@ -1,4 +1,4 @@
-Use this playbook to retrieve the original email in the thread as eml file when the reporting user forwarded the original email not as an attachment.
+Use this playbook to retrieve the original email using Microsoft Graph Mail integration.
 
 You must have the necessary permissions in the Microsoft Graph Mail integration as described here:
       * https://docs.microsoft.com/en-us/graph/api/message-get
@@ -14,21 +14,20 @@ This playbook does not use any sub-playbooks.
 * MicrosoftGraphMail
 
 ### Scripts
-This playbook does not use any scripts.
+* IsIntegrationAvailable
 
 ### Commands
-* msgraph-mail-get-email-as-eml
 * msgraph-mail-list-emails
+* msgraph-mail-get-email-as-eml
 
 ## Playbook Inputs
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Mailbox | Email address of the reporting user. | incident.emailfrom | Optional |
-| InReplyTo | The InReplyTo header in the forwarded email. | incident.phishingreporteremailheaders.headervalue | Optional |
-| ThreadTopic | The ThreadTopic header in the forwarded email. | incident.phishingreporteremailheaders.headervalue | Optional |
-| OriginalMessageID | The original message id. In case it is provided, the original email will be retrieved based on its value. |  | Optional |
+| UserID | Email address of the reporting user. |  | Optional |
+| MessageID | The InReplyTo header in the forwarded email. |  | Optional |
+| ThreadTopic | The ThreadTopic header in the forwarded email. |  | Optional |
 
 ## Playbook Outputs
 ---

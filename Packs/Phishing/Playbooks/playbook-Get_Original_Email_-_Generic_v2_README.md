@@ -12,8 +12,8 @@ You must have the necessary permissions in your email service to execute global 
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Get Original Email - Gmail
 * Get Original Email - Microsoft Graph Mail
+* Get Original Email - Gmail v2
 * Get Original Email - EWS v2
 
 ### Integrations
@@ -27,7 +27,12 @@ This playbook does not use any commands.
 
 ## Playbook Inputs
 ---
-There are no inputs for this playbook.
+
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| MessgaeID | The original email message id to retrieve. This should hold the value of the "Message-ID" header of the original email. |  | Optional |
+| UserID | The user's email address. The "me" special value can be used to indicate the authenticated user \(gmail\). |  | Optional |
+| EmailSubject | The original email subject. |  | Optional |
 
 ## Playbook Outputs
 ---
