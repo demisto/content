@@ -31,9 +31,9 @@ def get_remediation_info() -> CommandResults:
     deleted_login_profiles = demisto.get(remediation_actions, 'DisabledLoginProfile.Username')
     if deleted_login_profiles is not None and not isinstance(deleted_login_profiles, list):
         deleted_login_profiles = [deleted_login_profiles]
-    res = {'Blocked IP Addresses': ','.join(blocked_ip_addresses) if blocked_ip_addresses else None,
-           'Inactive Access keys': ','.join(inactive_access_keys) if inactive_access_keys else None,
-           'Deleted Login Profiles': ','.join(deleted_login_profiles) if deleted_login_profiles else None}
+    res = {'Blocked IP Addresses': blocked_ip_addresses,
+           'Inactive Access keys': inactive_access_keys,
+           'Deleted Login Profiles': deleted_login_profiles}
     return CommandResults(
         readable_output=tableToMarkdown('Remediation Actions Information', res, headers=list(res.keys())))
 

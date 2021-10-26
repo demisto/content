@@ -39,8 +39,9 @@ def get_identity_info() -> CommandResults:
                'Sub Type': alert_event.get('identity_sub_type'),
                'Uuid': alert_event.get('identity_uuid'),
                'Provider': alert_event.get('cloud_provider'),
-               'Access Keys': ",".join(access_keys)}
-        results.append(res)
+               'Access Keys': access_keys}
+        if res not in results:
+            results.append(res)
     return CommandResults(
         readable_output=tableToMarkdown('Identity Information', results,
                                         headers=list(results[0].keys()) if results else None))
