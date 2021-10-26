@@ -51,7 +51,6 @@ configuration:
   type: 0
   required: false
   additionalinfo: User Agent to perform requests
-
 description: Use urlscan.io integration to perform scans on suspected URLs and see their reputation.
 display: urlscan.io
 name: urlscan.io

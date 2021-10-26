@@ -194,7 +194,6 @@ def urlscan_submit_url(client):
 
     submission_dict['url'] = demisto.args().get('url')
 
-
     if demisto.args().get('useragent'):
         submission_dict['customagent'] = demisto.args().get('useragent')
     elif demisto.params().get('useragent'):
