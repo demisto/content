@@ -1290,7 +1290,7 @@ Deprecated. Use the cs-falcon-get-custom-ioc command instead.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | type | The IOC type to retrieve. Possible values are: "sha256", "sha1", "md5", "domain", "ipv4", and "ipv6". | Required | 
-| value | The IOC value to retrieve. | Required | 
+| value | The string representation of the indicator. | Required | 
 
 
 #### Context Output
@@ -1495,7 +1495,7 @@ Deprecated. Use the cs-falcon-delete-custom-ioc command instead.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | type | The IOC type to delete. Possible values are: "sha256", "sha1", "md5", "domain", "ipv4", and "ipv6". | Required | 
-| value | The IOC value to delete. | Required | 
+| value | The string representation of the indicator to delete. | Required | 
 
 
 #### Context Output
@@ -1523,7 +1523,7 @@ Number of hosts that observed the given IOC.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | type | The IOC type. Possible values are: "sha256", "sha1", "md5", "domain", "ipv4", and "ipv6". | Required | 
-| value | The IOC value. | Required | 
+| value | The string representation of the indicator. | Required | 
 
 
 #### Context Output
@@ -1570,7 +1570,7 @@ Get processes associated with a given IOC.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | type | The IOC type. Possible values are: "sha256", "sha1", "md5", "domain", "ipv4", and "ipv6". | Required | 
-| value | The IOC value. | Required | 
+| value | The string representation of the indicator. | Required | 
 | device_id | The device ID to check against. | Required | 
 
 
@@ -1690,7 +1690,7 @@ Returns a list of device IDs on which an indicator ran.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | type | The type of indicator. Possible values are: "domain", "ipv4", "ipv6", "md5", "sha1", or "sha256". | Required | 
-| value | The actual string representation of the indicator. | Required | 
+| value | The string representation of the indicator. | Required | 
 
 
 #### Context Output
@@ -3060,7 +3060,7 @@ There is no context output for this command.
 
 ### cs-falcon-search-custom-iocs
 ***
-Returns a list of your uploaded IOCs that match the search criteria
+Returns a list of your uploaded IOCs that match the search criteria.
 
 
 #### Base Command
@@ -3085,7 +3085,7 @@ Returns a list of your uploaded IOCs that match the search criteria
 | --- | --- | --- |
 | CrowdStrike.IOC.Type | string | The type of the IOC. | 
 | CrowdStrike.IOC.Value | string | The string representation of the indicator. | 
-| <span>CrowdStrike.IOC.ID</span> | string | The full ID of the indicator. | 
+| CrowdStrike.IOC.ID | string | The full ID of the indicator. | 
 | CrowdStrike.IOC.Severity | string | The severity level to apply to this indicator. | 
 | CrowdStrike.IOC.Source | string | The source of the IOC. | 
 | CrowdStrike.IOC.Action | string | Action to take when a host observes the custom IOC. | 
@@ -3140,7 +3140,7 @@ Gets the full definition of one or more indicators that you are watching.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | type | The IOC type to retrieve. Possible values are: "sha256", "sha1", "md5", "domain", "ipv4", and "ipv6". | Required | 
-| value | The IOC value to retrieve. | Required | 
+| value | The string representation of the indicator. | Required | 
 
 
 #### Context Output
@@ -3149,7 +3149,7 @@ Gets the full definition of one or more indicators that you are watching.
 | --- | --- | --- |
 | CrowdStrike.IOC.Type | string | The type of the IOC. | 
 | CrowdStrike.IOC.Value | string | The string representation of the indicator. | 
-| <span>CrowdStrike.IOC.ID</span> | string | The full ID of the indicator. | 
+| CrowdStrike.IOC.ID | string | The full ID of the indicator. | 
 | CrowdStrike.IOC.Severity | string | The severity level to apply to this indicator. | 
 | CrowdStrike.IOC.Source | string | The source of the IOC. | 
 | CrowdStrike.IOC.Action | string | Action to take when a host observes the custom IOC. | 
@@ -3220,7 +3220,7 @@ Uploads an indicator for CrowdStrike to monitor.
 | --- | --- | --- |
 | CrowdStrike.IOC.Type | string | The type of the IOC. | 
 | CrowdStrike.IOC.Value | string | The string representation of the indicator. | 
-| <span>CrowdStrike.IOC.ID</span> | string | The full ID of the indicator. | 
+| CrowdStrike.IOC.ID | string | The full ID of the indicator. | 
 | CrowdStrike.IOC.Severity | string | The severity level to apply to this indicator. | 
 | CrowdStrike.IOC.Source | string | The source of the IOC. | 
 | CrowdStrike.IOC.Action | string | Action to take when a host observes the custom IOC. | 
@@ -3289,7 +3289,7 @@ Updates an indicator for CrowdStrike to monitor.
 | --- | --- | --- |
 | CrowdStrike.IOC.Type | string | The type of the IOC. | 
 | CrowdStrike.IOC.Value | string | The string representation of the indicator. | 
-| <span>CrowdStrike.IOC.ID</span> | string | The full ID of the indicator \(type:value\). | 
+| CrowdStrike.IOC.ID | string | The full ID of the indicator \(type:value\). | 
 | CrowdStrike.IOC.Policy | string | The policy of the indicator. | 
 | CrowdStrike.IOC.Source | string | The source of the IOC. | 
 | CrowdStrike.IOC.ShareLevel | string | The level at which the indicator will be shared. | 
