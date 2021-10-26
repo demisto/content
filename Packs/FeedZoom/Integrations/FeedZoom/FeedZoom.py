@@ -39,7 +39,19 @@ class Client(BaseClient):
                               'ZoomPhone.txt',
                               'ZoomCDN.txt']
 
-        indicators = []
+        indicators = [
+            'crl3.digicert.com'
+            'crl4.digicert.com',
+            'ocsp.digicert.com',
+            'certificates.godaddy.com',
+            'crl.godaddy.com',
+            'ocsp.godaddy.com',
+            'certificates.starfieldtech.com',
+            'crl.starfieldtech.com',
+            'ocsp.starfieldtech.com',
+            '*.zoom.us',
+            '*.cloudfront.net']
+
         for url in list_ips_txt_files:
             res = self._http_request(method='GET', url_suffix=url, resp_type='text')
             for ip in res.split('\n'):
