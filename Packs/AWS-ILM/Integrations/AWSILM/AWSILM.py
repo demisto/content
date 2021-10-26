@@ -15,6 +15,48 @@ ERROR_CODES_TO_SKIP = [
 ]
 SUPPORTED_GET_USER_IAM_ATTRIBUTES = ['id', 'userName']
 
+AWS_DEFAULT_SCHEMA_MAPPING = {
+    'id': 'id',
+    'userName': 'userName',
+    'name': {
+        'formatted': 'formatted',
+        'familyName': 'familyName',
+        'givenName': 'givenName',
+        'middleName': 'middleName',
+        'honorificPrefix': 'honorificPrefix',
+        'honorificSuffix': 'honorificSuffix'
+    },
+    'displayName': 'displayName',
+    'nickName': 'nickName',
+    'profileUrl': 'profileUrl',
+    'title': 'title',
+    'userType': 'userType',
+    'preferredLanguage': 'preferredLanguage',
+    'locale': 'locale',
+    'timezone': 'timezone',
+    'active': 'active',
+    'password': 'password',
+    'emails': [{
+        'type': 'type',
+        'value': 'value',
+        'primary': 'primary'
+    }],
+    'phoneNumbers': [{
+        'type': 'type',
+        'value': 'value'
+    }],
+    'addresses': [{
+        'formatted': 'formatted',
+        'streetAddress': 'streetAddress',
+        'locality': 'locality',
+        'region': 'region',
+        'postalCode': 'postalCode',
+        'Country': 'Country'
+    }],
+    'groups': ['group'],
+    'roles': ['role']
+}
+
 
 def build_body_request_for_update_user(old_user_data, new_user_data):
     operations = []
@@ -570,49 +612,8 @@ def get_mapping_fields() -> GetMappingFieldsResponse:
 
     :return: (GetMappingFieldsResponse) An object that represents the user schema
     """
-    mapping = {
-        'id': 'id',
-        'userName': 'userName',
-        'name': {
-            'formatted': 'formatted',
-            'familyName': 'familyName',
-            'givenName': 'givenName',
-            'middleName': 'middleName',
-            'honorificPrefix': 'honorificPrefix',
-            'honorificSuffix': 'honorificSuffix'
-        },
-        'displayName': 'displayName',
-        'nickName': 'nickName',
-        'profileUrl': 'profileUrl',
-        'title': 'title',
-        'userType': 'userType',
-        'preferredLanguage': 'preferredLanguage',
-        'locale': 'locale',
-        'timezone': 'timezone',
-        'active': 'active',
-        'password': 'password',
-        'emails': [{
-            'type': 'type',
-            'value': 'value',
-            'primary': 'primary'
-        }],
-        'phoneNumbers': [{
-            'type': 'type',
-            'value': 'value'
-        }],
-        'addresses': [{
-            'formatted': 'formatted',
-            'streetAddress': 'streetAddress',
-            'locality': 'locality',
-            'region': 'region',
-            'postalCode': 'postalCode',
-            'Country': 'Country'
-        }],
-        'groups': ['group'],
-        'roles': ['role']
-    }
-    incident_type_scheme = SchemeTypeMapping(type_name=IAMUserProfile.DEFAULT_INCIDENT_TYPE, fields=mapping)
-
+    incident_type_scheme = SchemeTypeMapping(type_name=IAMUserProfile.DEFAULT_INCIDENT_TYPE,
+                                             fields=AWS_DEFAULT_SCHEMA_MAPPING)
     return GetMappingFieldsResponse([incident_type_scheme])
 
 

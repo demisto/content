@@ -139,7 +139,6 @@ class Client(BaseClient):
         """
         uri = f'{URI_PREFIX}sobjects/FF__Key_Contact__c/{user_id}'
         params = {"_HttpMethod": "PATCH"}
-
         self._http_request(
             method='POST',
             url_suffix=uri,
@@ -147,7 +146,7 @@ class Client(BaseClient):
             json_data=user_data,
             headers=self.headers,
             resp_type='response',
-            ok_codes=(204,)
+            ok_codes=(200, 204,)
         )
 
         return self.get_user_by_id(user_id)
@@ -268,8 +267,8 @@ def get_error_details(res: Dict[str, Any]) -> str:
     if isinstance(res, list):
         res = res[0]
     if isinstance(res, dict):
-        message = res.get('message')
-        details = res.get('detail')
+        message = res.get('message', 'No error message was supplied')
+        details = res.get('detail', 'No details regarding the error were supplied')
     return f'{message}: {details}'
 
 
@@ -312,8 +311,6 @@ def main():
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     command = demisto.command()
-    incident_type: str = IAMUserProfile.CREATE_INCIDENT_TYPE if command == 'iam-get-user' else \
-        IAMUserProfile.UPDATE_INCIDENT_TYPE
     args = demisto.args()
 
     is_create_enabled = params.get("create_user_enabled")

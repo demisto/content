@@ -602,23 +602,11 @@ def test_get_mapping_fields_command__runs_the_all_integration_flow(mocker):
         - Ensure a GetMappingFieldsResponse object that contains the application fields is returned
     """
     import demistomock as demisto
+    from AWSILM import AWS_DEFAULT_SCHEMA_MAPPING
     mocker.patch.object(demisto, 'command', return_value='get-mapping-fields')
     mocker.patch.object(demisto, 'params', return_value={'url': 'http://example.com', 'tenant_id': 'tenant'})
     mock_result = mocker.patch('AWSILM.return_results')
-
-    schema = {
-        'result': [
-            {'name': 'field1', 'description': 'desc1'},
-            {'name': 'field2', 'description': 'desc2'},
-        ]
-    }
-
-    with requests_mock.Mocker() as m:
-        m.get('http://example.com/tenant/schema', json=schema)
-
-        main()
-
+    main()
     mapping = mock_result.call_args.args[0].extract_mapping()
 
-    assert mapping.get(IAMUserProfile.DEFAULT_INCIDENT_TYPE, {}).get('field1') == 'desc1'
-    assert mapping.get(IAMUserProfile.DEFAULT_INCIDENT_TYPE, {}).get('field2') == 'desc2'
+    assert mapping.get(IAMUserProfile.DEFAULT_INCIDENT_TYPE, {}) == AWS_DEFAULT_SCHEMA_MAPPING

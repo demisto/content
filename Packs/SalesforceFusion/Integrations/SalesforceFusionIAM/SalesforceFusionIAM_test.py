@@ -208,7 +208,9 @@ class TestSalesforceFusionIAM:
         with requests_mock.Mocker() as m:
             m.post('https://test.com/services/oauth2/token?grant_type=password', json={})
             # User already exist
-            m.get(f'{URI_PREFIX}sobjects/FF__Key_Contact__c/mock_id', json=APP_UPDATED_USER_OUTPUT)
+            m.get(f'https://test.com{URI_PREFIX}sobjects/FF__Key_Contact__c/mock_id', json=APP_UPDATED_USER_OUTPUT)
+            m.post(f'https://test.com{URI_PREFIX}sobjects/FF__Key_Contact__c/mock_id?_HttpMethod=PATCH',
+                   json=APP_UPDATED_USER_OUTPUT)
             m.get(
                 f'{URI_PREFIX}parameterizedSearch?q=testdemisto@paloaltonetworks.com&sobject=FF__Key_Contact__c'
                 f'&FF__Key_Contact__c.where=Work_Email__c=%27testdemisto@paloaltonetworks.com%27'
@@ -392,7 +394,7 @@ class TestSalesforceFusionIAM:
         mock_result = mocker.patch('SalesforceFusionIAM.return_results')
 
         schema = {
-            'result': [
+            'fields': [
                 {'name': 'field1', 'label': 'desc1'},
                 {'name': 'field2', 'label': 'desc2'},
             ]
