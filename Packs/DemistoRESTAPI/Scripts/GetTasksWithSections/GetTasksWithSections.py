@@ -121,8 +121,8 @@ def get_tasks_command(incident_id: str):
                           )
 
 
-def get_tasks_and_readable(tasks_nested_results: Dict[str, Union[str, Dict]], workplan_url: Optional[str] = None):
-    task_results = []
+def get_tasks_and_readable(tasks_nested_results: Dict[str, Dict], workplan_url: Optional[str] = None):
+    task_results: List[Dict] = []
     md_lst = []
     headers = ['id', 'name', 'state', 'completedDate']
     for k1, v1 in tasks_nested_results.items():

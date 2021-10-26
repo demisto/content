@@ -65,12 +65,12 @@ def create_markdown_tasks() -> CommandResults:
     return CommandResults(readable_output=md)
 
 
-def get_tasks_and_readable(tasks_nested_results: Dict[str, Union[str, Dict]], workplan_url: Optional[str] = None):
+def get_tasks_and_readable(tasks_nested_results: Dict[str, Dict], workplan_url: Optional[str] = None):
     # This will keep only wanted keys and sort them by their order
     tasks_nested_results = {key: value for key, value in tasks_nested_results.items() if key in SECTIONS_TO_KEEP}
     tasks_nested_results = {key: value for key, value in sorted(
         tasks_nested_results.items(), key=lambda x: SECTIONS_TO_KEEP.index(x[0]))}
-    all_tasks = []
+    all_tasks: List[Dict] = []
     headers = ['id', 'name', 'state', 'completedDate']
     md_lst = []
     for section in SECTIONS_TO_KEEP:
