@@ -144,8 +144,9 @@ def main():
         if not incident_id:
             incident_id = demisto.incident().get('investigationId')
         return_results(get_tasks_command(incident_id))
-    except DemistoException as e:
-        return_error(traceback.format_exc())
+    except Exception as e:
+        demisto.error(traceback.format_exc())  # print the traceback
+        return_error(f'Failed to execute  GetTasksWithSections.\nError:\n{str(e)}')
 
 
 if __name__ in ('__main__', 'builtin', 'builtins'):

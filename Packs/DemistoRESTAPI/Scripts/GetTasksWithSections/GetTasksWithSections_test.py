@@ -1,5 +1,4 @@
 import json
-import pytest
 from GetTasksWithSections import traverse_tasks, find_start_task
 
 
