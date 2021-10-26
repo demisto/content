@@ -19,7 +19,7 @@ INTEL471_SEVERITIES = ['Low', 'Medium', 'High', 'Critical']
 INCIDENT_TYPE = 'Intel 471 Watcher Alert'
 DEMISTO_VERSION = demisto.demistoVersion()
 CONTENT_PACK = 'Intel471 Feed/2.0.4'
-INTEGRATION = 'Intel471 Watcher Alerts Feed'
+INTEGRATION = 'Intel471 Watcher Alerts'
 USER_AGENT = f'XSOAR/{DEMISTO_VERSION["version"]}.{DEMISTO_VERSION["buildNumber"]} - {CONTENT_PACK} - {INTEGRATION}'
 TAG_RE = re.compile(r'<[^>]+>')
 # disable-secrets-detection-end

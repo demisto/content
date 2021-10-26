@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Intel471 Watcher Alerts Feed
+  id: Intel471 Watcher Alerts
   version: -1
 configuration:
 - defaultvalue: 'true'
@@ -67,8 +67,8 @@ configuration:
   type: 8
 description: |-
   'Intel 471's watcher alerts provide a mechanism by which customers can be notified in a timely manner of Titan content that is most relevant to them.'
-display: Intel471 Watcher Alerts Feed
-name: Intel471 Watcher Alerts Feed
+display: Intel471 Watcher Alerts
+name: Intel471 Watcher Alerts
 script:
   longRunning: false
   longRunningPort: false
