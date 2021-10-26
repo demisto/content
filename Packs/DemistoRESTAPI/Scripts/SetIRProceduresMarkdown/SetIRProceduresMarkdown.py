@@ -81,15 +81,15 @@ def get_tasks_and_readable(tasks_nested_results: Dict[str, Dict], workplan_url: 
             continue
         if 'tasks' in v1.keys():
             tasks = v1.get('tasks')
-            all_tasks.extend(tasks) # type: ignore
-            tasks = add_url_to_tasks(tasks, workplan_url) if workplan_url else tasks # type: ignore
+            all_tasks.extend(tasks)  # type: ignore
+            tasks = add_url_to_tasks(tasks, workplan_url) if workplan_url else tasks  # type: ignore
             md_lst.append(
                 tableToMarkdown('', tasks, headers=headers, headerTransform=lambda x: HEADER_TRANSFORM.get(x)))
         else:
             for k2, v2 in v1.items():
                 tasks = v2.get('tasks')
-                all_tasks.extend(tasks) # type: ignore
-                tasks = add_url_to_tasks(tasks, workplan_url) if workplan_url else tasks # type: ignore
+                all_tasks.extend(tasks)  # type: ignore
+                tasks = add_url_to_tasks(tasks, workplan_url) if workplan_url else tasks  # type: ignore
                 md_lst.append(
                     tableToMarkdown(k2, tasks, headers=headers, headerTransform=lambda x: HEADER_TRANSFORM.get(x)))
     md = '\n'.join(md_lst)
