@@ -90,7 +90,7 @@ def test_get_user_command_url_saved_chars(mocker):
 
     user_name = "?dbot+"
     client = MsGraphClient('tenant_id', 'auth_id', 'enc_key', 'app_name', 'http://base_url', 'verify', 'proxy',
-                           'self_deployed', 'redirect_uri', 'auth_code')
+                           'self_deployed', 'redirect_uri', 'auth_code', endpoint='com')
     http_mock = mocker.patch.object(BaseClient, '_http_request')
     mocker.patch.object(MicrosoftClient, 'get_access_token')
     hr, _, _ = get_user_command(client, {'user': user_name})
