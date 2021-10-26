@@ -1,4 +1,5 @@
-from typing import Tuple
+from copy import deepcopy
+from typing import Tuple, List, Dict
 from CommonServerPython import *
 import urllib3
 from dateutil.parser import parse
@@ -1084,6 +1085,52 @@ def get_file_related_machines_command(client: MsClient, args: dict):
     return human_readable, entry_context, machines_response
 
 
+def parse_ip_addresses(ip_addresses: List[Dict]) -> List[Dict]:
+    """
+    Creates new dict with readable keys and concat all the ip addresses with the same MAC address.
+    Args:
+        ip_addresses (List[Dict]): List of ip addresses dictionaries as recieved from the api.
+
+    Returns:
+        List of dicts
+    """
+    mac_addresses = dict.fromkeys([item.get('macAddress') for item in ip_addresses])
+    for item in ip_addresses:
+        current_mac = item.get('macAddress')
+        if not mac_addresses[current_mac]:
+            mac_addresses[current_mac] = {
+                'MACAddress': item['macAddress'],
+                'IPAddresses': [item['ipAddress']],
+                'Type': item['type'],
+                'Status': item['operationalStatus']
+            }
+        else:
+            mac_addresses[current_mac]['IPAddresses'].append(item['ipAddress'])
+
+    return list(mac_addresses.values())
+
+
+def print_ip_addresses(parsed_ip_addresses: List[Dict]) -> str:
+    """
+    Converts the given list of ip addresses to ascii table.
+    Args:
+        parsed_ip_addresses (List[Dict]):
+
+    Returns:
+        ascii table without headers
+    """
+    human_readable_list = deepcopy(parsed_ip_addresses)
+    for entry in human_readable_list:
+        entry['MAC'] = entry.pop('MACAddress')
+        entry['IP Addresses'] = ','.join(entry.pop('IPAddresses'))
+
+    rows = [[f"{i}. "] + [f"{k}: {v}" for k, v in entry] for i, entry in enumerate(human_readable_list,start=1)]
+    max_lengths = [[max(col)] for col in zip(*rows)] # to make sure the table is pretty
+    string_rows = ['| '.join([cell.ljust(max_len_col) for cell,max_len_col in zip(row,max_lengths)]) for row in rows]
+
+    return '\n'.join(string_rows)
+
+
 def get_machine_details_command(client: MsClient, args: dict):
     """Retrieves specific Machine by its machine ID or computer name.
 
@@ -1091,58 +1138,23 @@ def get_machine_details_command(client: MsClient, args: dict):
         (str, dict, dict). Human readable, context, raw response
     """
     headers = ['ID', 'ComputerDNSName', 'OSPlatform', 'LastIPAddress', 'LastExternalIPAddress', 'HealthStatus',
-               'RiskScore', 'ExposureLevel', 'NetworkInterfaces']
+               'RiskScore', 'ExposureLevel', 'IPAddresses']
     machine_id = args.get('machine_id')
     machine_response = client.get_machine_details(machine_id)
     machine_data = get_machine_data(machine_response)
+    raw_ip_addresses = machine_data.get('IPAddresses', [])
 
-    # Grouping Interface / IP Addresses by MAC Address (unique Interface)
-    if ('IPAddresses' in machine_data) and (type(machine_data['IPAddresses']) == list):
-        interface_list: list = list()
-        for item in machine_data['IPAddresses']:
-            new_interface = True
-            for interface in interface_list:
-                if interface['MACAddress'] == item['macAddress']:
-                    new_interface = False
-                    # Since we have more than one IP, convert the IPAddresses into a list
-                    # and add the new IP
-                    interface['IPAddresses'] = [interface['IPAddresses'], ]
-                    interface['IPAddresses'].append(item['ipAddress'])
-            if new_interface:
-                interface_list.append({
-                    'MACAddress': item['macAddress'],
-                    'IPAddresses': item['ipAddress'],
-                    'Type': item['type'],
-                    'Status': item['operationalStatus']
-                })
+    parsed_ip_address = parse_ip_addresses(raw_ip_addresses)
+    human_readable_ip_addresses = print_ip_addresses(parsed_ip_address)
 
-        machine_data['NetworkInterfaces'] = interface_list
-        machine_data.pop('IPAddresses')
-
-    machine_data_readable = dict(machine_data)
-    readable_interface_data = ''
-    max_ip_str_len = 0
-    ip_addresses_strings = list()
-    for entry in machine_data_readable['NetworkInterfaces']:
-        ip_addresses_str = ', '.join(entry['IPAddresses'])
-        ip_addresses_strings.append(', '.join(entry['IPAddresses']))
-        if len(ip_addresses_str) > max_ip_str_len:
-            max_ip_str_len = len(ip_addresses_str)
-    for index, entry in enumerate(machine_data_readable['NetworkInterfaces']):
-        readable_interface_data += '{}. | MAC: {} | IP Addresses: {} | Type: {} | Status: {}\n'.format(
-            str(index + 1),
-            entry['MACAddress'],
-            ip_addresses_strings[index - 1].ljust(max_ip_str_len),
-            entry['Type'],
-            entry['Status']
-        )
-    machine_data_readable['NetworkInterfaces'] = readable_interface_data
-
+    machine_data['IPAddresses'] = human_readable_ip_addresses
     human_readable = tableToMarkdown(
         f'Microsoft Defender ATP machine {machine_id} details:',
         machine_data_readable,
         headers=headers,
         removeNull=True)
+
+    machine_data['IPAddresses'] = raw_ip_addresses
     results = CommandResults(
         outputs_prefix='MicrosoftATP.Machine',
         outputs_key_field='ID',
