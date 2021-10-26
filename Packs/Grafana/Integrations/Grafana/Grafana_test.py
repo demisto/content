@@ -181,8 +181,8 @@ same_time_at_fetch_bigger_id = (parse_alerts_values_data["same_time_at_fetch_big
                                 3,
                                 ["TryAlert"])
 PARSE_ALERTS_VALUES = [limit_to_one_first_fetch, first_fetch_high_limit, after_one_alert_was_fetched_low_limit,
-                       after_one_alert_was_fetched_high_limit, no_alerts_to_fetch, same_time_at_fetch_bigger_id, first_fetch_low_limit,
-                       no_alerts_to_fetch, limit_to_one_second_fetch]
+                       after_one_alert_was_fetched_high_limit, no_alerts_to_fetch, same_time_at_fetch_bigger_id,
+                       first_fetch_low_limit, no_alerts_to_fetch, limit_to_one_second_fetch]
 
 
 @pytest.mark.parametrize('alerts, max_fetch, last_fetch, last_id_fetched, '
