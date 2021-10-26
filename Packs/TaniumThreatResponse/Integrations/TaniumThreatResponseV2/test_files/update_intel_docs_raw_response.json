@@ -1,0 +1,30 @@
+{
+    "id": 423,
+    "revisionId": 2,
+    "type": "tanium-test",
+    "typeVersion": "1.0",
+    "isSchemaValid": true,
+    "intrinsicId": "test123456",
+    "md5": "abcd123456",
+    "name": "get_doc_test",
+    "description": "get_doc_test",
+    "size": 100,
+    "alertCount": 2,
+    "compiled": "get_doc_test",
+    "unresolvedAlertCount": 0,
+    "labelIds": [
+        1,
+        2,
+        3,
+        16
+    ],
+    "suppressionRules": [],
+    "sourceId": 2,
+    "contents": "get_doc_test",
+    "mitreAttack": "get_doc_test",
+    "platforms": [
+        "windows"
+    ],
+    "createdAt": "2021-05-25T22:29:09.224Z",
+    "updatedAt": "2021-05-25T22:29:09.224Z"
+}
