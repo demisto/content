@@ -5,7 +5,7 @@ verify_ssl = true
 
 [dev-packages]
 pylint = "*"
-pytest = "*"
+pytest = "==5.0.1"
 pytest-mock = "*"
 requests-mock = "*"
 pytest-asyncio = "*"
@@ -13,11 +13,8 @@ pytest-xdist = "*"
 pytest-datadir-ng = "*"
 freezegun = "*"
 pytest-json = "*"
-vcrpy = "*"
-pytest-cov = "*"
-hypothesis = "*"
 
 [packages]
 
 [requires]
-python_version = "3.9"
+python_version = "3.7"
