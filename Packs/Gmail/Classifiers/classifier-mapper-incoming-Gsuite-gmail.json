@@ -124,7 +124,12 @@
                     "simple": "Html"
                 },
                 "Email Headers": {
-                    "complex": null,
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": " ",
+                        "transformers": []
+                    },
                     "simple": null
                 },
                 "Email Message ID": {
