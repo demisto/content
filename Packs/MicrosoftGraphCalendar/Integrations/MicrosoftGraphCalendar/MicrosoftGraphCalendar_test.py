@@ -1,3 +1,4 @@
+import pytest
 from MicrosoftGraphCalendar import *
 
 
@@ -88,6 +89,24 @@ def test_parse_event():
                          'Subject': 'Some Subject ', 'Type': 'singleInstance', 'WebLink': ''}]
     assert parsed_readable == expected_readable
     assert parsed_outputs == expected_outputs
+
+
+@pytest.mark.parametrize('server_url, expected_endpoint', [('https://graph.microsoft.us', 'gcc-high'),
+                                                         ('https://dod-graph.microsoft.us', 'dod'),
+                                                         ('https://graph.microsoft.de', 'de'),
+                                                         ('https://microsoftgraph.chinacloudapi.cn', 'cn')])
+def test_host_to_endpoint(server_url, expected_endpoint):
+    """
+    Given:
+        - Host address for national endpoints
+    When:
+        - Creating a new MsGraphClient
+    Then:
+        - Verify that the host address is translated to the correct endpoint code, i.e. com/gcc-high/dod/de/cn
+    """
+    from MicrosoftGraphCalendar import GRAPH_BASE_ENDPOINTS
+
+    assert GRAPH_BASE_ENDPOINTS[server_url] == expected_endpoint
 
 
 MOCK_CALENDAR_JSON = [{
