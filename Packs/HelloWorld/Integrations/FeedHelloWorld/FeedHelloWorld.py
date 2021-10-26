@@ -200,7 +200,7 @@ class Client(BaseClient):
                     related_indicator = {}
 
                     # Adding domain related to url indicator.
-                    # This creation of the relationships is just an example of creating relationships in Feeds.
+                    # This is an example of creating relationships in Feeds.
                     # We will create relationships between indicators only in case that the API returns information
                     # about the relationship between two indicators.
                     if indicator_type == FeedIndicatorType.URL:
