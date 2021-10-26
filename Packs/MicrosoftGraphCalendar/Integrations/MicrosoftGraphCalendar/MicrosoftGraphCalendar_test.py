@@ -92,9 +92,9 @@ def test_parse_event():
 
 
 @pytest.mark.parametrize('server_url, expected_endpoint', [('https://graph.microsoft.us', 'gcc-high'),
-                                                         ('https://dod-graph.microsoft.us', 'dod'),
-                                                         ('https://graph.microsoft.de', 'de'),
-                                                         ('https://microsoftgraph.chinacloudapi.cn', 'cn')])
+                                                           ('https://dod-graph.microsoft.us', 'dod'),
+                                                           ('https://graph.microsoft.de', 'de'),
+                                                           ('https://microsoftgraph.chinacloudapi.cn', 'cn')])
 def test_host_to_endpoint(server_url, expected_endpoint):
     """
     Given:
