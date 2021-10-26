@@ -5,6 +5,7 @@ import pytest
 from RemoteAccessv2 import CommandResults, DemistoException
 import demistomock as demisto
 
+
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
