@@ -400,12 +400,14 @@ def test_get_mapping_fields_command(mocker):
     mock_result = mocker.patch('ClarizenIAM.return_results')
 
     schema = {
-        'entityDescriptions': {
-            'fields': [
-                {'name': 'field1', 'label': 'desc1'},
-                {'name': 'field2', 'label': 'desc2'},
-            ]
-        }
+        'entityDescriptions': [
+            {
+                'fields': [
+                    {'name': 'field1', 'label': 'desc1'},
+                    {'name': 'field2', 'label': 'desc2'},
+                ]
+            }
+        ]
     }
 
     mocker.patch.object(Client, 'get_session_id', return_value='SessionID')
