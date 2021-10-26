@@ -53,7 +53,8 @@ def test_fetch_incidents(requests_mock):
 
     mock_response = util_load_json('test_data/search_alerts.json')
     requests_mock.get(
-        'https://api.test.com/v1/alerts?showRead=true&displayWatchers=true&markAsRead=false&sort=earliest&count=1&from=1581944401',
+        'https://api.test.com/v1/alerts?showRead=true&displayWatchers=true&markAsRead=false&sort=earliest&count=1&'
+        'from=1581944401',
         json=mock_response)
 
     client = Client(
