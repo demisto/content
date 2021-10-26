@@ -70,10 +70,6 @@ description: |-
 display: Intel471 Watcher Alerts Feed
 name: Intel471 Watcher Alerts Feed
 script:
-  commands:
-  - name: fetch-incidents
-    arguments: []
-    description: Fetches Intel 471 Watcher Alerts.
   longRunning: false
   longRunningPort: false
   runonce: false
