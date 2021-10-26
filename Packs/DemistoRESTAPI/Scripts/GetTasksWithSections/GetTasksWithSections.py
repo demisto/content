@@ -1,7 +1,6 @@
 from CommonServerPython import *
 import copy
 from itertools import chain
-from typing import NamedTuple
 import traceback
 
 
@@ -100,7 +99,7 @@ def add_url_to_tasks(tasks: List[Dict[str, str]], workplan_url: str):
 
 
 def get_tasks_command(incident_id: str):
-    urls = demisto.demistoUrls()
+    urls = demisto.demistoUrls()  # works in multi tenant env as well
     workplan_url = urls.get('workPlan')
     res = demisto.executeCommand('demisto-api-get', {'uri': f'/investigation/{incident_id}/workplan'})
     if isError(res[0]):

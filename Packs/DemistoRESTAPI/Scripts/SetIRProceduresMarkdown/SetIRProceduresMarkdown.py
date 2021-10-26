@@ -50,7 +50,7 @@ def set_incident_with_count(all_tasks: List[Dict[str, str]]):
 
 
 def create_markdown_tasks() -> CommandResults:
-    urls = demisto.demistoUrls()
+    urls = demisto.demistoUrls()  # works in multi tenant env as well
     workplan_url = urls.get('workPlan')
     res = demisto.executeCommand('GetTasksWithSections', {})
     if isError(res[0]):
@@ -69,8 +69,8 @@ def create_markdown_tasks() -> CommandResults:
             all_tasks.extend(tasks)
             tasks = add_url_to_tasks(tasks, workplan_url)
             md_lst.append(
-                tableToMarkdown(k1, tasks, headers=headers, headerTransform=lambda x: HEADER_TRANSFORM.get(x))[
-                1:])  # in order to trim the first # to make the header bigger
+                tableToMarkdown(k1, tasks, headers=headers, headerTransform=lambda x: HEADER_TRANSFORM.get(x))[1:])
+            # in order to trim the first # to make the header bigger
         else:
             md_lst.append(f'## {k1}')
             for k2, v2 in v1.items():
