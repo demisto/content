@@ -351,7 +351,6 @@ class NwQueryResponse:
         self.result: List[NwQueryField] = []
 
     # Wrapper method to read from Plain Text SDK Response
-    @logger
     def parseFromHttpResponse(self, response: str = ''):
         """
             Reads the SDK Response obtained by firing a SDK Request via Netwitness Core Service Rest Interface
@@ -1885,24 +1884,26 @@ def process_args(client: NwCoreClient, args):
     }
 
     # Collect Time Parameter
-    # start_time, end_time = get_time_range(
-    #     time_frame=getParam(args, NwParams.TimeFrame),
-    #     start_time=getParam(args, NwParams.StartTime),
-    #     end_time=getParam(args, NwParams.EndTime),
-    # )
-    # if start_time and end_time:
-    #         p.update({
-    #             'startTimeEpoch': start_time,
-    #             'endTimeEpoch': end_time,
-    #         })
-    t_param = getParam(args, NwParams.Time)
-    if t_param:
-        start_time, end_time = utilParseTimeRange(t_param, client.getTimeRange()[1])
-        if start_time and end_time:
+    start_time, end_time = get_time_range(
+        time_frame=getParam(args, NwParams.TimeFrame),
+        start_time=getParam(args, NwParams.StartTime),
+        end_time=getParam(args, NwParams.EndTime),
+    )
+    demisto.info(f'new - date params: {start_time} - {end_time}')
+    if start_time and end_time:
             p.update({
                 'startTimeEpoch': start_time,
                 'endTimeEpoch': end_time,
             })
+    t_param = getParam(args, NwParams.Time)
+    if t_param:
+        start_time, end_time = utilParseTimeRange(t_param, client.getTimeRange()[1])
+        demisto.info(f'old - date params: {start_time} - {end_time}')
+        # if start_time and end_time:
+        #     p.update({
+        #         'startTimeEpoch': start_time,
+        #         'endTimeEpoch': end_time,
+        #     })
 
     return p
 
