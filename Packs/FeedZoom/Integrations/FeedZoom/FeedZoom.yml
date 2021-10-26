@@ -68,9 +68,9 @@ configuration:
   defaultvalue: "30"
   type: 19
   required: false
-- display: Zoom Endpoint URL
+- display: Zoom IP Ranges URL
   name: url
-  defaultvalue: https://support.zoom.us/hc/en-us/articles/201362683-Network-Firewall-or-Proxy-Server-Settings-for-Zoom
+  defaultvalue: https://assets.zoom.us/docs/ipranges
   type: 0
   required: true
 - display: Tags

@@ -3,7 +3,7 @@ from unittest import mock
 from FeedZoom import Client
 
 
-URL = "https://support.zoom.us/hc/en-us/articles/201362683-Network-Firewall-or-Proxy-Server-Settings-for-Zoom"
+URL = "https://assets.zoom.us/docs/ipranges"
 
 
 @mock.patch('subprocess.check_output')

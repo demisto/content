@@ -32,21 +32,20 @@ class Client(BaseClient):
             A list of objects, containing the indicators.
         """
         result = []
-        try:
-            if self._verify:
-                r = subprocess.check_output(['wget', '-O-', self._base_url], stderr=subprocess.STDOUT)
-            else:
-                r = subprocess.check_output(['wget', '--no-check-certificate', '-O-', self._base_url],
-                                            stderr=subprocess.STDOUT)
-        except subprocess.CalledProcessError as e:
-            raise DemistoException(f"Unable to get the url content. Error: {e}.")
-        soup = BeautifulSoup(r, "html.parser")
+        # https://assets.zoom.us/docs/ipranges
+        list_ips_txt_files = ['Zoom.txt',
+                              'ZoomMeetings.txt',
+                              'ZoomCRC.txt',
+                              'ZoomPhone.txt',
+                              'ZoomCDN.txt']
 
+        indicators = []
+        for url in list_ips_txt_files:
+            res = self._http_request(method='GET', url_suffix=url, resp_type='text')
+            for ip in res.split('\n'):
+                indicators.append(ip)
         try:
-            raw_data: List = sum(
-                [cell.get_text(strip=True, separator=" ").split(" ") for cell in soup.select("table tbody tr td")], []
-            )
-            indicators = list(set(raw_data))
+            indicators = list(set(indicators))
             for indicator in indicators:
                 if auto_detect_indicator_type(indicator):
                     result.append(
