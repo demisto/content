@@ -17,7 +17,9 @@ from accessdata.client import Client
 from CommonServerPython import *
 import demistomock as demisto
 
+
 """ decorator wrapping demisto commands """
+
 
 _run_functions = {}
 
@@ -30,7 +32,9 @@ def wrap_demisto_command(command):
         return _inside
     return _func
 
+
 """ register demisto commands """
+
 
 @wrap_demisto_command("accessdata-api-get-case-by-name")
 def _get_case_by_name(client, name):
@@ -49,6 +53,7 @@ def _get_case_by_name(client, name):
         readable_output=tableToMarkdown("Case", dict(case))
     )
 
+
 @wrap_demisto_command("accessdata-api-create-case")
 def _create_case(client, **kwargs):
     case = client.cases.create(**kwargs)
@@ -66,6 +71,7 @@ def _create_case(client, **kwargs):
         readable_output=tableToMarkdown("Case", dict(case))
     )
 
+
 @wrap_demisto_command("accessdata-api-process-evidence")
 def _process_evidence(client, caseid, evidence_path, evidence_type, options):
     # gather the case object from it's id
@@ -76,7 +82,7 @@ def _process_evidence(client, caseid, evidence_path, evidence_type, options):
     # try find json in the options
     try:
         options = loads(options)
-    except:
+    except Exception as exception:
         pass
 
     # determine the type of processing options supplied
@@ -108,6 +114,7 @@ def _process_evidence(client, caseid, evidence_path, evidence_type, options):
         raise ValueError("Processing Options supplied are not supported. " /
             "Must be `dict` or `string`.")
 
+
 @wrap_demisto_command("accessdata-api-export-natives")
 def _export_natives(client, caseid, path, filter_json):
     # gather the case object from it's id
@@ -124,6 +131,7 @@ def _export_natives(client, caseid, path, filter_json):
         outputs_key_field="ID",
         readable_output=tableToMarkdown("Job", dict(job))
     )
+
 
 @wrap_demisto_command("accessdata-api-get-job-status")
 def _get_job_status(client, caseid, jobid):
@@ -148,6 +156,7 @@ def _get_job_status(client, caseid, jobid):
         readable_output=tableToMarkdown("Job", dict(job))
     )
 
+
 @wrap_demisto_command("accessdata-api-endpoint-volatile-analysis")
 def _run_volatile_analysis(client, caseid, target):
     # gather the case object from it's id
@@ -166,6 +175,7 @@ def _run_volatile_analysis(client, caseid, target):
         outputs_key_field="ID",
         readable_output=tableToMarkdown("Job", dict(job))
     )
+
 
 @wrap_demisto_command("accessdata-api-endpoint-memory-collect")
 def _run_memory_acquisition(client, caseid, target):
@@ -186,6 +196,7 @@ def _run_memory_acquisition(client, caseid, target):
         readable_output=tableToMarkdown("Job", dict(job))
     )
 
+
 @wrap_demisto_command("accessdata-api-endpoint-disk-collect")
 def _run_disk_acquisition(client, caseid, target, **kwargs):
     # gather the case object from it's id
@@ -205,11 +216,12 @@ def _run_disk_acquisition(client, caseid, target, **kwargs):
         readable_output=tableToMarkdown("Job", dict(job))
     )
 
+
 _comparator_mapping = {
     "==": "__eq__",
     "!=": "__ne__",
-    ">":  "__gt__",
-    "<":  "__lt__",
+    ">": "__gt__",
+    "<": "__lt__",
     ">=": "__ge__",
     "<=": "__le__"
 }
@@ -237,13 +249,14 @@ def _create_filter(client, column, comparator, value):
         readable_output=tableToMarkdown("Filter", filter_json)
     )
 
+
 @wrap_demisto_command("accessdata-api-combine-filter-and")
 def _and_filter(client, filter_json1, filter_json2):
     # try find json in the filters
     try:
         filter_json1 = loads(filter_json1)
         filter_json2 = loads(filter_json2)
-    except:
+    except Exception as exception:
         raise ValueError("Both filters must be JSON content.")
 
     filter_json = and_(filter_json1, filter_json2)
@@ -256,13 +269,14 @@ def _and_filter(client, filter_json1, filter_json2):
         readable_output=tableToMarkdown("Filter", filter_json)
     )
 
+
 @wrap_demisto_command("accessdata-api-combine-filter-or")
 def _or_filter(client, filter_json1, filter_json2):
     # try find json in the filters
     try:
         filter_json1 = loads(filter_json1)
         filter_json2 = loads(filter_json2)
-    except:
+    except Exception as exception:
         raise ValueError("Both filters must be JSON content.")
 
     filter_json = or_(filter_json1, filter_json2)
@@ -275,17 +289,20 @@ def _or_filter(client, filter_json1, filter_json2):
         readable_output=tableToMarkdown("Filter", filter_json)
     )
 
+
 @wrap_demisto_command("test-module")
 def _test_module(client):
     # test the client can reach the case list
     try:
         cases = client.cases
-    except:
+    except Exception as exception:
         raise ValueError("Client cannot reach the server with the current configuration.")
 
     return "ok"
 
-""" define entry """
+
+""" define entry """#
+
 
 def main():
     # gather parameters
