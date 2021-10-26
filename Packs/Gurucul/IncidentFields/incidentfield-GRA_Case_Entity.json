@@ -1,22 +1,21 @@
 {
-    "fromVersion": "5.5.0",
+    "fromVersion": "5.0.0",
     "associatedToAll": false,
     "associatedTypes": [
-        "GraCase",
-        "GraHighRiskUser"
+        "GRACase"
     ],
     "caseInsensitive": true,
-    "cliName": "gracasestatus",
+    "cliName": "gracaseentity",
     "closeForm": false,
     "content": true,
-    "description": "Gra Case Status",
+    "description": "GRA Case Entity",
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_gracasestatus",
+    "id": "incident_gracaseentity",
     "isReadOnly": false,
     "locked": false,
-    "name": "Gra Case Status",
+    "name": "GRA Case Entity",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,
