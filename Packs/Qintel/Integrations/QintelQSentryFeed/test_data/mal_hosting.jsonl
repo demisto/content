@@ -1,0 +1,2 @@
+{"cidr": "192.168.1.0/29", "asn": 12345, "ip_type": "ipv4", "comment": "This IP address belongs to a network block that has been abused by nation state actors"}
+{"cidr": "192.168.2.0/24", "asn": 12345, "ip_type": "ipv4", "comment": "This IP address belongs to an identified bullet proof hoster."}

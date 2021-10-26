@@ -1,0 +1,33 @@
+{
+    "name": "Qintel",
+    "description": "Qintel App",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Qintel, LLC",
+    "url": "https://qintel.com",
+    "email": "integrations@qintel.com",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Alerts",
+        "Dark Web",
+        "Threat Intelligence"
+    ],
+    "useCases": [],
+    "keywords": [
+        "qintel",
+        "enrichment",
+        "intelligence",
+        "vulnerabilities",
+        "credentials",
+        "reputation"
+    ],
+    "devEmail": [
+        "integrations@qintel.com"
+    ],
+    "githubUser": [
+        "calvin-qintel",
+        "scott-qintel"
+    ]
+}
