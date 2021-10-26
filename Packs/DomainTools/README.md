@@ -4,3 +4,5 @@ Together, DomainTools and Cortex XSOAR automate and orchestrate the incident res
 - Profile domains and receive reputation scores.
 - Find domains based off IP, Name Server, or whois using the `reverseIP`, `reverseNS`, and `reverseWhois` commands.
 - See whois data including parsed whois and whois history. 
+
+This app requires a DomainTools Enterprise Research API subscription. Please contact sales@domaintools.com for a trial.
