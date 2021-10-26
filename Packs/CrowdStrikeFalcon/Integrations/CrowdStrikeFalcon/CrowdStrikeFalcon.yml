@@ -414,7 +414,7 @@ script:
       default: false
       defaultValue: read
       description: 'The scope for which to run the command. Possible values are: "read",
-        "write", and "admin". Default is "read".'
+        "write", and "admin".'
       isArray: false
       name: scope
       predefined:
@@ -427,7 +427,7 @@ script:
       default: false
       defaultValue: batch
       description: 'The target for which to run the command. Possible values are:
-        "single" and "batch". Default is "batch".'
+        "single" and "batch".'
       isArray: false
       name: target
       predefined:
@@ -481,7 +481,7 @@ script:
       description: 'The permission type for the custom script. Possible values are:
         "private", which is used only by the user who uploaded it, "group", which
         is used by all RTR Admins, and "public", which is used by all active-responders
-        and RTR admins. Default is "private".'
+        and RTR admins.'
       isArray: false
       name: permission_type
       predefined:
@@ -947,7 +947,7 @@ script:
       default: false
       defaultValue: read
       description: 'The scope for which to run the command. Possible values are: "read",
-        "write", or "admin". Default is "read".'
+        "write", or "admin".'
       isArray: false
       name: scope
       predefined:
@@ -1207,7 +1207,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The IOC value to retrieve.
+      description: The string representation of the indicator.
       isArray: false
       name: value
       required: true
@@ -1279,7 +1279,7 @@ script:
       defaultValue: detect
       description: 'The policy to enact when the value is detected on a host. Possible
         values are: "detect" and "none". A value of "none" is equivalent to turning
-        the indicator off. Default is "detect".'
+        the indicator off.'
       isArray: false
       name: policy
       predefined:
@@ -1386,7 +1386,7 @@ script:
       defaultValue: detect
       description: 'The policy to enact when the value is detected on a host. Possible
         values are: "detect" and "none". A value of "none" is equivalent to turning
-        the indicator off. Default is "detect".'
+        the indicator off.'
       isArray: false
       name: policy
       predefined:
@@ -1483,7 +1483,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The IOC value to delete.
+      description: The string representation of the indicator.
       isArray: false
       name: value
       required: true
@@ -1498,6 +1498,13 @@ script:
         "sha1", "md5", "domain", "ipv4", "ipv6".'
       isArray: true
       name: types
+      predefined:
+      - sha256
+      - sha1
+      - md5
+      - domain
+      - ipv4
+      - ipv6
       required: false
       secret: false
     - default: false
@@ -1611,7 +1618,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The IOC value to retrieve.
+      description: The string representation of the indicator.
       isArray: false
       name: value
       required: true
@@ -1712,7 +1719,7 @@ script:
       default: false
       description: 'The severity level to apply to this indicator. 
       Required for the prevent and detect actions. Optional for no_action.
-      Possible values are: informational, low, medium, high and critical.' 
+      Possible values are: informational, low, medium, high, and critical.' 
       isArray: false
       name: severity
       predefined:
@@ -1923,7 +1930,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The IOC value.
+      description: The string representation of the indicator.
       isArray: false
       name: value
       required: true
@@ -1962,7 +1969,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The IOC value.
+      description: The string representation of the indicator.
       isArray: false
       name: value
       required: true
@@ -2054,7 +2061,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The actual string representation of the indicator.
+      description: The string representation of the indicator.
       isArray: false
       name: value
       required: true
@@ -2084,7 +2091,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The actual string representation of the indicator.
+      description: The string representation of the indicator.
       isArray: false
       name: value
       required: true
