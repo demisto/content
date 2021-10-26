@@ -111,24 +111,7 @@ def get_tasks_command(incident_id: str):
     start_task = find_start_task(tasks)
     tasks_nested_results: Dict = {}
     traverse_tasks(tasks, start_task, tasks_nested_results)
-    task_results = []
-    md_lst = []
-    headers = ['id', 'name', 'state', 'completedDate']
-    for k1, v1 in tasks_nested_results.items():
-        if 'tasks' in v1.keys():
-            tasks = v1.get('tasks')
-            task_results.extend(tasks)
-            tasks = add_url_to_tasks(tasks, workplan_url)
-            md_lst.append(tableToMarkdown(k1, tasks, headers=headers)[1:])  # this is for making the title bigger
-        else:
-            md_lst.append(f'## {k1}')
-            for k2, v2 in v1.items():
-                tasks = v2.get('tasks')
-                task_results.extend(tasks)
-                tasks = add_url_to_tasks(tasks, workplan_url)
-                md_lst.append(tableToMarkdown(k2, tasks, headers=headers))
-
-    md = '\n'.join(md_lst)
+    task_results, md = get_tasks_and_readable(tasks_nested_results, workplan_url)
     return CommandResults(outputs_prefix='Tasks',
                           outputs_key_field='id',
                           entry_type=EntryType.NOTE,
@@ -138,11 +121,32 @@ def get_tasks_command(incident_id: str):
                           )
 
 
+def get_tasks_and_readable(tasks_nested_results: Dict[str, Union[str, Dict]], workplan_url: Optional[str] = None):
+    task_results = []
+    md_lst = []
+    headers = ['id', 'name', 'state', 'completedDate']
+    for k1, v1 in tasks_nested_results.items():
+        if 'tasks' in v1.keys():
+            tasks = v1.get('tasks')
+            task_results.extend(tasks)
+            tasks = add_url_to_tasks(tasks, workplan_url) if workplan_url else tasks
+            md_lst.append(tableToMarkdown(k1, tasks, headers=headers)[1:])  # this is for making the title bigger
+        else:
+            md_lst.append(f'## {k1}')
+            for k2, v2 in v1.items():
+                tasks = v2.get('tasks')
+                task_results.extend(tasks)
+                tasks = add_url_to_tasks(tasks, workplan_url) if workplan_url else tasks
+                md_lst.append(tableToMarkdown(k2, tasks, headers=headers))
+    md = '\n'.join(md_lst)
+    return task_results, md
+
+
 def main():
     try:
-        incident_id = demisto.args().get('incident_id')
+        incident_id = demisto.args().get('investigation_id')
         if not incident_id:
-            incident_id = demisto.incident().get('investigationId')
+            incident_id = demisto.incident().get('id')
         return_results(get_tasks_command(incident_id))
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback

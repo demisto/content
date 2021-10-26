@@ -2,7 +2,7 @@ args:
 - default: false
   description: 'Incident id to create the tasks table'
   isArray: false
-  name: incident_id
+  name: investigation_id
   required: false
   secret: false
 commonfields:

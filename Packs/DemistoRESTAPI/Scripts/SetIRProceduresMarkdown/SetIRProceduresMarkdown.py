@@ -57,33 +57,43 @@ def create_markdown_tasks() -> CommandResults:
         raise DemistoException('Command GetTasksWithSections was not successful')
 
     tasks_nested_results = demisto.get(res[0], 'Contents')
+
+    all_tasks, md = get_tasks_and_readable(tasks_nested_results, workplan_url)
+
+    set_incident_with_count(all_tasks)
+
+    return CommandResults(readable_output=md)
+
+
+def get_tasks_and_readable(tasks_nested_results: Dict[str, Union[str, Dict]], workplan_url: Optional[str] = None):
+    # This will keep only wanted keys and sort them by their order
     tasks_nested_results = {key: value for key, value in tasks_nested_results.items() if key in SECTIONS_TO_KEEP}
     tasks_nested_results = {key: value for key, value in sorted(
         tasks_nested_results.items(), key=lambda x: SECTIONS_TO_KEEP.index(x[0]))}
     all_tasks = []
     headers = ['id', 'name', 'state', 'completedDate']
     md_lst = []
-    for k1, v1 in tasks_nested_results.items():
+    for section in SECTIONS_TO_KEEP:
+        md_lst.append(f"## {section}")
+        v1 = tasks_nested_results.get(section)
+        if v1 is None:
+            md_lst.append('**No tasks found**')
+            continue
         if 'tasks' in v1.keys():
             tasks = v1.get('tasks')
             all_tasks.extend(tasks)
-            tasks = add_url_to_tasks(tasks, workplan_url)
+            tasks = add_url_to_tasks(tasks, workplan_url) if workplan_url else tasks
             md_lst.append(
-                tableToMarkdown(k1, tasks, headers=headers, headerTransform=lambda x: HEADER_TRANSFORM.get(x))[1:])
-            # in order to trim the first # to make the header bigger
+                tableToMarkdown('', tasks, headers=headers, headerTransform=lambda x: HEADER_TRANSFORM.get(x)))
         else:
-            md_lst.append(f'## {k1}')
             for k2, v2 in v1.items():
                 tasks = v2.get('tasks')
                 all_tasks.extend(tasks)
-                tasks = add_url_to_tasks(tasks, workplan_url)
+                tasks = add_url_to_tasks(tasks, workplan_url) if workplan_url else tasks
                 md_lst.append(
                     tableToMarkdown(k2, tasks, headers=headers, headerTransform=lambda x: HEADER_TRANSFORM.get(x)))
-
-    set_incident_with_count(all_tasks)
-
     md = '\n'.join(md_lst)
-    return CommandResults(readable_output=md)
+    return all_tasks, md
 
 
 ''' MAIN FUNCTION '''

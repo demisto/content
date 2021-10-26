@@ -95,7 +95,8 @@
     "quietMode": 0,
     "reputationCalc": 0,
     "restrictedCompletion": false,
-    "scriptArguments": {},
+    "scriptArguments": {
+    },
     "separateContext": false,
     "task": {
       "brand": "",
@@ -116,6 +117,88 @@
       "position": {
         "x": 265,
         "y": 1010
+      }
+    }
+  },
+  "11": {
+    "evidenceData": {
+      "description": null,
+      "occurred": null,
+      "tags": null
+    },
+    "id": "11",
+    "isAutoSwitchedToQuietMode": false,
+    "isOverSize": false,
+    "nextTasks": {
+      "#none#": [
+        "13"
+      ]
+    },
+    "note": false,
+    "quietMode": 0,
+    "reputationCalc": 0,
+    "restrictedCompletion": false,
+    "scriptArguments": null,
+    "separateContext": false,
+    "task": {
+      "brand": "",
+      "conditions": null,
+      "id": "322de4dc-dcde-414a-8e98-7bdab27f356e",
+      "isCommand": false,
+      "isLocked": false,
+      "isTitleTask": true,
+      "modified": "2021-10-26T13:36:26.548075459Z",
+      "name": "Section 4",
+      "playbookName": "",
+      "sortValues": null,
+      "type": "title",
+      "version": 1
+    },
+    "taskId": "322de4dc-dcde-414a-8e98-7bdab27f356e",
+    "type": "title",
+    "view": {
+      "position": {
+        "x": -30,
+        "y": 545
+      }
+    }
+  },
+  "13": {
+    "evidenceData": {
+      "description": null,
+      "occurred": null,
+      "tags": null
+    },
+    "id": "13",
+    "isAutoSwitchedToQuietMode": false,
+    "isOverSize": false,
+    "nextTasks": null,
+    "note": false,
+    "quietMode": 0,
+    "reputationCalc": 0,
+    "restrictedCompletion": false,
+    "scriptArguments": null,
+    "separateContext": true,
+    "task": {
+      "brand": "",
+      "conditions": null,
+      "id": "896e05a0-4684-4fbe-8927-e1af2414410c",
+      "isCommand": false,
+      "isLocked": false,
+      "modified": "2021-10-26T13:36:26.290961647Z",
+      "name": "Access Investigation - Generic",
+      "playbookId": "access_investigation_-_generic",
+      "playbookName": "",
+      "sortValues": null,
+      "type": "playbook",
+      "version": 1
+    },
+    "taskId": "896e05a0-4684-4fbe-8927-e1af2414410c",
+    "type": "playbook",
+    "view": {
+      "position": {
+        "x": -230,
+        "y": 710
       }
     }
   },
@@ -172,7 +255,8 @@
     "isOverSize": false,
     "nextTasks": {
       "#none#": [
-        "4"
+        "4",
+        "11"
       ]
     },
     "note": false,
@@ -373,7 +457,8 @@
     "quietMode": 0,
     "reputationCalc": 0,
     "restrictedCompletion": false,
-    "scriptArguments": {},
+    "scriptArguments": {
+    },
     "separateContext": false,
     "task": {
       "brand": "",
