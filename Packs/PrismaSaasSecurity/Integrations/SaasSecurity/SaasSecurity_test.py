@@ -296,7 +296,7 @@ def test_get_remote_data_command(client, requests_mock, mocker, close_incident,
 
     args = {
         'id': 1,
-        'lastUpdate': 0
+        'lastUpdate': '2021-08-24T07:44:21.608Z'
     }
     incident = util_load_json('test_data/get-incident-by-id.json')
     requests_mock.get('http://base_url/incident/api/incidents/1', json=incident)
@@ -357,7 +357,7 @@ def test_get_mapping_fields_command():
       'delta': {'category': 'No Reason'}, 'entries': []},
      'Incident updated successfully. Result: {\'state\': \'open\', \'category\': \'No Reason\'}')
 ])
-def test_upddate_remote_system_command(requests_mock, mocker, client, args, expected_debug_message):
+def test_update_remote_system_command(requests_mock, mocker, client, args, expected_debug_message):
 
     from SaasSecurity import update_remote_system_command
 
