@@ -22,18 +22,18 @@ import traceback
 
 def get_remediation_info() -> CommandResults:
     remediation_actions = demisto.get(demisto.context(), 'RemediationActions')
-    blocked_ip_addresses = remediation_actions.get('BlockedIP').get('Addresses')
-    if not isinstance(blocked_ip_addresses, list):
+    blocked_ip_addresses = demisto.get(remediation_actions, 'BlockedIP.Addresses')
+    if blocked_ip_addresses is not None and not isinstance(blocked_ip_addresses, list):
         blocked_ip_addresses = [blocked_ip_addresses]
     inactive_access_keys = remediation_actions.get('InactiveAccessKeys')
-    if not isinstance(inactive_access_keys, list):
+    if inactive_access_keys is not None and not isinstance(inactive_access_keys, list):
         inactive_access_keys = [inactive_access_keys]
-    deleted_login_profiles = remediation_actions.get('DisabledLoginProfile').get('Username')
-    if not isinstance(deleted_login_profiles, list):
+    deleted_login_profiles = demisto.get(remediation_actions, 'DisabledLoginProfile.Username')
+    if deleted_login_profiles is not None and not isinstance(deleted_login_profiles, list):
         deleted_login_profiles = [deleted_login_profiles]
-    res = {'Blocked IP Addresses': ','.join(blocked_ip_addresses),
-           'Inactive Access keys': ','.join(inactive_access_keys),
-           'Deleted Login Profiles': ','.join(deleted_login_profiles)}
+    res = {'Blocked IP Addresses': ','.join(blocked_ip_addresses) if blocked_ip_addresses else None,
+           'Inactive Access keys': ','.join(inactive_access_keys) if inactive_access_keys else None,
+           'Deleted Login Profiles': ','.join(deleted_login_profiles) if deleted_login_profiles else None}
     return CommandResults(
         readable_output=tableToMarkdown('Remediation Actions Information', res, headers=list(res.keys())))
 
