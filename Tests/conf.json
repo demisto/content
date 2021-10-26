@@ -3975,15 +3975,6 @@
             ]
         },
         {
-            "playbookID": "test playbook - QRadarCorrelations",
-            "fromversion": "6.0.0",
-            "integrations": [
-                "QRadar_v2",
-                "QRadar v3",
-                "QRadar"
-            ]
-        },
-        {
             "playbookID": "SX - PC - Test Playbook",
             "fromversion": "5.5.0",
             "integrations": [
@@ -4688,7 +4679,6 @@
         "Trend Micro Deep Security - Test": "outsourced",
         "Microsoft Teams - Test": "Issue 38263",
         "QualysVulnerabilityManagement-Test": "Issue 38640",
-        "test playbook - QRadarCorrelations": "Issue 38639",
         "EWS Extension: Powershell Online V2 Test": "Issue 39008",
         "O365 - EWS - Extension - Test": "Issue 39008",
         "Majestic Million Test Playbook": "Issue 30931",
