@@ -100,6 +100,10 @@ class Client(BaseClient):
         user_data = {'action': 'deactivate'}
         return self.update_user(user_id, user_data)
 
+    def get_app_fields(self):
+        user_app_data = self.get_user('', 'me')
+        return {k: underscoreToCamelCase(k) for k, _ in user_app_data.full_data.items()}
+
     @staticmethod
     def handle_exception(user_profile: IAMUserProfile,
                          e: Union[DemistoException, Exception],
@@ -201,48 +205,8 @@ def test_module(client: Client):
     return 'ok'
 
 
-def get_mapping_fields():
-    mapping = {
-        "id": "string",
-        "meta": {
-            "resourceType": "User",
-            "location": "https://api.zoom.us/scim2/Users/{id}",
-            "version": "1.0.0"
-        },
-        "schemas": [
-            "urn:ietf:params:scim:schemas:core:2.0:User",
-            "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User",
-            "urn:us:zoom:scim:schemas:extension:1.0:ZoomUser"
-        ],
-        "name": {
-            "givenName": "string",
-            "familyName": "string"
-        },
-        "emails": [
-            {
-                "type": "string",
-                "value": "string",
-                "primary": "boolean"
-            }
-        ],
-        "displayName": "string",
-        "userName": "string",
-        "active": "boolean",
-        "userType": "string",
-        "department": "string",
-        "phoneNumbers": [],
-        "roles": [],
-        "groups": [],
-        "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User": {
-            "department": "string"
-        },
-        "urn:us:zoom:scim:schemas:extension:1.0:ZoomUser": {
-            "loginType": {
-                "workEmail": "boolean",
-                "sso": "boolean"
-            }
-        }
-    }
+def get_mapping_fields(client: Client):
+    mapping = client.get_app_fields()
     incident_type_scheme = SchemeTypeMapping(type_name=IAMUserProfile.DEFAULT_INCIDENT_TYPE, fields=mapping)
     return GetMappingFieldsResponse([incident_type_scheme])
 
@@ -268,7 +232,7 @@ def main():
                              create_if_not_exists=False,
                              mapper_in=mapper_in,
                              mapper_out=mapper_out,
-                             get_user_iam_attrs=['id', 'emails']
+                             get_user_iam_attrs=['id', 'userName', 'emails']
                              )
     client = Client(
         base_url=BASE_URL,
@@ -295,7 +259,7 @@ def main():
         if command == 'test-module':
             return_results(test_module(client))
         elif command == 'get-mapping-fields':
-            return_results(get_mapping_fields())
+            return_results(get_mapping_fields(client))
     except Exception:
         # For any other integration command exception, return an error
         return_error(f'Failed to execute {command} command. Traceback: {traceback.format_exc()}')
