@@ -690,9 +690,9 @@ def get_remote_data(
         return GetRemoteDataResponse(alert, entries)
     except Exception as e:
         if "Rate limit" in str(e):
-            return_error("API rate limit")
+            raise Exception("API rate limit")
 
-        return_error(str(e))
+        raise Exception(str(e))
 
 
 def get_modified_remote_data(client: Client, args: Dict):
@@ -815,9 +815,9 @@ def ztap_get_alert_entries(
         return entries
     except Exception as e:
         if "Rate limit" in str(e):
-            return_error("API rate limit")
+            raise Exception("API rate limit")
 
-        return_error(str(e))
+        raise Exception(str(e))
 
 
 def test_module(client: Client) -> str:

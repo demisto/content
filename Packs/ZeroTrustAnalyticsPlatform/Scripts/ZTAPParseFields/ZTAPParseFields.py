@@ -61,8 +61,8 @@ def parse_fields_command(args: Dict[str, Any]) -> CommandResults:
     custom_fields = incident.get("CustomFields")
     events = custom_fields.get("ztaptriggers")
 
-    max_fields = args.get("maxFields", 50)
-    max_value_length = args.get("maxValueLength", 512)
+    max_fields = args.get("max_fields", 50)
+    max_value_length = args.get("max_value_length", 512)
     full = args.get("full", False)
 
     # Call the standalone function and get the raw response

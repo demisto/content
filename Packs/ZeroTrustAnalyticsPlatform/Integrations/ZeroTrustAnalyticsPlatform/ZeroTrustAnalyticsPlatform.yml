@@ -108,7 +108,8 @@ script:
       required: false
       secret: false
     execution: false
-    description: Get remote data from a remote incident.
+    description: Get remote data from a remote incident. This command should only be called
+      manually for debugging purposes.
   - name: get-modified-remote-data
     arguments:
     - default: false
@@ -120,9 +121,6 @@ script:
       secret: false
     execution: false
     description: Get the list of incidents that were modified since the last update.
-  - name: update-remote-system
-    description: Pushes incident changes to the remote.
-    execution: false
   - name: ztap-get-alert-entries
     arguments:
     - default: false

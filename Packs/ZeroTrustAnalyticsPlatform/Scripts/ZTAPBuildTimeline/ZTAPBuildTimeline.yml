@@ -8,6 +8,7 @@ name: ZTAPBuildTimeline
 script: ''
 subtype: python3
 tags:
+- ztap
 type: python
 runas: DBotWeakRole
 dockerimage: demisto/python3:3.9.7.24076

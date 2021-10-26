@@ -9,6 +9,7 @@ name: ZTAPParseLinks
 script: '-'
 system: false
 tags:
+- ztap
 - dynamic-section
 timeout: '0'
 type: python

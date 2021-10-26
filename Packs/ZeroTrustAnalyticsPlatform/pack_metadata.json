@@ -1,10 +1,10 @@
 {
     "name": "Zero Trust Analytics Platform",
     "description": "Provides view of raised alerts within ZTAP.",
-    "support": "developer",
+    "support": "partner",
     "currentVersion": "1.0.0",
     "author": "CriticalStart",
-    "url": "",
+    "url": "https://support.criticalstart.com/",
     "email": "support@criticalstart.com",
     "itemPrefix": [
         "ZTAP"

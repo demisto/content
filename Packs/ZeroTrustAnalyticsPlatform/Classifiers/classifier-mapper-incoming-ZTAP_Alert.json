@@ -28,7 +28,7 @@
                     "complex": null,
                     "simple": "xsoar_input_tag"
                 },
-                "ZTAP ID": {
+                "ZTAP Alert ID": {
                     "complex": null,
                     "simple": "id"
                 },

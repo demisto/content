@@ -1,8 +1,8 @@
 args:
-- name: maxFields
+- name: max_fields
   description: Maximum number of fields to display
   defaultValue: "50"
-- name: maxValueLength
+- name: max_value_length
   description: Maximum number of characters to display per field
   defaultValue: "512"
 - name: full
@@ -19,6 +19,7 @@ name: ZTAPParseFields
 script: ''
 subtype: python3
 tags:
+- ztap
 - dynamic-section
 type: python
 runas: DBotWeakRole

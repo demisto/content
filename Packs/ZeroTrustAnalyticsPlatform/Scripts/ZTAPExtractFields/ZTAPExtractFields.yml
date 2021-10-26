@@ -12,6 +12,7 @@ name: ZTAPExtractFields
 script: ''
 subtype: python3
 tags:
+- ztap
 - transformer
 type: python
 runas: DBotWeakRole
