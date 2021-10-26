@@ -20,10 +20,10 @@ urllib3.disable_warnings()
 '''GLOBALS'''
 
 domain_regex = (
-    "([a-z¡-\uffff0-9](?:[a-z¡-\uffff0-9-]{0,61}"
-    "[a-z¡-\uffff0-9])?(?:\\.(?!-)[a-z¡-\uffff0-9-]{1,63}(?<!-))*"
+    "([a-zÂ¡-\uffff0-9](?:[a-zÂ¡-\uffff0-9-]{0,61}"
+    "[a-zÂ¡-\uffff0-9])?(?:\\.(?!-)[a-zÂ¡-\uffff0-9-]{1,63}(?<!-))*"
     "\\.(?!-)(?!(jpg|jpeg|exif|tiff|tif|png|gif|otf|ttf|fnt|dtd|xhtml|css"
-    "|html)$)(?:[a-z¡-\uffff-]{2,63}|xn--[a-z0-9]{1,59})(?<!-)\\.?$"
+    "|html)$)(?:[a-zÂ¡-\uffff-]{2,63}|xn--[a-z0-9]{1,59})(?<!-)\\.?$"
     "|localhost)"
 )
 
