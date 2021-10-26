@@ -125,7 +125,7 @@ configuration:
   name: incidentFetchInterval
   required: false
   type: 19
-- display: Custom Fields
+- display: Custom Fields to Mirror
   name: custom_fields
   required: false
   type: 12
