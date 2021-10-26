@@ -49,6 +49,16 @@ class Client(BaseClient):
                                       headers=self.headers, params=params)
         return response
 
+    def bulk_action(self, action_type, entities):
+        url_suffix = f'rest/{self.tenant_id}/ems/bulk'
+        payload = {
+            "entities": json.loads(entities),
+            "operation": action_type
+        }
+        response = self._http_request(method='POST', url_suffix=url_suffix,
+                                      headers=self.headers, json_data=payload)
+        return response
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -214,6 +224,41 @@ def query_entities_command(client: Client, args: Dict[str, Any]):
     ]
 
 
+def create_entities_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+
+    entities = args.get('entities', None)
+
+    readable_entities = []
+    context_entities = []
+
+    if not (entities):
+        raise ValueError('Entities are not specified')
+
+    result = client.bulk_action(action_type="CREATE", entities=entities)
+    bulk_results = result.get('entity_result_list')
+    for entity in bulk_results:
+        entity_object = entity.get('entity')
+        completion_status = entity.get('completion_status')
+        context_entity = {"completion_status": completion_status}
+        context_entity.update(entity_object)
+        context_entities.append(context_entity)
+        readable_entity = {
+            'Type': entity_object.get('entity_type'),
+            'CompletionStatus': completion_status
+        }
+        readable_entity.update(entity_object.get('properties'))
+        readable_entities.append(readable_entity)
+
+    results_readable_output = tableToMarkdown('Entities Creation Details:', readable_entities)
+
+    return CommandResults(
+        outputs_prefix='MicroFocus.SMAX.Entities',
+        outputs_key_field='properties.Id',
+        readable_output=results_readable_output,
+        outputs=context_entities,
+    )
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -259,6 +304,12 @@ def main() -> None:
 
         elif demisto.command() == 'microfocus-smax-query-entities':
             return_results(query_entities_command(client, args))
+
+        elif demisto.command() == 'microfocus-smax-create-entities':
+            return_results(create_entities_command(client, args))
+
+        elif demisto.command() == 'microfocus-smax-update-entities':
+            return_results(update_entities_command(client, args))
 
     except Exception as e:
         demisto.error(traceback.format_exc())

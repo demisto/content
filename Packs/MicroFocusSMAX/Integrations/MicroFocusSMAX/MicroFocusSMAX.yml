@@ -178,6 +178,22 @@ script:
     description: Create new entities
     execution: false
     name: microfocus-smax-create-entities
+    outputs:
+      - contextPath: MicroFocus.SMAX.Entities.properties.Id
+        description: Entity Id
+        type: String
+      - contextPath: MicroFocus.SMAX.Entities.properties.Name
+        description: Entity name
+        type: String
+      - contextPath: MicroFocus.SMAX.Query.query_time
+        description: Query time
+        type: String
+      - contextPath: MicroFocus.SMAX.Query.total_count
+        description: Query results total count
+        type: String
+      - contextPath: MicroFocus.SMAX.Query.completion_status
+        description: Query result status
+        type: String
   - arguments:
     - default: false
       description: A list of entity objects to update, please review the Bulk API
@@ -190,6 +206,22 @@ script:
     description: Update entities
     execution: false
     name: microfocus-smax-update-entities
+    outputs:
+      - contextPath: MicroFocus.SMAX.Entities.properties.Id
+        description: Entity Id
+        type: String
+      - contextPath: MicroFocus.SMAX.Entities.properties.Name
+        description: Entity name
+        type: String
+      - contextPath: MicroFocus.SMAX.Query.query_time
+        description: Query time
+        type: String
+      - contextPath: MicroFocus.SMAX.Query.total_count
+        description: Query results total count
+        type: String
+      - contextPath: MicroFocus.SMAX.Query.completion_status
+        description: Query result status
+        type: String
   dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: true
