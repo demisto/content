@@ -13,5 +13,7 @@ type: python
 runas: DBotRole
 runonce: false
 subtype: python3
+tests:
+- No test
 dockerimage: demisto/python3:3.9.7.24076
 fromversion: 5.5.0
