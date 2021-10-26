@@ -99,8 +99,11 @@ Before you can create an instance of the Microsoft Teams integration in Cortex X
 3. [Configure Microsoft Teams on Cortex XSOAR](#configure-microsoft-teams-on-cortex-xsoar)
 4. [Add the Demisto Bot to a Team](#add-the-demisto-bot-to-a-team)
 
+*Note:* Microsoft App Studio is being phased out and will be deprecated on January 1, 2022. It is replaced by Microsoft Developer Portal. Steps 1 and 4 differ if using the App Studio or the Developer Portal.
+
 ### Create the Demisto Bot in Microsoft Teams
 
+#### Using the App Studio
 1. Download the ZIP file located at the bottom of this article.
 2. In Microsoft Teams, access the Store.
 3. Search for and click **App Studio**.
@@ -129,6 +132,17 @@ Before you can create an instance of the Microsoft Teams integration in Cortex X
 14. From the left-side navigation pane, under Finish, click **Test and distribute**.
 15. To download the new bot file, which now includes App Details, click **Download**.
 16. Navigate to Store, and click **Upload a custom app > Upload for ORGANIZATION-NAME**, and select the ZIP file you downloaded.
+
+#### Using the Developer Portal
+1. Navigate to the [Tools in the Microsoft Developer Portal](https://dev.teams.microsoft.com/tools).
+2. Navigate to **Bot management**.
+3. Click the **+New Bot** button.
+4. Fill in `Demisto Bot` in the prompt, click the *Add* button, and wait a few seconds until the bot is created.
+5. Record the **Bot ID** of `Demisto Bot` for the next steps.
+6. Click on the line where `Demisto Bot` shows under the **Bot Name**.
+7. Navigate to **Configure** and fill in the **Bot endpoint address**.
+8. Navigate to **Client Secrets** and click the **Add a client secret for your bot** button, and wait a few seconds to allow the secret to be generated.
+9. Store the generated secret securely for the next steps.
 
 ### Grant the Demisto Bot Permissions in Microsoft Graph
 
@@ -172,17 +186,33 @@ Before you can create an instance of the Microsoft Teams integration in Cortex X
 | incidentType | Incident type | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+5. Click the **Save & exit** button.
 
 ### Add the Demisto Bot to a Team
 
   - Note: the following need to be done after configuring the integration on Cortex XSOAR (the previous step).
-  
+#### Using the App Studio
 1. In Microsoft Teams, access the Store.
 2. Search for **Demisto Bot** and click the Demisto Bot widget.
 3. Click the arrow on the **Open** button and select **Add to a team**.
 4. In the search box, type the name of the team to which to add the bot.
 5. Click **Set up** and configure the new app.
 
+#### Using the Developer Portal
+1. Download the ZIP file located at the bottom of this article.
+2. Uncompress the ZIP file. You should see 3 files (`manifest.json`, `color.png` and `outline.png`).
+3. Open the `manifest.json` file that was extracted from the ZIP file.
+4. In the `bots` list, replace the value of the `botId` attribute with the value of the *Bot ID* you stored in the previous steps.
+5. Compress back the 3 files (the modified `manifest.json` file, `color.png` and `outline.png`).
+6. Navigate to [Manage Apps in the Microsoft Teams admin center](https://admin.teams.microsoft.com/policies/manage-apps).
+7. Click the **+Upload** button.
+8. In the modal that pops up click the **Upload** button.
+9. Browse for the ZIP you created in the previous steps, open it and wait a few seconds until it loads.
+10. Search for **Demisto Bot**.
+11. In the line where `Demisto Bot` shows under **Name**, tick the V on the left.
+12. Click the **Add to team** button.
+13. In the search box, type the name of the team to which you want to add the bot.
+14. Click the **Add** button on the wanted team and then click the **Apply** button.
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
