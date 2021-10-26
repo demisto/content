@@ -1770,6 +1770,9 @@ script:
     - contextPath: Tanium.IntelDoc.UpdatedAt
       description: The date when this intel was last updated.
       type: date
+    - contextPath: Tanium.IntelDoc.Type
+      description: The shortened type name of the intel. For example, "openioc", "stix", "yara".
+      type: String
   - arguments:
     - description: The intel document ID.
       name: intel_doc_id

@@ -1300,7 +1300,7 @@ def intel_doc_create(client, data_args):
     if intel_doc:
         intel_doc['LabelIds'] = str(intel_doc['LabelIds']).strip('[]')
 
-    human_readable = tableToMarkdown('Intel Doc uploaded', intel_doc, headerTransform=pascalToSpace, removeNull=True)
+    human_readable = tableToMarkdown('Intel Doc information', intel_doc, headerTransform=pascalToSpace, removeNull=True)
 
     return human_readable, outputs, raw_response
 
