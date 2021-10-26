@@ -1779,9 +1779,9 @@ script:
       name: computer_group_name
       required: true
     description: Scan a computer group for hashes in intel document. Computer groups
-      can be viewed by navigating to `Administration -> Computer Groups` in the UI.
-      Computer group names and IDs can also be retrieved by using the `tn-list-groups`
-      command in the `Tanium` integration.
+      can be viewed by navigating to `Administration -> Computer Groups` in the Threat-Response
+      product console. Computer group names and IDs can also be retrieved by using
+      the `tn-list-groups` command in the `Tanium` integration.
     name: tanium-tr-start-quick-scan
     outputs:
     - contextPath: Tanium.QuickScan.IntelDocId
