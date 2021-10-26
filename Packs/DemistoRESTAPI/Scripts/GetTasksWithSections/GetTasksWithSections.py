@@ -128,15 +128,15 @@ def get_tasks_and_readable(tasks_nested_results: Dict[str, Dict], workplan_url: 
     for k1, v1 in tasks_nested_results.items():
         if 'tasks' in v1.keys():
             tasks = v1.get('tasks')
-            task_results.extend(tasks)
-            tasks = add_url_to_tasks(tasks, workplan_url) if workplan_url else tasks
+            task_results.extend(tasks) # type: ignore
+            tasks = add_url_to_tasks(tasks, workplan_url) if workplan_url else tasks # type: ignore
             md_lst.append(tableToMarkdown(k1, tasks, headers=headers)[1:])  # this is for making the title bigger
         else:
             md_lst.append(f'## {k1}')
             for k2, v2 in v1.items():
                 tasks = v2.get('tasks')
-                task_results.extend(tasks)
-                tasks = add_url_to_tasks(tasks, workplan_url) if workplan_url else tasks
+                task_results.extend(tasks)  # type: ignore
+                tasks = add_url_to_tasks(tasks, workplan_url) if workplan_url else tasks # type: ignore
                 md_lst.append(tableToMarkdown(k2, tasks, headers=headers))
     md = '\n'.join(md_lst)
     return task_results, md
