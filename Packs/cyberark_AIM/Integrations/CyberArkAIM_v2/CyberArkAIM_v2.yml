@@ -23,7 +23,8 @@ configuration:
   name: safe
   required: true
   type: 0
-- display: A comma-separated list of credential names in the safe. Partial names are not supported.
+- display: A comma-separated list of credential names in the safe.
+  additionalinfo: Partial names are not supported.
   hidden: false
   name: credential_names
   required: false
