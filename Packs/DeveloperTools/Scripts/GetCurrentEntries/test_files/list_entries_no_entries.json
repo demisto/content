@@ -1,0 +1,31 @@
+{
+    "body": "{\"ShardID\":0,\"allRead\":false,\"allReadWrite\":false,\"category\":\"\",\"childs\":null,\"closed\":\"0001-01-01T00:00:00Z\",\"created\":\"2021-10-26T15:04:06.708601+03:00\",\"creatingUserId\":\"admin\",\"dbotCreatedBy\":\"admin\",\"details\":\"\",\"entries\":[],\"totalEntries\":0,\"type\":0,\"users\":[\"admin\"],\"version\":5}",
+    "headers": {
+        "Content-Type": [
+            "application/json"
+        ],
+        "Date": [
+            "Tue, 26 Oct 2021 12:04:28 GMT"
+        ],
+        "Server-Timing": [
+            "16"
+        ],
+        "Strict-Transport-Security": [
+            "max-age=10886400000000000; includeSubDomains"
+        ],
+        "Vary": [
+            "Accept-Encoding"
+        ],
+        "X-Content-Type-Options": [
+            "nosniff"
+        ],
+        "X-Frame-Options": [
+            "DENY"
+        ],
+        "X-Xss-Protection": [
+            "1; mode=block"
+        ]
+    },
+    "status": "200 OK",
+    "statusCode": 200
+}

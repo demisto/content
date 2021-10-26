@@ -11,6 +11,10 @@ args:
 - name: incident_id
   description: ID of the incident.
   required: true
+outputs:
+- contextPath: LatestEntries
+  description: Dictionary where key is the entry and the value is the number of occurances.
+  type: unknown
 scripttarget: 0
 subtype: python3
 runonce: false
