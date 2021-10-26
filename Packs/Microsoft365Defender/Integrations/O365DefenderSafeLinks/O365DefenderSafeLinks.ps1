@@ -367,6 +367,7 @@ class ExchangeOnlinePowershellV2Client {
 
 function GetPolicyListCommand {
     [CmdletBinding()]
+    [OutputType([System.Object[]])]
     Param (
         [Parameter(Mandatory)][ExchangeOnlinePowershellV2Client]$client,
         [hashtable]$kwargs
@@ -383,6 +384,7 @@ function GetPolicyListCommand {
 
 function CreateUpdatePolicyCommand {
     [CmdletBinding()]
+    [OutputType([System.Object[]])]
     Param (
         [Parameter(Mandatory)][ExchangeOnlinePowershellV2Client]$client,
         [Parameter(Mandatory)][string]$command_type,
@@ -403,6 +405,7 @@ function CreateUpdatePolicyCommand {
 
 function RemovePolicyCommand {
     [CmdletBinding()]
+    [OutputType([System.Object[]])]
     Param (
         [Parameter(Mandatory)][ExchangeOnlinePowershellV2Client]$client,
         [hashtable]$kwargs
@@ -415,6 +418,7 @@ function RemovePolicyCommand {
 
 function GetRulesCommand {
     [CmdletBinding()]
+    [OutputType([System.Object[]])]
     Param (
         [Parameter(Mandatory)][ExchangeOnlinePowershellV2Client]$client,
         [hashtable]$kwargs
@@ -433,6 +437,7 @@ function GetRulesCommand {
 
 function CreateUpdateRuleCommand {
     [CmdletBinding()]
+    [OutputType([System.Object[]])]
     Param (
         [Parameter(Mandatory)][ExchangeOnlinePowershellV2Client]$client,
         [Parameter(Mandatory)][string]$command_type,
@@ -491,25 +496,25 @@ function Main {
                 ($human_readable, $entry_context, $raw_response) = TestModuleCommand $exo_client
             }
             "$script:COMMAND_PREFIX-policy-list" {
-                ($human_readable, $entry_context, $raw_response) = GetPolicyListCommand $exo_client $command_arguments
+                ($human_readable, $entry_context, $raw_response) = GetPolicyListCommand -client $exo_client -kwargs $command_arguments
             }
             "$script:COMMAND_PREFIX-policy-create" {
-                ($human_readable, $entry_context, $raw_response) = CreateUpdatePolicyCommand $exo_client "create" $command_arguments
+                ($human_readable, $entry_context, $raw_response) = CreateUpdatePolicyCommand -client $exo_client "create" -kwargs $command_arguments
             }
             "$script:COMMAND_PREFIX-policy-update" {
-                ($human_readable, $entry_context, $raw_response) = CreateUpdatePolicyCommand $exo_client "update" $command_arguments
+                ($human_readable, $entry_context, $raw_response) = CreateUpdatePolicyCommand -client $exo_client "update" -kwargs $command_arguments
             }
             "$script:COMMAND_PREFIX-policy-remove" {
-                ($human_readable, $entry_context, $raw_response) = RemovePolicyCommand $exo_client $command_arguments
+                ($human_readable, $entry_context, $raw_response) = RemovePolicyCommand -client $exo_client -kwargs $command_arguments
             }
             "$script:COMMAND_PREFIX-rule-list" {
-                ($human_readable, $entry_context, $raw_response) = GetRulesCommand $exo_client $command_arguments
+                ($human_readable, $entry_context, $raw_response) = GetRulesCommand -client $exo_client -kwargs $command_arguments
             }
             "$script:COMMAND_PREFIX-rule-create" {
-                ($human_readable, $entry_context, $raw_response) = CreateUpdateRuleCommand $exo_client "create" $command_arguments
+                ($human_readable, $entry_context, $raw_response) = CreateUpdateRuleCommand -client $exo_client -command_type "create" -kwargs $command_arguments
             }
             "$script:COMMAND_PREFIX-rule-update" {
-                ($human_readable, $entry_context, $raw_response) = CreateUpdateRuleCommand $exo_client "update" $command_arguments
+                ($human_readable, $entry_context, $raw_response) = CreateUpdateRuleCommand -client $exo_client -command_type "update" -kwargs $command_arguments
             }
 
             default {
