@@ -1,5 +1,6 @@
 from CommonServerPython import *
 import copy
+import itertools
 import traceback
 
 
@@ -59,7 +60,7 @@ def traverse_tasks(tasks: Dict[str, Dict],
             dct.setdefault('tasks', []).append(task)
             new_path = path
         if current_task.get('nextTasks'):
-            next_tasks_ids: Set = set().union(*demisto.get(current_task, 'nextTasks').values())
+            next_tasks_ids: List[str] = list(itertools.chain(*demisto.get(current_task, 'nextTasks').values()))
             next_tasks: List[Dict] = [tasks.get(task_id) for task_id in next_tasks_ids]  # type: ignore
             for next_task in next_tasks:
                 traverse_tasks(tasks, next_task, results, current_task, new_path, visited)
