@@ -861,4 +861,4 @@ script:
   dockerimage: demisto/pwsh-exchange:1.0.0.22307
 fromversion: 5.5.0
 tests:
-  - No test
+- No Test

@@ -9,7 +9,7 @@
     "DoNotAllowClickThrough": false,
     "DoNotRewriteUrls": [
       "www.b.com",
-      "https://another.bla.com"
+      "https://google.com"
     ],
     "DoNotTrackUserClicks": false,
     "EnableForInternalSenders": false,
@@ -19,7 +19,7 @@
     "ExchangeVersion": "0.20 (15.0.0.0)",
     "ExcludedUrls": [
       "www.b.com",
-      "https://another.bla.com"
+      "https://google.com"
     ],
     "Guid": "5796cea3-cfdb-4a99-9956-bf62209118a6",
     "Id": "Policy2",
@@ -120,7 +120,7 @@
     "WhenChangedUTC": "2021-10-21T12:49:16Z",
     "WhenCreated": "2021-10-21T12:49:03+00:00",
     "WhenCreatedUTC": "2021-10-21T12:49:03Z",
-    "WhiteListedUrls": "www.b.com,https://another.bla.com"
+    "WhiteListedUrls": "www.b.com,https://google.com"
   },
   {
     "AdminDisplayName": "\"blabla\"",
