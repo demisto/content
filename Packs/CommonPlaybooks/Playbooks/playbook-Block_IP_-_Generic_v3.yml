@@ -1,0 +1,3934 @@
+id: Block IP - Generic v3
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Block IP - Generic v3
+description: "This playbook blocks malicious IPs using all integrations that are enabled.\
+  \ The direction of the traffic that will be blocked is determined by the XSOAR user\
+  \ ( and set by default to outgoing)\nPlease note the following:\n-  some of those\
+  \ integrations require specific parameters to run, which are based on the playbook\
+  \ inputs. Also, Certain integrations use FW rules or Appanded network objects\n\
+  - Note that the Appended Network objects should be specified in blocking rules inside\
+  \ the system later on. \n\n\nSupported integrations for this playbook [Network security\
+  \ products such as FW/WAF/IPS/Etc]: \n\n* Check Point Firewall\n* Palo Alto Networks\
+  \ PAN-OS\n* Zscaler\n* FortiGate\n* Aria Packet Intelligence\n* Cisco Firepower\
+  \ \n* Cisco Secure Cloud Analytics\n* Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n\
+  * ThreatX\n* Signal Sciences WAF\n* Sophos Firewall\n\n"
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2f0a993c-3141-490b-8e59-6d25d3cb8325
+    type: start
+    task:
+      id: 2f0a993c-3141-490b-8e59-6d25d3cb8325
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "36"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1040,
+          "y": -3060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: d80bac10-b621-4052-82eb-d96ad1c25444
+    type: title
+    task:
+      id: d80bac10-b621-4052-82eb-d96ad1c25444
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1040,
+          "y": 1700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 5d87dcce-d933-4830-8dbe-eafdb6c1a0a8
+    type: title
+    task:
+      id: 5d87dcce-d933-4830-8dbe-eafdb6c1a0a8
+      version: -1
+      name: Block IPs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "17"
+      - "18"
+      - "20"
+      - "26"
+      - "30"
+      - "55"
+      - "60"
+      - "64"
+      - "63"
+      - "67"
+      - "71"
+      - "79"
+      - "74"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1040,
+          "y": 950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: da9cca4e-bef2-43f7-8ebd-fc1180442cf3
+    type: condition
+    task:
+      id: da9cca4e-bef2-43f7-8ebd-fc1180442cf3
+      version: -1
+      name: Is Check Point Firewall enabled?
+      description: Verify that there is a valid instance of Check Point Firewall enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CheckPointFirewall_v2
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 1520,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: ac1f402d-62e1-4e70-8d06-d0c4f74b1015
+    type: condition
+    task:
+      id: ac1f402d-62e1-4e70-8d06-d0c4f74b1015
+      version: -1
+      name: Is there an IP to block?
+      description: Verify that is at least one IP to block.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "96"
+      "yes":
+      - "43"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: BlockList.Input
+            iscontext: true
+        - operator: isExists
+          left:
+            value:
+              simple: BlockList.Malicious
+            iscontext: true
+        - operator: isExists
+          left:
+            value:
+              simple: BlockList.Suspicious
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1040,
+          "y": -860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 30b386fd-8599-46d5-8e57-6a65a78ef837
+    type: condition
+    task:
+      id: 30b386fd-8599-46d5-8e57-6a65a78ef837
+      version: -1
+      name: Is Zscaler enabled?
+      description: Verify that there is a valid instance of Zscaler enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Zscaler
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 2010,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: fbab68f8-f972-46e2-8332-0ecefd90cde0
+    type: regular
+    task:
+      id: fbab68f8-f972-46e2-8332-0ecefd90cde0
+      version: -1
+      name: Block IP with Zscaler
+      description: Block the IPs using Zscaler.
+      script: Zscaler|||zscaler-blacklist-ip
+      type: regular
+      iscommand: true
+      brand: Zscaler
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      ip:
+        complex:
+          root: BlockList
+          accessor: Final
+          transformers:
+          - operator: uniq
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2010,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: a6d71b7d-87ad-4e1b-8b0b-5fb91f3cbf8f
+    type: playbook
+    task:
+      id: a6d71b7d-87ad-4e1b-8b0b-5fb91f3cbf8f
+      version: -1
+      name: PAN-OS - Block IP - Custom Block Rule
+      description: |-
+        This playbook blocks IP addresses using Custom Block Rules in Palo Alto Networks Panorama or Firewall.
+        The playbook receives malicious IP addresses as inputs, creates a custom bi-directional rule to block them, and commits the configuration.
+      playbookName: PAN-OS - Block IP - Custom Block Rule
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      AutoCommit:
+        simple: ${inputs.AutoCommit}
+      IP:
+        complex:
+          root: BlockList
+          accessor: Final
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: d4b987eb-59f3-4fb4-8717-f22b34da401a
+    type: playbook
+    task:
+      id: d4b987eb-59f3-4fb4-8717-f22b34da401a
+      version: -1
+      name: PAN-OS - Block IP - Static Address Group
+      description: |-
+        This playbook blocks IP addresses using Static Address Groups in Palo Alto Networks Panorama or Firewall.
+        The playbook receives malicious IP addresses and an address group name as inputs, verifies that the addresses are not already a part of the address group, adds them and commits the configuration.
+
+        ***Note - The playbook does not block the address group communication using a policy block rule. This step will be taken once outside of the playbook.
+      playbookName: PAN-OS - Block IP - Static Address Group
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      AddressGroupName:
+        simple: ${inputs.StaticAddressGroup}
+      AutoCommit:
+        simple: ${inputs.AutoCommit}
+      IP:
+        complex:
+          root: BlockList
+          accessor: Final
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: c7d6fc89-2e83-460d-87fb-f79483a28a57
+    type: title
+    task:
+      id: c7d6fc89-2e83-460d-87fb-f79483a28a57
+      version: -1
+      name: PAN-OS
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "22"
+      - "23"
+      - "24"
+      - "25"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 1115
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 9300ad3f-d2c9-4740-806a-f2045195635f
+    type: title
+    task:
+      id: 9300ad3f-d2c9-4740-806a-f2045195635f
+      version: -1
+      name: CheckPoint FW
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1520,
+          "y": 1115
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: f29448e8-9d4a-4f2f-8c4f-1e99eca3ffb1
+    type: title
+    task:
+      id: f29448e8-9d4a-4f2f-8c4f-1e99eca3ffb1
+      version: -1
+      name: Zscaler
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2010,
+          "y": 1115
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 3deb1da0-cdb2-49af-8d86-f95866fc385b
+    type: playbook
+    task:
+      id: 3deb1da0-cdb2-49af-8d86-f95866fc385b
+      version: -1
+      name: PAN-OS DAG Configuration
+      description: "This playbook utilizes the Dynamic Address Group (DAG) capability\
+        \ of PAN-OS.\nDAG enables analysts to create a rule one time, where the group\
+        \ is the source/destination, and adds IP addresses dynamically without the\
+        \ need to commit the configuration every time.\n\nThe playbook checks if the\
+        \ given tag already exists. If the tag exists, then the IP address is added\
+        \ to the tag.\n\nIf the tag does not exist, a new address group is created\
+        \ with the given tag and a matching rule, and the configuration is committed.\
+        \ \n"
+      playbookName: PAN-OS DAG Configuration
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      action-type:
+        simple: drop
+      address_group_name:
+        simple: ${inputs.StaticAddressGroup}
+      auto_commit:
+        simple: ${inputs.AutoCommit}
+      inbound-or-outbound-rule:
+        simple: ${inputs.RuleDirection}
+      ip_list:
+        complex:
+          root: BlockList
+          accessor: Final
+          transformers:
+          - operator: uniq
+      pre-post-rulebase:
+        simple: pre-rulebase
+      rule-position:
+        simple: top
+      tag_name:
+        simple: ${inputs.DAG}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": -650,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 23cb5266-464f-41cb-8364-e3bf6b991624
+    type: condition
+    task:
+      id: 23cb5266-464f-41cb-8364-e3bf6b991624
+      version: -1
+      name: Use Custom Block Rules?
+      description: Verify if custom block rule playbook input is set to true or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.CustomBlockRule
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: f865ade2-bb65-4c3e-8aff-9c3b26c5cbed
+    type: condition
+    task:
+      id: f865ade2-bb65-4c3e-8aff-9c3b26c5cbed
+      version: -1
+      name: Use Static Address Group?
+      description: Verify if there is a static address group name set as a playbook
+        input.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.StaticAddressGroup
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: cf43d286-2cb4-41b4-8964-748c4329dea4
+    type: condition
+    task:
+      id: cf43d286-2cb4-41b4-8964-748c4329dea4
+      version: -1
+      name: Use External Dynamic List?
+      description: Verify if there is an EDL Server IP as a playbook input.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "101"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.IPListName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.EDLServerIP
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 807c57e7-c6f7-4b1d-8e7a-33f3fdcb3d82
+    type: condition
+    task:
+      id: 807c57e7-c6f7-4b1d-8e7a-33f3fdcb3d82
+      version: -1
+      name: Use Dynamic Address Group?
+      description: Verify if there is a dynamic address group name set as a playbook
+        input.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.DAG
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -650,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 3635b4fc-d51b-4546-8b79-ff35aafe9d83
+    type: title
+    task:
+      id: 3635b4fc-d51b-4546-8b79-ff35aafe9d83
+      version: -1
+      name: Fortinet
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2460,
+          "y": 1115
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: c34c6121-f420-44c8-8efd-6f1412a56d24
+    type: condition
+    task:
+      id: c34c6121-f420-44c8-8efd-6f1412a56d24
+      version: -1
+      name: Is FortiGate enabled?
+      description: Verify that there is a valid instance of FortiGate enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: FortiGate
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2460,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: ea606dc0-0e2e-433e-86ab-1bf81d215c3a
+    type: regular
+    task:
+      id: ea606dc0-0e2e-433e-86ab-1bf81d215c3a
+      version: -1
+      name: 'FortiGate Ban IP '
+      description: Adds IP addresses to the banned list.
+      script: '|||fortigate-ban-ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      ip_address:
+        complex:
+          root: BlockList
+          accessor: Final
+          transformers:
+          - operator: uniq
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2460,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: da65d860-1272-4428-8b63-a8622e6e4189
+    type: playbook
+    task:
+      id: da65d860-1272-4428-8b63-a8622e6e4189
+      version: -1
+      name: Checkpoint - Block IP - Custom Block Rule
+      description: |-
+        This playbook blocks IP addresses using Custom Block Rules in Checkpoint Firewall.
+        The playbook receives malicious IP addresses as inputs, creates a custom bi-directional rule to block them, and publish the configuration.
+      playbookName: Checkpoint - Block IP - Custom Block Rule
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      IP:
+        simple: ${BlockList.Final}
+      block_IP_error_handling:
+        simple: Stop
+      checkpoint_error_handling:
+        simple: Stop
+      install_policy:
+        complex:
+          root: inputs.AutoCommit
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition: {}
+              else:
+                value:
+                  simple: "False"
+              equals:
+                value:
+                  simple: "Yes"
+              lhs: {}
+              options: {}
+              rhs: {}
+              then:
+                value:
+                  simple: "True"
+      policy_package:
+        simple: Standard
+      rule_layer:
+        simple: Network
+      rule_name:
+        simple: ${inputs.RuleName}
+      rule_position:
+        simple: top
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 1520,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: b48be6f0-60f9-47c6-8d35-9934fe4d60d3
+    type: title
+    task:
+      id: b48be6f0-60f9-47c6-8d35-9934fe4d60d3
+      version: -1
+      name: F5 Silverline
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "32"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2930,
+          "y": 1115
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 846b5d1f-d36c-4db0-8469-8d752a1d2ebc
+    type: regular
+    task:
+      id: 846b5d1f-d36c-4db0-8469-8d752a1d2ebc
+      version: -1
+      name: 'F5 Silverline - add IP to deny list '
+      description: Adds a new particular threatening IP address object by its IP address.
+      script: F5Silverline|||f5-silverline-ip-object-add
+      type: regular
+      iscommand: true
+      brand: F5Silverline
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      cidr_range:
+        complex:
+          root: BlockList
+          accessor: Final
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      list_type:
+        simple: denylist
+      note:
+        simple: ${inputs.RuleName}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2930,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 6452a1b9-ffe9-4583-869d-7f3f814135a1
+    type: condition
+    task:
+      id: 6452a1b9-ffe9-4583-869d-7f3f814135a1
+      version: -1
+      name: Is F5 Silverline enabled?
+      description: Verify that there is a valid instance of F5 Silverline enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: F5Silverline
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2930,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: aaa887b3-7e94-4e5a-80dd-029159fe1ab4
+    type: condition
+    task:
+      id: aaa887b3-7e94-4e5a-80dd-029159fe1ab4
+      version: -1
+      name: Are there IPs in Inputs?
+      description: Check if there are any IPs mentioned in the inputs section.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "80"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.IP
+                filters:
+                - - operator: match
+                    left:
+                      value:
+                        simple: inputs.IP
+                      iscontext: true
+                    right:
+                      value:
+                        simple: (\b25[0-5]|\b2[0-4][0-9]|\b[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1040,
+          "y": -2920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 552c3717-8791-43eb-80c2-0a9e7413dce3
+    type: playbook
+    task:
+      id: 552c3717-8791-43eb-80c2-0a9e7413dce3
+      version: -1
+      name: IP Enrichment - Generic v2
+      description: |-
+        Enrich IP addresses using one or more integrations.
+
+        - Resolve IP addresses to hostnames (DNS)
+        - Provide threat information
+        - Separate internal and external IP addresses
+        - For internal IP addresses, get host information
+      playbookName: IP Enrichment - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "100"
+    scriptarguments:
+      IP:
+        complex:
+          root: inputs.IP
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+      InternalRange:
+        simple: ${inputs.InternalRange}
+      ResolveIP:
+        simple: ${inputs.ResolveIP}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": -1950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: b226596d-f29e-483e-82c3-820deef8cf72
+    type: condition
+    task:
+      id: b226596d-f29e-483e-82c3-820deef8cf72
+      version: -1
+      name: Are there any Malicious IPs?
+      description: Check if there are any malicious IPs from the input IPs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: IP
+                filters:
+                - - operator: isExists
+                    left:
+                      value:
+                        simple: IP.Malicious
+                      iscontext: true
+                accessor: Address
+                transformers:
+                - operator: uniq
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": -1480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: e775224e-36d1-42f9-8fec-df8b9f20ee70
+    type: regular
+    task:
+      id: e775224e-36d1-42f9-8fec-df8b9f20ee70
+      version: -1
+      name: Append Context List with IPs
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: BlockList.Malicious
+      value:
+        complex:
+          root: IP
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: IP.Malicious
+                iscontext: true
+          - - operator: inList
+              left:
+                value:
+                  simple: IP.Address
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.IP
+                iscontext: true
+              ignorecase: true
+          accessor: Address
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": -1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: a6a40c61-d46d-438b-8493-d147db10c454
+    type: title
+    task:
+      id: a6a40c61-d46d-438b-8493-d147db10c454
+      version: -1
+      name: User Verification Prompt
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "44"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1040,
+          "y": -605
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 73802a53-6769-4309-8091-eefadf5d049a
+    type: condition
+    task:
+      id: 73802a53-6769-4309-8091-eefadf5d049a
+      version: -1
+      name: Is User Verification required?
+      description: Check if user verification is needed. Otherwise, proceed without
+        asking questions.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "86"
+      "yes":
+      - "95"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.UserVerification
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+    view: |-
+      {
+        "position": {
+          "x": 1040,
+          "y": -475
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: ceb35b69-79b5-4714-850e-dd287f2551f7
+    type: collection
+    task:
+      id: ceb35b69-79b5-4714-850e-dd287f2551f7
+      version: -1
+      name: 'Analyst Verification Prompt '
+      description: |-
+        Ask the user what IPs should be blocked.
+        Note that in this Task the following IPs are in your Internal Range:
+        ${BlockList.PIIP}
+
+        Remember that the direction you have decided is - ${inputs.RuleDirection}
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "102"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 580,
+          "y": -15
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Analyst,Administrator
+      subject:
+        simple: Block IP Playbook - Analyst's Verification
+      body:
+        simple: |-
+          <p>Dear XSOAR user,</p>
+          <p>This notification informs you that the following list of IPs will be blocked on your XSOAR's integrated network devices.</p>
+          <p><br />(<strong>Note</strong>: the IPs will be added to your company BlockList or be blocked in individual rules based on the XSOAR integrated devices).</p>
+          <p>Also, <strong>please note</strong> that the following IPs are part of the <strong>Internal Range</strong> mentioned in the playbook:</p>
+          <p>${BlockList.PIIP}</p>
+          <p>&nbsp;</p>
+          <p>For more information, please click on the link below.</p>
+      methods:
+      - email
+      format: html
+      bcc:
+      cc:
+        simple: Administrator
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Do you approve the blocking request for "Malicious IPs"?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: BlockList
+            accessor: Malicious
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Do you approve the blocking request for "Suspiocus IPs"?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: BlockList
+            accessor: Suspicious
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "2"
+        label: ""
+        labelarg:
+          simple: Do you approve the blocking request for "Other IPs from Input"?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: BlockList.Input
+            filters:
+            - - operator: notIn
+                left:
+                  value:
+                    simple: BlockList.Input
+                  iscontext: true
+                right:
+                  value:
+                    simple: BlockList.Suspicious
+                  iscontext: true
+            - - operator: notIn
+                left:
+                  value:
+                    simple: BlockList.Input
+                  iscontext: true
+                right:
+                  value:
+                    simple: BlockList.Malicious
+                  iscontext: true
+                ignorecase: true
+            - - operator: notIn
+                left:
+                  value:
+                    simple: BlockList.Input
+                  iscontext: true
+                right:
+                  value:
+                    simple: BlockList.PIIP
+                  iscontext: true
+                ignorecase: true
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "3"
+        label: ""
+        labelarg:
+          simple: Do you approve the blocking request or "Internal Address"?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: BlockList.PIIP
+            filters:
+            - - operator: notIn
+                left:
+                  value:
+                    simple: BlockList.PIIP
+                  iscontext: true
+                right:
+                  value:
+                    simple: BlockList.Suspicious
+                  iscontext: true
+            - - operator: notIn
+                left:
+                  value:
+                    simple: BlockList.PIIP
+                  iscontext: true
+                right:
+                  value:
+                    simple: BlockList.Malicious
+                ignorecase: true
+            transformers:
+            - operator: uniq
+        - {}
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Please answer the following
+      description: Please note that there are Internal IPs in this form!
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 53e3778c-76b2-4431-87b1-e79c78707f7a
+    type: condition
+    task:
+      id: 53e3778c-76b2-4431-87b1-e79c78707f7a
+      version: -1
+      name: Are there any Suspicious IPs?
+      description: Check if any suspicious IPs were found during the IP enrichment
+        process.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "YES":
+      - "48"
+    separatecontext: false
+    conditions:
+    - label: "YES"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: match
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: (\b25[0-5]|\b2[0-4][0-9]|\b[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}
+                - - operator: inList
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.IP
+                      iscontext: true
+                accessor: Score
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    view: |-
+      {
+        "position": {
+          "x": 580,
+          "y": -1480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 2885f824-b7d1-4e64-8fec-6e97980f8dfd
+    type: regular
+    task:
+      id: 2885f824-b7d1-4e64-8fec-6e97980f8dfd
+      version: -1
+      name: Append Context List with IPs
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: BlockList.Suspicious
+      stringify:
+        simple: "false"
+      value:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "2"
+          - - operator: match
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: (\b25[0-5]|\b2[0-4][0-9]|\b[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}
+          - - operator: inList
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.IP
+                iscontext: true
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 580,
+          "y": -1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: ad8a453d-91e7-4660-8f88-cc904d092de6
+    type: condition
+    task:
+      id: ad8a453d-91e7-4660-8f88-cc904d092de6
+      version: -1
+      name: An error occurred during enrichment?
+      description: Check whether the given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If an array is provided, will return yes
+        if one of the entries returned an error.
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "100"
+      "yes":
+      - "39"
+    scriptarguments:
+      entryId:
+        complex:
+          root: lastCompletedTaskEntries
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": -2150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: d6072abd-3069-44fb-8c9a-b871f5d4d7d9
+    type: title
+    task:
+      id: d6072abd-3069-44fb-8c9a-b871f5d4d7d9
+      version: -1
+      name: Finalize Verdict For IP/s
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "41"
+      - "47"
+      - "85"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": -1630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: 5dc29bfb-1d32-4769-8cb2-568621741f3a
+    type: regular
+    task:
+      id: 5dc29bfb-1d32-4769-8cb2-568621741f3a
+      version: -1
+      name: Enrich Indicators
+      description: Checks the reputation of an IP address.
+      script: '|||ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      ip:
+        complex:
+          root: IP
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: IP.Address
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.IP
+                iscontext: true
+              ignorecase: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: IP.InRange
+                iscontext: true
+              right:
+                value:
+                  simple: "No"
+              ignorecase: true
+          accessor: Address
+          transformers:
+          - operator: uniq
+    reputationcalc: 2
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": -2330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: 8ec34c6b-6ed9-48e9-8267-7601a62325fb
+    type: title
+    task:
+      id: 8ec34c6b-6ed9-48e9-8267-7601a62325fb
+      version: -1
+      name: Cisco ASA
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "56"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1060,
+          "y": 1115
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 23318568-9f06-4ae2-81cd-d7bd275202ba
+    type: condition
+    task:
+      id: 23318568-9f06-4ae2-81cd-d7bd275202ba
+      version: -1
+      name: Is Cisco ASA enabled?
+      description: Verify that there is a valid instance of Cisco ASA enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "57"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Cisco ASA
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -1060,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: 1947b15b-c559-4dea-8266-252aec50b3d9
+    type: regular
+    task:
+      id: 1947b15b-c559-4dea-8266-252aec50b3d9
+      version: -1
+      name: Cisco ASA - Create Blocking Rule
+      description: Creates a rule.
+      script: '|||cisco-asa-create-rule'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      active:
+        complex:
+          root: inputs.AutoCommit
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition: {}
+              else:
+                value:
+                  simple: "False"
+              equals:
+                value:
+                  simple: "Yes"
+              lhs: {}
+              options: {}
+              rhs: {}
+              then:
+                value:
+                  simple: Ture
+      destination:
+        complex:
+          root: inputs.RuleDirection
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition: {}
+              else:
+                value:
+                  simple: 0.0.0.0
+              equals:
+                value:
+                  simple: outbound
+              lhs: {}
+              options: {}
+              rhs: {}
+              then:
+                value:
+                  simple: ${BlockList.Final}
+                iscontext: true
+      interface_type:
+        simple: Global
+      log_level:
+        simple: Default
+      permit:
+        simple: "False"
+      position:
+        simple: top
+      source:
+        complex:
+          root: inputs.RuleDirection
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition: {}
+              else:
+                value:
+                  simple: ${BlockList.Final}
+                iscontext: true
+              equals:
+                value:
+                  simple: outbound
+              lhs: {}
+              options: {}
+              rhs: {}
+              then:
+                value:
+                  simple: 0.0.0.0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1060,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: 4144658f-dc3c-4c03-883b-ef2b1918a5f5
+    type: condition
+    task:
+      id: 4144658f-dc3c-4c03-883b-ef2b1918a5f5
+      version: -1
+      name: Is Cisco Secure Cloud Analytics enabled?
+      description: Verify that there is a valid instance of Cisco Secure Cloud Analytics
+        enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "59"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Stealthwatch Cloud
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -1480,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: c6ae8d8c-33ec-4c12-8f5e-e52d86dea65c
+    type: regular
+    task:
+      id: c6ae8d8c-33ec-4c12-8f5e-e52d86dea65c
+      version: -1
+      name: Cisco Secure Cloud Analytics - Add IP to BlockList
+      description: Add a domain or IP to the blacklist
+      script: '|||sw-block-domain-or-ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      ip:
+        complex:
+          root: BlockList
+          accessor: Final
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1480,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: 61858db6-539f-4223-81f1-b054682f358a
+    type: title
+    task:
+      id: 61858db6-539f-4223-81f1-b054682f358a
+      version: -1
+      name: Cisco Secure Cloud Analytics
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "58"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1480,
+          "y": 1115
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: 6d51f915-0e9f-4558-86a7-ceea9929f2d9
+    type: condition
+    task:
+      id: 6d51f915-0e9f-4558-86a7-ceea9929f2d9
+      version: -1
+      name: Is Cisco Firepower enabled?
+      description: Verify that there is a valid instance of Cisco Firepower enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "89"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Cisco Firepower
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -1900,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: 3f7e2884-956f-4173-8be9-fe0abd4b4125
+    type: title
+    task:
+      id: 3f7e2884-956f-4173-8be9-fe0abd4b4125
+      version: -1
+      name: 'Cisco Firepower '
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "61"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1900,
+          "y": 1115
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: 493a056d-21b7-49dc-8a4d-29d35be1b828
+    type: title
+    task:
+      id: 493a056d-21b7-49dc-8a4d-29d35be1b828
+      version: -1
+      name: Akamai WAF
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "65"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1040,
+          "y": 1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: 17b62c9f-3541-4f71-81a2-0256757bd518
+    type: condition
+    task:
+      id: 17b62c9f-3541-4f71-81a2-0256757bd518
+      version: -1
+      name: Is Akamai WAF enabled?
+      description: Verify that there is a valid instance of ThreatX enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "66"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Akamai WAF
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 1040,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: e3f3b587-2330-4456-8ef3-3c49a444d2fb
+    type: regular
+    task:
+      id: e3f3b587-2330-4456-8ef3-3c49a444d2fb
+      version: -1
+      name: Akamai WAF - Add IP to a blocklist
+      description: Adds elements to the specified network list.
+      script: '|||akamai-add-elements-to-network-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      elements:
+        complex:
+          root: BlockList
+          accessor: Final
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      network_list_id:
+        simple: ${inputs.AkamaiNetworkListID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1040,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: 97e6df96-29e8-428c-8ffa-b3968a4df297
+    type: title
+    task:
+      id: 97e6df96-29e8-428c-8ffa-b3968a4df297
+      version: -1
+      name: ThreatX
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "68"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3580,
+          "y": 1115
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: 1d741718-f54c-4042-8321-ce7f30b490a7
+    type: condition
+    task:
+      id: 1d741718-f54c-4042-8321-ce7f30b490a7
+      version: -1
+      name: Is ThreatX enabled?
+      description: Verify that there is a valid instance of ThreatX enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "69"
+      - "93"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ThreatX
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 3580,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: fa3349e6-33bf-4012-8472-97a6a61a9890
+    type: regular
+    task:
+      id: fa3349e6-33bf-4012-8472-97a6a61a9890
+      version: -1
+      name: ThreatX - Block IP for 30 min
+      description: Temporarily blocks an IP address or CIDR. Default is 30 minutes.
+      script: '|||threatx-block-ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      description:
+        simple: ${inputs.RuleName}
+      ip:
+        complex:
+          root: BlockList
+          accessor: Final
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3380,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "71":
+    id: "71"
+    taskid: e698d7b0-d216-45cf-8c94-463432a79cea
+    type: title
+    task:
+      id: e698d7b0-d216-45cf-8c94-463432a79cea
+      version: -1
+      name: 'Signal Sciences WAF '
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "72"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 4250,
+          "y": 1115
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: bd9e2618-e262-4fe2-81f9-37f29de202cf
+    type: condition
+    task:
+      id: bd9e2618-e262-4fe2-81f9-37f29de202cf
+      version: -1
+      name: Is Signal Sciences WAF  enabled?
+      description: Verify that there is a valid instance of Signal Sciences WAF enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "73"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 'Signal Sciences '
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 4250,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "73":
+    id: "73"
+    taskid: 0b3a1b93-d922-47f5-8ef2-a4cc45f297a7
+    type: regular
+    task:
+      id: 0b3a1b93-d922-47f5-8ef2-a4cc45f297a7
+      version: -1
+      name: Is Signal Sciences WAF   - Blacklist IPs
+      description: Adding  IPs to the Signal Sciences WAF integration
+      script: '|||sigsci-blacklist-add-ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      ip:
+        complex:
+          root: BlockList
+          accessor: Final
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      note:
+        simple: ${inputs.RuleName}
+      siteName:
+        simple: ${inputs.SiteName}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 4250,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "74":
+    id: "74"
+    taskid: c3c885cf-65d7-49b8-8e9f-eb5e5f3dff79
+    type: title
+    task:
+      id: c3c885cf-65d7-49b8-8e9f-eb5e5f3dff79
+      version: -1
+      name: Sophos Firewall
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "76"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 4730,
+          "y": 1115
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "75":
+    id: "75"
+    taskid: 4cd86b93-c127-4fca-8072-20fb107f8466
+    type: regular
+    task:
+      id: 4cd86b93-c127-4fca-8072-20fb107f8466
+      version: -1
+      name: ARIA Packet Intelligence - Blacklist IPs
+      description: Adds a rule that blocks packets destined for a specific IP address
+        or range of IP addresses.
+      script: '|||aria-block-dest-subnet'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      rule_name:
+        simple: ${inputs.RuleName}
+      target_ip:
+        complex:
+          root: BlockList
+          accessor: Final
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2320,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "76":
+    id: "76"
+    taskid: 22fa86de-e981-4c06-8d5d-c108c64b753a
+    type: condition
+    task:
+      id: 22fa86de-e981-4c06-8d5d-c108c64b753a
+      version: -1
+      name: Is Sophos Firewall enabled?
+      description: Verify that there is a valid instance of Signal Sciences WAF enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "94"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: sophos_firewall
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 4730,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "78":
+    id: "78"
+    taskid: bdde8128-2f18-46d1-8314-22317f132600
+    type: condition
+    task:
+      id: bdde8128-2f18-46d1-8314-22317f132600
+      version: -1
+      name: Is ARIA Packet Intelligence enabled?
+      description: Verify that there is a valid instance of ARIA Packet Intelligence
+        enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "75"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 'ARIA Packet Intelligence '
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -2320,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "79":
+    id: "79"
+    taskid: 1c7c38d6-3c1f-4634-8843-a9fe1eccc16e
+    type: title
+    task:
+      id: 1c7c38d6-3c1f-4634-8843-a9fe1eccc16e
+      version: -1
+      name: 'ARIA Packet Intelligence '
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "78"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2320,
+          "y": 1115
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "80":
+    id: "80"
+    taskid: d63fbaaa-9006-47b5-805c-11c0559d77da
+    type: regular
+    task:
+      id: d63fbaaa-9006-47b5-805c-11c0559d77da
+      version: -1
+      name: Check if there are internal IP addresses
+      description: Returns yes if the IP is in one of the ranges provided, returns
+        no otherwise.
+      scriptName: IsIPInRanges
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "99"
+    scriptarguments:
+      ip:
+        complex:
+          root: inputs.IP
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+      ipRanges:
+        simple: ${inputs.InternalRange}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": -2725
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "85":
+    id: "85"
+    taskid: 397baf68-6e31-4063-88d2-6454c5a1659d
+    type: regular
+    task:
+      id: 397baf68-6e31-4063-88d2-6454c5a1659d
+      version: -1
+      name: Append Context List with Input IPs
+      description: Add the IPs from the input
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: BlockList.Input
+      stringify:
+        simple: "false"
+      value:
+        complex:
+          root: inputs.IP
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": -1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "86":
+    id: "86"
+    taskid: c538b350-e3b0-4357-812f-4cd041e9eebb
+    type: regular
+    task:
+      id: c538b350-e3b0-4357-812f-4cd041e9eebb
+      version: -1
+      name: Re-set the blocklist [Inputs]
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: BlockList.Final
+      value:
+        simple: ${BlockList.Input}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "89":
+    id: "89"
+    taskid: f8d0c2a7-c4b6-4756-8165-4984d819c69c
+    type: playbook
+    task:
+      id: f8d0c2a7-c4b6-4756-8165-4984d819c69c
+      version: -1
+      name: Cisco FirePower- Append network group object
+      playbookName: Cisco FirePower- Append network group object
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      ID:
+        simple: ${inputs.CiscoFPID}
+      IP:
+        complex:
+          root: BlockList
+          accessor: Final
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      Name:
+        simple: ${inputs.CiscoFPName}
+      Override:
+        simple: "False"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -1900,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "90":
+    id: "90"
+    taskid: 9a0841e0-60af-4a0e-8a23-863a7c786cd0
+    type: regular
+    task:
+      id: 9a0841e0-60af-4a0e-8a23-863a7c786cd0
+      version: -1
+      name: Re-set the blocklist [Inputs]
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "91"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: BlockList.Final
+      value:
+        simple: ${Please answer the following.Answers.2}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1040,
+          "y": 385
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "91":
+    id: "91"
+    taskid: 8ff59b5e-2f29-4d9d-8389-52d77cadc7e5
+    type: regular
+    task:
+      id: 8ff59b5e-2f29-4d9d-8389-52d77cadc7e5
+      version: -1
+      name: Re-set the blocklist [Malicious]
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "92"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: BlockList.Final
+      value:
+        simple: ${Please answer the following.Answers.0}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1040,
+          "y": 555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "92":
+    id: "92"
+    taskid: bb6f73f5-fb93-4dcb-8e04-bec8143fb86b
+    type: regular
+    task:
+      id: bb6f73f5-fb93-4dcb-8e04-bec8143fb86b
+      version: -1
+      name: Re-set the blocklist [Suspicious]
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: BlockList.Final
+      value:
+        simple: ${Please answer the following.Answers.1}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1040,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "93":
+    id: "93"
+    taskid: cbd2dbc8-7365-48f3-8f6a-84b150950523
+    type: regular
+    task:
+      id: cbd2dbc8-7365-48f3-8f6a-84b150950523
+      version: -1
+      name: ThreatX - add IP to a blocklist
+      description: Adds an IP address or CIDR to the blacklist.
+      script: '|||threatx-blacklist-ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      description:
+        simple: ${inputs.RuleName}
+      ip:
+        complex:
+          root: BlockList
+          accessor: Final
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3780,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "94":
+    id: "94"
+    taskid: f8a84a27-3739-4b1a-8168-ae47a9f9189f
+    type: playbook
+    task:
+      id: f8a84a27-3739-4b1a-8168-ae47a9f9189f
+      version: -1
+      name: Sophos Firewall - Block IP
+      description: |-
+        This playbook adds the IP address to a pre-configured firewall rule. (The target firewall rule can be changed as requested.)
+        Pre-Requisite:
+        1) Create an IP host group.
+        2) Create a firewall rule which refers to the IP host group created in the previous step.
+      playbookName: Sophos Firewall - Block IP
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      IP:
+        complex:
+          root: BlockList
+          accessor: Final
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 4730,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "95":
+    id: "95"
+    taskid: ff19ac0b-1931-47da-870e-dcf862ef09cd
+    type: condition
+    task:
+      id: ff19ac0b-1931-47da-870e-dcf862ef09cd
+      version: -1
+      name: Are There Any Internal IPs?
+      description: Check if there are any internal IPs in the block requested IPs.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "98"
+      "yes":
+      - "45"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${BlockList.PIIP}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1040,
+          "y": -220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "96":
+    id: "96"
+    taskid: e1a09fb6-5324-4496-8c82-2303d5e91804
+    type: title
+    task:
+      id: e1a09fb6-5324-4496-8c82-2303d5e91804
+      version: -1
+      name: No IP to block
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2750,
+          "y": 1115
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "98":
+    id: "98"
+    taskid: cffb5065-1c64-4277-8168-33e29f39115a
+    type: collection
+    task:
+      id: cffb5065-1c64-4277-8168-33e29f39115a
+      version: -1
+      name: Analyst Verification Prompt (without IP Internal List)
+      description: |-
+        Ask the user what IPs should be blocked.
+
+        Remember that the direction you have decided is - ${inputs.RuleDirection}
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "90"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1040,
+          "y": -15
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Analyst,Administrator
+      subject:
+        simple: Block IP Playbook - Analyst's Verification
+      body:
+        simple: |-
+          <p>Dear XSOAR user,</p>
+          <p>This notification informs you that the following list of IPs will be blocked on your XSOAR's integrated network devices.</p>
+          <p><br />(<strong>Note</strong>: the IPs will be added to your company BlockList or be blocked in individual rules based on the XSOAR integrated devices).</p>
+          <p>&nbsp;</p>
+          <p>For more information, please click on the link below.</p>
+      methods:
+      - email
+      format: html
+      bcc:
+      cc:
+        simple: Administrator
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Do you approve the blocking request for "Malicious IPs"?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: BlockList
+            accessor: Malicious
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Do you approve the blocking request for "Suspiocus IPs"?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: BlockList
+            accessor: Suspicious
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "2"
+        label: ""
+        labelarg:
+          simple: Do you approve the blocking request for "Other IPs from Input"?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: BlockList.Input
+            filters:
+            - - operator: notIn
+                left:
+                  value:
+                    simple: BlockList.Input
+                  iscontext: true
+                right:
+                  value:
+                    simple: BlockList.Suspicious
+                  iscontext: true
+            - - operator: notIn
+                left:
+                  value:
+                    simple: BlockList.Input
+                  iscontext: true
+                right:
+                  value:
+                    simple: BlockList.Malicious
+                  iscontext: true
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Please answer the following
+      description: ""
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "99":
+    id: "99"
+    taskid: 6095e240-4ab6-4339-8276-fd7bc088f68a
+    type: condition
+    task:
+      id: 6095e240-4ab6-4339-8276-fd7bc088f68a
+      version: -1
+      name: Should Inputs be enriched?
+      description: Check if the user requests an IPs enrichment for determining if
+        those are malicious or suspicious.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "100"
+      "yes":
+      - "53"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.InputEnrichment
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": -2540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "100":
+    id: "100"
+    taskid: c4598ce9-3558-47f7-8aa7-727b7e9bcdaf
+    type: regular
+    task:
+      id: c4598ce9-3558-47f7-8aa7-727b7e9bcdaf
+      version: -1
+      name: Append Internal IPs to a possible blocklist
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: BlockList.PIIP
+      value:
+        complex:
+          root: IP
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: IP.InRange
+                iscontext: true
+              right:
+                value:
+                  simple: "Yes"
+              ignorecase: true
+          - - operator: inList
+              left:
+                value:
+                  simple: IP.Address
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.IP
+                iscontext: true
+              ignorecase: true
+          accessor: Address
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": -1780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "101":
+    id: "101"
+    taskid: 4223ec20-3ebc-4d3e-8a48-7a80c9c9bfa8
+    type: playbook
+    task:
+      id: 4223ec20-3ebc-4d3e-8a48-7a80c9c9bfa8
+      version: -1
+      name: PAN-OS - Block IP and URL - External Dynamic List v2
+      description: |-
+        This playbook blocks IP addresses and URLs using Palo Alto Networks Panorama or Firewall External Dynamic Lists.
+        It checks if the EDL configuration is in place with the 'PAN-OS EDL Setup' sub-playbook (otherwise the list will be configured), and adds the inputted IPs and URLs to the relevant lists.
+      playbookName: PAN-OS - Block IP and URL - External Dynamic List v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      AutoCommit:
+        simple: ${inputs.AutoCommit}
+      IP:
+        complex:
+          root: BlockList
+          accessor: Final
+          transformers:
+          - operator: uniq
+      IPListName:
+        simple: ${inputs.IPListName}
+      URL:
+        complex:
+          root: URL
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: URL.Malicious
+                iscontext: true
+          accessor: Data
+          transformers:
+          - operator: uniq
+      URLListName:
+        simple: Demisto-Remediation-URL-EDL
+      inbound-or-outbound-rule:
+        simple: ${inputs.RuleDirection}
+      ip-pre-post-rulebase:
+        simple: pre-rulebase
+      ip-rule-position:
+        simple: top
+      url-pre-post-rulebase:
+        simple: pre-rulebase
+      url-rule-position:
+        simple: top
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "102":
+    id: "102"
+    taskid: 05e701f6-78fe-47da-8d26-b55cdb1d12d3
+    type: regular
+    task:
+      id: 05e701f6-78fe-47da-8d26-b55cdb1d12d3
+      version: -1
+      name: Re-set the blocklist [Internal Address]
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "90"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: BlockList.Final
+      value:
+        simple: ${Please answer the following.Answers.3}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 580,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "12_2_#default#": 0.11,
+      "22_2_#default#": 0.22,
+      "23_2_#default#": 0.2,
+      "24_2_#default#": 0.1,
+      "25_2_#default#": 0.1,
+      "27_2_#default#": 0.1,
+      "32_2_#default#": 0.1,
+      "36_8_#default#": 0.19,
+      "41_42_yes": 0.65,
+      "41_8_#default#": 0.1,
+      "47_8_#default#": 0.18,
+      "50_100_#default#": 0.82,
+      "56_2_#default#": 0.11,
+      "58_2_#default#": 0.14,
+      "61_2_#default#": 0.1,
+      "68_2_#default#": 0.1,
+      "68_69_yes": 0.52,
+      "68_93_yes": 0.52,
+      "72_2_#default#": 0.1,
+      "76_2_#default#": 0.12,
+      "78_2_#default#": 0.1,
+      "7_2_#default#": 0.39,
+      "8_43_yes": 0.5,
+      "8_96_#default#": 0.1,
+      "99_53_yes": 0.62
+    },
+    "paper": {
+      "dimensions": {
+        "height": 4825,
+        "width": 7860,
+        "x": -2750,
+        "y": -3060
+      }
+    }
+  }
+inputs:
+- key: IP
+  value: {}
+  required: false
+  description: 'An array of malicious IPs to block. Enter a list of IPs separated
+    by comma delimiter (i.e: 1.1.1.1,2.2.2.2).'
+  playbookInputQuery:
+- key: CustomBlockRule
+  value:
+    simple: "True"
+  required: false
+  description: "This input determines whether Palo Alto Networks Panorama or Firewall\
+    \ Custom Block Rules are used.\nSpecify True to use Custom Block Rules. \nFor\
+    \ true statement - This option will create 2 FW rules inside the PAN-OS device."
+  playbookInputQuery:
+- key: LogForwarding
+  value: {}
+  required: false
+  description: Panorama log forwarding object name. This will indicate what type of
+    Log Forwarding setting will be specified in the PAN-OS custom rules.
+  playbookInputQuery:
+- key: AutoCommit
+  value:
+    simple: "No"
+  required: false
+  description: "This input determines whether to commit the configuration automatically\
+    \ on PAN-OS devices. \nYes - Commit automatically.\nNo - Commit manually."
+  playbookInputQuery:
+- key: StaticAddressGroup
+  value: {}
+  required: false
+  description: |-
+    This input determines whether Palo Alto Networks Panorama or Firewall Static Address Groups are used.
+    Specify the Static Address Group name for IPs list handling.
+  playbookInputQuery:
+- key: IPListName
+  value: {}
+  required: false
+  description: |-
+    This input determines whether Palo Alto Networks Panorama or Firewall External Dynamic Lists are used for blocking IPs.
+    Specify the EDL name for IPs list handling.
+  playbookInputQuery:
+- key: EDLServerIP
+  value: {}
+  required: false
+  description: |-
+    This input determines whether Palo Alto Networks Panorama or Firewall External Dynamic Lists are used:
+    * The IP address of the webserver on which the files are stored.
+    * The web server IP address is configured in the integration instance.
+  playbookInputQuery:
+- key: DAG
+  value: {}
+  required: false
+  description: |-
+    This input determines whether Palo Alto Networks Panorama or Firewall Dynamic Address Groups are used.
+    Specify the Dynamic Address Group tag name for IPs list handling.
+  playbookInputQuery:
+- key: ResolveIP
+  value:
+    simple: "False"
+  required: true
+  description: |-
+    This input is required for the IP Enrichment - Generic v2. Will be used for resolving IP's hostname. Default: False.
+    (Input value: True/False)
+  playbookInputQuery:
+- key: UserVerification
+  value:
+    simple: "True"
+  required: false
+  description: "Possible values: True/False.  Default: True.\nAsking for user verification\
+    \ for blocking those IPs. \n\nFalse - No prompt will be displayed to the user.\n\
+    True - The server will ask the user for blocking verification and will display\
+    \ the blocking list."
+  playbookInputQuery:
+- key: InternalRange
+  value: {}
+  required: false
+  description: 'A list of internal IP ranges to check IP addresses against. The list
+    should be provided in CIDR notation, separated by commas. An example of a list
+    of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes).
+    If a list is not provided, will use default list provided in the IsIPInRanges
+    script (the known IPv4 private address ranges).'
+  playbookInputQuery:
+- key: SiteName
+  value: {}
+  required: false
+  description: Signal Sciences WAF - Enter the Site Name for the integration to be
+    applied. The site name can be found in your instance console.
+  playbookInputQuery:
+- key: CiscoFPName
+  value: {}
+  required: false
+  description: Cisco FirePower - Enter the Object Group Name to be appended with the
+    blocklisted IPs.
+  playbookInputQuery:
+- key: CiscoFPID
+  value: {}
+  required: false
+  description: Cisco FirePower - Enter the Object Group ID  to be appended with the
+    blocklisted IPs.
+  playbookInputQuery:
+- key: AkamaiNetworkListID
+  value: {}
+  required: false
+  description: Akamai's WAF network list ID, which is mandatory to be mentioned for
+    the integration. To this ID, the chosen IPs will be added.
+  playbookInputQuery:
+- key: CiscoFWSource
+  value: {}
+  required: false
+  description: Cisco ASA (firewall) value for Rule's source object in the created
+    blocking rule. Can be the value of an IPv4, an address block, or the name of a
+    network object.
+  playbookInputQuery:
+- key: InputEnrichment
+  value:
+    simple: "True"
+  required: false
+  description: |-
+    Possible values: True/False . Default: True
+    Enrich Input IP address/es with reputation commands.
+  playbookInputQuery:
+- key: RuleName
+  value:
+    simple: XSOAR - Block IP playbook - ${incident.id}
+  required: false
+  description: |-
+    The Rule name/description that will be presented on the created rule in certain integrations (if there is a need).
+    The supported integrations: PAN-OS, CheckPoint.
+
+    Default Input- "XSOAR - Block IP playbook - ${incident.id}"
+  playbookInputQuery:
+- key: RuleDirection
+  value:
+    simple: outbound
+  required: false
+  description: |-
+    Determine if a newly created rule should be with the network direction of outbound or inbound blocked traffic.
+    Possible values: inbound/outbound
+    Default: outbound
+  playbookInputQuery:
+outputs:
+- contextPath: Aria.BlockDestSubnet.Rule
+  description: The rule name/ID which was created in the system for this playbook.
+  type: unknown
+- contextPath: Aria.BlockDestSubnet.Status
+  description: 'The status of the command that created the rule above. '
+  type: unknown
+- contextPath: Stealthwatch.IP.id
+  description: The ID of the object created in Cisco Secure Cloud Analytics.
+  type: unknown
+- contextPath: Stealthwatch.IP.identifier
+  description: The value of the object created in Cisco Secure Cloud Analytics.
+  type: unknown
+- contextPath: CiscoASA.Rules.ID
+  description: The rule ID that was created on Cisco ASA for this playbook.
+  type: unknown
+- contextPath: CiscoASA.Rules.Source
+  description: Rule's source object that was set in the associated rule.
+  type: unknown
+- contextPath: CiscoASA.Rules.Dest
+  description: Rule's destination object that was set in the associated rule.
+  type: unknown
+- contextPath: CiscoASA.Rules.IsActive
+  description: Rule's state that was set in the  associated rule.
+  type: unknown
+- contextPath: SigSciences.Corp.Site.Blacklist.ID
+  description: Signal Sciences created rule ID.
+  type: unknown
+- contextPath: SigSciences.Corp.Site.Blacklist.Source
+  description: Signal Sciences blocked address in a dedicated rule.
+  type: unknown
+- contextPath: SigSciences.Corp.Site.Blacklist.CreatedBy
+  description: Signal Sciences - the blocking rule's creator name.
+  type: unknown
+tests:
+- Field polling test
+- test-domain-indicator
+- Calculate Severity - Generic v2 - Test
+- Wait Until Datetime - Test
+- Calculate Severity - Standard - Test
+- Extract Indicators From File - Generic v2 - Test
+- URL Enrichment - Generic v2 - Test
+- File Enrichment - Generic v2 - Test
+- Domain Enrichment - Generic v2 - Test
+- Account Enrichment - Generic v2.1 - Test
+- IP Enrichment - Generic v2 - Test
+- Get endpoint details - Generic - test
+- Detonate URL - Generic Test
+- Email Address Enrichment - Generic v2.1 - Test
+- Generic Polling Test
+- Send Investigation Summary Reports - Test
+- Detonate File - No Files test
+- Test Convert file hash to corresponding hashes
+- Detonate File - Generic Test
+- Endpoint Enrichment - Generic v2.1 - Test
+- Retrieve File from Endpoint - Generic V2 Test
+- Isolate and unisolate endpoint - test
+fromversion: 5.5.0

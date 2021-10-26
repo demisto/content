@@ -1,0 +1,489 @@
+id: Cisco FirePower- Append network group object
+version: -1
+name: Cisco FirePower- Append network group object
+description: This Playbook will append a network group object with new elements (
+  IPs or network objects ).
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: bccbda50-b654-438c-8d6e-d0f561b04234
+    type: start
+    task:
+      id: bccbda50-b654-438c-8d6e-d0f561b04234
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": -30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: d3be4a03-9215-432d-8f9f-7035907ac38c
+    type: regular
+    task:
+      id: d3be4a03-9215-432d-8f9f-7035907ac38c
+      version: -1
+      name: Cisco FirePower - update group object
+      description: Updates a group of network objects.
+      script: Cisco Firepower|||ciscofp-update-network-groups-objects
+      type: regular
+      iscommand: true
+      brand: Cisco Firepower
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      description:
+        simple: Added through XSOAR. Last modification -  ${incident.starttime}
+      id:
+        simple: ${inputs.ID}
+      name:
+        simple: ${inputs.Name}
+      network_address_list:
+        complex:
+          root: IPList
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      network_objects_id_list:
+        complex:
+          root: ObjectList
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      overridable:
+        complex:
+          root: inputs.Override
+          transformers:
+          - operator: toLowerCase
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 15,
+          "y": 995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 4bea0fcc-c190-4e54-8e0e-71a3e79a4f88
+    type: regular
+    task:
+      id: 4bea0fcc-c190-4e54-8e0e-71a3e79a4f88
+      version: -1
+      name: Cisco FirePower - Get Objects' details
+      description: Retrieves the groups of network objects and addresses associated
+        with the specified ID. If not supplied, retrieves a list of all network objects.
+      script: Cisco Firepower|||ciscofp-get-network-groups-object
+      type: regular
+      iscommand: true
+      brand: Cisco Firepower
+    nexttasks:
+      '#none#':
+      - "3"
+      - "4"
+    scriptarguments:
+      id:
+        simple: ${inputs.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 15,
+          "y": 470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 818ccfce-223b-4ce3-8cbe-02bc23e59a83
+    type: regular
+    task:
+      id: 818ccfce-223b-4ce3-8cbe-02bc23e59a83
+      version: -1
+      name: IP From Input
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: IPList
+      stringify:
+        simple: "false"
+      value:
+        complex:
+          root: inputs.IP
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": 645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 5e8004fd-4bcf-407b-875e-cdff59619c93
+    type: regular
+    task:
+      id: 5e8004fd-4bcf-407b-875e-cdff59619c93
+      version: -1
+      name: Objects From Input
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: ObjectList
+      stringify:
+        simple: "false"
+      value:
+        complex:
+          root: inputs.ObjectID
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: a912fb76-f595-46fe-8ab9-117d967ff7ac
+    type: regular
+    task:
+      id: a912fb76-f595-46fe-8ab9-117d967ff7ac
+      version: -1
+      name: IP From the Group
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: IPList
+      stringify:
+        simple: "false"
+      value:
+        complex:
+          root: CiscoFP.NetworkGroups.Addresses
+          accessor: Value
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 0303e394-b2b7-414f-8bbc-1c326c27acbb
+    type: regular
+    task:
+      id: 0303e394-b2b7-414f-8bbc-1c326c27acbb
+      version: -1
+      name: Objects From the Group
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: ObjectList
+      stringify:
+        simple: "false"
+      value:
+        complex:
+          root: CiscoFP.NetworkGroups.Objects
+          accessor: ID
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 25ca562d-24ed-4ca4-82b9-dc5dade046fe
+    type: title
+    task:
+      id: 25ca562d-24ed-4ca4-82b9-dc5dade046fe
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: bda9050c-0221-42c7-8c49-0f139132ccb5
+    type: condition
+    task:
+      id: bda9050c-0221-42c7-8c49-0f139132ccb5
+      version: -1
+      name: Is Cisco FirePower Integration Enabled?
+      description: Check if there is any Cisco Firepower integration available.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isExists
+                    left:
+                      value:
+                        simple: modules
+                      iscontext: true
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Cisco Firepower
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 115
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 7898ad92-55ee-4a62-8956-4f9e8163e532
+    type: title
+    task:
+      id: 7898ad92-55ee-4a62-8956-4f9e8163e532
+      version: -1
+      name: Integration is unavailable
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "8_9_#default#": 0.56
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1265,
+        "width": 1060,
+        "x": -200,
+        "y": -30
+      }
+    }
+  }
+inputs:
+- key: ID
+  value: {}
+  required: true
+  description: "The Id of the network group object that you would like to append.\
+    \ This information can be retrieved using -  \n!ciscofp-get-network-groups-object"
+  playbookInputQuery:
+- key: Name
+  value: {}
+  required: true
+  description: The name of the Network Group
+  playbookInputQuery:
+- key: Override
+  value:
+    simple: "False"
+  required: false
+  description: |
+    Possible Value: True / False
+  playbookInputQuery:
+- key: IP
+  value: {}
+  required: false
+  description: Enter a list of IPs ( separated with,  ) that will be added to the
+    list.
+  playbookInputQuery:
+- key: ObjectID
+  value: {}
+  required: false
+  description: You may add a group of IPs by using the Object ID. You can use !ciscofp-get-network-object
+    for more details.
+  playbookInputQuery:
+outputs: []
+tests:
+- Cisco Firepower - Test
+fromversion: 5.5.0
