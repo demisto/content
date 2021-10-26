@@ -46,6 +46,12 @@ configuration:
   name: create_relationships
   required: false
   type: 8
+- display: User Agent
+  name: useragent
+  type: 0
+  required: false
+  additionalinfo: User Agent to perform requests
+
 description: Use urlscan.io integration to perform scans on suspected URLs and see their reputation.
 display: urlscan.io
 name: urlscan.io
@@ -142,6 +148,8 @@ script:
       defaultValue: 'false'
       required: false
       secret: false
+    - name: useragent
+      description: User agent to perform request
     deprecated: true
     description: Deprecated. Use the url command instead.
     execution: false
@@ -271,6 +279,8 @@ script:
       defaultValue: 'false'
       required: false
       secret: false
+    - name: useragent
+      description: User agent to perform request
     deprecated: false
     description: Submits a URL to scan.
     execution: false
