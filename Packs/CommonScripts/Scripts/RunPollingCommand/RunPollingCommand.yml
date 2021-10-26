@@ -25,6 +25,7 @@ args:
 - name: additionalPollingCommandArgValues
   description: Commas separated arguments values of the polling command
 scripttarget: 0
+runas: DBotRole
 runonce: false
 tests:
 - No test
