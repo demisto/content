@@ -53,7 +53,8 @@ def test_fetch_incidents(requests_mock):
 
     mock_response = util_load_json('test_data/search_alerts.json')
     requests_mock.get(
-        'https://api.test.com/v1/alerts?showRead=true&displayWatchers=true&markAsRead=false&sort=earliest&count=1&from=1581944401',
+        'https://api.test.com/v1/alerts?showRead=true&displayWatchers=true&markAsRead=false&sort=earliest&count=1'
+        '&from=1581944401',
         json=mock_response)
 
     client = Client(
@@ -81,14 +82,16 @@ def test_fetch_incidents(requests_mock):
     assert incidents == [
         {
             'name': 'INSTANT MESSAGE:\nPart 1 sell part2',
-            'occurred': '2021-10-25T11:34:47.376Z',
+            'occurred': '2021-10-25T11:34:47.000Z',
             'rawJSON': json.dumps(mock_response['alerts'][0]),
             'type': 'Intel 471 Watcher Alert',
             'severity': 2,
             'CustomFields': {
-                'titanurl': 'https://api.intel471.com/v1/ims_thread/45678901234567890123456789012345?message_uid=34567890123456789012345678901234',
+                'titanurl': 'https://titan.intel471.com/ims_thread/45678901234567890123456789012345?message_uid'
+                            '=34567890123456789012345678901234',
                 'titanwatchergroup': 'Test Watcher Group 1',
                 'titanwatcher': "Watcher on \"sell\""
-            }
+            },
+            'details': 'Source Object: INSTANT MESSAGE\nService: TestService\nChannel: TEST CHANNEL\nActor: \n\nPart 1 sell part2'
         }
     ]
