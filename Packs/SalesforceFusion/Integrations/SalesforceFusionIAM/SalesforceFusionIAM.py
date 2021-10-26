@@ -167,7 +167,9 @@ class Client(BaseClient):
             url_suffix=uri,
             params=params,
             json_data=user_data,
-            headers=self.headers
+            headers=self.headers,
+            resp_type='response',
+            ok_codes=(204,)
         )
 
         return self.get_user_by_id(user_id)
@@ -284,8 +286,12 @@ def get_error_details(res: Dict[str, Any]) -> str:
     :return: The parsed error details.
     :rtype: ``str``
     """
-    message = res.get('message')
-    details = res.get('detail')
+    message, details = "Couldn't find details for the error", ''
+    if isinstance(res, list):
+        res = res[0]
+    if isinstance(res, dict):
+        message = res.get('message')
+        details = res.get('detail')
     return f'{message}: {details}'
 
 
