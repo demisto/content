@@ -1,7 +1,8 @@
 import demistomock as demisto
 import json
 import pytest
-from MicrosoftDefenderAdvancedThreatProtection import MsClient, get_future_time, build_std_output
+from MicrosoftDefenderAdvancedThreatProtection import MsClient, get_future_time, build_std_output, parse_ip_addresses, \
+    print_ip_addresses, get_machine_details_command
 
 ARGS = {'id': '123', 'limit': '2', 'offset': '0'}
 
@@ -739,3 +740,72 @@ def test_build_std_output_url():
         "url": url
     }])
     assert res['URL(val.Data && val.Data == obj.Data)'][0]['Data'] == url
+
+
+ip_addresses = [
+    {
+        "ipAddress": "ip1",
+        "macAddress": "MAC1",
+        "operationalStatus": "Up",
+        "type": "Ethernet"
+    },
+    {
+        "ipAddress": "ip2",
+        "macAddress": "MAC2",
+        "operationalStatus": "Up",
+        "type": "Ethernet"
+    },
+    {
+        "ipAddress": "ip3",
+        "macAddress": "MAC1",
+        "operationalStatus": "Up",
+        "type": "Ethernet"
+    }
+]
+ip_addresses_result = [{'MACAddress': 'MAC1', 'IPAddresses': ['ip1', 'ip3'], 'Type': 'Ethernet', 'Status': 'Up'},
+                       {'MACAddress': 'MAC2', 'IPAddresses': ['ip2'], 'Type': 'Ethernet', 'Status': 'Up'}]
+
+print_ip_addresses_result = '1. | MAC : MAC1 | IP Addresses : ip1,ip3 | Type : Ethernet | Status : Up\n' \
+                            '2. | MAC : MAC2 | IP Addresses : ip2     | Type : Ethernet | Status : Up'
+
+
+def test_parse_ip_addresses():
+    assert parse_ip_addresses(ip_addresses) == ip_addresses_result
+
+
+def test_print_ip_addresses():
+    assert print_ip_addresses(ip_addresses_result) == print_ip_addresses_result
+
+
+human_readable_result = '### Microsoft Defender ATP machine None details:\n'\
+                        '|ID|ComputerDNSName|OSPlatform|LastIPAddress|LastExternalIPAddress|HealthStatus|RiskScore|ExposureLevel|IPAddresses|\n'\
+                        '|---|---|---|---|---|---|---|---|---|\n'\
+                        '| 123 | test-node | Windows10 | 192.0.2.12 | 2.2.2.2 | Inactive | None | High |'\
+                        ' 1. \\| MAC : 001122334418 \\| IP Addresses : 192.0.2.135,fe80::2413:e4aa:a3f4:d5bf \\| Type : Ethernet \\| Status : Up<br>' \
+                        '2. \\| MAC : 001122334436 \\| IP Addresses : 192.0.2.10,fe80::55b9:7f5a:6e9c:30ed  \\| Type : Ethernet \\| Status : Up<br>' \
+                        '3. \\| MAC : 001122334422 \\| IP Addresses : 192.0.2.11,fe80::c3:b878:f6fd:ae4b    \\| Type : Ethernet \\| Status : Up<br>' \
+                        '4. \\| MAC : 00112233442C \\| IP Addresses : 192.0.2.12,fe80::65a8:d227:e97b:8220  \\| Type : Ethernet \\| Status : Up |\n'
+outputs_result = """{"ID": "123", "ComputerDNSName": "test-node", "FirstSeen": "2021-08-30T20:11:52.7746006Z",
+                  "LastSeen": "2021-09-12T14:46:04.2458709Z", "OSPlatform": "Windows10", "OSVersion": "21H1",
+                  "OSProcessor": "x64", "LastIPAddress": "192.0.2.12", "LastExternalIPAddress": "2.2.2.2",
+                  "AgentVersion": "10.7740.19041.1151", "OSBuild": 19043, "HealthStatus": "Inactive", "RBACGroupID": 0,
+                  "RiskScore": "None", "ExposureLevel": "High", "IsAADJoined": false, "IPAddresses": [
+        {"ipAddress": "192.0.2.135", "macAddress": "001122334418", "operationalStatus": "Up", "type": "Ethernet"},
+        {"ipAddress": "fe80::2413:e4aa:a3f4:d5bf", "macAddress": "001122334418", "operationalStatus": "Up",
+         "type": "Ethernet"},
+        {"ipAddress": "192.0.2.10", "macAddress": "001122334436", "operationalStatus": "Up", "type": "Ethernet"},
+        {"ipAddress": "fe80::55b9:7f5a:6e9c:30ed", "macAddress": "001122334436", "operationalStatus": "Up",
+         "type": "Ethernet"},
+        {"ipAddress": "192.0.2.11", "macAddress": "001122334422", "operationalStatus": "Up", "type": "Ethernet"},
+        {"ipAddress": "fe80::c3:b878:f6fd:ae4b", "macAddress": "001122334422", "operationalStatus": "Up",
+         "type": "Ethernet"},
+        {"ipAddress": "192.0.2.12", "macAddress": "00112233442C", "operationalStatus": "Up", "type": "Ethernet"},
+        {"ipAddress": "fe80::65a8:d227:e97b:8220", "macAddress": "00112233442C", "operationalStatus": "Up",
+         "type": "Ethernet"}]}"""
+
+
+def test_get_machine_details_command(mocker):
+    mocker.patch.object(client_mocker, 'get_machine_details', return_value=SINGLE_MACHINE_RESPONSE_API)
+    results = get_machine_details_command(client_mocker, {})
+    assert results.outputs == json.loads(outputs_result)
+    assert results.readable_output == human_readable_result

@@ -1119,14 +1119,13 @@ def print_ip_addresses(parsed_ip_addresses: List[Dict]) -> str:
     Returns:
         ascii table without headers
     """
-    human_readable_list = deepcopy(parsed_ip_addresses)
-    for entry in human_readable_list:
-        entry['MAC'] = entry.pop('MACAddress')
-        entry['IP Addresses'] = ','.join(entry.pop('IPAddresses'))
 
-    rows = [[f"{i}. "] + [f"{k}: {v}" for k, v in entry] for i, entry in enumerate(human_readable_list,start=1)]
-    max_lengths = [[max(col)] for col in zip(*rows)] # to make sure the table is pretty
-    string_rows = ['| '.join([cell.ljust(max_len_col) for cell,max_len_col in zip(row,max_lengths)]) for row in rows]
+    rows = list()
+    for i, entry in enumerate(parsed_ip_addresses, start=1):
+        rows.append([f"{i}.", f"MAC : {entry['MACAddress']}", f"IP Addresses : {','.join(entry['IPAddresses'])}",
+                     f"Type : {entry['Type']}", f"Status : {entry['Status']}"])
+    max_lengths = [len(max(col, key=lambda x: len(x))) for col in zip(*rows)]  # to make sure the table is pretty
+    string_rows = [' | '.join([cell.ljust(max_len_col) for cell, max_len_col in zip(row, max_lengths)]) for row in rows]
 
     return '\n'.join(string_rows)
 
@@ -1150,7 +1149,7 @@ def get_machine_details_command(client: MsClient, args: dict):
     machine_data['IPAddresses'] = human_readable_ip_addresses
     human_readable = tableToMarkdown(
         f'Microsoft Defender ATP machine {machine_id} details:',
-        machine_data_readable,
+        machine_data,
         headers=headers,
         removeNull=True)
 
