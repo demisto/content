@@ -50,7 +50,7 @@ configuration:
   required: false
   type: 8
 description: Use the Tanium Threat Response integration to manage endpoints processes,
-  evidence, alerts, files, snapshots, and connections. This Integration works with Tanium Threat Response version 3.0.159 and above.
+  evidence, alerts, files, snapshots, and connections. This integration works with Tanium Threat Response version 3.0.159 and above.
 display: Tanium Threat Response v2
 name: Tanium Threat Response v2
 script:
@@ -172,7 +172,7 @@ script:
   - arguments:
     - default: false
       defaultValue: '5'
-      description: The maximum number of alerts to return. The default value is 5.
+      description: The maximum number of alerts to return. 
       isArray: false
       name: limit
       required: false
@@ -331,14 +331,14 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The ID's of the alerts to update.
+      description: A comma-separated list of alert IDs to update.
       isArray: true
       name: alert_ids
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The new state for the alert. Can be "Unresolved", "In Progress",
+      description: The new state for the alerts. Can be "Unresolved", "In Progress",
         "Dismissed", "Ignored", or "Resolved".
       isArray: false
       name: state
@@ -351,7 +351,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Updates the state of a single alert.
+    description: Updates the state of the specified alerts.
     execution: false
     name: tanium-tr-alert-update-state
   - arguments:
@@ -393,8 +393,7 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximum number of local snapshots to return. The default value
-        is 50.
+      description: The maximum number of local snapshots to return. 
       isArray: false
       name: limit
       required: false
@@ -485,28 +484,28 @@ script:
       description: Current connection state.
       type: String
     - contextPath: Tanium.Connection.platform
-      description: The connection's operating system.
+      description: The connection operating system.
       type: String
     - contextPath: Tanium.Connection.ip
-      description: The connection's ip.
+      description: The connection ip.
       type: String
     - contextPath: Tanium.Connection.connectedAt
       description: Time when the connection was connected.
       type: String
     - contextPath: Tanium.Connection.message
-      description: The connection's message descriding the status.
+      description: The connection message describing the status.
       type: String
     - contextPath: Tanium.Connection.personaId
-      description: The connection's persona Id.
+      description: The connection persona Id.
       type: String
     - contextPath: Tanium.Connection.clientId
       description: The client id.
       type: String
     - contextPath: Tanium.Connection.userId
-      description: The connection's user id.
+      description: The connection user id.
       type: String
     - contextPath: Tanium.Connection.eid
-      description: The connection's eid.
+      description: The connection eid.
       type: String
     - contextPath: Tanium.Connection.hasTools
       description: Has connection tools.
@@ -648,14 +647,14 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximum number of files to return. The default value is 50.
+      description: The maximum number of files to return. 
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
       defaultValue: '0'
-      description: Offset to start getting file downloads. The default is 0.
+      description: Offset to start getting file downloads. 
       isArray: false
       name: offset
       required: false
@@ -782,14 +781,14 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum number of events to return. The default value is 50.
+      description: The maximum number of events to return. 
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
       defaultValue: '0'
-      description: Offset to start getting the result set. The default is 0.
+      description: Offset to start getting the result set. 
       isArray: false
       name: offset
       required: false
@@ -941,7 +940,7 @@ script:
     - contextPath: TaniumEvent.eventTaskName
       description: The name of the event task.
       type: String
-    - contextPath: TaniumEvent.hashe
+    - contextPath: TaniumEvent.hash
       description: The process hash.
       type: String
   - arguments:
@@ -1420,7 +1419,7 @@ script:
       description: Hash type.
       type: String
     - contextPath: Tanium.ProcessTree.id
-      description: Process id at the tunium system.
+      description: Process id at the tanium system.
       type: String
     - contextPath: Tanium.ProcessTree.imageEventsCount
       description: Number of Image events in the process.
@@ -1461,15 +1460,14 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximum number of evidences to return. The default value is
-        50.
+      description: The maximum number of evidences to return. 
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
       defaultValue: '0'
-      description: Offset to start getting the events result set. The default is 0.
+      description: Offset to start getting the events result set. 
       isArray: false
       name: offset
       required: false
@@ -1674,14 +1672,14 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum number of files to return. The default value is 50.
+      description: The maximum number of files to return. 
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
       defaultValue: '0'
-      description: Offset to start getting files. The default is 0.
+      description: Offset to start getting files. 
       isArray: false
       name: offset
       required: false
@@ -1692,7 +1690,7 @@ script:
     name: tanium-tr-list-files-in-directory
     outputs:
     - contextPath: Tanium.File.connectionId
-      description: Connection id.
+      description: Connection ID.
       type: String
     - contextPath: Tanium.File.createdDate
       description: Time the file was created.
@@ -1718,7 +1716,7 @@ script:
   - arguments:
     - default: false
       defaultValue: Connection id.
-      description: The id of the connection.
+      description: The ID of the connection.
       isArray: false
       name: connection_id
       required: true
@@ -1742,7 +1740,7 @@ script:
       description: Cid.
       type: String
     - contextPath: Tanium.File.connectionId
-      description: Connection id.
+      description: Connection ID.
       type: String
     - contextPath: Tanium.File.createdDate
       description: Time the file was created.
@@ -1766,11 +1764,11 @@ script:
       description: The file type.
       type: String
     - contextPath: Tanium.File.sessionId
-      description: Session id.
+      description: Session ID.
       type: String
   - arguments:
     - default: false
-      description: Connection id.
+      description: Connection ID.
       isArray: false
       name: connection_id
       required: true
@@ -1799,7 +1797,7 @@ script:
     name: tanium-tr-intel-docs-labels-list
     outputs:
     - contextPath: Tanium.IntelDocLabel.IntelDocID
-      description: The requested intel doc id.
+      description: The requested intel doc ID.
       type: String
     - contextPath: Tanium.IntelDocLabel.LabelsList.ID
       description: The unique identifier for this label.
@@ -1846,7 +1844,7 @@ script:
     name: tanium-tr-intel-docs-add-label
     outputs:
     - contextPath: Tanium.IntelDocLabel.IntelDocID
-      description: The requested intel doc id.
+      description: The requested intel doc ID.
       type: String
     - contextPath: Tanium.IntelDocLabel.LabelsList.ID
       description: The unique identifier for this label.
@@ -1902,7 +1900,7 @@ script:
       description: Label description.
       type: String
     - contextPath: Tanium.IntelDocLabel.LabelsList.ID
-      description: Label id.
+      description: Label ID.
       type: Number
     - contextPath: Tanium.IntelDocLabel.LabelsList.IndicatorCount
       description: Number of related indicators.
@@ -2094,7 +2092,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get task by id.
+    description: Get task by ID.
     execution: false
     hidden: false
     name: tanium-tr-get-task-by-id
@@ -2145,7 +2143,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get system status, to retrive all possible connection's client ids,
+    description: Get system status, to retrieve all possible connection's client ids,
       hostnames, ips.
     execution: false
     hidden: false
@@ -2161,10 +2159,10 @@ script:
       description: Hostname to connect.
       type: String
     - contextPath: Tanium.SystemStatus.ipaddressClient
-      description: Client IP adress.
+      description: Client IP address.
       type: String
     - contextPath: Tanium.SystemStatus.ipaddressServer
-      description: Server IP adress.
+      description: Server IP address.
       type: String
     - contextPath: Tanium.SystemStatus.lastRegistration
       description: Host last registration time.
