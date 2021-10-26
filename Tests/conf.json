@@ -4886,7 +4886,7 @@
         "Awake Security": "Checking",
         "ArcSight ESM v2": "Checking",
         "Phish.AI": "Checking",
-        "VMware": "Checking",
+        "VMware": "PyVim (SmartConnect class) does not support proxy",
         "Intezer": "Nightly - Checking",
         "ProtectWise": "Nightly - Checking",
         "google-vault": "Nightly - Checking",
