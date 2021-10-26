@@ -145,29 +145,44 @@ after_one_alert_was_fetched_low_limit = (parse_alerts_values_data["after_one_ale
                                          dateparser.parse('2021-07-08 12:08:40 UTC').replace(tzinfo=utc, microsecond=0),
                                          3,
                                          ["TryAlert"])
-keep_all_alerts = (parse_alerts_values_data["keep_all_alerts"],
-                   2,
-                   dateparser.parse('2020-06-08 10:00:00 UTC').replace(tzinfo=utc, microsecond=0),
-                   -1,
-                   dateparser.parse('2021-07-08 12:08:40 UTC').replace(tzinfo=utc, microsecond=0),
-                   3,
-                   ["Arseny's Alert", "TryAlert"])
-limit_to_one = (parse_alerts_values_data["limit_to_one"],
-                1,
-                dateparser.parse('2020-06-08 10:00:00 UTC').replace(tzinfo=utc, microsecond=0),
-                -1,
-                dateparser.parse('2021-06-09 15:20:01 UTC').replace(tzinfo=utc, microsecond=0),
-                1,
-                ["Arseny's Alert"])
-same_time_at_fetch = (parse_alerts_values_data["same_time_at_fetch"],
-                      100,
-                      dateparser.parse('2021-07-08 12:08:40 UTC').replace(tzinfo=utc, microsecond=0),
-                      2,
-                      dateparser.parse('2021-07-08 12:08:40 UTC').replace(tzinfo=utc, microsecond=0),
-                      3,
-                      ["TryAlert"])
-PARSE_ALERTS_VALUES = [limit_to_one, keep_all_alerts, after_one_alert_was_fetched_low_limit,
-                       after_one_alert_was_fetched_high_limit, no_alerts_to_fetch, same_time_at_fetch]
+first_fetch_high_limit = (parse_alerts_values_data["first_fetch_high_limit"],
+                          100,
+                          dateparser.parse('2020-06-08 10:00:00 UTC').replace(tzinfo=utc, microsecond=0),
+                          -1,
+                          dateparser.parse('2021-07-29 14:03:20 UTC').replace(tzinfo=utc, microsecond=0),
+                          2,
+                          ["Arseny's Alert", "TryAlert", "Adi's Alert"])
+first_fetch_low_limit = (parse_alerts_values_data["first_fetch_low_limit"],
+                         2,
+                         dateparser.parse('2020-06-08 10:00:00 UTC').replace(tzinfo=utc, microsecond=0),
+                         -1,
+                         dateparser.parse('2021-07-08 12:08:40 UTC').replace(tzinfo=utc, microsecond=0),
+                         3,
+                         ["Arseny's Alert", "TryAlert"])
+limit_to_one_first_fetch = (parse_alerts_values_data["limit_to_one_first_fetch"],
+                            1,
+                            dateparser.parse('2020-06-08 10:00:00 UTC').replace(tzinfo=utc, microsecond=0),
+                            -1,
+                            dateparser.parse('2021-06-09 15:20:01 UTC').replace(tzinfo=utc, microsecond=0),
+                            1,
+                            ["Arseny's Alert"])
+limit_to_one_second_fetch = (parse_alerts_values_data["limit_to_one_second_fetch"],
+                             1,
+                             dateparser.parse('2021-06-09 15:20:01 UTC').replace(tzinfo=utc, microsecond=0),
+                             1,
+                             dateparser.parse('2021-07-08 12:08:40 UTC').replace(tzinfo=utc, microsecond=0),
+                             3,
+                             ["TryAlert"])
+same_time_at_fetch_bigger_id = (parse_alerts_values_data["same_time_at_fetch_bigger_id"],
+                                100,
+                                dateparser.parse('2021-07-08 12:08:40 UTC').replace(tzinfo=utc, microsecond=0),
+                                2,
+                                dateparser.parse('2021-07-08 12:08:40 UTC').replace(tzinfo=utc, microsecond=0),
+                                3,
+                                ["TryAlert"])
+PARSE_ALERTS_VALUES = [limit_to_one_first_fetch, first_fetch_high_limit, after_one_alert_was_fetched_low_limit,
+                       after_one_alert_was_fetched_high_limit, no_alerts_to_fetch, same_time_at_fetch_bigger_id, first_fetch_low_limit,
+                       no_alerts_to_fetch, limit_to_one_second_fetch]
 
 
 @pytest.mark.parametrize('alerts, max_fetch, last_fetch, last_id_fetched, '
@@ -267,9 +282,9 @@ def test_concatenate_url(base_url, dict_input, expected_result):
 with open("TestData/alerts_to_filter_by_time.json") as alerts_to_filter_by_time_file:
     alerts_to_filter_by_time_data = json.load(alerts_to_filter_by_time_file)
 
-keep_all_alerts = (alerts_to_filter_by_time_data['keep_all_alerts'][0],
-                   dateparser.parse('2020-06-08 10:00:00 UTC').replace(tzinfo=utc, microsecond=0),
-                   alerts_to_filter_by_time_data['keep_all_alerts'][1])
+first_fetch_high_limit = (alerts_to_filter_by_time_data['keep_all_alerts'][0],
+                          dateparser.parse('2020-06-08 10:00:00 UTC').replace(tzinfo=utc, microsecond=0),
+                          alerts_to_filter_by_time_data['keep_all_alerts'][1])
 keep_two_alerts = (alerts_to_filter_by_time_data['keep_two_alerts'][0],
                    dateparser.parse('2021-06-10 10:00:00 UTC').replace(tzinfo=utc, microsecond=0),
                    alerts_to_filter_by_time_data['keep_two_alerts'][1])
@@ -277,7 +292,7 @@ keep_one_alert_same_time = (alerts_to_filter_by_time_data['keep_one_alert_same_t
                             dateparser.parse('2021-07-29 14:03:20 UTC').replace(tzinfo=utc, microsecond=0),
                             alerts_to_filter_by_time_data['keep_one_alert_same_time'][1])
 
-ALERTS_TO_FILTER_BY_TIME = [keep_all_alerts, keep_two_alerts, keep_one_alert_same_time]
+ALERTS_TO_FILTER_BY_TIME = [first_fetch_high_limit, keep_two_alerts, keep_one_alert_same_time]
 
 
 @pytest.mark.parametrize('alerts, last_fetch, expected_alerts', ALERTS_TO_FILTER_BY_TIME)
@@ -308,16 +323,12 @@ keep_all_alerts_not_first = (alerts_to_filter_by_date_data['keep_all_alerts_not_
                              dateparser.parse('2021-05-08 10:00:00 UTC').replace(tzinfo=utc, microsecond=0),
                              2,
                              alerts_to_filter_by_date_data['keep_all_alerts_not_first'][1])
+# all alerts have the same time, last ID fetched is 2, so we want to get only ID 3 and not ID 1
 keep_one_alert_greater_id_same_time = (alerts_to_filter_by_date_data['keep_one_alert_greater_id_same_time'][0],
                                        dateparser.parse('2021-07-08 12:08:40 UTC').replace(tzinfo=utc, microsecond=0),
                                        2,
                                        alerts_to_filter_by_date_data['keep_one_alert_greater_id_same_time'][1])
-dont_keep_alert_smaller_id_same_time = (alerts_to_filter_by_date_data['dont_keep_alert_smaller_id_same_time'][0],
-                                        dateparser.parse('2021-07-08 12:08:40 UTC').replace(tzinfo=utc, microsecond=0),
-                                        2,
-                                        alerts_to_filter_by_date_data['dont_keep_alert_smaller_id_same_time'][1])
-ALERTS_TO_FILTER_BY_DATE = [keep_all_alerts_first_fetch, keep_all_alerts_not_first, keep_one_alert_greater_id_same_time,
-                            dont_keep_alert_smaller_id_same_time]
+ALERTS_TO_FILTER_BY_DATE = [keep_all_alerts_first_fetch, keep_all_alerts_not_first, keep_one_alert_greater_id_same_time]
 
 
 @pytest.mark.parametrize('alerts, last_fetch, last_id_fetched, expected_alerts', ALERTS_TO_FILTER_BY_DATE)
@@ -372,13 +383,13 @@ def test_reduce_incidents_to_limit(alerts, limit, last_fetch, last_id_fetched,
     """
 
     Given:
-        - Fetch incidents runs, after filtering alerts by date and by id, and after sorting it by date and then by id
+        - Alerts got from Grafana
 
     When:
-        - Needs to return only up to the limit of alerts wanted
+        - Fetch incidents runs, after filtering alerts by date and by id, and after sorting it by date and then by id
 
     Then:
-        - Returns the alert and the new time and id fetched
+        - Returns new time and id fetched, and the alerts only up to the limit wanted
 
     """
     output_last_fetch, output_last_id, output_incidents = reduce_incidents_to_limit(alerts, limit, last_fetch, last_id_fetched)
@@ -395,10 +406,10 @@ def test_set_state(state_input, state_output):
     """
 
     Given:
-        - alerts-list command is executed
+        - 'state' argument is or isn't given to the `alerts-list` command
 
     When:
-        - 'state' argument is or isn't given
+        - `alerts-list` command is executed
 
     Then:
         - Returns the right states to get
@@ -416,10 +427,10 @@ def test_set_time_for_annotation(time_input, time_output):
     """
 
     Given:
-        - annotation-create command is executed
+        - 'time' and 'time_end' arguments are or aren't given to the `annotation-create` command
 
     When:
-        - 'time' and 'time_end' arguments are or aren't given
+        - `annotation-create` command is executed
 
     Then:
         - Returns the right epoch time in millisecond resolution
