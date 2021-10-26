@@ -21,7 +21,6 @@ from itertools import chain
 ''' COMMAND FUNCTION '''
 
 
-# TODO: REMOVE the following dummy command function
 def get_identity_info() -> CommandResults:
     context = demisto.context()
     alerts = demisto.get(context, 'PaloAltoNetworksXDR.OriginalAlert')
@@ -32,14 +31,15 @@ def get_identity_info() -> CommandResults:
     for alert in alerts:
         alert_event = alert.get('event')
         username = alert_event.get('identity_orig').get('userName')
-        access_keys = [user.get('AccessKeys', []) for user in users if user.get('UserName') == username]
-        access_keys = list(chain(*access_keys))
+        access_keys = chain(*[user.get('AccessKeys', {}) for user in users])
+        access_keys = [access_key.get('AccessKeyId') for access_key in access_keys if
+                       access_key.get('UserName') == username]
         res = {'Name': alert_event.get('identity_name'),
                'Type': alert_event.get('identity_type'),
                'Sub Type': alert_event.get('identity_sub_type'),
                'Uuid': alert_event.get('identity_uuid'),
                'Provider': alert_event.get('cloud_provider'),
-               'Access Keys': access_keys}
+               'Access Keys': ",".join(access_keys)}
         results.append(res)
     return CommandResults(
         readable_output=tableToMarkdown('Identity Information', results,
