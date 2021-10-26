@@ -18,6 +18,20 @@ ATTACHED_RESPONSE = {
     'Marker': '111'
 }
 
+PAGINATION_CHECK = [
+    (
+        {'userName': 'test'},
+        ['AllAccessPolicy', 'KeyPolicy']),
+    (
+        {
+            'userName': 'test',
+            'page': 2,
+            'page_size': 1,
+            'marker': '111'
+        },
+        ['KeyPolicy'])
+]
+
 
 class AWSClient:
     def aws_session(self):
@@ -38,21 +52,6 @@ class Boto3Client:
         pass
 
 
-PAGINATION_CHECK = [
-    (
-        {'userName': 'test'},
-        ['AllAccessPolicy', 'KeyPolicy']),
-    (
-        {
-            'userName': 'test',
-            'page': 2,
-            'page_size': 1,
-            'marker': '111'
-        },
-        ['KeyPolicy'])
-]
-
-
 @pytest.mark.parametrize('args, res', PAGINATION_CHECK)
 def test_list_user_policies(mocker, args, res):
     response = {
@@ -64,9 +63,16 @@ def test_list_user_policies(mocker, args, res):
         'Marker': '111'
     }
 
-    ec = {'AWS.IAM.Users(val.UserName && val.UserName === obj.UserName)': {'UserName': 'test',
-                                                                           'Policies': res,
-                                                                           'InlinePoliciesMarker': '111'}}
+    policy_data = []
+    for policy in res:
+        policy_data.append({
+            'UserName': 'test',
+            'PolicyName': policy,
+        })
+
+    ec = {'AWS.IAM.UserPolicies(val.PolicyName && val.UserName && val.PolicyName === obj.PolicyName && '
+          'val.UserName === obj.UserName)': policy_data,
+          'AWS.IAM.Users(val.UserName === \'{}\').InlinePoliciesMarker'.format('test'): response.get('Marker')}
 
     mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
     mocker.patch.object(Boto3Client, "list_user_policies", return_value=response)
@@ -88,9 +94,8 @@ def test_list_attached_user_polices(mocker):
         'userName': 'test'
     }
 
-    ec = {'AWS.IAM.Users(val.UserName && val.UserName === obj.UserName)': {'UserName': 'test',
-                                                                           'AttachedPolicies': ATTACHED_POLICIES,
-                                                                           'AttachedPoliciesMarker': '111'}}
+    policy_name = ATTACHED_POLICIES[0].get('PolicyName')
+    policy_arn = ATTACHED_POLICIES[0].get('PolicyArn')
 
     mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
     mocker.patch.object(Boto3Client, "list_attached_user_policies", return_value=ATTACHED_RESPONSE)
@@ -99,6 +104,11 @@ def test_list_attached_user_polices(mocker):
     client = AWSClient()
     AWS_IAM.list_attached_user_policies(args, client)
     contents = demisto.results.call_args[0][0]
+
+    ec = {'AWS.IAM.AttachedUserPolicies(val.PolicyArn && val.UserName && val.PolicyArn === obj.PolicyArn && '
+          'val.UserName === obj.UserName)': [{'UserName': 'test', 'PolicyName': policy_name, 'PolicyArn': policy_arn}],
+          'AWS.IAM.Users(val.UserName === \'{}\').AttachedPoliciesMarker'.format('test'): '111'}
+
     human_readable = tableToMarkdown('AWS IAM Attached Policies for user {}'.format('test'),
                                      headers=['PolicyName', 'PolicyArn'],
                                      headerTransform=pascalToSpace,
@@ -112,9 +122,8 @@ def test_list_attached_group_polices(mocker):
         'groupName': 'test'
     }
 
-    ec = {'AWS.IAM.Groups(val.GroupName && val.GroupName === obj.GroupName)': {'GroupName': 'test',
-                                                                               'AttachedPolicies': ATTACHED_POLICIES,
-                                                                               'AttachedPoliciesMarker': '111'}}
+    policy_name = ATTACHED_POLICIES[0].get('PolicyName')
+    policy_arn = ATTACHED_POLICIES[0].get('PolicyArn')
 
     mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
     mocker.patch.object(Boto3Client, "list_attached_group_policies", return_value=ATTACHED_RESPONSE)
@@ -123,10 +132,17 @@ def test_list_attached_group_polices(mocker):
     client = AWSClient()
     AWS_IAM.list_attached_group_policies(args, client)
     contents = demisto.results.call_args[0][0]
+
     human_readable = tableToMarkdown('AWS IAM Attached Policies for group {}'.format('test'),
                                      headers=['PolicyName', 'PolicyArn'],
                                      headerTransform=pascalToSpace,
                                      t=ATTACHED_POLICIES)
+
+    ec = {'AWS.IAM.AttachedGroupPolicies(val.PolicyArn && val.GroupName && val.PolicyArn === obj.PolicyArn && '
+          'val.GroupName === obj.GroupName)': [
+        {'GroupName': 'test', 'PolicyName': policy_name, 'PolicyArn': policy_arn}],
+          'AWS.IAM.Groups(val.GroupName === \'{}\').AttachedPoliciesMarker'.format('test'): '111'}
+
     assert contents.get('HumanReadable') == human_readable
     assert contents.get('EntryContext') == ec
 

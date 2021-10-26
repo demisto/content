@@ -2331,9 +2331,13 @@ script:
     execution: false
     name: aws-iam-list-user-policies
     outputs:
-    - contextPath: AWS.IAM.Users.Policies
-      description: A list of the user's inline policy names.
-      type: Unknown
+    - contextPath: AWS.IAM.UserPolicies.UserName
+      description: The name (friendly name, not ARN) of the user to list attached
+        policies for.
+      type: String
+    - contextPath: AWS.IAM.UserPolicies.PolicyName
+      description: The name of the policy.
+      type: String
     - contextPath: AWS.IAM.Users.InlinePoliciesMarker
       description: First element of next page of items.
       type: String
@@ -2377,10 +2381,14 @@ script:
     execution: false
     name: aws-iam-list-attached-user-policies
     outputs:
-    - contextPath: AWS.IAM.Users.AttachedPolicies.PolicyName
-      description: Policy Name.
+    - contextPath: AWS.IAM.AttachedUserPolicies.UserName
+      description: The name (friendly name, not ARN) of the user to list attached
+        policies for.
       type: String
-    - contextPath: AWS.IAM.Users.AttachedPolicies.PolicyArn
+    - contextPath: AWS.IAM.AttachedUserPolicies.PolicyName
+      description: The name of the attached policy
+      type: String
+    - contextPath: AWS.IAM.AttachedUserPolicies.PolicyArn
       description: The Amazon Resource Name (ARN) of the attached policy.
       type: String
     - contextPath: AWS.IAM.Users.AttachedPoliciesMarker
@@ -2426,10 +2434,14 @@ script:
     execution: false
     name: aws-iam-list-attached-group-policies
     outputs:
-    - contextPath: AWS.IAM.Groups.AttachedPolicies.PolicyName
-      description: Policy Name.
+    - contextPath: AWS.IAM.AttachedGroupPolicies.GroupName
+      description: The name (friendly name, not ARN) of the group to list attached
+        policies for.
       type: String
-    - contextPath: AWS.IAM.Groups.AttachedPolicies.PolicyArn
+    - contextPath: AWS.IAM.AttachedGroupPolicies.PolicyName
+      description: The name of the attached policy
+      type: String
+    - contextPath: AWS.IAM.AttachedGroupPolicies.PolicyArn
       description: The Amazon Resource Name (ARN) of the attached policy.
       type: String
     - contextPath: AWS.IAM.Groups.AttachedPoliciesMarker

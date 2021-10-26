@@ -1598,7 +1598,8 @@ Lists the names of the inline policies embedded in the specified IAM user.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.IAM.Users.Policies | string | A list of the user's inline policy names. | 
+| AWS.IAM.UserPolicies.UserName | string | A list of the user's inline policy names. |
+| AWS.IAM.UserPolicies.PolicyName | string | The name of the policy. |
 | AWS.IAM.Users.InlinePoliciesMarker | string | First element of next page of items. | 
 
 #### Command Example
@@ -1626,8 +1627,9 @@ Lists all managed policies that are attached to the specified IAM user.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.IAM.Users.AttachedPolicies.PolicyName | string | Policy Name | 
-| AWS.IAM.Users.AttachedPolicies.PolicyArn | string | The Amazon Resource Name (ARN) of the attached policy. | 
+| AWS.IAM.AttachedUserPolicies.UserName | string | The name (friendly name, not ARN) of the user to list attached policies for. |
+| AWS.IAM.AttachedUserPolicies.PolicyName | string | Policy Name | 
+| AWS.IAM.AttachedUserPolicies.PolicyArn | string | The Amazon Resource Name (ARN) of the attached policy. | 
 | AWS.IAM.Users.AttachedPoliciesMarker | string | First element of next page of items. | 
 
 #### Command Example
@@ -1655,8 +1657,9 @@ Lists all managed policies that are attached to the specified IAM group.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.IAM.Groups.AttachedPolicies.PolicyName | string | Policy Name | 
-| AWS.IAM.Groups.AttachedPolicies.PolicyArn | string | The Amazon Resource Name (ARN) of the attached policy. | 
+| AWS.IAM.AttachedGroupPolicies.GroupName | string | The name (friendly name, not ARN) of the group to list attached policies for. |
+| AWS.IAM.AttachedGroupPolicies.PolicyName | string | Policy Name | 
+| AWS.IAM.AttachedGroupPolicies.PolicyArn | string | The Amazon Resource Name (ARN) of the attached policy. | 
 | AWS.IAM.Groups.AttachedPoliciesMarker | string | First element of next page of items. | 
 
 #### Command Example
