@@ -1,6 +1,7 @@
 from CommonServerPython import *
 import copy
-import itertools
+from itertools import chain
+from typing import NamedTuple
 import traceback
 
 
@@ -60,7 +61,7 @@ def traverse_tasks(tasks: Dict[str, Dict],
             dct.setdefault('tasks', []).append(task)
             new_path = path
         if current_task.get('nextTasks'):
-            next_tasks_ids: List[str] = list(itertools.chain(*demisto.get(current_task, 'nextTasks').values()))
+            next_tasks_ids = chain(*demisto.get(current_task, 'nextTasks').values())
             next_tasks: List[Dict] = [tasks.get(task_id) for task_id in next_tasks_ids]  # type: ignore
             for next_task in next_tasks:
                 traverse_tasks(tasks, next_task, results, current_task, new_path, visited)
@@ -116,14 +117,14 @@ def get_tasks_command(incident_id: str):
     headers = ['id', 'name', 'state', 'completedDate']
     for k1, v1 in tasks_nested_results.items():
         if 'tasks' in v1.keys():
-            tasks = list(v1.values())[0]
+            tasks = list(v1.get('tasks'))
             task_results.extend(tasks)
             tasks = add_url_to_tasks(tasks, workplan_url)
             md_lst.append(tableToMarkdown(k1, tasks, headers=headers)[1:])  # this is for making the title bigger
         else:
             md_lst.append(f'## {k1}')
             for k2, v2 in v1.items():
-                tasks = list(v2.values())[0]
+                tasks = list(v2.get('tasks'))
                 task_results.extend(tasks)
                 tasks = add_url_to_tasks(tasks, workplan_url)
                 md_lst.append(tableToMarkdown(k2, tasks, headers=headers))
