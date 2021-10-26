@@ -1,5 +1,4 @@
 File transfer between Cortex XSOAR to remote machine, and execution of commands on remote machine
-This integration was integrated and tested with version xx of RemoteAccess v2
 
 Some changes have been made that might affect your existing content. 
 If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-remoteaccess-v2).
