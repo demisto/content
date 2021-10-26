@@ -46,7 +46,7 @@ To setup the mirroring follow these instructions:
 Newly fetched incidents will be mirrored in the chosen direction.
 Note: This will not effect existing incidents.
    
-**Imporatnt Notes** 
+**Important Notes** 
  - In order for the mirroring to work, the *Incident Mirroring Direction* parameter needs to be set before the incident is fetched.
  - In order to ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and SaaS Security. 
  - The only fields that can be mirrored in from SaaS Security to XSOAR are:
@@ -525,56 +525,3 @@ Get the remediation status for a given asset ID.
 >|---|---|---|---|---|---|
 >| 2021-08-25T21:18:37.148+0000 | api | 61099dc46b544e38fa3ce89a | SP0605 copy.java | system_quarantine | success |
 
-
-### get-mapping-fields
-***
-Returns the list of fields for an incident type. This command is for debugging purposes.
-
-
-#### Base Command
-
-`get-mapping-fields`
-#### Input
-
-There are no input arguments for this command.
-
-#### Context Output
-
-There is no context output for this command.
-
-
-
-### get-remote-data
-***
-Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes.
-
-
-#### Base Command
-
-`get-remote-data`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| id | The ticket ID. | Required | 
-| lastUpdate | Retrieve entries that were created after lastUpdate. | Required | 
-
-
-### get-modified-remote-data
-***
-Get the list of incidents that were modified since the last update. This method does not update the current incident, and should be used for debugging purposes.
-
-
-#### Base Command
-
-`get-modified-remote-data`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| lastUpdate | Retrieve entries that were created after lastUpdate. | Required | 
-
-
-#### Context Output
-
-There is no context output for this command.
