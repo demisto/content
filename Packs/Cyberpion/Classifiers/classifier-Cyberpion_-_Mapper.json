@@ -15,9 +15,45 @@
         "Cyberpion Security Alert": {
             "dontMapEventToLabels": false,
             "internalMapping": {
+                "Cyberpion Asset": {
+                    "complex": null,
+                    "simple": "domain"
+                },
                 "Cyberpion Category": {
                     "complex": null,
                     "simple": "category"
+                },
+                "Cyberpion Description": {
+                    "complex": null,
+                    "simple": "description"
+                },
+                "Cyberpion Domain": {
+                    "complex": null,
+                    "simple": "domain"
+                },
+                "Cyberpion Impact": {
+                    "complex": null,
+                    "simple": "impact"
+                },
+                "Cyberpion Solution": {
+                    "complex": null,
+                    "simple": "solution"
+                },
+                "Cyberpion Summary": {
+                    "complex": null,
+                    "simple": "summary"
+                },
+                "Cyberpion Technical Details": {
+                    "complex": null,
+                    "simple": "technical_details"
+                },
+                "Cyberpion Title": {
+                    "complex": null,
+                    "simple": "title"
+                },
+                "Cyberpion portal link": {
+                    "complex": null,
+                    "simple": "link"
                 },
                 "category": {
                     "complex": null,
@@ -45,15 +81,6 @@
                     "complex": null,
                     "simple": "category"
                 },
-                "Cyberpion Vulnerability Description": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [],
-                        "root": "description",
-                        "transformers": []
-                    },
-                    "simple": ""
-                },
                 "Cyberpion Domain": {
                     "complex": null,
                     "simple": "domain"
@@ -78,17 +105,13 @@
                     "complex": null,
                     "simple": "title"
                 },
-                "Cyberpion Vulnerability Description": {
+                "Cyberpion Description": {
                     "complex": null,
                     "simple": "description"
                 },
                 "Cyberpion portal link": {
                     "complex": null,
                     "simple": "link"
-                },
-                "Cyberpion Domain": {
-                    "complex": null,
-                    "simple": "domain"
                 },
                 "category": {
                     "complex": {
