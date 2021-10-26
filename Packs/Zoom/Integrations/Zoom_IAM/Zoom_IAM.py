@@ -231,7 +231,8 @@ def main():
                              is_update_enabled=False,
                              create_if_not_exists=False,
                              mapper_in=mapper_in,
-                             mapper_out=mapper_out,
+                             # Currently we don't use scim API endpoints, so we don't map the arguments.
+                             mapper_out=None,
                              get_user_iam_attrs=['id', 'userName', 'emails']
                              )
     client = Client(
