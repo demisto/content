@@ -32,16 +32,16 @@ jobs:
           echo "PYTHONPATH=${GITHUB_WORKSPACE}/content:${GITHUB_WORKSPACE}:${PYTHONPATH}" >> $GITHUB_ENV
           echo "ARTIFACTS_FOLDER=/home/runner/work/repository/repository/content/artifacts" >> $GITHUB_ENV
           echo "NEW_PACKS_FOLDER=/home/runner/work/repository/repository/content/new_packs_zips" >> $GITHUB_ENV
-          echo "DEMISTO_README_VALIDATION=true" >> $GITHUB_ENV
+          echo "DEMISTO_README_VALIDATION=false" >> $GITHUB_ENV
 
           BRANCH_NAME=${REF#refs/heads/}
+          PACKS_CHANGED=$(python $GITHUB_WORKSPACE/content-internal-dist/build_related_scripts/get_modified_packs.py --repo_path $GITHUB_WORKSPACE/content-internal-dist/)
+          echo "PACKS_CHANGED=${PACKS_CHANGED}" >> $GITHUB_ENV
           echo "DEMISTO_SDK_GITHUB_TOKEN=<your-github-token>" >> $GITHUB_ENV
 
           # Copy Base pack from content to your repository. Needed for linting.
           cp -r $GITHUB_WORKSPACE/content/Packs/Base $GITHUB_WORKSPACE/repository/Packs
 
-          # NOTE: For performance enhancement - you can check whether any packs has changed or not.
-          # If you do so, you can save it under $PACKS_CHANGED.
       - name: Prepare Venv
         run: |
           cd $GITHUB_WORKSPACE/content/
@@ -126,7 +126,14 @@ jobs:
         run : |
           if [ $PACKS_CHANGED ]; then
             BRANCH_NAME=${REF#refs/heads/}
-            # Upload to the artifacts server of your choice.
+            # TODO: Upload to the artifacts server of your choice.
+            # Create a file with the service account data
+
+            # use the bucket_upload script to upload your packs to google cloud storge
+            python $GITHUB_WORKSPACE/repository/build_related_scripts/bucket_upload.py --service_account $GITHUB_WORKSPACE/service_account.json --packs_directory $NEW_PACKS_FOLDER --branch_name $BRANCH_NAME
+
+            # Delete the service account file
+            rm $GITHUB_WORKSPACE/service_account.json
           else
             echo "No packs has changed, skipping step."
           fi
