@@ -94,3 +94,5 @@ def test_fetch_incidents(requests_mock):
             'details': 'Source Object: INSTANT MESSAGE\nService: TestService\nChannel: TEST CHANNEL\nActor: \n\nPart 1 sell part2'
         }
     ]
+        }
+    ]
