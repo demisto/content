@@ -252,7 +252,7 @@ class Client(BaseClient):
             headers=self.headers
         )
 
-        fields = res.get('entityDescriptions', {}).get('fields', [])
+        fields = res.get('entityDescriptions', [])[0].get('fields', [])
         return {field.get('name'): field.get('label') for field in fields}
 
     @staticmethod
