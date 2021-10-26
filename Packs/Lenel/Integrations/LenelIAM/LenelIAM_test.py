@@ -25,8 +25,9 @@ APP_DISABLED_USER_OUTPUT = {
 DISABLED_USER_APP_DATA = IAMUserAppData("mock_id", "mock_user_name", is_active=False, app_data=APP_DISABLED_USER_OUTPUT)
 
 
-def mock_client():
-    client = Client(base_url='https://test.com')
+def mock_client(mocker):
+    mocker.patch.object(Client, 'get_client_token', return_value=None)
+    client = Client(base_url='https://test.com', username='mock_username', version='1.0', password='mock_password')
     return client
 
 
@@ -47,7 +48,7 @@ def test_get_user_command__existing_user(mocker):
     Then:
         - Ensure the resulted User Profile object holds the correct user details
     """
-    client = mock_client()
+    client = mock_client(mocker)
     args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com'}}
 
     mocker.patch.object(client, 'get_user', return_value=USER_APP_DATA)
@@ -76,7 +77,7 @@ def test_get_user_command__non_existing_user(mocker):
     Then:
         - Ensure the resulted User Profile object holds information about an unsuccessful result.
     """
-    client = mock_client()
+    client = mock_client(mocker)
     args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com'}}
 
     mocker.patch.object(client, 'get_user', return_value=None)
@@ -103,7 +104,7 @@ def test_get_user_command__bad_response(mocker):
     """
     import demistomock as demisto
 
-    client = mock_client()
+    client = mock_client(mocker)
     args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com'}}
 
     bad_response = Response()
@@ -132,7 +133,7 @@ def test_create_user_command__success(mocker):
     Then:
         - Ensure a User Profile object with the user data is returned
     """
-    client = mock_client()
+    client = mock_client(mocker)
     args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com'}}
 
     mocker.patch.object(client, 'get_user', return_value=None)
@@ -163,7 +164,7 @@ def test_create_user_command__user_already_exists(mocker):
     Then:
         - Ensure the command is considered successful and the user is still disabled
     """
-    client = mock_client()
+    client = mock_client(mocker)
     args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com'}, 'allow-enable': 'false'}
 
     mocker.patch.object(client, 'get_user', return_value=DISABLED_USER_APP_DATA)
@@ -195,7 +196,7 @@ def test_update_user_command__non_existing_user(mocker):
         - Ensure the create action is executed
         - Ensure a User Profile object with the user data is returned
     """
-    client = mock_client()
+    client = mock_client(mocker)
     args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com', 'givenname': 'mock_first_name'}}
 
     mocker.patch.object(client, 'get_user', return_value=None)
@@ -225,7 +226,7 @@ def test_update_user_command__command_is_disabled(mocker):
     Then:
         - Ensure the command is considered successful and skipped
     """
-    client = mock_client()
+    client = mock_client(mocker)
     args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com', 'givenname': 'mock_first_name'}}
 
     mocker.patch.object(client, 'get_user', return_value=None)
@@ -253,7 +254,7 @@ def test_update_user_command__allow_enable(mocker):
     Then:
         - Ensure the user is enabled at the end of the command execution.
     """
-    client = mock_client()
+    client = mock_client(mocker)
     args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com', 'givenname': 'mock_first_name'},
             'allow-enable': 'true'}
 
@@ -285,7 +286,7 @@ def test_disable_user_command__non_existing_user(mocker):
     Then:
         - Ensure the command is considered successful and skipped
     """
-    client = mock_client()
+    client = mock_client(mocker)
     args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com'}}
 
     mocker.patch.object(client, 'get_user', return_value=None)
@@ -309,7 +310,7 @@ def test_get_mapping_fields_command(mocker):
     Then:
         - Ensure a GetMappingFieldsResponse object that contains the application fields is returned
     """
-    client = mock_client()
+    client = mock_client(mocker)
     mocker.patch.object(client, 'get_app_fields', return_value={'field1': 'desc1', 'field2': 'desc2'})
 
     mapping_response = get_mapping_fields(client)
