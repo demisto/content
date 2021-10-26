@@ -2,6 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 from typing import Dict
+from urllib.parse import quote
 
 # disable insecure warnings
 
@@ -73,7 +74,7 @@ class MsGraphClient:
     def terminate_user_session(self, user):
         self.ms_client.http_request(
             method='PATCH',
-            url_suffix=f'users/{user}',
+            url_suffix=f'users/{quote(user)}',
             data=BLOCK_ACCOUNT_JSON,
             resp_type="text"
         )
@@ -82,7 +83,7 @@ class MsGraphClient:
     def unblock_user(self, user):
         self.ms_client.http_request(
             method='PATCH',
-            url_suffix=f'users/{user}',
+            url_suffix=f'users/{quote(user)}',
             data=UNBLOCK_ACCOUNT_JSON,
             resp_type="text"
         )
@@ -92,7 +93,7 @@ class MsGraphClient:
     def delete_user(self, user):
         self.ms_client.http_request(
             method='DELETE',
-            url_suffix=f'users/{user}',
+            url_suffix=f'users/{quote(user)}',
             resp_type="text"
         )
 
@@ -111,7 +112,7 @@ class MsGraphClient:
             body[field] = value
         self.ms_client.http_request(
             method='PATCH',
-            url_suffix=f'users/{user}',
+            url_suffix=f'users/{quote(user)}',
             json_data=body,
             resp_type="text")
 
@@ -129,7 +130,7 @@ class MsGraphClient:
         }
         self.ms_client.http_request(
             method='PATCH',
-            url_suffix=f'users/{user}',
+            url_suffix=f'users/{quote(user)}',
             json_data=body,
             resp_type="text")
 
@@ -144,7 +145,7 @@ class MsGraphClient:
         try:
             user_data = self.ms_client.http_request(
                 method='GET',
-                url_suffix=f'users/{user}',
+                url_suffix=f'users/{quote(user)}',
                 params={'$select': properties})
             user_data.pop('@odata.context', None)
             return user_data
@@ -166,7 +167,7 @@ class MsGraphClient:
     def get_direct_reports(self, user):
         res = self.ms_client.http_request(
             method='GET',
-            url_suffix=f'users/{user}/directReports')
+            url_suffix=f'users/{quote(user)}/directReports')
 
         res.pop('@odata.context', None)
         return res.get('value', [])
@@ -174,7 +175,7 @@ class MsGraphClient:
     def get_manager(self, user):
         manager_data = self.ms_client.http_request(
             method='GET',
-            url_suffix=f'users/{user}/manager')
+            url_suffix=f'users/{quote(user)}/manager')
         manager_data.pop('@odata.context', None)
         manager_data.pop('@odata.type', None)
         return manager_data
@@ -186,7 +187,7 @@ class MsGraphClient:
         body = {"@odata.id": manager_ref}
         self.ms_client.http_request(
             method='PUT',
-            url_suffix=f'users/{user}/manager/$ref',
+            url_suffix=f'users/{quote(user)}/manager/$ref',
             json_data=body,
             resp_type="text"
         )
