@@ -189,14 +189,14 @@ configuration:
   name: extensive_logs
   type: 8
   required: false
-- display: 'Advanced: Fetch backwards window for the events occurrence time'
+- display: 'Advanced: Fetch backwards window for the events occurrence time (minutes)'
   name: occurrence_look_behind
   defaultvalue: "15"
   type: 0
   required: false
   additionalinfo: The fetch time range will be at least of the size specified here.
     This will support events that have a gap between their occurrence time and their
-    index time in Splunk.
+    index time in Splunk. To decide the value, you need to analyze what is the average time between them both.
 - display: 'Advanced: Unique ID fields'
   name: unique_id_fields
   type: 0

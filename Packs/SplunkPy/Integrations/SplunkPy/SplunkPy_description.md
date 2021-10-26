@@ -1,4 +1,7 @@
 ## SplunkPy
+We strongly recommend you to use **Splunk Pre Release** integration which contains improvements regarding the fetch mechanism.   
+***
+
 Use the SplunkPy integration to fetch incidents from Splunk ES, and query results by SID.
 ***
 
