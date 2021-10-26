@@ -12,6 +12,11 @@ configuration:
   name: credentials
   type: 9
   required: false
+- display: Additional Password
+  name: additional_password
+  required: false
+  type: 4
+  additionalinfo: Will require additional password as an argument to run any command of this module.
 - display: Ciphers
   additionalinfo: Comma separated list of ciphers to be used. Will return error with
     the supported ciphers by server if none of given ciphers were agreed by server.
@@ -43,16 +48,28 @@ script:
       name: command
       required: true
       secret: false
+    - default: false
+      description: Password. Required to match the parameter Additional Password if was supplied in order to run the command.
+      isArray: false
+      name: additional_password
+      required: false
+      secret: false
     deprecated: false
     description: Run command on remote system with ssh
     execution: false
     name: remote-access-ssh
     outputs:
-    - contextPath: RemoteAccess.Command.stdout
+    - contextPath: RemoteAccess.Command.output
       description: STD output of the given command.
       type: String
-    - contextPath: RemoteAccess.Command.std_error
+    - contextPath: RemoteAccess.Command.error
       description: STD error output of the given command.
+      type: String
+    - contextPath: RemoteAccess.Command.success
+      description: Whether operation have been successful.
+      type: Boolean
+    - contextPath: RemoteAccess.Command.command
+      description: Command that have been ran.
       type: String
   - arguments:
     - default: false
@@ -66,6 +83,12 @@ script:
         Defaults to the `entry_id` file path if not given
       isArray: false
       name: destination_path
+      required: false
+      secret: false
+    - default: false
+      description: Password. Required to match the parameter Additional Password if was supplied in order to run the command.
+      isArray: false
+      name: additional_password
       required: false
       secret: false
     deprecated: false
@@ -86,6 +109,12 @@ script:
         file name will be c.txt.
       isArray: false
       name: file_name
+      required: false
+      secret: false
+    - default: false
+      description: Password. Required to match the parameter Additional Password if was supplied in order to run the command.
+      isArray: false
+      name: additional_password
       required: false
       secret: false
     deprecated: false

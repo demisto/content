@@ -139,8 +139,10 @@ def execute_shell_command(ssh_client: SSHClient, args: Dict[str, Any]) -> Comman
     std_error_str: str = std_err.read().decode()
     if stdout_str or std_error_str:
         outputs: Optional[List[Dict]] = [{
-            'stdout': stdout_str,
-            'std_error': std_error_str
+            'output': stdout_str,
+            'error': std_error_str,
+            'command': command,
+            'success': not std_error_str
         }]
         readable_output = tableToMarkdown(f'Command {command} Outputs', outputs, removeNull=True)
     else:
@@ -206,8 +208,12 @@ def main() -> None:
     ciphers: Set[str] = set(argToList(params.get('ciphers')))
     key_algorithms: Set[str] = set(argToList(params.get('key_algorithms')))
 
-    # interactive_terminal_mode: bool = argToBoolean(params.get('interactive_terminal_mode', False))
     demisto.debug(f'Command being called is {demisto.command()}')
+    if password_param := params.get('additional_password'):
+        if password_param != args.get('additional_password'):
+            raise DemistoException('Additional password to use the module have been supplied.\n'
+                                   'Please supply "additional_password" argument that matches the "Additional Password"'
+                                   ' parameter value.')
     client = None
     try:
         client = create_paramiko_ssh_client(host_name, user, password, ciphers, key_algorithms)

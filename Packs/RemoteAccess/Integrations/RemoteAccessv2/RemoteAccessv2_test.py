@@ -3,7 +3,7 @@ import json
 
 import pytest
 from RemoteAccessv2 import CommandResults, DemistoException
-
+import demistomock as demisto
 
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
@@ -75,10 +75,11 @@ def test_create_paramiko_ssh_client_invalid(mocker, cipher_arg, key_arg, server_
         create_paramiko_ssh_client('host', 'user', 'password', cipher_arg, key_arg)
 
 
-@pytest.mark.parametrize('command, mock_std_output, mock_std_error',
-                         [('echo lol', 'lol', ''), ('cat invalid_path_file', '', 'cat: lol: No such file or directory'),
-                          ('non-known-command', '', 'command not found: non-known-command')])
-def test_execute_shell_command(mocker, command, mock_std_output, mock_std_error):
+@pytest.mark.parametrize('command, mock_std_output, mock_std_error, success',
+                         [('echo lol', 'lol', '', True),
+                          ('cat invalid_path_file', '', 'cat: lol: No such file or directory', False),
+                          ('non-known-command', '', 'command not found: non-known-command', False)])
+def test_execute_shell_command(mocker, command, mock_std_output, mock_std_error, success):
     """
     Given:
     - Cortex XSOAR arguments.
@@ -102,8 +103,10 @@ def test_execute_shell_command(mocker, command, mock_std_output, mock_std_error)
             results: CommandResults = execute_shell_command(mock_client, {'command': command})
     assert results.outputs_prefix == 'RemoteAccess.Command'
     assert results.outputs == [{
-        'stdout': mock_std_output,
-        'std_error': mock_std_error
+        'output': mock_std_output,
+        'error': mock_std_error,
+        'success': success,
+        'command': command
     }]
 
 
@@ -173,3 +176,28 @@ def test_copy_from_command_valid(mocker, file_name, expected_file_name):
     copy_from_command(mock_client, args)
     assert mocker_results.call_args[0][0] == expected_file_name
     assert mocker_results.call_args[0][1] == 'RemoteFileData'
+
+
+@pytest.mark.parametrize('args', [({}), ({'additional_password': '1243'})])
+def test_invalid_password_for_command(mocker, args):
+    """"
+    Given:
+    - Cortex XSOAR params, having additional_password parameter fulfilled.
+    - Cortex XSOAR arguments.
+
+    When:
+    - Executing a command.
+    Cases:
+    Case a: No additional_password was given in the arguments.
+    Case a: Incorrect additional_password was given in the arguments.
+
+    Then:
+    - Ensure DemistoException is thrown with the expected error message.
+    """
+    from RemoteAccessv2 import main
+    mocker.patch.object(demisto, 'params', return_value={'additional_password': '1234'})
+    mocker.patch.object(demisto, 'args', return_value=args)
+    with pytest.raises(DemistoException, match='Additional password to use the module have been supplied.\n'
+                                               'Please supply "additional_password" argument that matches '
+                                               'the "Additional Password" parameter value.'):
+        main()

@@ -1,8 +1,8 @@
-[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]
-This integration enables Cortex XSOAR to access and run commands on a terminal in a remote location (via SSH).
+File transfer between Cortex XSOAR to remote machine, and execution of commands on remote machine
+This integration was integrated and tested with version xx of RemoteAccess v2
 
 Some changes have been made that might affect your existing content. 
-If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-RemoteAccessv2).
+If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-remoteaccess-v2).
 
 ## Configure RemoteAccess v2 on Cortex XSOAR
 
@@ -13,9 +13,11 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Default Hostname Or IP Address |  | True |
-    | Ciphers | Comma separated list of ciphers to be used. Will return error with the supported ciphers by server if none of given ciphers were agreed by server. | False |
     | User | For example, "root". | False |
     | Password |  | False |
+    | Additional Password | Will require additional password as an argument to run any command of this module. | False |
+    | Ciphers | Comma separated list of ciphers to be used. Will return error with the supported ciphers by server if none of given ciphers were agreed by server. | False |
+    | Key Algorithms | Comma separated list of key algorithms to be used. Will return error with the supported key algorithms by server if none of given key algorithms were agreed by server. | False |
     | Interactive Terminal Mode | TODO | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
@@ -35,14 +37,17 @@ Run command on remote system with ssh
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | command | Command to run on remote machine. | Required | 
+| additional_password | Password. Required to match the parameter Additional Password if was supplied in order to run the command. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| RemoteAccess.Command.stdout | String | STD output of the given command. | 
-| RemoteAccess.Command.std_error | String | STD error output of the given command. | 
+| RemoteAccess.Command.output | String | STD output of the given command. | 
+| RemoteAccess.Command.error | String | STD error output of the given command. | 
+| RemoteAccess.Command.success | Boolean | Whether operation have been successful. | 
+| RemoteAccess.Command.command | String | Command that have been ran. | 
 
 
 #### Command Example
@@ -54,8 +59,10 @@ Run command on remote system with ssh
     "RemoteAccess": {
         "Command": [
             {
-                "std_error": "",
-                "stdout": "test\n"
+                "command": "echo test",
+                "error": "",
+                "output": "test\n",
+                "success": true
             }
         ]
     }
@@ -65,9 +72,9 @@ Run command on remote system with ssh
 #### Human Readable Output
 
 >### Command echo test Outputs
->|std_error|stdout|
->|---|---|
->|  | test<br/> |
+>|command|output|success|
+>|---|---|---|
+>| echo test | test<br/> | true |
 
 
 ### remote-access-copy-to
@@ -84,6 +91,7 @@ Run command on remote system with ssh
 | --- | --- | --- |
 | entry_id | Entry ID of the file to be copied from Cortex XSOAR to remote machine. | Required | 
 | destination_path | Destination of the path of the copied file in the remote machine. Defaults to the `entry_id` file path if not given. | Optional | 
+| additional_password | Password. Required to match the parameter Additional Password if was supplied in order to run the command. | Optional | 
 
 
 #### Context Output
@@ -111,6 +119,7 @@ Run command on remote system with ssh
 | --- | --- | --- |
 | file_path | Path of the file in remote machine to be copied to Cortex XSOAR. | Required | 
 | file_name | Name of the file to be saved in Cortex XSOAR. Defaults to the file name in `file_path` if not given. E.g, if `file_path` is "a/b/c.txt", the file name will be c.txt. | Optional | 
+| additional_password | Password. Required to match the parameter Additional Password if was supplied in order to run the command. | Optional | 
 
 
 #### Context Output
@@ -136,7 +145,7 @@ Run command on remote system with ssh
 ```json
 {
     "File": {
-        "EntryID": "124@49493d71-eef6-4bb4-8075-4be38d9bc340",
+        "EntryID": "165@49493d71-eef6-4bb4-8075-4be38d9bc340",
         "Info": "text/plain",
         "MD5": "c5253b90e791d18439a84511c382616b",
         "Name": "CopiedRemoteFile",
@@ -156,7 +165,6 @@ Run command on remote system with ssh
 
 ## Breaking changes from the previous version of this integration - RemoteAccess v2
 - Stopped support of `Interactive terminal mode` instance parameter.
-- Stopped support of `Require users to enter additional password`  instance parameter.
 - Stopped support of `Terminal Type` instance parameter.
 
 ### Commands
