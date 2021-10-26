@@ -22,7 +22,8 @@ Further information is available from CyberArk at:
 | app_id | AppID as configured in AIM | False |
 | folder | Folder to search in safe | True |
 | safe | Safe to search in | True |
-| credential_names | Credential names \- comma\-separated list of credentials names in the safe. Partial names are not supported. | False || credentials | Username | False |
+| credential_names | Credential names \- comma\-separated list of credentials names in the safe. Partial names are not supported. | False |
+| credentials | Username | False |
 | cert_text | Certificate file as text | False |
 | key_text | Key file as text | False |
 | isFetchCredentials | Fetches credentials | False |
