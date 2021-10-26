@@ -371,6 +371,7 @@ def test_fetch_incidents_no_first(mocker, requests_mock):
     assert last_fetch == last_three
 
 
+@freeze_time("2021-01-22 15:30:22.222")
 def test_fetch_incidents(mocker, requests_mock):
     """Unit test
     Given
