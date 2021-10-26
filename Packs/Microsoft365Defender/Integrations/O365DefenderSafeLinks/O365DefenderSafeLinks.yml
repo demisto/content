@@ -8,7 +8,7 @@ configuration:
     required: true
     type: 9
     additionalinfo: A pfx certificate encoded in Base64.
-    displaypassword: "Password - Used to generate to certificate"
+    displaypassword: "Password - Used to generate the certificate"
     hiddenusername: false
   - name: organization
     display: Organization
@@ -126,8 +126,7 @@ script:
     - name: o365-defender-safelinks-policy-create
       arguments:
         - name: name
-          description: "The Name parameter specifies a unique name for the Safe Links
-            policy."
+          description: "The Name parameter specifies a unique name for the Safe Links policy."
           required: true
           isArray: false
         - default: false
@@ -145,15 +144,19 @@ script:
             complete. When true, messages that contain malicious links are not delivered. Default is false.
           required: false
           isArray: false
+          auto: PREDEFINED
           predefined:
-            - true,false
+            - 'true'
+            - 'false'
         - name: do_not_allow_click_through
           description: Whether to allow users to click through to the original URL on
             warning pages. Default is false.
           required: false
           isArray: false
+          auto: PREDEFINED
           predefined:
-            - true,false
+            - 'true'
+            - 'false'
         - name: do_not_rewrite_urls
           description: Comma-separated list of URLs that are not rewritten by Safe Links scanning.
           required: false
@@ -163,49 +166,63 @@ script:
             links in email messages. Default is false.
           required: false
           isArray: false
+          auto: PREDEFINED
           predefined:
-            - true,false
+            - 'true'
+            - 'false'
         - name: enable_for_internal_senders
           description: Whether the Safe Links policy is applied to messages sent between
             internal senders and internal recipients within the same Exchange
             Online organization. Default is false.
           required: false
           isArray: false
+          auto: PREDEFINED
           predefined:
-            - true,false
+            - 'true'
+            - 'false'
         - name: enable_organization_branding
           description: Whether to display the organization's logo on Safe Links warning and notification pages. Default is false.
           required: false
           isArray: false
+          auto: PREDEFINED
           predefined:
-            - true,false
+            - 'true'
+            - 'false'
         - name: enable_safe_links_for_teams
           description: Whether to enable the Safe Links for Microsoft Teams. Default is false.
           required: false
           isArray: false
+          auto: PREDEFINED
           predefined:
-            - true,false
+            - 'true'
+            - 'false'
         - name: is_enabled
           description: Whether to enable Safe Links protection for email messages. Default is false.
           required: false
           isArray: false
+          auto: PREDEFINED
           predefined:
-            - true,false
+            - 'true'
+            - 'false'
         - name: scan_urls
           description: Whether to enable or disable real-time scanning of clicked links in
             email messages. Default is false.
           required: false
           isArray: false
+          auto: PREDEFINED
           predefined:
-            - true,false
+            - 'true'
+            - 'false'
         - name: use_translated_notification_text
           description: Whether to use Microsoft Translator to automatically localize the
             custom notification text that you specified with the
             CustomNotificationText parameter. Default is false.
           required: false
           isArray: false
+          auto: PREDEFINED
           predefined:
-            - true,false
+            - 'true'
+            - 'false'
       outputs:
         - contextPath: O365Defender.SafeLinks.AdminDisplayName
           description: Policy description.
@@ -316,15 +333,19 @@ script:
             complete. When true, messages that contain malicious links are not delivered. Default is false.
           required: false
           isArray: false
+          auto: PREDEFINED
           predefined:
-            - true,false
+            - 'true'
+            - 'false'
         - name: do_not_allow_click_through
           description: Whether to allow users to click through to the original URL on
             warning pages. Default is false.
           required: false
           isArray: false
+          auto: PREDEFINED
           predefined:
-            - true,false
+            - 'true'
+            - 'false'
         - name: do_not_rewrite_urls
           description: Comma-separated list of URLs that are not rewritten by Safe Links scanning.
           required: false
@@ -334,49 +355,63 @@ script:
             links in email messages. Default is false.
           required: false
           isArray: false
+          auto: PREDEFINED
           predefined:
-            - true,false
+            - 'true'
+            - 'false'
         - name: enable_for_internal_senders
           description: Whether the Safe Links policy is applied to messages sent between
             internal senders and internal recipients within the same Exchange
             Online organization. Default is false.
           required: false
           isArray: false
+          auto: PREDEFINED
           predefined:
-            - true,false
+            - 'true'
+            - 'false'
         - name: enable_organization_branding
           description: Whether to display the organization's logo on Safe Links warning and notification pages. Default is false.
           required: false
           isArray: false
+          auto: PREDEFINED
           predefined:
-            - true,false
+            - 'true'
+            - 'false'
         - name: enable_safe_links_for_teams
           description: Whether to enable the Safe Links for Microsoft Teams. Default is false.
           required: false
           isArray: false
+          auto: PREDEFINED
           predefined:
-            - true,false
+            - 'true'
+            - 'false'
         - name: is_enabled
           description: Whether to enable Safe Links protection for email messages. Default is false.
           required: false
           isArray: false
+          auto: PREDEFINED
           predefined:
-            - true,false
+            - 'true'
+            - 'false'
         - name: scan_urls
           description: Whether to enable or disable real-time scanning of clicked links in
             email messages. Default is false.
           required: false
           isArray: false
+          auto: PREDEFINED
           predefined:
-            - true,false
+            - 'true'
+            - 'false'
         - name: use_translated_notification_text
           description: Whether to use Microsoft Translator to automatically localize the
             custom notification text that you specified with the
             CustomNotificationText parameter. Default is false.
           required: false
           isArray: false
+          auto: PREDEFINED
           predefined:
-            - true,false
+            - 'true'
+            - 'false'
       outputs:
         - contextPath: O365Defender.SafeLinks.AdminDisplayName
           description: Policy description.
@@ -493,8 +528,10 @@ script:
           description: The State of the rules. Possible values are Enabled and Disabled.
           required: false
           secret: false
+          auto: PREDEFINED
           predefined:
-            - Enabled,Disabled
+            - 'Enabled'
+            - 'Disabled'
       deprecated: false
       outputs:
         - contextPath: O365Defender.SafeLinks.Rule.Comments
@@ -587,8 +624,10 @@ script:
           description: Whether the rule is enabled.
           required: false
           isArray: false
+          auto: PREDEFINED
           predefined:
-            - true,false
+            - 'true'
+            - 'false'
         - name: except_if_recipient_domain_is
           description: Specifies an exception that looks for recipients with email address in the specified domains.
           required: false
@@ -711,8 +750,10 @@ script:
           description: Whether the rule is enabled.
           required: false
           isArray: false
+          auto: PREDEFINED
           predefined:
-            - true,false
+            - 'true'
+            - 'false'
         - name: except_if_recipient_domain_is
           description: Specifies an exception that looks for recipients with email address in the specified domains.
           required: false

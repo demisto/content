@@ -14,7 +14,9 @@ function EncloseArgWithQuotes {
     }
 
     $arrayed_value = $arg_value -split ","
-
+    if ($arrayed_value.Length -eq 1) {
+        return $arrayed_value
+    }
     for ($i = 0; $i -lt $arrayed_value.Count; $i++) {
         $temp_val = $arrayed_value[$i]
         if ($temp_val[0] -ne '"') {
@@ -77,21 +79,27 @@ class ExchangeOnlinePowershellV2Client {
         Connect-ExchangeOnline @cmd_params -ShowBanner:$false -WarningAction:SilentlyContinue | Out-Null
     }
     DisconnectSession() {
-        Disconnect-ExchangeOnline -Confirm:$false -WarningAction:SilentlyContinue | Out-Null
+        Disconnect-ExchangeOnline -Confirm:$false -WarningAction:SilentlyContinue -InformationAction:Ignore | Out-Null
     }
 
     [PSObject]
     GetPolicyList(
         [string]$identity
     ) {
-        $cmd_params = @{ }
-        if ($identity) {
-            $cmd_params.Identity = $identity
+        try
+        {
+            $cmd_params = @{ }
+            if ($identity)
+            {
+                $cmd_params.Identity = $identity
+            }
+            $this.CreateSession()
+            $results = Get-SafeLinksPolicy @cmd_params
+            return $results
         }
-        $this.CreateSession()
-        $results = Get-SafeLinksPolicy @cmd_params
-        $this.DisconnectSession()
-        return $results
+        finally {
+            $this.DisconnectSession()
+        }
 
         <#
         .DESCRIPTION
@@ -120,71 +128,64 @@ class ExchangeOnlinePowershellV2Client {
     [PSObject]
     CreateUpdatePolicy(
         [string]$command_type,
-        [string]$name,
-        [string]$admin_display_name,
-        [string]$custom_notification_text,
-        [bool]$deliver_message_after_scan,
-        [bool]$do_not_allow_click_through,
-        [string]$do_not_rewrite_urls,
-        [bool]$do_not_track_user_clicks,
-        [bool]$enable_for_internal_senders,
-        [bool]$enable_organization_branding,
-        [bool]$enable_safe_links_for_teams,
-        [bool]$is_enabled,
-        [bool]$scan_urls,
-        [bool]$use_translated_notification_text
+        [hashtable]$kwargs
     ) {
-        $cmd_params = @{
-            Name = $name
-        }
-        if ($admin_display_name) {
-            $cmd_params.AdminDisplayName = $admin_display_name
-        }
-        if ($custom_notification_text) {
-            $cmd_params.CustomNotificationText = $custom_notification_text
-        }
-        if ($deliver_message_after_scan) {
-            $cmd_params.DeliverMessageAfterScan = $deliver_message_after_scan
-        }
-        if ($do_not_allow_click_through) {
-            $cmd_params.DoNotAllowClickThrough = $do_not_allow_click_through
-        }
-        if ($do_not_rewrite_urls) {
-            $cmd_params.DoNotRewriteUrls = $do_not_rewrite_urls
-        }
-        if ($do_not_track_user_clicks) {
-            $cmd_params.DoNotTrackUserClicks = $do_not_track_user_clicks
-        }
-        if ($enable_for_internal_senders) {
-            $cmd_params.EnableForInternalSenders = $enable_for_internal_senders
-        }
-        if ($enable_organization_branding) {
-            $cmd_params.EnableOrganizationBranding = $enable_organization_branding
-        }
-        if ($enable_safe_links_for_teams) {
-            $cmd_params.EnableSafeLinksForTeams = $enable_safe_links_for_teams
-        }
-        if ($is_enabled) {
-            $cmd_params.IsEnabled = $is_enabled
-        }
-        if ($scan_urls) {
-            $cmd_params.ScanUrls = $scan_urls
-        }
-        if ($use_translated_notification_text) {
-            $cmd_params.UseTranslatedNotificationText = $use_translated_notification_text
-        }
+        try
+        {
+            $cmd_params = @{
+            Name = $kwargs.name
+            }
+            if ($kwargs.admin_display_name) {
+                $cmd_params.AdminDisplayName = $kwargs.admin_display_name
+            }
+            if ($kwargs.custom_notification_text) {
+                $cmd_params.CustomNotificationText = $kwargs.custom_notification_text
+            }
+            if ($kwargs.deliver_message_after_scan) {
+                $cmd_params.DeliverMessageAfterScan = ConvertTo-Boolean $kwargs.deliver_message_after_scan
+            }
+            if ($kwargs.do_not_allow_click_through) {
+                $cmd_params.DoNotAllowClickThrough = ConvertTo-Boolean $kwargs.do_not_allow_click_through
+            }
+            if ($kwargs.do_not_rewrite_urls) {
+                $cmd_params.DoNotRewriteUrls = EncloseArgWithQuotes($kwargs.do_not_rewrite_urls)
+            }
+            if ($kwargs.do_not_track_user_clicks) {
+                $cmd_params.DoNotTrackUserClicks = ConvertTo-Boolean $kwargs.do_not_track_user_clicks
+            }
+            if ($kwargs.enable_for_internal_senders) {
+                $cmd_params.EnableForInternalSenders = ConvertTo-Boolean $kwargs.enable_for_internal_senders
+            }
+            if ($kwargs.enable_organization_branding) {
+                $cmd_params.EnableOrganizationBranding = ConvertTo-Boolean $kwargs.enable_organization_branding
+            }
+            if ($kwargs.enable_safe_links_for_teams) {
+                $cmd_params.EnableSafeLinksForTeams = ConvertTo-Boolean $kwargs.enable_safe_links_for_teams
+            }
+            if ($kwargs.is_enabled) {
+                $cmd_params.IsEnabled = ConvertTo-Boolean $kwargs.is_enabled
+            }
+            if ($kwargs.scan_urls) {
+                $cmd_params.ScanUrls = ConvertTo-Boolean $kwargs.scan_urls
+            }
+            if ($kwargs.use_translated_notification_text) {
+                $cmd_params.UseTranslatedNotificationText = ConvertTo-Boolean $kwargs.use_translated_notification_text
+            }
 
-        $this.CreateSession()
+            $this.CreateSession()
 
-        if ($command_type -eq "create") {
-            $results = New-SafeLinksPolicy @cmd_params
+            if ($command_type -eq "create") {
+                $results = New-SafeLinksPolicy @cmd_params
+            }
+            else {
+                $results = Set-SafeLinksPolicy @cmd_params
+            }
+            return $results
         }
-        else {
-            $results = Set-SafeLinksPolicy @cmd_params
+        finally
+        {
+            $this.DisconnectSession()
         }
-
-        $this.DisconnectSession()
-        return $results
 
         <#
         .DESCRIPTION
@@ -203,18 +204,19 @@ class ExchangeOnlinePowershellV2Client {
         #>
     }
 
-    [PSObject]
-    RemovePolicy(
-        [string]$identity
-    ) {
-        $cmd_params = @{ }
-        if ($identity) {
-            $cmd_params.Identity = $identity
+    RemovePolicy([string]$identity) {
+
+        try
+        {
+            $this.CreateSession()
+            Remove-SafeLinksPolicy -Identity $identity -Confirm:$false -WarningAction:SilentlyContinue > $null
         }
-        $this.CreateSession()
-        $results = Remove-SafeLinksPolicy @cmd_params
-        $this.DisconnectSession()
-        return $results
+
+        finally
+        {
+            $this.DisconnectSession()
+        }
+
 
         <#
         .DESCRIPTION
@@ -245,17 +247,25 @@ class ExchangeOnlinePowershellV2Client {
         [string]$identity,
         [string]$state
     ) {
-        $cmd_params = @{ }
-        if ($identity) {
-            $cmd_params.Identity = $identity
+        try
+        {
+            $cmd_params = @{ }
+            if ($identity) {
+                $cmd_params.Identity = $identity
+            }
+            if ($state) {
+                $cmd_params.State = $state
+            }
+            $this.CreateSession()
+            $results = Get-SafeLinksRule @cmd_params
+
+            return $results
+
         }
-        if ($state) {
-            $cmd_params.State = $state
+        finally
+        {
+            $this.DisconnectSession()
         }
-        $this.CreateSession()
-        $results = Get-SafeLinksRule @cmd_params
-        $this.DisconnectSession()
-        return $results
 
         <#
         .DESCRIPTION
@@ -284,64 +294,57 @@ class ExchangeOnlinePowershellV2Client {
     [PSObject]
     CreateUpdateRule(
         [string]$command_type,
-        [string]$name,
-        [string]$safe_links_policy,
-        [string]$comments,
-        [bool]$enabled,
-        [string]$except_if_recipient_domain_is,
-        [string]$except_if_sent_to,
-        [string]$except_if_sent_to_member_of,
-        [Int32]$priority,
-        [string]$recipient_domain_is,
-        [string]$sent_to,
-        [string]$sent_to_member_of
-
+        [hashtable]$kwargs
     ) {
-        $cmd_params = @{
-            Name = $name
-        }
-        if ($safe_links_policy) {
-            $cmd_params.SafeLinksPolicy = $safe_links_policy
-        }
-        if ($comments) {
-            $cmd_params.Comments = $comments
-        }
-        if ($enabled) {
-            $cmd_params.Enabled = $enabled
-        }
-        if ($except_if_recipient_domain_is) {
-            $cmd_params.ExceptIfRecipientDomainIs = $except_if_recipient_domain_is
-        }
-        if ($except_if_sent_to) {
-            $cmd_params.ExceptIfSentTo = $except_if_sent_to
-        }
-        if ($except_if_sent_to_member_of) {
-            $cmd_params.ExceptIfSentToMemberOf = $except_if_sent_to_member_of
-        }
-        if ($priority) {
-            $cmd_params.Priority = $priority
-        }
-        if ($recipient_domain_is) {
-            $cmd_params.RecipientDomainIs = $recipient_domain_is
-        }
-        if ($sent_to) {
-            $cmd_params.EnableForInternalSenders = $sent_to
-        }
-        if ($sent_to_member_of) {
-            $cmd_params.SentToMemberOf = $sent_to_member_of
-        }
+        try {
+            $cmd_params = @{
+            Name = $kwargs.name
+            }
 
-        $this.CreateSession()
+            if ($kwargs.safe_links_policy) {
+                $cmd_params.SafeLinksPolicy = $kwargs.safe_links_policy
+            }
+            if ($kwargs.comments) {
+                $cmd_params.Comments = $kwargs.comments
+            }
+            if ($kwargs.enabled) {
+                $cmd_params.Enabled = ConvertTo-Boolean $kwargs.enabled
+            }
+            if ($kwargs.except_if_recipient_domain_is) {
+                $cmd_params.ExceptIfRecipientDomainIs = $kwargs.except_if_recipient_domain_is
+            }
+            if ($kwargs.except_if_sent_to) {
+                $cmd_params.ExceptIfSentTo = EncloseArgWithQuotes($kwargs.except_if_sent_to)
+            }
+            if ($kwargs.except_if_sent_to_member_of) {
+                $cmd_params.ExceptIfSentToMemberOf = $kwargs.except_if_sent_to_member_of
+            }
+            if ($kwargs.priority) {
+                $cmd_params.Priority = $kwargs.priority -as [Int32]
+            }
+            if ($kwargs.recipient_domain_is) {
+                $cmd_params.RecipientDomainIs = EncloseArgWithQuotes($kwargs.recipient_domain_is)
+            }
+            if ($kwargs.sent_to) {
+                $cmd_params.SentTo =  EncloseArgWithQuotes($kwargs.sent_to)
+            }
+            if ($kwargs.sent_to_member_of) {
+                $cmd_params.SentToMemberOf = EncloseArgWithQuotes($kwargs.sent_to_member_of)
+            }
 
-        if ($command_type -eq "create") {
-            $results = New-SafeLinksRule @cmd_params
-        }
-        else {
-            $results = Set-SafeLinksRule @cmd_params
-        }
+            $this.CreateSession()
 
-        $this.DisconnectSession()
-        return $results
+            if ($command_type -eq "create") {
+                $results = New-SafeLinksRule @cmd_params
+            }
+            else {
+                $results = Set-SafeLinksRule @cmd_params
+            }
+            return $results
+        }
+        finally {
+            $this.DisconnectSession()
+        }
 
         <#
         .DESCRIPTION
@@ -368,13 +371,14 @@ function GetPolicyListCommand {
         [Parameter(Mandatory)][ExchangeOnlinePowershellV2Client]$client,
         [hashtable]$kwargs
     )
-    $identity = EncloseArgWithQuotes($kwargs.identity)
-    $raw_response = $client.GetPolicyList(
-        $identity
-    )
+    $raw_response = $client.GetPolicyList($kwargs.identity)
+    if (!$raw_response){
+        return "#### No policies were found.", @{}, @{}
+    }
+
     $human_readable = TableToMarkdown $raw_response "Results of $command"
     $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.Policy(obj.Guid === val.Guid)" = $raw_response }
-    Write-Output $human_readable, $entry_context, $raw_response
+    return $human_readable, $entry_context, $raw_response
 }
 
 function CreateUpdatePolicyCommand {
@@ -384,39 +388,17 @@ function CreateUpdatePolicyCommand {
         [Parameter(Mandatory)][string]$command_type,
         [hashtable]$kwargs
     )
-    $name = EncloseArgWithQuotes($kwargs.name)
-    $admin_display_name = EncloseArgWithQuotes($kwargs.admin_display_name)
-    $custom_notification_text = EncloseArgWithQuotes($kwargs.custom_notification_text)
-    $deliver_message_after_scan = $kwargs.deliver_message_after_scan -eq "true"
-    $do_not_allow_click_through = $kwargs.do_not_allow_click_through -eq "true"
-    $do_not_rewrite_urls = EncloseArgWithQuotes($kwargs.do_not_rewrite_urls)
-    $do_not_track_user_clicks = $kwargs.do_not_track_user_clicks -eq "true"
-    $enable_for_internal_senders = $kwargs.enable_for_internal_senders -eq "true"
-    $enable_organization_branding = $kwargs.enable_organization_branding -eq "true"
-    $enable_safe_links_for_teams = $kwargs.enable_safe_links_for_teams -eq "true"
-    $is_enabled = $kwargs.is_enabled -eq "true"
-    $scan_urls = $kwargs.scan_urls -eq "true"
-    $use_translated_notification_text = $kwargs.use_translated_notification_text -eq "true"
-
     $raw_response = $client.CreateUpdatePolicy(
         $command_type,
-        $name,
-        $admin_display_name,
-        $custom_notification_text,
-        $deliver_message_after_scan,
-        $do_not_allow_click_through,
-        $do_not_rewrite_urls,
-        $do_not_track_user_clicks,
-        $enable_for_internal_senders,
-        $enable_organization_branding,
-        $enable_safe_links_for_teams,
-        $is_enabled,
-        $scan_urls,
-        $use_translated_notification_text
+        $kwargs
     )
+    if (!$raw_response){
+        return "#### The policy was not ${command_type}d successfully.", @{}, @{}
+    }
+
     $human_readable = TableToMarkdown $raw_response "Results of $command"
     $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.Policy(obj.Guid === val.Guid)" = $raw_response }
-    Write-Output $human_readable, $entry_context, $raw_response
+    return $human_readable, $entry_context, $raw_response
 }
 
 function RemovePolicyCommand {
@@ -425,13 +407,10 @@ function RemovePolicyCommand {
         [Parameter(Mandatory)][ExchangeOnlinePowershellV2Client]$client,
         [hashtable]$kwargs
     )
-    $identity = EncloseArgWithQuotes($kwargs.identity)
-    $raw_response = $client.RemovePolicy(
-        $identity
-    )
-    $human_readable = TableToMarkdown $raw_response "Results of $command"
-    $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.Policy(obj.Guid === val.Guid)" = $raw_response }
-    Write-Output $human_readable, $entry_context, $raw_response
+    $identity = $kwargs.identity
+    $client.RemovePolicy($identity)
+    $human_readable = "#### Policy with Identity: ${identity} was removed successfully."
+    return $human_readable, $null, $null
 }
 
 function GetRulesCommand {
@@ -440,11 +419,16 @@ function GetRulesCommand {
         [Parameter(Mandatory)][ExchangeOnlinePowershellV2Client]$client,
         [hashtable]$kwargs
     )
-    $identity = EncloseArgWithQuotes($kwargs.identity)
+    $identity = $kwargs.identity
     $raw_response = $client.GetRules($identity, $kwargs.state)
+
+    if (!$raw_response){
+        return "#### No rules were found.", @{}, @{}
+    }
+
     $human_readable = TableToMarkdown $raw_response "Results of $command"
     $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.Rule(obj.Guid === val.Guid)" = $raw_response }
-    Write-Output $human_readable, $entry_context, $raw_response
+    return $human_readable, $entry_context, $raw_response
 }
 
 function CreateUpdateRuleCommand {
@@ -454,36 +438,20 @@ function CreateUpdateRuleCommand {
         [Parameter(Mandatory)][string]$command_type,
         [hashtable]$kwargs
     )
-    $name = EncloseArgWithQuotes($kwargs.name)
-    $safe_links_policy = EncloseArgWithQuotes($kwargs.safe_links_policy)
-    $comments = EncloseArgWithQuotes($kwargs.comments)
-    $enabled = $kwargs.enabled -eq "true"
-    $except_if_recipient_domain_is = EncloseArgWithQuotes($kwargs.except_if_recipient_domain_is)
-    $except_if_sent_to = EncloseArgWithQuotes($kwargs.except_if_sent_to)
-    $except_if_sent_to_member_of = EncloseArgWithQuotes($kwargs.except_if_sent_to_member_of)
-    $priority = $kwargs.enable_for_internal_senders -as [Int32]
-    $recipient_domain_is = EncloseArgWithQuotes($kwargs.recipient_domain_is)
-    $sent_to = EncloseArgWithQuotes($kwargs.sent_to)
-    $sent_to_member_of = EncloseArgWithQuotes($kwargs.sent_to_member_of)
 
     $raw_response = $client.CreateUpdateRule(
         $command_type,
-        $name,
-        $safe_links_policy,
-        $comments,
-        $enabled,
-        $except_if_recipient_domain_is,
-        $except_if_sent_to,
-        $except_if_sent_to_member_of,
-        $priority,
-        $recipient_domain_is,
-        $sent_to,
-        $sent_to_member_of
+        $kwargs
     )
+    if (!$raw_response){
+        return "#### The rule was not ${command_type}d successfully.", @{}, @{}
+    }
+
     $human_readable = TableToMarkdown $raw_response "Results of $command"
     $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.Policy(obj.Guid === val.Guid)" = $raw_response }
-    Write-Output $human_readable, $entry_context, $raw_response
+    return $human_readable, $entry_context, $raw_response
 }
+
 function TestModuleCommand($client) {
     try {
         $client.CreateSession()
@@ -566,10 +534,6 @@ function Main {
         else {
             ReturnError $_.Exception.Message
         }
-    }
-    finally {
-        # Always disconnect the session, even if no sessions available.
-        $exo_client.DisconnectSession()
     }
 }
 
