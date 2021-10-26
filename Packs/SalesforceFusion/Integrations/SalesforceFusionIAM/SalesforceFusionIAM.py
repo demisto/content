@@ -19,7 +19,7 @@ class Client(BaseClient):
     """ A client class that implements logic to authenticate with the application. """
 
     def __init__(self, base_url, verify=True, proxy=False, ok_codes=(), headers=None, auth=None, client_id=None,
-                 username=None, password=None, client_secret=None, manager_email=None):
+                 username=None, password=None, client_secret=None):
         super().__init__(base_url, verify, proxy, ok_codes, headers, auth)
         self.client_id = client_id
         self.client_secret = client_secret
@@ -27,23 +27,6 @@ class Client(BaseClient):
         self.password = password
         self.headers = headers if headers else {}
         self.headers['Authorization'] = f'Bearer {self.create_login()}'
-        # self.manager_id = self.get_manager_id(manager_email)
-
-    def get_manager_id(self, manager_email: Optional[str]) -> str:
-        """ Gets the user's manager ID from manager email.
-        :type manager_email: ``str``
-        :param manager_email: user's manager email
-        :return: The user's manager ID
-        :rtype: ``str``
-        """
-
-        # Get manager ID.
-        manager_id = ''
-        if manager_email:
-            res = self.get_user('Work_Email__c', manager_email)
-            if res is not None:
-                manager_id = res.id
-        return manager_id
 
     def create_login(self):
         uri = '/services/oauth2/token'
@@ -130,8 +113,6 @@ class Client(BaseClient):
         :rtype: ``IAMUserAppData``
         """
         uri = f'{URI_PREFIX}sobjects/FF__Key_Contact__c'
-        # if self.manager_id:
-        #     user_data['manager_id'] = self.manager_id
         res = self._http_request(
             method='POST',
             url_suffix=uri,
@@ -157,8 +138,6 @@ class Client(BaseClient):
         :rtype: ``IAMUserAppData``
         """
         uri = f'{URI_PREFIX}sobjects/FF__Key_Contact__c/{user_id}'
-        # if self.manager_id:
-        #     user_data['manager_id'] = self.manager_id
         params = {"_HttpMethod": "PATCH"}
 
         self._http_request(
@@ -336,12 +315,6 @@ def main():
     incident_type: str = IAMUserProfile.CREATE_INCIDENT_TYPE if command == 'iam-get-user' else \
         IAMUserProfile.UPDATE_INCIDENT_TYPE
     args = demisto.args()
-    if 'user-profile' in args:
-        manager_email = IAMUserProfile(args.get('user-profile', {}),
-                                       mapper=mapper_out,
-                                       incident_type=incident_type).get_attribute('manageremailaddress')
-    else:
-        manager_email = None
 
     is_create_enabled = params.get("create_user_enabled")
     is_enable_enabled = params.get("enable_user_enabled")
@@ -367,8 +340,7 @@ def main():
         client_id=client_id,
         client_secret=client_secret,
         username=username,
-        password=password + secret_token if password and secret_token else None,
-        manager_email=manager_email,
+        password=password + secret_token if password and secret_token else None
     )
 
     demisto.debug(f'Command being called is {command}')
