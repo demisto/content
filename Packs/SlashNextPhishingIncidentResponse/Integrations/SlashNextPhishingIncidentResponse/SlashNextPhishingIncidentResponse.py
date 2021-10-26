@@ -465,6 +465,68 @@ def domain_command():
     return_outputs(md, ec, snx_ioc_cont)
 
 
+def url_lookup(url):
+    """
+    Execute SlashNext's url/reputation API against the requested url with the given parameters
+    :param url: Url whose reputation needs to be fetched
+    :return: Response of the SlashNext url/reputation API
+    """
+    # Create the required data dictionary for Url/Reputation
+    api_data = {
+        'url': url
+    }
+    response = http_request(endpoint=URL_REPUTE_API, data=api_data)
+
+    if response.get('errorNo') != 0:
+        return_error('API Returned, {}:{}'.format(response.get('errorNo'), response.get('errorMsg')))
+
+    return response
+
+
+def url_command():
+    """
+    Execute SlashNext's url/reputation API against the requested url reputation command with the given parameters
+    @:return: None
+    """
+    # 1. Get input url from Demisto
+    url = demisto.args().get('url')
+    # 2. Get the url reputation from SlashNext API
+    response = url_lookup(url=url)
+    if response.get('errorNo') != 0:
+        return
+    # 3. Parse and format the response
+    url_data = response.get('urlData')
+
+    snx_ioc_cont, dbot_score_cont, url_cont = get_snx_url_ioc_context(url_data)
+
+    ec = {
+        'SlashNext.URL(val.Value === obj.Value)': snx_ioc_cont[0],
+        'DBotScore': dbot_score_cont,
+        'URL': url_cont
+    }
+
+    title = 'SlashNext Phishing Incident Response - URL Lookup\n'\
+            '##### url = {}'.format(url_data.get('url'))
+
+    if response.get('normalizeData').get('normalizeStatus') == 1:
+        title += ' *\n*' + response.get('normalizeData').get('normalizeMessage')
+
+    md = tableToMarkdown(
+        title,
+        snx_ioc_cont,
+        ['Value',
+         'Type',
+         'Verdict',
+         'ThreatStatus',
+         'ThreatName',
+         'ThreatType',
+         'FirstSeen',
+         'LastSeen']
+    )
+
+    return_outputs(md, ec, snx_ioc_cont)
+
+
 def host_reputation(host):
     """
     Execute SlashNext's host/reputation API against the requested host with the given parameters
@@ -1283,6 +1345,8 @@ def main():
             ip_command()
         elif demisto.command() == 'domain':
             domain_command()
+        elif demisto.command() == 'url':
+            url_command()
         elif demisto.command() == 'slashnext-host-reputation':
             host_reputation_command()
         elif demisto.command() == 'slashnext-host-report':
