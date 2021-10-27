@@ -26,7 +26,7 @@ class Client(BaseClient):
         """
         super().__init__(base_url, verify=verify, proxy=proxy)
 
-    def get_indicators(self) -> List:
+    def get_indicators(self) -> Set:
         """
         Uses 5 text files which contains zoom endpoints. This files are linked from:
         https://support.zoom.us/hc/en-us/articles/201362683-Network-Firewall-or-Proxy-Server-Settings-for-Zoom
@@ -39,7 +39,7 @@ class Client(BaseClient):
                               'ZoomPhone.txt',
                               'ZoomCDN.txt']
 
-        indicators = [
+        indicators = {
             'crl3.digicert.com'
             'crl4.digicert.com',
             'ocsp.digicert.com',
@@ -50,12 +50,12 @@ class Client(BaseClient):
             'crl.starfieldtech.com',
             'ocsp.starfieldtech.com',
             '*.zoom.us',
-            '*.cloudfront.net']
+            '*.cloudfront.net'}
 
         for url in list_ips_txt_files:
             res = self._http_request(method='GET', url_suffix=url, resp_type='text')
             for ip in res.split('\n'):
-                indicators.append(ip)
+                indicators.add(ip)
         return indicators
 
     def build_iterator(self) -> List:
@@ -64,10 +64,10 @@ class Client(BaseClient):
             A list of objects, containing the indicators.
         """
         result = []
-        indicators = self.get_indicators()
 
         try:
-            indicators = list(set(indicators))
+            indicators = list(self.get_indicators())
+
             for indicator in indicators:
                 if auto_detect_indicator_type(indicator):
                     result.append(
