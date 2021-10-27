@@ -741,27 +741,6 @@ jobs:
               then
                 python3 ./Tests/scripts/verify_base_branch_for_contribution.py $CIRCLE_BRANCH
             fi
-      - unless:
-          condition:
-            equal:
-              - master
-              - << pipeline.git.branch >>
-          steps:
-            - run:
-                name: validate content-test-conf branch merged
-                shell: /bin/bash
-                when: always
-                command: |
-                  # replace slashes ('/') in the branch name, if exist, with underscores ('_')
-                  UNDERSCORE_CIRCLE_BRANCH=${CIRCLE_BRANCH//\//_}
-                  wget --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN" "https://github.com/demisto/content-test-conf/archive/$UNDERSCORE_CIRCLE_BRANCH.zip" --no-check-certificate -q
-                  if [ "$?" != "0" ]; then
-                    echo "No such branch in content-test-conf: $UNDERSCORE_CIRCLE_BRANCH"
-                    exit 0
-                  else
-                    echo "ERROR: Found a branch with the same name in contest-test-conf conf.json - $UNDERSCORE_CIRCLE_BRANCH.\n Merge it in order to merge the current branch into content repo."
-                    exit 1
-                  fi
       - run:
           name: Validate landingPageSections.json
           when: always
