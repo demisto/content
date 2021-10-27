@@ -376,5 +376,5 @@ outputs:
   description: Original attachments
   type: unknown
 tests:
-- No tests (auto formatted)
+- Get Original Email - Gmail v2 - test
 fromversion: 6.1.0

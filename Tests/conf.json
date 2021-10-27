@@ -4603,6 +4603,29 @@
             "is_mockable": false,
             "instance_names": "MISP_feed_instance",
             "timeout": 2400
+        },
+        {
+            "playbookID": "Get Original Email - Microsoft Graph Mail - test",
+            "fromversion": "6.1.0",
+            "integrations": [
+                "MicrosoftGraphMail"
+            ],
+            "instance_names": "ms_graph_mail_dev_no_oproxy"
+        },
+        {
+            "playbookID": "Get Original Email - Gmail v2 - test",
+            "fromversion": "6.1.0",
+            "integrations": [
+                "Gmail"
+            ]
+        },
+        {
+            "playbookID": "Get Original Email - EWS v2 - test",
+            "fromversion": "6.1.0",
+            "integrations": [
+                "EWS v2"
+            ],
+            "instance_names": "ewv2_regular"
         }
     ],
     "skipped_tests": {

@@ -1,0 +1,228 @@
+id: Get Original Email - Microsoft Graph Mail - test
+version: -1
+name: Get Original Email - Microsoft Graph Mail - test
+description: '"Get Original Email - Microsoft Graph Mail" test playbook.'
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 15d27661-5221-4106-81cb-1beb7ce1e7fd
+    type: start
+    task:
+      id: 15d27661-5221-4106-81cb-1beb7ce1e7fd
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 22c123c2-df9c-4ae6-8632-45b3e1c1393e
+    type: condition
+    task:
+      id: 22c123c2-df9c-4ae6-8632-45b3e1c1393e
+      version: -1
+      name: Check output
+      description: Check the playbook outputs.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: File
+                accessor: SHA256
+            iscontext: true
+          right:
+            value:
+              simple: 5284e46729c4f554172494938be7482627cbfb3d91b83f83b7a5c70cf647ae94
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 23abaa87-7be6-4efa-84c3-d7e0689f3d27
+    type: regular
+    task:
+      id: 23abaa87-7be6-4efa-84c3-d7e0689f3d27
+      version: -1
+      name: Print success
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value:
+        simple: SUCCESS
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 4d7dc1e1-b5ca-48bc-824f-41bad4755526
+    type: regular
+    task:
+      id: 4d7dc1e1-b5ca-48bc-824f-41bad4755526
+      version: -1
+      name: Print Error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: ERROR
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 6d2d3cde-0030-464a-8bda-a99ab24a9fa1
+    type: playbook
+    task:
+      id: 6d2d3cde-0030-464a-8bda-a99ab24a9fa1
+      version: -1
+      name: Get Original Email - Microsoft Graph Mail
+      description: |-
+        Use this playbook to retrieve the original email using Microsoft Graph Mail integration.
+
+        You must have the necessary permissions in the Microsoft Graph Mail integration as described here:
+              * https://docs.microsoft.com/en-us/graph/api/message-get
+              * https://docs.microsoft.com/en-us/graph/api/user-list-messages
+      playbookName: Get Original Email - Microsoft Graph Mail
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      MessageID:
+        complex:
+          root: inputs.MessageID
+      ThreadTopic:
+        complex:
+          root: inputs.EmailSubject
+      UserID:
+        complex:
+          root: inputs.UserID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 615,
+        "width": 840,
+        "x": 220,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: UserID
+  value:
+    simple: avishai@demistodev.onmicrosoft.com
+  required: false
+  description: ""
+  playbookInputQuery:
+- key: MessageID
+  value:
+    simple: <VI1PR07MB4751252DDE7DD134E41EB032E2859@VI1PR07MB4751.eurprd07.prod.outlook.com>
+  required: false
+  description: ""
+  playbookInputQuery:
+- key: EmailSubject
+  value:
+    simple: TEST_EMAIL_DO_NOT_DELETE
+  required: false
+  description: ""
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.1.0

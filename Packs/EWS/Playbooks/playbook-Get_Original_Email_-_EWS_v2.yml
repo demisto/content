@@ -303,5 +303,5 @@ outputs:
   description: The original email as eml file.
   type: unknown
 tests:
-- No tests (auto formatted)
+- Get Original Email - EWS v2 - test
 fromversion: 6.1.0

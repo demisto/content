@@ -1,0 +1,215 @@
+id: Get Original Email - EWS v2 - test
+version: -1
+name: Get Original Email - EWS v2 - test
+description: '"Get Original Email - EWS v2" test playbook.'
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 15d27661-5221-4106-81cb-1beb7ce1e7fd
+    type: start
+    task:
+      id: 15d27661-5221-4106-81cb-1beb7ce1e7fd
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: f00380e0-6efc-4c9c-87ff-279b353d80a9
+    type: condition
+    task:
+      id: f00380e0-6efc-4c9c-87ff-279b353d80a9
+      version: -1
+      name: Check output
+      description: Check the playbook outputs.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: File
+                accessor: SHA256
+            iscontext: true
+          right:
+            value:
+              simple: b566b3812fcfaeb3474f9b43dc891a51e9a378d00d57d4e3048017715ef18fe1
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 23abaa87-7be6-4efa-84c3-d7e0689f3d27
+    type: regular
+    task:
+      id: 23abaa87-7be6-4efa-84c3-d7e0689f3d27
+      version: -1
+      name: Print success
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value:
+        simple: SUCCESS
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: acf8565e-b649-41af-8631-75ddd75af037
+    type: regular
+    task:
+      id: acf8565e-b649-41af-8631-75ddd75af037
+      version: -1
+      name: Print Error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: ERROR
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: eee8500a-b9c6-4e6e-8565-6b15a55d1ef2
+    type: playbook
+    task:
+      id: eee8500a-b9c6-4e6e-8565-6b15a55d1ef2
+      version: -1
+      name: Get Original Email - EWS v2
+      description: |-
+        This v2 playbook retrieves the original email in the thread (as eml file) by using the EWS v2 integration.
+        The main difference between this playbook and its previous version is that this playbook will retrieve the email as eml and not as an Email object. This version also reduces the amount of tasks needed to perform the fetch action.
+        You must have the necessary permissions in the EWS integration to execute global search: eDiscovery
+      playbookName: Get Original Email - EWS v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      MessageID:
+        simple: ${inputs.MessageID}
+      TargetMailbox:
+        simple: ${inputs.UserID}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 615,
+        "width": 840,
+        "x": 220,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: UserID
+  value:
+    simple: demistoadmin@demisto.int
+  required: false
+  description: ""
+  playbookInputQuery:
+- key: MessageID
+  value:
+    simple: <1635327546298.23756@demisto.int>
+  required: false
+  description: ""
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.1.0

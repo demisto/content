@@ -108,10 +108,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 76ff3cb3-7924-4cd5-8ba7-32f18147ac34
+    taskid: 4e24bc0c-facd-4823-8f1e-67e4458fd4b5
     type: regular
     task:
-      id: 76ff3cb3-7924-4cd5-8ba7-32f18147ac34
+      id: 4e24bc0c-facd-4823-8f1e-67e4458fd4b5
       version: -1
       name: Search for messages by MessageID
       description: Gets the properties of returned emails. Typically shows partial
@@ -257,10 +257,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: cf07b584-cecf-47e9-8eb1-3e0da9dbc07a
+    taskid: 015f4932-563b-458f-8009-e7daafc60547
     type: condition
     task:
-      id: cf07b584-cecf-47e9-8eb1-3e0da9dbc07a
+      id: 015f4932-563b-458f-8009-e7daafc60547
       version: -1
       name: Verify required inputs
       description: Verify that the required input values for retrieving the original
@@ -281,19 +281,19 @@ tasks:
           left:
             value:
               complex:
-                root: inputs.InReplyTo
+                root: inputs.UserID
             iscontext: true
-      - - operator: isExists
+        - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.MessageID
+            iscontext: true
+        - operator: isExists
           left:
             value:
               complex:
                 root: inputs.ThreadTopic
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: inputs.Mailbox
             iscontext: true
     view: |-
       {
@@ -350,5 +350,5 @@ outputs:
   description: The original email as eml file.
   type: unknown
 tests:
-- No tests (auto formatted)
+- Get Original Email - Microsoft Graph Mail - test
 fromversion: 6.1.0
