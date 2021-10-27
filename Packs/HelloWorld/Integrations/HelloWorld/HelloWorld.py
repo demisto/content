@@ -253,9 +253,7 @@ from typing import Any, Dict, Tuple, List, Optional, Union, cast
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-
 ''' CONSTANTS '''
-
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 MAX_INCIDENTS_TO_FETCH = 50
@@ -801,6 +799,22 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
         ip_data = client.get_ip_reputation(ip)
         ip_data['ip'] = ip
 
+        # This is an example of creating relationships in reputation commands.
+        # We will create relationships between indicators only in case that the API returns information about
+        # the relationship between two indicators.
+        # See https://xsoar.pan.dev/docs/integrations/generic-commands-reputation#relationships
+
+        relationships_list = []
+        links = ip_data.get('network', {}).get('links', [])
+        for link in links:
+            relationships_list.append(EntityRelationship(
+                entity_a=ip,
+                entity_a_type=FeedIndicatorType.IP,
+                name='related-to',
+                entity_b=link,
+                entity_b_type=FeedIndicatorType.URL,
+                brand='HelloWorld'))
+
         # HelloWorld score to XSOAR reputation mapping
         # See: https://xsoar.pan.dev/docs/integrations/dbot
         # We are using Common.DBotScore as macros to simplify
@@ -840,7 +854,8 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
         ip_standard_context = Common.IP(
             ip=ip,
             asn=ip_data.get('asn'),
-            dbot_score=dbot_score
+            dbot_score=dbot_score,
+            relationships=relationships_list
         )
 
         # INTEGRATION DEVELOPER TIP
@@ -874,7 +889,8 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
             outputs_prefix='HelloWorld.IP',
             outputs_key_field='ip',
             outputs=ip_data,
-            indicator=ip_standard_context
+            indicator=ip_standard_context,
+            relationships=relationships_list
         ))
     return command_results
 
@@ -1252,7 +1268,8 @@ def scan_status_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def scan_results_command(client: Client, args: Dict[str, Any]) -> Union[Dict[str, Any], CommandResults, List[CommandResults]]:
+def scan_results_command(client: Client, args: Dict[str, Any]) ->\
+        Union[Dict[str, Any], CommandResults, List[CommandResults]]:
     """helloworld-scan-results command: Returns results for a HelloWorld scan
 
     :type client: ``Client``
@@ -1307,7 +1324,8 @@ def scan_results_command(client: Client, args: Dict[str, Any]) -> Union[Dict[str
         entities = results.get('entities', [])
         for e in entities:
             if 'vulns' in e.keys() and isinstance(e['vulns'], list):
-                cves.extend([Common.CVE(id=c, cvss=None, published=None, modified=None, description=None) for c in e['vulns']])
+                cves.extend(
+                    [Common.CVE(id=c, cvss=None, published=None, modified=None, description=None) for c in e['vulns']])
 
         # INTEGRATION DEVELOPER TIP
         # We want to provide a unique result for every CVE indicator.
