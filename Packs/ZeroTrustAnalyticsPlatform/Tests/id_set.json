@@ -802,7 +802,7 @@
                     "ZTAP Triggers",
                     "ZTAP Assigned Organization",
                     "ZTAP Product Status",
-                    "ZTAP ID",
+                    "ZTAP Alert ID",
                     "ZTAP Priority"
                 ],
                 "transformers": [

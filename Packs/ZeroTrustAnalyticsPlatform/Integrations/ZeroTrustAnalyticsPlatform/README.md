@@ -109,29 +109,6 @@ There is no context output for this command.
 
 
 
-### update-remote-system
-***
-Pushes incident changes to the remote.
-
-
-#### Base Command
-
-`update-remote-system`
-#### Input
-
-There are no input arguments for this command.
-
-#### Context Output
-
-There is no context output for this command.
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### ztap-get-alert-entries
 ***
 Get the entries data from a remote incident.

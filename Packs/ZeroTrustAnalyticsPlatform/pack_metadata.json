@@ -25,5 +25,24 @@
     "devEmail": [
         "xdr+xsoar@threatanalytics.io"
     ],
-    "githubUser": []
+    "githubUser": [],
+    "dependencies": {
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
+        "CommonPlaybooks": {
+            "mandatory": true,
+            "display_name": "Common Playbooks"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        }
+    },
+    "displayedImages": [
+        "CommonTypes",
+        "CommonPlaybooks",
+        "CommonScripts"
+    ]
 }

@@ -13,7 +13,7 @@
     "id": "incident_ztapalertid",
     "isReadOnly": false,
     "locked": false,
-    "name": "ZTAP ID",
+    "name": "ZTAP Alert ID",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,
