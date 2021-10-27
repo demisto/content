@@ -26,6 +26,8 @@ If you're not invoking the integration via the server HTTPS endpoint, then you s
 
 The examples below assume you invoke the integration via the server HTTPS endpoint. In case you don't, replace the URL in the examples as suggested above.
 
+Please note the instance name is case sensitive.
+
 **Note**: The ***Listen Port*** needs to be available, which means it has to be unique for each integration instance. It cannot be used by other long-running integrations.
 
 ## Usage
