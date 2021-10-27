@@ -7,6 +7,7 @@ from typing import Union, Optional
 import requests
 import base64
 import binascii
+from urllib.parse import quote
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -113,7 +114,7 @@ class MsGraphClient:
         odata = f'{odata}&$top={page_size}' if odata else f'$top={page_size}'
 
         if search:
-            odata = f'{odata}&$search="{search}"'
+            odata = f'{odata}&$search="{quote(search)}"'
         suffix = with_folder if folder_id else no_folder
         if odata:
             suffix += f'?{odata}'
