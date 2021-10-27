@@ -54,7 +54,7 @@ script:
       predefined:
       - "True"
       - "False"
-    description: Resolve an name to IP over HTTPS
+    description: Resolve a name to IP over HTTPS
     name: doh-resolve
     outputs:
     - contextPath: DNS-over-HTTPS.Results
