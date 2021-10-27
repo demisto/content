@@ -826,8 +826,6 @@ def main():
         '''
         Before EVERY command the following tow lines are performed (do_auth and get_token_from_response)
         '''
-        resp = do_auth(server=demisto.getParam('server'), crads=demisto.getParam(
-            'authentication'), insecure=demisto.getParam('insecure'), domain=demisto.getParam('domain'))
         token = get_token()
         if current_command == 'test-module':
             # This is the call made when pressing the integration test button.
