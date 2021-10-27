@@ -77,7 +77,46 @@ create-instances:
         echo "Skipping - not running in INSTANCE_TESTS build"
       else
         [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-        python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY
+
+        echo attempt 1: branch
+        git diff --name-status origin/master...$CI_COMMIT_BRANCH || echo failed
+
+        echo attempt 1: contrib
+        git diff --name-status HEAD -- Packs || echo failed
+
+        echo attempt 1: master
+        git diff --name-status HEAD~...HEAD || echo failed
+
+        echo attempt 2: master
+        git diff --name-status HEAD~1...HEAD || echo failed
+
+        echo attempt 3: master
+        git diff --name-status HEAD^1...HEAD || echo failed
+
+        echo attempt 4: master
+        git diff --name-status HEAD~ HEAD || echo failed
+
+        echo attempt 5: master
+        git diff --name-status HEAD^ HEAD || echo failed
+
+        echo attempt 6: master
+        git log -n 2 --pretty=%H || echo failed
+        echo phase2:
+        git diff --name-status `git log -n 2 --pretty=%H` || echo failed
+
+        echo attempt 7: master
+        git log -n 3
+
+        echo additional tests
+        echo rev-parse head
+        git rev-parse @
+        
+        echo rev-parse prev commit
+        git rev-parse @~
+
+        exit 1
+
+        # python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY
       fi
     - section_end "Collect Tests and Content Packs"
     - section_start "Calculate Packs Dependencies"
