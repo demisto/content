@@ -6,3 +6,9 @@ ignore=BA101
 
 [file:CreateMockFeed.yml]
 ignore=DO102,DO107
+
+[file:SlackBurst.yml]
+ignore=CJ105
+
+[file:GetCurrentEntries.yml]
+ignore=CJ105
