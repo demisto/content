@@ -2300,9 +2300,7 @@ def main():
     command = demisto.command()
     LOG(f'Executing command {command}')
 
-    params = demisto.params()
-    # Add custom args to SNOW_ARGS
-    add_custom_fields(params)
+    params = demisto.params()    
     verify = not params.get('insecure', False)
     use_oauth = params.get('use_oauth', False)
     oauth_params = {}
@@ -2352,6 +2350,7 @@ def main():
     get_attachments = params.get('get_attachments', False)
     update_timestamp_field = params.get('update_timestamp_field', 'sys_updated_on') or 'sys_updated_on'
     mirror_limit = params.get('mirror_limit', '100') or '100'
+    add_custom_fields(params)
 
     raise_exception = False
     try:
