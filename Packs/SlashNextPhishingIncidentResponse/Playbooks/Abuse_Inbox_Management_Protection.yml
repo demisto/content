@@ -675,6 +675,9 @@ tasks:
       iscommand: false
       brand: ""
       description: ""
+    nexttasks:
+      '#none#':
+      - "23"
     separatecontext: false
     defaultassigneecomplex:
       simple: Analyst
@@ -683,6 +686,33 @@ tasks:
         "position": {
           "x": 1160,
           "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: d9974cfd-b1de-4675-856c-8b27495cb340
+    type: title
+    task:
+      id: d9974cfd-b1de-4675-856c-8b27495cb340
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1160,
+          "y": 1235
         }
       }
     note: false
