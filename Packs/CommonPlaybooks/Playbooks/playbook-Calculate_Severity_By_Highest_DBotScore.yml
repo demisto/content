@@ -410,3 +410,4 @@ outputs:
   type: string
 tests:
 - Calculate Severity - Standard - Test
+toversion: 5.9.9
