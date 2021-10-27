@@ -16,16 +16,31 @@ configuration:
   name: apikey
   required: true
   type: 4
-- defaultvalue: high
-  display: Threshold of the indicator.
-  name: default_threshold
-  options:
-  - low
-  - medium
-  - high
-  - very-high
-  required: true
-  type: 15
+- display: URL threshold
+  name: url_threshold
+  required: false
+  type: 0
+- display: IP threshold
+  name: ip_threshold
+  required: false
+  type: 0
+- display: Domain threshold
+  name: domain_threshold
+  required: false
+  type: 0
+- display: File threshold
+  name: file_threshold
+  required: false
+  type: 0
+- display: Email threshold
+  name: email_threshold
+  required: false
+  type: 0
+- defaultvalue: 'false'
+  display: Include inactive results
+  name: include_inactive
+  required: false
+  type: 8
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -62,25 +77,16 @@ script:
       name: ip
       required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
-      description: If severity is greater than or equal to the threshold, then the
-        IP address will be considered malicious. This argument will override the default
-        threshold defined as a parameter. Can be "low", "medium", "high", or "very-high".
+    - default: false
+      description: If confidence is greater than the threshold, then the IP address
+        will be considered malicious otherwise it will considered good. This argument
+        will override the default IP threshold defined as a parameter.
       isArray: false
       name: threshold
-      predefined:
-      - low
-      - medium
-      - high
-      - very-high
       required: false
       secret: false
     - auto: PREDEFINED
-      default: false
-      defaultValue: 'False'
-      description: Whether to include results with an inactive status. Default is
-        "False".
+      description: Whether to include results with an inactive status.
       isArray: false
       name: include_inactive
       predefined:
@@ -102,6 +108,9 @@ script:
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
       type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
     - contextPath: IP.ASN
       description: The Autonomous System (AS) number associated with the indicator.
       type: String
@@ -160,6 +169,9 @@ script:
     - contextPath: IP.Tags
       description: (List) Tags of the IP.
       type: Unknown
+    - contextPath: IP.ThreatTypes
+      description: Threat types that are associated with the ip.
+      type: Unknown
   - arguments:
     - default: true
       description: The domain name to check.
@@ -167,25 +179,16 @@ script:
       name: domain
       required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
-      description: If the severity is greater than or equal to the threshold, the
-        IP address is considered as malicious. This argument will override the default
-        threshold defined as a parameter. Can be "low", "medium", "high", or "very-high".
+    - default: false
+      description: If confidence is greater than the threshold, then the Domain will
+        be considered malicious otherwise it will considered good. This argument will
+        override the default Domain threshold defined as a parameter.
       isArray: false
       name: threshold
-      predefined:
-      - low
-      - medium
-      - high
-      - very-high
       required: false
       secret: false
     - auto: PREDEFINED
-      default: false
-      defaultValue: 'False'
-      description: Whether to include results with an inactive status. Default is
-        "False".
+      description: Whether to include results with an inactive status.
       isArray: false
       name: include_inactive
       predefined:
@@ -280,6 +283,9 @@ script:
     - contextPath: Domain.Tags
       description: (List) Tags of the domain.
       type: Unknown
+    - contextPath: Domain.ThreatTypes
+      description: Threat types that are associated with the domain.
+      type: Unknown
   - arguments:
     - default: true
       description: The hash of file to check.
@@ -287,25 +293,16 @@ script:
       name: file
       required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
-      description: If the severity is greater than or equal to the threshold, the
-        hash of file is considered as malicious. This argument will override the default
-        threshold defined as a parameter. Can be "low", "medium", "high", or "very-high".
+    - default: false
+      description: If the confidence is greater than the threshold, then the hash
+        of file will be considered malicious otherwise it will considered as good.
+        This argument will override the default File threshold defined as a parameter.
       isArray: false
       name: threshold
-      predefined:
-      - low
-      - medium
-      - high
-      - very-high
       required: false
       secret: false
     - auto: PREDEFINED
-      default: false
-      defaultValue: 'False'
-      description: Whether to include results with an inactive status. Default is
-        "False".
+      description: Whether to include results with an inactive status.
       isArray: false
       name: include_inactive
       predefined:
@@ -384,6 +381,9 @@ script:
     - contextPath: File.Tags
       description: (List) Tags of the file.
       type: Unknown
+    - contextPath: File.ThreatTypes
+      description: Threat types that are associated with the file.
+      type: Unknown
   - arguments:
     - default: false
       description: The email address to check.
@@ -391,25 +391,16 @@ script:
       name: email
       required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
-      description: If the severity is greater or equal than the threshold, the IP
-        address is considered as malicious. This argument will override the default
-        threshold defined as a parameter. Can be "low", "medium", "high", "very-high".
+    - default: false
+      description: If the confidence is greater than the threshold, then the Email
+        address will be considered malicious otherwise it will considered as good.
+        This argument will override the default Email threshold defined as a parameter.
       isArray: false
       name: threshold
-      predefined:
-      - low
-      - medium
-      - high
-      - very-high
       required: false
       secret: false
     - auto: PREDEFINED
-      default: false
-      defaultValue: 'False'
-      description: Whether to include results with an inactive status. Default is
-        "False".
+      description: Whether to include results with an inactive status.
       isArray: false
       name: include_inactive
       predefined:
@@ -1570,23 +1561,15 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: If the severity is greater than or equal to the threshold, the
-        URL is considered as malicious. This argument will override the default threshold
-        defined as a parameter. Can be "low", "medium", "high", or "very-high".
+      description: If confidence is greater than the threshold, then the URL will
+        be considered malicious otherwise it will considered good. This argument will
+        override the default URL threshold defined as a parameter.
       isArray: false
       name: threshold
-      predefined:
-      - low
-      - medium
-      - high
-      - very-high
       required: false
       secret: false
     - auto: PREDEFINED
-      default: false
-      defaultValue: 'False'
-      description: Whether to include results with an inactive status. Default is
-        "False".
+      description: Whether to include results with an inactive status.
       isArray: false
       name: include_inactive
       predefined:
@@ -1653,6 +1636,9 @@ script:
       type: Unknown
     - contextPath: URL.Tags
       description: (List) Tags of the URL.
+      type: Unknown
+    - contextPath: URL.ThreatTypes
+      description: Threat types that are associated with the url.
       type: Unknown
   dockerimage: demisto/emoji:1.0.0.23151
   feed: false

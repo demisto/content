@@ -45,7 +45,7 @@ tasks:
       - "3"
     scriptarguments:
       domain:
-        simple: dropwellsfargo.com
+        simple: y.gp
       include_inactive: {}
       threshold: {}
     separatecontext: false
@@ -154,7 +154,7 @@ tasks:
     scriptarguments:
       include_inactive: {}
       ip:
-        simple: 116.101.134.118
+        simple: 78.78.78.67
       threshold: {}
     separatecontext: false
     view: |-
@@ -225,7 +225,7 @@ tasks:
       include_inactive: {}
       threshold: {}
       url:
-        simple: http://www.myronnhammond.club/godaddy/
+        simple: http://www.ujhy1.com/
     separatecontext: false
     view: |-
       {
@@ -293,7 +293,7 @@ tasks:
       - "10"
     scriptarguments:
       email:
-        simple: tatimouzo1@aliceadsl.fr
+        simple: egov@ac.in
       include_inactive: {}
       threshold: {}
     separatecontext: false
@@ -352,8 +352,8 @@ tasks:
     task:
       id: 6eba16b2-245a-4445-8ee9-3ce4ccce2b97
       version: -1
-      name: Check MD5 reputation
-      description: Checks the reputation of the given md5 of the file.
+      name: Check SHA256 reputation
+      description: Checks the reputation of the given SHA256 of the file.
       script: Anomali ThreatStream v2|||file
       type: regular
       iscommand: true
@@ -363,13 +363,9 @@ tasks:
       - "12"
     scriptarguments:
       file:
-        simple: ae56db90749f05ee3b6ea1daed4279a2
-      include_inactive:
-        simple: fal
-      md5:
-        simple: fc0f4799549242c437cd480c85cb5e16cfdc0c3df622cc31ed9745a45a61df28
-      threshold:
-        simple: low
+        simple: 178ba564b39bd07577e974a9b677dfd86ffa1f1d0299dfd958eb883c5ef6c3e1
+      include_inactive: {}
+      threshold: {}
     separatecontext: false
     view: |-
       {
@@ -402,7 +398,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: File.MD5
+              simple: File.SHA256
             iscontext: true
       - - operator: isNotEmpty
           left:
@@ -497,7 +493,7 @@ tasks:
       country: {}
       created_ts: {}
       id:
-        simple: "51685266655"
+        simple: "231017344"
       indicator_severity: {}
       indicator_value: {}
       is_public: {}
@@ -543,7 +539,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 144.172.153.165
+              simple: y.gp
       - - operator: isEqualString
           left:
             value:
@@ -551,7 +547,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: low
+              simple: very-high
     view: |-
       {
         "position": {

@@ -1,19 +1,18 @@
+from requests.exceptions import MissingSchema, ConnectionError
 import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 
-''' IMPORTS '''
+REPUTATION_COMANDS = ['ip', 'domain', 'file', 'url', 'threatstream-email-reputation']
 
-import json
-import requests
-from requests.exceptions import MissingSchema, ConnectionError
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
-VENDOR_NAME = 'ThreatStream'
+THREAT_STREAM = 'ThreatStream'
+DEFAULT_MALICIOUS_THRESHOLD = 65
+DEFAULT_SUSPICIOUS_THRESHOLD = 25
 HEADERS = {
     'Content-Type': 'application/json'
 }
@@ -27,17 +26,39 @@ DBOT_SCORE = {
     'very-high': 3
 }
 
-SEVERITY_SCORE = {
-    'low': 0,
-    'medium': 1,
-    'high': 2,
-    'very-high': 3
-}
 
-DBOT_MAPPING = {
-    'value': 'Indicator',
-    'type': 'Type',
-    'source': 'Vendor',
+IOC_ARGS_TO_INDICATOR_KEY_MAP = {
+    'domain': {
+        'domain': 'value',
+        'dns': 'ip',
+        'organization': 'org',
+        'traffic_light_protocol': 'tlp',
+        'geo_country': 'country',
+        'creation_date': 'created_ts',
+        'updated_date': 'modified_ts',
+        'registrant_name': 'meta.registrant_name',
+        'registrant_email': 'meta.registrant_email',
+        'registrant_phone': 'meta.registrant_phone'
+    },
+    'url': {
+        'url': 'value',
+        'asn': 'asn',
+        'organization': 'org',
+        'geo_country': 'country',
+        'traffic_light_protocol': 'tlp'
+    },
+    'ip': {
+        'ip': 'value',
+        'asn': 'asn',
+        'geo_latitude': 'latitude',
+        'geo_longitude': 'longitude',
+        'geo_country': 'country',
+        'traffic_light_protocol': 'tlp'
+    },
+    'file': {
+        'organization': 'org',
+        'traffic_light_protocol': 'tlp'
+    }
 }
 
 DEFAULT_INDICATOR_MAPPING = {
@@ -51,6 +72,15 @@ DEFAULT_INDICATOR_MAPPING = {
     'org': 'Organization',
     'source': 'Source',
     'tags': 'Tags',
+}
+
+FILE_INDICATOR_MAPPING = {
+    'modified_ts': 'Modified',
+    'confidence': 'Confidence',
+    'status': 'Status',
+    'source': 'Source',
+    'subtype': 'Type',
+    'tags': 'Tags'
 }
 
 INDICATOR_EXTENDED_MAPPING = {
@@ -74,6 +104,61 @@ THREAT_MODEL_MAPPING = {
     'id': 'ID',
     'created_ts': 'CreatedTime',
 }
+
+RELATIONSHIPS_MAPPING = {
+    'ip': [
+        {
+            'name': EntityRelationship.Relationships.RESOLVES_TO,
+            'raw_field': 'rdns',
+            'entity_b_type': FeedIndicatorType.Domain
+        },
+        {
+            'name': EntityRelationship.Relationships.INDICATOR_OF,
+            'raw_field': 'meta.maltype',
+            'entity_b_type': 'Malware'
+        }
+    ],
+    'domain': [
+        {
+            'name': EntityRelationship.Relationships.RESOLVED_FROM,
+            'raw_field': 'ip',
+            'entity_b_type': FeedIndicatorType.IP
+        },
+        {
+            'name': EntityRelationship.Relationships.INDICATOR_OF,
+            'raw_field': 'meta.maltype',
+            'entity_b_type': 'Malware'
+        }
+    ],
+    'url': [
+        {
+            'name': EntityRelationship.Relationships.RESOLVED_FROM,
+            'raw_field': 'ip',
+            'entity_b_type': FeedIndicatorType.IP
+        },
+        {
+            'name': EntityRelationship.Relationships.INDICATOR_OF,
+            'raw_field': 'meta.maltype',
+            'entity_b_type': 'Malware'
+        }
+    ],
+    'file': [
+        {
+            'name': EntityRelationship.Relationships.INDICATOR_OF,
+            'raw_field': 'meta.maltype',
+            'entity_b_type': 'Malware'
+        }
+    ],
+    'email': [
+        {
+            'name': EntityRelationship.Relationships.INDICATOR_OF,
+            'raw_field': 'meta.maltype',
+            'entity_b_type': 'Malware'
+        }
+    ]
+}
+
+THRESHOLDS_FROM_PARAM: Dict = {}
 
 ''' HELPER FUNCTIONS '''
 
@@ -101,7 +186,7 @@ class Client:
         )
         # Handle error responses gracefully
         if res.status_code in {401}:
-            raise Exception(f"{VENDOR_NAME} - Got unauthorized from the server. Check the credentials.")
+            raise Exception(f"{THREAT_STREAM} - Got unauthorized from the server. Check the credentials.")
         elif res.status_code in {404}:
             command = demisto.command()
             if command in ['threatstream-get-model-description', 'threatstream-get-indicators-by-model',
@@ -109,46 +194,33 @@ class Client:
                 # in order to prevent raising en error in case model/indicator/report was not found
                 return {}
             else:
-                raise Exception(f"{VENDOR_NAME} - The resource not found. Check the endpoint.")
+                raise Exception(f"{THREAT_STREAM} - The resource not found. Check the endpoint.")
         elif res.status_code not in {200, 201, 202}:
-            raise Exception(F"{VENDOR_NAME} - Error in API call to ThreatStream {res.status_code} - {res.text}")
+            raise Exception(F"{THREAT_STREAM} - Error in API call to ThreatStream {res.status_code} - {res.text}")
 
         if text_response:
             return res.text
         return res.json()
 
-    def get_dbot_context(self, indicator, threshold, mapping=None):
-        """
-             Builds and returns dictionary with Indicator, Type, Vendor and Score keys
-             and values from the indicator that will be returned to context.
-        """
-        if not mapping:
-            mapping = DBOT_MAPPING
-        dbot_context = {mapping[k]: v for (k, v) in indicator.items() if k in mapping.keys()}
-        indicator_score = DBOT_SCORE[indicator.get('meta', {}).get('severity', 'low')]
-        # the indicator will be considered as malicious in case it's score is greater or equal to threshold
-        dbot_context['Score'] = 3 if indicator_score >= DBOT_SCORE[threshold] else indicator_score
-        dbot_context['Vendor'] = VENDOR_NAME
-        dbot_context['Reliability'] = self.reliability
-
-        return dbot_context
-
 
 def find_worst_indicator(indicators):
     """
-        Sorts list of indicators by severity score and returns one indicator with the highest severity.
-        In case the indicator has no severity value, the indicator severity score is set to 0 (low).
+        Sorts list of indicators by confidence score and returns one indicator with the highest confidence.
+        In case the indicator has no confidence value, the indicator score is set to 0 (NONE).
     """
-    indicators.sort(key=lambda ioc: SEVERITY_SCORE[ioc.get('meta', {}).get('severity', 'low')], reverse=True)
+    indicators.sort(key=lambda ioc: ioc.get('confidence', Common.DBotScore.NONE), reverse=True)
     return indicators[0]
 
 
-def prepare_args(args):
+def prepare_args(args, command, params):
     # removing empty keys that can be passed from playbook input
     args = {k: v for (k, v) in args.items() if v}
-    if 'include_inactive' in args:
-        # special handling for ip, domain, file, url and threatstream-email-reputation commands
-        args['status'] = "active,inactive" if args.pop('include_inactive') == 'True' else "active"
+
+    # special handling for ip, domain, file, url and threatstream-email-reputation commands
+    if command in REPUTATION_COMANDS:
+        default_include_inactive = params.get('include_inactive', False)
+        include_inactive = argToBoolean(args.pop('include_inactive', default_include_inactive))
+        args['status'] = "active,inactive" if include_inactive else "active"
     if 'indicator_severity' in args:
         # special handling for threatstream-get-indicators
         args['meta.severity'] = args.pop('indicator_severity', None)
@@ -158,6 +230,8 @@ def prepare_args(args):
     if 'indicator_value' in args:
         # special handling for threatstream-get-indicators
         args['value'] = args.pop('indicator_value', None)
+    if 'threshold' in args:
+        args['threshold'] = arg_to_number(args['threshold'])
 
     return args
 
@@ -170,23 +244,61 @@ def build_params(**params):
     return params
 
 
+def calculate_score(indicator, threshold=None):
+    """
+        Calculate the DBot score according the indicator's confidence and threshold
+    """
+    confidence = indicator.get('confidence', Common.DBotScore.NONE)
+    # in case threshold was defined in the instance or passed as argument
+    # we have only two scores levels - malicious or good
+    # if threshold wasn't defined we have three score levels malicious suspicious and good
+    defined_threshold = threshold or THRESHOLDS_FROM_PARAM.get(demisto.command())
+    if defined_threshold:
+        return Common.DBotScore.BAD if confidence >= defined_threshold else Common.DBotScore.GOOD
+    else:
+        if confidence > DEFAULT_MALICIOUS_THRESHOLD:
+            return Common.DBotScore.BAD
+        if confidence > DEFAULT_SUSPICIOUS_THRESHOLD:
+            return Common.DBotScore.SUSPICIOUS
+        else:
+            return Common.DBotScore.GOOD
+
+
+def get_tags(indicator):
+    """
+        Return list of the indicator's tags threat_type and maltype
+    """
+    tags = []
+
+    for key in ['meta.maltype', 'threat_type']:
+        val = demisto.get(indicator, key)
+        if val:
+            tags.append(val)
+
+    indicator_tags = indicator.get('tags', [])
+    if indicator_tags:
+        tags.extend([str(tag.get('name', '')) for tag in indicator_tags])
+
+    return tags
+
+
 def mark_as_malicious(indicator, threshold, context):
     """
-        Marks indicator as malicious if severity of indicator is greater/equals to threshold and
+        Marks indicator as malicious if confidence of indicator is greater to threshold and
         adds Malicious key to returned dictionary (context) in such case.
     """
-    severity = indicator.get('meta', {}).get('severity', 'low')
-
-    if SEVERITY_SCORE[severity] >= SEVERITY_SCORE[threshold]:
+    confidence = indicator.get('confidence', Common.DBotScore.NONE)
+    threshold = threshold or THRESHOLDS_FROM_PARAM.get(demisto.command()) or DEFAULT_MALICIOUS_THRESHOLD
+    if confidence > threshold:
         context['Malicious'] = {
-            'Vendor': 'ThreatStream'
+            'Vendor': THREAT_STREAM
         }
 
 
 def search_indicator_by_params(client: Client, params, searchable_value):
     """
         Generic function that searches for indicators from ThreatStream by given query string.
-        Returns indicator with the highest severity score.
+        Returns indicator with the highest confidence score.
     """
     indicators_data = client.http_request("Get", "v2/intelligence/", params=params, headers=HEADERS)
 
@@ -197,111 +309,17 @@ def search_indicator_by_params(client: Client, params, searchable_value):
     return find_worst_indicator(indicators_data['objects'])
 
 
-def get_ip_context(indicator, threshold):
-    """
-        Builds and returns dictionary that will be set to IP generic context.
-    """
-    ip_context = {}
-    ip_context['ASN'] = indicator.get('asn', '')
-    ip_context['Address'] = indicator.get('value', '')
-    ip_context['Geo'] = {
-        'Country': indicator.get('country', ''),
-        'Location': F"{indicator.get('latitude', '')},{indicator.get('longitude', '')}"
-    }
-    indicator_tags = indicator.get('tags', [])
-    if indicator_tags:
-        ip_context['Tags'] = [str(tag.get('name', '')) for tag in indicator_tags]
-
-    mark_as_malicious(indicator, threshold, ip_context)
-
-    return ip_context
-
-
-def get_domain_context(indicator, threshold):
-    """
-        Builds and returns dictionary that will be set to Domain generic context.
-    """
-    domain_context = {}
-    whois_context = {}
-    domain_context['Name'] = indicator.get('value', '')
-    domain_context['DNS'] = indicator.get('ip', '')
-
-    whois_context['CreationDate'] = indicator.get('created_ts', '')
-    whois_context['UpdatedDate'] = indicator.get('modified_ts', '')
-    meta = indicator.get('meta', None)
-
-    if meta:
-        registrant = {}
-        registrant['Name'] = meta.get('registrant_name', '')
-        registrant['Email'] = meta.get('registrant_email', '')
-        registrant['Phone'] = meta.get('registrant_phone', '')
-    whois_context['Registrant'] = registrant
-    domain_context['WHOIS'] = whois_context
-    indicator_tags = indicator.get('tags', [])
-    if indicator_tags:
-        domain_context['Tags'] = [str(tag.get('name', '')) for tag in indicator_tags]
-
-    mark_as_malicious(indicator, threshold, domain_context)
-
-    return domain_context
-
-
-def get_file_type(file_indicator):
-    """
-        The function gets a file indicator data and returns it's subtype.
-    """
-    indicator_type = file_indicator.get('subtype', '')
-    return indicator_type
-
-
-def get_file_context(indicator, threshold):
-    """
-        Builds and returns dictionary that will be set to File generic context.
-    """
-    indicator_type = get_file_type(indicator)
-    indicator_value = indicator.get('value', '')
-    file_context = {}
-    if indicator_type:
-        file_context = {indicator_type: indicator_value}
-    indicator_tags = indicator.get('tags', [])
-    if indicator_tags:
-        file_context['Tags'] = [str(tag.get('name', '')) for tag in indicator_tags]
-
-    mark_as_malicious(indicator, threshold, file_context)
-
-    return file_context
-
-
-def get_url_context(indicator, threshold):
-    """
-        Builds and returns dictionary that will be set to URL generic context.
-    """
-    url_context = {'Data': indicator.get('value', '')}
-    indicator_tags = indicator.get('tags', [])
-    if indicator_tags:
-        url_context['Tags'] = [str(tag.get('name', '')) for tag in indicator_tags]
-
-    mark_as_malicious(indicator, threshold, url_context)
-
-    return url_context
-
-
-def get_threat_generic_context(indicator, indicator_mapping=None):
+def get_threat_generic_context(indicator, indicator_mapping=DEFAULT_INDICATOR_MAPPING):
     """
         Receives indicator and builds new dictionary from values that were defined in
         DEFAULT_INDICATOR_MAPPING keys and adds the Severity key with indicator severity value.
     """
-    # True when the indicator isn't a file (file indicator has a modified indicator_mapping).
-    if not indicator_mapping:
-        indicator_mapping = DEFAULT_INDICATOR_MAPPING
-    threat_ip_context = {indicator_mapping[k]: v for (k, v) in indicator.items() if
-                         k in indicator_mapping.keys()}
-    try:
-        threat_ip_context['Severity'] = indicator['meta']['severity']
-    except KeyError:
-        threat_ip_context['Severity'] = 'low'
-    finally:
-        return threat_ip_context
+
+    context = {indicator_mapping[k]: v for (k, v) in indicator.items()
+               if k in indicator_mapping.keys()}
+    context['Tags'] = get_tags(indicator)
+    context['Severity'] = demisto.get(indicator, 'meta.severity') or 'low'
+    return context
 
 
 def parse_network_elem(element_list, context_prefix):
@@ -410,15 +428,16 @@ def build_model_data(model, name, is_public, tlp, tags, intelligence, descriptio
     return data
 
 
-def get_file_mapping():
-    """
-    Returns the file indicator mapping after changing it's type field to subtype.
-    """
-    file_indicator_mapping = DEFAULT_INDICATOR_MAPPING.copy()
-    # The real type of the hash is in subtype field.
-    file_indicator_mapping.pop('type', '')
-    file_indicator_mapping['subtype'] = 'Type'
-    return file_indicator_mapping
+def create_relationships(indicator, ioc_type, relation_mapper):
+    relationships = []
+    for relation in relation_mapper:
+        relationships.append(EntityRelationship(entity_a=indicator['value'],
+                                                entity_a_type=ioc_type,
+                                                name=relation['name'],
+                                                entity_b=demisto.get(indicator, relation['raw_field']),
+                                                entity_b_type=relation['entity_b_type'],
+                                                brand=THREAT_STREAM))
+    return relationships
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -433,207 +452,281 @@ def test_module(client: Client):
     demisto.results('ok')
 
 
-def ips_reputation_command(client: Client, ip, threshold=None, status="active,inactive"):
+def ips_reputation_command(client: Client, ip, status, threshold=None):
     ips = argToList(ip, ',')
     for single_ip in ips:
-        get_ip_reputation(client, single_ip, threshold, status)
+        get_ip_reputation(client, single_ip, status, threshold)
 
 
-def get_ip_reputation(client: Client, ip, threshold=None, status="active,inactive"):
+def get_ip_reputation(client: Client, ip, status, threshold=None):
     """
         Checks the reputation of given ip from ThreatStream and
-        returns the indicator with highest severity score.
+        returns the indicator with highest confidence score.
     """
+    # get the indicator
     params = build_params(value=ip, type="ip", status=status, limit=0)
     indicator = search_indicator_by_params(client, params, ip)
     if not indicator:
         return
 
-    threshold = threshold or client.default_threshold
-    dbot_context = client.get_dbot_context(indicator, threshold)
-    ip_context = get_ip_context(indicator, threshold)
-    threat_ip_context = get_threat_generic_context(indicator)
-    threat_ip_tags = threat_ip_context.pop('Tags', [])
-    if threat_ip_tags:
-        # Convert the tags objects into s string for the human readable and then override it with the original objects
-        # for the context.
-        threat_ip_context['Tags'] = ', '.join(str(tag.get('name', '')) for tag in threat_ip_tags)
-    human_readable = tableToMarkdown(F"IP reputation for: {ip}", threat_ip_context)
-    threat_ip_context['Tags'] = threat_ip_tags
+    # Convert the tags objects into s string for the human readable and then override it with the original objects
+    # for the context.
+    threat_context = get_threat_generic_context(indicator)
+    tags = threat_context.pop('Tags', [])
+    if tags:
+        threat_context['Tags'] = ', '.join(tags)
+    human_readable = tableToMarkdown(f'IP reputation for: {ip}', threat_context)
+    threat_context['Tags'] = tags
 
-    ec = {
-        'DBotScore': dbot_context,
-        'IP(val.Address == obj.Address)': ip_context,
-        'ThreatStream.IP(val.Address == obj.Address)': threat_ip_context
-    }
+    # build relationships
+    relationships = create_relationships(indicator, FeedIndicatorType.IP, RELATIONSHIPS_MAPPING.get('ip'))
 
-    return_outputs(human_readable, ec, indicator)
+    # create the IP instance
+    args_to_keys_map: Dict[str, str] = IOC_ARGS_TO_INDICATOR_KEY_MAP.get('ip')  # type: ignore
+    kwargs = {arg: demisto.get(indicator, key) for (arg, key) in args_to_keys_map.items()}
+    ip_indicator = Common.IP(
+        dbot_score=Common.DBotScore(ip, DBotScoreType.IP,
+                                    THREAT_STREAM, score=calculate_score(indicator, threshold),
+                                    reliability=client.reliability),
+        tags=get_tags(indicator),
+        threat_types=[Common.ThreatTypes(indicator.get('threat_type'))],
+        relationships=relationships,
+        **kwargs
+    )
+
+    return_results(CommandResults(
+        outputs_prefix=f'{THREAT_STREAM}.IP',
+        outputs_key_field='Address',
+        indicator=ip_indicator,
+        readable_output=human_readable,
+        outputs=threat_context,
+        raw_response=indicator,
+        relationships=relationships
+    ))
 
 
-def domains_reputation_command(client: Client, domain, threshold=None, status="active,inactive"):
+def domains_reputation_command(client: Client, domain, status, threshold=None):
     """
         Wrapper function for get_domain_reputation.
     """
     domains = argToList(domain, ',')
     for single_domain in domains:
-        get_domain_reputation(client, single_domain, threshold, status)
+        get_domain_reputation(client, single_domain, status, threshold)
 
 
-def get_domain_reputation(client: Client, domain, threshold=None, status="active,inactive"):
+def get_domain_reputation(client: Client, domain, status, threshold=None):
     """
         Checks the reputation of given domain from ThreatStream and
-        returns the indicator with highest severity score.
+        returns the indicator with highest confidence score.
     """
-    params = build_params(value=domain, type="domain", status=status, limit=0)
+    # get the indicator
+    params = build_params(value=domain, type='domain', status=status, limit=0)
     indicator = search_indicator_by_params(client, params, domain)
     if not indicator:
         return
 
-    threshold = threshold or client.default_threshold
-    dbot_context = client.get_dbot_context(indicator, threshold)
-    domain_context = get_domain_context(indicator, threshold)
-    threat_domain_context = get_threat_generic_context(indicator)
-    threat_domain_tags = threat_domain_context.pop('Tags', [])
-    if threat_domain_tags:
-        # Convert the tags objects into s string for the human readable and then override it with the original objects
-        # for the context.
-        threat_domain_context['Tags'] = ', '.join(str(tag.get('name', '')) for tag in threat_domain_tags)
-    human_readable = tableToMarkdown(F"Domain reputation for: {domain}", threat_domain_context)
-    threat_domain_context['Tags'] = threat_domain_tags
+    # Convert the tags objects into s string for the human readable and then override it with the original objects
+    # for the context.
+    threat_context = get_threat_generic_context(indicator)
+    tags = threat_context.pop('Tags', [])
+    if tags:
+        threat_context['Tags'] = ', '.join(tags)
+    human_readable = tableToMarkdown(f'Domain reputation for: {domain}', threat_context)
+    threat_context['Tags'] = tags
 
-    ec = {
-        'DBotScore': dbot_context,
-        'Domain(val.Name == obj.Name)': domain_context,
-        'ThreatStream.Domain(val.Address == obj.Address)': threat_domain_context
-    }
+    # build relationships
+    relationships = create_relationships(indicator, FeedIndicatorType.Domain, RELATIONSHIPS_MAPPING.get('domain'))
 
-    return_outputs(human_readable, ec, indicator)
+    # create the Domain instance
+    args_to_keys_map: Dict[str, str] = IOC_ARGS_TO_INDICATOR_KEY_MAP.get('domain')  # type: ignore
+    kwargs = {arg: demisto.get(indicator, key) for (arg, key) in args_to_keys_map.items()}
+    geo_location = f"{indicator.get('latitude')},{indicator.get('longitude')}" if indicator.get('latitude') else None
+    domain_indicator = Common.Domain(
+        dbot_score=Common.DBotScore(domain, DBotScoreType.DOMAIN,
+                                    THREAT_STREAM, reliability=client.reliability,
+                                    score=calculate_score(indicator, threshold)),
+        tags=get_tags(indicator),
+        threat_types=[Common.ThreatTypes(indicator.get('threat_type'))],
+        geo_location=geo_location,
+        relationships=relationships,
+        **kwargs,
+    )
+
+    return_results(CommandResults(
+        outputs_prefix=f'{THREAT_STREAM}.Domain',
+        outputs_key_field='Address',
+        indicator=domain_indicator,
+        readable_output=human_readable,
+        outputs=threat_context,
+        raw_response=indicator,
+        relationships=relationships
+    ))
 
 
-def files_reputation_command(client: Client, file, threshold=None, status="active,inactive"):
+def files_reputation_command(client: Client, file, status, threshold=None):
     """
         Wrapper function for get_file_reputation.
     """
     files = argToList(file, ',')
     for single_file in files:
-        get_file_reputation(client, single_file, threshold, status)
+        get_file_reputation(client, single_file, status, threshold)
 
 
-def get_file_reputation(client: Client, file, threshold=None, status="active,inactive"):
+def get_file_reputation(client: Client, file, status, threshold=None):
     """
         Checks the reputation of given hash of the file from ThreatStream and
         returns the indicator with highest severity score.
     """
+    # get the indicator
     params = build_params(value=file, type="md5", status=status, limit=0)
     indicator = search_indicator_by_params(client, params, file)
     if not indicator:
         return
 
-    threshold = threshold or client.default_threshold
-    file_dbot_mapping = {
-        'value': 'Indicator',
-        'subtype': 'Type',
-        'source': 'Vendor',
-    }
-    dbot_context = client.get_dbot_context(indicator, threshold, file_dbot_mapping)
-    file_type = get_file_type(indicator)
-    file_context = get_file_context(indicator, threshold)
-    file_indicator_mapping = get_file_mapping()
+    # save the hash value under the hash type key
+    threat_context = get_threat_generic_context(indicator, indicator_mapping=FILE_INDICATOR_MAPPING)
+    file_type: str = indicator.get('subtype')  # The real type of the hash is in subtype field.
+    if file_type:
+        threat_context[file_type] = indicator.get('value')
 
-    threat_file_context = get_threat_generic_context(indicator, file_indicator_mapping)
-    threat_file_context[file_type] = threat_file_context.pop('Address')
-    threat_file_context.pop("ASN", None)
-    threat_file_context.pop("Organization", None)
-    threat_file_context.pop("Country", None)
-    threat_file_tags = threat_file_context.pop('Tags', [])
-    if threat_file_tags:
-        # Convert the tags objects into s string for the human readable and then override it with the original objects
-        # for the context.
-        threat_file_context['Tags'] = ', '.join(str(tag.get('name', '')) for tag in threat_file_tags)
-    human_readable = tableToMarkdown(F"{file_type} reputation for: {file}", threat_file_context)
-    threat_file_context['Tags'] = threat_file_tags
+    # Convert the tags objects into s string for the human readable and then override it with the original objects
+    # for the context.
+    tags = threat_context.pop('Tags', [])
+    if tags:
+        threat_context['Tags'] = ', '.join(tags)
+    human_readable = tableToMarkdown(f'File reputation for: {file}', threat_context)
+    threat_context['Tags'] = tags
 
-    ec = {
-        'DBotScore': dbot_context,
-        Common.File.CONTEXT_PATH: file_context,
-        f'ThreatStream.{Common.File.CONTEXT_PATH}': threat_file_context
-    }
+    # build relationships
+    relationships = create_relationships(indicator, FeedIndicatorType.File, RELATIONSHIPS_MAPPING.get('file'))
 
-    return_outputs(human_readable, ec, indicator)
+    # create the File instance
+    args_to_keys_map: Dict[str, str] = IOC_ARGS_TO_INDICATOR_KEY_MAP.get('file')  # type: ignore
+    kwargs = {arg: demisto.get(indicator, key) for (arg, key) in args_to_keys_map.items()}
+    if file_type:
+        kwargs[file_type.lower()] = threat_context[file_type]
+    file_indicator = Common.File(
+        dbot_score=Common.DBotScore(file, DBotScoreType.FILE,
+                                    THREAT_STREAM, reliability=client.reliability,
+                                    score=calculate_score(indicator, threshold)),
+        tags=get_tags(indicator),
+        threat_types=[Common.ThreatTypes(indicator.get('threat_type'))],
+        relationships=relationships,
+        **kwargs,
+    )
+
+    return_results(CommandResults(
+        outputs_prefix=f'{THREAT_STREAM}.{Common.File.CONTEXT_PATH}',
+        indicator=file_indicator,
+        readable_output=human_readable,
+        outputs=threat_context,
+        raw_response=indicator,
+        relationships=relationships
+    ))
 
 
-def urls_reputation_command(client: Client, url, threshold=None, status="active,inactive"):
+def urls_reputation_command(client: Client, url, status, threshold=None):
     """
         Wrapper function for get_url_reputation.
     """
     urls = argToList(url, ',')
     for single_url in urls:
-        get_url_reputation(client, single_url, threshold, status)
+        get_url_reputation(client, single_url, status, threshold)
 
 
-def get_url_reputation(client: Client, url, threshold=None, status="active,inactive"):
+def get_url_reputation(client: Client, url, status, threshold=None):
     """
         Checks the reputation of given url address from ThreatStream and
-        returns the indicator with highest severity score.
+        returns the indicator with highest confidence score.
     """
+
+    # get the indicator
     params = build_params(value=url, type="url", status=status, limit=0)
     indicator = search_indicator_by_params(client, params, url)
     if not indicator:
         return
 
-    threshold = threshold or client.default_threshold
-    dbot_context = client.get_dbot_context(indicator, threshold)
-    domain_context = get_url_context(indicator, threshold)
-    threat_url_context = get_threat_generic_context(indicator)
-    del threat_url_context['ASN']
-    threat_url_tags = threat_url_context.pop('Tags', [])
-    if threat_url_tags:
-        # Convert the tags objects into s string for the human readable and then override it with the original objects
-        # for the context.
-        threat_url_context['Tags'] = ', '.join(str(tag.get('name', '')) for tag in threat_url_tags)
-    human_readable = tableToMarkdown(F"URL reputation for: {url}", threat_url_context)
-    threat_url_context['Tags'] = threat_url_tags
+    # Convert the tags objects into s string for the human readable and then override it with the original objects
+    # for the context.
+    threat_context = get_threat_generic_context(indicator)
+    tags = threat_context.pop('Tags', [])
+    if tags:
+        threat_context['Tags'] = ', '.join(tags)
+    human_readable = tableToMarkdown(f'URL reputation for: {url}', threat_context)
+    threat_context['Tags'] = tags
 
-    ec = {
-        'DBotScore': dbot_context,
-        'URL(val.Data == obj.Data)': domain_context,
-        'ThreatStream.URL(val.Address == obj.Address)': threat_url_context
-    }
+    # build relationships
+    relationships = create_relationships(indicator, FeedIndicatorType.URL, RELATIONSHIPS_MAPPING.get('url'))
 
-    return_outputs(human_readable, ec, indicator)
+    # create the URL instance
+    args_to_keys_map: Dict[str, str] = IOC_ARGS_TO_INDICATOR_KEY_MAP.get('url')  # type: ignore
+    kwargs = {arg: demisto.get(indicator, key_in_indicator) for (arg, key_in_indicator) in args_to_keys_map.items()}
+    url_indicator = Common.URL(
+        dbot_score=Common.DBotScore(url, DBotScoreType.URL,
+                                    THREAT_STREAM, reliability=client.reliability,
+                                    score=calculate_score(indicator, threshold)),
+        tags=get_tags(indicator),
+        threat_types=[Common.ThreatTypes(indicator.get('threat_type'))],
+        relationships=relationships,
+        **kwargs,
+    )
+
+    return_results(CommandResults(
+        outputs_prefix=f'{THREAT_STREAM}.URL',
+        outputs_key_field='Address',
+        indicator=url_indicator,
+        readable_output=human_readable,
+        outputs=threat_context,
+        raw_response=indicator,
+        relationships=relationships
+    ))
 
 
-def get_email_reputation(client: Client, email, threshold=None, status="active,inactive"):
+def get_email_reputation(client: Client, email, status, threshold=None):
     """
         Checks the reputation of given email address from ThreatStream and
-        returns the indicator with highest severity score.
+        returns the indicator with highest confidence score.
     """
     params = build_params(value=email, type="email", status=status, limit=0)
     indicator = search_indicator_by_params(client, params, email)
     if not indicator:
         return
 
-    threshold = threshold or client.default_threshold
-    dbot_context = client.get_dbot_context(indicator, threshold)
-    threat_email_context = get_threat_generic_context(indicator)
-    threat_email_context['Email'] = threat_email_context.pop('Address')
-    threat_email_context.pop("ASN", None)
-    threat_email_context.pop("Organization", None)
-    threat_email_context.pop("Country", None)
-    threat_email_tags = threat_email_context.pop('Tags', [])
-    if threat_email_tags:
-        # Convert the tags objects into s string for the human readable and then override it with the original objects
-        # for the context.
-        threat_email_context['Tags'] = ', '.join(str(tag.get('name', '')) for tag in threat_email_tags)
-    human_readable = tableToMarkdown(F"Email reputation for: {email}", threat_email_context)
-    threat_email_context['Tags'] = threat_email_tags
+    threat_context = get_threat_generic_context(indicator)
+    threat_context['Email'] = threat_context.pop('Address')
+    threat_context.pop('ASN', None)
+    threat_context.pop('Organization', None)
+    threat_context.pop('Country', None)
 
-    ec = {
-        'DBotScore': dbot_context,
-        'ThreatStream.EmailReputation(val.Email == obj.Email)': threat_email_context
-    }
+    # Convert the tags objects into s string for the human readable and then override it with the original objects
+    # for the context.
+    tags = threat_context.pop('Tags', [])
+    if tags:
+        threat_context['Tags'] = ', '.join(tags)
+    human_readable = tableToMarkdown(f'Email reputation for: {email}', threat_context)
+    threat_context['Tags'] = tags
 
-    return_outputs(human_readable, ec, indicator)
+    # build relationships
+    relationships = create_relationships(indicator, FeedIndicatorType.Email, RELATIONSHIPS_MAPPING.get('email'))
+
+    # create the EMAIL instance
+    email_indicator = Common.EMAIL(
+        dbot_score=Common.DBotScore(email, DBotScoreType.EMAIL,
+                                    THREAT_STREAM, reliability=client.reliability,
+                                    score=calculate_score(indicator, threshold)),
+        address=threat_context['Email'],
+        relationships=relationships,
+    )
+
+    return_results(CommandResults(
+        outputs_prefix=f'{THREAT_STREAM}.EmailReputation',
+        outputs_key_field='Email',
+        indicator=email_indicator,
+        readable_output=human_readable,
+        outputs=threat_context,
+        raw_response=indicator,
+        relationships=relationships
+    ))
 
 
 def get_passive_dns(client: Client, value, type="ip", limit=50):
@@ -883,7 +976,7 @@ def get_submission_status(client: Client, report_id, output=True):
 
 def file_name_to_valid_string(file_name):
     try:
-        # In case the user uses Demisto version < 5.0 and the new docker image will not be automatically changed
+        # In case the user uses Cortex XSOAR version < 5.0 and the new docker image will not be automatically changed
         import emoji
 
         if emoji.emoji_count(file_name):  # type: ignore
@@ -916,7 +1009,7 @@ def submit_report(client: Client, submission_type, submission_value, submission_
             # submission_value will be entry id of uploaded file to war room
             file_info = demisto.getFilePath(submission_value)
         except Exception:
-            raise Exception(F"{VENDOR_NAME} - Entry {submission_value} does not contain a file.")
+            raise Exception(F"{THREAT_STREAM} - Entry {submission_value} does not contain a file.")
 
         uploaded_file = open(file_info['path'], 'rb')
         file_name = file_name_to_valid_string(file_info.get('name'))
@@ -1015,12 +1108,19 @@ def main():
 
     params = demisto.params()
 
+    # init credentials
     user_name = params.get('username')
     api_key = params.get('apikey')
     server_url = params.get('url', '').strip('/')
-
     CREDENTIALS['username'] = user_name
     CREDENTIALS['api_key'] = api_key
+
+    # init threshold from params
+    THRESHOLDS_FROM_PARAM['url'] = arg_to_number(params.get('url_threshold'))
+    THRESHOLDS_FROM_PARAM['ip'] = arg_to_number(params.get('ip_threshold'))
+    THRESHOLDS_FROM_PARAM['file'] = arg_to_number(params.get('file_threshold'))
+    THRESHOLDS_FROM_PARAM['domain'] = arg_to_number(params.get('domain_threshold'))
+    THRESHOLDS_FROM_PARAM['threatstream-email-reputation'] = arg_to_number(params.get('email_threshold'))
 
     reliability = params.get('integrationReliability')
     reliability = reliability if reliability else DBotScoreReliability.B
@@ -1040,7 +1140,7 @@ def main():
         )
 
         handle_proxy()
-        args = prepare_args(demisto.args())
+        args = prepare_args(demisto.args(), command, params)
         if command == 'test-module':
             test_module(client)
         elif command == 'ip':
