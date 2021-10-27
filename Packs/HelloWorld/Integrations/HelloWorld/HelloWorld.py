@@ -799,7 +799,7 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
         ip_data = client.get_ip_reputation(ip)
         ip_data['ip'] = ip
 
-        # This creation is an example of creating relationships in reputation commands.
+        # This is an example of creating relationships in reputation commands.
         # We will create relationships between indicators only in case that the API returns information about
         # the relationship between two indicators.
         # See https://xsoar.pan.dev/docs/integrations/generic-commands-reputation#relationships
