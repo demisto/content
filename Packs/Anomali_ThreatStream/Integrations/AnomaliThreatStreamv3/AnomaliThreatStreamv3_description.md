@@ -1,14 +1,13 @@
-## Anomali Threat Stream v3
+# Anomali Threat Stream v3
 To access ThreatStream using the API, you need a user ID and API key. To get these credentials, register at [http://ui.threatstream.com](http://ui.threatstream.com).
 
 
-#### Configure the Threshold Parameters
-Each indicator have its threshold parameter.
-This threshold will impact the calculation of an indicator's DBotScore.
-The DBotScore of an indicator will be calculated based on this threshold as below:
-if `confidence` value of the indicator will be above this threshold - the Score will be 3 (Malicious)
-otherwise the DBotScore will 1 (Good).
-if this threshold will not be specified - the DBotScore will calculate as following:
-`confidence` > 65 - DBotScore value will be 3 (Malicious).
-`confidence` between 25 and 65 - DBotScore value will be 2 (Suspicious).
-`confidence` < 25 - DBotScore value will be 1 (Good).
+#### Configure Indicator Threshold Parameters
+Each indicator has a threshold parameter that impacts the indicator's DBotScore calculation.
+The indicator DBotScore is calculated based on the threshold parameter as follows:
+If the indicator `confidence` value is above the threshold parameter value, the Score is set to 3 (Malicious)
+Otherwise the DBotScore is set to 1 (Good).
+If the threshold parameter value is not specified, the DBotScore is calculated as follows:
+If the indicator `confidence` > 65, the DBotScore value is set to 3 (Malicious).
+If the indicator `confidence` is between 25 and 65, the DBotScore value is set to 2 (Suspicious).
+If the indicator `confidence` < 25, the DBotScore value is set to 1 (Good).
