@@ -3092,6 +3092,7 @@ def encode_context_data(context_data: dict, include_id: bool = False) -> dict:
     new_context_data = context_data.copy()
     new_context_data.pop('retry_compatible', None)
     new_context_data.pop(LAST_FETCH_KEY, None)
+    new_context_data.pop(RESET_KEY, None)
     new_context_data.update({
         UPDATED_MIRRORED_OFFENSES_CTX_KEY: json_dumps_inner(context_data.get(UPDATED_MIRRORED_OFFENSES_CTX_KEY, [])),
         MIRRORED_OFFENSES_CTX_KEY: json_dumps_inner(context_data.get(MIRRORED_OFFENSES_CTX_KEY, [])),
