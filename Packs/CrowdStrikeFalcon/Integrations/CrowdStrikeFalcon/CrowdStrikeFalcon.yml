@@ -360,7 +360,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Resolves and updates a detection.
+    description: Resolves and updates a detection using the provided arguments. At least one optional argument must be passed, otherwise no change will take place.
     execution: false
     name: cs-falcon-resolve-detection
   - arguments:

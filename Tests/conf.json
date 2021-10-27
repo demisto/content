@@ -1161,6 +1161,11 @@
             "playbookID": "TestEditServerConfig"
         },
         {
+            "playbookID": "MarketplacePackInstaller_Test",
+            "integrations": "Demisto REST API",
+            "fromversion": "6.0.0"
+        },
+        {
             "playbookID": "Default - Test",
             "integrations": [
                 "ThreatQ v2",
@@ -1829,7 +1834,6 @@
         {
             "integrations": "Tanium",
             "playbookID": "Tanium Test Playbook",
-            "nightly": true,
             "timeout": 1200,
             "pid_threshold": 10
         },
@@ -2243,6 +2247,13 @@
         },
         {
             "playbookID": "Ping Test Playbook"
+        },
+        {
+            "playbookID": "ParseWordDoc-Test"
+        },
+        {
+            "playbookID": "PDFUnlocker-Test",
+            "fromversion": "6.0.0"
         },
         {
             "playbookID": "Active Directory Test",
@@ -3964,15 +3975,6 @@
             ]
         },
         {
-            "playbookID": "test playbook - QRadarCorrelations",
-            "fromversion": "6.0.0",
-            "integrations": [
-                "QRadar_v2",
-                "QRadar v3",
-                "QRadar"
-            ]
-        },
-        {
             "playbookID": "SX - PC - Test Playbook",
             "fromversion": "5.5.0",
             "integrations": [
@@ -4570,6 +4572,8 @@
         },
         {
             "integrations": "Azure Sentinel",
+            "fromversion": "5.5.0",
+            "is_mockable": false,
             "playbookID": "TestAzureSentinelPlaybookV2"
         },
         {
@@ -4577,6 +4581,28 @@
             "integrations": ["Tanium Threat Response v2", "Demisto REST API"],
             "fromversion": "6.0.0",
             "timeout": 3000
+        },
+        {
+            "playbookID": "IndicatorMaliciousRatioCalculation_test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "playbookID": "MISPfeed Test",
+            "fromversion": "5.5.0",
+            "integrations": [
+                "MISP Feed"
+            ]
+        },
+        {
+            "integrations": [
+                "MISP Feed",
+                "Demisto REST API"
+            ],
+            "playbookID": "Fetch Indicators Test",
+            "fromversion": "6.0.0",
+            "is_mockable": false,
+            "instance_names": "MISP_feed_instance",
+            "timeout": 2400
         }
     ],
     "skipped_tests": {
@@ -4653,7 +4679,6 @@
         "Trend Micro Deep Security - Test": "outsourced",
         "Microsoft Teams - Test": "Issue 38263",
         "QualysVulnerabilityManagement-Test": "Issue 38640",
-        "test playbook - QRadarCorrelations": "Issue 38639",
         "EWS Extension: Powershell Online V2 Test": "Issue 39008",
         "O365 - EWS - Extension - Test": "Issue 39008",
         "Majestic Million Test Playbook": "Issue 30931",
@@ -4683,7 +4708,7 @@
         "LogRhythm REST test": "Issue 40654"
     },
     "skipped_integrations": {
-        
+
         "_comment1": "~~~ NO INSTANCE ~~~",
         "Ipstack": "Usage limit reached (Issue 38063)",
         "AnsibleAlibabaCloud": "No instance - issue 40447",
@@ -4729,7 +4754,6 @@
         "GoogleCloudSCC": "No instance, outsourced",
         "FortiGate": "License expired, and not going to get one (issue 14723)",
         "Attivo Botsink": "no instance, not going to get it",
-        "VMware": "no License, and probably not going to get it",
         "AWS Sagemaker": "License expired, and probably not going to get it",
         "Symantec MSS": "No instance, probably not going to get it (issue 15513)",
         "Google Cloud Compute": "Can't test yet",
@@ -4776,28 +4800,26 @@
         "FraudWatch": "Issue 34299",
         "Cisco Stealthwatch": "No instance - developed by Qmasters",
         "Armis": "No instance - developed by SOAR Experts",
-        
+
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
-        
+
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
-        
+
         "_comment4": "~~~ OTHER ~~~",
         "AlienVault OTX TAXII Feed": "Issue 29197",
         "EclecticIQ Platform": "Issue 8821",
-        "Zoom": "Issue 19832",
         "Forescout": "Can only be run from within PANW network. Look in keeper for - Demisto in the LAB",
         "FortiManager": "Can only be run within PANW network",
         "HelloWorldSimple": "This is just an example integration - no need for test",
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
         "AttackIQFireDrill": "License issues #29774",
-        "SentinelOne V2": "License expired issue #24933",
-        "Azure Sentinel": "issue with the tenant_id parameter"
+        "SentinelOne V2": "License expired issue #24933"
     },
     "nightly_integrations": [
         "Laline v2",
@@ -4853,6 +4875,7 @@
         "Awake Security": "Checking",
         "ArcSight ESM v2": "Checking",
         "Phish.AI": "Checking",
+        "VMware": "PyVim (SmartConnect class) does not support proxy",
         "Intezer": "Nightly - Checking",
         "ProtectWise": "Nightly - Checking",
         "google-vault": "Nightly - Checking",
@@ -4895,6 +4918,7 @@
         "syslog": "syslog",
         "MongoDB Log": "Our instance not using SSL",
         "MongoDB Key Value Store": "Our instance not using SSL",
+        "Zoom": "Uses dynamic token",
         "GoogleKubernetesEngine": "SDK",
         "TAXIIFeed": "Cannot use proxy",
         "EWSO365": "oproxy dependent",
@@ -4964,7 +4988,7 @@
         "HelloWorldPremium-Test"
     ],
     "docker_thresholds": {
-        
+
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {
