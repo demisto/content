@@ -32,7 +32,6 @@ class Client(BaseClient):
             A list of objects, containing the indicators.
         """
         result = []
-        # https://assets.zoom.us/docs/ipranges
         list_ips_txt_files = ['Zoom.txt',
                               'ZoomMeetings.txt',
                               'ZoomCRC.txt',
