@@ -1,0 +1,17 @@
+{
+    "name": "Assign Incident and Notify via Slack",
+    "description": "Simple playbook to assign an incident to an individual or group and send a custom Slack message notifying them of the assignment. \n\nThe intent of this notice is to allow analysts to disable noisy dbot notifications without losing visibility into automated incident assignments.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "lfarvour",
+    "url": "",
+    "email": "",
+    "created": "2021-10-27T18:44:33Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "lfarvour"
+    ]
+}
