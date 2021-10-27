@@ -1689,7 +1689,7 @@ def test_extract_decode_encode(context_data):
       'retry_compatible': False},
      True)
 ])
-def test_change_ctx_to_be_compatible(mocker, context_data, retry_compatible):
+def test_change_ctx_to_be_compatible(context_data, retry_compatible):
     """Test changing the context data to be compatible with set_to_integration_context_with_retries.
 
     Given:
@@ -1702,9 +1702,9 @@ def test_change_ctx_to_be_compatible(mocker, context_data, retry_compatible):
         Ensure the context_data is transformed to the new format if needed.
     """
     encoded_context = context_data
-    mocker.patch.object(QRadar_v3, 'set_to_integration_context_with_retries')
+    QRadar_v3.set_integration_context(context_data)
 
-    change_ctx_to_be_compatible_with_retry(context_data)
+    change_ctx_to_be_compatible_with_retry()
     if not retry_compatible:
         encoded_context = set_context_data_as_json(context_data)
 
@@ -1779,4 +1779,4 @@ def test_change_ctx_valid(ctx):
     change_ctx_to_be_compatible_with_retry()
     QRadar_v3.get_integration_context()
     # Change field in compatible context, just to see the set_to_integration_context_with_retries successfully finishes.
-    QRadar_v3.set_to_integration_context_with_retries({'a': 2})
+    QRadar_v3.set_to_integration_context_with_retries(ctx)
