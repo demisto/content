@@ -123,7 +123,7 @@ def main() -> None:
     """
 
     # TODO: make sure you properly handle authentication
-    # api_key = demisto.params().get('apikey')
+    # api_key = demisto.params().get('credentials', {}).get('password')
 
     # get the service API url
     base_url = urljoin(demisto.params()['url'], '/api/v1')
