@@ -1,5 +1,5 @@
-The penfield-api-call command takes in necessary context data, and returns the analyst that Penfield believes the incident should be assigned to based on Penfield's models of skill and process. The test command verfies that the endpoint is reachable.
-This integration was integrated and tested with version xx of Penfield
+The penfield-get-assignee command takes in necessary context data, and returns the analyst that Penfield believes the incident should be assigned to based on Penfield's models of skill and process. The test command verfies that the endpoint is reachable.
+This integration was integrated and tested with version 0.1.4 of Penfield
 
 ## Configure Penfield on Cortex XSOAR
 
@@ -40,11 +40,12 @@ Calls the Penfield API and returns the analyst Penfield recommends assigning the
 
 #### Context Output
 
-There is no context output for this command.
+| **Parameter** | **Description** |
+| --- | --- |
+| Penfield.Recommended | The analyst Penfield recommends assigning this incident too. |
 
 #### Command Example
-``` ```
+```!penfield-get-assignee analyst_ids=['analystid1', 'analystid2'] category='my cat' created='2021-09-13T01:58:22.621033322Z' id=34 name='big rootkit attack' severity='High'```
 
 #### Human Readable Output
-
-
+peter

@@ -8,7 +8,7 @@ import traceback
 
 
 def penfield_assign(analyst_ids, category, created, id, name, severity):
-    return demisto.executeCommand("PenfieldGetAssignee", {
+    return demisto.executeCommand("penfield-get-assignee", {
         'analyst_ids': analyst_ids,
         'category': category,
         'created': created,

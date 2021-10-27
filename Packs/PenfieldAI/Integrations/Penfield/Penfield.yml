@@ -21,52 +21,54 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: "The penfield-api-call command takes in necessary context data, and returns the analyst that Penfield believes
- the incident should be assigned to based on Penfield's models of skill and process. The test command verfies that the endpoint is reachable."
+description: "The penfield-get-assignee command takes in necessary context data, and returns\
+  \ the analyst that Penfield believes the incident should be assigned to based on\
+  \ Penfield's models of skill and process. The test command verfies that the endpoint\
+  \ is reachable."
 display: 'Penfield'
 name: Penfield
 script:
   commands:
-  # - name: baseintegration-dummy
-  #   arguments:
-  #   - name: dummy
-  #     required: true
-  #     description: '[Enter a description of the argument, including any important
-  #       information users need to know, for example, default values.]'
-  #   outputs:
-  #   - contextPath: BaseIntegration.Output
-  #     description: '[Enter a description of the data returned in this output.]'
-  #     type: String
-  #   description: '[Enter a description of the command, including any important information
-  #     users need to know, for example required permissions.]'
-  - name: PenfieldGetAssignee
-    description: 'Calls the Penfield API and returns the analyst Penfield recommends assigning the incident to. This information is saved in the output, but the incident will not be automatically assigned.'
+  - name: penfield-get-assignee
+    description: 'Calls the Penfield API and returns the analyst Penfield recommends
+      assigning the incident to. This information is saved in the output, but the
+      incident will not be automatically assigned.'
+    outputs:
+      - contextPath: ThreatStream.Analysis.ReportID
+        description: The ID of the report submitted to the sandbox.
+        type: String
     arguments:
     - name: analyst_ids
-      description: 'An array of XSOAR analyst IDs for Penfield to choose from when determining who to assign to.'
+      description: 'An array of XSOAR analyst IDs for Penfield to choose from when
+        determining who to assign to.'
       required: true
       isArray: true
     - name: category
       required: true
-      description: 'The category of the incident to assign. Can be taken from incident Context Data.'
+      description: 'The category of the incident to assign. Can be taken from incident
+        Context Data.'
     - name: created
       required: true
-      description: 'The creation_date of the incident to assign. Can be taken from incident Context Data.'
+      description: 'The creation_date of the incident to assign. Can be taken from
+        incident Context Data.'
     - name: id
       required: true
-      description: 'The id of the incident to assign. Can be taken from incident Context Data.'
+      description: 'The id of the incident to assign. Can be taken from incident Context
+        Data.'
     - name: name
       required: true
-      description: 'The name of the incident to assign. Can be taken from incident Context Data.'
+      description: 'The name of the incident to assign. Can be taken from incident
+        Context Data.'
     - name: severity
       required: true
-      description: 'The severity of the incident to assign. Can be taken from incident Context Data.'
+      description: 'The severity of the incident to assign. Can be taken from incident
+        Context Data.'
   isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
   dockerimage: demisto/python3:3.9.7.24076
-fromversion: 5.5.0
+fromversion: 6.0.0
 tests:
 - No tests (auto formatted)

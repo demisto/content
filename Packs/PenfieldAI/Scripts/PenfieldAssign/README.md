@@ -30,3 +30,6 @@ There are no outputs for this script.
 !PenfieldAssign
 !PenfieldAssign assign='Yes'
 !PenfieldAssign assign='No'
+
+#### Human Readable Output
+incident assigned to: charles

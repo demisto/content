@@ -1,4 +1,4 @@
-comment: 'PenfieldAssign will use the PenfieldGetAssignee integration to determine who an incident should be assigned to, then print the selected analyst to the War Room and overwrite the owner property.'
+comment: "PenfieldAssign will use the Penfield integration's penfield-get-assignee command to determine who an incident should be assigned to, then print the selected analyst to the War Room and overwrite the owner property."
 commonfields:
   id: PenfieldAssign
   version: -1
@@ -24,7 +24,7 @@ timeout: '0'
 type: python
 subtype: python3
 dockerimage: demisto/python3:3.9.7.24076
-fromversion: 5.5.0
+fromversion: 6.0.0
 dependson:
   must:
-  - Penfield|||PenfieldGetAssignee
+  - Penfield|||penfield-get-assignee

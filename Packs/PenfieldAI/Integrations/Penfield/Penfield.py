@@ -12,23 +12,24 @@ urllib3.disable_warnings()
 
 
 class Client(BaseClient):
-    def live_assign_get(self, args) -> str:
+    def live_assign_get(self, analyst_ids, category, created, arg_id, name, severity) -> CommandResults:
+        params = assign_params(
+            analyst_ids=analyst_ids,
+            category=category,
+            created=created,
+            id=arg_id,
+            name=name,
+            severity=severity
+        )
         response = self._http_request(
             method='POST',
             url_suffix='/api/v1/xsoar_live_assign/',
-            params={
-                'analyst_ids': args['analyst_ids'],
-                'category': args['category'],
-                'created': args['created'],
-                'id': args['id'],
-                'name': args['name'],
-                'severity': args['severity']
-            }
+            params=params
         )
-        
+
         return CommandResults(
             readable_output=response['analyst'],
-            outputs_prefix='penfield.recommended',
+            outputs_prefix='Penfield.Recommended',
             outputs_key_field='',
             outputs=response['analyst']
         )
@@ -44,8 +45,25 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def get_assignee(client: Client, args) -> str:
-    return client.live_assign_get(args)
+def get_assignee(client: Client, args) -> CommandResults:
+    analyst_ids = args.get('analyst_ids')
+    category = args.get('category')
+    created = args.get('created')
+    arg_id = args.get('id')
+    name = args.get('name')
+    severity = args.get('severity')
+
+    return client.live_assign_get(analyst_ids, category, created, arg_id, name, severity)
+    # raw_response = client.live_assign_get(analyst_ids, category, created, arg_id, name, severity)
+
+    # analyst = raw_response.get('analyst')
+    # human_readable=tableToMarkdown('Analyst Penfield Recommends', analyst, headerTransform=pascalToSpace, removeNull=True)
+    # return CommandResults(
+    #         readable_output=human_readable,
+    #         outputs_prefix='Penfield.Recommended',
+    #         outputs_key_field='',
+    #         outputs=analyst
+    #   )
 
 
 def test_api(client: Client):
@@ -80,7 +98,7 @@ def main() -> None:
             else:
                 raise RuntimeError('Penfield API cannot be reached')
 
-        elif demisto.command() == 'PenfieldGetAssignee':
+        elif demisto.command() == 'penfield-get-assignee':
             result = get_assignee(client, demisto.args())
             return_results(result)
 
