@@ -235,7 +235,7 @@ def main():
                              mapper_in=mapper_in,
                              # Currently we don't use scim API endpoints, so we don't map the arguments.
                              mapper_out=None,
-                             get_user_iam_attrs=['id', 'userName', 'emails']
+                             get_user_iam_attrs=['id', 'username', 'email']
                              )
     client = Client(
         base_url=BASE_URL,

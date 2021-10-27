@@ -271,6 +271,7 @@ class Client(BaseClient):
             url_suffix=groupUri,
             json_data=data,
             resp_type='response',
+            ok_codes=(200, 201, 409)
         )
 
     def update_group(self, group_id, data):
