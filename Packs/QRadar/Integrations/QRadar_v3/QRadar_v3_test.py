@@ -1701,11 +1701,10 @@ def test_change_ctx_to_be_compatible(mocker, context_data, retry_compatible):
     Then:
         Ensure the context_data is transformed to the new format if needed.
     """
-    mocker.patch.object(QRadar_v3, 'get_integration_context', return_value=context_data)
     encoded_context = context_data
     mocker.patch.object(QRadar_v3, 'set_to_integration_context_with_retries')
 
-    change_ctx_to_be_compatible_with_retry()
+    change_ctx_to_be_compatible_with_retry(context_data)
     if not retry_compatible:
         encoded_context = set_context_data_as_json(context_data)
 
@@ -1728,24 +1727,23 @@ def test_change_ctx_to_be_compatible(mocker, context_data, retry_compatible):
     assert extract_context_data(encoded_context) == extracted_ctx
 
     if not retry_compatible:
-        QRadar_v3.set_to_integration_context_with_retries.assert_called_once_with(encode_context_data(extracted_ctx))
+        QRadar_v3.set_integration_context.assert_called_once_with(encode_context_data(extracted_ctx))
     else:
-        assert not QRadar_v3.set_to_integration_context_with_retries.called
+        assert not QRadar_v3.set_integration_context.called
 
 
-@pytest.mark.parametrize('context_data, retry_compatible, extracted_ctx', [
+@pytest.mark.parametrize('expected_context, retry_compatible, context', [
     # Expected after previous bug fix
     ({'samples': '[{"id": "1", "last_persisted_time": 2, "events": [{"event_id": "2"}, {"event_id": "3"}]}]',
-      'id': '"5"',
-      'last_mirror_update': '"10"',
-      'retry_compatible': True},
+      'id': '5',
+      'last_mirror_update': '10'},
      False,
      {'samples': [{'id': '1', 'last_persisted_time': 2,
                    'events': [{'event_id': '2'}, {'event_id': '3'}]}],
       'id': 5,
       'last_mirror_update': 10})
 ])
-def test_change_ctx_with_dirty_samples(mocker, context_data, retry_compatible, extracted_ctx):
+def test_change_ctx_with_dirty_samples(expected_context, retry_compatible, context):
     """Test changing the context data to be compatible with set_to_integration_context_with_retries after this
     sort of change was preformed on a previous integration version 2.0.27/28 -> 2.1.0 .
 
@@ -1758,15 +1756,9 @@ def test_change_ctx_with_dirty_samples(mocker, context_data, retry_compatible, e
     Then:
         Ensure the context_data is transformed to the new format.
     """
-    mocker.patch.object(QRadar_v3, 'get_integration_context', return_value=context_data)
-    mocker.patch.object(QRadar_v3, 'set_to_integration_context_with_retries')
-
-    change_ctx_to_be_compatible_with_retry()
-
-    if not retry_compatible:
-        QRadar_v3.set_to_integration_context_with_retries.assert_called_once_with(encode_context_data(extracted_ctx))
-    else:
-        assert not QRadar_v3.set_to_integration_context_with_retries.called
+    change_ctx_to_be_compatible_with_retry(context)
+    modified_context = QRadar_v3.get_integration_context()
+    assert modified_context == expected_context
 
 
 @pytest.mark.parametrize('ctx', [({'a': True, 'b': 2, 'c': {}, 'd': 1.1, 'e': [1, 1.1, {}, True],
@@ -1784,7 +1776,7 @@ def test_change_ctx_valid(ctx):
 
     """
     QRadar_v3.set_integration_context(ctx)
-    change_ctx_to_be_compatible_with_retry(ctx)
-    compatible_context = QRadar_v3.get_integration_context()
+    change_ctx_to_be_compatible_with_retry()
+    QRadar_v3.get_integration_context()
     # Change field in compatible context, just to see the set_to_integration_context_with_retries successfully finishes.
     QRadar_v3.set_to_integration_context_with_retries({'a': 2})
