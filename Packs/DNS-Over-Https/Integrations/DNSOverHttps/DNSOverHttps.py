@@ -23,7 +23,7 @@ def create_output(results, endpoint, only_answers):
     if only_answers:
         try:
             output = CommandResults(
-                outputs_prefix=f'DNS-over-HTTPS.{endpoint}',
+                outputs_prefix=f'DNSOverHTTPS.{endpoint}',
                 outputs_key_field='',
                 outputs=results['Answer']
             )
