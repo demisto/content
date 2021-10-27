@@ -1658,6 +1658,22 @@ def test_extract_decode_encode(context_data):
      RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: ['1', '11'],
      'retry_compatible': False},
      False),
+    ({'samples': [{'id': '1', 'last_persisted_time': 2,
+                   'events': [{'event_id': '2'}, {'event_id': '3'}]}],
+      'last_mirror_update': '10',
+      LAST_FETCH_KEY: 5,
+      UPDATED_MIRRORED_OFFENSES_CTX_KEY: [{'id': '1',
+                                           'last_persisted_time': 2,
+                                           'events': [{'event_id': '2'},
+                                                      {'event_id': '3'}]},
+                                          {'id': '11',
+                                           'last_persisted_time': 3,
+                                           'events': [{'event_id': '22'},
+                                                      {'event_id': '33'}]}],
+      MIRRORED_OFFENSES_CTX_KEY: [],
+      RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: ['1', '11'],
+      'retry_compatible': False, 'reset': True},
+     False),
     ({'samples': '["{\\"id\\": \\"1\\", '
                  '\\"last_persisted_time\\": 2, '
                  '\\"events\\": [{\\"event_id\\": \\"2\\"}, {\\"event_id\\": \\"3\\"}]}"]',
@@ -1687,6 +1703,22 @@ def test_extract_decode_encode(context_data):
       'mirrored_offenses': '[]',
       'resubmitted_mirrored_offenses': '["\\"1\\"", "\\"11\\""]',
       'retry_compatible': False},
+     True),
+    ({'samples': '["{\\"id\\": \\"1\\", '
+                 '\\"last_persisted_time\\": 2, '
+                 '\\"events\\": [{\\"event_id\\": \\"2\\"}, {\\"event_id\\": \\"3\\"}]}"]',
+      'id': '"5"',
+      'last_mirror_update': '"10"',
+      'updated_mirrored_offenses': '["{\\"id\\": \\"1\\", '
+                                   '\\"last_persisted_time\\": 2, '
+                                   '\\"events\\": [{\\"event_id\\": \\"2\\"}, {\\"event_id\\": \\"3\\"}]}", '
+                                   '"{\\"id\\": \\"11\\", '
+                                   '\\"last_persisted_time\\": 3, '
+                                   '\\"events\\": [{\\"event_id\\": \\"22\\"}, {\\"event_id\\": \\"33\\"}]}"]',
+      'mirrored_offenses': '[]',
+      'resubmitted_mirrored_offenses': '["\\"1\\"", "\\"11\\""]',
+      'retry_compatible': False,
+      'reset': True},
      True)
 ])
 def test_change_ctx_to_be_compatible(mocker, context_data, retry_compatible):
@@ -1710,6 +1742,7 @@ def test_change_ctx_to_be_compatible(mocker, context_data, retry_compatible):
         encoded_context = set_context_data_as_json(context_data)
 
     encoded_context.pop('retry_compatible', None)
+    encoded_context.pop('reset', None)
 
     extracted_ctx = {'samples': [{'id': '1', 'last_persisted_time': 2,
                                   'events': [{'event_id': '2'}, {'event_id': '3'}]}],
