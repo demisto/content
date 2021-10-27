@@ -72,7 +72,7 @@ script:
       description: The number of sources that positively reported the indicator as blacklist.
       type: Number
     - contextPath: DBotScore.Score
-      description: The DBot score.
+      description: The DBot score..
       type: Number
     - contextPath: DBotScore.Type
       description: The type of indicator.
@@ -139,13 +139,13 @@ script:
       description: Date when the IoC was last updated.
       type: Date
     - contextPath: Domain.TLD
-      description: Top Level Domain of the hostname
+      description: Top Level Domain of the hostname.
       type: Number
     - contextPath: Domain.ASName
       description: Autonomous system name of the domain.
       type: String
     - contextPath: DBotScore.Score
-      description: The DBot score.
+      description: The DBot score..
       type: Number
     - contextPath: DBotScore.Type
       description: The type of indicator.
@@ -230,7 +230,7 @@ script:
       description: The number of sources that positively reported the indicator as blacklist.
       type: Number
     - contextPath: DBotScore.Score
-      description: The DBot score
+      description: The DBot score.
       type: Number
     - contextPath: DBotScore.Type
       description: The type of indicator.
@@ -272,7 +272,7 @@ script:
       description: Stores the hostname to which the URL belongs.
       type: String
     - contextPath: Maltiverse.URL.Domain
-      description: Stores the domain to which the hostname belongs. Hostname and domain can match on level 2 hostnames
+      description: Stores the domain to which the hostname belongs. Hostname and domain can match on level 2 hostnames.
       type: String
     - contextPath: Maltiverse.URL.TLD
       description: Top-level domain of the hostname.
@@ -327,7 +327,7 @@ script:
       description: The path of the file.
       type: String
     - contextPath: DBotScore.Score
-      description: The DBot score.
+      description: The DBot score..
       type: Number
     - contextPath: DBotScore.Type
       description: The type of indicator.

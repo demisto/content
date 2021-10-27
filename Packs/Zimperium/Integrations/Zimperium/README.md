@@ -1307,7 +1307,7 @@ Gets a report.
 | Zimperium.Reports.risk_profile.intell_privacy | String | Privacy intelligence. | 
 | Zimperium.Reports.risk_profile.intell_security | String | Security intelligence. | 
 | Zimperium.Reports.risk_profile.overall_risk | String | Overall  risk. | 
-| Zimperium.Reports.risk_profile.privacy.Category | String | Privacy category | 
+| Zimperium.Reports.risk_profile.privacy.Category | String | Privacy category. | 
 | Zimperium.Reports.risk_profile.privacy.Risk Level | String | Privacy risk level. | 
 | Zimperium.Reports.risk_profile.privacy.desc | String | Privacy description. | 
 | Zimperium.Reports.risk_profile.privacy_risk | Number | Privacy risk. | 

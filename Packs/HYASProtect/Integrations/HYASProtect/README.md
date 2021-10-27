@@ -168,7 +168,7 @@ Returns verdict information for the provided FQDN.
 | DBotScore.Score | Number | The actual score. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the indicator score. | 
-| HYAS.FQDNVerdict.verdict | String | Verdict for for the provided FQDN. | 
+| HYAS.FQDNVerdict.verdict | String | Verdict for the provided FQDN. | 
 | HYAS.FQDNVerdict.reasons | Unknown | Verdict Reasons for the provided FQDN. | 
 
 

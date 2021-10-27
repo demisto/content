@@ -107,7 +107,7 @@ script:
       description: The vendor used to calculate the indicator score.
       type: String
     - contextPath: HYAS.FQDNVerdict.verdict
-      description: Verdict for for the provided FQDN.
+      description: Verdict for the provided FQDN.
       type: String
     - contextPath: HYAS.FQDNVerdict.reasons
       description: Verdict Reasons for the provided FQDN.

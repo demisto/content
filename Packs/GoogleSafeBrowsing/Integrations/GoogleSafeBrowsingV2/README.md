@@ -49,7 +49,7 @@ Check URL Reputation
 | GoogleSafeBrowsing.URL.threatEntryType | string | The URL threat entry type. |
 | GoogleSafeBrowsing.URL.platformType | string | The URL platform type. |
 | URL.Data | string | Bad URLs found | 
-| URL.Malicious.Vendor | string | For malicious URLs, the vendor that made the decision | 
+| URL.Malicious.Vendor | string | For malicious URLs, the vendor that made the decision. | 
 | URL.Malicious.Description | string | For malicious URLs, the reason for the vendor to make the decision | 
 
 

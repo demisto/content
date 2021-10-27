@@ -54,7 +54,7 @@ Checks the reputation of an IP address
 | IP.PositiveDetections | Number | The number of sources that positively reported the indicator as blacklist |
 | IP.Tags | String | The type of indicator |  
 | IP.ThreatTypes | Unknown | A list with the description of the elements in the blacklist |  
-| DBotScore.Score | Number | The DBot score | 
+| DBotScore.Score | Number | The DBot score. | 
 | DBotScore.Type | String | The type of indicator | 
 | DBotScore.Vendor | String | The vendor used to calculate the score | 
 | DBotScore.Indicator | String | The indicator that was tested | 
@@ -95,11 +95,11 @@ Checks the reputation of a Domain
 | Domain.Name | String | The domain name | 
 | Domain.CreationDate | Date | Date when a IoC has been inserted for the first time | 
 | Domain.ModificationDate | Date | Date when a IoC has been updated for the last time | 
-| Domain.TLD | Number | Top Level Domain of the hostname | 
+| Domain.TLD | Number | Top Level Domain of the hostname. | 
 | Domain.ASName | String | Autonumous system name of the domain |
 | Domain.Tags | String | Attribute to label an IoC |  
 | Domain.ThreatTypes | Unknown | A list with the description of the elements in the blacklist |   
-| DBotScore.Score | Number | The DBot score | 
+| DBotScore.Score | Number | The DBot score. | 
 | DBotScore.Type | String | The type of indicator | 
 | DBotScore.Vendor | String | The vendor used to calculate the score | 
 | DBotScore.Indicator | String | The indicator that was tested | 
@@ -150,7 +150,7 @@ Checks the reputation of an URL
 | URL.PositiveDetections | Number | The number of sources that positively reported the indicator as blacklist | 
 | URL.Tags | String | Attribute to label an IoC |  
 | URL.ThreatTypes | Unknown | A list with the description of the elements in the blacklist |
-| DBotScore.Score | Number | The DBot score | 
+| DBotScore.Score | Number | The DBot score. | 
 | DBotScore.Type | String | The type of indicato | 
 | DBotScore.Vendor | String | The vendor used to calculate the score | 
 | DBotScore.Indicator | String | The indicator that was tested | 
@@ -205,7 +205,7 @@ Check the reputation of a file
 | File.Path | String | The path of the file |
 | File.Tags | String | Attribute to label an IoC |  
 | File.ThreatTypes | Unknown | A list with the description of the elements in the blacklist |    
-| DBotScore.Score | Number | The DBot score | 
+| DBotScore.Score | Number | The DBot score. | 
 | DBotScore.Type | String | The type of indicator | 
 | DBotScore.Vendor | String | The vendor used to calculate the score | 
 | DBotScore.Indicator | String | The indicator that was tested | 

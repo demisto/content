@@ -386,7 +386,7 @@ Adds URLs to the specified category.
 | Zscaler.Category.CustomCategory | boolean | True, if the category is a custom category. Otherwise, false. | 
 | Zscaler.Category.Description | string | The description of the category. | 
 | Zscaler.Category.ID | string | The ID of the category. | 
-| Zscaler.Category.URL | string | The URL of the category. | 
+| Zscaler.Category.URL | string | The URL of the category.. | 
 
 
 #### Command Example
@@ -440,7 +440,7 @@ Adds IP address to the specified category.
 | Zscaler.Category.CustomCategory | boolean | True, if the category is a custom category. Otherwise, false. | 
 | Zscaler.Category.Description | string | The description of the category. | 
 | Zscaler.Category.ID | string | The ID of the category. | 
-| Zscaler.Category.URL | string | The URL of the category | 
+| Zscaler.Category.URL | string | The URL of the category. | 
 
 
 `!zscaler-category-add-ip category-id=REFERENCE_SITES ip=1.2.3.4,8.8.8.8`
@@ -492,7 +492,7 @@ Removes URLs from the specified category.
 | Zscaler.Category.CustomCategory | boolean | True, if the category is a custom category. Otherwise, false. | 
 | Zscaler.Category.Description | string | The description of the category. | 
 | Zscaler.Category.ID | string | The ID of the category. | 
-| Zscaler.Category.URL | string | The URL of the category. | 
+| Zscaler.Category.URL | string | The URL of the category.. | 
 
 #### Command Example
 `!zscaler-category-remove-url category-id=MUSIC url=apple.com`
@@ -542,7 +542,7 @@ Removes IP address from the specified category.
 | Zscaler.Category.CustomCategory | boolean | True, if the category is a custom category. Otherwise, false. | 
 | Zscaler.Category.Description | string | The description of the category. | 
 | Zscaler.Category.ID | string | The ID of the category. | 
-| Zscaler.Category.URL | string | The URL of the category. | 
+| Zscaler.Category.URL | string | The URL of the category.. | 
 
 
 #### Command Example
@@ -593,7 +593,7 @@ Retrieves a list of all categories.
 | --- | --- | --- |
 | Zscaler.Category.ID | string | The ID of the category. | 
 | Zscaler.Category.CustomCategory | boolean | True, if the category is a custom category. Otherwise, false. | 
-| Zscaler.Category.URL | string | The URL of the category. | 
+| Zscaler.Category.URL | string | The URL of the category.. | 
 | Zscaler.Category.Description | string | The description of the category. | 
 | Zscaler.Category.Name | string | The name of the category. | 
 
