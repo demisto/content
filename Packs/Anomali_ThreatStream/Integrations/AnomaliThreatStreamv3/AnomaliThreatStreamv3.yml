@@ -295,7 +295,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: If the confidence is greater than the threshold the file hash 
+      description: If the confidence is greater than the threshold the hash of the file 
         is considered malicious, otherwise it is considered good.
         This argument overrides the default file threshold defined as a parameter.
       isArray: false
@@ -317,16 +317,16 @@ script:
     name: file
     outputs:
     - contextPath: File.MD5
-      description: The file MD5 hash.
+      description: The MD5 hash of the file.
       type: String
     - contextPath: File.SHA1
-      description: The file SHA1 hash.
+      description: The SHA1 hash of the file.
       type: String
     - contextPath: File.SHA256
-      description: The file SHA256 hash.
+      description: The SHA256 hash of the file.
       type: String
     - contextPath: File.SHA512
-      description: The file SHA512 hash.
+      description: The SHA512 hash of the file.
       type: String
     - contextPath: File.Malicious.Vendor
       description: The vendor that reported the indicator as malicious.
@@ -357,16 +357,16 @@ script:
       description: The indicator type.
       type: String
     - contextPath: ThreatStream.File.MD5
-      description: The indicator MD5 hash.
+      description: The MD5 hash of the indicator.
       type: String
     - contextPath: ThreatStream.File.SHA1
-      description: The indicator SHA1 hash.
+      description: The SHA1 hash of the indicator.
       type: String
     - contextPath: ThreatStream.File.SHA256
-      description: The indicator SHA256 hash.
+      description: The SHA256 hash of the indicator.
       type: String
     - contextPath: ThreatStream.File.SHA512
-      description: The indicator SHA512 hash.
+      description: The SHA512 hash of the indicator.
       type: String
     - contextPath: ThreatStream.File.Modified
       description: |-
