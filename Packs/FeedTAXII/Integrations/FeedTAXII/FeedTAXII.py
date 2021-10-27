@@ -950,6 +950,7 @@ def package_extract_properties(package):
         if 'tlpmarkingstructuretype' not in type_:
             continue
 
+        result['share_level'] = color.lower()  # To keep backward compatibility
         result['TLP'] = color.upper()  # https://www.us-cert.gov/tlp
         break
 
