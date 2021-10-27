@@ -1833,6 +1833,8 @@ def resolve_detection_command():
 
     status = args.get('status')
     show_in_ui = args.get('show_in_ui')
+    if not (username or assigned_to_uuid or comment or status or show_in_ui):
+        raise DemistoException("Please provide at least one argument to resolve the detection with.")
     raw_res = resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment)
     args.pop('ids')
     hr = "Detection {0} updated\n".format(str(ids)[1:-1])
