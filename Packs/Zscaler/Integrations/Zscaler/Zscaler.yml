@@ -274,7 +274,7 @@ script:
       description: The ID of the category.
       type: string
     - contextPath: Zscaler.Category.URL
-      description: The URL of the category..
+      description: The URL of the category.
       type: string
   - arguments:
     - default: false
@@ -307,7 +307,7 @@ script:
       description: The ID of the category.
       type: string
     - contextPath: Zscaler.Category.URL
-      description: The URL of the category.
+      description: The URL of the category
       type: string
   - arguments:
     - default: false
@@ -340,7 +340,7 @@ script:
       description: The ID of the category.
       type: string
     - contextPath: Zscaler.Category.URL
-      description: The URL of the category..
+      description: The URL of the category.
       type: string
   - arguments:
     - default: false
@@ -373,7 +373,7 @@ script:
       description: The ID of the category.
       type: string
     - contextPath: Zscaler.Category.URL
-      description: The URL of the category..
+      description: The URL of the category.
       type: string
   - arguments:
     - auto: PREDEFINED
@@ -423,7 +423,7 @@ script:
       description: True, if the category is a custom category. Otherwise, false.
       type: boolean
     - contextPath: Zscaler.Category.URL
-      description: The URL of the category..
+      description: The URL of the category.
       type: string
     - contextPath: Zscaler.Category.Description
       description: The description of the category.

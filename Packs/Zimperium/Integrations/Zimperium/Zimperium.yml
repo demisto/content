@@ -979,7 +979,7 @@ script:
       description: Detection rate of the application.
       type: String
     - contextPath: Zimperium.Reports.risk_profile.intell_privacy
-      description: Privacy intelligence,.
+      description: Privacy intelligence,
       type: String
     - contextPath: Zimperium.Reports.risk_profile.intell_security
       description: Security intelligence.
@@ -988,7 +988,7 @@ script:
       description: Overall risk.
       type: String
     - contextPath: Zimperium.Reports.risk_profile.privacy.Category
-      description: Privacy category.
+      description: Privacy category
       type: String
     - contextPath: Zimperium.Reports.risk_profile.privacy.Risk Level
       description: Privacy risk level.

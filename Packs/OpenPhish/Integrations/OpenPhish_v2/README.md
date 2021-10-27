@@ -35,7 +35,7 @@ Checks the reputation of a URL.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| URL.Data | unknown | The URL. | 
+| URL.Data | unknown | The URL | 
 | URL.Malicious.Vendor | unknown | The vendor reporting the URL as malicious. | 
 | URL.Malicious.Description | unknown | A description of the malicious URL. | 
 | DBotScore.Indicator | unknown | The indicator that was tested. | 

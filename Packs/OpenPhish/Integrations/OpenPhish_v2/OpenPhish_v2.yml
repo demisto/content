@@ -41,7 +41,7 @@ script:
           description: URL to check
       outputs:
         - contextPath: URL.Data
-          description: The URL.
+          description: The URL
         - contextPath: URL.Malicious.Vendor
           description: The vendor reporting the URL as malicious.
         - contextPath: URL.Malicious.Description

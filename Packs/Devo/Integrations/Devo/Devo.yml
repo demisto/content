@@ -60,7 +60,7 @@ script:
       defaultValue: "true"
     outputs:
     - contextPath: Devo.Results
-      description: The query results.
+      description: The query results
     description: Perform a query.
   runonce: false
   dockerimage: demisto/python:2.7.18.24066

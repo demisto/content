@@ -64,28 +64,28 @@ script:
     name: url
     outputs:
     - contextPath: DBotScore.Indicator
-      description: The Indicator.
+      description: The Indicator
       type: string
     - contextPath: DBotScore.Type
-      description: The Indicator Type.
+      description: The Indicator Type
       type: string
     - contextPath: DBotScore.Vendor
-      description: The DBot score vendor.
+      description: The DBot score vendor
       type: string
     - contextPath: DBotScore.Score
-      description: The DBot score.
+      description: The DBot score
       type: number
     - contextPath: DBotScore.Reliability
       description: Reliability of the source providing the intelligence data.
       type: String
     - contextPath: URL.Malicious.Vendor
-      description: For malicious URLs, the vendor that made the decision.
+      description: For malicious URLs, the vendor that made the decision
       type: string
     - contextPath: URL.Malicious.Description
-      description: For malicious URLs, the reason that the vendor made the decision.
+      description: For malicious URLs, the reason that the vendor made the decision
       type: string
     - contextPath: URL.Data
-      description: URL name.
+      description: URL name
       type: string
     - contextPath: GoogleSafeBrowsing.URL.threatType
       description: The URL threat type.
