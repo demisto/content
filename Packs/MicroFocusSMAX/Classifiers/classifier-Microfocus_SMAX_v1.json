@@ -1,0 +1,20 @@
+{
+    "id": "Microfocus_SMAX_Classifier_v1",
+    "name": "Microfocus SMAX Classifier",
+    "description": "Microfocus SMAX Classifier",
+    "feed": false,
+    "keyTypeMap": {
+        "Incident": "MicroFocus SMAX Incident",
+        "Request": "MicroFocus SMAX Request"
+    },
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "complex": null,
+        "simple": "Type"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

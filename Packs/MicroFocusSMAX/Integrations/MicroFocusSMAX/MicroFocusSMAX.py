@@ -1,7 +1,4 @@
-
-import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
+from CommonServerPython import *
 
 import requests
 import traceback
@@ -50,9 +47,13 @@ class Client(BaseClient):
         return response
 
     def bulk_action(self, action_type, entities):
+        if type(entities) == list:
+            entities = entities
+        else:
+            entities = json.loads(entities)
         url_suffix = f'rest/{self.tenant_id}/ems/bulk'
         payload = {
-            "entities": json.loads(entities),
+            "entities": entities,
             "operation": action_type
         }
         response = self._http_request(method='POST', url_suffix=url_suffix,
@@ -104,9 +105,9 @@ def fetch_incidents_command(client: Client, object_to_fetch="Incident", fetch_qu
     incidents = []
     validate_fetch_params(fetch_limit=fetch_limit, fetch_start=fetch_start)
     if fetch_fields:
-        fetch_fields = 'Name,Id,EmsCreationTime' + fetch_fields
+        fetch_fields = 'DisplayLabel,Id,EmsCreationTime' + fetch_fields
     else:
-        fetch_fields = 'Name,Id,EmsCreationTime'
+        fetch_fields = 'DisplayLabel,Id,EmsCreationTime'
 
     last_run = demisto.getLastRun()
     if last_run and 'start_time' in last_run:
@@ -123,13 +124,14 @@ def fetch_incidents_command(client: Client, object_to_fetch="Incident", fetch_qu
                                     order_by="Id desc", entity_fields=fetch_fields,
                                     size=fetch_limit, skip=None)
     for entity in results.get('entities'):
-        created_at_epoch = int(entity.get('properties')['EmsCreationTime'])
+        properties = entity.get('properties')
+        created_at_epoch = int(properties.get('EmsCreationTime'))
         created_at_date = datetime.fromtimestamp(round(created_at_epoch/1000), timezone.utc)
-        Id = entity.get('properties')['Id']
+        entity_id = properties.get('Id')
         raw_json = {'Type': entity.get('entity_type')}
-        raw_json.update(entity.get('properties'))
+        raw_json.update(properties)
         inc = {
-            'name': f'SMAX {object_to_fetch}: {Id}',
+            'name': f'SMAX {object_to_fetch}: {entity_id}',
             'occurred': created_at_date.isoformat(),
             'rawJSON': json.dumps(raw_json)
         }
@@ -153,25 +155,31 @@ def get_entity_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         raise ValueError('Entity Type and ID are not specified')
 
     if entity_fields:
-        entity_fields = 'Name,Id,' + entity_fields
+        entity_fields = 'DisplayLabel,Id,' + entity_fields
     else:
-        entity_fields = 'Name,Id'
+        entity_fields = 'DisplayLabel,Id'
 
     result = client.get_entity(entity_type=entity_type, entity_id=entity_id, entity_fields=entity_fields)
 
-    entity = result.get('entities')[0]
+    if result.get('entities'):
 
-    readable_entity['Type'] = entity.get('entity_type')
-    readable_entity.update(entity.get('properties'))
+        entity = result.get('entities')[0]
 
-    readable_output = tableToMarkdown('Entity Details:', readable_entity)
+        readable_entity['Type'] = entity.get('entity_type')
+        readable_entity.update(entity.get('properties'))
 
-    return CommandResults(
-        outputs_prefix='MicroFocus.SMAX.Entities',
-        outputs_key_field='properties.Id',
-        readable_output=readable_output,
-        outputs=entity,
-    )
+        readable_output = tableToMarkdown('Entity Details:', readable_entity)
+
+        return CommandResults(
+            outputs_prefix='MicroFocus.SMAX.Entities',
+            outputs_key_field='properties.Id',
+            readable_output=readable_output,
+            outputs=entity,
+        )
+    else:
+        return CommandResults(
+                readable_output="The entity is not found",
+        )
 
 
 def query_entities_command(client: Client, args: Dict[str, Any]):
@@ -195,33 +203,37 @@ def query_entities_command(client: Client, args: Dict[str, Any]):
 
     results = client.query_entities(entity_type=entity_type, entity_fields=entity_fields, query_filter=query_filter,
                                     order_by=order_by, size=size, skip=skip)
+    if results.get('entities'):
+        for entity in results.get('entities'):
+            readable_entity = {'Type': entity.get('entity_type')}
+            readable_entity.update(entity.get('properties'))
+            readable_entities.append(readable_entity)
+        meta_data = results.get("meta")
+        count_readable_output = tableToMarkdown('Result Total Count:', {
+            "Query Time": meta_data.get("query_time"),
+            "Total Count": meta_data.get("total_count")
+        })
 
-    for entity in results.get('entities'):
-        readable_entity = {'Type': entity.get('entity_type')}
-        readable_entity.update(entity.get('properties'))
-        readable_entities.append(readable_entity)
+        results_readable_output = tableToMarkdown('Result Details:', readable_entities)
 
-    count_readable_output = tableToMarkdown('Result Total Count:', {
-        "Query Time": results.get("meta")["query_time"],
-        "Total Count": results.get("meta")["total_count"]
-    })
-
-    results_readable_output = tableToMarkdown('Result Details:', readable_entities)
-
-    return [
-        CommandResults(
-            outputs_prefix='MicroFocus.SMAX.Query',
-            outputs_key_field='query_time',
-            readable_output=count_readable_output,
-            outputs=results.get('meta'),
-        ),
-        CommandResults(
-            outputs_prefix='MicroFocus.SMAX.Entities',
-            outputs_key_field='properties.Id',
-            readable_output=results_readable_output,
-            outputs=results.get('entities'),
+        return [
+            CommandResults(
+                outputs_prefix='MicroFocus.SMAX.Query',
+                outputs_key_field='query_time',
+                readable_output=count_readable_output,
+                outputs=results.get('meta'),
+            ),
+            CommandResults(
+                outputs_prefix='MicroFocus.SMAX.Entities',
+                outputs_key_field='properties.Id',
+                readable_output=results_readable_output,
+                outputs=results.get('entities'),
+            )
+        ]
+    else:
+        return CommandResults(
+                readable_output="No entities found",
         )
-    ]
 
 
 def create_entities_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -231,7 +243,7 @@ def create_entities_command(client: Client, args: Dict[str, Any]) -> CommandResu
     readable_entities = []
     context_entities = []
 
-    if not (entities):
+    if not entities:
         raise ValueError('Entities are not specified')
 
     result = client.bulk_action(action_type="CREATE", entities=entities)
@@ -250,6 +262,285 @@ def create_entities_command(client: Client, args: Dict[str, Any]) -> CommandResu
         readable_entities.append(readable_entity)
 
     results_readable_output = tableToMarkdown('Entities Creation Details:', readable_entities)
+
+    return CommandResults(
+        outputs_prefix='MicroFocus.SMAX.Entities',
+        outputs_key_field='properties.Id',
+        readable_output=results_readable_output,
+        outputs=context_entities,
+    )
+
+
+def update_entities_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+
+    entities = args.get('entities', None)
+
+    readable_entities = []
+    context_entities = []
+
+    if not entities:
+        raise ValueError('Entities are not specified')
+
+    result = client.bulk_action(action_type="UPDATE", entities=entities)
+    bulk_results = result.get('entity_result_list')
+    for entity in bulk_results:
+        entity_object = entity.get('entity')
+        completion_status = entity.get('completion_status')
+        context_entity = {"completion_status": completion_status}
+        context_entity.update(entity_object)
+        context_entities.append(context_entity)
+        readable_entity = {
+            'Type': entity_object.get('entity_type'),
+            'CompletionStatus': completion_status
+        }
+        readable_entity.update(entity_object.get('properties'))
+        readable_entities.append(readable_entity)
+
+    results_readable_output = tableToMarkdown('Entities Update Details:', readable_entities)
+
+    return CommandResults(
+        outputs_prefix='MicroFocus.SMAX.Entities',
+        outputs_key_field='properties.Id',
+        readable_output=results_readable_output,
+        outputs=context_entities,
+    )
+
+
+def create_incident_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+
+    readable_entities = []
+    context_entities = []
+
+    incident_name = args.get('incident_name')
+    incident_description = args.get('incident_description')
+    impacted_service = args.get('impacted_service')
+    requested_by = args.get('requested_by', None)
+    incident_urgency = args.get('incident_urgency', None)
+    impact_scope = args.get('impact_scope', None)
+    service_desk_group = args.get('service_desk_group', None)
+    other_properities = args.get('other_properities', None)
+
+    incident_properities = {
+        "DisplayLabel": incident_name,
+        "Description": incident_description,
+        "RegisteredForActualService": impacted_service
+    }
+
+    if requested_by:
+        incident_properities["RequestedByPerson"] = requested_by
+    if incident_urgency:
+        incident_properities["Urgency"] = incident_urgency
+    if impact_scope:
+        incident_properities["ImpactScope"] = impact_scope
+    if service_desk_group:
+        incident_properities["ServiceDeskGroup"] = service_desk_group
+    if other_properities:
+        incident_properities.update(json.loads(other_properities))
+
+    incident_object = {
+        "entity_type": "Incident",
+        "properties": incident_properities
+    }
+
+    result = client.bulk_action(action_type="CREATE", entities=[incident_object])
+    bulk_results = result.get('entity_result_list')
+    for entity in bulk_results:
+        entity_object = entity.get('entity')
+        completion_status = entity.get('completion_status')
+        context_entity = {"completion_status": completion_status}
+        context_entity.update(entity_object)
+        context_entities.append(context_entity)
+        readable_entity = {
+            'Type': entity_object.get('entity_type'),
+            'CompletionStatus': completion_status
+        }
+        readable_entity.update(entity_object.get('properties'))
+        readable_entities.append(readable_entity)
+
+    results_readable_output = tableToMarkdown('Incident Creation Results:', readable_entities)
+
+    return CommandResults(
+        outputs_prefix='MicroFocus.SMAX.Entities',
+        outputs_key_field='properties.Id',
+        readable_output=results_readable_output,
+        outputs=context_entities,
+    )
+
+
+def update_incident_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+
+    readable_entities = []
+    context_entities = []
+
+    incident_id = args.get('incident_id')
+    incident_description = args.get('incident_description', None)
+    incident_urgency = args.get('incident_urgency', None)
+    incident_scope = args.get('incident_scope', None)
+    incident_status = args.get('incident_status', None)
+    incident_closure_category = args.get('incident_closure_category', None)
+    incident_completion_code = args.get('incident_completion_code', None)
+    incident_solution = args.get('incident_solution', None)
+    other_properities = args.get('other_properities', None)
+
+    incident_properities = {
+        "Id": incident_id
+    }
+
+    if incident_description:
+        incident_properities["Description"] = incident_description
+    if incident_urgency:
+        incident_properities["Urgency"] = incident_urgency
+    if incident_scope:
+        incident_properities["ImpactScope"] = incident_scope
+    if incident_status:
+        incident_properities["Status"] = incident_status
+    if incident_closure_category:
+        incident_properities["ClosureCategory"] = incident_closure_category
+    if incident_completion_code:
+        incident_properities["CompletionCode"] = incident_completion_code
+    if incident_solution:
+        incident_properities["Solution"] = incident_solution
+    if other_properities:
+        incident_properities.update(json.loads(other_properities))
+
+    request_object = {
+        "entity_type": "Incident",
+        "properties": incident_properities
+    }
+
+    result = client.bulk_action(action_type="UPDATE", entities=[request_object])
+    bulk_results = result.get('entity_result_list')
+    for entity in bulk_results:
+        entity_object = entity.get('entity')
+        completion_status = entity.get('completion_status')
+        context_entity = {"completion_status": completion_status}
+        context_entity.update(entity_object)
+        context_entities.append(context_entity)
+        readable_entity = {
+            'Type': entity_object.get('entity_type'),
+            'CompletionStatus': completion_status
+        }
+        readable_entity.update(entity_object.get('properties'))
+        readable_entities.append(readable_entity)
+
+    results_readable_output = tableToMarkdown('Incident Update Results:', readable_entities)
+
+    return CommandResults(
+        outputs_prefix='MicroFocus.SMAX.Entities',
+        outputs_key_field='properties.Id',
+        readable_output=results_readable_output,
+        outputs=context_entities,
+    )
+
+
+def create_request_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+
+    readable_entities = []
+    context_entities = []
+
+    request_name = args.get('request_name')
+    request_description = args.get('request_description')
+    requested_by = args.get('requested_by')
+    requested_for = args.get('requested_for')
+    request_urgency = args.get('request_urgency', None)
+    impact_scope = args.get('impact_scope', None)
+    other_properities = args.get('other_properities', None)
+
+    request_properities = {
+        "DisplayLabel": request_name,
+        "Description": request_description,
+        "RequestedByPerson": requested_by,
+        "RequestedForPerson": requested_for
+    }
+
+    if request_urgency:
+        request_properities["Urgency"] = request_urgency
+    if impact_scope:
+        request_properities["ImpactScope"] = impact_scope
+    if other_properities:
+        request_properities.update(json.loads(other_properities))
+
+    request_object = {
+        "entity_type": "Request",
+        "properties": request_properities
+    }
+
+    result = client.bulk_action(action_type="CREATE", entities=[request_object])
+    bulk_results = result.get('entity_result_list')
+    for entity in bulk_results:
+        entity_object = entity.get('entity')
+        completion_status = entity.get('completion_status')
+        context_entity = {"completion_status": completion_status}
+        context_entity.update(entity_object)
+        context_entities.append(context_entity)
+        readable_entity = {
+            'Type': entity_object.get('entity_type'),
+            'CompletionStatus': completion_status
+        }
+        readable_entity.update(entity_object.get('properties'))
+        readable_entities.append(readable_entity)
+
+    results_readable_output = tableToMarkdown('Request Creation Results:', readable_entities)
+
+    return CommandResults(
+        outputs_prefix='MicroFocus.SMAX.Entities',
+        outputs_key_field='properties.Id',
+        readable_output=results_readable_output,
+        outputs=context_entities,
+    )
+
+
+def update_request_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+
+    readable_entities = []
+    context_entities = []
+
+    request_id = args.get('request_id')
+    request_description = args.get('request_description', None)
+    request_urgency = args.get('request_urgency', None)
+    impact_scope = args.get('impact_scope', None)
+    request_status = args.get('request_status', None)
+    request_note = args.get('request_note', None)
+    other_properities = args.get('other_properities', None)
+
+    request_properities = {
+        "Id": request_id
+    }
+
+    if request_description:
+        request_properities["Description"] = request_description
+    if request_urgency:
+        request_properities["Urgency"] = request_urgency
+    if impact_scope:
+        request_properities["ImpactScope"] = impact_scope
+    if request_status:
+        request_properities["Status"] = request_status
+    if request_note:
+        request_properities["ClosureCategory"] = request_note
+    if other_properities:
+        request_properities.update(json.loads(other_properities))
+
+    request_object = {
+        "entity_type": "Request",
+        "properties": request_properities
+    }
+
+    result = client.bulk_action(action_type="UPDATE", entities=[request_object])
+    bulk_results = result.get('entity_result_list')
+    for entity in bulk_results:
+        entity_object = entity.get('entity')
+        completion_status = entity.get('completion_status')
+        context_entity = {"completion_status": completion_status}
+        context_entity.update(entity_object)
+        context_entities.append(context_entity)
+        readable_entity = {
+            'Type': entity_object.get('entity_type'),
+            'CompletionStatus': completion_status
+        }
+        readable_entity.update(entity_object.get('properties'))
+        readable_entities.append(readable_entity)
+
+    results_readable_output = tableToMarkdown('Request Update Results:', readable_entities)
 
     return CommandResults(
         outputs_prefix='MicroFocus.SMAX.Entities',
@@ -310,6 +601,18 @@ def main() -> None:
 
         elif demisto.command() == 'microfocus-smax-update-entities':
             return_results(update_entities_command(client, args))
+
+        elif demisto.command() == 'microfocus-smax-create-incident':
+            return_results(create_incident_command(client, args))
+
+        elif demisto.command() == 'microfocus-smax-update-incident':
+            return_results(update_incident_command(client, args))
+
+        elif demisto.command() == 'microfocus-smax-create-request':
+            return_results(create_request_command(client, args))
+
+        elif demisto.command() == 'microfocus-smax-update-request':
+            return_results(update_request_command(client, args))
 
     except Exception as e:
         demisto.error(traceback.format_exc())
