@@ -1,4 +1,4 @@
-Fetch SMAX cases and automate  differen SMAX case management actions
+Fetch SMAX incidents, requests and automate different SMAX case management actions
 This integration was integrated and tested with version 2021.08 of MicroFocus SMAX
 
 ## Configure MicroFocus SMAX on Cortex XSOAR
