@@ -68,11 +68,6 @@ configuration:
   defaultvalue: "30"
   type: 19
   required: false
-- display: Zoom IP Ranges URL
-  name: url
-  defaultvalue: https://assets.zoom.us/docs/ipranges
-  type: 0
-  required: true
 - display: Tags
   name: feedTags
   defaultvalue: ""

@@ -10,6 +10,7 @@ from bs4 import BeautifulSoup
 urllib3.disable_warnings()
 
 INTEGRATION_NAME = "Zoom Feed"
+ZOOM_DOCS_IP_RANGES_URL = "https://assets.zoom.us/docs/ipranges"
 
 
 class Client(BaseClient):
@@ -177,7 +178,6 @@ def main():
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
     params = demisto.params()
-    base_url = params.get("url")
     insecure = not params.get("insecure", False)
     proxy = params.get("proxy", False)
 
@@ -185,7 +185,7 @@ def main():
     demisto.info(f"Command being called is {command}")
 
     try:
-        client = Client(base_url=base_url, verify=insecure, proxy=proxy, )
+        client = Client(base_url=ZOOM_DOCS_IP_RANGES_URL, verify=insecure, proxy=proxy, )
 
         commands: Dict[
             str, Callable[[Client, Dict[str, str], Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]
