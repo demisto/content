@@ -3338,7 +3338,7 @@ def get_modified_remote_data_command(client: Client, params: Dict[str, str],
     return GetModifiedRemoteDataResponse(new_modified_records_ids)
 
 
-def change_ctx_to_be_compatible_with_retry() -> None:
+def change_ctx_to_be_compatible_with_retry(ctx: Dict) -> None:
     """
     In order to move QRadar from using set_integration_context to set_to_integration_context_with_retries, the fields
     need to change to JSON strings.
@@ -3349,7 +3349,6 @@ def change_ctx_to_be_compatible_with_retry() -> None:
     Returns:
         (None): Modifies context to be compatible.
     """
-    ctx = get_integration_context()
     new_ctx = ctx.copy()
     try:
         extract_context_data(ctx)
@@ -3375,7 +3374,7 @@ def change_ctx_to_be_compatible_with_retry() -> None:
 
 
 def main() -> None:
-    change_ctx_to_be_compatible_with_retry()
+    change_ctx_to_be_compatible_with_retry(get_integration_context())
     params = demisto.params()
     command = demisto.command()
     args = demisto.args()

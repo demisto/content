@@ -1767,3 +1767,24 @@ def test_change_ctx_with_dirty_samples(mocker, context_data, retry_compatible, e
         QRadar_v3.set_to_integration_context_with_retries.assert_called_once_with(encode_context_data(extracted_ctx))
     else:
         assert not QRadar_v3.set_to_integration_context_with_retries.called
+
+
+@pytest.mark.parametrize('ctx', [({'a': True, 'b': 2, 'c': {}, 'd': 1.1, 'e': [1, 1.1, {}, True],
+                                   RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: [{'a': 2}]})])
+def test_change_ctx_valid(ctx):
+    """
+    Given:
+    - Integration context who is not compatible to work with set_to_integration_context_with_retries
+
+    When:
+    - Calling to change_ctx_to_be_compatible_with_retry function
+
+    Then:
+    - Ensure the integration context is compatible.
+
+    """
+    QRadar_v3.set_integration_context(ctx)
+    change_ctx_to_be_compatible_with_retry(ctx)
+    compatible_context = QRadar_v3.get_integration_context()
+    # Change field in compatible context, just to see the set_to_integration_context_with_retries successfully finishes.
+    QRadar_v3.set_to_integration_context_with_retries({'a': 2})
