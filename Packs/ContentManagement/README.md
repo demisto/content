@@ -11,6 +11,6 @@ This pack provides the ability to control your XSOAR system, your use-cases, and
 
 As part of this pack, you will also get out-of-the-box incident type, fields and layout, and a playbook for managing the entire configuration process.
 
-For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/articles/content-management)
+For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/packs/content-management)
 
 ![playbook.png](https://raw.githubusercontent.com/demisto/content/master/Packs/ContentManagement/docs-files/playbook.png)

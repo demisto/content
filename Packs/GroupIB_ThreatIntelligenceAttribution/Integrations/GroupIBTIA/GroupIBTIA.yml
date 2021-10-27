@@ -39,6 +39,7 @@ configuration:
   - compromised/breached
   - bp/phishing
   - bp/phishing_kit
+  - bp/domain
   - osi/git_leak
   - osi/public_leak
   - malware/targeted_malware
