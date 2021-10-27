@@ -1273,6 +1273,7 @@ def main():
         verify=not params.get('insecure', False),
         proxy=params.get('proxy', False),
     )
+
     commands = {
         'archer-search-applications': search_applications_command,
         'archer-get-application-fields': get_application_fields_command,
