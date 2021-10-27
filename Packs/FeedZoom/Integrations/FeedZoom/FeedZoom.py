@@ -26,12 +26,13 @@ class Client(BaseClient):
         """
         super().__init__(base_url, verify=verify, proxy=proxy)
 
-    def build_iterator(self) -> List:
-        """Retrieves all entries from the feed.
-        Returns:
-            A list of objects, containing the indicators.
+    def get_indicators(self) -> List:
         """
-        result = []
+        Uses 5 text files which contains zoom endpoints. This files are linked from:
+        https://support.zoom.us/hc/en-us/articles/201362683-Network-Firewall-or-Proxy-Server-Settings-for-Zoom
+        and contains all the endpoints listed on the zoom firewall rules tables, accept the domains and ipv6 addresses.
+        Using the text files instead of parsing the http page ןs due to blockage of the zoom support site.
+        """
         list_ips_txt_files = ['Zoom.txt',
                               'ZoomMeetings.txt',
                               'ZoomCRC.txt',
@@ -55,6 +56,16 @@ class Client(BaseClient):
             res = self._http_request(method='GET', url_suffix=url, resp_type='text')
             for ip in res.split('\n'):
                 indicators.append(ip)
+        return indicators
+
+    def build_iterator(self) -> List:
+        """Retrieves all entries from the feed.
+        Returns:
+            A list of objects, containing the indicators.
+        """
+        result = []
+        indicators = self.get_indicators()
+
         try:
             indicators = list(set(indicators))
             for indicator in indicators:
