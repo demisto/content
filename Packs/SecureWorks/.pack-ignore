@@ -6,6 +6,3 @@ ignore=PA114,RN106
 
 [file:README.md]
 ignore=RM104
-
-[file:Author_image.png]
-ignore=IM109
