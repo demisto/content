@@ -606,6 +606,7 @@
             "timeout": 600,
             "pid_threshold": 8,
             "fromversion": "6.2.0",
+            "is_mockable": false,
             "instance_names": [
                 "SlackV3_LoadTester",
                 "SlackV3_WorkerOne",
