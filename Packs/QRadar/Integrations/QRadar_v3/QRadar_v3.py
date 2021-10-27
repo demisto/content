@@ -385,7 +385,12 @@ class Client(BaseClient):
                 message = 'Authorization Error: make sure credentials are correct.'
             elif 'The specified encryption strength is not available' in err_msg:
                 err_msg = ''
-                message = 'The specified encryption is not available, try using a weaker encrpytion (AES128).'
+                message = 'The specified encryption is not available, try using a weaker encryption (AES128).'
+            elif 'User has insufficient capabilities to access this endpoint resource' in message:
+                message = 'The given credentials do not have the needed permissions to perform the call the endpoint' \
+                          f'\n{res.request.path_url}.\n' \
+                          'Please supply credentials with the needed permissions as can be seen in the integration ' \
+                          'description, or do not call or enrich offenses with the mentioned endpoint.'
             err_msg += f'\n{message}'
             raise DemistoException(err_msg, res=res)
         except ValueError:
@@ -948,10 +953,7 @@ def enrich_offense_with_assets(client: Client, offense_ips: List[str]) -> List[D
 
     def get_assets_for_ips_batch(b: List):
         filter_query = ' or '.join([f'interfaces contains ip_addresses contains value="{ip}"' for ip in b])
-        try:
-            return client.assets_list(filter_=filter_query)
-        except Exception as e:
-            raise DemistoException(f'Error occurred during asset enrichment. Query: {filter_query}') from e
+        return client.assets_list(filter_=filter_query)
 
     offense_ips = [offense_ip for offense_ip in offense_ips if is_valid_ip(offense_ip)]
     # Submit addresses in batches to avoid overloading QRadar service
@@ -1196,8 +1198,10 @@ def print_debug_msg(msg: str):
     """
     debug_msg = f'QRadarMsg - {msg}'
     if lock.acquire(timeout=LOCK_WAIT_TIME):
-        demisto.debug(debug_msg)
-        lock.release()
+        try:
+            demisto.debug(debug_msg)
+        finally:
+            lock.release()
 
 
 def reset_mirroring_events_variables(mirror_options: str):
@@ -1209,8 +1213,13 @@ def reset_mirroring_events_variables(mirror_options: str):
     Returns: None
     """
     ctx = extract_context_data(get_integration_context().copy())
-    print_mirror_events_stats(ctx, f"New Long Running Container - Before Mirroring Variables Reset, "
-                                   f"Mirror Option {mirror_options}")
+    try:
+        print_mirror_events_stats(ctx, f"New Long Running Container - Before Mirroring Variables Reset, "
+                                       f"Mirror Option {mirror_options}")
+    except Exception as e:
+        print_debug_msg(f'Could not print mirror_events_stats due to error: {str(e)} \n '
+                        f'Reseting mirroring vars')
+        mirror_options = 'needs reset to mirroring vars'
 
     if mirror_options != MIRROR_OFFENSE_AND_EVENTS:
         ctx[UPDATED_MIRRORED_OFFENSES_CTX_KEY] = []
@@ -1238,14 +1247,15 @@ def is_reset_triggered(handle_reset: bool = False):
         - False if lock was acquired, and reset flag was not found in integration context.
     """
     if lock.acquire(timeout=LOCK_WAIT_TIME):
-        ctx = get_integration_context()
-        if ctx and RESET_KEY in ctx:
-            if handle_reset:
-                print_debug_msg('Reset fetch-incidents.')
-                set_integration_context({'retry_compatible': True, 'samples': ctx.get('samples', '[]')})
+        try:
+            ctx = get_integration_context()
+            if ctx and RESET_KEY in ctx:
+                if handle_reset:
+                    print_debug_msg('Reset fetch-incidents.')
+                    set_integration_context({'samples': ctx.get('samples', '[]')})
+                return True
+        finally:
             lock.release()
-            return True
-        lock.release()
     return False
 
 
@@ -2841,7 +2851,6 @@ def qradar_reset_last_run_command() -> str:
     """
     ctx = get_integration_context()
     ctx[RESET_KEY] = True
-    ctx['retry_compatible'] = True
     set_integration_context(ctx)
     return 'fetch-incidents was reset successfully.'
 
@@ -3341,12 +3350,25 @@ def change_ctx_to_be_compatible_with_retry() -> None:
         (None): Modifies context to be compatible.
     """
     ctx = get_integration_context()
-    if not ctx.get('retry_compatible', False):
-        ctx = encode_context_data(ctx)
+    new_ctx = ctx.copy()
+    try:
+        extract_context_data(ctx)
+        print_debug_msg(f"ctx {ctx} was found to be compatible with retries")
+        extract_works = True
+    except TypeError as e:
+        print_debug_msg(f"extracting ctx {ctx} failed, trying to make it retry compatible. Error was: {str(e)}")
+        extract_works = False
+
+    # The following is done to fix issued in upgrading from 2.0.27/28 to 2.1.0 was incompatible
+    if not extract_works and ctx.get('samples') and type(ctx.get('samples')) is str:
+        new_ctx['samples'] = json.loads(ctx.get('samples'))
+        new_ctx['last_mirror_update'] = json.loads(ctx.get('last_mirror_update', '0'))
+
+    if not extract_works:
+        encoded_ctx = encode_context_data(new_ctx)
         print_debug_msg(f"Change ctx context data is {ctx}")
-        set_integration_context({'retry_compatible': True})
-        set_to_integration_context_with_retries(ctx)
-        print_debug_msg(f"Change ctx context data was changed to {ctx}")
+        set_to_integration_context_with_retries(encoded_ctx)
+        print_debug_msg(f"Change ctx context data was changed to {encoded_ctx}")
 
 
 ''' MAIN FUNCTION '''
