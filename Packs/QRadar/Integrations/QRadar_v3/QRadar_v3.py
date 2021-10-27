@@ -3104,7 +3104,7 @@ def encode_context_data(context_data: dict, include_id: bool = False) -> dict:
         'last_mirror_update': str(context_data.get('last_mirror_update', 0))
     })
     if include_id and LAST_FETCH_KEY in context_data:
-        new_context_data.update({LAST_FETCH_KEY: int(context_data.get(LAST_FETCH_KEY, 0))})
+        new_context_data.update({LAST_FETCH_KEY: int(context_data.get(LAST_FETCH_KEY) or 0)})
 
     return new_context_data
 
