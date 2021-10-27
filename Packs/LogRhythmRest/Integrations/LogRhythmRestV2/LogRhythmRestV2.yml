@@ -116,10 +116,10 @@ script:
   isfetch: true
   commands:
   - name: lr-alarms-list
-    description: 'Get alarms details using filter criteria.'
+    description: 'Gets the details of the alarms using the filter criteria.'
     arguments:
     - name: alarm_status
-      description: 'The alarm status.'
+      description: 'The alarm status. Possible values: "New", "Opened", "Working", "Escalated", Closed, "Closed_FalseAlarm", "Closed_Resolved", "Closed_Unresolved", "Closed_Reported", "Closed_Monitor".'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -178,19 +178,19 @@ script:
       description: 'The alarm date inserted.'
     - type: String
       contextPath: LogRhythm.Alarm.entityName
-      description: 'The alarm entuty name.'
+      description: 'The alarm entity name.'
     - type: String
       contextPath: LogRhythm.Alarm.associatedCases
-      description: 'The alarm associated cases'
+      description: 'The alarm associated cases.'
   - name: lr-alarm-update
-    description: 'Update Alarm Status and RBP based on the AlarmId supplied. alarm_status or rbp are required.'
+    description: 'Updates the alarm status and RBP based on the alarm ID supplied. alarm_status or rbp are required.'
     arguments:
     - name: alarm_id
       description: 'The alarm ID.'
       required: true
       isArray: false
     - name: alarm_status
-      description: 'The alarm status.'
+      description: 'The alarm status. Possible values: "New", "Opened", "Working", "Escalated", Closed, "Closed_FalseAlarm", "Closed_Resolved", "Closed_Unresolved", "Closed_Reported", "Closed_Monitor".'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -211,7 +211,7 @@ script:
       isArray: false
     outputs: []
   - name: lr-alarm-add-comment
-    description: 'Updates AlarmHistory table to add comments in Comments column based on the AlarmId supplied.'
+    description: 'Updates the Alarm History table with comments in the Comments column based on the alarm ID supplied.'
     arguments:
     - name: alarm_id
       description: 'The alarm ID.'
@@ -223,7 +223,7 @@ script:
       isArray: false
     outputs: []
   - name: lr-alarm-history-list
-    description: 'Get alarm history details by ID and filter criteria.'
+    description: 'Gets the alarm history details by ID and filter criteria.'
     arguments:
     - name: alarm_id
       description: 'The alarm ID.'
@@ -234,11 +234,11 @@ script:
       required: false
       isArray: false
     - name: date_updated
-      description: 'Filter criteria return value greater than or equal to.'
+      description: 'Filter by when the alarm was updated. The returned value will be greater than or equal to the given date.'
       required: false
       isArray: false
     - name: type
-      description: 'Filter by history type.'
+      description: 'Filter by history type. Possible type: "comment", "status", and "rbp".'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -262,18 +262,18 @@ script:
       description: 'The alarm ID.'
     - type: Number
       contextPath: LogRhythm.AlarmHistory.personId
-      description: 'The person ID.'
+      description: The ID of the person who edited the alarm (changed status/ added comment, etc.).
     - type: String
       contextPath: LogRhythm.AlarmHistory.comments
       description: 'The alarm comments.'
     - type: Date
       contextPath: LogRhythm.AlarmHistory.dateInserted
-      description: 'The alarm date inserted.'
+      description: 'The date when the alarm was inserted.'
     - type: Date
       contextPath: LogRhythm.AlarmHistory.dateUpdated
-      description: 'The alarm date updated.'
+      description: 'The date when the alarm was updated.'
   - name: lr-alarm-events-list
-    description: 'Get events by alarmId.'
+    description: 'Gets a list of events for the specified alarm ID.'
     arguments:
     - name: alarm_id
       description: 'The alarm ID.'
@@ -291,13 +291,13 @@ script:
       description: 'The alarm event action.'
     - type: Unknown
       contextPath: LogRhythm.AlarmEvents.amount
-      description: 'The alarm event amount.'
-    - type: Unknown
+      description: The number of events related to the alarm.
+    - type: Number
       contextPath: LogRhythm.AlarmEvents.bytesIn
-      description: 'The alarm event bytes in.'
+      description: The number of bytes received or input from a device, system, or process.
     - type: Unknown
       contextPath: LogRhythm.AlarmEvents.bytesOut
-      description: 'The alarm event bytes out.'
+      description: The number of bytes sent from a device, system, or process.
     - type: Number
       contextPath: LogRhythm.AlarmEvents.classificationId
       description: 'The alarm event classification ID.'
@@ -309,25 +309,25 @@ script:
       description: 'The alarm event classification type.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.command
-      description: 'The alarm event command.'
+      description: The specific command executed that was recorded in the log message.
     - type: Number
       contextPath: LogRhythm.AlarmEvents.commonEventId
       description: 'The common event name.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.cve
-      description: 'The alarm event CVE'
+      description: 'The alarm event CVE.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.commonEventName
       description: 'The alarm event name.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.count
-      description: 'The alarm events count.'
+      description: The number of alarm events.
     - type: Number
       contextPath: LogRhythm.AlarmEvents.directionId
-      description: 'The alarm event direction ID.'
+      description: The direction by ID of the activity between a log’s origin and impacted zones.
     - type: String
       contextPath: LogRhythm.AlarmEvents.directionName
-      description: 'The alarm event direction name.'
+      description: The direction by name of the activity between a log’s origin and impacted zones. Values can be Internal, External, Outbound, Local, or Unknown.
     - type: String
       contextPath: LogRhythm.AlarmEvents.domain
       description: 'The alarm event domain.'
@@ -336,7 +336,7 @@ script:
       description: 'The alarm event duration.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.entityId
-      description: 'The alarm entity ID.'
+      description: 'The alarm event entity ID.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.entityName
       description: 'The alarm event entity name.'
@@ -345,127 +345,127 @@ script:
       description: 'The alarm event group.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.impactedEntityId
-      description: 'The event impacted entity ID.'
+      description: The ID of the entity that was impacted by the alarm.
     - type: String
       contextPath: LogRhythm.AlarmEvents.impactedEntityName
-      description: 'The event impacted entity name.'
+      description: The name of the entity that was impacted by the alarm.
     - type: Number
       contextPath: LogRhythm.AlarmEvents.impactedHostId
-      description: 'The event impacted host ID.'
+      description: The ID of the host that was impacted by the alarm.
     - type: String
       contextPath: LogRhythm.AlarmEvents.impactedHostName
-      description: 'The event impacted host name.'
+      description: The name of the host that was impacted by the alarm.
     - type: String
       contextPath: LogRhythm.AlarmEvents.impactedInterface
-      description: 'The event impacted interface.'
+      description: The interface that was impacted by the alarm.
     - type: Unknown
       contextPath: LogRhythm.AlarmEvents.impactedIP
-      description: 'The event impacted IP.'
+      description: The IP address that was impacted by the alarm.
     - type: String
       contextPath: LogRhythm.AlarmEvents.impactedLocation.countryCode
-      description: 'The event impacted countryCode.'
+      description: The country code of the location that was impacted by the alarm.
     - type: String
       contextPath: LogRhythm.AlarmEvents.impactedLocation.name
-      description: 'The event impacted country.'
+      description: The country name of the location that was impacted by the alarm.
     - type: Number
       contextPath: LogRhythm.AlarmEvents.impactedLocation.latitude
-      description: 'The event impacted location latitude.'
+      description: The latitude of the location that was impacted by the alarm.
     - type: Number
       contextPath: LogRhythm.AlarmEvents.impactedLocation.locationId
-      description: 'The event impacted location ID.'
+      description: The ID of the location that was impacted by the alarm.
     - type: String
       contextPath: LogRhythm.AlarmEvents.impactedLocation.locationKey
-      description: 'The event impacted location key.'
+      description: The key of the location that was impacted by the alarm.
     - type: Number
       contextPath: LogRhythm.AlarmEvents.impactedLocation.longitude
-      description: 'The event impacted location longitude.'
+      description: The longitude of the location that was impacted by the alarm.
     - type: Number
       contextPath: LogRhythm.AlarmEvents.impactedLocation.parentLocationId
-      description: 'The event impacted parent location ID.'
+      description: The parent location ID of the location that was impacted by the alarm.
     - type: String
       contextPath: LogRhythm.AlarmEvents.impactedLocation.recordStatus
-      description: 'The event impacted location record status.'
+      description: The record status of the location that was impacted by the alarm.
     - type: String
       contextPath: LogRhythm.AlarmEvents.impactedLocation.regionCode
-      description: 'The event impacted location region code.'
+      description: The region code of the location that was impacted by the alarm.
     - type: String
       contextPath: LogRhythm.AlarmEvents.impactedLocation.type
-      description: 'The event impacted location type.'
+      description: The type of the location that was impacted by the alarm.
     - type: Date
       contextPath: LogRhythm.AlarmEvents.impactedLocation.dateUpdated
       description: 'The date the impacted location was last updated.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.impactedMAC
-      description: 'The event impacted MAC.'
+      description: The MAC that was impacted by the alarm.
     - type: String
       contextPath: LogRhythm.AlarmEvents.impactedName
-      description: 'The event impacted name.'
+      description: The name of the event that was impacted by the alarm.
     - type: String
       contextPath: LogRhythm.AlarmEvents.impactedNATIP
-      description: 'The event impacted NATIP.'
+      description: The NAT IP address that was impacted by the alarm.
     - type: Unknown
       contextPath: LogRhythm.AlarmEvents.impactedNATPort
-      description: 'The event impacted NAT port.'
+      description: The NAT port that was impacted by the alarm.
     - type: String
       contextPath: LogRhythm.AlarmEvents.impactedNetwork.beginIPRange.value
-      description: 'The event impacted network begin IP range.'
+      description: 'The beginning of the IP range for the network that was impacted by the alarm.'
     - type: Date
       contextPath: LogRhythm.AlarmEvents.impactedNetwork.dateUpdated
       description: 'The date the impacted network was last updated.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.impactedNetwork.riskThreshold
-      description: 'The event impacted network risk threshold.'
+      description: The risk threshold of the network impacted by the alarm.
     - type: String
       contextPath: LogRhythm.AlarmEvents.impactedNetwork.endIPRange.value
-      description: 'The event impacted network end IP range.'
+      description: 'The end of the IP range for the network that was impacted by the alarm.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.impactedNetwork.entityId
-      description: 'The event impacted network entity ID.'
+      description: The ID of the entity for the network that was impacted by the alarm.
     - type: String
       contextPath: LogRhythm.AlarmEvents.impactedNetwork.hostZone
-      description: 'The event impacted network host zone.'
+      description: The host zone for the network that was impacted by the alarm.
     - type: Number
       contextPath: LogRhythm.AlarmEvents.impactedNetwork.locationId
-      description: 'The event impacted network location ID.'
+      description: The location ID of the network that was impacted by the alarm.
     - type: String
       contextPath: LogRhythm.AlarmEvents.impactedNetwork.longDesc
-      description: 'The event impacted network long description.'
+      description: The long description of the network that was impacted by the alarm.
     - type: String
       contextPath: LogRhythm.AlarmEvents.impactedNetwork.name
-      description: 'The event impacted network name.'
+      description: The name of the network that was impacted by the alarm.
     - type: Number
       contextPath: LogRhythm.AlarmEvents.impactedNetwork.networkId
-      description: 'The event impacted network ID.'
+      description: The ID of the network that was impacted by the alarm.
     - type: String
       contextPath: LogRhythm.AlarmEvents.impactedNetwork.recordStatus
-      description: 'The event impacted network record status.'
+      description: The status of the record of the network that was impacted by the alarm.
     - type: String
       contextPath: LogRhythm.AlarmEvents.impactedNetwork.shortDesc
-      description: 'The event impacted network short description.'
+      description: The short description of the network that was impacted by the alarm.
     - type: Number
       contextPath: LogRhythm.AlarmEvents.impactedPort
-      description: 'The event impacted port.'
+      description: The port that was impacted by the alarm.
     - type: String
       contextPath: LogRhythm.AlarmEvents.impactedZone
-      description: 'The event impacted zone.'
+      description: The zone that was impacted by the alarm.
     - type: Number
       contextPath: LogRhythm.AlarmEvents.itemsPacketsIn
-      description: 'The event packets in.'
+      description: Items such as packets received or input from a device, system, or process.
     - type: Number
       contextPath: LogRhythm.AlarmEvents.itemsPacketsOut
-      description: 'The event packets out.'
+      description: Items such as packets sent from a device, system, or process.
     - type: Date
       contextPath: LogRhythm.AlarmEvents.logDate
-      description: 'The event log date'
+      description: 'The event log date.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.login
-      description: 'The event login.'
+      description: The user associated with the log activity.
     - type: String
       contextPath: LogRhythm.AlarmEvents.logMessage
       description: 'The event log message.'
     - type: Unknown
       contextPath: LogRhythm.AlarmEvents.logSourceHostId
-      description: 'The log source host ID.'
+      description: 'The host ID of the log source of the event.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.logSourceHostName
       description: 'The log source host name.'
@@ -480,133 +480,133 @@ script:
       description: 'The event message ID.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.mpeRuleId
-      description: 'The event MPE rule ID'
+      description: 'The event MPE rule ID,'
     - type: String
       contextPath: LogRhythm.AlarmEvents.mpeRuleName
       description: 'The event MPE rule name.'
     - type: Date
       contextPath: LogRhythm.AlarmEvents.normalDateMax
-      description: 'The event max normal date.'
+      description: If the message is aggregated, the maximum creation date contained in the group of logs. It can be in UTC or user-selected time zone.
     - type: String
       contextPath: LogRhythm.AlarmEvents.objectName
-      description: 'The event object name.'
+      description: 'The object name of the event.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.objectType
-      description: 'The event object type.'
+      description: 'The object type of the event.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.originEntityId
-      description: 'The event origin entity ID.'
+      description: 'The origin entity ID of the event.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.originEntityName
-      description: 'The event origin entity name.'
+      description: 'The origin entity name of the event.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.originHostId
-      description: 'The event origin host ID.'
+      description: 'The host ID of where the event originated.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.originHostName
-      description: 'The event origin host name'
+      description: 'The host name of where the event originated.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.originInterface
-      description: 'The event origin interface.'
+      description: 'The interface of where the event originated.'
     - type: Unknown
       contextPath: LogRhythm.AlarmEvents.originIP
-      description: 'The event origin IP'
+      description: 'The IP address of where the event originated.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.originLocation.countryCode
-      description: 'The origin location country code.'
+      description: 'The country code of the  location of where the event originated.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.originLocation.name
-      description: 'The origin location name.'
+      description: 'The name of the location of where the event originated.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.originLocation.latitude
-      description: 'The origin location latitude.'
+      description: 'The latitude of the location of where the event originated.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.originLocation.locationId
-      description: 'The origin location ID.'
+      description: 'The location ID of the location of where the event originated.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.originLocation.locationKey
-      description: 'The origin location key.'
+      description: 'The location key of where the event originated.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.originLocation.longitude
-      description: 'The origin location longitude.'
+      description: 'The longitude of the location of where the event originated.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.originLocation.parentLocationId
-      description: 'The origin parent location ID.'
+      description: 'The parent location ID of where the event originated.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.originLocation.recordStatus
-      description: 'The origin location record status.'
+      description: 'The record status of the location of where the event originated.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.originLocation.regionCode
-      description: 'The origin location region code.'
+      description: 'The region code of the location of where the event originated.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.originLocation.type
-      description: 'The origin location type.'
+      description: 'The type of location of where the event originated.'
     - type: Date
       contextPath: LogRhythm.AlarmEvents.originLocation.dateUpdated
-      description: 'The date the origin location was last updated.'
+      description: 'The date the location of where the event originated was last updated.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.originMAC
-      description: 'The event origin MAC.'
+      description: 'The MAC address of where the event originated.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.originName
-      description: 'The event origin name.'
+      description: 'The name of where the event originated.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.originNATIP
-      description: 'The event origin NATIP.'
+      description: 'The NAT IP address of where the event originated.'
     - type: Unknown
       contextPath: LogRhythm.AlarmEvents.originNATPort
-      description: 'The event origin NAT port.'
+      description: 'The NAT port of where the event originated.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.originNetwork.beginIPRange.value
-      description: 'The origin network begin IP range.'
+      description: 'The beginning address of the IP range of the network where the event originated.'
     - type: Date
       contextPath: LogRhythm.AlarmEvents.originNetwork.dateUpdated
-      description: 'The date the origin network was last updated.'
+      description: 'The date of the network when the event originate was last updated.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.originNetwork.riskThreshold
-      description: 'The origin network risk threshold.'
+      description: 'The risk threshold of the network where the event originated.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.originNetwork.endIPRange.value
-      description: 'The origin network end IP range.'
+      description: 'The end of the IP range for the network where the event originated.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.originNetwork.entityId
-      description: 'The origin network entity ID.'
+      description: 'The entity ID of the network where the event originated.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.originNetwork.hostZone
-      description: 'The origin network host zone.'
+      description: 'The host zone of the network where the event originated.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.originNetwork.locationId
-      description: 'The origin network location ID.'
+      description: 'The ID of the location of the network where the event originated.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.originNetwork.longDesc
-      description: 'The origin network long description.'
+      description: 'The long description of the network where the event originated.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.originNetwork.name
-      description: 'The origin network name.'
+      description: 'The name of the network where the event originated.'.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.originNetwork.networkId
-      description: 'The origin network ID.'
+      description: 'The ID of the network where the event originated.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.originNetwork.recordStatus
-      description: 'The origin network record status.'
+      description: 'The record status of the network where the event originated.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.originNetwork.shortDesc
-      description: 'The origin network short description.'
+      description: 'The short description of the network where the event originated.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.originPort
-      description: 'The event origin port.'
+      description: 'The port where the event originated.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.originZone
-      description: 'The event origin zone.'
+      description: 'The zone where the event originated.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.parentProcessId
-      description: 'The event parent process ID'
+      description: 'The parent process ID of the event.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.parentProcessName
-      description: 'The event parent process Name.'
+      description: 'The parent process name of the event.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.parentProcessPath
-      description: 'The event parent process path.'
+      description: 'The parent process path of the event.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.policy
       description: 'The event policy.'
@@ -642,7 +642,7 @@ script:
       description: 'The event result.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.responseCode
-      description: 'Thee event response code.'
+      description: 'The event response code.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.sender
       description: 'The event sender.'
@@ -719,10 +719,10 @@ script:
       contextPath: LogRhythm.AlarmEvents.recipientIdentityName
       description: 'The event recipient identity.'
   - name: lr-alarm-summary
-    description: 'Get alarm summary by alarm ID.'
+    description: 'Get the alarm summary by the specified alarm ID.'
     arguments:
     - name: alarm_id
-      description: 'Numeric ID of the Alarm to get.'
+      description: 'Numeric ID of the alarm to get.'
       required: true
       isArray: false
     outputs:
@@ -737,7 +737,7 @@ script:
       description: 'The alarm rbp average.'
     - type: Number
       contextPath: LogRhythm.AlarmSummary.alarmRuleId
-      description: 'The alarm rule ID'
+      description: 'The alarm rule ID.'
     - type: String
       contextPath: LogRhythm.AlarmSummary.alarmRuleGroup
       description: 'The alarm rule group.'
@@ -752,7 +752,7 @@ script:
       description: 'The alarm ID.'
     - type: Number
       contextPath: LogRhythm.AlarmSummary.alarmEventSummary.msgClassId
-      description: 'The alarm summary mesasge class ID.'
+      description: 'The alarm summary message class ID.'
     - type: String
       contextPath: LogRhythm.AlarmSummary.alarmEventSummary.msgClassName
       description: 'The alarm summary message class name.'
@@ -796,11 +796,11 @@ script:
     description: 'Get cases details using filter criteria.'
     arguments:
     - name: case_id
-      description: 'Filter by case ID.'
+      description: 'The case ID by which to filter the results.'
       required: false
       isArray: false
     - name: timestamp_filter_type
-      description: 'Filter case results by date combined with the argument timestamp.'
+      description: 'The type by which to filter case results combined with the argument timestamp. Possible values: "updatedAfter", "updatedBefore", "createdAfter", and "createdBefore".'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -810,11 +810,11 @@ script:
       - createdAfter
       - createdBefore
     - name: timestamp
-      description: 'Filter case results by date combined with the argument timestamp_filter_type.'
+      description: 'The timestamp by which to filter case results combined with the argument timestamp_filter_type.'
       required: false
       isArray: false
     - name: priority
-      description: 'Filter by priority.'
+      description: 'The priority by which to filter the results. Possible values: "1", "2", "3", "4", and "5", where 1 is the highest priority.'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -825,7 +825,7 @@ script:
       - '4'
       - '5'
     - name: status
-      description: 'Filter by status.'
+      description: 'The status by which to filter the results. Possible values are "1", (created), "2" (completed), "3" (incident), "4" (mitigated), and "5" (resolved).'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -836,19 +836,19 @@ script:
       - '4'
       - '5'
     - name: owners
-      description: 'Filter by person number, or a comma separated list of person numbers.'
+      description: A comma-separated list of owner numbers.
       required: false
-      isArray: false
+      isArray: true
     - name: tags
-      description: 'Filter by tag number, or a comma separated list of tag numbers.'
+      description: A comma-separated list of  tag numbers.
       required: false
-      isArray: false
+      isArray: true
     - name: text
       description: 'Filter results that have a case number or name that contains the specified value.'
       required: false
       isArray: false
     - name: evidence_type
-      description: 'Filter results that have evidence of the specified type.'
+      description: 'Filter results that have evidence of the specified type. Possible values: "alarm", "userEvents", "log", no"te, and "file".'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -859,11 +859,11 @@ script:
       - note
       - file
     - name: reference_id
-      description: 'Filter results that have evidence with the given reference identifier. For example, an alarm Id.'
+      description: 'Filter results that have evidence with the given reference identifier. For example, an alarm ID.'
       required: false
       isArray: false
     - name: external_id
-      description: 'Filter results that have evidence with the given reference identifier. For example, an alarm Id.'
+      description: 'Filter results that have the specified, unique, external identifier.'
       required: false
       isArray: false
     - name: offset
@@ -873,19 +873,19 @@ script:
       isArray: false
     - name: count
       defaultValue: "50"
-      description: 'The numbers of cases to return.'
+      description: 'The number of cases to return.'
       required: false
       isArray: false
     outputs:
     - type: String
       contextPath: LogRhythm.Case.id
-      description: 'The Case ID.'
+      description: 'The case ID.'
     - type: Number
       contextPath: LogRhythm.Case.number
-      description: 'The Case number.'
+      description: 'The case number.'
     - type: String
       contextPath: LogRhythm.Case.externalId
-      description: 'The Case external ID.'
+      description: 'The case external ID.'
     - type: Date
       contextPath: LogRhythm.Case.dateCreated
       description: 'The date the case was created.'
@@ -897,22 +897,22 @@ script:
       description: 'The date the case was closed.'
     - type: Number
       contextPath: LogRhythm.Case.owner.number
-      description: 'The case owner number.'
+      description: 'The ID of the case owner.'
     - type: String
       contextPath: LogRhythm.Case.owner.name
-      description: 'The case owner name.'
+      description: 'The name of the case owner.'
     - type: Boolean
       contextPath: LogRhythm.Case.owner.disabled
-      description: 'Whether the owner is disabled or not'
+      description: 'Whether the case owner is disabled.'
     - type: Number
       contextPath: LogRhythm.Case.lastUpdatedBy.number
-      description: 'Last updated by user number. '
+      description: 'The ID of the user who last updated the case.'
     - type: String
       contextPath: LogRhythm.Case.lastUpdatedBy.name
-      description: 'Last updated by user name.'
+      description: 'The name of the user who last updated the case.'
     - type: Boolean
       contextPath: LogRhythm.Case.lastUpdatedBy.disabled
-      description: 'Whether the last updated user is disabled or not.'
+      description: 'Whether the user who last updated the case is disabled.'
     - type: String
       contextPath: LogRhythm.Case.name
       description: 'The case name.'
@@ -927,7 +927,7 @@ script:
       description: 'The case priority.'
     - type: Date
       contextPath: LogRhythm.Case.dueDate
-      description: 'The due date time of thee case.'
+      description: ' The datetime the case is due.'
     - type: Unknown
       contextPath: LogRhythm.Case.resolution
       description: 'The case resolution.'
@@ -957,7 +957,7 @@ script:
       description: 'The case collaborator name.'
     - type: Boolean
       contextPath: LogRhythm.Case.collaborators.disabled
-      description: 'Whether the case collaborator is disabled or not.'
+      description: 'Whether the case collaborator is disabled.'
     - type: String
       contextPath: LogRhythm.Case.tags.text
       description: 'The case tag name.'
@@ -972,7 +972,7 @@ script:
       required: true
       isArray: false
     - name: priority
-      description: 'Priority of the case.'
+      description: 'The priority by which to filter the results. Possible values: "1", "2", "3", "4", and "5", where 1 is the highest priority.'
       required: true
       isArray: false
       auto: PREDEFINED
@@ -987,7 +987,7 @@ script:
       required: false
       isArray: false
     - name: due_date
-      description: 'When the case is due, as an RFC 3339 formatted string. e.g. 2020-04-20T14:15:22Z'
+      description: 'The timedate of when the case is due, as an RFC 3339 formatted string. E.g., 2020-04-20T14:15:22Z.'
       required: false
       isArray: false
     - name: summary
@@ -997,13 +997,13 @@ script:
     outputs:
     - type: String
       contextPath: LogRhythm.Case.id
-      description: 'The Case ID.'
+      description: 'The case ID.'
     - type: Number
       contextPath: LogRhythm.Case.number
-      description: 'The Case number.'
+      description: 'The case number.'
     - type: String
       contextPath: LogRhythm.Case.externalId
-      description: 'The Case external ID.'
+      description: 'The case external ID.'
     - type: Date
       contextPath: LogRhythm.Case.dateCreated
       description: 'The date the case was created.'
@@ -1015,22 +1015,22 @@ script:
       description: 'The date the case was closed.'
     - type: Number
       contextPath: LogRhythm.Case.owner.number
-      description: 'The case owner number.'
+      description: 'The ID of the case owner.'
     - type: String
       contextPath: LogRhythm.Case.owner.name
-      description: 'The case owner name.'
+      description: 'The name of the case owner.'
     - type: Boolean
       contextPath: LogRhythm.Case.owner.disabled
-      description: 'Whether the owner is disabled or not'
+      description: 'Whether the owner is disabled.'
     - type: Number
       contextPath: LogRhythm.Case.lastUpdatedBy.number
-      description: 'Last updated by user number. '
+      description: 'The ID of the user who last updated the case.'
     - type: String
       contextPath: LogRhythm.Case.lastUpdatedBy.name
-      description: 'Last updated by user name.'
+      description: 'The name of the user who last updated the case.'
     - type: Boolean
       contextPath: LogRhythm.Case.lastUpdatedBy.disabled
-      description: 'Whether the last updated user is disabled or not.'
+      description: 'Whether the last user who updated the case is disabled.'
     - type: String
       contextPath: LogRhythm.Case.name
       description: 'The case name.'
@@ -1045,7 +1045,7 @@ script:
       description: 'The case priority.'
     - type: Date
       contextPath: LogRhythm.Case.dueDate
-      description: 'The due date time of thee case.'
+      description: ' The datetime the case is due.'
     - type: Unknown
       contextPath: LogRhythm.Case.resolution
       description: 'The case resolution.'
@@ -1075,7 +1075,7 @@ script:
       description: 'The case collaborator name.'
     - type: Boolean
       contextPath: LogRhythm.Case.collaborators.disabled
-      description: 'Whether the case collaborator is disabled or not.'
+      description: 'Whether the case collaborator is disabled.'
     - type: String
       contextPath: LogRhythm.Case.tags.text
       description: 'The case tag name.'
@@ -1094,7 +1094,7 @@ script:
       required: false
       isArray: false
     - name: priority
-      description: 'Priority of the case.'
+      description: 'The priority of the case. Possible values: "1", "2", "3", "4", and "5", where 1 is the highest priority.'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -1105,11 +1105,11 @@ script:
       - '4'
       - '5'
     - name: external_id
-      description: 'Entity to assign to the case.'
+      description: 'Externally defined identifier for the case.'
       required: false
       isArray: false
     - name: due_date
-      description: 'When the case is due, as an RFC 3339 formatted string. e.g. 2020-04-20T14:15:22Z'
+      description: 'The timedate of when the case is due, as an RFC 3339 formatted string. E.g., 2020-04-20T14:15:22Z.'
       required: false
       isArray: false
     - name: summary
@@ -1127,13 +1127,13 @@ script:
     outputs:
     - type: String
       contextPath: LogRhythm.Case.id
-      description: 'The Case ID.'
+      description: 'The case ID.'
     - type: Number
       contextPath: LogRhythm.Case.number
-      description: 'The Case number.'
+      description: 'The case number.'
     - type: String
       contextPath: LogRhythm.Case.externalId
-      description: 'The Case external ID.'
+      description: 'The case external ID.'
     - type: Date
       contextPath: LogRhythm.Case.dateCreated
       description: 'The date the case was created.'
@@ -1145,22 +1145,22 @@ script:
       description: 'The date the case was closed.'
     - type: Number
       contextPath: LogRhythm.Case.owner.number
-      description: 'The case owner number.'
+      description: 'The ID of the case owner.'
     - type: String
       contextPath: LogRhythm.Case.owner.name
-      description: 'The case owner name.'
+      description: 'The name of the case owner.'
     - type: Boolean
       contextPath: LogRhythm.Case.owner.disabled
-      description: 'Whether the owner is disabled or not'
+      description: 'Whether the owner is disabled.'
     - type: Number
       contextPath: LogRhythm.Case.lastUpdatedBy.number
-      description: 'Last updated by user number. '
+      description: 'The ID of the user who last updated the case.'
     - type: String
       contextPath: LogRhythm.Case.lastUpdatedBy.name
-      description: 'Last updated by user name.'
+      description: 'The name of the user who last updated the case.'
     - type: Boolean
       contextPath: LogRhythm.Case.lastUpdatedBy.disabled
-      description: 'Whether the last updated user is disabled or not.'
+      description: 'Whether the last user who updated the case is disabled.'
     - type: String
       contextPath: LogRhythm.Case.name
       description: 'The case name.'
@@ -1175,7 +1175,7 @@ script:
       description: 'The case priority.'
     - type: Date
       contextPath: LogRhythm.Case.dueDate
-      description: 'The due date time of thee case.'
+      description: ' The datetime the case is due.'
     - type: Unknown
       contextPath: LogRhythm.Case.resolution
       description: 'The case resolution.'
@@ -1205,7 +1205,7 @@ script:
       description: 'The case collaborator name.'
     - type: Boolean
       contextPath: LogRhythm.Case.collaborators.disabled
-      description: 'Whether the case collaborator is disabled or not.'
+      description: 'Whether the case collaborator is disabled.'
     - type: String
       contextPath: LogRhythm.Case.tags.text
       description: 'The case tag name.'
@@ -1220,7 +1220,7 @@ script:
       required: true
       isArray: false
     - name: status
-      description: 'The case status.'
+      description: 'The case status. Possible values: "Created", "Completed", "Incident", "Mitigated", and "Resolved".'
       required: true
       isArray: false
       auto: PREDEFINED
@@ -1233,13 +1233,13 @@ script:
     outputs:
     - type: String
       contextPath: LogRhythm.Case.id
-      description: 'The Case ID.'
+      description: 'The case ID.'
     - type: Number
       contextPath: LogRhythm.Case.number
-      description: 'The Case number.'
+      description: 'The case number.'
     - type: String
       contextPath: LogRhythm.Case.externalId
-      description: 'The Case external ID.'
+      description: 'The case external ID.'
     - type: Date
       contextPath: LogRhythm.Case.dateCreated
       description: 'The date the case was created.'
@@ -1251,22 +1251,22 @@ script:
       description: 'The date the case was closed.'
     - type: Number
       contextPath: LogRhythm.Case.owner.number
-      description: 'The case owner number.'
+      description: 'The ID of the case owner.'
     - type: String
       contextPath: LogRhythm.Case.owner.name
-      description: 'The case owner name.'
+      description: 'The name of the case owner.'
     - type: Boolean
       contextPath: LogRhythm.Case.owner.disabled
-      description: 'Whether the owner is disabled or not'
+      description: 'Whether the owner is disabled.'
     - type: Number
       contextPath: LogRhythm.Case.lastUpdatedBy.number
-      description: 'Last updated by user number. '
+      description: 'The ID of the user who last updated the case.'
     - type: String
       contextPath: LogRhythm.Case.lastUpdatedBy.name
-      description: 'Last updated by user name.'
+      description: 'The name of the user who last updated the case.'
     - type: Boolean
       contextPath: LogRhythm.Case.lastUpdatedBy.disabled
-      description: 'Whether the last updated user is disabled or not.'
+      description: 'Whether the last user who updated the case is disabled.'
     - type: String
       contextPath: LogRhythm.Case.name
       description: 'The case name.'
@@ -1281,7 +1281,7 @@ script:
       description: 'The case priority.'
     - type: Date
       contextPath: LogRhythm.Case.dueDate
-      description: 'The due date time of thee case.'
+      description: ' The datetime the case is due.'
     - type: Unknown
       contextPath: LogRhythm.Case.resolution
       description: 'The case resolution.'
@@ -1311,13 +1311,13 @@ script:
       description: 'The case collaborator name.'
     - type: Boolean
       contextPath: LogRhythm.Case.collaborators.disabled
-      description: 'Whether the case collaborator is disabled or not.'
+      description: 'Whether the case collaborator is disabled.'
     - type: String
       contextPath: LogRhythm.Case.tags.text
       description: 'The case tag name.'
     - type: Number
       contextPath: LogRhythm.Case.tags.number
-      description: 'TThe case tag number.'
+      description: 'The case tag number.'
   - name: lr-case-evidence-list
     description: 'Return a list of evidence summaries for a case.'
     arguments:
@@ -1326,7 +1326,7 @@ script:
       required: true
       isArray: false
     - name: evidence_type
-      description: 'Filter results that have evidence of the specified type.'
+      description: 'Filter results that have evidence of the specified type. Possible values are: "alarm", "userEvents", "log", "note", and "file".'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -1337,7 +1337,7 @@ script:
       - note
       - file
     - name: status
-      description: 'Filter results that have a specific evidence status.'
+      description: 'Filter results that have a specific evidence status. Possible values: "pending", "completed", and "failed".'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -1364,22 +1364,22 @@ script:
       description: 'The date the evidence was updated.'
     - type: Number
       contextPath: LogRhythm.CaseEvidence.Evidences.createdBy.number
-      description: 'The number of the user who created the evidence.'
+      description: 'The ID of the user who created the evidence.'
     - type: String
       contextPath: LogRhythm.CaseEvidence.Evidences.createdBy.name
-      description: 'The user who created the evidence.'
+      description: 'The name of the user who created the evidence.'
     - type: Boolean
       contextPath: LogRhythm.CaseEvidence.Evidences.createdBy.disabled
-      description: 'Whether the user is disabled or not.'
+      description: 'Whether the user is disabled.'
     - type: Number
       contextPath: LogRhythm.CaseEvidence.Evidences.lastUpdatedBy.number
-      description: 'Last updated by user number.'
+      description: 'The ID of the user who last updated the case evidence.'
     - type: String
       contextPath: LogRhythm.CaseEvidence.Evidences.lastUpdatedBy.name
-      description: 'Last updated by user name.'
+      description: 'The name of the user who last updated the case evidence.'
     - type: Boolean
       contextPath: LogRhythm.CaseEvidence.Evidences.lastUpdatedBy.disabled
-      description: 'Whether the last updated user is disabled or not.'
+      description: 'Whether the last user who updated the case evidence is disabled.'
     - type: String
       contextPath: LogRhythm.CaseEvidence.Evidences.type
       description: 'The evidence type.'
@@ -1394,7 +1394,7 @@ script:
       description: 'The evidence text.'
     - type: Boolean
       contextPath: LogRhythm.CaseEvidence.Evidences.pinned
-      description: 'Whether the evidence is pinned or not.'
+      description: 'Whether the evidence is pinned.'
     - type: Unknown
       contextPath: LogRhythm.CaseEvidence.Evidences.datePinned
       description: 'The date the evidence was pinned.'
@@ -1406,9 +1406,9 @@ script:
       required: true
       isArray: false
     - name: alarm_numbers
-      description: 'Comma separated list of alarm IDs.'
+      description: 'A comma-separated list of alarm IDs.'
       required: true
-      isArray: false
+      isArray: true
     outputs:
     - type: String
       contextPath: LogRhythm.AlarmEvidence.CaseID
@@ -1424,22 +1424,22 @@ script:
       description: 'The date the evidence was updated.'
     - type: Number
       contextPath: LogRhythm.AlarmEvidence.Evidences.createdBy.number
-      description: 'The number of the user who created the evidence.'
+      description: 'The ID of the user who created the evidence.'
     - type: String
       contextPath: LogRhythm.AlarmEvidence.Evidences.createdBy.name
-      description: 'The user who created the evidence.'
+      description: 'The name of the user who created the evidence.'
     - type: Boolean
       contextPath: LogRhythm.AlarmEvidence.Evidences.createdBy.disabled
-      description: 'Whether the user is disabled or not.'
+      description: 'Whether the user is disabled.'
     - type: Number
       contextPath: LogRhythm.AlarmEvidence.Evidences.lastUpdatedBy.number
-      description: 'Last updated by user number.'
+      description: 'The ID of the user who last updated the alarm evidence.'
     - type: String
       contextPath: LogRhythm.AlarmEvidence.Evidences.lastUpdatedBy.name
-      description: 'Last updated by user name.'
+      description: 'The name of the user who last updated the alarm evidence.'
     - type: Boolean
       contextPath: LogRhythm.AlarmEvidence.Evidences.lastUpdatedBy.disabled
-      description: 'Whether the last updated user is disabled or not.'
+      description: 'Whether the last user who updated the alarm evidence is disabled.'
     - type: String
       contextPath: LogRhythm.AlarmEvidence.Evidences.type
       description: 'The evidence type.'
@@ -1454,7 +1454,7 @@ script:
       description: 'The evidence text.'
     - type: Boolean
       contextPath: LogRhythm.AlarmEvidence.Evidences.pinned
-      description: 'Whether the evidence is pinned or not.'
+      description: 'Whether the evidence is pinned.'
     - type: Unknown
       contextPath: LogRhythm.AlarmEvidence.Evidences.datePinned
       description: 'The date the evidence was pinned.'
@@ -1463,10 +1463,10 @@ script:
       description: 'The alarm ID.'
     - type: Date
       contextPath: LogRhythm.AlarmEvidence.Evidences.alarm.alarmDate
-      description: 'The date the alarm date.'
+      description: 'The alarm date.'
     - type: Number
       contextPath: LogRhythm.AlarmEvidence.Evidences.alarm.alarmRuleId
-      description: 'The alarm rule ID'
+      description: 'The alarm rule ID.'
     - type: String
       contextPath: LogRhythm.AlarmEvidence.Evidences.alarm.alarmRuleName
       description: 'The alarm rule name.'
@@ -1481,7 +1481,7 @@ script:
       description: 'The alarm entity name.'
     - type: Number
       contextPath: LogRhythm.AlarmEvidence.Evidences.alarm.riskBasedPriorityMax
-      description: 'The alarm risk based priority max.'
+      description: 'The maximum Risk Based Priority (RBP) threshold of events to monitor.'
   - name: lr-case-note-evidence-add
     description: 'Add a note as evidence on a case.'
     arguments:
@@ -1508,28 +1508,28 @@ script:
       description: 'The date the evidence was updated.'
     - type: Number
       contextPath: LogRhythm.NoteEvidence.Evidences.createdBy.number
-      description: 'The number of the user who created the evidence.'
+      description: 'The ID of the user who created the evidence.'
     - type: String
       contextPath: LogRhythm.NoteEvidence.Evidences.createdBy.name
-      description: 'The user who created the evidence.'
+      description: 'The name of the user who created the evidence.'
     - type: Boolean
       contextPath: LogRhythm.NoteEvidence.Evidences.createdBy.disabled
-      description: 'Whether the user is disabled or not.'
+      description: 'Whether the user is disabled.'
     - type: Number
       contextPath: LogRhythm.NoteEvidence.Evidences.lastUpdatedBy.number
-      description: 'Last updated by user number.'
+      description: 'The ID of the user who last updated the evidence.'
     - type: String
       contextPath: LogRhythm.NoteEvidence.Evidences.lastUpdatedBy.name
-      description: 'Last updated by user name.'
+      description: 'The name of the user who last updated the evidence.'
     - type: Boolean
       contextPath: LogRhythm.NoteEvidence.Evidences.lastUpdatedBy.disabled
-      description: 'Whether the last updated user is disabled or not.'
+      description: 'Whether the last user who updated the evidence is disabled.'
     - type: String
       contextPath: LogRhythm.NoteEvidence.Evidences.type
       description: 'The evidence type.'
     - type: String
       contextPath: LogRhythm.NoteEvidence.Evidences.status
-      description: 'The evidence status'
+      description: 'The evidence status,'
     - type: Unknown
       contextPath: LogRhythm.NoteEvidence.Evidences.statusMessage
       description: 'The evidence status message.'
@@ -1538,7 +1538,7 @@ script:
       description: 'The evidence text.'
     - type: Boolean
       contextPath: LogRhythm.NoteEvidence.Evidences.pinned
-      description: 'Whether the evidence is pinned or not.'
+      description: 'Whether the evidence is pinned.'
     - type: Unknown
       contextPath: LogRhythm.NoteEvidence.Evidences.datePinned
       description: 'The date the evidence was pinned.'
@@ -1546,11 +1546,11 @@ script:
     description: 'Upload a file as evidence on a case.'
     arguments:
     - name: case_id
-      description: 'Unique identifier for the case'
+      description: 'Unique identifier for the case,'
       required: true
       isArray: false
     - name: entryId
-      description: 'The EntryID of the file to attach.'
+      description: 'The entry ID of the file to attach.'
       required: true
       isArray: false
     outputs:
@@ -1568,22 +1568,22 @@ script:
       description: 'The date the evidence was updated.'
     - type: Number
       contextPath: LogRhythm.FileEvidence.Evidences.createdBy.number
-      description: 'The number of the user who created the evidence.'
+      description: 'The ID of the user who created the evidence.'
     - type: String
       contextPath: LogRhythm.FileEvidence.Evidences.createdBy.name
-      description: 'The user who created the evidence.'
+      description: 'The name of the user who created the evidence.'
     - type: Boolean
       contextPath: LogRhythm.FileEvidence.Evidences.createdBy.disabled
-      description: 'Whether the user is disabled or not.'
+      description: 'Whether the user is disabled.'
     - type: Number
       contextPath: LogRhythm.FileEvidence.Evidences.lastUpdatedBy.number
-      description: 'Last updated by user number.'
+      description: 'The ID of the user who last updated the evidence.'
     - type: String
       contextPath: LogRhythm.FileEvidence.Evidences.lastUpdatedBy.name
-      description: 'Last updated by user name.'
+      description: 'The name of the user who last updated the evidence.'
     - type: Boolean
       contextPath: LogRhythm.FileEvidence.Evidences.lastUpdatedBy.disabled
-      description: 'Whether the last updated user is disabled or not.'
+      description: 'Whether the last user who updated the evidence is disabled.'
     - type: String
       contextPath: LogRhythm.FileEvidence.Evidences.type
       description: 'The evidence type.'
@@ -1598,12 +1598,12 @@ script:
       description: 'The evidence text.'
     - type: Boolean
       contextPath: LogRhythm.FileEvidence.Evidences.pinned
-      description: 'Whether the evidence is pinned or not.'
+      description: 'Whether the evidence is pinned.'
     - type: Unknown
       contextPath: LogRhythm.FileEvidence.Evidences.datePinned
       description: 'The date the evidence was pinned.'
   - name: lr-case-evidence-delete
-    description: 'Remove an item of evidence from a case.'
+    description: 'Remove evidence from a case.'
     arguments:
     - name: case_id
       description: 'Unique identifier for the case.'
@@ -1632,19 +1632,19 @@ script:
       required: true
       isArray: false
     - name: tag_numbers
-      description: 'comma separated list of tag numbers to add.'
+      description: 'A comma-separated list of tag numbers to add.'
       required: true
-      isArray: false
+      isArray: true
     outputs:
     - type: String
       contextPath: LogRhythm.Case.id
-      description: 'The Case ID.'
+      description: 'The case ID.'
     - type: Number
       contextPath: LogRhythm.Case.number
-      description: 'The Case number.'
+      description: 'The case number.'
     - type: String
       contextPath: LogRhythm.Case.externalId
-      description: 'The Case external ID.'
+      description: 'The case external ID.'
     - type: Date
       contextPath: LogRhythm.Case.dateCreated
       description: 'The date the case was created.'
@@ -1656,22 +1656,22 @@ script:
       description: 'The date the case was closed.'
     - type: Number
       contextPath: LogRhythm.Case.owner.number
-      description: 'The case owner number.'
+      description: 'The ID of the case owner.'
     - type: String
       contextPath: LogRhythm.Case.owner.name
-      description: 'The case owner name.'
+      description: 'The name of the case owner.'
     - type: Boolean
       contextPath: LogRhythm.Case.owner.disabled
       description: 'Whether the owner is disabled or not'
     - type: Number
       contextPath: LogRhythm.Case.lastUpdatedBy.number
-      description: 'Last updated by user number. '
+      description: 'The ID of the user who last updated the case.'
     - type: String
       contextPath: LogRhythm.Case.lastUpdatedBy.name
-      description: 'Last updated by user name.'
+      description: 'The name of the user who last updated the case.'
     - type: Boolean
       contextPath: LogRhythm.Case.lastUpdatedBy.disabled
-      description: 'Whether the last updated user is disabled or not.'
+      description: 'Whether the last user who updated the case is disabled.'
     - type: String
       contextPath: LogRhythm.Case.name
       description: 'The case name.'
@@ -1686,7 +1686,7 @@ script:
       description: 'The case priority.'
     - type: Date
       contextPath: LogRhythm.Case.dueDate
-      description: 'The due date time of thee case.'
+      description: ' The datetime the case is due.'
     - type: Unknown
       contextPath: LogRhythm.Case.resolution
       description: 'The case resolution.'
@@ -1716,7 +1716,7 @@ script:
       description: 'The case collaborator name.'
     - type: Boolean
       contextPath: LogRhythm.Case.collaborators.disabled
-      description: 'Whether the case collaborator is disabled or not.'
+      description: 'Whether the case collaborator is disabled.'
     - type: String
       contextPath: LogRhythm.Case.tags.text
       description: 'The case tag name.'
@@ -1731,19 +1731,19 @@ script:
       required: true
       isArray: false
     - name: tag_numbers
-      description: 'comma separated list of tag numbers to remove.'
+      description: 'A comma-separated list of tag numbers to remove.'
       required: true
-      isArray: false
+      isArray: true
     outputs:
     - type: String
       contextPath: LogRhythm.Case.id
-      description: 'The Case ID.'
+      description: 'The case ID.'
     - type: Number
       contextPath: LogRhythm.Case.number
-      description: 'The Case number.'
+      description: 'The case number.'
     - type: String
       contextPath: LogRhythm.Case.externalId
-      description: 'The Case external ID.'
+      description: 'The case external ID.'
     - type: Date
       contextPath: LogRhythm.Case.dateCreated
       description: 'The date the case was created.'
@@ -1755,22 +1755,22 @@ script:
       description: 'The date the case was closed.'
     - type: Number
       contextPath: LogRhythm.Case.owner.number
-      description: 'The case owner number.'
+      description: 'The ID of the case owner.'
     - type: String
       contextPath: LogRhythm.Case.owner.name
-      description: 'The case owner name.'
+      description: 'The name of the case owner.'
     - type: Boolean
       contextPath: LogRhythm.Case.owner.disabled
       description: 'Whether the owner is disabled or not'
     - type: Number
       contextPath: LogRhythm.Case.lastUpdatedBy.number
-      description: 'Last updated by user number. '
+      description: 'The ID of the user who last updated the case.'
     - type: String
       contextPath: LogRhythm.Case.lastUpdatedBy.name
-      description: 'Last updated by user name.'
+      description: 'The name of the user who last updated the case.'
     - type: Boolean
       contextPath: LogRhythm.Case.lastUpdatedBy.disabled
-      description: 'Whether the last updated user is disabled or not.'
+      description: 'Whether the last user who updated the case is disabled.'
     - type: String
       contextPath: LogRhythm.Case.name
       description: 'The case name.'
@@ -1785,7 +1785,7 @@ script:
       description: 'The case priority.'
     - type: Date
       contextPath: LogRhythm.Case.dueDate
-      description: 'The due date time of thee case.'
+      description: ' The datetime the case is due.'
     - type: Unknown
       contextPath: LogRhythm.Case.resolution
       description: 'The case resolution.'
@@ -1815,13 +1815,13 @@ script:
       description: 'The case collaborator name.'
     - type: Boolean
       contextPath: LogRhythm.Case.collaborators.disabled
-      description: 'Whether the case collaborator is disabled or not.'
+      description: 'Whether the case collaborator is disabled.'
     - type: String
       contextPath: LogRhythm.Case.tags.text
       description: 'The case tag name.'
     - type: Number
       contextPath: LogRhythm.Case.tags.number
-      description: 'TThe case tag number.'
+      description: 'The case tag number.'
   - name: lr-tags-list
     description: 'Return a list of tags using filter criteria.'
     arguments:
@@ -1851,13 +1851,13 @@ script:
       description: 'The date the tag was created.'
     - type: Number
       contextPath: LogRhythm.Tag.createdBy.number
-      description: 'The number of the user who created the tag.'
+      description: 'The ID of the user who created the tag.'
     - type: String
       contextPath: LogRhythm.Tag.createdBy.name
-      description: 'The user who created the tag.'
+      description: 'The name of the user who created the tag.'
     - type: Boolean
       contextPath: LogRhythm.Tag.createdBy.disabled
-      description: 'Whether the user is disabled or not.'
+      description: 'Whether the user is disabled.'
   - name: lr-case-collaborators-list
     description: 'Returns the owner and a list of collaborators associated with a specific case.'
     arguments:
@@ -1871,13 +1871,13 @@ script:
       description: 'The case ID.'
     - type: Number
       contextPath: LogRhythm.CaseCollaborator.owner.number
-      description: 'The case owner number.'
+      description: 'The ID of the case owner.'
     - type: String
       contextPath: LogRhythm.CaseCollaborator.owner.name
-      description: 'The case owner.'
+      description: 'The name of the case owner.'
     - type: Boolean
       contextPath: LogRhythm.CaseCollaborator.owner.disabled
-      description: 'Whether the owner is disabled or not.'
+      description: 'Whether the owner is disabled.'
     - type: Number
       contextPath: LogRhythm.CaseCollaborator.collaborators.number
       description: 'The case collaborator number.'
@@ -1886,12 +1886,12 @@ script:
       description: 'The case collaborator name.'
     - type: Boolean
       contextPath: LogRhythm.CaseCollaborator.collaborators.disabled
-      description: 'Whether the case collaborator is disabled or not.'
+      description: 'Whether the case collaborator is disabled.'
   - name: lr-case-collaborators-update
     description: 'Updates the owner and collaborators associated with a specific case.'
     arguments:
     - name: case_id
-      description: 'Unique identifier for the case'
+      description: 'Unique identifier for the case.'
       required: true
       isArray: false
     - name: owner
@@ -1899,40 +1899,40 @@ script:
       required: true
       isArray: false
     - name: collaborators
-      description: 'Comma separated list of person numbers.'
+      description: 'A comma-separated list of user IDs.'
       required: true
-      isArray: false
+      isArray: true
     outputs:
     - type: String
       contextPath: LogRhythm.CaseCollaborator.CaseID
       description: 'The case ID.'
     - type: Number
       contextPath: LogRhythm.CaseCollaborator.owner.number
-      description: 'The case owner number.'
+      description: 'The ID of the case owner.'
     - type: String
       contextPath: LogRhythm.CaseCollaborator.owner.name
-      description: 'The case owner.'
+      description: 'The name of the case owner.'
     - type: Boolean
       contextPath: LogRhythm.CaseCollaborator.owner.disabled
-      description: 'Whether the owner is disabled or not.'
+      description: 'Whether the owner is disabled.'
     - type: Number
       contextPath: LogRhythm.CaseCollaborator.collaborators.number
-      description: 'The case collaborator number.'
+      description: 'The case collaborator ID.'
     - type: String
       contextPath: LogRhythm.CaseCollaborator.collaborators.name
       description: 'The case collaborator name.'
     - type: Boolean
       contextPath: LogRhythm.CaseCollaborator.collaborators.disabled
-      description: 'Whether the case collaborator is disabled or not.'
+      description: 'Whether the case collaborator is disabled.'
   - name: lr-entities-list
     description: 'Returns all Entities that match the specified criteria.'
     arguments:
     - name: parent_entity_id
-      description: 'Filter by Object parent entity ID.'
+      description: 'Filter by the object parent entity ID.'
       required: false
       isArray: false
     - name: entity_id
-      description: 'Filter by entity ID.'
+      description: 'Filter by the entity ID.'
       required: false
       isArray: false
     - name: offset
@@ -1942,7 +1942,7 @@ script:
       isArray: false
     - name: count
       defaultValue: "50"
-      description: 'The numbers of entities to return.'
+      description: 'The number of entities to return.'
       required: false
       isArray: false
     outputs:
@@ -1980,7 +1980,7 @@ script:
       required: false
       isArray: false
     - name: record_status
-      description: 'Filter by record status.'
+      description: 'Filter by record status. Possible values: "all", "active", "retired".'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -1995,7 +1995,7 @@ script:
       isArray: false
     - name: count
       defaultValue: "50"
-      description: 'The numbers of hosts to return.'
+      description: 'The number of hosts to return.'
       required: false
       isArray: false
     outputs:
@@ -2013,7 +2013,7 @@ script:
       description: 'The host name.'
     - type: String
       contextPath: LogRhythm.Host.riskLevel
-      description: 'The host risk level'
+      description: 'The host risk level.'
     - type: String
       contextPath: LogRhythm.Host.threatLevel
       description: 'The host threat level.'
@@ -2031,16 +2031,16 @@ script:
       description: 'The host location ID.'
     - type: String
       contextPath: LogRhythm.Host.os
-      description: 'The OS type supported by LogRhythm.'
+      description: 'The operating system type supported by LogRhythm.'
     - type: Boolean
       contextPath: LogRhythm.Host.useEventlogCredentials
-      description: 'Whether to use the event log credentials or not.'
+      description: 'Whether to use the event log credentials.'
     - type: String
       contextPath: LogRhythm.Host.osType
-      description: 'The Agent server type on which the OS is installed.'
+      description: 'The agent server type on which the operating system is installed.'
     - type: Date
       contextPath: LogRhythm.Host.dateUpdated
-      description: 'The date the host was updated'
+      description: 'The date the host was updated.'
     - type: String
       contextPath: LogRhythm.Host.shortDesc
       description: 'The host short description.'
@@ -2049,10 +2049,10 @@ script:
       description: 'The host operation system version.'
     - type: String
       contextPath: LogRhythm.Host.hostIdentifiers.type
-      description: 'The Host identifier type.'
+      description: 'The host identifier type.'
     - type: String
       contextPath: LogRhythm.Host.hostIdentifiers.value
-      description: 'The Host identifier value.'
+      description: 'The host identifier value.'
     - type: Date
       contextPath: LogRhythm.Host.hostIdentifiers.dateAssigned
       description: 'The date the host identifier was assigned.'
@@ -2060,18 +2060,18 @@ script:
       contextPath: LogRhythm.Host.eventlogPassword
       description: 'The event log password.'
   - name: lr-users-list
-    description: 'Returns User records based on the permissions of the currently logged in User and the specified criteria.'
+    description: 'Returns user records based on the permissions of the currently logged in user and the specified criteria.'
     arguments:
     - name: user_ids
-      description: 'Comma separated list of person IDs.'
+      description: 'A comma-separated list of user IDs.'
       required: false
-      isArray: false
+      isArray: true
     - name: entity_ids
-      description: 'Comma separated list of entity IDs.'
+      description: 'A comma-separated list of entity IDs.'
       required: false
-      isArray: false
+      isArray: true
     - name: user_status
-      description: 'Filter by user status.'
+      description: 'Filter by user status. Possible values: "Active" and "Retired".'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -2080,12 +2080,12 @@ script:
       - Retired
     - name: offset
       defaultValue: "0"
-      description: 'The number of users to skip before starting to collect the result set.'
+      description: 'The ID of users to skip before starting to collect the result set.'
       required: false
       isArray: false
     - name: count
       defaultValue: "50"
-      description: 'The numbers of users to return.'
+      description: 'The IDs of the users to return.'
       required: false
       isArray: false
     outputs:
@@ -2129,10 +2129,10 @@ script:
       description: 'The date the user was updated.'
       type: Date
   - name: lr-lists-get
-    description: 'Returns list details using filter criteria.'
+    description: 'Returns list details using the filter criteria.'
     arguments:
     - name: list_type
-      description: 'List types supported in LogRhythm.'
+      description: 'The list type. Possible values: "None", "Application", "Classification", "CommonEvent", "Host", "Location", "MsgSource", "MsgSourceType", "MPERule", "Network", "User", "GeneralValue", "Entity", "RootEntity", "IP", "IPRange", and "Identity".'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -2159,7 +2159,7 @@ script:
       required: false
       isArray: false
     - name: can_edit
-      description: 'Specifies if Write Only (true) or Read Only (false) Lists are required for a User.'
+      description: 'Specifies if Write Only (true) or Read Only (false) lists are required for a user. Possible values: "true" and "false".'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -2181,16 +2181,16 @@ script:
       description: 'The list short description.'
     - type: String
       contextPath: LogRhythm.List.useContext
-      description: 'The use contexts type.'
+      description: 'The use context type.'
     - type: Boolean
       contextPath: LogRhythm.List.autoImportOption.enabled
-      description: 'Whether the list auto import is enabled or not.'
+      description: 'Whether the list auto import is enabled.'
     - type: Boolean
       contextPath: LogRhythm.List.autoImportOption.usePatterns
-      description: 'Whether the auto import use patterns is enabled or not.'
+      description: 'Whether the auto import use patterns is enabled.'
     - type: Boolean
       contextPath: LogRhythm.List.autoImportOption.replaceExisting
-      description: 'Whether the auto import replace existing is enabled or not.'
+      description: 'Whether the auto import replace existing is enabled.'
     - type: Number
       contextPath: LogRhythm.List.id
       description: 'The list ID.'
@@ -2211,7 +2211,7 @@ script:
       description: 'The write permission level.'
     - type: Boolean
       contextPath: LogRhythm.List.restrictedRead
-      description: 'Whether the list is restricted read or not.'
+      description: 'Whether the list is read restricted.'
     - type: String
       contextPath: LogRhythm.List.entityName
       description: 'The list entity name.'
@@ -2220,19 +2220,19 @@ script:
       description: 'The list entry count.'
     - type: Boolean
       contextPath: LogRhythm.List.needToNotify
-      description: 'Whether the list need to notify or not.'
+      description: 'Whether the list will notify the user when updated.'
     - type: Boolean
       contextPath: LogRhythm.List.doesExpire
-      description: 'Whether the list does expire or not.'
+      description: 'Whether the list expires.'
     - type: Number
       contextPath: LogRhythm.List.owner
-      description: 'The list owner.'
+      description: 'The ID of the list owner.'
     - type: String
       contextPath: LogRhythm.List.longDescription
       description: 'The list long description.'
     - type: Number
       contextPath: LogRhythm.List.timeToLiveSeconds
-      description: 'The list time to live in seconds.'
+      description: 'The list time for the list to live in seconds.'
     - type: Date
       contextPath: LogRhythm.List.revisitDate
       description: 'The list revisit date.'
@@ -2242,7 +2242,7 @@ script:
       Creates a new list summary if the GUID does not exist. Otherwise, updates the list summary.'
     arguments:
     - name: list_type
-      description: 'The list type.'
+      description: 'The list type. Possible values: "None", "Application", "Classification", "CommonEvent", "Host", "Location", "MsgSource", "MsgSourceType", "MPERule", "Network", "User", "GeneralValue", "Entity", "RootEntity", "IP", "IPRange", and "Identity".'
       required: true
       isArray: false
       auto: PREDEFINED
@@ -2269,7 +2269,7 @@ script:
       required: true
       isArray: false
     - name: enabled
-      description: 'Whether the list auto import is enabled or not.'
+      description: 'Whether the list auto import is enabled. Possible values: "true" and "false".'
       required: true
       isArray: false
       auto: PREDEFINED
@@ -2277,7 +2277,7 @@ script:
       - 'true'
       - 'false'
     - name: use_patterns
-      description: 'Whether the auto import use patterns is enabled or not.'
+      description: 'Whether the auto import use patterns is enabled. Possible values: "true" and "false".'
       required: true
       isArray: false
       auto: PREDEFINED
@@ -2285,7 +2285,7 @@ script:
       - 'true'
       - 'false'
     - name: replace_existing
-      description: 'Whether the auto import replace existing is enabled or not.'
+      description: 'Whether the auto import replace existing is enabled. Possible values: "true" and "false".'
       required: true
       isArray: false
       auto: PREDEFINED
@@ -2293,7 +2293,7 @@ script:
       - 'true'
       - 'false'
     - name: read_access
-      description: 'The read permission level.'
+      description: 'The read permission level. Possible values: "Private", "PublicAll", "PublicGlobalAdmin", "PublicGlobalAnalyst", "PublicRestrictedAnalyst", "PublicRestrictedAdmin".'
       required: true
       isArray: false
       auto: PREDEFINED
@@ -2301,11 +2301,11 @@ script:
       - Private
       - PublicAll
       - PublicGlobalAdmin
-      - PublicGlobalAnalystq
+      - PublicGlobalAnalyst
       - PublicRestrictedAnalyst
       - PublicRestrictedAdmin
     - name: write_access
-      description: 'The write permission level.'
+      description: 'The write permission level. Possible values: "Private", "PublicAll", "PublicGlobalAdmin", "PublicGlobalAnalyst", "PublicRestrictedAnalyst", "PublicRestrictedAdmin".'
       required: true
       isArray: false
       auto: PREDEFINED
@@ -2313,11 +2313,11 @@ script:
       - Private
       - PublicAll
       - PublicGlobalAdmin
-      - PublicGlobalAnalystq
+      - PublicGlobalAnalyst
       - PublicRestrictedAnalyst
       - PublicRestrictedAdmin
     - name: restricted_read
-      description: 'Whether the list is restricted read or not.'
+      description: 'Whether the list is read restricted. Possible values: "true" and "false".'
       required: true
       isArray: false
       auto: PREDEFINED
@@ -2329,7 +2329,7 @@ script:
       required: true
       isArray: false
     - name: need_to_notify
-      description: 'Whether the list need to notify or not.'
+      description: 'Whether the list need to notify. Possible values: "true" and "false".'
       required: true
       isArray: false
       auto: PREDEFINED
@@ -2337,7 +2337,7 @@ script:
       - 'true'
       - 'false'
     - name: does_expire
-      description: 'Whether the list does expire or not.'
+      description: 'Whether the list expires. Possible values: "true" and "false".'
       required: true
       isArray: false
       auto: PREDEFINED
@@ -2345,12 +2345,12 @@ script:
       - 'true'
       - 'false'
     - name: owner
-      description: 'The owner number.'
+      description: 'The ID of the owner.'
       required: false
       isArray: false
     outputs:
     - contextPath: LogRhythm.List.listType
-      description: 'The list Type.'
+      description: 'The list type.'
       type: String
     - contextPath: LogRhythm.List.status
       description: 'The list status.'
@@ -2359,16 +2359,16 @@ script:
       description: 'The list name.'
       type: String
     - contextPath: LogRhythm.List.useContext
-      description: 'The use contexts type.'
+      description: 'The use context type.'
       type: String
     - contextPath: LogRhythm.List.autoImportOption.enabled
-      description: 'Whether the list auto import is enabled or not.'
+      description: 'Whether the list auto import is enabled.'
       type: Boolean
     - contextPath: LogRhythm.List.autoImportOption.usePatterns
-      description: 'Whether the auto import use patterns is enabled or not.'
+      description: 'Whether the auto import use patterns is enabled.'
       type: Boolean
     - contextPath: LogRhythm.List.autoImportOption.replaceExisting
-      description: 'Whether the auto import replace existing is enabled or not.'
+      description: 'Whether the auto import replace existing is enabled.'
       type: Boolean
     - contextPath: LogRhythm.List.id
       description: 'The list ID.'
@@ -2389,7 +2389,7 @@ script:
       description: 'The write permission level.'
       type: String
     - contextPath: LogRhythm.List.restrictedRead
-      description: 'Whether the list is restricted read or not.'
+      description: 'Whether the list is read restricted.'
       type: Boolean
     - contextPath: LogRhythm.List.entityName
       description: 'The list entity name.'
@@ -2398,24 +2398,24 @@ script:
       description: 'The list entry count.'
       type: Number
     - contextPath: LogRhythm.List.needToNotify
-      description: 'Whether the list need to notify or not.'
+      description: 'Whether the list will notify the user when updated.'
       type: Boolean
     - contextPath: LogRhythm.List.doesExpire
-      description: 'Whether the list does expire or not.'
+      description: 'Whether the list expires.'
       type: Boolean
     - contextPath: LogRhythm.List.owner
-      description: 'The list owner.'
+      description: 'The ID of the list owner.'
       type: Number
   - name: lr-list-details-and-items-get
-    description: 'Returns list details and list items based on list GUID.'
+    description: 'Returns list details and list items based on the list GUID.'
     arguments:
     - name: list_guid
-      description: 'The GUID stored in database.'
+      description: 'The GUID stored in the database.'
       required: true
       isArray: false
     - name: max_items
       defaultValue: "100"
-      description: 'The upper limit for items that can be returned in a single request.'
+      description: 'The maximum number of items that can be returned in a single request.'
       required: false
       isArray: false
     outputs:
@@ -2430,22 +2430,22 @@ script:
       description: 'The list name.'
     - type: String
       contextPath: LogRhythm.ListDetails.useContext
-      description: 'The use contexts type.'
+      description: 'The use context type.'
     - type: Boolean
       contextPath: LogRhythm.ListDetails.autoImportOption.enabled
-      description: 'Whether the list auto import is enabled or not.'
+      description: 'Whether the list auto import is enabled.'
     - type: Boolean
       contextPath: LogRhythm.ListDetails.autoImportOption.usePatterns
-      description: 'Whether the auto import use patterns is enabled or not.'
+      description: 'Whether the auto import use patterns is enabled.'
     - type: Boolean
       contextPath: LogRhythm.ListDetails.autoImportOption.replaceExisting
-      description: 'Whether the auto import replace existing is enabled or not.'
+      description: 'Whether the auto import replace existing is enabled.'
     - type: Number
       contextPath: LogRhythm.ListDetails.id
       description: 'The list ID.'
     - type: String
       contextPath: LogRhythm.ListDetails.guid
-      description: 'The list GUID'
+      description: 'The list GUID.'
     - type: Date
       contextPath: LogRhythm.ListDetails.dateCreated
       description: 'The date the list was created.'
@@ -2454,7 +2454,7 @@ script:
       description: 'The date the list was updated.'
     - type: Date
       contextPath: LogRhythm.ListDetails.revisitDate
-      description: 'The list revisit date.'
+      description: 'The date the list was revisited.'
     - type: String
       contextPath: LogRhythm.ListDetails.readAccess
       description: 'The read permission level.'
@@ -2463,7 +2463,7 @@ script:
       description: 'The write permission level.'
     - type: Boolean
       contextPath: LogRhythm.ListDetails.restrictedRead
-      description: 'Whether the list is restricted read or not.'
+      description: 'Whether the list is read restricted.'
     - type: String
       contextPath: LogRhythm.ListDetails.entityName
       description: 'The list entity name.'
@@ -2472,31 +2472,31 @@ script:
       description: 'The list entry count.'
     - type: Boolean
       contextPath: LogRhythm.ListDetails.needToNotify
-      description: 'Whether the list need to notify or not.'
+      description: 'Whether the list will notify the user when updated.'
     - type: Boolean
       contextPath: LogRhythm.ListDetails.doesExpire
-      description: 'Whether the list does expire or not.'
+      description: 'Whether the list expires.'
     - type: Number
       contextPath: LogRhythm.ListDetails.owner
-      description: 'The list owner.'
+      description: 'The ID of the list owner.'
     - type: Number
       contextPath: LogRhythm.ListDetails.listItemsCount
       description: 'The list items count.'
     - type: String
       contextPath: LogRhythm.ListDetails.items.displayValue
-      description: 'The list item value.'
+      description: 'The list items value.'
     - type: Unknown
       contextPath: LogRhythm.ListDetails.items.expirationDate
-      description: 'The list item expiration date'
+      description: 'The list item expiration date.'
     - type: Boolean
       contextPath: LogRhythm.ListDetails.items.isExpired
-      description: 'Whether the item is expired or not.'
+      description: 'Whether the item is expired.'
     - type: Boolean
       contextPath: LogRhythm.ListDetails.items.isListItem
-      description: 'Whether the item is list item or not.'
+      description: 'Whether the item is a list item.'
     - type: Boolean
       contextPath: LogRhythm.ListDetails.items.isPattern
-      description: 'Whether the item is pattern or not.'
+      description: 'Whether the item is a pattern.'
     - type: String
       contextPath: LogRhythm.ListDetails.items.listItemDataType
       description: 'The item data type.'
@@ -2510,11 +2510,11 @@ script:
     description: 'Adds more items to an existing list.'
     arguments:
     - name: list_guid
-      description: 'The GUID stored in database.'
+      description: 'The GUID stored in the database.'
       required: true
       isArray: false
     - name: items
-      description: 'The body of the list item so that the list can be updated with new items(JSON format).'
+      description: 'The body of the list item so that the list can be updated with new items (JSON format).'
       required: true
       isArray: false
     outputs:
@@ -2529,16 +2529,16 @@ script:
       description: 'The list name.'
     - type: String
       contextPath: LogRhythm.ListItemsAdd.useContext
-      description: 'The use contexts type.'
+      description: 'The use context type.'
     - type: Boolean
       contextPath: LogRhythm.ListItemsAdd.autoImportOption.enabled
-      description: 'Whether the list auto import is enabled or not.'
+      description: 'Whether the list auto import is enabled.'
     - type: Boolean
       contextPath: LogRhythm.ListItemsAdd.autoImportOption.usePatterns
-      description: 'Whether the auto import use patterns is enabled or not.'
+      description: 'Whether the auto import use patterns is enabled.'
     - type: Boolean
       contextPath: LogRhythm.ListItemsAdd.autoImportOption.replaceExisting
-      description: 'Whether the auto import replace existing is enabled or not.'
+      description: 'Whether the auto import replace existing is enabled.'
     - type: Number
       contextPath: LogRhythm.ListItemsAdd.id
       description: 'The list ID.'
@@ -2562,7 +2562,7 @@ script:
       description: 'The write permission level.'
     - type: Boolean
       contextPath: LogRhythm.ListItemsAdd.restrictedRead
-      description: 'Whether the list is restricted read or not.'
+      description: 'Whether the list is read restricted.'
     - type: String
       contextPath: LogRhythm.ListItemsAdd.entityName
       description: 'The list entity name.'
@@ -2571,13 +2571,13 @@ script:
       description: 'The list entry count.'
     - type: Boolean
       contextPath: LogRhythm.ListItemsAdd.needToNotify
-      description: 'Whether the list need to notify or not.'
+      description: 'Whether the list will notify the user when updated.'
     - type: Boolean
       contextPath: LogRhythm.ListItemsAdd.doesExpire
-      description: 'Whether the list does expire or not.'
+      description: 'Whether the list expires.'
     - type: Number
       contextPath: LogRhythm.ListItemsAdd.owner
-      description: 'The list owner.'
+      description: 'The ID of the list owner.'
     - type: Number
       contextPath: LogRhythm.ListItemsAdd.listItemsCount
       description: 'The list items count.'
@@ -2585,11 +2585,11 @@ script:
     description: 'Removes items from an existing list.'
     arguments:
     - name: list_guid
-      description: 'The GUID stored in database.'
+      description: 'The GUID stored in the database.'
       required: true
       isArray: false
     - name: items
-      description: 'Body of the list items to be removed from the list(JSON format).'
+      description: 'Body of the list items to be removed from the list (JSON format).'
       required: true
       isArray: false
     outputs:
@@ -2604,16 +2604,16 @@ script:
       description: 'The list name.'
     - type: String
       contextPath: LogRhythm.ListItemsRemove.useContext
-      description: 'The use contexts type.'
+      description: 'The use context type.'
     - type: Boolean
       contextPath: LogRhythm.ListItemsRemove.autoImportOption.enabled
-      description: 'Whether the list auto import is enabled or not.'
+      description: 'Whether the list auto import is enabled.'
     - type: Boolean
       contextPath: LogRhythm.ListItemsRemove.autoImportOption.usePatterns
-      description: 'Whether the auto import use patterns is enabled or not.'
+      description: 'Whether the auto import use patterns is enabled.'
     - type: Boolean
       contextPath: LogRhythm.ListItemsRemove.autoImportOption.replaceExisting
-      description: 'Whether the auto import replace existing is enabled or not.'
+      description: 'Whether the auto import replace existing is enabled.'
     - type: Number
       contextPath: LogRhythm.ListItemsRemove.id
       description: 'The list ID.'
@@ -2637,7 +2637,7 @@ script:
       description: 'The write permission level.'
     - type: Boolean
       contextPath: LogRhythm.ListItemsRemove.restrictedRead
-      description: 'Whether the list is restricted read or not.'
+      description: 'Whether the list is read restricted.'
     - type: String
       contextPath: LogRhythm.ListItemsRemove.entityName
       description: 'The list entity name.'
@@ -2646,18 +2646,18 @@ script:
       description: 'The list entry count.'
     - type: Boolean
       contextPath: LogRhythm.ListItemsRemove.needToNotify
-      description: 'Whether the list need to notify or not.'
+      description: 'Whether the list will notify the user when updated.'
     - type: Boolean
       contextPath: LogRhythm.ListItemsRemove.doesExpire
-      description: 'Whether the list does expire or not.'
+      description: 'Whether the list expires.'
     - type: Number
       contextPath: LogRhythm.ListItemsRemove.owner
-      description: 'The list owner.'
+      description: 'The ID of the list owner.'
     - type: Number
       contextPath: LogRhythm.ListItemsRemove.listItemsCount
       description: 'The list items count.'
   - name: lr-execute-search-query
-    description: 'Execute search query to LogRhythm log database.'
+    description: 'Execute a search query on the LogRhythm log database.'
     arguments:
     - name: number_of_days
       description: 'Number of days to search.'
@@ -3638,19 +3638,19 @@ script:
       required: false
       isArray: false
     - name: sender
-      description: 'Email subject.'
+      description: 'Email sender.'
       required: false
       isArray: false
     - name: recipient
-      description: 'Email subject.'
+      description: 'Email recipient.'
       required: false
       isArray: false
     - name: hash
-      description: 'Hash.'
+      description: 'Hash code of the event.'
       required: false
       isArray: false
     - name: url
-      description: 'URL.'
+      description: 'URL of the event.'
       required: false
       isArray: false
     - name: process_name
@@ -3662,11 +3662,11 @@ script:
       required: false
       isArray: false
     - name: ip_address
-      description: 'IP address.'
+      description: 'IP address of the endpoint.'
       required: false
       isArray: false
     - name: max_message
-      description: 'Maximum number of log message to query.'
+      description: 'Maximum number of log messages to query.'
       required: false
       isArray: false
       defaultValue: "100"
@@ -3682,15 +3682,15 @@ script:
     outputs:
     - type: String
       contextPath: Logrhythm.Search.Task.TaskId
-      description: 'TaskId returned from database for the current search. This is actually Search GUID.'
+      description: 'The task ID returned from the database for the current search. This is actually the search GUID.'
     - type: String
       contextPath: Logrhythm.Search.Task.StatusMessage
-      description: 'TaskStatus returned from database for the current search.'
+      description: 'The task status returned from the database for the current search.'
   - name: lr-get-query-result
-    description: 'Get search query result for the specified task ID. The task ID can be retrieved from the lr-execute-search-query command.'
+    description: 'Get the search query result for the specified task ID. The task ID can be retrieved from the lr-execute-search-query command.'
     arguments:
     - name: task_id
-      description: 'The task ID can be retrieved from the lr-execute-search-query command.'
+      description: 'The task ID. The task ID can be retrieved from the lr-execute-search-query command.'
       required: true
       isArray: false
     - name: page_size
@@ -3709,7 +3709,7 @@ script:
       description: 'Entity ID.'
       type: Number
     - contextPath: Logrhythm.Search.Results.Items.impactedIp
-      description: 'Impacted IP.'
+      description: 'Impacted IP address.'
       type: String
     - contextPath: Logrhythm.Search.Results.Items.classificationTypeName
       description: 'Classification name.'
@@ -3739,7 +3739,7 @@ script:
       description: 'Logrhythm rule ID.'
       type: Number
     - contextPath: Logrhythm.Search.Results.Items.originIp
-      description: 'Origin IP.'
+      description: 'Origin IP address.'
       type: String
     - contextPath: Logrhythm.Search.Results.Items.mpeRuleName
       description: 'Logrhythm rule name.'
@@ -3768,7 +3768,7 @@ script:
       required: true
       isArray: false
     - name: name
-      description: 'The name of the Host.'
+      description: 'The name of the host.'
       required: true
       isArray: false
     - name: short-description
@@ -3780,7 +3780,7 @@ script:
       required: false
       isArray: false
     - name: risk-level
-      description: 'The host risk level.'
+      description: 'The host risk level. Possible values: "None", "Low-Low", "Low-Medium", "Low-High", "Medium-Low", "Medium-Medium", "Medium-High", "High-Low", "High-Medium", and "High-High".'
       required: true
       isArray: false
       auto: PREDEFINED
@@ -3796,7 +3796,7 @@ script:
       - High-Medium
       - High-High
     - name: threat-level
-      description: 'The host threat level.'
+      description: 'The host threat level. Possible values: "None", "Low-Low", "Low-Medium", "Low-High", "Medium-Low", "Medium-Medium", "Medium-High", "High-Low", "High-Medium", and "High-High".'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -3816,7 +3816,7 @@ script:
       required: false
       isArray: false
     - name: host-status
-      description: 'The host status.'
+      description: 'The host status. Possible values: "Retired" and "Active".'
       required: true
       isArray: false
       auto: PREDEFINED
@@ -3824,7 +3824,7 @@ script:
       - Retired
       - Active
     - name: host-zone
-      description: 'The host zone.'
+      description: 'The host zone. Possible values: "External", "DMZ", and "Internal".'
       required: true
       isArray: false
       auto: PREDEFINED
@@ -3833,7 +3833,7 @@ script:
       - DMZ
       - Internal
     - name: use-eventlog-credentials
-      description: 'Whether to use the event log credentials.'
+      description: 'Whether to use the event log credentials. Possible values: "true" and "false".'
       required: true
       isArray: false
       auto: PREDEFINED
@@ -3841,7 +3841,7 @@ script:
       - 'true'
       - 'false'
     - name: os-type
-      description: 'The Agent server type on which the OS is installed.'
+      description: 'The Agent server type on which the operating system is installed. Possible values: "None", "Server", and "Desktop".'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -3850,7 +3850,7 @@ script:
       - Server
       - Desktop
     - name: os
-      description: 'The OS type supported by LogRhythm.'
+      description: 'The operating system type supported by LogRhythm. Possible values: "Unknown", "Other", "WindowsNT4","Windows2000Professional", "Windows2000Server", "Windows2003Standard", "Windows2003Enterprise", "Windows95", "WindowsXP", "WindowsVista", "Linux", "Solaris", "AIX", "HPUX", and "Windows".'
       required: true
       isArray: false
       auto: PREDEFINED
@@ -3891,7 +3891,7 @@ script:
       description: 'The host threat level.'
     - type: String
       contextPath: LogRhythm.Host.threatLevelComments
-      description: 'The threat level comments'
+      description: 'The threat level comments.'
     - type: String
       contextPath: LogRhythm.Host.recordStatusName
       description: 'The host record status name.'
@@ -3903,16 +3903,16 @@ script:
       description: 'The host location ID.'
     - type: String
       contextPath: LogRhythm.Host.os
-      description: 'The OS type supported by LogRhythm.'
+      description: 'The operating system type supported by LogRhythm.'
     - type: Boolean
       contextPath: LogRhythm.Host.useEventlogCredentials
-      description: 'Whether to use the event log credentials or not.'
+      description: 'Whether to use the event log credentials.'
     - type: String
       contextPath: LogRhythm.Host.osType
-      description: 'The Agent server type on which the OS is installed.'
+      description: 'The agent server type on which the operating system is installed.'
     - type: Date
       contextPath: LogRhythm.Host.dateUpdated
-      description: 'The date the host was updated'
+      description: 'The date the host was updated.'
   - name: endpoint
     description: 'Returns information about an endpoint.'
     arguments:
@@ -3925,14 +3925,14 @@ script:
       required: false
       isArray: false
   - name: lr-hosts-status-update
-    description: 'Updates the status of a Host to retire or activate it.'
+    description: 'Updates the status of a host to retire or active.'
     arguments:
     - name: host_id
       description: 'The host ID.'
       required: true
       isArray: false
     - name: host_status
-      description: 'The host status.'
+      description: 'The host status. Possible values: "Retired" and "Active".'
       required: true
       isArray: false
       auto: PREDEFINED
@@ -3952,7 +3952,7 @@ script:
       required: false
       isArray: false
     - name: record_status
-      description: 'Filter by object recordStatus.'
+      description: 'Filter by object record status. Possible values: "all", "retired", "active".'
       required: false
       isArray: false
       auto: PREDEFINED
@@ -3961,11 +3961,11 @@ script:
       - retired
       - active
     - name: bip
-      description: 'The starting IP address to allow records to be filtered on a specified IP address, e.g. 127.0.0.1.'
+      description: 'The starting IP address to allow records to be filtered on a specified IP address, e.g., 127.0.0.1.'
       required: false
       isArray: false
     - name: eip
-      description: 'The ending IP address to allow records to be filtered on a specified IP address, e.g. 127.0.0.1.'
+      description: 'The ending IP address to allow records to be filtered on a specified IP address, e.g., 127.0.0.1.'
       required: false
       isArray: false
     - name: count
@@ -4013,13 +4013,13 @@ script:
       description: 'The network location ID.'
       type: Number
     - contextPath: LogRhythm.Network.location.name
-      description: 'The network location.'
+      description: 'The network location name.'
       type: String
     - contextPath: LogRhythm.Network.bip
       description: 'Starting IP address.'
       type: String
     - contextPath: LogRhythm.Network.eip
-      description: 'Ending IP address'
+      description: 'Ending IP address.'
       type: String
     - contextPath: LogRhythm.Network.dateUpdated
       description: 'The date the network was last updated.'
