@@ -8,7 +8,7 @@ name: RemediationActionsWidget
 script: '-'
 system: false
 tags:
-- basescript
+- dynamic-section
 timeout: '0'
 type: python
 subtype: python3

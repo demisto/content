@@ -64,7 +64,6 @@ def format_results(indicators: list, incident_ids) -> str:
 
     if len(indicators_df) == 0:
         return 'No mutual indicators were found.'
-
     indicators_df['Id'] = indicators_df['id'].apply(lambda x: "[%s](#/indicator/%s)" % (x, x))
     indicators_df = indicators_df.sort_values(['score', 'Involved Incidents Count'], ascending=False)
     indicators_df['Reputation'] = indicators_df['score'].apply(scoreToReputation)

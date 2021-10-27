@@ -20,6 +20,19 @@ import traceback
 ''' COMMAND FUNCTION '''
 
 
+def indicator_to_clickable(indicator):
+    server_url = demisto.demistoUrls().get('server')
+    res = demisto.executeCommand('GetIndicatorsByQuery', {'query': f'value:{indicator}'})
+    if isError(res[0]):
+        return_error('Query for get indicators is invalid')
+    res_content = res.get('Contents')
+    if not res_content:
+        return_error(f'ip address {indicator} was not found')
+    incident_id = res_content[0].get('id')
+    incident_url = os.path.join(server_url, '#', 'incident', incident_id)
+    return f'[{indicator}]({incident_url})'
+
+
 def get_remediation_info() -> CommandResults:
     remediation_actions = demisto.get(demisto.context(), 'RemediationActions')
     blocked_ip_addresses = demisto.get(remediation_actions, 'BlockedIP.Addresses')
@@ -31,9 +44,14 @@ def get_remediation_info() -> CommandResults:
     deleted_login_profiles = demisto.get(remediation_actions, 'DisabledLoginProfile.Username')
     if deleted_login_profiles is not None and not isinstance(deleted_login_profiles, list):
         deleted_login_profiles = [deleted_login_profiles]
-    res = {'Blocked IP Addresses': blocked_ip_addresses,
-           'Inactive Access keys': inactive_access_keys,
-           'Deleted Login Profiles': deleted_login_profiles}
+
+    res = {}
+    if blocked_ip_addresses:
+        res['Blocked IP Addresses'] = [indicator_to_clickable(ip) for ip in blocked_ip_addresses]
+    if inactive_access_keys:
+        res['Inactive Access keys'] = inactive_access_keys
+    if deleted_login_profiles:
+        res['Deleted Login Profiles'] = deleted_login_profiles
     return CommandResults(
         readable_output=tableToMarkdown('Remediation Actions Information', res, headers=list(res.keys())))
 
