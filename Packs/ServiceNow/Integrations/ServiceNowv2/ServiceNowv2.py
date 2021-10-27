@@ -2300,7 +2300,7 @@ def main():
     command = demisto.command()
     LOG(f'Executing command {command}')
 
-    params = demisto.params()    
+    params = demisto.params()
     verify = not params.get('insecure', False)
     use_oauth = params.get('use_oauth', False)
     oauth_params = {}
