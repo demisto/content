@@ -124,8 +124,9 @@ configuration:
   name: custom_fields
   required: false
   type: 12
-  additionalinfo: "Custom (user defined) fields in the format: u_fieldname1,u_fieldname2
-        custom fields start with a 'u_'. These fields will be included in the mirroring capabilities, if added here."
+  additionalinfo: 'Custom (user defined) fields in the format: u_fieldname1,u_fieldname2
+    custom fields start with a ''u_''. These fields will be included in the mirroring capabilities,
+    if added here.'
 - additionalinfo: When selected, closing the ServiceNow ticket is mirrored in Cortex
     XSOAR.
   defaultvalue: 'false'
