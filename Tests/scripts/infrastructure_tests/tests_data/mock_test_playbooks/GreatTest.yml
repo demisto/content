@@ -1,0 +1,27 @@
+id: GreatTest
+version: -1
+name: GreatTest
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 4d5802d1-1b08-4057-8638-336acb417cb6
+    type: start
+    task:
+      id: 4d5802d1-1b08-4057-8638-336acb417cb6
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 65,\n      \"width\": 380,\n      \"x\": 450,\n      \"y\": 50\n\
+  \    }\n  }\n}"
+inputs: []
+outputs: []
