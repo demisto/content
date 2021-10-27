@@ -2248,7 +2248,8 @@ Add a new intel document to the system by providing its document contents.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| intel-doc | Intel Document in OpenIOC format containing hashes | Required |
+| entry-id | The file entry ID. | Required |
+| file_extension | The suffix at the end of a filename. (Available file types - yara, stix, ioc) | Required |
 
 
 ##### Context Output
@@ -2261,12 +2262,13 @@ Add a new intel document to the system by providing its document contents.
 | Tanium.IntelDoc.ID | Number | The unique identifier for this intel in this instance of the system. |
 | Tanium.IntelDoc.LabelIds | Number | The IDs of all labels applied to this intel. |
 | Tanium.IntelDoc.Name | String | The name of the intel, as declared in the document or as updated by a user. |
+| Tanium.IntelDoc.Type | String | The shortened type name of the intel. For example, "openioc", "stix", "yara". |
 | Tanium.IntelDoc.UnresolvedAlertCount | Number | The number of unresolved alerts that currently exist for this intel. |
 | Tanium.IntelDoc.UpdatedAt | Date | The date when this intel was last updated. |
 
 
 ##### Command Example
-```!tanium-tr-intel-doc-create intel-doc=${IntelDoc}```
+```!tanium-tr-intel-doc-create entry-id=7173@e99f97d1-7225-4c75-896c-3c960febbe8c file_extension=ioc```
 ##### Context Example
 ```
 {
@@ -2283,6 +2285,7 @@ Add a new intel document to the system by providing its document contents.
                 16
             ],
             "Name": "Administrator Account Enumeration",
+            "Type": "openioc",
             "UnresolvedAlertCount": 0,
             "UpdatedAt": "2020-01-14T21:37:30.934Z"
         }
@@ -2293,7 +2296,7 @@ Add a new intel document to the system by providing its document contents.
 ### Intel Doc uploaded
 |ID|Name|Description|Type|Alert Count|Unresolved Alert Count|Created At|Updated At|Label Ids|
 |---|---|---|---|---|---|---|---|---|
-| 2 | Administrator Account Enumeration | Detects usage of the NET.EXE utility to enumerate members of the local Administrators or Domain Administrators groups. Often used during post-compromise reconnaissance. |  | 0 | 0 | 2019-07-31T18:46:28.814Z | 2020-01-14T21:37:30.934Z | 2, 3, 9, 16 |
+| 2 | Administrator Account Enumeration | Detects usage of the NET.EXE utility to enumerate members of the local Administrators or Domain Administrators groups. Often used during post-compromise reconnaissance. | openioc | 0 | 0 | 2019-07-31T18:46:28.814Z | 2020-01-14T21:37:30.934Z | 2, 3, 9, 16 |
 
 
 ### tanium-tr-start-quick-scan
