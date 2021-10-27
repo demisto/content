@@ -1,5 +1,5 @@
 {
-    "name": "DNS-over-https",
+    "name": "DNSOverHttps",
     "description": "Use this pack to make DNS queries over HTTPS to Cloudflare or Google DoH service.",
     "support": "community",
     "currentVersion": "1.0.0",
