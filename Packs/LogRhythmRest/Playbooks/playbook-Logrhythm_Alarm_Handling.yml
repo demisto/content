@@ -2,8 +2,8 @@ id: Logrhythm Alarm Handling
 version: -1
 name: Logrhythm Alarm Handling
 description: "This playbook is triggered by fetching a LogRhythm alarm incident. \n\
-  The playbook executing the commands: lr-alarms-list, lr-alarm-summary and lr-users-list\
-  \ to get more use-full data for the alarm."
+  The playbook executes the commands: lr-alarms-list, lr-alarm-summary and lr-users-list\
+  \ to get more useful data for the alarm."
 starttaskid: "0"
 tasks:
   "0":
@@ -79,8 +79,8 @@ tasks:
       id: ea52259b-a1e5-4602-839c-39129ba9e40c
       version: -1
       name: Get user
-      description: Returns User records based on the permissions of the currently
-        logged in User and the specified criteria.
+      description: Returns user records based on the permissions of the currently
+        logged in user and the specified criteria.
       script: '|||lr-users-list'
       type: regular
       iscommand: true
@@ -116,7 +116,7 @@ tasks:
       id: b11fe582-5fae-4c18-8c8d-d127105dd743
       version: -1
       name: Get alarm data
-      description: Get alarms details using filter criteria.
+      description: Get alarm details using the filter criteria.
       script: '|||lr-alarms-list'
       type: regular
       iscommand: true
