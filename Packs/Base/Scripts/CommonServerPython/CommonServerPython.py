@@ -1774,7 +1774,8 @@ def create_clickable_url(url):
     return '[{}]({})'.format(url, url)
 
 
-def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False, metadata=None, url_keys=None):
+def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False, metadata=None, url_keys=None,
+                    date_fields=None):
     """
        Converts a demisto table in JSON form to a Markdown table
 
@@ -1799,6 +1800,9 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
 
        :type url_keys: ``list``
        :param url_keys: a list of keys in the given JSON table that should be turned in to clickable
+
+       :type date_fields: ``list``
+       :param date_fields: A list of date fields to format the value to human-readable output.
 
        :return: A string representation of the markdown table
        :rtype: ``str``
@@ -1865,8 +1869,17 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
         sep = '---'
         mdResult += '|' + '|'.join([sep] * len(headers)) + '|\n'
         for entry in t:
-            vals = [stringEscapeMD((formatCell(entry.get(h, ''), False) if entry.get(h) is not None else ''),
+            entry_copy = entry.copy()
+            if date_fields:
+                for field in date_fields:
+                    try:
+                        entry_copy[field] = datetime.fromtimestamp(int(entry_copy[field]) / 1000).strftime('%Y-%m-%d %H:%M:%S')
+                    except Exception:
+                        pass
+
+            vals = [stringEscapeMD((formatCell(entry_copy.get(h, ''), False) if entry_copy.get(h) is not None else ''),
                                    True, True) for h in headers]
+
             # this pipe is optional
             mdResult += '| '
             try:
@@ -2450,7 +2463,8 @@ class Common(object):
             self.indicator_type = indicator_type
             # For integrations - The class will automatically determine the integration name.
             if demisto.callingContext.get('integration'):
-                self.integration_name = get_integration_name()
+                context_integration_name = get_integration_name()
+                self.integration_name = context_integration_name if context_integration_name else integration_name
             else:
                 self.integration_name = integration_name
             self.score = score
@@ -6228,7 +6242,7 @@ ipv4Regex = r'\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9
 ipv4cidrRegex = r'\b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\[\.\]|\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\/([0-9]|[1-2][0-9]|3[0-2]))\b'  # noqa: E501
 ipv6Regex = r'\b(?:(?:[0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:(?:(:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\b'  # noqa: E501
 ipv6cidrRegex = r'\b(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))(\/(12[0-8]|1[0-1][0-9]|[1-9][0-9]|[0-9]))\b'  # noqa: E501
-emailRegex = r'\b[^@]+@[^@]+\.[^@]+\b'
+emailRegex = r'\b[^@]{1,64}@[^@]{1,253}\.[^@]+\b'
 hashRegex = r'\b[0-9a-fA-F]+\b'
 urlRegex = r'(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+[-\w\d]+(?::\d+)?' \
            r'(?:(?:\/|\?)[-\w\d+&@#\/%=~_$?!\-:,.\(\);]*[\w\d+&@#\/%=~_$\(\);])?'
@@ -6310,10 +6324,8 @@ def pascalToSpace(s):
     if not isinstance(s, STRING_OBJ_TYPES):
         return s
 
-    tokens = pascalRegex.findall(s)
-    for t in tokens:
-        # double space to handle capital words like IP/URL/DNS that not included in the regex
-        s = s.replace(t, ' {} '.format(t.title()))
+    # double space to handle capital words like IP/URL/DNS that not included in the regex
+    s = re.sub(pascalRegex, lambda match: r' {} '.format(match.group(1).title()), s)
 
     # split and join: to remove double spacing caused by previous workaround
     s = ' '.join(s.split())
@@ -8163,3 +8175,20 @@ def support_multithreading():
             demisto.lock.release()  # type: ignore[attr-defined]
 
     demisto._Demisto__do = locked_do  # type: ignore[attr-defined]
+
+
+def get_tenant_account_name():
+    """Gets the tenant name from the server url.
+
+    :return: The account name.
+    :rtype: ``str``
+
+    """
+    urls = demisto.demistoUrls()
+    server_url = urls.get('server', '')
+    account_name = ''
+    if '/acc_' in server_url:
+        tenant_name = server_url.split('acc_')[-1]
+        account_name = "acc_{}".format(tenant_name) if tenant_name != "" else ""
+
+    return account_name
