@@ -816,6 +816,7 @@ def get_token():
         token = get_token_from_response(resp)
         integration_context['token'] = token
         integration_context['token_expiration'] = current_time + 24 * 60 * 60
+        demisto.setIntegrationContext(integration_context)
 
     return token
 
