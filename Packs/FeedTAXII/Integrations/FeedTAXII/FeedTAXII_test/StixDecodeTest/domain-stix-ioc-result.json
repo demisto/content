@@ -6,6 +6,7 @@
     "stix_title": "testing obs1",
     "stix_description": "testing",
     "TLP": "RED",
+    "share_level": "red",
     "stix_package_title": "Indicatore_Mrch5"
   }
 ]
