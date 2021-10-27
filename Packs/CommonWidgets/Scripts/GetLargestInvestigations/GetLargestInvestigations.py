@@ -87,8 +87,8 @@ def get_month_database_names():
 def main():
     try:
         if is_demisto_version_ge("6.2.0"):
-            raise DemistoException("This script has been deprecated. Please checkout the System Diagnostic page for an "
-                                   "alternative.")
+            demisto.info("Warning: This script has been deprecated. Please checkout the System Diagnostic page for an "
+                         "alternative.")
         investigations: Dict = {}
         args: Dict = demisto.args()
         from_date = args.get('from')
