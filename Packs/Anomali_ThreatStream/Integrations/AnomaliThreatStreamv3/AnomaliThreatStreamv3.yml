@@ -589,7 +589,7 @@ script:
       secret: false
     - default: false
       description: 'The imported data source. Can be one of the following: url or
-        file-id datatext of the file uploaded the War Room. Supported file types
+        file-id datatext of the file uploaded to the War Room. Supported file types
         for file-id are: CSV, HTML, IOC, JSON, PDF, TXT.'
       isArray: false
       name: import_value
