@@ -2,7 +2,7 @@ id: LogRhythmRestV2 - Search query
 version: -1
 name: LogRhythmRestV2 - Search query
 description: 'This playbook used generic polling to get query results using the command:
-  lr-execute-search-query'
+  lr-execute-search-query.'
 starttaskid: "0"
 tasks:
   "0":
@@ -42,7 +42,7 @@ tasks:
       id: 69b4bbd3-aef3-4374-8307-b16fb29724bb
       version: -1
       name: Execute search query
-      description: Execute search query to Log Rhythm log database
+      description: Execute a search query to the LogRhythm log database.
       script: '|||lr-execute-search-query'
       type: regular
       iscommand: true
@@ -198,8 +198,8 @@ tasks:
       id: 71283421-3034-44cf-8d26-74fcfcdb280a
       version: -1
       name: Get results
-      description: Get search query result with task ID output from lr-execute-search-query
-        command
+      description: Get search query results with task ID output from the lr-execute-search-query
+        command.
       script: '|||lr-get-query-result'
       type: regular
       iscommand: true
@@ -261,17 +261,17 @@ inputs:
 - key: subject
   value: {}
   required: false
-  description: Email Subject.
+  description: Email subject.
   playbookInputQuery:
 - key: sender
   value: {}
   required: false
-  description: Email Sender.
+  description: Email sender.
   playbookInputQuery:
 - key: recipient
   value: {}
   required: false
-  description: Email Recipient.
+  description: Email recipient.
   playbookInputQuery:
 - key: hash
   value: {}
@@ -296,13 +296,13 @@ inputs:
 - key: ip_address
   value: {}
   required: false
-  description: IP Address.
+  description: IP address.
   playbookInputQuery:
 - key: max_massage
   value:
     simple: "10"
   required: false
-  description: Maximum number of log message to query.
+  description: Maximum number of log messages to query.
   playbookInputQuery:
 - key: query_timeout
   value:
@@ -326,49 +326,49 @@ outputs:
   description: Entity ID.
   type: number
 - contextPath: Logrhythm.Search.Results.Items.impactedIp
-  description: Impacted IP.
+  description: Impacted IP address.
   type: string
 - contextPath: Logrhythm.Search.Results.Items.classificationTypeName
-  description: Classification Name.
+  description: Classification name.
   type: string
 - contextPath: Logrhythm.Search.Results.Items.logSourceName
-  description: Log Source Name.
+  description: Log source name.
   type: string
 - contextPath: Logrhythm.Search.Results.Items.entityName
-  description: Entity Name.
+  description: Entity name.
   type: string
 - contextPath: Logrhythm.Search.Results.Items.normalDate
   description: Date.
   type: date
 - contextPath: Logrhythm.Search.Results.Items.vendorMessageId
-  description: Vendor Log message.
+  description: Vendor log message.
   type: string
 - contextPath: Logrhythm.Search.Results.Items.priority
   description: Log priority.
   type: number
 - contextPath: Logrhythm.Search.Results.Items.sequenceNumber
-  description: Seq number.
+  description: Sequence number.
   type: string
 - contextPath: Logrhythm.Search.Results.Items.originHostId
-  description: Origin Host ID.
+  description: Origin host ID.
   type: number
 - contextPath: Logrhythm.Search.Results.Items.mpeRuleId
-  description: Log Rhythm rule ID.
+  description: LogRhythm rule ID.
   type: number
 - contextPath: Logrhythm.Search.Results.Items.originIp
-  description: Origin IP.
+  description: Origin IP address.
   type: string
 - contextPath: Logrhythm.Search.Results.Items.mpeRuleName
-  description: Log Rhythm rule name.
+  description: LogRhythm rule name.
   type: string
 - contextPath: Logrhythm.Search.Results.Items.logSourceHostId
-  description: Log Source host ID.
+  description: Log source host ID.
   type: number
 - contextPath: Logrhythm.Search.Results.Items.originHost
-  description: Origin Host.
+  description: Origin host.
   type: string
 - contextPath: Logrhythm.Search.Results.Items.logDate
-  description: Log Date.
+  description: Log date.
   type: date
 - contextPath: Logrhythm.Search.Results.Items.classificationName
   description: Log classification name.
