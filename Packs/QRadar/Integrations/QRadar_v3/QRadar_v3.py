@@ -3031,7 +3031,10 @@ def json_loads_inner(json_dumps_list: List[str]) -> list:
     """
     python_object_list = []
     for json_dump in json_dumps_list:
-        python_object_list.append(json.loads(json_dump))
+        try:
+            python_object_list.append(json.loads(json_dump))
+        except TypeError:
+            python_object_list.append(json_dump)
 
     return python_object_list
 

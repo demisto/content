@@ -1777,6 +1777,6 @@ def test_change_ctx_valid(ctx):
     """
     QRadar_v3.set_integration_context(ctx)
     change_ctx_to_be_compatible_with_retry()
-    QRadar_v3.get_integration_context()
+    assert QRadar_v3.get_integration_context() == json.dumps(ctx)
     # Change field in compatible context, just to see the set_to_integration_context_with_retries successfully finishes.
     QRadar_v3.set_to_integration_context_with_retries(ctx)
