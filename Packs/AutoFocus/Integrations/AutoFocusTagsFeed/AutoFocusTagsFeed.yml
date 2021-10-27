@@ -21,6 +21,13 @@ configuration:
   name: feed
   required: false
   type: 8
+- additionalinfo: Incremental feeds pull only new or modified indicators that have been sent from the integration. As the determination if the indicator is new or modified happens on the 3rd-party vendor's side, and only indicators that are new or modified are sent to Cortex XSOAR, all indicators coming from these feeds are labeled new or modified.
+  display: Incremental Feed
+  name: feedIncremental
+  defaultvalue: true
+  required: false
+  type: 8
+  hidden: true
 - additionalinfo: Indicators from this integration instance will be marked with this
     reputation.
   display: Indicator Reputation
