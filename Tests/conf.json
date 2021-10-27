@@ -1834,7 +1834,6 @@
         {
             "integrations": "Tanium",
             "playbookID": "Tanium Test Playbook",
-            "nightly": true,
             "timeout": 1200,
             "pid_threshold": 10
         },
@@ -3976,15 +3975,6 @@
             ]
         },
         {
-            "playbookID": "test playbook - QRadarCorrelations",
-            "fromversion": "6.0.0",
-            "integrations": [
-                "QRadar_v2",
-                "QRadar v3",
-                "QRadar"
-            ]
-        },
-        {
             "playbookID": "SX - PC - Test Playbook",
             "fromversion": "5.5.0",
             "integrations": [
@@ -4693,7 +4683,6 @@
         "Trend Micro Deep Security - Test": "outsourced",
         "Microsoft Teams - Test": "Issue 38263",
         "QualysVulnerabilityManagement-Test": "Issue 38640",
-        "test playbook - QRadarCorrelations": "Issue 38639",
         "EWS Extension: Powershell Online V2 Test": "Issue 39008",
         "O365 - EWS - Extension - Test": "Issue 39008",
         "Majestic Million Test Playbook": "Issue 30931",
@@ -4769,7 +4758,6 @@
         "GoogleCloudSCC": "No instance, outsourced",
         "FortiGate": "License expired, and not going to get one (issue 14723)",
         "Attivo Botsink": "no instance, not going to get it",
-        "VMware": "no License, and probably not going to get it",
         "AWS Sagemaker": "License expired, and probably not going to get it",
         "Symantec MSS": "No instance, probably not going to get it (issue 15513)",
         "Google Cloud Compute": "Can't test yet",
@@ -4891,6 +4879,7 @@
         "Awake Security": "Checking",
         "ArcSight ESM v2": "Checking",
         "Phish.AI": "Checking",
+        "VMware": "PyVim (SmartConnect class) does not support proxy",
         "Intezer": "Nightly - Checking",
         "ProtectWise": "Nightly - Checking",
         "google-vault": "Nightly - Checking",
