@@ -597,14 +597,21 @@
             "playbookID": "SlackV3 TestPB",
             "timeout": 400,
             "pid_threshold": 8,
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "instance_names": "SlackV3"
         },
         {
             "integrations": "SlackV3",
             "playbookID": "Mirror Stress Test - Orchestrator",
             "timeout": 600,
             "pid_threshold": 8,
-            "fromversion": "6.1.0"
+            "fromversion": "6.2.0",
+            "instance_names": [
+                "SlackV3_LoadTester",
+                "SlackV3_WorkerOne",
+                "SlackV3_WorkerTwo",
+                "SlackV3_WorkerThree"
+            ]
         },
         {
             "integrations": "Cortex XDR - IR",
