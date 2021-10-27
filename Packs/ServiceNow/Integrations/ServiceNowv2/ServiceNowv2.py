@@ -1,14 +1,14 @@
 import os
 import shutil
-from typing import Any, Callable, Dict, List, Optional, Tuple, Union
-from urllib import parse
-
 import dateparser
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
+from urllib import parse
+from typing import List, Tuple, Dict, Callable, Any, Union, Optional
+
+
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
+
 
 COMMAND_NOT_IMPLEMENTED_MSG = 'Command not implemented'
 
@@ -2231,7 +2231,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
                     key = 'work_notes'
                 elif params.get('comment_tag') in tags:
                     key = 'comments'
-                user = entry.get('user', 'dbot')
+                user = entry.get('user', 'dbot') or 'dbot'
                 text = f"({user}): {str(entry.get('contents', ''))}\n\n Mirrored from Cortex XSOAR"
                 client.add_comment(ticket_id, ticket_type, key, text)
 
@@ -2292,7 +2292,7 @@ def add_custom_fields(params):
     custom_fields = argToList(params.get('custom_fields'))
     SNOW_ARGS += custom_fields
 
-
+    
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
