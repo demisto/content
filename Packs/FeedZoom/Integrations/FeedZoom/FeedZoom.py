@@ -3,8 +3,7 @@ from CommonServerPython import *
 from typing import Dict, List, Tuple, Any, Callable, Optional
 
 import urllib3
-import subprocess
-from bs4 import BeautifulSoup
+
 
 # disable insecure warnings
 urllib3.disable_warnings()
