@@ -57,19 +57,14 @@ def create_markdown_tasks() -> CommandResults:
         raise DemistoException('Command GetTasksWithSections was not successful')
 
     tasks_nested_results = demisto.get(res[0], 'Contents')
-
     all_tasks, md = get_tasks_and_readable(tasks_nested_results, workplan_url)
-
     set_incident_with_count(all_tasks)
-
     return CommandResults(readable_output=md)
 
 
 def get_tasks_and_readable(tasks_nested_results: Dict[str, Dict], workplan_url: Optional[str] = None):
     # This will keep only wanted keys and sort them by their order
-    tasks_nested_results = {key: value for key, value in tasks_nested_results.items() if key in SECTIONS_TO_KEEP}
-    tasks_nested_results = {key: value for key, value in sorted(
-        tasks_nested_results.items(), key=lambda x: SECTIONS_TO_KEEP.index(x[0]))}
+    tasks_nested_results = get_sorted_sections(tasks_nested_results)
     all_tasks: List[Dict] = []
     headers = ['id', 'name', 'state', 'completedDate']
     md_lst = []
@@ -94,6 +89,13 @@ def get_tasks_and_readable(tasks_nested_results: Dict[str, Dict], workplan_url: 
                     tableToMarkdown(k2, tasks, headers=headers, headerTransform=lambda x: HEADER_TRANSFORM.get(x)))
     md = '\n'.join(md_lst)
     return all_tasks, md
+
+
+def get_sorted_sections(tasks_nested_results):
+    tasks_nested_results = {key: value for key, value in tasks_nested_results.items() if key in SECTIONS_TO_KEEP}
+    tasks_nested_results = {key: value for key, value in sorted(
+        tasks_nested_results.items(), key=lambda x: SECTIONS_TO_KEEP.index(x[0]))}
+    return tasks_nested_results
 
 
 ''' MAIN FUNCTION '''
