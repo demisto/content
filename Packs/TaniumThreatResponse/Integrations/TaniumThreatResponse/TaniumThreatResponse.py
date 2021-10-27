@@ -431,6 +431,7 @@ def get_intel_doc_item(intel_doc):
     return {
         'ID': intel_doc.get('id'),
         'Name': intel_doc.get('name'),
+        'Type': intel_doc.get('type'),
         'Description': intel_doc.get('description'),
         'AlertCount': intel_doc.get('alertCount'),
         'UnresolvedAlertCount': intel_doc.get('unresolvedAlertCount'),
