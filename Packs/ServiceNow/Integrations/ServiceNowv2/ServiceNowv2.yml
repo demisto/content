@@ -119,7 +119,7 @@ configuration:
   display: How many incidents to mirror incoming each time
   name: mirror_limit
   required: false
-  type: 0I
+  type: 0
 - display: Custom Fields to Mirror
   name: custom_fields
   required: false
