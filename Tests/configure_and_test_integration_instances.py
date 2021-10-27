@@ -268,7 +268,7 @@ def check_test_version_compatible_with_server(test, server_version):
     test_to_version = format_version(test.get('toversion', '99.99.99'))
     server_version = format_version(server_version)
 
-    if not (LooseVersion(test_from_version) <= LooseVersion(server_version) <= LooseVersion(test_to_version)):
+    if not LooseVersion(test_from_version) <= LooseVersion(server_version) <= LooseVersion(test_to_version):
         playbook_id = test.get('playbookID')
         logging.debug(
             f'Test Playbook: {playbook_id} was ignored in the content installation test due to version mismatch '
@@ -582,7 +582,7 @@ def __set_server_keys(client, integration_params, integration_name):
     }
 
     for key, value in integration_params.get('server_keys').items():
-        data['data'][key] = value
+        data['data'][key] = value  # type: ignore[index]
 
     update_server_configuration(
         client=client,
@@ -852,6 +852,7 @@ def get_env_conf():
             "Role": "DEMISTO EVN"  # e.g. 'Server Master'
         }]
     #  END CHANGE ON LOCAL RUN  #
+    return None
 
 
 def map_server_to_port(env_results, instance_role):

@@ -384,7 +384,7 @@ references:
           exit 0
         fi
 
-        ./Tests/scripts/lint.sh
+        ./Tests/scripts/linters_runner.sh
         ./Tests/scripts/validate.sh
 
   run_unit_testing_and_lint: &run_unit_testing_and_lint

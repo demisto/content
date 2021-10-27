@@ -118,7 +118,7 @@ def main():
     # get branch name
     branches = tools.run_command("git branch")
     branch_name_regex = re.search(r"\* (.*)", branches)
-    branch_name = branch_name_regex.group(1)
+    branch_name = branch_name_regex.group(1)  # type: ignore[union-attr]
 
     if branch_has_private_build_infra_change(branch_name):
         # get the workflows ids before triggering the build

@@ -151,7 +151,7 @@ class Pack(object):
         """
         self._is_feed = is_feed
 
-    @status.setter
+    @status.setter  # type: ignore
     def status(self, status_value):
         """ setter of pack current status.
         """
@@ -229,7 +229,7 @@ class Pack(object):
         """
         return self._user_metadata
 
-    @display_name.setter
+    @display_name.setter  # type: ignore
     def display_name(self, display_name_value):
         """ setter of display name property of the pack.
         """
@@ -587,7 +587,7 @@ class Pack(object):
             Metadata.VERSION_INFO: build_number,
             Metadata.COMMIT: commit_hash,
             Metadata.DOWNLOADS: self._downloads_count,
-            Metadata.TAGS: list(self._tags),
+            Metadata.TAGS: list(self._tags),  # type: ignore[arg-type]
             Metadata.CATEGORIES: self._categories,
             Metadata.CONTENT_ITEMS: self._content_items,
             Metadata.SEARCH_RANK: self._search_rank,
@@ -1195,7 +1195,8 @@ class Pack(object):
 
         """
         lowest_version = [LooseVersion(Pack.PACK_INITIAL_VERSION)]
-        lower_versions, higher_versions = [], []
+        lower_versions: list = []
+        higher_versions: list = []
         same_block_versions_dict: dict = dict()
         for item in changelog.keys():  # divide the versions into lists of lower and higher than given version
             (lower_versions if LooseVersion(item) < version else higher_versions).append(LooseVersion(item))
@@ -1275,7 +1276,7 @@ class Pack(object):
             changelog: The changelog from the production bucket.
             latest_release_notes: The latest release notes version string in the current branch
         """
-        changelog_latest_release_notes = max(changelog, key=lambda k: LooseVersion(k))
+        changelog_latest_release_notes = max(changelog, key=lambda k: LooseVersion(k))  # pylint: disable=W0108
         assert LooseVersion(latest_release_notes) >= LooseVersion(changelog_latest_release_notes), \
             f'{self._pack_name}: Version mismatch detected between upload bucket and current branch\n' \
             f'Upload bucket version: {changelog_latest_release_notes}\n' \
@@ -1695,7 +1696,7 @@ class Pack(object):
             self.current_version = user_metadata.get(Metadata.CURRENT_VERSION, '')
             self.hidden = user_metadata.get(Metadata.HIDDEN, False)
             self.description = user_metadata.get(Metadata.DESCRIPTION, False)
-            self.display_name = user_metadata.get(Metadata.NAME, '')
+            self.display_name = user_metadata.get(Metadata.NAME, '')  # type: ignore
             self._user_metadata = user_metadata
             self.eula_link = user_metadata.get(Metadata.EULA_LINK, Metadata.EULA_URL)
 
@@ -1826,7 +1827,7 @@ class Pack(object):
         try:
             self.set_pack_dependencies(packs_dependencies_mapping)
             if Metadata.DISPLAYED_IMAGES not in self.user_metadata:
-                self._user_metadata[Metadata.DISPLAYED_IMAGES] = packs_dependencies_mapping.get(
+                self._user_metadata[Metadata.DISPLAYED_IMAGES] = packs_dependencies_mapping.get(  # type: ignore[index]
                     self._pack_name, {}).get(Metadata.DISPLAYED_IMAGES, [])
                 logging.info(f"Adding auto generated display images for {self._pack_name} pack")
             dependencies_data, is_missing_dependencies = \
@@ -1881,7 +1882,7 @@ class Pack(object):
 
         if metadata:
             if metadata.get(Metadata.CREATED):
-                created_time = metadata.get(Metadata.CREATED)
+                created_time = metadata.get(Metadata.CREATED)  # type: ignore[assignment]
             else:
                 raise Exception(f'The metadata file of the {pack_name} pack does not contain "{Metadata.CREATED}" time')
 
@@ -1908,7 +1909,7 @@ class Pack(object):
     def set_pack_dependencies(self, packs_dependencies_mapping):
         pack_dependencies = packs_dependencies_mapping.get(self._pack_name, {}).get(Metadata.DEPENDENCIES, {})
         if Metadata.DEPENDENCIES not in self.user_metadata:
-            self._user_metadata[Metadata.DEPENDENCIES] = {}
+            self._user_metadata[Metadata.DEPENDENCIES] = {}  # type: ignore[index]
 
         # If it is a core pack, check that no new mandatory packs (that are not core packs) were added
         # They can be overridden in the user metadata to be not mandatory so we need to check there as well
@@ -1922,7 +1923,7 @@ class Pack(object):
                                 f'found in the core pack {self._pack_name}')
 
         pack_dependencies.update(self.user_metadata[Metadata.DEPENDENCIES])
-        self._user_metadata[Metadata.DEPENDENCIES] = pack_dependencies
+        self._user_metadata[Metadata.DEPENDENCIES] = pack_dependencies  # type: ignore[index]
 
     def prepare_for_index_upload(self):
         """ Removes and leaves only necessary files in pack folder.
@@ -2488,7 +2489,7 @@ class Pack(object):
         else:
             # Important: Currently, implementation of aggregating BCs was decided to concat between them
             # In the future this might be needed to re-thought.
-            return '\n'.join(bc_version_to_text.values())
+            return '\n'.join(bc_version_to_text.values())  # type: ignore
 
     def _handle_many_bc_versions_some_with_text(self, release_notes_dir: str, text_of_bc_versions: List[str],
                                                 bc_versions_without_text: List[str], ) -> str:
@@ -2618,11 +2619,11 @@ def get_upload_data(packs_results_file_path: str, stage: str) -> Tuple[dict, dic
     """
     if os.path.exists(packs_results_file_path):
         packs_results_file = load_json(packs_results_file_path)
-        stage = packs_results_file.get(stage, {})
-        successful_packs_dict = stage.get(BucketUploadFlow.SUCCESSFUL_PACKS, {})
-        failed_packs_dict = stage.get(BucketUploadFlow.FAILED_PACKS, {})
-        successful_private_packs_dict = stage.get(BucketUploadFlow.SUCCESSFUL_PRIVATE_PACKS, {})
-        images_data_dict = stage.get(BucketUploadFlow.IMAGES, {})
+        stage_data: dict = packs_results_file.get(stage, {})
+        successful_packs_dict = stage_data.get(BucketUploadFlow.SUCCESSFUL_PACKS, {})
+        failed_packs_dict = stage_data.get(BucketUploadFlow.FAILED_PACKS, {})
+        successful_private_packs_dict = stage_data.get(BucketUploadFlow.SUCCESSFUL_PRIVATE_PACKS, {})
+        images_data_dict = stage_data.get(BucketUploadFlow.IMAGES, {})
         return successful_packs_dict, failed_packs_dict, successful_private_packs_dict, images_data_dict
     return {}, {}, {}, {}
 
@@ -2673,7 +2674,7 @@ def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: s
         logging.debug(f"Successful packs {successful_packs_dict}")
 
     if updated_private_packs:
-        successful_private_packs_dict = {
+        successful_private_packs_dict: dict = {
             BucketUploadFlow.SUCCESSFUL_PRIVATE_PACKS: {pack_name: {} for pack_name in updated_private_packs}
         }
         packs_results[stage].update(successful_private_packs_dict)

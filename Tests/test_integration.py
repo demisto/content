@@ -122,7 +122,7 @@ def __set_server_keys(client, logging_manager, integration_params, integration_n
     }
 
     for key, value in integration_params.get('server_keys').items():
-        data['data'][key] = value
+        data['data'][key] = value  # type: ignore[index]
 
     update_server_configuration(
         client=client,
@@ -294,7 +294,7 @@ def __create_incident_with_playbook(client: DefaultApi,
                                     playbook_id,
                                     integrations,
                                     logging_manager,
-                                    ) -> tuple[Optional[Incident], int]:
+                                    ) -> Tuple[Optional[Incident], int]:
     # create incident
     create_incident_request = demisto_client.demisto_api.CreateIncidentRequest()
     create_incident_request.create_investigation = True
@@ -308,10 +308,7 @@ def __create_incident_with_playbook(client: DefaultApi,
 
     try:
         inc_id = response.id
-    except:  # noqa: E722
-        inc_id = 'incCreateErr'
-    # inc_id = response_json.get('id', 'incCreateErr')
-    if inc_id == 'incCreateErr':
+    except AttributeError:
         integration_names = [integration['name'] for integration in integrations if
                              'name' in integration]
         error_message = f'Failed to create incident for integration names: {integration_names} ' \
@@ -363,11 +360,7 @@ def __get_investigation_playbook_state(client, inv_id, logging_manager):
         )
         return PB_Status.FAILED
 
-    try:
-        state = investigation_playbook['state']
-        return state
-    except:  # noqa: E722
-        return PB_Status.NOT_SUPPORTED_VERSION
+    return investigation_playbook.get('state', PB_Status.NOT_SUPPORTED_VERSION)
 
 
 # return True if delete-incident succeeded, False otherwise

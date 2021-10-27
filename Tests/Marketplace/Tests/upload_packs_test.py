@@ -1,3 +1,5 @@
+# type: ignore
+# pylint: disable=no-member
 import copy
 import json
 import os
@@ -6,7 +8,7 @@ import pytest
 from unittest.mock import patch
 from Tests.Marketplace.upload_packs import get_packs_names, get_updated_private_packs, is_private_packs_updated
 
-# pylint: disable=no-member
+
 # disable-secrets-detection-start
 
 class TestModifiedPacks:
@@ -44,7 +46,7 @@ class FakeDirEntry:
 
     @staticmethod
     def isdir(path):
-        return True if path == 'mock_path' else False
+        return path == 'mock_path'
 
 
 def scan_dir(dirs=None):
@@ -592,7 +594,7 @@ class TestUpdatedPrivatePacks:
         assert not is_private_packs_updated(public_index_json, index_file_path)
 
         # private pack was deleted
-        del (private_index_json.get("packs")[0])
+        del private_index_json.get("packs")[0]
         mocker.patch('Tests.Marketplace.upload_packs.load_json', return_value=private_index_json)
         assert is_private_packs_updated(public_index_json, index_file_path)
 

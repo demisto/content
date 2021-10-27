@@ -110,7 +110,7 @@ def get_pack_dependencies(client: demisto_client, pack_data: dict, lock: Lock):
         )
 
         if 200 <= status_code < 300:
-            dependencies_data = []
+            dependencies_data: list = []
             dependants_ids = [pack_id]
             reseponse_data = ast.literal_eval(response_data).get('dependencies', [])
             create_dependencies_data_structure(reseponse_data, dependants_ids, dependencies_data, dependants_ids)
@@ -184,6 +184,7 @@ def search_pack(client: demisto_client,
         global SUCCESS_FLAG
         SUCCESS_FLAG = False
         lock.release()
+        return {}
 
 
 def find_malformed_pack_id(error_message: str) -> List:
@@ -378,7 +379,7 @@ def search_pack_and_its_dependencies(client: demisto_client,
         installation_request_body (list): A list of packs to be installed, in the request format.
         lock (Lock): A lock object.
     """
-    pack_data = []
+    pack_data = {}
     if pack_id not in packs_to_install:
         pack_display_name = get_pack_display_name(pack_id)
         if pack_display_name:
@@ -435,6 +436,7 @@ def get_latest_version_from_bucket(pack_id: str, production_bucket: Bucket) -> s
         return pack_latest_version
     else:
         logging.error(f'Could not find any versions for pack {pack_id} in bucket path {pack_bucket_path}')
+        return ''
 
 
 def get_pack_installation_request_data(pack_id: str, pack_version: str):
@@ -597,8 +599,8 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
 
     logging.info(f'Starting to search and install packs in server: {host}')
 
-    packs_to_install = []  # we save all the packs we want to install, to avoid duplications
-    installation_request_body = []  # the packs to install, in the request format
+    packs_to_install: list = []  # we save all the packs we want to install, to avoid duplications
+    installation_request_body: list = []  # the packs to install, in the request format
 
     threads_list = []
     lock = Lock()

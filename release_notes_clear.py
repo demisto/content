@@ -33,7 +33,7 @@ def get_file_data(file_path):
 
     load_function = FILE_TYPE_DICT[extension]
     with open(file_path, 'r') as file_obj:
-        data = load_function(file_obj)
+        data = load_function(file_obj)  # type: ignore
 
     return data
 

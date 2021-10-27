@@ -1180,7 +1180,7 @@ def test_remove_ignored_tests(tests_to_filter, ignored_tests, expected_result, m
     res = remove_ignored_tests(tests_to_filter, MOCK_ID_SET, tests_to_filter)
     assert res == expected_result
     if ignored_tests:
-        logging.info.assert_called_once_with("Skipping tests that were ignored via .pack-ignore:\n{}".format(
+        logging.info.assert_called_once_with("Skipping tests that were ignored via .pack-ignore:\n{}".format(  # type: ignore
             '\n'.join(ignored_tests)))  # pylint: disable=no-member
 
 
@@ -1206,7 +1206,7 @@ def test_remove_tests_for_non_supported_packs(tests_to_filter, should_test_conte
     res = remove_tests_for_non_supported_packs(tests_to_filter, MOCK_ID_SET)
     assert res == expected_result
     if not should_test_content:
-        logging.debug.assert_called_once_with(
+        logging.debug.assert_called_once_with(  # type: ignore
             'The following test playbooks are not supported and will not be tested: \n{} '.format(
                 '\n'.join(filtered_tests)))  # pylint: disable=no-member
 

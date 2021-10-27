@@ -418,7 +418,7 @@ def slack_notifier(build_url, slack_token, test_type, build_number, env_results_
                    job_name="", slack_channel=CONTENT_CHANNEL, gitlab_server=None):
     branches = run_command("git branch")
     branch_name_reg = re.search(r'\* (.*)', branches)
-    branch_name = branch_name_reg.group(1)
+    branch_name = branch_name_reg.group(1)  # type: ignore[union-attr]
 
     if branch_name == 'master' or slack_channel.lower() != CONTENT_CHANNEL:
         logging.info("Extracting build status")

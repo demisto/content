@@ -6,13 +6,14 @@ Overview can be found at: https://confluence.paloaltonetworks.com/display/Demist
 import argparse
 import glob
 import json
-import logging
+import re
 from copy import deepcopy
 from distutils.version import LooseVersion
-from typing import Dict, Tuple, Union, Optional
+from typing import Dict, Tuple, Optional
 
 import os
 import sys
+import logging
 
 import demisto_sdk.commands.common.tools as tools
 from Tests.scripts.utils import collect_helpers
@@ -21,7 +22,6 @@ from Tests.scripts.utils.content_packs_util import should_test_content_pack, sho
     is_pack_xsoar_supported
 from Tests.scripts.utils.get_modified_files_for_testing import get_modified_files_for_testing
 from Tests.scripts.utils.log_util import install_logging
-import re
 from demisto_sdk.commands.common import constants  # noqa: E402
 
 SANITY_TESTS = {
@@ -136,7 +136,7 @@ sys.path.append(CONTENT_DIR)
 # Global used to indicate if failed during any of the validation states
 _FAILED = False
 ID_SET = {}
-CONF: Union[TestConf, dict] = {}
+CONF: TestConf = None  # type: ignore[assignment]
 
 if os.path.isfile('./artifacts/id_set.json'):
     with open('./artifacts/id_set.json', 'r') as conf_file:
@@ -167,6 +167,8 @@ def get_name(file_path):
     if data_dictionary:
         return data_dictionary.get('name', '-')
 
+    return None
+
 
 def get_tests(file_path):
     """Collect tests mentioned in file_path"""
@@ -174,6 +176,7 @@ def get_tests(file_path):
     # inject no tests to whitelist so adding values to white list will not force all tests
     if data_dictionary:
         return data_dictionary.get('tests', [])
+    return []
 
 
 def collect_tests_and_content_packs(
@@ -334,12 +337,16 @@ def id_set__get_test_playbook(id_set, test_playbook_id):
         if test_playbook_id in test_playbook.keys():
             return test_playbook[test_playbook_id]
 
+    return None
+
 
 def id_set__get_integration_file_path(id_set, integration_id):
     for integration in id_set.get('integrations', []):
         if integration_id in integration.keys():
             return integration[integration_id]['file_path']
+
     logging.critical(f'Could not find integration "{integration_id}" in the id_set')
+    return None
 
 
 def check_if_fetch_incidents_is_tested(missing_ids, integration_ids, id_set, conf, tests_set):
@@ -1067,7 +1074,7 @@ def remove_tests_for_non_supported_packs(tests: set, id_set: dict) -> set:
     if tests_that_should_not_be_tested:
         logging.debug('The following test playbooks are not supported and will not be tested: \n{} '.format(
             '\n'.join(tests_that_should_not_be_tested)))
-        tests_names = set([test.split(':')[0] for test in tests_that_should_not_be_tested])
+        tests_names = {test.split(':')[0] for test in tests_that_should_not_be_tested}
         tests.difference_update(tests_names)
     return tests
 
@@ -1150,10 +1157,7 @@ def is_documentation_changes_only(files_string: str) -> bool:
     files = [s for s in files_string.split('\n') if s]
     documentation_changes_only = \
         all(map(lambda s: s.endswith('.md') or s.endswith('.png') or s.endswith('.jpg') or s.endswith('.mp4'), files))
-    if documentation_changes_only:
-        return True
-    else:
-        return False
+    return documentation_changes_only
 
 
 def get_test_list_and_content_packs_to_install(files_string,
@@ -1402,7 +1406,7 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
     else:
         branches = tools.run_command("git branch")
         branch_name_reg = re.search(r"\* (.*)", branches)
-        branch_name = branch_name_reg.group(1)
+        branch_name = branch_name_reg.group(1)  # type: ignore[union-attr]
 
         logging.info("Getting changed files from the branch: {0}".format(branch_name))
         if path_to_pack:
@@ -1444,12 +1448,14 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
 
     else:
         if tests_string:
-            logging.success('Collected the following tests:\n{0}\n'.format(tests_string))  # pylint: disable=no-member
+            success_msg = 'Collected the following tests:\n{0}\n'.format(tests_string)
+            logging.success(success_msg)  # type: ignore # pylint: disable=no-member
         else:
             logging.error('Did not find tests to run')
 
         if packs_to_install_string:
-            logging.success('Collected the following content packs to install:\n{0}\n'.format(packs_to_install_string))  # pylint: disable=no-member
+            success_msg = 'Collected the following content packs to install:\n{0}\n'.format(packs_to_install_string)
+            logging.success(success_msg)  # type: ignore # pylint: disable=no-member
         else:
             logging.error('Did not find content packs to install')
 

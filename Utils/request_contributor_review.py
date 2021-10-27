@@ -9,7 +9,7 @@ import sendgrid
 import sys
 
 import urllib3
-from sendgrid.helpers.mail import *
+from sendgrid.helpers.mail import Email, Content, Mail
 
 REPO_OWNER = "demisto"
 REPO_NAME = "content"
@@ -37,11 +37,7 @@ def check_if_user_exists(github_user, github_token=None, verify_ssl=True):
         sys.exit(1)
 
     github_user_info = response.json()
-
-    if 'id' in github_user_info:
-        return True
-    else:
-        return False
+    return 'id' in github_user_info
 
 
 def get_pr_author(pr_number, github_token, verify_ssl):
@@ -293,7 +289,7 @@ def main():
 
     pr_number = args.pr_number
     github_token = args.github_token
-    verify_ssl = True if github_token else False
+    verify_ssl = bool(github_token)
     email_api_token = args.email_api_token if args.email_api_token else ''
 
     if not verify_ssl:

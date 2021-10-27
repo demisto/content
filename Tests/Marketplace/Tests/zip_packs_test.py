@@ -1,10 +1,12 @@
+# type: ignore
+# pylint: disable=no-member
+
 import pytest
 
 from Tests.Marketplace.zip_packs import get_latest_pack_zip_from_pack_files, zip_packs,\
     remove_test_playbooks_if_exist, remove_test_playbooks_from_signatures, get_zipped_packs_names,\
     copy_zipped_packs_to_artifacts
 
-# pylint: disable=no-member
 
 class TestZipPacks:
     BLOB_NAMES = [

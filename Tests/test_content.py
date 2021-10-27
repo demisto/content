@@ -440,10 +440,10 @@ def add_pr_comment(comment):
     headers = {'Authorization': 'Bearer ' + token}
     try:
         res = requests.get(url + query, headers=headers, verify=False)
-        res = handle_github_response(res)
+        res_dict = handle_github_response(res)
 
-        if res and res.get('total_count', 0) == 1:
-            issue_url = res['items'][0].get('comments_url') if res.get('items', []) else None
+        if res_dict and res_dict.get('total_count', 0) == 1:
+            issue_url = res_dict['items'][0].get('comments_url') if res_dict.get('items', []) else None
             if issue_url:
                 res = requests.post(issue_url, json={'body': comment}, headers=headers, verify=False)
                 handle_github_response(res)

@@ -17,7 +17,7 @@ ARTIFACTS_FOLDER = os.getenv('ARTIFACTS_FOLDER', './artifacts')
 ENV_RESULTS_PATH = os.getenv('ENV_RESULTS_PATH', os.path.join(ARTIFACTS_FOLDER, 'env_results.json'))
 PACK_RESULTS_PATH = os.path.join(ARTIFACTS_FOLDER, BucketUploadFlow.PACKS_RESULTS_FILE)
 CONTENT_CHANNEL = 'dmst-content-team'
-GITLAB_PROJECT_ID = os.getenv('CI_PROJECT_ID', 2596)  # the default is the id of the content repo in code.pan.run
+GITLAB_PROJECT_ID = os.getenv('CI_PROJECT_ID') or 2596  # the default is the id of the content repo in code.pan.run
 GITLAB_SERVER_URL = os.getenv('CI_SERVER_URL', 'https://code.pan.run')  # disable-secrets-detection
 CONTENT_NIGHTLY = 'Content Nightly'
 BUCKET_UPLOAD = 'Upload Packs to Marketplace Storage'
@@ -52,7 +52,7 @@ def unit_tests_results():
     failing_unit_tests = get_artifact_data('failed_lint_report.txt')
     slack_results = []
     if failing_unit_tests:
-        failing_unit_tests = failing_unit_tests.split('\n')
+        failing_unit_tests = failing_unit_tests.split('\n')  # type: ignore[assignment]
         slack_results.append({
             "title": f'{"Failed Unit Tests"} - ({len(failing_unit_tests)})',
             "value": '\n'.join(failing_unit_tests),

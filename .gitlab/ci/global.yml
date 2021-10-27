@@ -237,7 +237,7 @@
       if [[ -n $FORCE_BUCKET_UPLOAD || -n $BUCKET_UPLOAD ]] && [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "marketplace-dist" ]] && [[ $CI_COMMIT_BRANCH != "master" ]]; then
         echo "Skipping the -Validate Files and Yaml- step when uploading to a test bucket."
       else
-        ./Tests/scripts/lint.sh
+        ./Tests/scripts/linters_runner.sh
         ./Tests/scripts/validate.sh
       fi
     - section_end "Validate Files and Yaml"

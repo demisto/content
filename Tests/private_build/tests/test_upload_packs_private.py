@@ -11,7 +11,7 @@ class FakeDirEntry:
 
     @staticmethod
     def isdir(path):
-        return True if path == 'mock_path' else False
+        return path == 'mock_path'
 
 
 def scan_dir(dirs=None):

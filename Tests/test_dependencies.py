@@ -46,7 +46,7 @@ class GraphTester:
         integration_to_tests_mapping = get_integration_to_tests_mapping(tests_data)
         for integration_name in integration_to_tests_mapping:
             tests_using_integration = integration_to_tests_mapping[integration_name]
-            for i in range(len(tests_using_integration)):
+            for i in range(len(tests_using_integration)):  # pylint: disable=C0200
                 first_test_name = tests_using_integration[i]
                 first_test_vertex = self.test_vertices[first_test_name]
 

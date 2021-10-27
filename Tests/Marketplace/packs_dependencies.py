@@ -1,6 +1,7 @@
 import argparse
 import json
 import os
+import sys
 from concurrent.futures import as_completed
 from contextlib import contextmanager
 from pprint import pformat
@@ -118,7 +119,7 @@ def get_all_packs_dependency_graph(id_set: dict, packs: list) -> Iterable:
         return dependency_graph
     except Exception:
         logging.exception("Failed calculating dependencies graph")
-        exit(2)
+        sys.exit(2)
 
 
 def select_packs_for_calculation() -> list:

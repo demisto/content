@@ -222,7 +222,8 @@ def main():
         private_packs, private_index_path, private_index_blob = update_index_with_priced_packs(private_storage_bucket,
                                                                                                extract_destination_path,
                                                                                                public_index_folder_path,
-                                                                                               changed_pack, True)
+                                                                                               changed_pack, True,
+                                                                                               storage_base_path)
         private_packs = add_private_packs_from_dummy_index(private_packs, dummy_index_blob)
         upload_modified_index(public_index_folder_path, extract_public_index_path, dummy_index_blob, build_number,
                               private_packs)

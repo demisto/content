@@ -12,6 +12,9 @@ from google.cloud.storage import Bucket
 
 from zipfile import ZipFile
 from typing import Any, Tuple, Union, Optional
+
+from requests import Response
+
 from Tests.Marketplace.marketplace_services import init_storage_client, Pack, \
     load_json, get_content_git_client, get_recent_commits_data, store_successful_and_failed_packs_in_ci_artifacts, \
     json_write
@@ -297,7 +300,7 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
             'modified': datetime.utcnow().strftime(Metadata.DATE_FORMAT),
             'packs': private_packs,
             'commit': commit,
-            'landingPage': {'sections': landing_page_sections.get('sections', [])}
+            'landingPage': {'sections': landing_page_sections.get('sections', [])}  # type: ignore
         }
         json.dump(index, index_file, indent=4)
 
@@ -378,7 +381,7 @@ def create_corepacks_config(storage_bucket: Any, build_number: str, index_folder
         logging.critical(f"Missing core packs are: {missing_core_packs}")
         sys.exit(1)
 
-    corepacks_json_path = os.path.join(artifacts_dir, GCPConfig.CORE_PACK_FILE_NAME)
+    corepacks_json_path = os.path.join(artifacts_dir, GCPConfig.CORE_PACK_FILE_NAME)  # type: ignore
     core_packs_data = {
         'corePacks': core_packs_public_urls,
         'upgradeCorePacks': GCPConfig.CORE_PACKS_LIST_TO_UPDATE,
@@ -518,7 +521,7 @@ def get_updated_private_packs(private_packs, index_folder_path):
     return updated_private_packs
 
 
-def get_private_packs(private_index_path: str, pack_names: set = set(),
+def get_private_packs(private_index_path: str, pack_names: set = None,
                       extract_destination_path: str = '') -> list:
     """
     Gets a list of private packs.
@@ -539,13 +542,14 @@ def get_private_packs(private_index_path: str, pack_names: set = set(),
         logging.warning(f'No metadata files found in [{private_index_path}]')
 
     private_packs = []
+    pack_names = pack_names or set()
     logging.info(f'all metadata files found: {metadata_files}')
     for metadata_file_path in metadata_files:
         try:
             with open(metadata_file_path, "r") as metadata_file:
                 metadata = json.load(metadata_file)
             pack_id = metadata.get('id')
-            is_changed_private_pack = pack_id in pack_names
+            is_changed_private_pack = pack_id in pack_names  # type: ignore[operator]
             if is_changed_private_pack:  # Should take metadata from artifacts.
                 with open(os.path.join(extract_destination_path, pack_id, "pack_metadata.json"),
                           "r") as metadata_file:
@@ -798,9 +802,9 @@ def add_pr_comment(comment: str):
     headers = {'Authorization': 'Bearer ' + token}
     try:
         res = requests.get(url + query, headers=headers, verify=False)
-        res = handle_github_response(res)
-        if res and res.get('total_count', 0) == 1:
-            issue_url = res['items'][0].get('comments_url') if res.get('items', []) else None
+        res_json = handle_github_response(res)
+        if res_json and res_json.get('total_count', 0) == 1:
+            issue_url = res_json['items'][0].get('comments_url') if res_json.get('items', []) else None
             if issue_url:
                 res = requests.post(issue_url, json={'body': comment}, headers=headers, verify=False)
                 handle_github_response(res)
@@ -811,7 +815,7 @@ def add_pr_comment(comment: str):
         logging.exception('Add pull request comment failed.')
 
 
-def handle_github_response(response: json) -> dict:
+def handle_github_response(response: Response) -> dict:
     """
     Handles the response from the GitHub server after making a request.
     :param response: Response from the server.
@@ -895,7 +899,7 @@ def get_images_data(packs_list: list):
     images_data = {}
 
     for pack in packs_list:
-        pack_image_data = {pack.name: {}}
+        pack_image_data: dict = {pack.name: {}}
         if pack.uploaded_author_image:
             pack_image_data[pack.name][BucketUploadFlow.AUTHOR] = True
         if pack.uploaded_integration_images:

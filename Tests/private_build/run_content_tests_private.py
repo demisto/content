@@ -6,7 +6,7 @@ from time import sleep
 from distutils.version import LooseVersion
 from typing import Any
 
-import logging
+from Tests.scripts.utils import logging_wrapper as logging
 import urllib3
 import demisto_client.demisto_api
 
@@ -129,17 +129,15 @@ def run_test(tests_settings: SettingsTester, demisto_user: str, demisto_pass: st
     start_message = f'------ Test {test_message} start ------'
     client = demisto_client.configure(base_url=server_url, username=demisto_user, password=demisto_pass,
                                       verify_ssl=False)
-    logging.info(start_message + ' (Private Build Test)')
+    logging.info(f'{start_message} (Private Build Test)')
     run_test_logic(tests_settings, client, failed_playbooks, integrations, playbook_id,
                    succeed_playbooks, test_message, test_options, slack, circle_ci, build_number,
                    server_url, demisto_user, demisto_pass, build_name)
     logging.info(f'------ Test {test_message} end ------\n')
 
-    return
-
 
 def run_private_test_scenario(tests_settings: SettingsTester, t: dict, default_test_timeout: int,
-                              skipped_tests_conf: set, nightly_integrations: list, skipped_integrations_conf: set,
+                              skipped_tests_conf: dict, nightly_integrations: list, skipped_integrations_conf: set,
                               skipped_integration: set, filtered_tests: list, skipped_tests: set, secret_params: dict,
                               failed_playbooks: list, playbook_skipped_integration: set, succeed_playbooks: list,
                               slack: str, circle_ci: str, build_number: str, server: str, build_name: str,
@@ -213,7 +211,7 @@ def run_private_test_scenario(tests_settings: SettingsTester, t: dict, default_t
     test_from_version = t.get('fromversion', '0.0.0')
     test_to_version = t.get('toversion', '99.99.99')
 
-    if not (LooseVersion(test_from_version) <= LooseVersion(server_numeric_version) <= LooseVersion(test_to_version)):
+    if not LooseVersion(test_from_version) <= LooseVersion(server_numeric_version) <= LooseVersion(test_to_version):
         warning_message = f'Test {test_message} ignored due to version mismatch ' \
                           f'(test versions: {test_from_version}-{test_to_version})'
         logging.warning(warning_message)
@@ -278,11 +276,11 @@ def execute_testing(tests_settings: SettingsTester, server_ip: str, all_tests: s
     # turn off telemetry
     turn_off_telemetry(xsoar_client)
 
-    failed_playbooks = []
-    succeed_playbooks = []
-    skipped_tests = set([])
-    skipped_integration = set([])
-    playbook_skipped_integration = set([])
+    failed_playbooks: list = []
+    succeed_playbooks: list = []
+    skipped_tests: set = set([])
+    skipped_integration: set = set([])
+    playbook_skipped_integration: set = set([])
 
     #  Private builds do not use mocking. Here we copy the mocked test list to the unmockable list.
     private_tests = get_test_records_of_given_test_names(tests_settings, all_tests)
@@ -300,7 +298,7 @@ def execute_testing(tests_settings: SettingsTester, server_ip: str, all_tests: s
                                       filtered_tests, skipped_tests, secret_params,
                                       failed_playbooks, playbook_skipped_integration,
                                       succeed_playbooks, slack, circle_ci, build_number, server,
-                                      build_name, server_numeric_version, demisto_user,
+                                      build_name, server_numeric_version, demisto_user,  # type: ignore
                                       demisto_pass, demisto_api_key)
 
     except Exception:

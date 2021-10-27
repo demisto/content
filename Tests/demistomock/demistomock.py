@@ -764,7 +764,7 @@ def incidents(incidents=None):
 
     """
     if incidents is None:
-        return exampleIncidents[0]['Contents']['data']
+        return exampleIncidents[0]['Contents']['data']  # type: ignore[index]
     else:
         return results(
             {"Type": 1, "Contents": json.dumps(incidents), "ContentsFormat": "json"}

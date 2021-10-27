@@ -99,7 +99,7 @@ def main():
         logging.info(f'Workflow {workflow_id} status is {status}, current step: {step}')
         time.sleep(10)
         status, conclusion, step = get_workflow_status(github_token, workflow_id)
-        elapsed = time.time() - start
+        elapsed = time.time() - start  # type: ignore[assignment]
 
     if elapsed >= GET_WORKFLOWS_TIMEOUT_THRESHOLD:
         logging.critical(f'Timeout reached while waiting for private content build to complete, build url:'
@@ -112,7 +112,7 @@ def main():
             f'Private repo build failed,  build url: {WORKFLOW_HTML_URL}/{workflow_id}')
         sys.exit(1)
 
-    logging.success('Build private repo finished successfully')  # pylint: disable=no-member
+    logging.success('Build private repo finished successfully')  # type: ignore # pylint: disable=no-member
     sys.exit(0)
 
 

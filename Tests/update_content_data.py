@@ -46,7 +46,8 @@ def update_content(content_zip_path, server=None, username=None, password=None, 
             result_object = ast.literal_eval(response_data)
             message = result_object['message']
             raise Exception(f"Upload has failed with status code {status_code}\n{message}")
-        logging.success(f'"{content_zip_path}" successfully uploaded to server "{server}"')  # pylint: disable=no-member
+        success_msg = f'"{content_zip_path}" successfully uploaded to server "{server}"'
+        logging.success(success_msg)  # type: ignore # pylint: disable=no-member
     except Exception:
         logging.exception(f'Failed to upload {content_zip_path} to server {server}')
 
