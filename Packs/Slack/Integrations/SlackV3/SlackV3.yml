@@ -1,4 +1,4 @@
-beta: true
+beta: false
 category: Messaging
 commonfields:
   id: SlackV3
@@ -63,7 +63,7 @@ configuration:
 - defaultvalue: 'true'
   display: Long running instance. Required for investigation mirroring and direct
     messages.
-  hidden: true
+  hidden: false
   name: longRunning
   required: false
   type: 8
@@ -99,7 +99,7 @@ configuration:
   required: false
   type: 8
 description: Send messages and notifications to your Slack team.
-display: Slack v3 (beta)
+display: Slack v3
 name: SlackV3
 script:
   commands:
