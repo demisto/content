@@ -3352,7 +3352,7 @@ def change_ctx_to_be_compatible_with_retry() -> None:
     Returns:
         (None): Modifies context to be compatible.
     """
-    ctx = get_integration_context()
+    ctx = get_integration_context().copy()
     extract_works = True
     for k, v in ctx.items():
         try:
