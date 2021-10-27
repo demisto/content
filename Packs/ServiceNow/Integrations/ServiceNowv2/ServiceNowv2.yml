@@ -119,12 +119,7 @@ configuration:
   display: How many incidents to mirror incoming each time
   name: mirror_limit
   required: false
-  type: 0
-- defaultvalue: '1'
-  display: Incidents Fetch Interval
-  name: incidentFetchInterval
-  required: false
-  type: 19
+  type: 0I
 - display: Custom Fields to Mirror
   name: custom_fields
   required: false
