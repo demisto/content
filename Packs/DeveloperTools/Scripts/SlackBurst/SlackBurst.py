@@ -11,7 +11,7 @@ class SlackSender:
         """
         self.slack_instance = demisto.get(args, 'slack_instance')
         self.slack_channel = demisto.get(args, 'slack_channel')
-        self.endurance = argToBoolean(demisto.get(args, 'endurance', False))
+        self.endurance = argToBoolean(demisto.get(args, 'endurance'))
         self.quantity = int(demisto.get(demisto.args(), 'quantity'))
 
     def fire_command(self):

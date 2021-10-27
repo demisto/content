@@ -16,10 +16,10 @@ args:
   description: Instance of Slack to send messages using.
 - name: slack_channel
   required: true
-  description: Channel to send Burst.
+  description: Channel to send the burst to.
 - name: endurance
   auto: PREDEFINED
-  description: Send one message every second.
+  description: Sends one message every second.
   predefined:
   - "true"
   - "false"
@@ -30,9 +30,9 @@ dependson:
   should:
   - SlackV3|||send-notification
 runonce: false
-dockerimage: demisto/python3:3.7.3.286
+dockerimage: demisto/python3:3.9.7.24076
 runas: DBotWeakRole
-comment: Sends a burst of messages to the Slack channel for load testing.
+comment: Sends a burst of messages to the given Slack channel for load testing.
 fromversion: 6.1.0
 tests:
 - No tests (auto formatted)

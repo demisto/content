@@ -20,6 +20,7 @@ def main():
     incident_id = demisto.args().get('incident_id')
     entries = fetch_entries(incident_id)
     entry_contents: dict = {}
+    entry_context: dict = {}
     if len(entries) > 0:
         for entry in entries:
             if entry.get('contents'):
@@ -28,11 +29,11 @@ def main():
                     entry_contents[context_safe_key] = 1
                 else:
                     entry_contents[context_safe_key] = entry_contents.get(context_safe_key, 0) + 1
-        contents: str = "Entries successfully added to context."
-        entry_context: dict = entry_contents
+        contents = "Entries successfully added to context."
+        entry_context = entry_contents
     else:
-        contents: str = "No entries were returned"
-        entry_context: dict = {}
+        contents = "No entries were returned"
+
     return CommandResults(
         outputs_prefix='LatestEntries',
         outputs_key_field='ID',

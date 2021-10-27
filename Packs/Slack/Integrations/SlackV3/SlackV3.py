@@ -1060,10 +1060,10 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
                 or \
                 event.get('bot_id', None):
 
-            # Get the bot ID so we can invite him
             if integration_context.get('bot_user_id'):
                 bot_id = integration_context['bot_user_id']
-                if bot_id == 'null':
+                if bot_id == 'null' or bot_id is None:
+                    # In some cases the bot_id can be stored as a string 'null', this handles this edge case.
                     bot_id = await get_bot_id_async()
                     set_to_integration_context_with_retries({'bot_user_id': bot_id}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
             else:
@@ -1073,8 +1073,7 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
                 demisto.debug("Received bot_message event type. Ignoring.")
                 return
             if event.get('bot_id', None) in bot_id:
-                demisto.info(f"I am - {bot_id}. The message I recieved is from {event.get('bot_id')}")
-                demisto.debug("Hearing myself. Ignoring.")
+                demisto.debug("Received bot message from the current bot. Ignoring.")
                 return
         if event.get('subtype') == 'message_changed':
             demisto.debug("Received message_changed event type. Ignoring.")
@@ -1092,6 +1091,7 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
 
         else:
             if user_id != '':
+                # User ID is returned as an empty string
                 user = await get_user_by_id_async(ASYNC_CLIENT, user_id)  # type: ignore
                 entitlement_reply = await check_and_handle_entitlement(text, user, thread)  # type: ignore
 
@@ -1142,7 +1142,6 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
                                                                 OBJECTS_TO_KEYS, SYNC_CONTEXT)
 
                 investigation_id = mirror['investigation_id']
-                demisto.info(f"Payload is - {payload}")
                 await handle_text(ASYNC_CLIENT, investigation_id, text, user)  # type: ignore
         # Reset module health
         demisto.updateModuleHealth("")
