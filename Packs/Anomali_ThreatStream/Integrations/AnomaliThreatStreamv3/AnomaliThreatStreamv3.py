@@ -1,3 +1,5 @@
+import emoji
+
 import demistomock as demisto
 from CommonServerPython import *
 import traceback
@@ -1024,6 +1026,15 @@ def get_submission_status(client: Client, report_id, output_as_command_result=Tr
         return status, verdict
 
 
+def file_name_to_valid_string(file_name):
+    """
+        Demoji the file name if it's contain emoji
+    """
+    if emoji.emoji_count(file_name):  # type: ignore
+        return emoji.demojize(file_name)  # type: ignore
+    return file_name
+
+
 def submit_report(client: Client, submission_type, submission_value, submission_classification="private",
                   report_platform="WINDOWS7",
                   premium_sandbox="false", detail=None):
@@ -1049,7 +1060,7 @@ def submit_report(client: Client, submission_type, submission_value, submission_
             raise DemistoException(f'{THREAT_STREAM} - Entry {submission_value} does not contain a file.')
 
         uploaded_file = open(file_info['path'], 'rb')
-        file_name = file_info.get('name')
+        file_name = file_name_to_valid_string(file_info.get('name'))
         files = {'report_radio-file': (file_name, uploaded_file)}
     else:
         data['report_radio-url'] = submission_value

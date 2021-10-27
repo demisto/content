@@ -1,10 +1,11 @@
+import emoji
 
 import demistomock as demisto
 from tempfile import mkdtemp
 from AnomaliThreatStreamv3 import main, \
     REPUTATION_COMMANDS, Client, DEFAULT_INDICATOR_MAPPING, \
     FILE_INDICATOR_MAPPING, INDICATOR_EXTENDED_MAPPING, get_model_description, import_ioc_with_approval, \
-    import_ioc_without_approval, create_model, update_model, submit_report, add_tag_to_model
+    import_ioc_without_approval, create_model, update_model, submit_report, add_tag_to_model, file_name_to_valid_string
 from CommonServerPython import *
 import pytest
 
@@ -758,3 +759,12 @@ class TestUpdateCommands:
         msg = "Failed to add \['tag_1'\] to Actor with test_actor_id"
         with pytest.raises(DemistoException, match=msg):
             add_tag_to_model(mock_client(), model_id='test_actor_id', model='Actor', tags='tag_1')
+
+
+def test_emoji_handling_in_file_name():
+    file_names_package = ['Fwd for you 😍', 'Hi all', '', '🐝🤣🇮🇱👨🏽‍🚀🧟‍♂🧞‍♂🧚🏼‍♀', '🧔🤸🏻‍♀🥩🧚😷🍙👻']
+
+    for file_name in file_names_package:
+        demojized_file_name = file_name_to_valid_string(file_name)
+        assert demojized_file_name == emoji.demojize(file_name)
+        assert not emoji.emoji_count(file_name_to_valid_string(demojized_file_name))
