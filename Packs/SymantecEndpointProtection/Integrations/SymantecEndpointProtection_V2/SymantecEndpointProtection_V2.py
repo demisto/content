@@ -808,7 +808,7 @@ def get_token():
     token = integration_context.get('token')
     token_expiration_date = integration_context.get('token_expiration')
     current_time = int(time.time())
-    if current_time < token_expiration_date:
+    if token_expiration_date and current_time < token_expiration_date:
         return token
     else:
         resp = do_auth(server=demisto.getParam('server'), crads=demisto.getParam(
