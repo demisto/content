@@ -2,7 +2,6 @@
 import json
 import logging
 import os
-import re
 import sys
 import time
 from subprocess import check_output
@@ -12,7 +11,6 @@ import requests
 import urllib3.util
 
 from Tests.scripts.utils.log_util import install_logging
-from demisto_sdk.commands.common.tools import run_command
 # Disable insecure warnings
 from demisto_sdk.commands.test_content.constants import SSH_USER
 from demisto_sdk.commands.test_content.tools import is_redhat_instance
