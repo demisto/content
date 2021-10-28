@@ -433,11 +433,6 @@
         {
             "integrations": "Azure Compute v2",
             "playbookID": "Azure Compute - Login Test",
-            "instance_names": "ms_azure_compute_dev"
-        },
-        {
-            "integrations": "Azure Compute v2",
-            "playbookID": "Azure Compute - Login Test",
             "instance_names": "ms_azure_compute_prod",
             "is_mockable": false
         },
