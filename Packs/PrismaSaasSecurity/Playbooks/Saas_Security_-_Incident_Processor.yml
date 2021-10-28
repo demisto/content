@@ -60,7 +60,7 @@ tasks:
       subject:
         simple: An Incident Found in Prisma Saas Platform
       to:
-        simple: ${incident.saassecurityincidentowneremail}
+        simple: ${incident.itemowneremail}
     separatecontext: false
     view: |-
       {
@@ -102,7 +102,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: incident.severity
+              simple: incident.saassecurityincidentseveritylevel
             iscontext: true
           right:
             value:
@@ -113,7 +113,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: incident.severity
+              simple: incident.saassecurityincidentseveritylevel
             iscontext: true
           right:
             value:
@@ -183,7 +183,7 @@ tasks:
       - - operator: match
           left:
             value:
-              simple: incident.saassecurityincidentassignee
+              simple: incident.saassecurityassignedto
             iscontext: true
           right:
             value:
@@ -226,7 +226,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: incident.saassecurityincidentstate
+              simple: incident.saassecuritystate
             iscontext: true
           right:
             value:
@@ -268,7 +268,7 @@ tasks:
       asset_name:
         simple: ${incident.saassecurityassetname}
       email:
-        simple: ${incident.saassecurityincidentassignee}
+        simple: ${incident.saassecurityassignedto}
       incident_id:
         simple: ${incident.saassecurityincidentid}
     separatecontext: false
@@ -354,7 +354,7 @@ view: |-
 inputs:
 - key: updated_at
   value:
-    simple: ${incident.saassecurityincidentupdatedat}
+    simple: ${incident.lastupdatetime}
   required: false
   description: This is the incident updated at timestamp.
   playbookInputQuery:
