@@ -968,12 +968,15 @@ def build_events_search_response(response: Union[dict, requests.Response]) -> di
     Convert the response of event search returned from MISP to the context output format.
     please note: attributes are excluded from search-events output as the information is too big. User can use the
     command search-attributes in order to get the information about the attributes.
+    Note: following the issue: 42650 we will return only attributes' feed hits on this command, for more info
+    please read the issue.
     """
     response_object = copy.deepcopy(response)
     if isinstance(response_object, str):
         response_object = json.loads(json.dumps(response_object))
     events = [event.get('Event') for event in response_object]
     for i in range(0, len(events)):
+        attribute_feed_hit = get_attribute_feed_hit(events[i])
         # Filter object from keys in event_args
         events[i] = {key: events[i].get(key) for key in EVENT_FIELDS if key in events[i]}
         events[i]['RelatedEvent'] = []  # there is no need in returning related event when searching for an event
@@ -982,9 +985,18 @@ def build_events_search_response(response: Union[dict, requests.Response]) -> di
         build_object_output(events[i])
         events[i]['timestamp'] = misp_convert_timestamp_to_date_string(events[i].get('timestamp'))
         events[i]['publish_timestamp'] = misp_convert_timestamp_to_date_string(events[i].get('publish_timestamp'))
+        if attribute_feed_hit:
+            events[i]['Attribute']['Feed'] = attribute_feed_hit
 
     formatted_events = replace_keys_from_misp_to_context_data(events)  # type: ignore
     return formatted_events  # type: ignore
+
+
+def get_attribute_feed_hit(event: dict) -> Optional[dict, None]:
+    attribute = event.get('Attribute', {})
+    if 'Feed' in attribute:
+        return attribute.get('Feed')
+    return None
 
 
 def event_to_human_readable_tag_list(event):
