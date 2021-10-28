@@ -18,13 +18,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "19"
+      - "22"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 50
+          "x": 40,
+          "y": -40
         }
       }
     note: false
@@ -57,8 +57,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 545
+          "x": 462.5,
+          "y": 605
         }
       }
     note: false
@@ -106,8 +106,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 720
+          "x": 462.5,
+          "y": 780
         }
       }
     note: false
@@ -148,8 +148,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 1070
+          "x": 350,
+          "y": 1130
         }
       }
     note: false
@@ -184,8 +184,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1420
+          "x": 687.5,
+          "y": 1500
         }
       }
     note: false
@@ -209,8 +209,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1770
+          "x": 40,
+          "y": 2000
         }
       }
     note: false
@@ -249,8 +249,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 370
+          "x": 575,
+          "y": 430
         }
       }
     note: false
@@ -289,44 +289,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "19":
-    id: "19"
-    taskid: 04b331df-4f69-44fc-876f-2c233a721d9a
-    type: regular
-    task:
-      id: 04b331df-4f69-44fc-876f-2c233a721d9a
-      version: -1
-      name: Delete PastContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "17"
-    scriptarguments:
-      all: {}
-      index: {}
-      key:
-        simple: Druva
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
+          "x": 575,
+          "y": 1305
         }
       }
     note: false
@@ -365,8 +329,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 895
+          "x": 462.5,
+          "y": 955
         }
       }
     note: false
@@ -422,8 +386,45 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1595
+          "x": 687.5,
+          "y": 1755
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: f01bc2c6-2334-4c68-885e-724a6b3c73f1
+    type: condition
+    task:
+      id: f01bc2c6-2334-4c68-885e-724a6b3c73f1
+      version: -1
+      name: Check Druva Integration Available
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "17"
+    scriptarguments:
+      brandname:
+        simple: Druva Ransomware Response
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 190
         }
       }
     note: false
@@ -438,10 +439,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1785,
-        "width": 605,
-        "x": 50,
-        "y": 50
+        "height": 2105,
+        "width": 1027.5,
+        "x": 40,
+        "y": -40
       }
     }
   }
@@ -487,4 +488,4 @@ outputs:
   type: unknown
 tests:
 - Druva-Test
-fromversion: 5.5.0
+fromversion: 6.0.0
