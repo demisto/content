@@ -32,7 +32,7 @@ from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_o
     qradar_log_sources_list_command, qradar_get_custom_properties_command, enrich_asset_properties, \
     flatten_nested_geolocation_values, get_modified_remote_data_command, get_remote_data_command, is_valid_ip, \
     qradar_ips_source_get_command, qradar_ips_local_destination_get_command, update_mirrored_events, \
-    encode_context_data, extract_context_data
+    encode_context_data, extract_context_data, change_ctx_to_be_compatible_with_retry
 
 client = Client(
     server='https://192.168.0.1',
@@ -1572,3 +1572,198 @@ def test_mirroring_with_events_remove_resubmitted_offenses(mocker, offenses, con
 def test_extract_decode_encode(context_data):
     assert extract_context_data(set_context_data_as_json(context_data, include_id=True),
                                 include_id=True) == context_data
+
+
+@pytest.mark.parametrize('context_data, retry_compatible', [
+    # Happy flow: configuration matches retry_compatible
+    ({'samples': [{'id': '1', 'last_persisted_time': 2,
+                   'events': [{'event_id': '2'}, {'event_id': '3'}]}],
+      'last_mirror_update': '10',
+     LAST_FETCH_KEY: 5,
+     UPDATED_MIRRORED_OFFENSES_CTX_KEY: [{'id': '1',
+                                          'last_persisted_time': 2,
+                                          'events': [{'event_id': '2'},
+                                                     {'event_id': '3'}]},
+                                         {'id': '11',
+                                          'last_persisted_time': 3,
+                                          'events': [{'event_id': '22'},
+                                                     {'event_id': '33'}]}],
+     MIRRORED_OFFENSES_CTX_KEY: [],
+     RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: ['1', '11'],
+     'retry_compatible': False},
+     False),
+    # Happy flow: configuration matches retry_compatible
+    ({'samples': '["{\\"id\\": \\"1\\", '
+                 '\\"last_persisted_time\\": 2, '
+                 '\\"events\\": [{\\"event_id\\": \\"2\\"}, {\\"event_id\\": \\"3\\"}]}"]',
+      'id': '"5"',
+      'last_mirror_update': '"10"',
+      'updated_mirrored_offenses': '["{\\"id\\": \\"1\\", '
+                                   '\\"last_persisted_time\\": 2, '
+                                   '\\"events\\": [{\\"event_id\\": \\"2\\"}, {\\"event_id\\": \\"3\\"}]}", '
+                                   '"{\\"id\\": \\"11\\", '
+                                   '\\"last_persisted_time\\": 3, '
+                                   '\\"events\\": [{\\"event_id\\": \\"22\\"}, {\\"event_id\\": \\"33\\"}]}"]',
+      'mirrored_offenses': '[]',
+      'resubmitted_mirrored_offenses': '["\\"1\\"", "\\"11\\""]',
+      'retry_compatible': True},
+     True),
+    # Configuration doesn't match retry_compatible
+    ({'samples': [{'id': '1', 'last_persisted_time': 2,
+                   'events': [{'event_id': '2'}, {'event_id': '3'}]}],
+      'last_mirror_update': '10',
+      LAST_FETCH_KEY: 5,
+      UPDATED_MIRRORED_OFFENSES_CTX_KEY: [{'id': '1',
+                                           'last_persisted_time': 2,
+                                           'events': [{'event_id': '2'},
+                                                      {'event_id': '3'}]},
+                                          {'id': '11',
+                                           'last_persisted_time': 3,
+                                           'events': [{'event_id': '22'},
+                                                      {'event_id': '33'}]}],
+      MIRRORED_OFFENSES_CTX_KEY: [],
+      RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: ['1', '11'],
+      'retry_compatible': True},
+     False),
+    # Configuration doesn't match retry_compatible
+    ({'samples': '["{\\"id\\": \\"1\\", '
+                 '\\"last_persisted_time\\": 2, '
+                 '\\"events\\": [{\\"event_id\\": \\"2\\"}, {\\"event_id\\": \\"3\\"}]}"]',
+      'id': '"5"',
+      'last_mirror_update': '"10"',
+      'updated_mirrored_offenses': '["{\\"id\\": \\"1\\", '
+                                   '\\"last_persisted_time\\": 2, '
+                                   '\\"events\\": [{\\"event_id\\": \\"2\\"}, {\\"event_id\\": \\"3\\"}]}", '
+                                   '"{\\"id\\": \\"11\\", '
+                                   '\\"last_persisted_time\\": 3, '
+                                   '\\"events\\": [{\\"event_id\\": \\"22\\"}, {\\"event_id\\": \\"33\\"}]}"]',
+      'mirrored_offenses': '[]',
+      'resubmitted_mirrored_offenses': '["\\"1\\"", "\\"11\\""]',
+      'retry_compatible': False},
+     True),
+    # No retry_compatible
+    ({'samples': [{'id': '1', 'last_persisted_time': 2,
+                   'events': [{'event_id': '2'}, {'event_id': '3'}]}],
+      'last_mirror_update': '10',
+     LAST_FETCH_KEY: 5,
+     UPDATED_MIRRORED_OFFENSES_CTX_KEY: [{'id': '1',
+                                          'last_persisted_time': 2,
+                                          'events': [{'event_id': '2'},
+                                                     {'event_id': '3'}]},
+                                         {'id': '11',
+                                          'last_persisted_time': 3,
+                                          'events': [{'event_id': '22'},
+                                                     {'event_id': '33'}]}],
+     MIRRORED_OFFENSES_CTX_KEY: [],
+     RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: ['1', '11'],
+     'retry_compatible': False},
+     False),
+    ({'samples': '["{\\"id\\": \\"1\\", '
+                 '\\"last_persisted_time\\": 2, '
+                 '\\"events\\": [{\\"event_id\\": \\"2\\"}, {\\"event_id\\": \\"3\\"}]}"]',
+      'id': '"5"',
+      'last_mirror_update': '"10"',
+      'updated_mirrored_offenses': '["{\\"id\\": \\"1\\", '
+                                   '\\"last_persisted_time\\": 2, '
+                                   '\\"events\\": [{\\"event_id\\": \\"2\\"}, {\\"event_id\\": \\"3\\"}]}", '
+                                   '"{\\"id\\": \\"11\\", '
+                                   '\\"last_persisted_time\\": 3, '
+                                   '\\"events\\": [{\\"event_id\\": \\"22\\"}, {\\"event_id\\": \\"33\\"}]}"]',
+      'mirrored_offenses': '[]',
+      'resubmitted_mirrored_offenses': '["\\"1\\"", "\\"11\\""]',
+      'retry_compatible': False},
+     True),
+    ({'samples': '["{\\"id\\": \\"1\\", '
+                 '\\"last_persisted_time\\": 2, '
+                 '\\"events\\": [{\\"event_id\\": \\"2\\"}, {\\"event_id\\": \\"3\\"}]}"]',
+      'id': '"5"',
+      'last_mirror_update': '"10"',
+      'updated_mirrored_offenses': '["{\\"id\\": \\"1\\", '
+                                   '\\"last_persisted_time\\": 2, '
+                                   '\\"events\\": [{\\"event_id\\": \\"2\\"}, {\\"event_id\\": \\"3\\"}]}", '
+                                   '"{\\"id\\": \\"11\\", '
+                                   '\\"last_persisted_time\\": 3, '
+                                   '\\"events\\": [{\\"event_id\\": \\"22\\"}, {\\"event_id\\": \\"33\\"}]}"]',
+      'mirrored_offenses': '[]',
+      'resubmitted_mirrored_offenses': '["\\"1\\"", "\\"11\\""]',
+      'retry_compatible': False},
+     True)
+])
+def test_change_ctx_to_be_compatible(mocker, context_data, retry_compatible):
+    """Test changing the context data to be compatible with set_to_integration_context_with_retries.
+
+    Given:
+        Context data in the old or new format.
+
+    When:
+        Executing any command.
+
+    Then:
+        Ensure the context_data is transformed to the new format if needed.
+    """
+    mocker.patch.object(QRadar_v3, 'get_integration_context', return_value=context_data)
+    encoded_context = context_data
+    mocker.patch.object(QRadar_v3, 'set_to_integration_context_with_retries')
+
+    change_ctx_to_be_compatible_with_retry()
+    if not retry_compatible:
+        encoded_context = set_context_data_as_json(context_data)
+
+    encoded_context.pop('retry_compatible', None)
+
+    extracted_ctx = {'samples': [{'id': '1', 'last_persisted_time': 2,
+                                  'events': [{'event_id': '2'}, {'event_id': '3'}]}],
+                     'last_mirror_update': '10',
+                     UPDATED_MIRRORED_OFFENSES_CTX_KEY: [{'id': '1',
+                                                          'last_persisted_time': 2,
+                                                          'events': [{'event_id': '2'},
+                                                                     {'event_id': '3'}]},
+                                                         {'id': '11',
+                                                          'last_persisted_time': 3,
+                                                          'events': [{'event_id': '22'},
+                                                                     {'event_id': '33'}]}],
+                     MIRRORED_OFFENSES_CTX_KEY: [],
+                     RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: ['1', '11']}
+
+    assert extract_context_data(encoded_context) == extracted_ctx
+
+    if not retry_compatible:
+        QRadar_v3.set_to_integration_context_with_retries.assert_called_once_with(encode_context_data(extracted_ctx))
+    else:
+        assert not QRadar_v3.set_to_integration_context_with_retries.called
+
+
+@pytest.mark.parametrize('context_data, retry_compatible, extracted_ctx', [
+    # Expected after previous bug fix
+    ({'samples': '[{"id": "1", "last_persisted_time": 2, "events": [{"event_id": "2"}, {"event_id": "3"}]}]',
+      'id': '"5"',
+      'last_mirror_update': '"10"',
+      'retry_compatible': True},
+     False,
+     {'samples': [{'id': '1', 'last_persisted_time': 2,
+                   'events': [{'event_id': '2'}, {'event_id': '3'}]}],
+      'id': 5,
+      'last_mirror_update': 10})
+])
+def test_change_ctx_with_dirty_samples(mocker, context_data, retry_compatible, extracted_ctx):
+    """Test changing the context data to be compatible with set_to_integration_context_with_retries after this
+    sort of change was preformed on a previous integration version 2.0.27/28 -> 2.1.0 .
+
+    Given:
+        Context data in the 2.0.28 format.
+
+    When:
+        Executing any command.
+
+    Then:
+        Ensure the context_data is transformed to the new format.
+    """
+    mocker.patch.object(QRadar_v3, 'get_integration_context', return_value=context_data)
+    mocker.patch.object(QRadar_v3, 'set_to_integration_context_with_retries')
+
+    change_ctx_to_be_compatible_with_retry()
+
+    if not retry_compatible:
+        QRadar_v3.set_to_integration_context_with_retries.assert_called_once_with(encode_context_data(extracted_ctx))
+    else:
+        assert not QRadar_v3.set_to_integration_context_with_retries.called
