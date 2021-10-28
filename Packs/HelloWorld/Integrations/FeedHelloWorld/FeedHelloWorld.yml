@@ -90,6 +90,11 @@ configuration:
   name: feedTags
   required: false
   type: 0
+- defaultvalue: 'true'
+  display: Create relationships
+  name: create_relationships
+  required: false
+  type: 8
 display: HelloWorld Feed
 name: HelloWorld Feed
 script:
