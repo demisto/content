@@ -25,3 +25,5 @@ timeout: '0'
 type: python
 dockerimage: devdemisto/unzip:1.0.1.24299
 fromversion: 6.0.0
+tests:
+  - UnPackFileV2-Test
