@@ -1,3 +1,6 @@
+import tempfile
+from typing import Tuple
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -7,45 +10,53 @@ import rarfile
 import os
 
 
-def extract(file_entry_id: str) -> CommandResults:
+def extract(rf: rarfile.RarFile, dir_path=None) -> Tuple[CommandResults, list]:
 
     file_base_names = []
     contents = []
-    if not file_entry_id:
-        raise Exception('You must set the entry_id when executing UnPackFile script.')
+    file_list = []
 
-    archive_path = demisto.getFilePath(file_entry_id).get('path')
-    rf = rarfile.RarFile(archive_path)
-    for f in rf.infolist():
-        file_path = f.filename
-        if f.is_file():
-            file_base_name = os.path.basename(file_path)
-            file_base_names.append(file_base_name)
+    for file_path in rf.namelist():
+        if file_name := os.path.basename(file_path):
             contents.append({
-                'Name': file_base_name,
+                'Name': file_name,
                 'Path': file_path
             })
-            with rf.open(file_path) as file_:
-                demisto.results(fileResult(file_base_name, file_.read()))
+
+    rf.extractall(path=dir_path)
+    for root, _, files in os.walk(dir_path):
+        for file_ in files:
+            file_base_name = os.path.basename(file_)
+            file_base_names.append(file_base_name)
+            file_path = os.path.join(root, file_)
+
+            file_list.append(file_path)
 
     return CommandResults(
         outputs_prefix='ExtractedFiles',
         outputs=file_base_names,
         readable_output=tableToMarkdown('Extracted Files', contents)
-    )
+    ), file_list
 
 
 ''' MAIN FUNCTION '''
 
 
 def main():
-    try:
-        args = demisto.args()
-        file_entry_id = args.get('entry_id')
-        return_results(extract(file_entry_id))
-    except Exception as ex:
-        demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute UnPackFileV2. Error: {str(ex)}')
+    with tempfile.TemporaryDirectory() as dir_path:
+        try:
+            args = demisto.args()
+            file_entry_id = args.get('entry_id')
+            archive_path = demisto.getFilePath(file_entry_id).get('path')
+            rf = rarfile.RarFile(archive_path)
+            results, files = extract(rf, dir_path)
+            for file_ in files:
+                file_base_name = os.path.basename(file_)
+                demisto.results(fileResult(file_base_name, open(file_).read()))
+            return_results(results)
+        except Exception as ex:
+            demisto.error(traceback.format_exc())  # print the traceback
+            return_error(f'Failed to execute UnPackFileV2. Error: {str(ex)}')
 
 
 ''' ENTRY POINT '''
