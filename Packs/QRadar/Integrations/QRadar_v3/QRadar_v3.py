@@ -3345,7 +3345,7 @@ def get_modified_remote_data_command(client: Client, params: Dict[str, str],
     return GetModifiedRemoteDataResponse(new_modified_records_ids)
 
 
-def clear_integration_ctx(ctx) -> dict:
+def clear_integration_ctx(ctx: dict) -> dict:
     fetch_id_ctx = ctx.get(LAST_FETCH_KEY, 0)
     try:
         fetch_id = int(fetch_id_ctx)
@@ -3390,7 +3390,7 @@ def change_ctx_to_be_compatible_with_retry() -> None:
     try:
         extracted_ctx = extract_context_data(ctx)
         print_mirror_events_stats(extracted_ctx, "Checking ctx")
-        print_debug_msg(f"ctx was found to be compatible with retries")
+        print_debug_msg("ctx was found to be compatible with retries")
         extract_works = True
     except Exception as e:
         print_debug_msg(f"extracting ctx {ctx} failed, trying to make it retry compatible. Error was: {str(e)}")
