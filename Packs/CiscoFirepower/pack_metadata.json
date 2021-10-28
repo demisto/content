@@ -1,5 +1,5 @@
 {
-    "name": "CiscoFirepower",
+    "name": "Cisco Firepower",
     "description": "Use the CiscoFirepower integration for unified management of firewalls, application control",
     "support": "xsoar",
     "currentVersion": "1.0.10",
