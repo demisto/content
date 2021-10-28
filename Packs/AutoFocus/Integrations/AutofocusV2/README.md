@@ -1,4 +1,4 @@
-Use the AutoFocus v2 integration to contextualize threat intelligence and bring speed, consistency, and precision to threat investigation.
+Use the Palo Alto Networks Unit42 Intel v2 integration to contextualize threat intelligence and bring speed, consistency, and precision to threat investigation.
 TIM customers that upgraded to version 6.2 or above, can have the API Key pre-configured in their main account so no additional input is needed. To use this feature, upgrade your license so it includes the license key.
 
 ## Use Cases
@@ -24,11 +24,11 @@ To get your API key, you need to add an authorization code, and then activate th
 Use the API key when configuring the integration.
 For more information on activating the license see [Activating AutoFocus Licenses](https://docs.paloaltonetworks.com/autofocus/autofocus-admin/get-started-with-autofocus/activate-autofocus-licenses.html).
 
-## Configure AutoFocus V2 on Cortex XSOAR
+## Configure Palo Alto Networks Unit42 Intel v2 on Cortex XSOAR
 ---
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for AutoFocus V2.
+2. Search for Palo Alto Networks Unit42 Intel v2.
 3. Click **Add instance** to create and configure a new integration instance.
 
    | **Parameter** | **Description** | **Example** |

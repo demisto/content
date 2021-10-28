@@ -95,8 +95,8 @@ configuration:
   name: feedTags
   required: false
   type: 0
-description: Use the AutoFocus Daily feed to export threat intelligence data produced by AutoFocus and connected services to provide actionable data for the Palo Alto Networks firewall as well as third party TIP and SIEM solutions. AutoFocus feed return a list which includes IP addresses, domains, URLs, and hash indicators which are updated daily.
-display: AutoFocus Daily Feed
+description: Use the Unit42 Intel Daily feed to export threat intelligence data produced by Unit42 Intel and connected services to provide actionable data for the Palo Alto Networks firewall as well as third party TIP and SIEM solutions. Unit42 Intel feed return a list which includes IP addresses, domains, URLs, and hash indicators which are updated daily.
+display: Unit42 Intel Daily Feed
 name: AutoFocus Daily Feed
 script:
   commands:

@@ -1,11 +1,11 @@
-Use the AutoFocus Feeds integration to fetch indicators from AutoFocus.
+Use the Unit42 Intel Daily Feed integration to fetch indicators from AutoFocus.
 For more information click [here](https://docs.paloaltonetworks.com/autofocus/autofocus-admin/autofocus-feeds.html).
 TIM customers that upgraded to version 6.2 or above, can have the API Key pre-configured in their main account so no additional input is needed. To use this feature, upgrade your license so it includes the license key.
 
-## Configure AutoFocus Feed on Cortex XSOAR
+## Configure Unit42 Intel Daily Feed on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for AutoFocus Feed.
+2. Search for Unit42 Intel Daily Feed.
 3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |

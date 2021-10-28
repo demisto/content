@@ -45,9 +45,9 @@ configuration:
   name: create_relationships
   required: false
   type: 8
-description: Use the Palo Alto Networks AutoFocus integration to distinguish the most
+description: Use the Palo Alto Networks Unit42 Intel integration to distinguish the most
   important threats from everyday commodity attacks.
-display: Palo Alto Networks AutoFocus v2
+display: Palo Alto Networks Unit42 Intel v2
 name: AutoFocus V2
 script:
   commands:

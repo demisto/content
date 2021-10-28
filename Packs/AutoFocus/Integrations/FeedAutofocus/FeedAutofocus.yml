@@ -36,7 +36,7 @@ configuration:
   - global
   required: false
   type: 15
-- additionalinfo: JSON styled AutoFocus query, an example can be found in the description (?) section. Only necessary in case a Samples Feed is fetched.
+- additionalinfo: JSON styled Unit42 Intel query, an example can be found in the description (?) section. Only necessary in case a Samples Feed is fetched.
   display: Samples Feed Query
   name: sample_query
   required: false
@@ -116,8 +116,8 @@ configuration:
   name: feedTags
   required: false
   type: 0
-description: Use the AutoFocus Feeds integration to fetch indicators from AutoFocus.
-display: AutoFocus Feed
+description: Use the Unit42 Intel Feeds integration to fetch indicators from Unit42 Intel.
+display: Unit42 Intel Feed
 name: AutoFocus Feed
 script:
   commands:
@@ -137,7 +137,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets the indicators from AutoFocus.
+    description: Gets the indicators from Unit42 Intel.
     execution: false
     name: autofocus-get-indicators
   dockerimage: demisto/python3:3.9.7.24076

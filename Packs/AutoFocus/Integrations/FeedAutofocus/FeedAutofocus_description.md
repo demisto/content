@@ -1,7 +1,7 @@
-## AutoFocus Feed
-Gets Custom and Sample feeds from AutoFocus.
+## Unit42 Intel Feed
+Gets Custom and Sample feeds from Unit42 Intel.
 
-**Note:** The `Daily Threat Feed` option is deprecated. Use the separate **AutoFocus Daily Feed** instead. 
+**Note:** The `Daily Threat Feed` option is deprecated. Use the separate **Unit42 Intel Daily Feed** instead. 
 
 For more information see the [AutoFocus documentation](https://docs.paloaltonetworks.com/autofocus/autofocus-admin/autofocus-feeds.html).
 

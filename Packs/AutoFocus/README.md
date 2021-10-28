@@ -13,11 +13,11 @@ Use AutoFocus to export threat intelligence data produced by AutoFocus and conne
 
 This content pack includes:
 - Integrations:
-   - **AutoFocus Daily Feed**: Fetch new, daily additions to the list created by the AutoFocus feed.
-   - **AutoFocus Feed**: Fetch a list from AutoFocus which includes IP addresses, domains, URLs, and hash indicators 
+   - **Unit42 Intel Daily Feed**: Fetch new, daily additions to the list created by the Unit42 Intel feed.
+   - **Unit42 Intel Feed**: Fetch a list from AutoFocus which includes IP addresses, domains, URLs, and hash indicators 
    - **Palo Alto AutoFocus**: (Deprecated)
-Use the Palo Alto Networks AutoFocus v2 integration instead. 
-   - **Palo Alto Networks AutoFocus v2**:
+Use the Palo Alto Networks Unit42 Intel v2 integration instead. 
+   - **Palo Alto Networks Unit42 Intel v2**:
 Distinguish the most important threats from everyday commodity attacks.
 
 - Playbooks:
