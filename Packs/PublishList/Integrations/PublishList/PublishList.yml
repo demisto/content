@@ -46,14 +46,6 @@ configuration:
   name: commaToLineBreak
   required: false
   type: 8
-contentitemexportablefields:
-  contentitemfields:
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: a5e325a1-1118-46db-8a4a-b00b80c19b4c
-    propagationLabels:
-    - all
-    toServerVersion: ""
 description: The Publish List integration is used to publish XSOAR lists for external
   consumption.
 display: Publish List
@@ -66,4 +58,3 @@ script:
   script: ''
   subtype: python3
   type: python
-sourcemoduleid: Generic Webhook
