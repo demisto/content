@@ -1755,8 +1755,8 @@ def long_running_execution_command(client: Client, params: Dict):
             context_data = {LAST_FETCH_KEY: orig_context_data.get(LAST_FETCH_KEY, 0)}
 
             updated_mirrored_offenses = None
+            ctx = extract_context_data(ctx)
             if mirror_options == MIRROR_OFFENSE_AND_EVENTS:
-                ctx = extract_context_data(ctx)
                 print_mirror_events_stats(ctx, "Long Running Command - Before Update")
                 updated_mirrored_offenses = update_mirrored_events(client=client,
                                                                    fetch_mode=fetch_mode,
@@ -3384,14 +3384,13 @@ def change_ctx_to_be_compatible_with_retry() -> None:
     try:
         extracted_ctx = extract_context_data(ctx)
         print_mirror_events_stats(extracted_ctx, "Checking ctx")
-        print_debug_msg(f"ctx {ctx} was found to be compatible with retries")
+        print_debug_msg(f"ctx was found to be compatible with retries")
         extract_works = True
     except Exception as e:
         print_debug_msg(f"extracting ctx {ctx} failed, trying to make it retry compatible. Error was: {str(e)}")
         extract_works = False
 
     if not extract_works:
-        print_debug_msg(f"Change ctx context data is {ctx}")
         cleared_ctx = clear_integration_ctx(new_ctx)
         set_integration_context(cleared_ctx)
         print_debug_msg(f"Change ctx context data was cleared and changed to {cleared_ctx}")
@@ -3552,6 +3551,7 @@ def main() -> None:
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
+        print_debug_msg(f"The integration context_data is {get_integration_context()}")
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 
