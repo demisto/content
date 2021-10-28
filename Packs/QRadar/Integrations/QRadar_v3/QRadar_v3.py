@@ -1252,7 +1252,7 @@ def is_reset_triggered(handle_reset: bool = False):
             if ctx and RESET_KEY in ctx:
                 if handle_reset:
                     print_debug_msg('Reset fetch-incidents.')
-                    set_integration_context({'samples': ctx.get('samples', '[]')})
+                    set_integration_context({'samples': '[]'})
                 return True
         finally:
             lock.release()
@@ -1752,7 +1752,7 @@ def long_running_execution_command(client: Client, params: Dict):
             )
 
             orig_context_data = extract_context_data(ctx.copy(), include_id=True)
-            context_data = {LAST_FETCH_KEY: orig_context_data.get(LAST_FETCH_KEY)}
+            context_data = {LAST_FETCH_KEY: orig_context_data.get(LAST_FETCH_KEY, 0)}
 
             updated_mirrored_offenses = None
             if mirror_options == MIRROR_OFFENSE_AND_EVENTS:
@@ -3339,6 +3339,35 @@ def get_modified_remote_data_command(client: Client, params: Dict[str, str],
     return GetModifiedRemoteDataResponse(new_modified_records_ids)
 
 
+def clear_integration_ctx(ctx) -> dict:
+    fetch_id_ctx = ctx.get(LAST_FETCH_KEY, 0)
+    try:
+        fetch_id = int(fetch_id_ctx)
+    except ValueError:
+        try:
+            fetch_id = int(json.loads(fetch_id_ctx))
+        except ValueError:
+            print_debug_msg("Could not retrive LAST_FETCH_KEY. Setting to 0")
+            fetch_id = 0
+
+    last_update_ctx = ctx.get('last_mirror_update', 0)
+    try:
+        last_update = str(int(last_update_ctx))
+    except ValueError:
+        try:
+            last_update = str(int(json.loads(last_update_ctx)))
+        except ValueError:
+            print_debug_msg("Could not retrive last_mirror_update. Setting to '0'")
+            last_update = '0'
+
+    return {LAST_FETCH_KEY: json.dumps(fetch_id),
+            'last_mirror_update':  json.dumps(last_update),
+            UPDATED_MIRRORED_OFFENSES_CTX_KEY: '[]',
+            MIRRORED_OFFENSES_CTX_KEY: '[]',
+            RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: '[]',
+            'samples': '[]'}
+
+
 def change_ctx_to_be_compatible_with_retry() -> None:
     """
     In order to move QRadar from using set_integration_context to set_to_integration_context_with_retries, the fields
@@ -3353,30 +3382,27 @@ def change_ctx_to_be_compatible_with_retry() -> None:
     ctx = get_integration_context()
     new_ctx = ctx.copy()
     try:
-        extract_context_data(ctx)
+        extracted_ctx = extract_context_data(ctx)
+        print_mirror_events_stats(extracted_ctx, "Checking ctx")
+        if extracted_ctx['samples']:
+            extracted_ctx['samples'][0].get('id')
         print_debug_msg(f"ctx {ctx} was found to be compatible with retries")
         extract_works = True
-    except TypeError as e:
+    except Exception as e:
         print_debug_msg(f"extracting ctx {ctx} failed, trying to make it retry compatible. Error was: {str(e)}")
         extract_works = False
 
-    # The following is done to fix issued in upgrading from 2.0.27/28 to 2.1.0 was incompatible
-    if not extract_works and ctx.get('samples') and type(ctx.get('samples')) is str:
-        new_ctx['samples'] = json.loads(ctx.get('samples'))
-        new_ctx['last_mirror_update'] = json.loads(ctx.get('last_mirror_update', '0'))
-
     if not extract_works:
-        encoded_ctx = encode_context_data(new_ctx)
         print_debug_msg(f"Change ctx context data is {ctx}")
-        set_to_integration_context_with_retries(encoded_ctx)
-        print_debug_msg(f"Change ctx context data was changed to {encoded_ctx}")
+        cleared_ctx = clear_integration_ctx(new_ctx)
+        set_integration_context(cleared_ctx)
+        print_debug_msg(f"Change ctx context data was cleared and changed to {cleared_ctx}")
 
 
 ''' MAIN FUNCTION '''
 
 
 def main() -> None:
-    change_ctx_to_be_compatible_with_retry()
     params = demisto.params()
     command = demisto.command()
     args = demisto.args()
@@ -3428,6 +3454,7 @@ def main() -> None:
             demisto.incidents(fetch_incidents_command())
 
         elif command == 'long-running-execution':
+            change_ctx_to_be_compatible_with_retry()
             long_running_execution_command(client, params)
 
         elif command == 'qradar-offenses-list' or command == 'qradar-offenses' or command == 'qradar-offense-by-id':
@@ -3514,9 +3541,11 @@ def main() -> None:
             return_results(qradar_get_mapping_fields_command(client))
 
         elif command == 'get-remote-data':
+            change_ctx_to_be_compatible_with_retry()
             return_results(get_remote_data_command(client, params, args))
 
         elif command == 'get-modified-remote-data':
+            change_ctx_to_be_compatible_with_retry()
             return_results(get_modified_remote_data_command(client, params, args))
 
         else:

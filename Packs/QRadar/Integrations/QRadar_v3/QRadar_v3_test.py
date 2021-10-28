@@ -32,7 +32,7 @@ from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_o
     qradar_log_sources_list_command, qradar_get_custom_properties_command, enrich_asset_properties, \
     flatten_nested_geolocation_values, get_modified_remote_data_command, get_remote_data_command, is_valid_ip, \
     qradar_ips_source_get_command, qradar_ips_local_destination_get_command, update_mirrored_events, \
-    encode_context_data, extract_context_data, change_ctx_to_be_compatible_with_retry
+    encode_context_data, extract_context_data, change_ctx_to_be_compatible_with_retry, clear_integration_ctx
 
 client = Client(
     server='https://192.168.0.1',
@@ -1719,7 +1719,12 @@ def test_extract_decode_encode(context_data):
       'resubmitted_mirrored_offenses': '["\\"1\\"", "\\"11\\""]',
       'retry_compatible': False,
       'reset': True},
-     True)
+     True),
+    ({'samples': '[{"id": "1", "last_persisted_time": 2, "events": [{"event_id": "2"}, {"event_id": "3"}]}]',
+      'id': '"5"',
+      'last_mirror_update': '"10"',
+      'retry_compatible': True},
+     False)
 ])
 def test_change_ctx_to_be_compatible(mocker, context_data, retry_compatible):
     """Test changing the context data to be compatible with set_to_integration_context_with_retries.
@@ -1734,69 +1739,48 @@ def test_change_ctx_to_be_compatible(mocker, context_data, retry_compatible):
         Ensure the context_data is transformed to the new format if needed.
     """
     mocker.patch.object(QRadar_v3, 'get_integration_context', return_value=context_data)
-    encoded_context = context_data
-    mocker.patch.object(QRadar_v3, 'set_to_integration_context_with_retries')
+    mocker.patch.object(QRadar_v3, 'set_integration_context')
 
     change_ctx_to_be_compatible_with_retry()
-    if not retry_compatible:
-        encoded_context = set_context_data_as_json(context_data)
 
-    encoded_context.pop('retry_compatible', None)
-    encoded_context.pop('reset', None)
-
-    extracted_ctx = {'samples': [{'id': '1', 'last_persisted_time': 2,
-                                  'events': [{'event_id': '2'}, {'event_id': '3'}]}],
-                     'last_mirror_update': '10',
-                     UPDATED_MIRRORED_OFFENSES_CTX_KEY: [{'id': '1',
-                                                          'last_persisted_time': 2,
-                                                          'events': [{'event_id': '2'},
-                                                                     {'event_id': '3'}]},
-                                                         {'id': '11',
-                                                          'last_persisted_time': 3,
-                                                          'events': [{'event_id': '22'},
-                                                                     {'event_id': '33'}]}],
-                     MIRRORED_OFFENSES_CTX_KEY: [],
-                     RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: ['1', '11']}
-
-    assert extract_context_data(encoded_context) == extracted_ctx
+    extracted_ctx = {'last_mirror_update': '10', LAST_FETCH_KEY: 5}
 
     if not retry_compatible:
-        QRadar_v3.set_to_integration_context_with_retries.assert_called_once_with(encode_context_data(extracted_ctx))
+        QRadar_v3.set_integration_context.assert_called_once_with(clear_integration_ctx(extracted_ctx))
     else:
-        assert not QRadar_v3.set_to_integration_context_with_retries.called
+        assert not QRadar_v3.set_integration_context.called
 
 
-@pytest.mark.parametrize('context_data, retry_compatible, extracted_ctx', [
+@pytest.mark.parametrize('context_data', [
     # Expected after previous bug fix
-    ({'samples': '[{"id": "1", "last_persisted_time": 2, "events": [{"event_id": "2"}, {"event_id": "3"}]}]',
-      'id': '"5"',
-      'last_mirror_update': '"10"',
-      'retry_compatible': True},
-     False,
-     {'samples': [{'id': '1', 'last_persisted_time': 2,
-                   'events': [{'event_id': '2'}, {'event_id': '3'}]}],
-      'id': 5,
-      'last_mirror_update': 10})
+    {'samples': '[{"id": "1", "last_persisted_time": 2, "events": [{"event_id": "2"}, {"event_id": "3"}]}]',
+     'id': '"5"',
+     'last_mirror_update': '"1000"',
+     'retry_compatible': True,
+     'reset': True},
+    {'samples': [{"id": "1", "last_persisted_time": 2, "events": [{"event_id": "2"}, {"event_id": "3"}]}],
+     'id': '5',
+     'last_mirror_update': '"1000"',
+     'retry_compatible': True},
+    {'samples': "",
+     'id': 5,
+     'last_mirror_update': '1000'},
+    {'samples': "",
+     'id': 5,
+     'last_mirror_update': 1000},
 ])
-def test_change_ctx_with_dirty_samples(mocker, context_data, retry_compatible, extracted_ctx):
-    """Test changing the context data to be compatible with set_to_integration_context_with_retries after this
-    sort of change was preformed on a previous integration version 2.0.27/28 -> 2.1.0 .
+def test_clearing_of_ctx(context_data):
+    expected_ctx = {LAST_FETCH_KEY: '5',
+                    'last_mirror_update':  '"1000"',
+                    UPDATED_MIRRORED_OFFENSES_CTX_KEY: '[]',
+                    MIRRORED_OFFENSES_CTX_KEY: '[]',
+                    RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: '[]',
+                    'samples': '[]'}
 
-    Given:
-        Context data in the 2.0.28 format.
+    assert clear_integration_ctx(context_data) == expected_ctx
 
-    When:
-        Executing any command.
 
-    Then:
-        Ensure the context_data is transformed to the new format.
-    """
-    mocker.patch.object(QRadar_v3, 'get_integration_context', return_value=context_data)
-    mocker.patch.object(QRadar_v3, 'set_to_integration_context_with_retries')
-
-    change_ctx_to_be_compatible_with_retry()
-
-    if not retry_compatible:
-        QRadar_v3.set_to_integration_context_with_retries.assert_called_once_with(encode_context_data(extracted_ctx))
-    else:
-        assert not QRadar_v3.set_to_integration_context_with_retries.called
+def test_cleared_ctx_is_compatible_with_retries():
+    cleared_ctx = clear_integration_ctx({'id': 5, 'last_mirror_update': '1000'})
+    QRadar_v3.set_integration_context(cleared_ctx)
+    QRadar_v3.set_to_integration_context_with_retries({'id': 7})
