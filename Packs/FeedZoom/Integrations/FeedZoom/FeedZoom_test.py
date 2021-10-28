@@ -9,9 +9,9 @@ def test_build_iterator(mocker):
     with open('test_data/zoom_endpoint.txt', 'r') as file:
         response = file.read()
     mocker.patch.object(Client, '_http_request', return_value=response)
-    mocker.patch.object(demisto, 'params', return_value={'zoom_clients_certificate_validation':
-                                                             'crl3.digicert.com,crl4.digicert.com',
-                                                         'zoom_clients_user_browser': '*.zoom.us'})
+    mocker.patch.object(demisto, 'params',
+                        return_value={'zoom_clients_certificate_validation': 'crl3.digicert.com,crl4.digicert.com',
+                                      'zoom_clients_user_browser': '*.zoom.us'})
 
     expected_cidr = '3.7.35.0/25'
     expected_glob = '*.zoom.us'
