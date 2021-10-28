@@ -208,7 +208,7 @@ script:
       description: The domain name.
       type: String
     - contextPath: Domain.DNS
-      description: 'The IP addresses resolved by DNS.'
+      description: The IP addresses resolved by DNS.
       type: String
     - contextPath: Domain.WHOIS.CreationDate
       description: |-

@@ -13,17 +13,17 @@ If you are upgrading from a previous version of this integration, see [Breaking 
     | --- | --- | --- |
     | Server URL (e.g., https://www.test.com) |  | True |
     | Username |  | True |
-    | Password |  | True |
+    | API Key |  | True |
     | URL threshold |  | False |
     | IP threshold |  | False |
     | Domain threshold |  | False |
     | File threshold |  | False |
     | Email threshold |  | False |
-    | Include inactive results | Whether to include inactive indicators in reputation commands or not. | False |
+    | Include inactive results | Whether to include inactive indicators in reputation commands. | False |
     | Source Reliability | Reliability of the source providing the intelligence data. | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
-    | Create relationships | Create relationships between indicators as part of Enrichment. | False |
+    | Create relationships | Create relationships between indicators as part of enrichment. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -42,7 +42,7 @@ Checks the reputation of the given IP address.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ip | The IP to check. | Required | 
-| threshold | If confidence is greater than the threshold, then the IP address will be considered malicious otherwise it will considered good. This argument will override the default IP threshold defined as a parameter. | Optional | 
+| threshold | If confidence is greater than the threshold the IP address is considered malicious, otherwise it is considered good. This argument overrides the default IP threshold defined as a parameter. | Optional | 
 | include_inactive | Whether to include results with an inactive status. Possible values are: True, False. | Optional | 
 
 
@@ -62,17 +62,16 @@ Checks the reputation of the given IP address.
 | ThreatStream.IP.Address | String | The IP address of the indicator. | 
 | ThreatStream.IP.Country | String | The country associated with the indicator. | 
 | ThreatStream.IP.Type | String | The indicator type. | 
-| ThreatStream.IP.Modified | String | The time when the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value for time, in UTC time. | 
+| ThreatStream.IP.Modified | String | The time the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value for time in UTC time. | 
 | ThreatStream.IP.Severity | String | The indicator severity \("very-high", "high", "medium", or "low"\). | 
 | ThreatStream.IP.Confidence | String | The observable certainty level of a reported indicator type. Confidence score can range from 0-100, in increasing order of confidence. | 
 | ThreatStream.IP.Status | String | The status assigned to the indicator. | 
 | ThreatStream.IP.Organization | String | The name of the business that owns the IP address associated with the indicator. | 
-| ThreatStream.IP.Source | String | The source of the indicator. | 
-| DBotScore.Score | Number | The actual score. | 
+| ThreatStream.IP.Source | String | The indicator source. | 
 | IP.Malicious.Vendor | String | The vendor that reported the indicator as malicious. | 
 | ThreatStream.IP.Tags | Unknown | Tags assigned to the IP. | 
-| IP.Tags | Unknown | \(List\) Tags of the IP. | 
-| IP.ThreatTypes | Unknown | Threat types that are associated with the ip. | 
+| IP.Tags | Unknown | List of IP Tags. | 
+| IP.ThreatTypes | Unknown | Threat types associated with the IP. | 
 
 
 #### Command Example
@@ -95,7 +94,7 @@ Checks the reputation of the given domain name.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | domain | The domain name to check. | Required | 
-| threshold | If confidence is greater than the threshold, then the Domain will be considered malicious otherwise it will considered good. This argument will override the default Domain threshold defined as a parameter. | Optional | 
+| threshold | If confidence is greater than the threshold the Domain is considered malicious, otherwise it is considered good. This argument overrides the default Domain threshold defined as a parameter. | Optional | 
 | include_inactive | Whether to include results with an inactive status. Possible values are: True, False. | Optional | 
 
 
@@ -104,35 +103,33 @@ Checks the reputation of the given domain name.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Domain.Name | String | The domain name. | 
-| Domain.DNS | String | The IP addresses resolved by DNS.  | 
-| Domain.WHOIS.CreationDate | Date | The date when the domain was created. The date format is: YYYYMMDDThhmmss.
-Where T denotes the start of the value
-for time, in UTC time. | 
-| Domain.WHOIS.UpdatedDate | Date | The date when the domain was last updated. The date format is: YYYYMMDDThhmmss.
-Where T denotes the start of the value
-for time, in UTC time. | 
-| Domain.WHOIS.Registrant.Name | String | The name of the registrant. | 
-| Domain.WHOIS.Registrant.Email | String | The email address of the registrant. | 
-| Domain.WHOIS.Registrant.Phone | String | The phone number of the registrant. | 
+| Domain.DNS | String | The IP addresses resolved by DNS. | 
+| Domain.WHOIS.CreationDate | Date | The date the domain was created. The date format is: YYYYMMDDThhmmss, where T denotes the start of the value
+for time in UTC time. | 
+| Domain.WHOIS.UpdatedDate | Date | The date the domain was last updated. The date format is: YYYYMMDDThhmmss, where T denotes the start of the value
+for time in UTC time. | 
+| Domain.WHOIS.Registrant.Name | String | The registrant name. | 
+| Domain.WHOIS.Registrant.Email | String | The registrant email address. | 
+| Domain.WHOIS.Registrant.Phone | String | The registrant phone number. | 
 | ThreatStream.Domain.ASN | String | The Autonomous System \(AS\) number associated with the indicator. | 
-| ThreatStream.Domain.Address | String | The domain name of the indicator. | 
+| ThreatStream.Domain.Address | String | The indicator domain name. | 
 | ThreatStream.Domain.Country | String | The country associated with the indicator. | 
 | ThreatStream.Domain.Type | String | The indicator type. | 
-| ThreatStream.Domain.Modified | String | The date and time when the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value
-for time, in UTC time. | 
+| ThreatStream.Domain.Modified | String | The date and time the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value
+for time in UTC time. | 
 | ThreatStream.Domain.Severity | String | The indicator severity \("very-high", "high", "medium", "low"\). | 
-| ThreatStream.Domain.Confidence | String | The observable certainty level of a reported indicator type. Confidence score can range from 0-100, in increasing order of confidence. | 
+| ThreatStream.Domain.Confidence | String | The observable certainty level of a reported indicator type. Confidence score ranges from 0-100, in increasing order of confidence. | 
 | ThreatStream.Domain.Status | String | The status assigned to the indicator. | 
 | ThreatStream.Domain.Organization | String | The name of the business that owns the IP address associated with the indicator. | 
-| ThreatStream.Domain.Source | String | The source of the indicator. | 
-| Domain.Malicious.Vendor | String | Vendor that reported the indicator as malicious. | 
+| ThreatStream.Domain.Source | String | The indicator source. | 
+| Domain.Malicious.Vendor | String | The vendor that reported the indicator as malicious. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | DBotScore.Score | Number | The actual score. | 
 | ThreatStream.Domain.Tags | Unknown | Tags assigned to the domain. | 
-| Domain.Tags | Unknown | \(List\) Tags of the domain. | 
-| Domain.ThreatTypes | Unknown | Threat types that are associated with the domain. | 
+| Domain.Tags | Unknown | List of domain tags. | 
+| Domain.ThreatTypes | Unknown | Threat types associated with the domain. | 
 
 
 #### Command Example
@@ -223,7 +220,7 @@ Checks the reputation of the given hash of the file.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | file | The hash of file to check. | Required | 
-| threshold | If the confidence is greater than the threshold, then the hash of file will be considered malicious otherwise it will considered as good. This argument will override the default File threshold defined as a parameter. | Optional | 
+| threshold | If the confidence is greater than the threshold the hash of the file is considered malicious, otherwise it is considered good. This argument overrides the default file threshold defined as a parameter. | Optional | 
 | include_inactive | Whether to include results with an inactive status. Possible values are: True, False. | Optional | 
 
 
@@ -233,7 +230,7 @@ Checks the reputation of the given hash of the file.
 | --- | --- | --- |
 | File.MD5 | String | The MD5 hash of the file. | 
 | File.SHA1 | String | The SHA1 hash of the file. | 
-| File.SHA256 | String | The SHA1 hash of the file. | 
+| File.SHA256 | String | The SHA256 hash of the file. | 
 | File.SHA512 | String | The SHA512 hash of the file. | 
 | File.Malicious.Vendor | String | The vendor that reported the indicator as malicious. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
@@ -241,19 +238,19 @@ Checks the reputation of the given hash of the file.
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | DBotScore.Score | Number | The actual score. | 
 | ThreatStream.File.Severity | String | The indicator severity \("very-high", "high", "medium", "low"\). | 
-| ThreatStream.File.Confidence | String | The observable certainty level of a reported indicator type. Confidence score can range from 0-100, in increasing order of confidence. | 
+| ThreatStream.File.Confidence | String | The observable certainty level of a reported indicator type. Confidence score ranges from 0-100, in increasing order of confidence. | 
 | ThreatStream.File.Status | String | The status assigned to the indicator. | 
 | ThreatStream.File.Type | String | The indicator type. | 
 | ThreatStream.File.MD5 | String | The MD5 hash of the indicator. | 
 | ThreatStream.File.SHA1 | String | The SHA1 hash of the indicator. | 
 | ThreatStream.File.SHA256 | String | The SHA256 hash of the indicator. | 
 | ThreatStream.File.SHA512 | String | The SHA512 hash of the indicator. | 
-| ThreatStream.File.Modified | String | The date and time when the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value
-for time, in UTC time. | 
-| ThreatStream.File.Source | String | The source of the indicator. | 
+| ThreatStream.File.Modified | String | The date and time the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value
+for time in UTC time. | 
+| ThreatStream.File.Source | String | The indicator source. | 
 | ThreatStream.File.Tags | Unknown | Tags assigned to the file. | 
-| File.Tags | Unknown | \(List\) Tags of the file. | 
-| File.ThreatTypes | Unknown | Threat types that are associated with the file. | 
+| File.Tags | Unknown | List of file tags. | 
+| File.ThreatTypes | Unknown | Threat types associated with the file. | 
 
 
 #### Command Example
@@ -319,7 +316,7 @@ Checks the reputation of the given email address.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | email | The email address to check. | Required | 
-| threshold | If the confidence is greater than the threshold, then the Email address will be considered malicious otherwise it will considered as good. This argument will override the default Email threshold defined as a parameter. | Optional | 
+| threshold | If the confidence is greater than the threshold the email address is considered malicious, otherwise it is considered good. This argument overrides the default email threshold defined as a parameter. | Optional | 
 | include_inactive | Whether to include results with an inactive status. Possible values are: True, False. | Optional | 
 
 
@@ -332,13 +329,13 @@ Checks the reputation of the given email address.
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | DBotScore.Score | Number | The actual score. | 
 | ThreatStream.EmailReputation.Severity | String | The indicator severity \("very-high", "high", "medium", "low"\). | 
-| ThreatStream.EmailReputation.Confidence | String | The observable certainty level of a reported indicator type. Confidence score can range from 0-100, in increasing order of confidence. | 
+| ThreatStream.EmailReputation.Confidence | String | The observable certainty level of a reported indicator type. Confidence score ranges from 0-100, in increasing order of confidence. | 
 | ThreatStream.EmailReputation.Status | String | The status assigned to the indicator. | 
 | ThreatStream.EmailReputation.Type | String | The indicator type. | 
-| ThreatStream.EmailReputation.Email | String | The email address of the indicator. | 
-| ThreatStream.EmailReputation.Source | String | The source of the indicator. | 
-| ThreatStream.EmailReputation.Modified | String | The date and time when the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value
-for time, in UTC time. | 
+| ThreatStream.EmailReputation.Email | String | The indicator email address. | 
+| ThreatStream.EmailReputation.Source | String | The indicator source. | 
+| ThreatStream.EmailReputation.Modified | String | The date and time the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value
+for time in UTC time. | 
 | ThreatStream.EmailReputation.Tags | Unknown | Tags assigned to the email. | 
 
 
@@ -397,7 +394,7 @@ Returns enrichment data for Domain or IP for available observables.
 | --- | --- | --- |
 | type | The type of passive DNS search ("ip", "domain"). Possible values are: ip, domain. Default is ip. | Required | 
 | value | Possible values are "IP" or "Domain". | Required | 
-| limit | The maximum number of results to return. Default is 50. Default is 50. | Optional | 
+| limit | The maximum number of results to return. Default is 50. | Optional | 
 
 
 #### Context Output
@@ -411,7 +408,7 @@ Returns enrichment data for Domain or IP for available observables.
 | ThreatStream.PassiveDNS.FirstSeen | String | The first seen date. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value
 for time, in UTC time. | 
 | ThreatStream.PassiveDNS.LastSeen | String | The last seen date. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value
-for time, in UTC time. | 
+for time in UTC time. | 
 
 
 #### Command Example
@@ -445,7 +442,7 @@ for time, in UTC time. |
 
 ### threatstream-import-indicator-with-approval
 ***
-Imports indicators (observables) into ThreatStream. Approval of the imported data is required, using the ThreatStream UI. The data can be imported using one of three methods: plain-text, file, or URL. Only one argument can be used.
+Imports indicators (observables) into ThreatStream. The imported data must be approved using the ThreatStream UI. The data can be imported using one of three methods: plain-text, file, or URL.
 
 
 #### Base Command
@@ -455,10 +452,10 @@ Imports indicators (observables) into ThreatStream. Approval of the imported dat
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| confidence | The observable certainty level of a reported indicator type. Default is 50. Default is 50. | Optional | 
-| classification | Whether the indicator data is public or private to the organization. Default is "private". Possible values are: private, public. Default is private. | Optional | 
-| threat_type | Type of threat associated with the imported observables. Pre-defined values, such as "adware", "bot", "malware", etc. Default is "exploit". Possible values are: adware, anomalous, anonymization, apt, bot, brute, c2, compromised, crypto, data_leakage, ddos, dyn_dns, exfil, exploit, hack_tool, i2p, informational, malware, p2p, parked, phish, scan, sinkhole, spam, suppress, suspicious, tor, vps. Default is exploit. | Optional | 
-| severity | The potential impact of the indicator type with which the observable is believed to be associated. Can be "high", "medium", or "high", or "very-high". Default is "low". Possible values are: low, medium, high, very-high. Default is low. | Optional | 
+| confidence | The observable certainty level of a reported indicator type. Default is 50. | Optional | 
+| classification | Whether the indicator data is public or private to the organization. Possible values are: private, public. Default is private. | Optional | 
+| threat_type | Type of threat associated with the imported observables. Can be "adware", "anomalous", "anonymization", "apt", "bot", "brute", "c2", "compromised", "crypto", "data_leakage", "ddos", "dyn_dns", "exfil", "exploit", "hack_tool", "i2p", "informational", "malware", "p2p", "parked", "phish", "scan", "sinkhole", "spam", "suppress", "suspicious", "tor", or "vps". Possible values are: adware, anomalous, anonymization, apt, bot, brute, c2, compromised, crypto, data_leakage, ddos, dyn_dns, exfil, exploit, hack_tool, i2p, informational, malware, p2p, parked, phish, scan, sinkhole, spam, suppress, suspicious, tor, vps. Default is exploit. | Optional | 
+| severity | The potential impact of the indicator type with which the observable is believed to be associated. Can be "low", "medium", "high", or "very-high". Possible values are: low, medium, high, very-high. Default is low. | Optional | 
 | import_type | The import type of the indicator. Can be "datatext", "file-id", or "url". Possible values are: datatext, file-id, url. | Required | 
 | import_value | The source of imported data. Can be one of the following: url, datatext of file-id of uploaded file to the War Room. Supported file types for file-id are: CSV, HTML, IOC, JSON, PDF, TXT. | Required | 
 | ip_mapping | Indicator type to assign if a specific type is not associated with an observable. This is a global setting that applies to any imported IP-type observable when an explicit itype is not specified for it. | Optional | 
@@ -502,15 +499,15 @@ Imports indicators (observables) into ThreatStream. Approval is not required for
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| confidence | The observable certainty level of a reported indicator type. Default is 50. Default is 50. | Optional | 
+| confidence | The observable certainty level of a reported indicator type. Default is 50. | Optional | 
 | source_confidence_weight | To use your specified confidence entirely and not re-assess the value using machine learning algorithms, set source_confidence_ weight to 100. | Optional | 
-| expiration_ts | The time stamp of when intelligence will expire on ThreatStream, in ISO format. For example, 2020-12-24T00:00:00. | Optional | 
-| severity | The severity you want to assign to the observable when it is imported. Can be "low", "medium", "high" , or "very-high". Possible values are: low, medium, high, very-high. | Optional | 
+| expiration_ts | The time stamp when intelligence will expire on ThreatStream, in ISO format. For example, 2020-12-24T00:00:00. | Optional | 
+| severity | The severity to assign to the observable when it is imported. Can be "low", "medium", "high" , or "very-high". Possible values are: low, medium, high, very-high. | Optional | 
 | tags | A comma-separated list of tags. For example, tag1,tag2. | Optional | 
-| trustedcircles | The ID of the trusted circle with which this threat data should be shared. If you want to import the threat data to multiple trusted circles, enter a list of comma-separated IDs. | Optional | 
+| trustedcircles | A comma-separated list of trusted circle IDs with which threat data should be shared. | Optional | 
 | classification | Denotes whether the indicator data is public or private to the organization. Possible values are: private, public. | Required | 
-| allow_unresolved | Whether domain observables that are included in the file and do not resolve will be accepted as valid in ThreatStream and imported. Possible values are: yes, no. | Optional | 
-| file_id | The entry ID of an uploaded file to the War Room containing a json with "objects" array and "meta" maps. | Required | 
+| allow_unresolved | Whether unresolved domain observables are included in the file will be accepted as valid in ThreatStream and imported. Possible values are: yes, no. | Optional | 
+| file_id | The entry ID of a file (containing a JSON with an "objects" array and "meta" maps) that is uploaded to the War Room. | Required | 
 
 
 #### Context Output
@@ -537,17 +534,17 @@ Returns a list of threat models.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | model | The threat model of the returned list. Can be "actor", "campaign", "incident", "signature", "ttp", "vulnerability", or "tipreport". Possible values are: actor, campaign, incident, signature, ttp, vulnerability, tipreport. | Required | 
-| limit | Limits the list of models size. Specifying limit=0 returns up to a maximum of 1000 models. In case of limit=0 the output won't be set in the context. Default is 50. | Optional | 
+| limit | Limits the model size list. Specifying limit=0 returns up to a maximum of 1000 models. For limit=0, the output is not set in the context. Default is 50. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatStream.List.Type | String | The type of threat model. | 
-| ThreatStream.List.Name | String | The name of the threat model. | 
-| ThreatStream.List.ID | String | The ID of the threat model. | 
-| ThreatStream.List.CreatedTime | String | The date and time of threat model creation. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value for time, in UTC time. | 
+| ThreatStream.List.Type | String | The threat model type. | 
+| ThreatStream.List.Name | String | The threat model name. | 
+| ThreatStream.List.ID | String | The threat model ID. | 
+| ThreatStream.List.CreatedTime | String | The date and time of threat model creation. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value for time in UTC time. | 
 
 
 #### Command Example
@@ -618,7 +615,7 @@ Returns an HTML file with a description of the threat model.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | model | The threat model. Can be "actor", "campaign", "incident", "signature", "ttp", "vulnerability", or "tipreport". Possible values are: actor, campaign, incident, signature, ttp, vulnerability, tipreport. | Required | 
-| id | The ID of the threat model. | Required | 
+| id | The threat model ID. | Required | 
 
 
 #### Context Output
@@ -668,20 +665,20 @@ Returns a list of indicators associated with the specified model and ID of the m
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | model | The threat model. Can be "actor", "campaign", "incident", "signature", "ttp", "vulnerability", or "tipreport". Possible values are: actor, campaign, incident, signature, ttp, vulnerability, tipreport. | Required | 
-| id | The ID of the model. | Required | 
-| limit | The maximum number of results to return. Default is 20. Default is 20. | Optional | 
+| id | The model ID. | Required | 
+| limit | The maximum number of results to return. Default is 20. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatStream.Model.ModelType | String | The type of the threat model. | 
-| ThreatStream.Model.ModelID | String | The ID of the threat model. | 
-| ThreatStream.Model.Indicators.Value | String | The value of indicator associated with the specified model. | 
-| ThreatStream.Model.Indicators.ID | String | The ID of indicator associated with the specified model. | 
+| ThreatStream.Model.ModelType | String | The threat model type. | 
+| ThreatStream.Model.ModelID | String | The threat model ID. | 
+| ThreatStream.Model.Indicators.Value | String | The value of the indicator associated with the specified model. | 
+| ThreatStream.Model.Indicators.ID | String | The ID of the indicator associated with the specified model. | 
 | ThreatStream.Model.Indicators.IType | String | The iType of the indicator associated with the specified model. | 
-| ThreatStream.Model.Indicators.Severity | String | The severity of the indicator associated with the specified model. | 
+| ThreatStream.Model.Indicators.Severity | String | The indicator severity associated with the specified model. | 
 | ThreatStream.Model.Indicators.Confidence | String | The confidence of the indicator associated with the specified model. | 
 | ThreatStream.Model.Indicators.Country | String | The country of the indicator associated with the specified model | 
 | ThreatStream.Model.Indicators.Organization | String | The organization of the indicator associated with the specified model. | 
@@ -689,8 +686,8 @@ Returns a list of indicators associated with the specified model and ID of the m
 | ThreatStream.Model.Indicators.Status | String | The status of the indicator associated with the specified model. | 
 | ThreatStream.Model.Indicators.Tags | String | The tags of the indicator associated with the specified model. | 
 | ThreatStream.Model.Indicators.Modified | String | The date and time the indicator was last modified. | 
-| ThreatStream.Model.Indicators.Source | String | The source of the indicator. | 
-| ThreatStream.Model.Indicators.Type | String | The type of the indicator. | 
+| ThreatStream.Model.Indicators.Source | String | The indicator source. | 
+| ThreatStream.Model.Indicators.Type | String | The indicator type. | 
 
 
 #### Command Example
@@ -735,7 +732,7 @@ Returns a list of indicators associated with the specified model and ID of the m
 
 ### threatstream-submit-to-sandbox
 ***
-Submits a file or URL to the ThreatStream-hosted Sandbox for detonation.
+Submits a file or URL to the ThreatStream-hosted sandbox for detonation.
 
 
 #### Base Command
@@ -745,19 +742,19 @@ Submits a file or URL to the ThreatStream-hosted Sandbox for detonation.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| submission_classification | Classification of the Sandbox submission. Can be "private" or "public". Default is "private". Possible values are: private, public. Default is private. | Optional | 
-| report_platform | The platform on which the submitted URL or file will be run. To obtain a list supported platforms run the threatstream-supported-platforms command. Can be "WINDOWS7", or "WINDOWSXP". Default is "WINDOWS7". Possible values are: WINDOWS7, WINDOWSXP. Default is WINDOWS7. | Optional | 
-| submission_type | The detonation type. Can be "file" or "url". Default is "file". Possible values are: file, url. Default is file. | Required | 
+| submission_classification | Classification of the Sandbox submission. Can be "private" or "public". Possible values are: private, public. Default is private. | Optional | 
+| report_platform | The platform on which the submitted URL or file is run. To obtain a list supported platforms run the threatstream-supported-platforms command. Can be "WINDOWS7", or "WINDOWSXP". Possible values are: WINDOWS7, WINDOWSXP. Default is WINDOWS7. | Optional | 
+| submission_type | The detonation type. Can be "file" or "url". Possible values are: file, url. Default is file. | Required | 
 | submission_value | The submission value. Possible values are a valid URL or a file ID that was uploaded to the War Room to detonate. | Required | 
-| premium_sandbox | Whether the premium sandbox should be used for detonation. Default is "false". Possible values are: false, true. Default is false. | Optional | 
-| detail | A comma separated list of additional details for the indicator. This information is displayed in the Tag column of the ThreatStream UI. | Optional | 
+| premium_sandbox | Whether the premium sandbox should be used for detonation. Possible values are: false, true. Default is false. | Optional | 
+| detail | A comma-separated list of additional details for the indicator. This information is displayed in the Tag column of the ThreatStream UI. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatStream.Analysis.ReportID | String | The report ID that was submitted to the sandbox. | 
+| ThreatStream.Analysis.ReportID | String | The report ID submitted to the sandbox. | 
 | ThreatStream.Analysis.Status | String | The analysis status. | 
 | ThreatStream.Analysis.Platform | String | The platform of the submission submitted to the sandbox. | 
 
@@ -788,7 +785,7 @@ Submits a file or URL to the ThreatStream-hosted Sandbox for detonation.
 
 ### threatstream-get-analysis-status
 ***
-Returns the current status of the report that was submitted to the sandbox. The report ID is returned from the threatstream-submit-to-sandbox command.
+Returns the current status of the report submitted to the sandbox. The report ID is returned from the threatstream-submit-to-sandbox command.
 
 
 #### Base Command
@@ -798,17 +795,17 @@ Returns the current status of the report that was submitted to the sandbox. The 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| report_id | The report ID for which to check the status. | Required | 
+| report_id | The report ID to check the status. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatStream.Analysis.ReportID | String | The report ID of the file or URL that was detonated to sandbox. | 
+| ThreatStream.Analysis.ReportID | String | The report ID of the file or URL that was detonated in the sandbox. | 
 | ThreatStream.Analysis.Status | String | The report status of the file or URL that was detonated in the sandbox. | 
-| ThreatStream.Analysis.Platform | String | The platform that was used for detonation. | 
-| ThreatStream.Analysis.Verdict | String | The report verdict of the file or URL that was detonated in the sandbox. The verdict will remain "benign" until detonation is complete. | 
+| ThreatStream.Analysis.Platform | String | The platform used for detonation. | 
+| ThreatStream.Analysis.Verdict | String | The report verdict of the file or URL detonated in the sandbox. The verdict remains "benign" until detonation is complete. | 
 
 
 #### Command Example
@@ -838,7 +835,7 @@ Returns the current status of the report that was submitted to the sandbox. The 
 
 ### threatstream-analysis-report
 ***
-Returns the report of a file or URL that was submitted to the sandbox.
+Returns the report of a file or URL submitted to the sandbox.
 
 
 #### Base Command
@@ -860,24 +857,24 @@ Returns the report of a file or URL that was submitted to the sandbox.
 | ThreatStream.Analysis.Started | String | The detonation start time. | 
 | ThreatStream.Analysis.Completed | String | The detonation completion time. | 
 | ThreatStream.Analysis.Duration | Number | The duration of the detonation \(in seconds\). | 
-| ThreatStream.Analysis.VmName | String | The name of the VM. | 
-| ThreatStream.Analysis.VmID | String | The ID of the VM. | 
-| ThreatStream.Analysis.Network.UdpSource | String | The source of UDP. | 
-| ThreatStream.Analysis.Network.UdpDestination | String | The destination of UDP. | 
-| ThreatStream.Analysis.Network.UdpPort | String | The port of the UDP. | 
+| ThreatStream.Analysis.VmName | String | The VM name. | 
+| ThreatStream.Analysis.VmID | String | The VM ID. | 
+| ThreatStream.Analysis.Network.UdpSource | String | The UDP source. | 
+| ThreatStream.Analysis.Network.UdpDestination | String | The UDP destination. | 
+| ThreatStream.Analysis.Network.UdpPort | String | The UDP port. | 
 | ThreatStream.Analysis.Network.IcmpSource | String | The ICMP source. | 
-| ThreatStream.Analysis.Network.IcmpDestination | String | The destination of ICMP. | 
-| ThreatStream.Analysis.Network.IcmpPort | String | The port of the ICMP. | 
-| ThreatStream.Analysis.Network.TcpSource | String | The source of TCP. | 
-| ThreatStream.Analysis.Network.TcpDestination | String | The destination of TCP. | 
-| ThreatStream.Analysis.Network.TcpPort | String | The port of TCP. | 
-| ThreatStream.Analysis.Network.HttpSource | String | The source of HTTP address. | 
+| ThreatStream.Analysis.Network.IcmpDestination | String | The ICMP destination. | 
+| ThreatStream.Analysis.Network.IcmpPort | String | The ICMP port. | 
+| ThreatStream.Analysis.Network.TcpSource | String | The TCP source. | 
+| ThreatStream.Analysis.Network.TcpDestination | String | The TCP destination. | 
+| ThreatStream.Analysis.Network.TcpPort | String | The TCP port. | 
+| ThreatStream.Analysis.Network.HttpSource | String | The source of the HTTP address. | 
 | ThreatStream.Analysis.Network.HttpDestinaton | String | The destination of the HTTP address. | 
 | ThreatStream.Analysis.Network.HttpPort | String | The port of the HTTP address. | 
 | ThreatStream.Analysis.Network.HttpsSource | String | The source of the HTTPS address. | 
 | ThreatStream.Analysis.Network.HttpsDestinaton | String | The destination of the HTTPS address. | 
 | ThreatStream.Analysis.Network.HttpsPort | String | The port of the HTTPS address. | 
-| ThreatStream.Analysis.Network.Hosts | String | The hosts of network analysis. | 
+| ThreatStream.Analysis.Network.Hosts | String | The network analysis hosts. | 
 | ThreatStream.Analysis.Verdict | String | The verdict of the sandbox detonation. | 
 
 
@@ -949,7 +946,7 @@ Return filtered indicators from ThreatStream. If a query is defined, it override
 | --- | --- | --- |
 | query | The Anomali Observable Search Filter Language query to filter indicator results. If a query is passed as an argument, it overrides all other arguments. | Optional | 
 | asn | The Autonomous System (AS) number associated with the indicator. | Optional | 
-| confidence | The observable certainty level<br/>of a reported indicator type. Confidence scores range from 0-100, in increasing order of confidence, and is assigned by ThreatStream based on several factors. | Optional | 
+| confidence | The observable certainty level<br/>of a reported indicator type. Confidence scores range from 0-100 in increasing order of confidence, and are assigned by ThreatStream based on several factors. | Optional | 
 | country | The country associated with the indicator. | Optional | 
 | created_ts | When the indicator was first seen on<br/>the ThreatStream cloud platform. The date must be specified in this format:<br/>YYYYMMDDThhmmss, where "T" denotes the start of the value for time, in UTC time.<br/>For example, 2014-10-02T20:44:35. | Optional | 
 | id | The unique ID for the indicator. | Optional | 
@@ -968,16 +965,16 @@ Return filtered indicators from ThreatStream. If a query is defined, it override
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | ThreatStream.Indicators.IType | String | The indicator type. | 
-| ThreatStream.Indicators.Modified | String | The date and time when the indicator was last updated on the ThreatStream. Format: YYYYMMDDThhmmss, where T denotes the start of the value
-for time, in UTC time. | 
+| ThreatStream.Indicators.Modified | String | The date and time the indicator was last updated in ThreatStream. The date format is: YYYYMMDDThhmmss, where T denotes the start of the value
+for time in UTC time. | 
 | ThreatStream.Indicators.Confidence | String | The observable certainty level of a reported indicator type. | 
 | ThreatStream.Indicators.Value | String | The indicator value. | 
 | ThreatStream.Indicators.Status | String | The indicator status. | 
 | ThreatStream.Indicators.Organization | String | The registered owner \(organization\) of the IP address associated with the indicator. | 
 | ThreatStream.Indicators.Country | String | The country associated with the indicator. | 
 | ThreatStream.Indicators.Tags | String | The tag assigned to the indicator. | 
-| ThreatStream.Indicators.Source | String | The source of the indicator. | 
-| ThreatStream.Indicators.ID | String | The ID of the indicator. | 
+| ThreatStream.Indicators.Source | String | The indicator source. | 
+| ThreatStream.Indicators.ID | String | The indicator ID. | 
 | ThreatStream.Indicators.ASN | String | The Autonomous System \(AS\) number associated with the indicator. | 
 | ThreatStream.Indicators.Severity | String | The severity assigned to the indicator. | 
 
@@ -1036,7 +1033,7 @@ for time, in UTC time. |
 
 ### threatstream-add-tag-to-model
 ***
-Adds tags to intelligence for purposes of filtering for related entities.
+Adds tags to intelligence to filter for related entities.
 
 
 #### Base Command
@@ -1046,9 +1043,9 @@ Adds tags to intelligence for purposes of filtering for related entities.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| model | The type of threat model entity on which to add the tag. Can be "actor", "campaign", "incident", "intelligence", "signature", "tipreport", "ttp", or "vulnerability". Default is "intelligence" (indicator). Possible values are: actor, campaign, incident, intelligence, signature, tipreport, ttp, vulnerability. Default is intelligence. | Optional | 
+| model | The type of threat model entity to which to add the tag. Can be "actor", "campaign", "incident", "intelligence", "signature", "tipreport", "ttp", or "vulnerability". Possible values are: actor, campaign, incident, intelligence, signature, tipreport, ttp, vulnerability. Default is intelligence. | Optional | 
 | tags | A comma separated list of tags applied to the specified threat model entities or observable. . | Required | 
-| model_id | The ID of the model on which to add the tag. | Required | 
+| model_id | The ID of the model to which to add the tag. | Required | 
 
 
 #### Context Output
@@ -1076,7 +1073,7 @@ Creates a threat model with the specified parameters.
 | --- | --- | --- |
 | model | The type of threat model to create. Can be "actor", "campaign", "incident", "ttp", "vulnerability", or "tipreport". Possible values are: actor, campaign, incident, ttp, vulnerability, tipreport. | Required | 
 | name | The name of the threat model to create. | Required | 
-| is_public | Whether the scope of threat model is visible. Default is false. Possible values are: true, false. Default is false. | Optional | 
+| is_public | Whether the scope of threat model is visible. Possible values are: true, false. Default is false. | Optional | 
 | tlp | The Traffic Light Protocol designation for the threat model. Can be "red", "amber", "green", or "white". Possible values are: red, amber, green, white. Default is red. | Optional | 
 | tags | A comma separated list of tags. | Optional | 
 | intelligence | A comma separated list of indicators IDs associated with the threat model on the ThreatStream platform. | Optional | 
@@ -1087,10 +1084,10 @@ Creates a threat model with the specified parameters.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatStream.Model.ModelType | String | The type of the threat model. | 
-| ThreatStream.Model.ModelID | String | The ID of the threat model. | 
-| ThreatStream.Model.Indicators.Value | String | The value of indicator associated with the specified model. | 
-| ThreatStream.Model.Indicators.ID | String | The ID of indicator associated with the specified model. | 
+| ThreatStream.Model.ModelType | String | The threat model type. | 
+| ThreatStream.Model.ModelID | String | The threat model ID. | 
+| ThreatStream.Model.Indicators.Value | String | The value of the indicator associated with the specified model. | 
+| ThreatStream.Model.Indicators.ID | String | The ID of the indicator associated with the specified model. | 
 | ThreatStream.Model.Indicators.IType | String | The iType of the indicator associated with the specified model. | 
 | ThreatStream.Model.Indicators.Severity | String | The severity of the indicator associated with the specified model. | 
 | ThreatStream.Model.Indicators.Confidence | String | The confidence of the indicator associated with the specified model. | 
@@ -1100,8 +1097,8 @@ Creates a threat model with the specified parameters.
 | ThreatStream.Model.Indicators.Status | String | The status of the indicator associated with the specified model. | 
 | ThreatStream.Model.Indicators.Tags | String | The tags of the indicator associated with the specified model. | 
 | ThreatStream.Model.Indicators.Modified | String | The date and time the indicator was last modified. | 
-| ThreatStream.Model.Indicators.Source | String | The source of the indicator. | 
-| ThreatStream.Model.Indicators.Type | String | The type of the indicator. | 
+| ThreatStream.Model.Indicators.Source | String | The indicator source. | 
+| ThreatStream.Model.Indicators.Type | String | The indicator type. | 
 
 
 #### Command Example
@@ -1159,10 +1156,10 @@ Updates a threat model with specific parameters. If one or more optional paramet
 | model | The type of threat model to update. Can be "actor", "campaign", "incident", "ttp", "vulnerability", or "tipreport". Possible values are: actor, campaign, incident, ttp, vulnerability, tipreport. | Required | 
 | model_id | The ID of the threat model to update. | Required | 
 | name | The name of the threat model to update. | Optional | 
-| is_public | Whether the scope of threat model is visible. Default is false. Possible values are: true, false. Default is false. | Optional | 
+| is_public | Whether the scope of threat model is visible. Possible values are: true, false. Default is false. | Optional | 
 | tlp | The Traffic Light Protocol designation for the threat model. Can be "red", "amber", "green", or "white". Possible values are: red, amber, green, white. Default is red. | Optional | 
 | tags | A comma separated list of tags. | Optional | 
-| intelligence | A comma separated list of indicators IDs associated with the threat model on the ThreatStream platform. | Optional | 
+| intelligence | A comma separated list of indicator IDs associated with the threat model on the ThreatStream platform. | Optional | 
 | description | The description of the threat model. | Optional | 
 
 
@@ -1170,10 +1167,10 @@ Updates a threat model with specific parameters. If one or more optional paramet
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatStream.Model.ModelType | String | The type of the threat model. | 
-| ThreatStream.Model.ModelID | String | The ID of the threat model. | 
-| ThreatStream.Model.Indicators.Value | String | The value of indicator associated with the specified model. | 
-| ThreatStream.Model.Indicators.ID | String | The ID of indicator associated with the specified model. | 
+| ThreatStream.Model.ModelType | String | The threat model type. | 
+| ThreatStream.Model.ModelID | String | The threat model ID. | 
+| ThreatStream.Model.Indicators.Value | String | The value of the indicator associated with the specified model. | 
+| ThreatStream.Model.Indicators.ID | String | The ID of the indicator associated with the specified model. | 
 | ThreatStream.Model.Indicators.IType | String | The iType of the indicator associated with the specified model. | 
 | ThreatStream.Model.Indicators.Severity | String | The severity of the indicator associated with the specified model. | 
 | ThreatStream.Model.Indicators.Confidence | String | The confidence of the indicator associated with the specified model. | 
@@ -1183,8 +1180,8 @@ Updates a threat model with specific parameters. If one or more optional paramet
 | ThreatStream.Model.Indicators.Status | String | The status of the indicator associated with the specified model. | 
 | ThreatStream.Model.Indicators.Tags | String | The tags of the indicator associated with the specified model. | 
 | ThreatStream.Model.Indicators.Modified | String | The date and time the indicator was last modified. | 
-| ThreatStream.Model.Indicators.Source | String | The source of the indicator. | 
-| ThreatStream.Model.Indicators.Type | String | The type of the indicator. | 
+| ThreatStream.Model.Indicators.Source | String | The indicator source. | 
+| ThreatStream.Model.Indicators.Type | String | The indicator type. | 
 
 
 #### Command Example
@@ -1239,7 +1236,7 @@ Returns a list of supported platforms for default or premium sandbox.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| sandbox_type | The type of sandbox ("default" or "premium"). Default type is "default". Possible values are: default, premium. Default is default. | Optional | 
+| sandbox_type | The type of sandbox ("default" or "premium"). Possible values are: default, premium. Default is default. | Optional | 
 
 
 #### Context Output
@@ -1297,7 +1294,7 @@ Checks the reputation of the given URL.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | url | The URL to check. | Required | 
-| threshold | If confidence is greater than the threshold, then the URL will be considered malicious otherwise it will considered good. This argument will override the default URL threshold defined as a parameter. | Optional | 
+| threshold | If confidence is greater than the threshold the URL is considered malicious, otherwise it is considered good. This argument overrides the default URL threshold defined as a parameter. | Optional | 
 | include_inactive | Whether to include results with an inactive status. Possible values are: True, False. | Optional | 
 
 
@@ -1310,20 +1307,20 @@ Checks the reputation of the given URL.
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | DBotScore.Score | Number | The actual score. | 
 | URL.Data | String | The URL of the indicator. | 
-| URL.Malicious.Vendor | String | Vendor that reported the indicator as malicious. | 
-| ThreatStream.URL.Modified | String | The date and time when the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value
-for time, in UTC time. | 
-| ThreatStream.URL.Confidence | String | The observable certainty level of a reported indicator type. Confidence score can range from 0-100, in increasing order of confidence. | 
-| ThreatStream.URL.Status | String | The status of the indicator. | 
+| URL.Malicious.Vendor | String | The vendor that reported the indicator as malicious. | 
+| ThreatStream.URL.Modified | String | The date and time the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value
+for time in UTC time. | 
+| ThreatStream.URL.Confidence | String | The observable certainty level of a reported indicator type. Confidence score ranges from 0-100, in increasing order of confidence. | 
+| ThreatStream.URL.Status | String | The indicator status. | 
 | ThreatStream.URL.Organization | String | The name of the business that owns the IP address associated with the indicator. | 
-| ThreatStream.URL.Address | String | The URL of the indicator. | 
+| ThreatStream.URL.Address | String | The indicator URL. | 
 | ThreatStream.URL.Country | String | The country associated with the indicator. | 
 | ThreatStream.URL.Type | String | The indicator type. | 
-| ThreatStream.URL.Source | String | The source of the indicator. | 
+| ThreatStream.URL.Source | String | The indicator source. | 
 | ThreatStream.URL.Severity | String | The indicator severity \("very-high", "high", "medium", or "low"\). | 
 | ThreatStream.URL.Tags | Unknown | Tags assigned to the URL. | 
-| URL.Tags | Unknown | \(List\) Tags of the URL. | 
-| URL.ThreatTypes | Unknown | Threat types that are associated with the url. | 
+| URL.Tags | Unknown | List of URL tags. | 
+| URL.ThreatTypes | Unknown | Threat types associated with the url. | 
 
 
 #### Command Example
