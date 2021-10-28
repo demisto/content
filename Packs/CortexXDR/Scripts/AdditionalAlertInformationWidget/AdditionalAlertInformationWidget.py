@@ -19,6 +19,18 @@ import traceback
 ''' COMMAND FUNCTION '''
 
 
+def indicator_to_clickable(indicator):
+    res = demisto.executeCommand('GetIndicatorsByQuery', {'query': f'value:{indicator}'})
+    if isError(res[0]):
+        return_error('Query for get indicators is invalid')
+    res_content = res[0].get('Contents')
+    if not res_content:
+        return_error(f'Indicator {indicator} was not found')
+    indicator_id = res_content[0].get('id')
+    incident_url = os.path.join('#', 'indicator', indicator_id)
+    return f'[{indicator}]({incident_url})'
+
+
 def get_additonal_info() -> CommandResults:
     alerts = demisto.get(demisto.context(), 'PaloAltoNetworksXDR.OriginalAlert')
     if not isinstance(alerts, list):
@@ -32,7 +44,7 @@ def get_additonal_info() -> CommandResults:
                'Provider': alert.get('event').get('cloud_provider'),
                'Log Name': alert.get('event').get('log_name'),
                'Event Type': alert.get('event').get('event_type'),
-               'Caller IP': alert.get('event').get('caller_ip'),
+               'Caller IP': indicator_to_clickable(alert.get('event').get('caller_ip')),
                'Caller IP Geo Location': alert.get('event').get('caller_ip_geolocation'),
                'Resource Type': alert.get('event').get('resource_type'),
                'Identity Name': alert.get('event').get('identity_name'),

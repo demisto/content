@@ -21,15 +21,14 @@ import traceback
 
 
 def indicator_to_clickable(indicator):
-    server_url = demisto.demistoUrls().get('server')
     res = demisto.executeCommand('GetIndicatorsByQuery', {'query': f'value:{indicator}'})
     if isError(res[0]):
         return_error('Query for get indicators is invalid')
-    res_content = res.get('Contents')
+    res_content = res[0].get('Contents')
     if not res_content:
-        return_error(f'ip address {indicator} was not found')
-    incident_id = res_content[0].get('id')
-    incident_url = os.path.join(server_url, '#', 'incident', incident_id)
+        return_error(f'Indicator {indicator} was not found')
+    indicator_id = res_content[0].get('id')
+    incident_url = os.path.join('#', 'indicator', indicator_id)
     return f'[{indicator}]({incident_url})'
 
 
