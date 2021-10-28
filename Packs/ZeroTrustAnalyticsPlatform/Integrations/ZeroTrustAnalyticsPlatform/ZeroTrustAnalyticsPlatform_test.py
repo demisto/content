@@ -8,6 +8,7 @@ from ZeroTrustAnalyticsPlatform import (
     get_remote_data,
     get_modified_remote_data,
     update_remote_system,
+    ztap_get_alert_entries,
 )
 
 from test_data.api_data import (
@@ -446,3 +447,22 @@ def test_update_remote_system_reopen(mocker):
     client.reopen_alert.assert_called()
 
     assert response == "1"
+
+
+def test_ztap_get_alert_entries(mocker):
+    client = get_test_client()
+
+    mocker.patch.object(client, "get_alert", return_value=alert_data())
+    mocker.patch.object(client, "get_comments", return_value=comment_data())
+    mocker.patch.object(client, "get_logs", return_value=log_data())
+    mocker.patch.object(client, "get_active_user", return_value=user_data())
+
+    args = {
+        "id": "1",
+    }
+    response = ztap_get_alert_entries(client, args)
+
+    entries_json = json.dumps(response)
+    entry_response = json.dumps(comment_entries() + log_entries())
+
+    assert entries_json == entry_response

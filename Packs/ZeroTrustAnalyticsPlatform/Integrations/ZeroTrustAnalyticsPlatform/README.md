@@ -50,7 +50,7 @@ Get mapping fields from remote incident.
 There is no context output for this command.
 
 #### Command Example
-``` ```
+```!get-mapping-fields```
 
 #### Human Readable Output
 
@@ -58,7 +58,7 @@ There is no context output for this command.
 
 ### get-remote-data
 ***
-Get remote data from a remote incident.
+Get remote data from a remote incident. This command should only be called manually for debugging purposes.
 
 
 #### Base Command
@@ -77,33 +77,9 @@ Get remote data from a remote incident.
 There is no context output for this command.
 
 #### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
-### get-modified-remote-data
-***
-Get the list of incidents that were modified since the last update.
-
-
-#### Base Command
-
-`get-modified-remote-data`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| lastUpdate | Date string representing the local time.The incident is only returned if it was modified after the last update time. | Optional | 
-
-
-#### Context Output
-
-There is no context output for this command.
-
-#### Command Example
-``` ```
+```
+!get-remote-data id=1 lastUpdate=2000-01-1
+```
 
 #### Human Readable Output
 
@@ -129,8 +105,15 @@ Get the entries data from a remote incident.
 There is no context output for this command.
 
 #### Command Example
-``` ```
+```!ztap-get-alert-entries id=1```
 
 #### Human Readable Output
 
-
+>```
+>{
+>    "contents": "Example comment.",
+>    "files": [],
+>    "occurred": "2021-10-28T18:57:01Z",
+>    "type": "comment"
+>}
+>```
