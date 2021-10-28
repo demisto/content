@@ -4559,6 +4559,42 @@
         {
             "integrations": "Azure Sentinel",
             "playbookID": "TestAzureSentinelPlaybookV2"
+        },
+        {
+            "integrations": "AnsibleAlibabaCloud",
+            "playbookID": "Test-AlibabaCloud"
+        },
+        {
+            "integrations": "AnsibleAzure",
+            "playbookID": "Test-AnsibleAzure"
+        },
+        {
+            "integrations": "AnsibleCiscoIOS",
+            "playbookID": "Test-AnsibleCiscoIOS"
+        },
+        {
+            "integrations": "AnsibleCiscoNXOS",
+            "playbookID": "Test-AnsibleCiscoNXOS"
+        },
+        {
+            "integrations": "AnsibleHCloud",
+            "playbookID": "Test-AnsibleHCloud"
+        },
+        {
+            "integrations": "AnsibleKubernetes",
+            "playbookID": "Test-AnsibleKubernetes"
+        },
+        {
+            "integrations": "AnsibleLinux",
+            "playbookID": "Test-AnsibleLinux"
+        },
+        {
+            "integrations": "AnsibleWindows",
+            "playbookID": "Test-AnsibleWindows"
+        },
+        {
+            "integrations": "AnsibleVMware",
+            "playbookID": "Test-AnsibleVMware"
         }
     ],
     "skipped_tests": {
