@@ -95,7 +95,14 @@ Search for events in MISP. This search command will return only information abou
 | MISP.Event.Feed.SourceFormat | String | Feed source format \(MISP for example\). | 
 | MISP.Event.Feed.URL | String | Feed url. | 
 | MISP.Event.Feed.EventUUIDS | Unknown | List of event uuids include the feed. | 
-
+| MISP.Event.Attribute.Feed.ID | String | Attribute feed id. | 
+| MISP.Event.Attribute.Feed.Name | String | Attribute feed name. | 
+| MISP.Event.Attribute.Feed.Provider | String | Attribute feed provider. | 
+| MISP.Event.Attribute.Feed.SourceFormat | String | Attribute feed source format \(MISP for example\). | 
+| MISP.Event.Attribute.Feed.URL | String | Attribute feed url. | 
+| MISP.Event.Attribute.Feed.EventUUIDS | Unknown | List of event uuids include the attribute feed. | 
+| MISP.Event.Attribute.ID | String | MISP attribute ID. | 
+| MISP.Event.Attribute.UUID | String | MISP attribute UUID. | 
 
 #### Command Example
 ```!misp-search-events category="Other" limit=3 page=1```
