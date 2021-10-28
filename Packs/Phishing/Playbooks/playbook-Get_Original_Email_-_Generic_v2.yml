@@ -4,7 +4,9 @@ contentitemexportablefields:
   contentitemfields: {}
 name: Get Original Email - Generic v2
 description: |-
-  Use this playbook to retrieve the original email in the thread, including headers and attahcments, when the reporting user forwarded the original email not as an attachment.
+  This v2 playbook is being used inside the "Phishing" flow. It will retrieve an original mail based on the inputs.
+
+  The inputs in this version are not using any labels and also allow the user to supply an email brand.
 
   You must have the necessary permissions in your email service to execute global search.
 

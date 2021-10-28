@@ -112,8 +112,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -360,
-          "y": 1790
+          "x": -130,
+          "y": 1880
         }
       }
     note: false
@@ -140,7 +140,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "22"
+      - "39"
     scriptarguments:
       entryid:
         simple: ${reportedemailentryid}
@@ -151,8 +151,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 600,
-          "y": 1180
+          "x": 660,
+          "y": 1075
         }
       }
     note: false
@@ -385,8 +385,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -270,
-          "y": 190
+          "x": -260,
+          "y": 200
         }
       }
     note: false
@@ -426,8 +426,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 100,
-          "y": 1170
+          "x": 180,
+          "y": 1240
         }
       }
     note: false
@@ -617,8 +617,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1080,
-          "y": 2040
+          "x": 1180,
+          "y": 2080
         }
       }
     note: false
@@ -663,8 +663,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 110,
-          "y": 1790
+          "x": 340,
+          "y": 1880
         }
       }
     note: false
@@ -715,8 +715,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 110,
-          "y": 1530
+          "x": 660,
+          "y": 1660
         }
       }
     note: false
@@ -741,13 +741,13 @@ tasks:
     nexttasks:
       '#none#':
       - "21"
-      - "39"
+      - "25"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 600,
-          "y": 1380
+          "x": 960,
+          "y": 1465
         }
       }
     note: false
@@ -863,7 +863,7 @@ tasks:
       {
         "position": {
           "x": 2370,
-          "y": 1700
+          "y": 1660
         }
       }
     note: false
@@ -1234,7 +1234,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 300,
+          "x": 380,
           "y": 530
         }
       }
@@ -1273,7 +1273,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 300,
+          "x": 380,
           "y": 365
         }
       }
@@ -1328,8 +1328,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -110,
-          "y": 715
+          "x": -30,
+          "y": 690
         }
       }
     note: false
@@ -1371,8 +1371,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 100,
-          "y": 935
+          "x": 180,
+          "y": 885
         }
       }
     note: false
@@ -1417,8 +1417,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 580,
-          "y": 1790
+          "x": 810,
+          "y": 1880
         }
       }
     note: false
@@ -1496,8 +1496,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 300,
-          "y": 715
+          "x": 380,
+          "y": 695
         }
       }
     note: false
@@ -1509,22 +1509,22 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: 0cd5de03-e240-42df-8f82-d81c03856268
+    taskid: 2113716f-6e64-4016-8a79-99704e0f558a
     type: condition
     task:
-      id: 0cd5de03-e240-42df-8f82-d81c03856268
+      id: 2113716f-6e64-4016-8a79-99704e0f558a
       version: -1
-      name: Check if attachments were found in eml
-      description: This branch is for a scenario when the email was retrieved as an
-        eml. The inner attachments' details should be displayed in the layout.
+      name: Check if attachments were found in eml file
+      description: Check if attachments were found in eml file in order to display
+        their details in the layout.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
-      - "11"
+      - "21"
       "yes":
-      - "25"
+      - "22"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1539,8 +1539,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1060,
-          "y": 1530
+          "x": 660,
+          "y": 1240
         }
       }
     note: false
@@ -1556,14 +1556,16 @@ view: |-
     "linkLabelsPosition": {
       "16_2_#default#": 0.28,
       "16_34_Yes-Alerts": 0.45,
+      "18_22_Email Exist": 0.38,
       "23_24_yes": 0.49,
+      "39_22_yes": 0.11,
       "4_5_yes": 0.57
     },
     "paper": {
       "dimensions": {
         "height": 3415,
-        "width": 4130,
-        "x": -360,
+        "width": 4030,
+        "x": -260,
         "y": -510
       }
     }
@@ -1724,5 +1726,5 @@ outputs:
   description: The File object.
   type: unknown
 tests:
-- - Process Email - Generic - Test - Incident Starter
+- Process Email - Generic - Test - Incident Starter
 fromversion: 6.1.0
