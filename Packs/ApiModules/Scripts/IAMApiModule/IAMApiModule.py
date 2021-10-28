@@ -511,8 +511,6 @@ class IAMCommand:
                     if updated_user.is_active is None:
                         updated_user.is_active = True if allow_enable else False
 
-                    if updated_user.email is None:
-                        updated_user.email = user_profile.get_attribute('email')
 
                     user_profile.set_result(
                         action=IAMActions.UPDATE_USER,
