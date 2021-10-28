@@ -6,6 +6,22 @@
     "Saas Security Incident": {
       "dontMapEventToLabels": true,
       "internalMapping": {
+        "Saas Security Asset Name": {
+          "complex": null,
+          "simple": "asset_name"
+        },
+        "Saas Security Incident Id": {
+          "complex": null,
+          "simple": "incident_id"
+        },
+        "Saas Security Incident Severity Level": {
+          "complex": null,
+          "simple": "severity_level"
+        },
+        "Policy URI": {
+          "complex": null,
+          "simple": "policy_page_uri"
+        },
         "App": {
           "complex": null,
           "simple": "app_name"
@@ -38,45 +54,9 @@
           "complex": null,
           "simple": "policy_id"
         },
-        "Policy URI": {
-          "complex": null,
-          "simple": "policy_page_uri"
-        },
         "SHA256": {
           "complex": null,
           "simple": "asset_sha256"
-        },
-        "Saas Security Asset ID": {
-          "complex": null,
-          "simple": "asset_id"
-        },
-        "Saas Security Asset Name": {
-          "complex": null,
-          "simple": "asset_name"
-        },
-        "Saas Security Assigned To": {
-          "complex": null,
-          "simple": "assigned_to"
-        },
-        "Saas Security Incident Id": {
-          "complex": null,
-          "simple": "incident_id"
-        },
-        "Saas Security Incident Owner": {
-          "complex": null,
-          "simple": "asset_owner_name"
-        },
-        "Saas Security Incident Owner Email": {
-          "complex": null,
-          "simple": "asset_owner_email"
-        },
-        "Saas Security Incident Severity Level": {
-          "complex": null,
-          "simple": "severity_level"
-        },
-        "Saas Security Incident Updated At": {
-          "complex": null,
-          "simple": "updated_at"
         },
         "State": {
           "complex": null,
@@ -90,6 +70,30 @@
           "complex": null,
           "simple": "category"
         },
+        "Saas Security State": {
+          "complex": null,
+          "simple": "state"
+        },
+        "Saas Security Category": {
+          "complex": null,
+          "simple": "category"
+        },
+        "Saas Security Assigned To": {
+          "complex": null,
+          "simple": "assigned_to"
+        },
+        "Saas Security Resolved By": {
+          "complex": null,
+          "simple": "resolved_by"
+        },
+        "Saas Security Status": {
+          "complex": null,
+          "simple": "status"
+        },
+        "Saas Security Asset ID": {
+          "complex": null,
+          "simple": "asset_id"
+        },
         "name": {
           "complex": null,
           "simple": "asset_name"
@@ -101,6 +105,40 @@
         "severity": {
           "complex": null,
           "simple": "severity"
+        },
+        "dbotMirrorDirection": {
+            "complex": null,
+            "simple": "mirror_direction"
+        },
+        "dbotMirrorId": {
+            "complex": null,
+            "simple": "incident_id"
+        },
+        "dbotMirrorInstance": {
+            "complex": null,
+            "simple": "mirror_instance"
+        },
+        "dbotMirrorLastSync": {
+            "complex": {
+                "accessor": "",
+                "filters": [
+
+                ],
+                "root": "last_mirrored_in",
+                "transformers": [
+                    {
+                        "args": {
+
+                        },
+                        "operator": "TimeStampToDate"
+                    }
+                ]
+            },
+            "simple": ""
+        },
+        "IncomingMirrorError": {
+            "complex": null,
+            "simple": "in_mirror_error"
         }
       }
     },
@@ -110,10 +148,6 @@
         "Saas Security Incident Severity Level": {
           "complex": null,
           "simple": "severity_level"
-        },
-        "Saas Security State": {
-          "complex": null,
-          "simple": "state"
         }
       }
     }
