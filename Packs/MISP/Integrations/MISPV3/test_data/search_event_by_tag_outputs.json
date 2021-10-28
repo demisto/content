@@ -17,6 +17,18 @@
     "PublishTimestamp": "1623745862",
     "SharingGroupID": "0",
     "DisableCorrelation": false,
+    "Attribute" : [
+        {
+          "ID": "69548",
+          "UUID": "5fd0c620-4c60-47a4-91c7-a37bc0a8ab16",
+          "Feed": []
+        },
+        {
+          "ID": "69549",
+          "UUID": "5fd0c620-6cb4-4e13-b068-a37bc0a8ab16",
+          "Feed": []
+        }
+    ],
     "Organization": {
       "ID": "1",
       "Name": "ORGNAME",
@@ -67,6 +79,18 @@
     "PublishTimestamp": "1623832501",
     "SharingGroupID": "0",
     "DisableCorrelation": false,
+    "Attribute": [
+      {
+          "ID": "70915",
+          "UUID": "5e6b336d-13f0-4705-b353-457dd7dd9f6d",
+          "Feed" : []
+      },
+      {
+          "ID": "70916",
+          "UUID": "5e6b336d-5180-45aa-a1c1-457dd7dd9f6d",
+          "Feed" : []
+      }
+    ],
     "Organization": {
       "ID": "1",
       "Name": "ORGNAME",
