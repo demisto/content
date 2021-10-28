@@ -394,7 +394,7 @@ Modifies an issue in Jira.
 
 
 ##### Command Example
-```!jira-edit-issue issueId=15572 customFields=Type_of_incident:Malware(Virus,_Ransomware) description="Just a description"```
+```!jira-edit-issue issueId=DEM-4921 issueJson=`{"fields":{"customfield_100": "testing3"}}```
 
 ##### Context Example
 ```
