@@ -210,6 +210,7 @@ EVENT_FIELDS = [
     'decay_score',
     'Object',
     'Feed',
+    'Attribute',
 ]
 
 ATTRIBUTE_FIELDS = [
@@ -976,27 +977,29 @@ def build_events_search_response(response: Union[dict, requests.Response]) -> di
         response_object = json.loads(json.dumps(response_object))
     events = [event.get('Event') for event in response_object]
     for i in range(0, len(events)):
-        attribute_feed_hit = get_attribute_feed_hit(events[i])
         # Filter object from keys in event_args
         events[i] = {key: events[i].get(key) for key in EVENT_FIELDS if key in events[i]}
         events[i]['RelatedEvent'] = []  # there is no need in returning related event when searching for an event
         build_galaxy_output(events[i])
         build_tag_output(events[i])
         build_object_output(events[i])
+        build_attribute_feed_hit(events[i])
         events[i]['timestamp'] = misp_convert_timestamp_to_date_string(events[i].get('timestamp'))
         events[i]['publish_timestamp'] = misp_convert_timestamp_to_date_string(events[i].get('publish_timestamp'))
-        if attribute_feed_hit:
-            events[i]['Attribute']['Feed'] = attribute_feed_hit
 
     formatted_events = replace_keys_from_misp_to_context_data(events)  # type: ignore
     return formatted_events  # type: ignore
 
 
-def get_attribute_feed_hit(event: dict) -> Optional[dict, None]:
-    attribute = event.get('Attribute', {})
-    if 'Feed' in attribute:
-        return attribute.get('Feed')
-    return None
+def build_attribute_feed_hit(event: dict):
+    if event.get('Attribute'):
+        event['Attribute'] = [
+            {
+                'id': attribute.get('id'),
+                'uuid': attribute.get('uuid'),
+                'Feed': attribute.get('Feed')
+            } for attribute in event['Attribute']
+        ]
 
 
 def event_to_human_readable_tag_list(event):

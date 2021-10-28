@@ -282,6 +282,30 @@ script:
     - contextPath: MISP.Event.Feed.EventUUIDS
       description: List of event uuids include the feed.
       type: Unknown
+    - contextPath: MISP.Event.Attribute.Feed.ID
+      description: Attribute feed id.
+      type: String
+    - contextPath: MISP.Event.Attribute.Feed.Name
+      description: Attribute feed name.
+      type: String
+    - contextPath: MISP.Event.Attribute.Feed.Provider
+      description: Attribute feed provider.
+      type: String
+    - contextPath: MISP.Event.Attribute.Feed.SourceFormat
+      description: Attribute feed source format (MISP for example).
+      type: String
+    - contextPath: MISP.Event.Attribute.Feed.URL
+      description: Attribute feed url.
+      type: String
+    - contextPath: MISP.Event.Attribute.Feed.EventUUIDS
+      description: List of event uuids include the attribute feed.
+      type: Unknown
+    - contextPath: MISP.Event.Attribute.ID
+      description: MISP attribute ID.
+      type: String
+    - contextPath: MISP.Event.Attribute.UUID
+      description: MISP attribute UUID.
+      type: String
   - arguments:
     - default: true
       description: Domain to search.
