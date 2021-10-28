@@ -1332,7 +1332,8 @@ def fetch_incidents_command() -> List[Dict]:
     Returns:
         (List[Dict]): List of incidents samples.
     """
-    return json.loads(get_integration_context().get('samples', '[]'))
+    ctx = get_integration_context()
+    return extract_context_data(ctx).get('samples', [])
 
 
 def create_search_with_retry(client: Client, fetch_mode: str, offense: Dict, event_columns: str, events_limit: int,
