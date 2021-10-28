@@ -202,12 +202,12 @@ Before you can create an instance of the Microsoft Teams integration in Cortex X
 1. Download the ZIP file located at the bottom of this article.
 2. Uncompress the ZIP file. You should see 3 files (`manifest.json`, `color.png` and `outline.png`).
 3. Open the `manifest.json` file that was extracted from the ZIP file.
-4. In the `bots` list, replace the value of the `botId` attribute with the value of the *Bot ID* you stored in the previous steps.
-5. Compress back the 3 files (the modified `manifest.json` file, `color.png` and `outline.png`).
+4. In the `bots` list, replace the value of the `botId` attribute with the value of the *Bot ID* from step 5 of the **Create the Demisto Bot in Microsoft Teams section**.
+5. Compress the 3 files (the modified `manifest.json` file, `color.png` and `outline.png`).
 6. Navigate to [Manage Apps in the Microsoft Teams admin center](https://admin.teams.microsoft.com/policies/manage-apps).
 7. Click the **+Upload** button.
-8. In the modal that pops up click the **Upload** button.
-9. Browse for the ZIP you created in the previous steps, open it and wait a few seconds until it loads.
+8. In the pop-up window, click the **Upload** button.
+9. Browse for the ZIP file you created in step 5, open it, and wait a few seconds until it loads.
 10. Search for **Demisto Bot**.
 11. In the line where `Demisto Bot` shows under **Name**, tick the V on the left.
 12. Click the **Add to team** button.
