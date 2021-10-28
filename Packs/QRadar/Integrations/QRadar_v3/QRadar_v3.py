@@ -1690,10 +1690,16 @@ def move_updated_offenses(context_data: dict, version: Any, include_context_data
                                  MIRRORED_OFFENSES_CTX_KEY: not_updated_list,
                                  RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY:
                                      context_data.get(RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY, [])})  # type: ignore
-        if not new_context_data.get('samples'):
-            new_context_data.update({'samples': context_data.get('samples')})
-        if not new_context_data.get('last_mirror_update'):
-            new_context_data.update({'last_mirror_update': str(context_data.get('last_mirror_update', 0))})
+    else:
+        new_context_data.update({UPDATED_MIRRORED_OFFENSES_CTX_KEY: context_data.get(UPDATED_MIRRORED_OFFENSES_CTX_KEY, []),
+                                 MIRRORED_OFFENSES_CTX_KEY: context_data.get(MIRRORED_OFFENSES_CTX_KEY, []),
+                                 RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY:
+                                     context_data.get(RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY, [])})
+
+    if not new_context_data.get('samples'):
+        new_context_data.update({'samples': context_data.get('samples')})
+    if not new_context_data.get('last_mirror_update'):
+        new_context_data.update({'last_mirror_update': str(context_data.get('last_mirror_update', 0))})
 
     return encode_context_data(new_context_data, include_id=True), version, new_context_data
 
