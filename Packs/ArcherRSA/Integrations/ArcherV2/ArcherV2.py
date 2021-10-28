@@ -235,7 +235,7 @@ SOAP_COMMANDS = {
 
 def get_occurred_time(fields: Union[List[dict], dict], field_id: str) -> str:
     """
-    Occurred time is part of the raw 'Field' key in the response.
+    Occurred time is part of the raw 'Field' key in the response...
     It should be under @xmlConvertedValue, but field can be both a list or a dict.
 
     Arguments:
