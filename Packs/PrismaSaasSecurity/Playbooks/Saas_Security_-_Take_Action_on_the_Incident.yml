@@ -1,6 +1,6 @@
-id: Saas Security - Take Action on the incident
+id: Saas Security - Take Action on the Incident
 version: -1
-name: Saas Security - Take Action on the incident
+name: Saas Security - Take Action on the Incident
 description: This sub-playbook will send email notification to the Saas Security Admin
   for taking remediation action on the incident.
 starttaskid: "0"

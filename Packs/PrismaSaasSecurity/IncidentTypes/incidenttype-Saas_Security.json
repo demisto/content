@@ -21,5 +21,6 @@
   "onChangeRepAlg": 0,
   "detached": false,
   "fromVersion": "6.0.0",
-  "layout": "Saas Security Layout"
+  "layout": "Saas Security Layout",
+  "playbookId": "Saas Security - Incident Processor"
 }
