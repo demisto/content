@@ -26,8 +26,4 @@ Choose the instance configuration base URL based on the server location:
 - https://api.aperture-apac.paloaltonetworks.com (APAC)
 
 
-Mirroring note
----
-- The only fields that can be mirror out are *state* and *category*.
-- The only categories that cen be mirror out are for incidents with state closed.
-That means, that the only use-case for outgoing is to mirror out closed XSOAR incidents.
+Note: SaaS Security API currently allows to mirror out only closed incidents, and only their **state** and **category** fields.
