@@ -5,11 +5,11 @@ This integration was integrated and tested with API version v1 of HackerOne.
 The`advanced_filter` parameter used both in the `hackerone-report-list` command and in the integration configuration, is used to filter results based on attribute values.
 The general filtering syntax is as follows:
 
-```{\"attribute\": \"value1, value2\"}```
+```{"attribute": "value1, value2"}```
 - `attribute` is the name of the attribute that the filter will be applied against.
 - `value` is the value being checked for. You can specify multiple values as a comma-separated list for the attributes that are accepting the multiple values according to the API document.
 - To specify multiple filters, use the comma ( , ) to separate them 
-  (for example, `{\"attribute1 \": \"value1, value2\", \"attribute2\" : \"value3, value4\"}`).
+  (for example, `{"attribute1": "value1, value2", "attribute2" : "value3, value4"}`).
 
 To get the detailed information regarding the valid attributes for filtering user can refer to the [HackerOne API documentation](https://api.hackerone.com/customer-resources/#reports-get-all-reports).
 
@@ -23,12 +23,12 @@ To get the detailed information regarding the valid attributes for filtering use
     | --- | --- | --- |
     | Server URL | Server URL to connect to HackerOne. | True |
     | Username | The username of the user. | True |
-    | Maximum number of incidents per fetch | The maximum limit is 100. | True |
+    | Maximum number of incidents per fetch | The maximum limit is 100. | False |
     | First fetch time interval | Date or relative timestamp to start fetching incidents from. <br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc | False |
     | Program Handle | Fetches reports based on the specified program handle. Supports comma separated values.<br/><br/>Note: To get program handle, use the "hackerone-program-list" command. | True |
     | State | Fetches reports based on the specified report state. <br/><br/>Note: Supports comma separated values. | False |
     | Severity | Fetches reports based on severity ratings of the report. <br/><br/>Note: Supports comma separated values. | False |
-    | Advanced Filters | By providing advanced filters users can get specific reports according to their requirements. Supports JSON format.<br/><br/>Note: This will take higher precedence over "Program Handle", "State" and "Severity".<br/><br/>Format accepted: \{"filter\[attribute1\]\[\]": "value1, value2", "filter\[attribute2\]" : "value3"\}<br/><br/>For example: \{"filter\[closed_at__gt\]" : "2020-10-26T10:48:16.834Z", "filter\[state\]\[\]" : "new, triaged"\} | False |
+    | Advanced Filters | By providing advanced filters users can get specific reports according to their requirements. Supports JSON format.<br/><br/>Note: This will take higher precedence over "Program Handle", "State" and "Severity".<br/><br/>Format accepted: \{"filter\[attribute1\]\[\]": "value1, value2", "filter\[attribute2\]" : "value3"\}<br/><br/>For example: \{"filter\[closed_at__gt\]" : "2020-10-26T10:48:16.834Z", "filter\[state\]\[\]" : "new, triaged"\}<br/><br/>To know more visit: https://api.hackerone.com/customer-resources/#reports-get-all-reports. | False |
     | Use system proxy settings |  | False |
     | Trust any certificate (not secure) |  | False |
     | Incident type |  | False |
@@ -54,7 +54,7 @@ Retrieves all the reports based on program handle and provided arguments.
 | sort_by | Sort the reports based on the attributes provided.<br/><br/>Possible values: swag_awarded_at, bounty_awarded_at, last_reporter_activity_at, first_program_activity_at, last_program_activity_at, triaged_at, created_at, closed_at, last_public_activity_at, last_activity_at, disclosed_at.<br/><br/>Note: The default sort order for an attribute is ascending. Prefix the attributes with a hyphen to sort in descending order. Supports comma separated values.<br/><br/>Example: -last_reporter_activity_at, created_at. | Optional | 
 | page_size | The number of reports to retrieve per page. <br/><br/>Note: Possible values are between 1 and 100. Default is 50. | Optional | 
 | page_number | Page number to retrieve the reports from the specified page. | Optional | 
-| advanced_filter | By providing advanced filters, users can get specific reports according to their requirements. Supports JSON format.<br/><br/>Note: This will take higher precedence over "program_handle", "filter_by_keyword", "state" and "severity".<br/><br/>Format accepted: {\"filter[attribute1][]\": \"value1, value2\", \"filter[attribute2]\" : \"value3\"}<br/><br/>For example: {\"filter[closed_at__gt]\":\"2020-10-26T10:48:16.834Z\",\"filter[state][]\":\"new, triaged\"}. | Optional | 
+| advanced_filter | By providing advanced filters, users can get specific reports according to their requirements. Supports JSON format.<br/><br/>Note: This will take higher precedence over "program_handle", "filter_by_keyword", "state" and "severity".<br/><br/>Format accepted: {"filter[attribute1][]": "value1, value2", "filter[attribute2]" : "value3"}<br/><br/>For example: {"filter[closed_at__gt]":"2020-10-26T10:48:16.834Z","filter[state][]":"new, triaged"}. | Optional | 
 | filter_by_keyword | The keyword filter to retrieve the reports by title and keywords. | Optional | 
 | state | The state filter to retrieve the reports by current report state.<br/><br/>Possible values: new, pending-program-review, triaged, needs-more-info, resolved, not-applicable, informative, duplicate, spam, retesting.<br/><br/>Note: Supports comma separated values. | Optional | 
 | severity | The severity filter to retrieve the reports by the severity ratings.<br/><br/>Possible values: none, low, medium, high, critical.<br/><br/>Note: Supports comma separated values. | Optional | 
