@@ -3346,6 +3346,15 @@ def get_modified_remote_data_command(client: Client, params: Dict[str, str],
 
 
 def clear_integration_ctx(ctx: dict) -> dict:
+    """Return a cleared context_data dict so set_integration_context could be called on it.
+    Calling set_integration_context with the output of this function ensures the next call to
+    set_to_integration_context_with_retries will not fail.
+
+    Args:
+        ctx: The context_data to simplify
+
+    Returns: The cleared context_data
+    """
     fetch_id_ctx = ctx.get(LAST_FETCH_KEY, 0)
     try:
         fetch_id = int(fetch_id_ctx)
