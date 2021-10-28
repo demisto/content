@@ -1701,7 +1701,7 @@ def generate_status_fields(endpoint_status):
     status = ''
     is_isolated = ''
 
-    if endpoint_status == 'normal':
+    if endpoint_status.lower() == 'normal':
         status = 'Online'
     elif endpoint_status == 'containment_pending':
         is_isolated = 'Pending isolation'
@@ -1709,7 +1709,8 @@ def generate_status_fields(endpoint_status):
         is_isolated = 'Yes'
     elif endpoint_status == 'lift_containment_pending':
         is_isolated = 'Pending unisolation'
-
+    else:
+        raise DemistoException(f'Error: Unknown endpoint status was given: {endpoint_status}')
     return status, is_isolated
 
 
@@ -1832,6 +1833,8 @@ def resolve_detection_command():
 
     status = args.get('status')
     show_in_ui = args.get('show_in_ui')
+    if not (username or assigned_to_uuid or comment or status or show_in_ui):
+        raise DemistoException("Please provide at least one argument to resolve the detection with.")
     raw_res = resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment)
     args.pop('ids')
     hr = "Detection {0} updated\n".format(str(ids)[1:-1])

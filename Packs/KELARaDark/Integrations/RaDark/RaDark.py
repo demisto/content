@@ -509,7 +509,7 @@ def item_purchase_command(client: Client, args: Dict[str, Any]) -> CommandResult
         mentions_list_res = client.get_mention_list()
         if isinstance(mentions_list_res, dict) and isinstance(mentions_list_res.get('data', ''), list) \
                 and len(mentions_list_res['data']) > 0 and isinstance(mentions_list_res['data'][0], dict) \
-                and 'id' in mentions_list_res['data'][0] and 'alias' in mentions_list_res['data'][0]:
+                and 'id' in mentions_list_res['data'][0]:
 
             mentions_list = mentions_list_res['data']
 
