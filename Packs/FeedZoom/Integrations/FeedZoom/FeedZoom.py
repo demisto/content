@@ -33,24 +33,15 @@ class Client(BaseClient):
         and contains all the endpoints listed on the zoom firewall rules tables, accept the domains and ipv6 addresses.
         Using the text files instead of parsing the http page ןs due to blockage of the zoom support site.
         """
+        params = demisto.params()
         list_ips_txt_files = ['Zoom.txt',
                               'ZoomMeetings.txt',
                               'ZoomCRC.txt',
                               'ZoomPhone.txt',
                               'ZoomCDN.txt']
 
-        indicators = {
-            'crl3.digicert.com'
-            'crl4.digicert.com',
-            'ocsp.digicert.com',
-            'certificates.godaddy.com',
-            'crl.godaddy.com',
-            'ocsp.godaddy.com',
-            'certificates.starfieldtech.com',
-            'crl.starfieldtech.com',
-            'ocsp.starfieldtech.com',
-            '*.zoom.us',
-            '*.cloudfront.net'}
+        indicators = set(argToList(params.get('zoom_clients_certificate_validation', [])))
+        indicators.update(set(argToList(params.get('zoom_clients_user_browser', []))))
 
         for url in list_ips_txt_files:
             res = self._http_request(method='GET', url_suffix=url, resp_type='text')
