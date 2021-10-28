@@ -1770,6 +1770,17 @@ def test_change_ctx_to_be_compatible(mocker, context_data, retry_compatible):
      'last_mirror_update': 1000},
 ])
 def test_clearing_of_ctx(context_data):
+    """Test clearing context data works for all supported cases
+
+    Given:
+        Context data in the old or new format.
+
+    When:
+        Clearing the context data.
+
+    Then:
+        Ensure the context_data is cleared as expected.
+    """
     expected_ctx = {LAST_FETCH_KEY: '5',
                     'last_mirror_update': '"1000"',
                     UPDATED_MIRRORED_OFFENSES_CTX_KEY: '[]',
@@ -1781,6 +1792,22 @@ def test_clearing_of_ctx(context_data):
 
 
 def test_cleared_ctx_is_compatible_with_retries():
+    """Make sure the cleared context data is compatoble with
+    set_to_integration_context_with_retries as promised.
+
+    This is needed since set_to_integration_context_with_retries
+    runs update_integration_context which in turn assumes a certain
+    context_data format.
+
+    Given:
+        Cleared context data in the set_integration_context.
+
+    When:
+        Running set_to_integration_context_with_retries.
+
+    Then:
+        Ensure no error is raised.
+    """
     cleared_ctx = clear_integration_ctx({'id': 5, 'last_mirror_update': '1000'})
     QRadar_v3.set_integration_context(cleared_ctx)
     QRadar_v3.set_to_integration_context_with_retries({'id': 7})
