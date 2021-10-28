@@ -133,6 +133,6 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 6.0.0
+fromversion: 5.0.0
 description: Tests authentication and basic information-fetching commands with an
   instance of Azure Compute.
