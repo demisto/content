@@ -1771,7 +1771,7 @@ def test_change_ctx_to_be_compatible(mocker, context_data, retry_compatible):
 ])
 def test_clearing_of_ctx(context_data):
     expected_ctx = {LAST_FETCH_KEY: '5',
-                    'last_mirror_update':  '"1000"',
+                    'last_mirror_update': '"1000"',
                     UPDATED_MIRRORED_OFFENSES_CTX_KEY: '[]',
                     MIRRORED_OFFENSES_CTX_KEY: '[]',
                     RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: '[]',

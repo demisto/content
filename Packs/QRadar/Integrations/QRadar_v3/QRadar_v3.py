@@ -3361,7 +3361,7 @@ def clear_integration_ctx(ctx) -> dict:
             last_update = '0'
 
     return {LAST_FETCH_KEY: json.dumps(fetch_id),
-            'last_mirror_update':  json.dumps(last_update),
+            'last_mirror_update': json.dumps(last_update),
             UPDATED_MIRRORED_OFFENSES_CTX_KEY: '[]',
             MIRRORED_OFFENSES_CTX_KEY: '[]',
             RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: '[]',
