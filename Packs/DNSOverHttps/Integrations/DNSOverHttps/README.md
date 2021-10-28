@@ -1,10 +1,9 @@
 Query dns names over https from Cloudflare or Google
-This integration was integrated and tested with version xx of DNS-over-https
 
-## Configure DNS-over-https on Cortex XSOAR
+## Configure DNSOverHttps on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for DNS-over-https.
+2. Search for DNSOverHttps.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
@@ -19,7 +18,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### doh-resolve
 ***
-Resolve an name to IP over HTTPS
+Resolve a name to IP over HTTPS
 
 
 #### Base Command
@@ -38,12 +37,45 @@ Resolve an name to IP over HTTPS
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DNS-over-HTTPS.Results | unknown | DNS query results | 
+| DNSOverHTTPS.Results | List | DNS query results | 
 
 
 #### Command Example
-``` ```
+```!doh-resolve domain=domain.com```
+
+#### Context Example
+```json
+{
+    "DNSOverHTTPS": {
+        "Results": [
+            {
+                "TTL": 3600,
+                "data": "domain.com.edgekey.net.",
+                "name": "www.domain.com",
+                "type": 5
+            },
+            {
+                "TTL": 21600,
+                "data": "e3130.dscg.net.",
+                "name": "domain.com.edgekey.net",
+                "type": 5
+            },
+            {
+                "TTL": 20,
+                "data": "111.11.11.111",
+                "name": "e3130.dscg.net",
+                "type": 1
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
-
+>### Results
+>|TTL|data|name|type|
+>|---|---|---|---|
+>| 3600 | domain.com.edgekey.net. | www.domain.com | 5 |
+>| 21600 | e3130.dscg.net. | domain.com.edgekey.net | 5 |
+>| 20 | 111.11.11.111 | e3130.dscg.net | 1 |

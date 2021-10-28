@@ -20,13 +20,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-contentitemexportablefields:
-  contentitemfields:
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 92e808aa-ace9-430f-8078-292b4cf75e9c
-    propagationLabels: []
-    toServerVersion: ""
 description: Query dns names over https from Cloudflare or Google
 display: DNS-over-https
 name: DNS-over-https
@@ -57,10 +50,14 @@ script:
     description: Resolve a name to IP over HTTPS
     name: doh-resolve
     outputs:
-    - contextPath: DNS-over-HTTPS.Results
+    - contextPath: DNSoOverHTTPS.Results
       description: DNS query results
+      type: list
   dockerimage: demisto/python3:3.9.7.24076
   runonce: false
   script: ''
   subtype: python3
   type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
