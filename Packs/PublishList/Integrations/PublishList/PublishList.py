@@ -86,8 +86,6 @@ async def handle_get(
         # this puts each entry on a new line
         if commaToLineBreak:
             if not is_json(list_response.get("body")):
-                list_body = "\n".join(list_response.get("body").split(","))
-
                 tmparr = []
                 reader = csv.reader([list_response.get("body")], quoting=csv.QUOTE_MINIMAL)
                 for row in reader:
