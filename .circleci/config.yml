@@ -280,42 +280,6 @@ references:
             python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType CustomBuild -custombuild true -circleurl $SERVER_DOWNLOAD_LINK -circleToken $SERVER_CI_TOKEN -timetolive $TTL -outfile $ENV_RESULTS_PATH
         fi
 
-  trigger_private_build: &trigger_private_build
-    unless:
-      condition:
-        or:
-          - << pipeline.parameters.force_pack_upload >>
-          - << pipeline.parameters.bucket_upload >>
-      steps:
-        run:
-          name: Trigger Private Repo Build
-          when: always
-          command: |
-            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]
-              then
-                echo "Skipping - not running in contribution instance"
-                exit 0
-            fi
-            python3 Utils/trigger_private_build.py --github-token $GITHUB_TOKEN
-
-  get_private_build_status: &get_private_build_status
-    unless:
-      condition:
-        or:
-          - << pipeline.parameters.force_pack_upload >>
-          - << pipeline.parameters.bucket_upload >>
-      steps:
-        run:
-          name: Get Private Build Status
-          when: always
-          command: |
-            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]
-              then
-                echo "Skipping - not running in contribution instance"
-                exit 0
-            fi
-            python3 Utils/get_private_build_status.py --github-token $GITHUB_TOKEN
-
   create_artifact: &create_artifact
     run:
       name: Create Content Artifacts
@@ -689,10 +653,8 @@ jobs:
       - *restore_cache
       - *add_ssh_keys
       - *prepare_environment
-      - *trigger_private_build
       - *infrastructure_testing
       - *run_unit_testing_and_lint
-      - *get_private_build_status
       - store_test_results:
           path: ./unit-tests
       - run:
