@@ -60,5 +60,5 @@ scripttarget: 0
 runonce: false
 sensitive: true
 tests:
-- No test
+- GetTasksWithSections test
 fromversion: 6.0.0
