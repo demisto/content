@@ -3347,7 +3347,7 @@ def clear_integration_ctx(ctx) -> dict:
         try:
             fetch_id = int(json.loads(fetch_id_ctx))
         except ValueError:
-            print_debug_msg("Could not retrive LAST_FETCH_KEY. Setting to 0")
+            print_debug_msg(f"Could not retrive LAST_FETCH_KEY from {fetch_id_ctx} Setting to 0")
             fetch_id = 0
 
     last_update_ctx = ctx.get('last_mirror_update', 0)
@@ -3357,7 +3357,7 @@ def clear_integration_ctx(ctx) -> dict:
         try:
             last_update = str(int(json.loads(last_update_ctx)))
         except ValueError:
-            print_debug_msg("Could not retrive last_mirror_update. Setting to '0'")
+            print_debug_msg(f"Could not retrive last_mirror_update from {last_update_ctx} Setting to '0'")
             last_update = '0'
 
     return {LAST_FETCH_KEY: json.dumps(fetch_id),
@@ -3384,8 +3384,6 @@ def change_ctx_to_be_compatible_with_retry() -> None:
     try:
         extracted_ctx = extract_context_data(ctx)
         print_mirror_events_stats(extracted_ctx, "Checking ctx")
-        if extracted_ctx['samples']:
-            extracted_ctx['samples'][0].get('id')
         print_debug_msg(f"ctx {ctx} was found to be compatible with retries")
         extract_works = True
     except Exception as e:
