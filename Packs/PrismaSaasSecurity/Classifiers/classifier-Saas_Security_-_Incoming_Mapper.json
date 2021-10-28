@@ -46,7 +46,7 @@
           "complex": null,
           "simple": "asset_sha256"
         },
-        "Saas Security Asset Id": {
+        "Saas Security Asset ID": {
           "complex": null,
           "simple": "asset_id"
         },
@@ -54,7 +54,7 @@
           "complex": null,
           "simple": "asset_name"
         },
-        "Saas Security Incident Assignee": {
+        "Saas Security Assigned To": {
           "complex": null,
           "simple": "assigned_to"
         },
@@ -86,21 +86,9 @@
           "complex": null,
           "simple": "tenant"
         },
-        "asset_id_saas": {
-          "complex": null,
-          "simple": "asset_id"
-        },
-        "asset_name": {
-          "complex": null,
-          "simple": "asset_name"
-        },
         "category": {
           "complex": null,
           "simple": "category"
-        },
-        "incident_id": {
-          "complex": null,
-          "simple": "incident_id"
         },
         "name": {
           "complex": null,
@@ -113,10 +101,6 @@
         "severity": {
           "complex": null,
           "simple": "severity"
-        },
-        "severity_level": {
-          "complex": null,
-          "simple": "severity_level"
         }
       }
     },
@@ -127,17 +111,9 @@
           "complex": null,
           "simple": "severity_level"
         },
-        "Saas Security Incident State": {
+        "Saas Security State": {
           "complex": null,
           "simple": "state"
-        },
-        "incident_id": {
-          "complex": null,
-          "simple": "incident_id"
-        },
-        "severity_level": {
-          "complex": null,
-          "simple": "severity_level"
         }
       }
     }

@@ -84,9 +84,9 @@ tasks:
       id: 6bbbc81d-69ff-43de-80cb-8a1d90992f6c
       version: -1
       name: Check Severity Level
-      description: "Gets a value and return it. This is to be used in playbook conditional
-        tasks - get a value from incident field, label or context, and act accordingly.
-        \nIf an array is returned. the first value will be the decision making value."
+      description: "Gets a value and return it. This is to be used in playbook conditional\
+        \ tasks - get a value from incident field, label or context, and act accordingly.\
+        \ \nIf an array is returned. the first value will be the decision making value."
       type: condition
       iscommand: false
       brand: ""
@@ -252,7 +252,7 @@ tasks:
     task:
       id: 62246c22-b73f-4792-8cb5-28e1e505887f
       version: -1
-      name: Send Action Taken Email to Assignee
+      name: Saas Security Take Action on the Incident
       description: This sub-playbook will send email notification to the Saas Security
         Admin for taking remediation action on the incident.
       playbookName: Saas Security Take Action on the Incident
@@ -298,7 +298,7 @@ tasks:
     task:
       id: 9194ef95-6841-43f5-88c2-dba037ef659e
       version: -1
-      name: Send Action Taken Email to Tenant Admin
+      name: Saas Security Take Action on the Incident
       description: This sub-playbook will send email notification to the Saas Security
         Admin for taking remediation action on the incident.
       playbookName: Saas Security Take Action on the Incident
@@ -357,12 +357,12 @@ inputs:
     simple: ${incident.saassecurityincidentupdatedat}
   required: false
   description: This is the incident updated at timestamp.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: tenant_admin
   value: {}
   required: false
   description: This is the tenant admin email.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: SaasSecurity.Incident.incident_id
   description: Incident ID.
@@ -423,4 +423,4 @@ outputs:
 
 fromversion: 6.0.0
 tests:
-  -  No tests
+- No tests

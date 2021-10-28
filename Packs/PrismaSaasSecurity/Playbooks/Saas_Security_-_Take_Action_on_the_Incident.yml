@@ -65,12 +65,12 @@ tasks:
         simple: ${inputs.email}
       subject:
         simple: Take Action to Asset ${incident.name}
-      body: null
+      body:
       methods:
       - email
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -95,7 +95,8 @@ tasks:
         tooltip: ""
         readonly: false
       title: Prisma Saas Incident
-      description: Admin can select remediation action taken on the risky asset from questionnaire.
+      description: Admin can select remediation action taken on the risky asset from
+        questionnaire.
       sender: Your SOC team
       expired: false
       totalanswers: 0
@@ -320,24 +321,24 @@ inputs:
   value: {}
   required: false
   description: "Admin Email"
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: incident_id
   value: {}
   required: false
   description: "Prisma Saas Incident Id"
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: asset_id
   value: {}
   required: false
   description: "Prisma Saas Asset Id"
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: asset_name
   value: {}
   required: false
   description: "Prisma Saas Asset Name"
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
 
 fromversion: 6.0.0
 tests:
-  -  No tests
+- No tests
