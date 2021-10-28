@@ -102,7 +102,7 @@ Search for events in MISP. This search command will return only information abou
 | MISP.Event.Attribute.Feed.URL | String | Attribute feed url. | 
 | MISP.Event.Attribute.Feed.EventUUIDS | Unknown | List of event uuids include the attribute feed. | 
 | MISP.Event.Attribute.ID | String | MISP attribute ID. | 
-| MISP.Event.Attribute.UUID | String | MISP attribute UUID. | 
+| MISP.Event.Attribute.Value | String | MISP attribute value. | 
 
 #### Command Example
 ```!misp-search-events category="Other" limit=3 page=1```

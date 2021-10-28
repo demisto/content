@@ -996,7 +996,7 @@ def build_attribute_feed_hit(event: dict):
         event['Attribute'] = [
             {
                 'id': attribute.get('id'),
-                'uuid': attribute.get('uuid'),
+                'value': attribute.get('value'),
                 'Feed': attribute.get('Feed')
             } for attribute in event['Attribute']
         ]

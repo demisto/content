@@ -303,8 +303,8 @@ script:
     - contextPath: MISP.Event.Attribute.ID
       description: MISP attribute ID.
       type: String
-    - contextPath: MISP.Event.Attribute.UUID
-      description: MISP attribute UUID.
+    - contextPath: MISP.Event.Attribute.Value
+      description: MISP attribute value.
       type: String
   - arguments:
     - default: true
