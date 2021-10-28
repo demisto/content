@@ -6,34 +6,38 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 8dbf3e90-5a0c-40cf-829e-cb7687583108
+    taskid: 69fc6625-1724-4c36-80c5-2c3f1c481fc7
     type: start
     task:
-      id: 8dbf3e90-5a0c-40cf-829e-cb7687583108
+      id: 69fc6625-1724-4c36-80c5-2c3f1c481fc7
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "55"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 65
+          "y": -3010
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 99f3fb5a-9087-4c0b-89de-34271057d7f9
+    taskid: 966c4254-78bd-49d0-88b1-8a26206f4d60
     type: regular
     task:
-      id: 99f3fb5a-9087-4c0b-89de-34271057d7f9
+      id: 966c4254-78bd-49d0-88b1-8a26206f4d60
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -47,10 +51,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -62,15 +62,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 6d27814e-1ae6-44ce-84d1-d5e580e357ed
+    taskid: 67a8e2c0-d972-4b4a-82f1-30deca37a559
     type: regular
     task:
-      id: 6d27814e-1ae6-44ce-84d1-d5e580e357ed
+      id: 67a8e2c0-d972-4b4a-82f1-30deca37a559
       version: -1
       name: SlashNext Host Reputation for a FQDN
-      description: Search in SlashNext Cloud database and retrieve reputation of a host.
+      description: Queries the SlashNext Cloud database and retrieves the reputation
+        of a host.
       script: SlashNext Phishing Incident Response|||slashnext-host-reputation
       type: regular
       iscommand: true
@@ -92,12 +97,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 92de53f4-0765-4ea5-8d0c-30be55f70a5d
+    taskid: 6b0494eb-3635-4dac-85db-2fbefb919c12
     type: condition
     task:
-      id: 92de53f4-0765-4ea5-8d0c-30be55f70a5d
+      id: 6b0494eb-3635-4dac-85db-2fbefb919c12
       version: -1
       name: Verify Host Reputation Results
       type: condition
@@ -155,18 +164,22 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3025
+          "y": 3020
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 1031102b-0650-4e04-8cf3-6599d94a803a
+    taskid: 51d90ade-efb9-4df2-8a54-93c5bdc2c861
     type: regular
     task:
-      id: 1031102b-0650-4e04-8cf3-6599d94a803a
+      id: 51d90ade-efb9-4df2-8a54-93c5bdc2c861
       version: -1
       name: Close Investigation
       description: Close the current incident
@@ -178,13 +191,8 @@ tasks:
       '#none#':
       - "22"
     scriptarguments:
-      assetid: {}
-      closeNotes: {}
-      closeReason: {}
-      emailclassification: {}
       id:
         simple: ${incident.id}
-      phishingsubtype: {}
     separatecontext: false
     view: |-
       {
@@ -196,12 +204,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: fecb327d-1e52-49ba-803d-c17b32fbfadb
+    taskid: 9334263f-55c0-4056-8557-b3e9bb94537f
     type: regular
     task:
-      id: fecb327d-1e52-49ba-803d-c17b32fbfadb
+      id: 9334263f-55c0-4056-8557-b3e9bb94537f
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -215,10 +227,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -230,15 +238,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 632fb6f5-cc3e-4992-84fd-18d242433a63
+    taskid: ec1e4f57-2d7f-4307-83ec-111efbc391ee
     type: regular
     task:
-      id: 632fb6f5-cc3e-4992-84fd-18d242433a63
+      id: ec1e4f57-2d7f-4307-83ec-111efbc391ee
       version: -1
       name: SlashNext Host Reputation for an IPv4
-      description: Search in SlashNext Cloud database and retrieve reputation of a host.
+      description: Queries the SlashNext Cloud database and retrieves the reputation
+        of a host.
       script: SlashNext Phishing Incident Response|||slashnext-host-reputation
       type: regular
       iscommand: true
@@ -260,12 +273,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 1b8ad464-60e2-4225-867d-be2f4621ae91
+    taskid: caf20ea0-267c-433e-8d05-4c47ee2b93b8
     type: condition
     task:
-      id: 1b8ad464-60e2-4225-867d-be2f4621ae91
+      id: caf20ea0-267c-433e-8d05-4c47ee2b93b8
       version: -1
       name: Verify Host Reputation Results
       type: condition
@@ -329,12 +346,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 6e13ea91-da43-4224-8e94-dd6b26d9a0a9
+    taskid: 304eacc6-d7a5-4f2a-8f8c-e332b6f011c7
     type: regular
     task:
-      id: 6e13ea91-da43-4224-8e94-dd6b26d9a0a9
+      id: 304eacc6-d7a5-4f2a-8f8c-e332b6f011c7
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -348,10 +369,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -363,14 +380,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: d2125c4f-f9df-45ed-85b4-44cf4228e4cf
+    taskid: 32beb4ef-5d30-46d2-8a11-2a3a61c6ed92
     type: regular
     task:
-      id: d2125c4f-f9df-45ed-85b4-44cf4228e4cf
+      id: 32beb4ef-5d30-46d2-8a11-2a3a61c6ed92
       version: -1
       name: SlashNext Host Report for a FQDN
+      description: Queries the SlashNext Cloud database and retrieves a detailed report
+        for a host and associated URL.
       script: SlashNext Phishing Incident Response|||slashnext-host-report
       type: regular
       iscommand: true
@@ -392,12 +415,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 30fbda35-9489-4c87-809f-265920044f7a
+    taskid: 5e087407-04a7-4f2f-84d7-4dc0dd753470
     type: condition
     task:
-      id: 30fbda35-9489-4c87-809f-265920044f7a
+      id: 5e087407-04a7-4f2f-84d7-4dc0dd753470
       version: -1
       name: Verify Host Report Results
       type: condition
@@ -461,12 +488,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: c31937c6-9934-4ea3-8230-6b3a1bdbd8fa
+    taskid: 255bdcd2-c490-4a81-83fb-0519b126d954
     type: regular
     task:
-      id: c31937c6-9934-4ea3-8230-6b3a1bdbd8fa
+      id: 255bdcd2-c490-4a81-83fb-0519b126d954
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -480,10 +511,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -495,14 +522,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: ee14c30b-fe56-459b-8a73-0a37f3729bd0
+    taskid: 56833ac1-4746-4f76-813f-b7727c75528c
     type: regular
     task:
-      id: ee14c30b-fe56-459b-8a73-0a37f3729bd0
+      id: 56833ac1-4746-4f76-813f-b7727c75528c
       version: -1
       name: SlashNext Host Report for a IPv4
+      description: Queries the SlashNext Cloud database and retrieves a detailed report
+        for a host and associated URL.
       script: SlashNext Phishing Incident Response|||slashnext-host-report
       type: regular
       iscommand: true
@@ -524,12 +557,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: bd14f3d7-bbc8-4e4b-8dea-5e20c401dcd5
+    taskid: f6c33b1e-c03f-4b37-8948-fa5e58e09586
     type: condition
     task:
-      id: bd14f3d7-bbc8-4e4b-8dea-5e20c401dcd5
+      id: f6c33b1e-c03f-4b37-8948-fa5e58e09586
       version: -1
       name: Verify Host Report Results
       type: condition
@@ -593,12 +630,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: e826bb1f-4738-4ebb-826f-de097c526c1f
+    taskid: 7f643d82-02a7-4959-853f-e2d7e59d8c9b
     type: regular
     task:
-      id: e826bb1f-4738-4ebb-826f-de097c526c1f
+      id: 7f643d82-02a7-4959-853f-e2d7e59d8c9b
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -612,10 +653,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -627,14 +664,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: ac35bcc1-7558-41fc-81f0-01bbda852c2d
+    taskid: a61e6a4e-d8e9-4014-857f-463678fe56c1
     type: regular
     task:
-      id: ac35bcc1-7558-41fc-81f0-01bbda852c2d
+      id: a61e6a4e-d8e9-4014-857f-463678fe56c1
       version: -1
       name: SlashNext Host URLs for a FQDN
+      description: Queries the SlashNext Cloud database and retrieves a list of all
+        URLs associated with the specified host.
       script: SlashNext Phishing Incident Response|||slashnext-host-urls
       type: regular
       iscommand: true
@@ -658,12 +701,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: cf4394f3-b29e-42d2-89d2-66923d4ccf9c
+    taskid: ce8571c7-b517-459b-8389-c0c290cb135e
     type: condition
     task:
-      id: cf4394f3-b29e-42d2-89d2-66923d4ccf9c
+      id: ce8571c7-b517-459b-8389-c0c290cb135e
       version: -1
       name: Verify Host URLs Results
       type: condition
@@ -726,12 +773,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 2366207e-4ff0-4d27-8000-b19f099db9e4
+    taskid: 88dd51f6-8190-4b17-8bd4-7b5acd93f643
     type: regular
     task:
-      id: 2366207e-4ff0-4d27-8000-b19f099db9e4
+      id: 88dd51f6-8190-4b17-8bd4-7b5acd93f643
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -745,10 +796,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -760,14 +807,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 8be6d86e-c9ec-4873-894f-bbacf50e6fef
+    taskid: 63e70cee-2987-45a9-857b-facd64aee96c
     type: regular
     task:
-      id: 8be6d86e-c9ec-4873-894f-bbacf50e6fef
+      id: 63e70cee-2987-45a9-857b-facd64aee96c
       version: -1
       name: SlashNext Host URLs for a IPv4
+      description: Queries the SlashNext Cloud database and retrieves a list of all
+        URLs associated with the specified host.
       script: SlashNext Phishing Incident Response|||slashnext-host-urls
       type: regular
       iscommand: true
@@ -791,12 +844,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 56e4745e-847a-4bdd-830a-d3a269251e86
+    taskid: e4924ab0-6d2a-424f-8dfc-b23011ea09a3
     type: condition
     task:
-      id: 56e4745e-847a-4bdd-830a-d3a269251e86
+      id: e4924ab0-6d2a-424f-8dfc-b23011ea09a3
       version: -1
       name: Verify Host URLs Results
       type: condition
@@ -859,12 +916,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 10183787-b053-4ca5-8944-899805410ec2
+    taskid: 09e07b95-471f-42f1-8886-3e6c4d7011e5
     type: regular
     task:
-      id: 10183787-b053-4ca5-8944-899805410ec2
+      id: 09e07b95-471f-42f1-8886-3e6c4d7011e5
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -878,10 +939,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -893,12 +950,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 82b67a6b-673f-419e-851b-ffce7e66dbea
+    taskid: 0ac1e1b9-1c69-4971-8030-dd331e60297a
     type: title
     task:
-      id: 82b67a6b-673f-419e-851b-ffce7e66dbea
+      id: 0ac1e1b9-1c69-4971-8030-dd331e60297a
       version: -1
       name: Done
       type: title
@@ -915,14 +976,23 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: dbc5a450-9ee1-4a53-8396-1e7fb807eac7
+    taskid: e45c9c6e-d12c-478b-8ae1-f8d45b2c32b6
     type: regular
     task:
-      id: dbc5a450-9ee1-4a53-8396-1e7fb807eac7
+      id: e45c9c6e-d12c-478b-8ae1-f8d45b2c32b6
       version: -1
       name: SlashNext URL Scan Sync for a FQDN based URL
+      description: Performs a real-time URL scan with SlashNext cloud-based SEER Engine
+        in a blocking mode. If the specified URL already exists in the cloud database,
+        scan result will be returned immediately. If not, this command will submit
+        a URL scan request and wait for the scan to finish. The scan may take up to
+        60 seconds to finish.
       script: SlashNext Phishing Incident Response|||slashnext-url-scan-sync
       type: regular
       iscommand: true
@@ -948,12 +1018,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 9c680957-7d1a-4475-85be-66b50d4e38fe
+    taskid: 26eeb494-aff4-4363-821a-f9f6048b0aee
     type: condition
     task:
-      id: 9c680957-7d1a-4475-85be-66b50d4e38fe
+      id: 26eeb494-aff4-4363-821a-f9f6048b0aee
       version: -1
       name: Verify URL Scan Sync Results
       type: condition
@@ -1041,12 +1115,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 812932d1-e1ce-43bd-8154-7a78c9731fdb
+    taskid: 698fffab-36f8-4153-8110-44b62a288048
     type: regular
     task:
-      id: 812932d1-e1ce-43bd-8154-7a78c9731fdb
+      id: 698fffab-36f8-4153-8110-44b62a288048
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1060,10 +1138,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -1075,14 +1149,23 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 495d0de2-51f2-4c57-8527-8f7ccb0367d5
+    taskid: 8f2f2bcd-a6a1-4acb-871b-90bbce7a70d3
     type: regular
     task:
-      id: 495d0de2-51f2-4c57-8527-8f7ccb0367d5
+      id: 8f2f2bcd-a6a1-4acb-871b-90bbce7a70d3
       version: -1
       name: SlashNext URL Scan Sync for a IPv4 based URL
+      description: Performs a real-time URL scan with SlashNext cloud-based SEER Engine
+        in a blocking mode. If the specified URL already exists in the cloud database,
+        scan result will be returned immediately. If not, this command will submit
+        a URL scan request and wait for the scan to finish. The scan may take up to
+        60 seconds to finish.
       script: SlashNext Phishing Incident Response|||slashnext-url-scan-sync
       type: regular
       iscommand: true
@@ -1108,12 +1191,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 949a3d70-2008-4f2c-8608-322ae3eea742
+    taskid: 37f63351-e330-4b47-865a-d71b81602564
     type: condition
     task:
-      id: 949a3d70-2008-4f2c-8608-322ae3eea742
+      id: 37f63351-e330-4b47-865a-d71b81602564
       version: -1
       name: Verify URL Scan Sync Results
       type: condition
@@ -1201,12 +1288,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: e52c9f22-67f1-4797-8a64-e54e15d08ac9
+    taskid: 47bbadfb-5c8f-4ef7-8971-8f5181037498
     type: condition
     task:
-      id: e52c9f22-67f1-4797-8a64-e54e15d08ac9
+      id: 47bbadfb-5c8f-4ef7-8971-8f5181037498
       version: -1
       name: Verify URL Scan Results
       type: condition
@@ -1294,12 +1385,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: ac610013-6c41-48aa-8161-b32d37098d3d
+    taskid: 5bf465dd-62c7-415f-8d84-d924f6a8a13a
     type: regular
     task:
-      id: ac610013-6c41-48aa-8161-b32d37098d3d
+      id: 5bf465dd-62c7-415f-8d84-d924f6a8a13a
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1313,10 +1408,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -1328,14 +1419,24 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: e9976a43-e9fb-4eda-84c0-576b749c05ba
+    taskid: 3c18a96d-8c39-4e1a-8fd3-5089b97cb5fb
     type: regular
     task:
-      id: e9976a43-e9fb-4eda-84c0-576b749c05ba
+      id: 3c18a96d-8c39-4e1a-8fd3-5089b97cb5fb
       version: -1
       name: SlashNext URL Scan for a FQDN based URL
+      description: Performs a real-time URL scan with SlashNext cloud-based SEER Engine.
+        If the specified URL already exists in the cloud database, scan results will
+        be returned immediately. If not, this command will submit a URL scan request
+        and return with the message "check back later" and include a unique Scan ID.
+        You can check the results of this scan using the "slashnext-scan-report" command
+        anytime after 60 seconds using the returned Scan ID.
       script: SlashNext Phishing Incident Response|||slashnext-url-scan
       type: regular
       iscommand: true
@@ -1359,12 +1460,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 2315dc0c-62c7-4f46-8210-e00f8d376cd9
+    taskid: 33c2ec6b-5d3c-4612-8582-68dc926efff8
     type: condition
     task:
-      id: 2315dc0c-62c7-4f46-8210-e00f8d376cd9
+      id: 33c2ec6b-5d3c-4612-8582-68dc926efff8
       version: -1
       name: Verify URL Scan Results
       type: condition
@@ -1452,12 +1557,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 15a3fbd8-2570-4015-880d-41de612e1e82
+    taskid: 41ffd4b7-d21d-47eb-829d-207e8d4aeb94
     type: regular
     task:
-      id: 15a3fbd8-2570-4015-880d-41de612e1e82
+      id: 41ffd4b7-d21d-47eb-829d-207e8d4aeb94
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1471,10 +1580,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -1486,14 +1591,24 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 0ec8ca75-f46f-4c42-811a-bce110cc2f21
+    taskid: 9c2629ca-f23a-4083-838e-96420b2a0ceb
     type: regular
     task:
-      id: 0ec8ca75-f46f-4c42-811a-bce110cc2f21
+      id: 9c2629ca-f23a-4083-838e-96420b2a0ceb
       version: -1
       name: SlashNext URL Scan for a IPv4 based URL
+      description: Performs a real-time URL scan with SlashNext cloud-based SEER Engine.
+        If the specified URL already exists in the cloud database, scan results will
+        be returned immediately. If not, this command will submit a URL scan request
+        and return with the message "check back later" and include a unique Scan ID.
+        You can check the results of this scan using the "slashnext-scan-report" command
+        anytime after 60 seconds using the returned Scan ID.
       script: SlashNext Phishing Incident Response|||slashnext-url-scan
       type: regular
       iscommand: true
@@ -1517,14 +1632,21 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 29507903-e52e-4eaf-86c4-95c3603d1c04
+    taskid: b70b701d-5fca-438e-8859-b9918ce31ced
     type: regular
     task:
-      id: 29507903-e52e-4eaf-86c4-95c3603d1c04
+      id: b70b701d-5fca-438e-8859-b9918ce31ced
       version: -1
       name: SlashNext Scan Report
+      description: Retrieves the results of a URL scan against a previous scan request.
+        If the scan is finished, results will be returned immediately; otherwise the
+        message "check back later" will be returned.
       script: SlashNext Phishing Incident Response|||slashnext-scan-report
       type: regular
       iscommand: true
@@ -1548,12 +1670,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: bbf0bf14-2e2e-4e3b-8083-a6c3d6c24e46
+    taskid: 0ca22df1-9d4b-4996-8266-3a393f7e6d01
     type: condition
     task:
-      id: bbf0bf14-2e2e-4e3b-8083-a6c3d6c24e46
+      id: 0ca22df1-9d4b-4996-8266-3a393f7e6d01
       version: -1
       name: Verify Scan Report Results
       type: condition
@@ -1645,12 +1771,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 0d34539d-2169-47b1-89cd-7a2b022a99be
+    taskid: 7e53d584-f486-42b8-801a-b1ebf3af452c
     type: regular
     task:
-      id: 0d34539d-2169-47b1-89cd-7a2b022a99be
+      id: 7e53d584-f486-42b8-801a-b1ebf3af452c
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1664,10 +1794,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -1679,6 +1805,895 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: e86cf74a-4259-4d87-8a68-e0d65e88503a
+    type: regular
+    task:
+      id: e86cf74a-4259-4d87-8a68-e0d65e88503a
+      version: -1
+      name: SlashNext URL Reputation for a FQDN based URL
+      description: Queries the SlashNext Cloud database and retrieves the reputation
+        of a url.
+      script: SlashNext Phishing Incident Response|||slashnext-url-reputation
+      type: regular
+      iscommand: true
+      brand: SlashNext Phishing Incident Response
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      url:
+        simple: www.google.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -125
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 8d3fab35-2efb-41dd-8b03-968f428a3df0
+    type: condition
+    task:
+      id: 8d3fab35-2efb-41dd-8b03-968f428a3df0
+      version: -1
+      name: Verify URL Reputation Results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: SlashNext.URL.Value
+            iscontext: true
+          right:
+            value:
+              simple: www.google.com
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SlashNext.URL.Type
+            iscontext: true
+          right:
+            value:
+              simple: Scanned URL
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SlashNext.URL.Verdict
+            iscontext: true
+          right:
+            value:
+              simple: Benign
+        - operator: isEqualString
+          left:
+            value:
+              simple: SlashNext.URL.Verdict
+            iscontext: true
+          right:
+            value:
+              simple: Malicious
+        - operator: isEqualString
+          left:
+            value:
+              simple: SlashNext.URL.Verdict
+            iscontext: true
+          right:
+            value:
+              simple: Redirector
+      - - operator: isExists
+          left:
+            value:
+              simple: SlashNext.URL.ThreatStatus
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: SlashNext.URL.ThreatName
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: SlashNext.URL.FirstSeen
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: SlashNext.URL.LastSeen
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 85bced3b-ce55-44d8-8eb9-114ed71b1b86
+    type: regular
+    task:
+      id: 85bced3b-ce55-44d8-8eb9-114ed71b1b86
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 952dbbaf-0df8-4216-8c55-eee949eb9e8a
+    type: regular
+    task:
+      id: 952dbbaf-0df8-4216-8c55-eee949eb9e8a
+      version: -1
+      name: SlashNext URL Reputation for a IPv4 based URL
+      description: Queries the SlashNext Cloud database and retrieves the reputation
+        of a url.
+      script: SlashNext Phishing Incident Response|||slashnext-url-reputation
+      type: regular
+      iscommand: true
+      brand: SlashNext Phishing Incident Response
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      url:
+        simple: 8.8.8.8
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: d801ee43-9a77-4bb4-8ce0-b9de49e1f4d8
+    type: condition
+    task:
+      id: d801ee43-9a77-4bb4-8ce0-b9de49e1f4d8
+      version: -1
+      name: Verify URL Reputation Results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: SlashNext.URL.Value
+            iscontext: true
+          right:
+            value:
+              simple: 8.8.8.8
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SlashNext.URL.Type
+            iscontext: true
+          right:
+            value:
+              simple: Scanned URL
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SlashNext.URL.Verdict
+            iscontext: true
+          right:
+            value:
+              simple: Benign
+        - operator: isEqualString
+          left:
+            value:
+              simple: SlashNext.URL.Verdict
+            iscontext: true
+          right:
+            value:
+              simple: Malicious
+        - operator: isEqualString
+          left:
+            value:
+              simple: SlashNext.URL.Verdict
+            iscontext: true
+          right:
+            value:
+              simple: Redirector
+      - - operator: isExists
+          left:
+            value:
+              simple: SlashNext.URL.ThreatStatus
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: SlashNext.URL.ThreatName
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: SlashNext.URL.FirstSeen
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: SlashNext.URL.LastSeen
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 094d56a3-a5d6-4bd6-8bae-a97cf09ab537
+    type: regular
+    task:
+      id: 094d56a3-a5d6-4bd6-8bae-a97cf09ab537
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 07d7a495-5b29-4b62-8b7a-c36330f4dd3e
+    type: regular
+    task:
+      id: 07d7a495-5b29-4b62-8b7a-c36330f4dd3e
+      version: -1
+      name: Generic URL Command
+      description: Queries the SlashNext Cloud database and retrieves the reputation
+        of a url.
+      script: SlashNext Phishing Incident Response|||url
+      type: regular
+      iscommand: true
+      brand: SlashNext Phishing Incident Response
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      url:
+        simple: www.google.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -1170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 5c4b0f6d-508c-47d9-8df2-2ac0769116cd
+    type: condition
+    task:
+      id: 5c4b0f6d-508c-47d9-8df2-2ac0769116cd
+      version: -1
+      name: Verify URL Command Results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "43"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: SlashNext.URL.Value
+            iscontext: true
+          right:
+            value:
+              simple: www.google.com
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SlashNext.URL.Type
+            iscontext: true
+          right:
+            value:
+              simple: Scanned URL
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SlashNext.URL.Verdict
+            iscontext: true
+          right:
+            value:
+              simple: Benign
+        - operator: isEqualString
+          left:
+            value:
+              simple: SlashNext.URL.Verdict
+            iscontext: true
+          right:
+            value:
+              simple: Malicious
+        - operator: isEqualString
+          left:
+            value:
+              simple: SlashNext.URL.Verdict
+            iscontext: true
+          right:
+            value:
+              simple: Redirector
+      - - operator: isExists
+          left:
+            value:
+              simple: SlashNext.URL.ThreatStatus
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: SlashNext.URL.ThreatName
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: SlashNext.URL.FirstSeen
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: SlashNext.URL.LastSeen
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 92ec8cda-18ab-4f37-806f-f7b3d1c0a6e0
+    type: regular
+    task:
+      id: 92ec8cda-18ab-4f37-806f-f7b3d1c0a6e0
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -1340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 160c7581-bbfd-430a-8905-2c0e8c3b5ac8
+    type: regular
+    task:
+      id: 160c7581-bbfd-430a-8905-2c0e8c3b5ac8
+      version: -1
+      name: Generic Domain Command
+      description: Looks up a Fully Qualified Domain Name (FQDN) indicator in the
+        SlashNext Threat Intelligence database.
+      script: SlashNext Phishing Incident Response|||domain
+      type: regular
+      iscommand: true
+      brand: SlashNext Phishing Incident Response
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      domain:
+        simple: www.google.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -1680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 0ce1af9b-0616-4084-8524-275a28b81d45
+    type: condition
+    task:
+      id: 0ce1af9b-0616-4084-8524-275a28b81d45
+      version: -1
+      name: Verify Domain Command Results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "46"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SlashNext.Domain.Value
+            iscontext: true
+          right:
+            value:
+              simple: www.google.com
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SlashNext.Domain.Type
+            iscontext: true
+          right:
+            value:
+              simple: Domain
+      - - operator: isExists
+          left:
+            value:
+              simple: SlashNext.Domain.Verdict
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: SlashNext.Domain.ThreatStatus
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: SlashNext.Domain.ThreatName
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: SlashNext.Domain.FirstSeen
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: SlashNext.Domain.LastSeen
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -1510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: b578649e-539a-4142-8f5b-c3114631e07b
+    type: regular
+    task:
+      id: b578649e-539a-4142-8f5b-c3114631e07b
+      version: -1
+      name: Generic IP Command
+      description: Looks up an IP address indicator in the SlashNext Threat Intelligence
+        database.
+      script: SlashNext Phishing Incident Response|||ip
+      type: regular
+      iscommand: true
+      brand: SlashNext Phishing Incident Response
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      ip:
+        simple: 8.8.8.8
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -2190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: df9f3e43-8d86-430f-8a13-693bb732c165
+    type: condition
+    task:
+      id: df9f3e43-8d86-430f-8a13-693bb732c165
+      version: -1
+      name: Verify IP Command Results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "51"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SlashNext.IP.Value
+            iscontext: true
+          right:
+            value:
+              simple: 8.8.8.8
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SlashNext.IP.Type
+            iscontext: true
+          right:
+            value:
+              simple: IP
+      - - operator: isExists
+          left:
+            value:
+              simple: SlashNext.IP.Verdict
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: SlashNext.IP.ThreatStatus
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: SlashNext.IP.ThreatName
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: SlashNext.IP.FirstSeen
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: SlashNext.IP.LastSeen
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -2020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 2f23b531-d363-4152-8df3-cfaa8678134e
+    type: regular
+    task:
+      id: 2f23b531-d363-4152-8df3-cfaa8678134e
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -1845
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: c9ecaa93-8260-4794-889e-668f70f9a5fc
+    type: regular
+    task:
+      id: c9ecaa93-8260-4794-889e-668f70f9a5fc
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -2360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: 979ccac9-e30a-4ecd-8f89-1a365e78de7e
+    type: condition
+    task:
+      id: 979ccac9-e30a-4ecd-8f89-1a365e78de7e
+      version: -1
+      name: Verify API Quota Command Results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "52"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: SlashNext.Quota.ExpirationDate
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: SlashNext.Quota.IsExpired
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: SlashNext.Quota.LicensedQuota
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: SlashNext.Quota.RemainingQuota
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -2530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: 0fbc6107-6352-485f-8637-e30150f02d2c
+    type: regular
+    task:
+      id: 0fbc6107-6352-485f-8637-e30150f02d2c
+      version: -1
+      name: SlashNext API Quota Command
+      description: Queries the SlashNext cloud database and retrieves the details
+        of API quota.
+      script: SlashNext Phishing Incident Response|||slashnext-api-quota
+      type: regular
+      iscommand: true
+      brand: SlashNext Phishing Incident Response
+    nexttasks:
+      '#none#':
+      - "53"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -2700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: 8807dea1-8cd8-48c6-81db-c437c156e20b
+    type: regular
+    task:
+      id: 8807dea1-8cd8-48c6-81db-c437c156e20b
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -2870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1691,15 +2706,21 @@ view: |-
       "28_35_yes": 0.36,
       "31_32_yes": 0.4,
       "36_37_yes": 0.38,
+      "39_1_yes": 0.41,
       "3_5_yes": 0.4,
+      "42_40_yes": 0.37,
+      "45_43_yes": 0.34,
+      "48_46_yes": 0.4,
+      "50_51_yes": 0.41,
+      "53_52_yes": 0.41,
       "7_8_yes": 0.38
     },
     "paper": {
       "dimensions": {
-        "height": 6175,
+        "height": 9250,
         "width": 380,
         "x": 50,
-        "y": 65
+        "y": -3010
       }
     }
   }
