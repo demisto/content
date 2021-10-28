@@ -60,5 +60,5 @@ scripttarget: 0
 runonce: false
 sensitive: true
 tests:
-- GetTasksWithSections test
+- GetTasksWithSections SetIRProcedures end to end test
 fromversion: 6.0.0

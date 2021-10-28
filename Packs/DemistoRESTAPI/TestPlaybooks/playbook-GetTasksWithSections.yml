@@ -1,6 +1,6 @@
-id: GetTasksWithSections test
+id: GetTasksWithSections SetIRProcedures end to end test
 version: -1
-name: GetTasksWithSections test
+name: GetTasksWithSections SetIRProcedures end to end test
 starttaskid: "0"
 description: ""
 tasks:
@@ -19,6 +19,7 @@ tasks:
       - "2"
       - "6"
       - "16"
+      - "19"
     separatecontext: false
     view: |-
       {
@@ -246,12 +247,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 6c11e950-a53a-4bed-8d48-3544e31e3427
+    taskid: f3c53921-150f-4459-85b5-b1fbcb6491e1
     type: title
     task:
-      id: 6c11e950-a53a-4bed-8d48-3544e31e3427
+      id: f3c53921-150f-4459-85b5-b1fbcb6491e1
       version: -1
-      name: Section 3
+      name: Threat Hunting
       type: title
       iscommand: false
       brand: ""
@@ -520,6 +521,71 @@ tasks:
         "position": {
           "x": 1770,
           "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 7b7fc399-6923-4f42-8480-17a240f8843d
+    type: regular
+    task:
+      id: 7b7fc399-6923-4f42-8480-17a240f8843d
+      version: -1
+      name: SetIrProcedures
+      description: Creates a markdown table based on te info of the GetTasksWithSection
+        command
+      scriptName: SetIRProceduresMarkdown
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2220,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 6dd7e445-9f23-4ea1-8be7-8f3034353ae7
+    type: regular
+    task:
+      id: 6dd7e445-9f23-4ea1-8be7-8f3034353ae7
+      version: -1
+      name: verify human readable
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries}
+      substring:
+        simple: Threat Hunting
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2220,
+          "y": 440
         }
       }
     note: false
