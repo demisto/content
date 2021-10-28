@@ -27,6 +27,7 @@ class Client(BaseClient):
         self.headers = headers
         self.headers['Authorization'] = 'Session ' + self.get_session_id(username, password)
         self.manager_id = self.get_manager_id(manager_email)
+        self.app_fields = self.get_app_fields()
 
     def get_session_id(self, username: str, password: str):
         auth_uri = '/authentication/login'
@@ -87,7 +88,6 @@ class Client(BaseClient):
         uri = '/data/findUserQuery'
         data = {'email': filter_value,
                 'includeSuspendedUsers': True}
-
         if filter_name == 'id':
             res = self.get_user_by_id(f'/User/{filter_value}')
             user_app_data = res
@@ -125,7 +125,7 @@ class Client(BaseClient):
         uri = '/data/objects/User'
         if self.manager_id:
             user_data['manager_id'] = self.manager_id
-
+        user_data = {k: v for k, v in user_data.items() if k in self.app_fields}
         res = self._http_request(
             method='PUT',
             url_suffix=uri,
@@ -157,7 +157,7 @@ class Client(BaseClient):
         uri = f'/data/objects/User/{user_id}'
         if self.manager_id:
             user_data['manager_id'] = self.manager_id
-
+        user_data = {k: v for k, v in user_data.items() if k in self.app_fields}
         self._http_request(
             method='POST',
             url_suffix=uri,

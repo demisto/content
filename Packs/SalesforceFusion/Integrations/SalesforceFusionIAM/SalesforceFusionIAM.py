@@ -176,13 +176,16 @@ class Client(BaseClient):
 
         uri = f'{URI_PREFIX}sobjects/FF__Key_Contact__c/{user_id}'
 
-        self._http_request(
+        res = self._http_request(
             method='DELETE',
             url_suffix=uri,
-            headers=self.headers
+            headers=self.headers,
+            ok_codes=(200, 204,),
+            resp_type='response'
         )
-
-        return IAMUserAppData(user_id, "", False, {})
+        if res.status_code == 204:
+            return IAMUserAppData(user_id, "", False, {})
+        raise DemistoException(f'Could not delete user. Response was: {res}')
 
     def get_app_fields(self) -> Dict[str, Any]:
         """ Gets a dictionary of the user schema fields in the application and their description.
