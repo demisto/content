@@ -182,7 +182,7 @@ def run_validate(file_path: str, json_output_file: str) -> None:
         print_ignored_files=False, skip_conf_json=True, validate_id_set=False, file_path=file_path,
         validate_all=False, is_external_repo=False, skip_pack_rn_validation=False, print_ignored_errors=False,
         silence_init_prints=False, no_docker_checks=False, skip_dependencies=False, id_set_path=None,
-        staged=False, json_file_path=json_output_file, skip_schema_check=True, create_id_set=False)
+        staged=False, json_file_path=json_output_file, skip_schema_check=False, create_id_set=False)
     v_manager.run_validation()
 
 
