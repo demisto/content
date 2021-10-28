@@ -28,13 +28,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "9"
+      - "13"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": -130,
-          "y": -110
+          "y": -270
         }
       }
     note: false
@@ -62,38 +62,6 @@ tasks:
         "position": {
           "x": -130,
           "y": 390
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "9":
-    id: "9"
-    taskid: 52b63562-f591-4520-8e4f-caf3aef00bae
-    type: title
-    task:
-      id: 52b63562-f591-4520-8e4f-caf3aef00bae
-      version: -1
-      name: Email Service Providers
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "10"
-      - "11"
-      - "12"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -130,
-          "y": 35
         }
       }
     note: false
@@ -143,8 +111,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -610,
-          "y": 190
+          "x": -1300,
+          "y": 220
         }
       }
     note: false
@@ -189,8 +157,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -130,
-          "y": 190
+          "x": -820,
+          "y": 220
         }
       }
     note: false
@@ -236,8 +204,110 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 350,
-          "y": 190
+          "x": -340,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 1f43899f-c0b2-4543-8466-27514587c289
+    type: condition
+    task:
+      id: 1f43899f-c0b2-4543-8466-27514587c289
+      version: -1
+      name: Check EmailBrand
+      type: condition
+      iscommand: false
+      brand: ""
+      description: Check if "EmailBrand" has a valid value.
+    nexttasks:
+      '#default#':
+      - "14"
+      EWS v2:
+      - "11"
+      Gmail:
+      - "12"
+      MSGraph:
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: Gmail
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.EmailBrand
+            iscontext: true
+          right:
+            value:
+              simple: Gmail
+    - label: EWS v2
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.EmailBrand
+            iscontext: true
+          right:
+            value:
+              simple: EWS v2
+    - label: MSGraph
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.EmailBrand
+            iscontext: true
+          right:
+            value:
+              simple: MicrosoftGraphMail
+    view: |-
+      {
+        "position": {
+          "x": -130,
+          "y": -120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: bf9f5223-a55a-4906-8512-7cca469cbe66
+    type: title
+    task:
+      id: bf9f5223-a55a-4906-8512-7cca469cbe66
+      version: -1
+      name: No brand - run all
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+      - "11"
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -130,
+          "y": 70
         }
       }
     note: false
@@ -250,13 +320,17 @@ tasks:
 system: true
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "13_10_MSGraph": 0.9,
+      "13_11_EWS v2": 0.9,
+      "13_12_Gmail": 0.85
+    },
     "paper": {
       "dimensions": {
-        "height": 565,
-        "width": 1340,
-        "x": -610,
-        "y": -110
+        "height": 725,
+        "width": 1550,
+        "x": -1300,
+        "y": -270
       }
     }
   }
@@ -277,6 +351,18 @@ inputs:
   value: {}
   required: false
   description: The original email subject.
+  playbookInputQuery:
+- key: EmailBrand
+  value: {}
+  required: false
+  description: |-
+    When this value supplied, only the relevant playbook will run.
+    Possible values:
+    - Gmail
+    - EWS v2
+    - MicrosoftGraphMail
+
+    If none of the above values is supplied, all of the playbooks will run.
   playbookInputQuery:
 outputs:
 - contextPath: Email

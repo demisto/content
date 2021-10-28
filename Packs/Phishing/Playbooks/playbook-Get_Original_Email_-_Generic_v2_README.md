@@ -1,4 +1,6 @@
-Use this playbook to retrieve the original email in the thread, including headers and attahcments, when the reporting user forwarded the original email not as an attachment.
+This v2 playbook is being used inside the "Phishing" flow. It will retrieve an original mail based on the inputs.
+
+The inputs in this version are not using any labels and also allow the user to supply an email brand.
 
 You must have the necessary permissions in your email service to execute global search.
 
@@ -33,6 +35,7 @@ This playbook does not use any commands.
 | MessgaeID | The original email message id to retrieve. This should hold the value of the "Message-ID" header of the original email. |  | Optional |
 | UserID | The user's email address. The "me" special value can be used to indicate the authenticated user \(gmail\). |  | Optional |
 | EmailSubject | The original email subject. |  | Optional |
+| EmailBrand | When this value supplied, only the relevant playbook will run.<br/>Possible values:<br/>- Gmail<br/>- EWS v2<br/>- MicrosoftGraphMail<br/><br/>If none of the above values is supplied, all of the playbooks will run. |  | Optional |
 
 ## Playbook Outputs
 ---

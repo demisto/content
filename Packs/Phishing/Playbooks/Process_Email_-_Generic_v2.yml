@@ -112,8 +112,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -330,
-          "y": 2040
+          "x": -360,
+          "y": 1790
         }
       }
     note: false
@@ -223,7 +223,7 @@ tasks:
       {
         "position": {
           "x": 340,
-          "y": 2580
+          "y": 2390
         }
       }
     note: false
@@ -264,7 +264,7 @@ tasks:
       {
         "position": {
           "x": 100,
-          "y": 2800
+          "y": 2610
         }
       }
     note: false
@@ -291,7 +291,7 @@ tasks:
       {
         "position": {
           "x": 340,
-          "y": 3030
+          "y": 2840
         }
       }
     note: false
@@ -321,7 +321,7 @@ tasks:
       {
         "position": {
           "x": 340,
-          "y": 2430
+          "y": 2260
         }
       }
     note: false
@@ -663,8 +663,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 120,
-          "y": 2040
+          "x": 110,
+          "y": 1790
         }
       }
     note: false
@@ -715,8 +715,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 120,
-          "y": 1660
+          "x": 110,
+          "y": 1530
         }
       }
     note: false
@@ -740,14 +740,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "25"
       - "21"
+      - "39"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 600,
-          "y": 1460
+          "y": 1380
         }
       }
     note: false
@@ -1417,8 +1417,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 570,
-          "y": 2040
+          "x": 580,
+          "y": 1790
         }
       }
     note: false
@@ -1430,10 +1430,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: e6ace7ad-4c0d-40dc-8b57-86086b1c2394
+    taskid: 60428e3a-d35f-4be9-852e-1834a3055810
     type: playbook
     task:
-      id: e6ace7ad-4c0d-40dc-8b57-86086b1c2394
+      id: 60428e3a-d35f-4be9-852e-1834a3055810
       version: -1
       name: Get Original Email - Generic v2
       description: |-
@@ -1454,6 +1454,10 @@ tasks:
       '#none#':
       - "36"
     scriptarguments:
+      EmailBrand:
+        complex:
+          root: incident
+          accessor: sourceBrand
       EmailSubject:
         complex:
           root: incident.phishingreporteremailheaders
@@ -1503,6 +1507,49 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 0cd5de03-e240-42df-8f82-d81c03856268
+    type: condition
+    task:
+      id: 0cd5de03-e240-42df-8f82-d81c03856268
+      version: -1
+      name: Check if attachments were found in eml
+      description: This branch is for a scenario when the email was retrieved as an
+        eml. The inner attachments' details should be displayed in the layout.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Email
+                accessor: AttachmentNames
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1060,
+          "y": 1530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 system: true
 view: |-
   {
@@ -1514,9 +1561,9 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 3605,
-        "width": 4100,
-        "x": -330,
+        "height": 3415,
+        "width": 4130,
+        "x": -360,
         "y": -510
       }
     }
@@ -1677,5 +1724,5 @@ outputs:
   description: The File object.
   type: unknown
 tests:
-- Process Email - Generic - Test - Incident Starter
+- - Process Email - Generic - Test - Incident Starter
 fromversion: 6.1.0
