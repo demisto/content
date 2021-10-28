@@ -21,6 +21,10 @@
         "Jira Incident",
         "Jira Create Issue and Mirror"
     ],
+    "systemAssociatedTypes": [
+        "Jira Incident",
+        "Jira Create Issue and Mirror"
+    ],
     "associatedToAll": false,
     "unmapped": false,
     "unsearchable": false,
