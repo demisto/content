@@ -37,4 +37,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![Druva-Ransomware-Response](../doc_files/Druva-Ransomware-Response_image.png)
+![Druva-Ransomware-Response](../doc_files/Druva-Ransomware-Response_Playbook.png)
