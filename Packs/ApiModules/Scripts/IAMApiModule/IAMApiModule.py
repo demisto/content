@@ -509,8 +509,7 @@ class IAMCommand:
                     updated_user = client.update_user(user_app_data.id, app_profile)
 
                     if updated_user.is_active is None:
-                        updated_user.is_active = True if allow_enable else False
-
+                        updated_user.is_active = True if allow_enable else user_app_data.is_active
 
                     user_profile.set_result(
                         action=IAMActions.UPDATE_USER,
