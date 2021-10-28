@@ -141,6 +141,9 @@ def extensive_log(message):
 
 
 def remove_old_incident_ids(last_run_fetched_ids):
+    """
+    If the key id has value of False, that means it did not appear at the current fetch and we can remove him
+    """
     return {k: v for k, v in last_run_fetched_ids.items() if v}
 
 
@@ -209,14 +212,15 @@ def get_fetch_start_times(dem_params, service, last_run_time, occurence_time_loo
         fetch_time_in_minutes = parse_time_to_minutes()
         start_time_for_fetch = current_time_for_fetch - timedelta(minutes=fetch_time_in_minutes)
         last_run_time = start_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
-        extensive_log('[SplunkPyPreRelease] SplunkPyPreRelease last run is None. Last run time is: {}'.format(last_run_time))
+        extensive_log(
+            '[SplunkPyPreRelease] SplunkPyPreRelease last run is None. Last run time is: {}'.format(last_run_time))
 
     occured_start_time = enforce_look_behind_time(last_run_time, now, occurence_time_look_behind)
 
     return occured_start_time, now
 
 
-def build_fetch_kwargs(dem_params, occured_start_time, now, search_offset):
+def build_fetch_kwargs(dem_params, occured_start_time, now):
     occurred_start_time_fieldname = dem_params.get("earliest_occurrence_time_fieldname", "earliest_time")
     occurred_end_time_fieldname = dem_params.get("latest_occurrence_time_fieldname", "latest_time")
 
@@ -226,7 +230,7 @@ def build_fetch_kwargs(dem_params, occured_start_time, now, search_offset):
     kwargs_oneshot = {
         occurred_start_time_fieldname: occured_start_time,
         occurred_end_time_fieldname: now,
-        "count": FETCH_LIMIT,
+        "count": FETCH_LIMIT,  # TODO: remove, change to no limit
     }
 
     return kwargs_oneshot
@@ -259,13 +263,16 @@ def fetch_notables(service, cache_object=None, enrich_notables=False):
     occured_start_time, now = get_fetch_start_times(dem_params, service, last_run_time, occurred_look_behind)
     extensive_log('[SplunkPyPreRelease] SplunkPyPreRelease last run time: {}, now: {}'.format(last_run_time, now))
 
-    kwargs_oneshot = build_fetch_kwargs(dem_params, occured_start_time, now, search_offset)
+    kwargs_oneshot = build_fetch_kwargs(dem_params, occured_start_time, now)
     fetch_query = build_fetch_query(dem_params)
 
     oneshotsearch_results = service.jobs.oneshot(fetch_query, **kwargs_oneshot)  # type: ignore
     reader = results.ResultsReader(oneshotsearch_results)
 
     last_run_fetched_ids = last_run_data.get('found_incidents_ids', {})
+
+    last_run_fetched_ids = {k: False for k, v in last_run_fetched_ids.items()}  # Each key will have the False value
+    # that will change to True if this id has seen at the current fetch
 
     incidents = []
     notables = []
@@ -287,8 +294,9 @@ def fetch_notables(service, cache_object=None, enrich_notables=False):
     current_epoch_time = int(time.time())
     extensive_log('[SplunkPyPreRelease] Size of last_run_fetched_ids before adding new IDs: {}'.format(len(last_run_fetched_ids)))
     for incident_id in incident_ids_to_add:
-        last_run_fetched_ids[incident_id] = current_epoch_time
-    extensive_log('[SplunkPyPreRelease] Size of last_run_fetched_ids after adding new IDs: {}'.format(len(last_run_fetched_ids)))
+        last_run_fetched_ids[incident_id] = True  # All those incident appeared on the current fetch, change them value to True
+    extensive_log(
+        '[SplunkPyPreRelease] Size of last_run_fetched_ids after adding new IDs: {}'.format(len(last_run_fetched_ids)))
     last_run_fetched_ids = remove_old_incident_ids(last_run_fetched_ids, current_epoch_time, occurred_look_behind)
     extensive_log('[SplunkPyPreRelease] Size of last_run_fetched_ids after '
                   'removing old IDs: {}'.format(len(last_run_fetched_ids)))
