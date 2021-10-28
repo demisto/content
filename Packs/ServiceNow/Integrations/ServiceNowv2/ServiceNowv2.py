@@ -4,7 +4,7 @@ import dateparser
 from urllib import parse
 from typing import List, Tuple, Dict, Callable, Any, Union, Optional
 
-
+from CommonServerPython import *
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -2292,7 +2292,7 @@ def add_custom_fields(params):
     custom_fields = argToList(params.get('custom_fields'))
     SNOW_ARGS += custom_fields
 
-    
+
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
