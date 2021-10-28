@@ -60,4 +60,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Saas Security - Incident Processor](https://raw.githubusercontent.com/demisto/content/26042a9bc42a1d8b8267ac794e0692de938f2a62/Packs/PrismaSaasSecurity/doc_files/Incident_Processor_Playbook.png)
+![Saas Security - Incident Processor](https://raw.githubusercontent.com/demisto/content/6f87824ee719814f27e0f77068242924617de9a1/Packs/PrismaSaasSecurity/doc_files/Incident_Processor_Playbook.png)
