@@ -13,7 +13,7 @@
     "keywords": [],
     "dependencies": {
         "Threat_Crowd": {
-            "mandatory": true,
+            "mandatory": false,
             "display_name": "Threat Crowd"
         },
         "CiscoASA": {
@@ -25,15 +25,15 @@
             "display_name": "FireEye (AX Series)"
         },
         "Cylance_Protect": {
-            "mandatory": true,
+            "mandatory": false,
             "display_name": "Cylance Protect"
         },
         "epo": {
-            "mandatory": true,
+            "mandatory": false,
             "display_name": "McAfee ePO"
         },
         "CheckpointFirewall": {
-            "mandatory": true,
+            "mandatory": false,
             "display_name": "Check Point Firewall"
         },
         "Carbon_Black_Enterprise_Response": {
@@ -93,7 +93,7 @@
             "display_name": "CrowdStrike FalconX"
         },
         "VirusTotal-Private_API": {
-            "mandatory": true,
+            "mandatory": false,
             "display_name": "VirusTotal - Private API"
         },
         "ThreatX": {
@@ -117,7 +117,7 @@
             "display_name": "Cisco Threat Grid"
         },
         "ExtraHop": {
-            "mandatory": true,
+            "mandatory": false,
             "display_name": "ExtraHop Reveal(x)"
         },
         "PANWComprehensiveInvestigation": {
@@ -129,7 +129,7 @@
             "display_name": "Cisco Secure Cloud Analytics (Stealthwatch Cloud)"
         },
         "Kenna": {
-            "mandatory": true,
+            "mandatory": false,
             "display_name": "Kenna"
         },
         "SplunkPy": {
@@ -145,11 +145,11 @@
             "display_name": "Proofpoint Threat Response (Beta)"
         },
         "CortexXDR": {
-            "mandatory": true,
+            "mandatory": false,
             "display_name": "Palo Alto Networks Cortex XDR - Investigation and Response"
         },
         "Rapid7_Nexpose": {
-            "mandatory": true,
+            "mandatory": false,
             "display_name": "Rapid7 Nexpose"
         },
         "Active_Directory_Query": {
@@ -185,7 +185,7 @@
             "display_name": "F5 Silverline"
         },
         "Zscaler": {
-            "mandatory": true,
+            "mandatory": false,
             "display_name": "Zscaler"
         },
         "Traps": {
@@ -193,11 +193,11 @@
             "display_name": "Palo Alto Networks Traps"
         },
         "VulnDB": {
-            "mandatory": true,
+            "mandatory": false,
             "display_name": "VulnDB"
         },
         "Cisco-umbrella": {
-            "mandatory": true,
+            "mandatory": false,
             "display_name": "Cisco Umbrella Investigate"
         },
         "HybridAnalysis": {
@@ -233,7 +233,7 @@
             "display_name": "Common Scripts"
         },
         "Cybereason": {
-            "mandatory": true,
+            "mandatory": false,
             "display_name": "Cybereason"
         },
         "TrendMicroApex": {
@@ -245,7 +245,7 @@
             "display_name": "Palo Alto Networks WildFire"
         },
         "FortiGate": {
-            "mandatory": true,
+            "mandatory": false,
             "display_name": "FortiGate"
         },
         "CuckooSandbox": {

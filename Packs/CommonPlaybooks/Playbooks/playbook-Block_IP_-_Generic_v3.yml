@@ -35,7 +35,7 @@ tasks:
       {
         "position": {
           "x": 1040,
-          "y": -3060
+          "y": -3100
         }
       }
     note: false
@@ -116,13 +116,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: da9cca4e-bef2-43f7-8ebd-fc1180442cf3
+    taskid: 75d44828-2e3f-46b0-8d4b-82019214266f
     type: condition
     task:
-      id: da9cca4e-bef2-43f7-8ebd-fc1180442cf3
+      id: 75d44828-2e3f-46b0-8d4b-82019214266f
       version: -1
       name: Is Check Point Firewall enabled?
-      description: Verify that there is a valid instance of Check Point Firewall enabled.
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
       brand: ""
@@ -131,37 +133,12 @@ tasks:
       - "2"
       "yes":
       - "29"
+    scriptarguments:
+      brandname:
+        simple: CheckPointFirewall_v2
+    results:
+    - brandInstances
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: CheckPointFirewall_v2
-                    ignorecase: true
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Active
-                    ignorecase: true
-                accessor: brand
-            iscontext: true
-          ignorecase: true
     view: |-
       {
         "position": {
@@ -228,13 +205,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 30b386fd-8599-46d5-8e57-6a65a78ef837
+    taskid: 55e4aea1-6bcc-4a88-8e0a-365cd2656b7b
     type: condition
     task:
-      id: 30b386fd-8599-46d5-8e57-6a65a78ef837
+      id: 55e4aea1-6bcc-4a88-8e0a-365cd2656b7b
       version: -1
       name: Is Zscaler enabled?
-      description: Verify that there is a valid instance of Zscaler enabled.
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
       brand: ""
@@ -243,37 +222,12 @@ tasks:
       - "2"
       "yes":
       - "13"
+    scriptarguments:
+      brandname:
+        simple: Zscaler
+    results:
+    - brandInstances
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Zscaler
-                    ignorecase: true
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                    ignorecase: true
-                accessor: brand
-            iscontext: true
-          ignorecase: true
     view: |-
       {
         "position": {
@@ -795,13 +749,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: c34c6121-f420-44c8-8efd-6f1412a56d24
+    taskid: a560feb5-d53e-4ca4-86bb-3c4bf6020459
     type: condition
     task:
-      id: c34c6121-f420-44c8-8efd-6f1412a56d24
+      id: a560feb5-d53e-4ca4-86bb-3c4bf6020459
       version: -1
       name: Is FortiGate enabled?
-      description: Verify that there is a valid instance of FortiGate enabled.
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
       brand: ""
@@ -810,34 +766,12 @@ tasks:
       - "2"
       "yes":
       - "28"
+    scriptarguments:
+      brandname:
+        simple: FortiGate
+    results:
+    - brandInstances
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: FortiGate
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                accessor: brand
-            iscontext: true
     view: |-
       {
         "position": {
@@ -1045,13 +979,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 6452a1b9-ffe9-4583-869d-7f3f814135a1
+    taskid: a2f81619-f000-485f-8e14-850e56809f77
     type: condition
     task:
-      id: 6452a1b9-ffe9-4583-869d-7f3f814135a1
+      id: a2f81619-f000-485f-8e14-850e56809f77
       version: -1
       name: Is F5 Silverline enabled?
-      description: Verify that there is a valid instance of F5 Silverline enabled.
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
       brand: ""
@@ -1060,35 +996,12 @@ tasks:
       - "2"
       "yes":
       - "31"
+    scriptarguments:
+      brandname:
+        simple: F5Silverline
+    results:
+    - brandInstances
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: containsString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: F5Silverline
-                    ignorecase: true
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                    ignorecase: true
-            iscontext: true
     view: |-
       {
         "position": {
@@ -1382,7 +1295,7 @@ tasks:
       {
         "position": {
           "x": 1040,
-          "y": -475
+          "y": -485
         }
       }
     note: false
@@ -1874,13 +1787,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: 23318568-9f06-4ae2-81cd-d7bd275202ba
+    taskid: aa907ce1-0a49-46bb-8786-180b311b56ce
     type: condition
     task:
-      id: 23318568-9f06-4ae2-81cd-d7bd275202ba
+      id: aa907ce1-0a49-46bb-8786-180b311b56ce
       version: -1
       name: Is Cisco ASA enabled?
-      description: Verify that there is a valid instance of Cisco ASA enabled.
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
       brand: ""
@@ -1889,35 +1804,12 @@ tasks:
       - "2"
       "yes":
       - "57"
+    scriptarguments:
+      brandname:
+        simple: Cisco ASA
+    results:
+    - brandInstances
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: containsString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Cisco ASA
-                    ignorecase: true
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                    ignorecase: true
-            iscontext: true
     view: |-
       {
         "position": {
@@ -2033,14 +1925,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "58":
     id: "58"
-    taskid: 4144658f-dc3c-4c03-883b-ef2b1918a5f5
+    taskid: b4d17586-75cd-49a4-8d40-e199d29a3012
     type: condition
     task:
-      id: 4144658f-dc3c-4c03-883b-ef2b1918a5f5
+      id: b4d17586-75cd-49a4-8d40-e199d29a3012
       version: -1
       name: Is Cisco Secure Cloud Analytics enabled?
-      description: Verify that there is a valid instance of Cisco Secure Cloud Analytics
-        enabled.
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
       brand: ""
@@ -2049,35 +1942,12 @@ tasks:
       - "2"
       "yes":
       - "59"
+    scriptarguments:
+      brandname:
+        simple: Stealthwatch Cloud
+    results:
+    - brandInstances
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: containsString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Stealthwatch Cloud
-                    ignorecase: true
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                    ignorecase: true
-            iscontext: true
     view: |-
       {
         "position": {
@@ -2162,13 +2032,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "61":
     id: "61"
-    taskid: 6d51f915-0e9f-4558-86a7-ceea9929f2d9
+    taskid: 167a8c88-5a29-431d-89d6-3cd15cb7e3d8
     type: condition
     task:
-      id: 6d51f915-0e9f-4558-86a7-ceea9929f2d9
+      id: 167a8c88-5a29-431d-89d6-3cd15cb7e3d8
       version: -1
       name: Is Cisco Firepower enabled?
-      description: Verify that there is a valid instance of Cisco Firepower enabled.
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
       brand: ""
@@ -2177,35 +2049,12 @@ tasks:
       - "2"
       "yes":
       - "89"
+    scriptarguments:
+      brandname:
+        simple: Cisco Firepower
+    results:
+    - brandInstances
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: containsString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Cisco Firepower
-                    ignorecase: true
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                    ignorecase: true
-            iscontext: true
     view: |-
       {
         "position": {
@@ -2282,13 +2131,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "65":
     id: "65"
-    taskid: 17b62c9f-3541-4f71-81a2-0256757bd518
+    taskid: 671afcc3-17ee-4da4-8468-1a4df5a079a6
     type: condition
     task:
-      id: 17b62c9f-3541-4f71-81a2-0256757bd518
+      id: 671afcc3-17ee-4da4-8468-1a4df5a079a6
       version: -1
       name: Is Akamai WAF enabled?
-      description: Verify that there is a valid instance of ThreatX enabled.
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
       brand: ""
@@ -2297,37 +2148,12 @@ tasks:
       - "2"
       "yes":
       - "66"
+    scriptarguments:
+      brandname:
+        simple: Akamai WAF
+    results:
+    - brandInstances
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Akamai WAF
-                    ignorecase: true
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Active
-                    ignorecase: true
-                accessor: brand
-            iscontext: true
-          ignorecase: true
     view: |-
       {
         "position": {
@@ -2418,13 +2244,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "68":
     id: "68"
-    taskid: 1d741718-f54c-4042-8321-ce7f30b490a7
+    taskid: 94fcac96-4918-4175-8b16-b8e6b7bf5045
     type: condition
     task:
-      id: 1d741718-f54c-4042-8321-ce7f30b490a7
+      id: 94fcac96-4918-4175-8b16-b8e6b7bf5045
       version: -1
       name: Is ThreatX enabled?
-      description: Verify that there is a valid instance of ThreatX enabled.
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
       brand: ""
@@ -2434,35 +2262,12 @@ tasks:
       "yes":
       - "69"
       - "93"
+    scriptarguments:
+      brandname:
+        simple: ThreatX
+    results:
+    - brandInstances
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: containsString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: ThreatX
-                    ignorecase: true
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                    ignorecase: true
-            iscontext: true
     view: |-
       {
         "position": {
@@ -2553,13 +2358,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "72":
     id: "72"
-    taskid: bd9e2618-e262-4fe2-81f9-37f29de202cf
+    taskid: 6338bb8e-573f-4986-87ed-875e6a25eec2
     type: condition
     task:
-      id: bd9e2618-e262-4fe2-81f9-37f29de202cf
+      id: 6338bb8e-573f-4986-87ed-875e6a25eec2
       version: -1
       name: Is Signal Sciences WAF  enabled?
-      description: Verify that there is a valid instance of Signal Sciences WAF enabled.
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
       brand: ""
@@ -2568,35 +2375,12 @@ tasks:
       - "2"
       "yes":
       - "73"
+    scriptarguments:
+      brandname:
+        simple: Signal Sciences WAF
+    results:
+    - brandInstances
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: containsString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: 'Signal Sciences '
-                    ignorecase: true
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                    ignorecase: true
-            iscontext: true
     view: |-
       {
         "position": {
@@ -2734,13 +2518,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "76":
     id: "76"
-    taskid: 22fa86de-e981-4c06-8d5d-c108c64b753a
+    taskid: 6b2d1099-e8fa-40d9-870e-20e314968046
     type: condition
     task:
-      id: 22fa86de-e981-4c06-8d5d-c108c64b753a
+      id: 6b2d1099-e8fa-40d9-870e-20e314968046
       version: -1
       name: Is Sophos Firewall enabled?
-      description: Verify that there is a valid instance of Signal Sciences WAF enabled.
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
       brand: ""
@@ -2749,35 +2535,12 @@ tasks:
       - "2"
       "yes":
       - "94"
+    scriptarguments:
+      brandname:
+        simple: sophos_firewall
+    results:
+    - brandInstances
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: containsString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: sophos_firewall
-                    ignorecase: true
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                    ignorecase: true
-            iscontext: true
     view: |-
       {
         "position": {
@@ -2794,14 +2557,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "78":
     id: "78"
-    taskid: bdde8128-2f18-46d1-8314-22317f132600
+    taskid: 5eceaa24-206d-4a97-8cfa-bcfbaf257aac
     type: condition
     task:
-      id: bdde8128-2f18-46d1-8314-22317f132600
+      id: 5eceaa24-206d-4a97-8cfa-bcfbaf257aac
       version: -1
       name: Is ARIA Packet Intelligence enabled?
-      description: Verify that there is a valid instance of ARIA Packet Intelligence
-        enabled.
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
       brand: ""
@@ -2810,35 +2574,12 @@ tasks:
       - "2"
       "yes":
       - "75"
+    scriptarguments:
+      brandname:
+        simple: ARIA Packet Intelligence
+    results:
+    - brandInstances
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: containsString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: 'ARIA Packet Intelligence '
-                    ignorecase: true
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                    ignorecase: true
-            iscontext: true
     view: |-
       {
         "position": {
@@ -3003,8 +2744,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 140,
-          "y": 405
+          "x": 150,
+          "y": 385
         }
       }
     note: false
@@ -3305,7 +3046,7 @@ tasks:
       {
         "position": {
           "x": 1040,
-          "y": -220
+          "y": -250
         }
       }
     note: false
@@ -3708,7 +3449,7 @@ view: |-
       "36_8_#default#": 0.19,
       "41_42_yes": 0.65,
       "41_8_#default#": 0.1,
-      "47_8_#default#": 0.18,
+      "47_8_#default#": 0.12,
       "50_100_#default#": 0.82,
       "56_2_#default#": 0.11,
       "58_2_#default#": 0.14,
@@ -3726,10 +3467,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 4825,
+        "height": 4865,
         "width": 7860,
         "x": -2750,
-        "y": -3060
+        "y": -3100
       }
     }
   }
@@ -3931,4 +3672,4 @@ tests:
 - Endpoint Enrichment - Generic v2.1 - Test
 - Retrieve File from Endpoint - Generic V2 Test
 - Isolate and unisolate endpoint - test
-fromversion: 5.5.0
+fromversion: 6.0.0
