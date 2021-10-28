@@ -311,11 +311,12 @@ class IAMUserAppData:
     :rtype: ``None``
     """
 
-    def __init__(self, user_id, username, is_active, app_data):
+    def __init__(self, user_id, username, is_active, app_data, email=None):
         self.id = user_id
         self.username = username
         self.is_active = is_active
         self.full_data = app_data
+        self.email = email
 
 
 class IAMCommand:
@@ -510,11 +511,14 @@ class IAMCommand:
                     if updated_user.is_active is None:
                         updated_user.is_active = True if allow_enable else False
 
+                    if updated_user.email is None:
+                        updated_user.email = user_profile.get_attribute('email')
+
                     user_profile.set_result(
                         action=IAMActions.UPDATE_USER,
                         active=updated_user.is_active,
                         iden=updated_user.id,
-                        email=user_profile.get_attribute('email'),
+                        email=updated_user.email,
                         username=updated_user.username,
                         details=updated_user.full_data
                     )
