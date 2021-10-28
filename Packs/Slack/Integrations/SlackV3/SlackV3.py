@@ -18,6 +18,12 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
+async def get_file(self: AsyncWebClient, url_private: str):
+    demisto.debug(f'download url is {url_private=}')
+    res = requests.get(url_private, headers={'Authorization': f'Bearer {self.token}'})
+    demisto.debug(f'{url_private} {res.status_code=}')
+    return res.content
+
 ''' CONSTANTS '''
 
 SEVERITY_DICT = {
@@ -61,6 +67,7 @@ PROXY_URL: Optional[str]
 PROXIES: dict
 DEDICATED_CHANNEL: str
 ASYNC_CLIENT: slack_sdk.web.async_client.AsyncWebClient
+# Add the files_get method
 CLIENT: slack_sdk.WebClient
 ALLOW_INCIDENTS: bool
 INCIDENT_TYPE: str
@@ -795,6 +802,7 @@ class SlackLogger:
 
     Essentially this converts Logger.info() to demisto.info()
     """
+
     def __init__(self):
         """
         Set the base level as debug. The server will handle the filtering as needed.
@@ -1026,8 +1034,10 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
         await handle_listen_error(
             f'Slack API has thrown an error. Code: {error_code}, Message: {error_msg}.')
         return
+
     try:
         data: dict = req.payload
+        # demisto.debug(f'Slack v3 data: {json.dumps(data, indent=4)=}')
         event: dict = data.get('event', {})
         subtype = data.get('subtype', '')
         text = event.get('text', '')
@@ -1036,6 +1046,7 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
         message_bot_id = data.get('bot_id', '')
         thread = event.get('thread_ts', None)
         message = data.get('message', {})
+        entitlement_reply = None
         # Check if slash command received. If so, ignore for now.
         if data.get('command', None):
             demisto.debug("Slash command event received. Ignoring.")
@@ -1045,12 +1056,14 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
         if subtype == 'bot_message' or message_bot_id or message.get('subtype') == 'bot_message' \
                 or \
                 event.get('bot_id', None):
-            if len(actions) == 0:
+            if not actions:
                 demisto.debug("Received bot_message event type. Ignoring.")
                 return
         if event.get('subtype') == 'message_changed':
             demisto.debug("Received message_changed event type. Ignoring.")
             return
+        if event.get('subtype') == 'file_share':
+            demisto.debug('Received file_share event type. Processing.')
 
         if len(actions) > 0:
             channel = data.get('channel', {}).get('id', '')
@@ -1063,16 +1076,20 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
             answer_question(action_text, entitlement_string, user.get('profile', {}).get('email'))
 
         else:
-            user = await get_user_by_id_async(ASYNC_CLIENT, user_id)  # type: ignore
-            entitlement_reply = await check_and_handle_entitlement(text, user, thread)  # type: ignore
+            if user_id != '':
+                user = await get_user_by_id_async(ASYNC_CLIENT, user_id)  # type: ignore
+                entitlement_reply = await check_and_handle_entitlement(text, user, thread)  # type: ignore
 
         if entitlement_reply:
-            await send_slack_request_async(client=ASYNC_CLIENT, method='chat.postMessage',
-                                           body={
-                                               'channel': channel,
-                                               'thread_ts': thread,
-                                               'text': entitlement_reply
-                                           })
+            await send_slack_request_async(
+                client=ASYNC_CLIENT,
+                method='chat.postMessage',
+                body={
+                    'channel': channel,
+                    'thread_ts': thread,
+                    'text': entitlement_reply
+                }
+            )
 
         elif channel and channel[0] == 'D' and ENABLE_DM:
             # DM
@@ -1113,7 +1130,20 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
                                                                 OBJECTS_TO_KEYS, SYNC_CONTEXT)
 
                 investigation_id = mirror['investigation_id']
-                await handle_text(ASYNC_CLIENT, investigation_id, text, user)  # type: ignore
+                # Post to the warroom
+                if event.get('subtype') == 'file_share':
+                    file_obj = event.get('files', [{}])[0]
+                    data = await get_file(ASYNC_CLIENT, file_obj.get('url_private'))
+                    name = file_obj.get('name')
+                    demisto.debug(f'{name=}, {bool(data)=}, {investigation_id=}')
+                    file_ = fileResult(name, data, investigation_id=investigation_id)
+                    handle_file(
+                        investigation_id, 
+                        file_,
+                        user  # type: ignore
+                    )
+                else:
+                    await handle_text(ASYNC_CLIENT, investigation_id, text, user)  # type: ignore
         # Reset module health
         demisto.updateModuleHealth("")
         demisto.info("SlackV3 - Event handled successfully.")
@@ -1152,6 +1182,20 @@ async def get_user_by_id_async(client: AsyncWebClient, user_id: str) -> dict:
 
     return user
 
+def handle_file(
+    investigation_id: str,
+    file_result: dict,
+    user: dict
+):
+    demisto.info(f'SlackV3 - adding file entry to incident {investigation_id}')
+    demisto.addEntry(
+            id=investigation_id,
+            entry=json.dumps(file_result),
+            username=user.get('name', ''),
+            email=user.get('profile', {}).get('email', ''),
+            footer=MESSAGE_FOOTER            
+        )
+
 
 async def handle_text(client: AsyncWebClient, investigation_id: str, text: str, user: dict):
     """
@@ -1163,8 +1207,8 @@ async def handle_text(client: AsyncWebClient, investigation_id: str, text: str, 
         text: The received text
         user: The sender
     """
-    demisto.info(f'SlackV3 - adding entry to incident {investigation_id}')
     if text:
+        demisto.info(f'SlackV3 - adding entry to incident {investigation_id}')
         demisto.addEntry(id=investigation_id,
                          entry=await clean_message(text, client),
                          username=user.get('name', ''),
@@ -1172,6 +1216,8 @@ async def handle_text(client: AsyncWebClient, investigation_id: str, text: str, 
                          footer=MESSAGE_FOOTER
                          )
         demisto.info("SlackV3 - Text handled successfully.")
+    else:
+        demisto.info('Entry does not added to incident, no text supplied')
 
 
 async def check_and_handle_entitlement(text: str, user: dict, thread_id: str) -> str:
@@ -1373,7 +1419,7 @@ def slack_send():
                 demisto.info('Slack - could not parse JSON from entitlement message.')
     file_dict = MirrorInvestigation.get_file_from_incoming_entry(args)
     response = slack_send_request(
-        to, channel, group, entry, ignore_add_url, thread_id, 
+        to, channel, group, entry, ignore_add_url, thread_id,
         message=message, blocks=blocks, file_dict=file_dict
     )
 

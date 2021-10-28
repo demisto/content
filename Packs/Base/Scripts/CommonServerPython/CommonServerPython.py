@@ -1982,7 +1982,7 @@ def sectionsToMarkdown(root):
     return mdResult
 
 
-def fileResult(filename, data, file_type=None):
+def fileResult(filename, data, file_type=None, investigation_id=None):
     """
        Creates a file from the given data
 
@@ -2000,12 +2000,14 @@ def fileResult(filename, data, file_type=None):
     """
     if file_type is None:
         file_type = entryTypes['file']
+    if not investigation_id:
+        investigation_id = demisto.investigation()['id']
     temp = demisto.uniqueFile()
     # pylint: disable=undefined-variable
     if (IS_PY3 and isinstance(data, str)) or (not IS_PY3 and isinstance(data, unicode)):  # type: ignore # noqa: F821
         data = data.encode('utf-8')
     # pylint: enable=undefined-variable
-    with open(demisto.investigation()['id'] + '_' + temp, 'wb') as f:
+    with open(investigation_id + '_' + temp, 'wb') as f:
         f.write(data)
     return {'Contents': '', 'ContentsFormat': formats['text'], 'Type': file_type, 'File': filename, 'FileID': temp}
 
