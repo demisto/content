@@ -4605,7 +4605,7 @@
             "playbookID": "Test-AnsibleLinux"
         },
         {
-            "integrations": "AnsibleWindows",
+            "integrations": "AnsibleMicrosoftWindows",
             "playbookID": "Test-AnsibleWindows"
         },
         {
