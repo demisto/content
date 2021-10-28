@@ -516,7 +516,7 @@ class IAMCommand:
                         action=IAMActions.UPDATE_USER,
                         active=updated_user.is_active,
                         iden=updated_user.id,
-                        email=updated_user.email,
+                        email=user_profile.get_attribute('email') or updated_user.email,
                         username=updated_user.username,
                         details=updated_user.full_data
                     )
