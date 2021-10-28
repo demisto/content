@@ -1,0 +1,426 @@
+id: Saas Security - Incident Processor
+version: -1
+name: Saas Security - Incident Processor
+description: 'This playbook notifies incidents owner and provides remediation options
+  to Saas Security admin for resolving incidents. '
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 366308c5-3400-4314-8141-cc6ab0fdfb47
+    type: start
+    task:
+      id: 366308c5-3400-4314-8141-cc6ab0fdfb47
+      description: Start the playbook.
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 620,
+          "y": 0
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 712f2bae-3ed7-4231-8189-aee181d8114e
+    type: regular
+    task:
+      id: 712f2bae-3ed7-4231-8189-aee181d8114e
+      version: -1
+      name: Send Notification Email
+      description: Sends an email using EWS.
+      script: EWS Mail Sender|||send-mail
+      type: regular
+      iscommand: true
+      brand: EWS Mail Sender
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      body:
+        simple: |-
+          Dear admin,
+              An incident generated on your asset ${incident.saassecurityassetname}. Please  check if there is any risks in this file.
+
+          Prisma Saas Support Team
+      subject:
+        simple: An Incident Found in Prisma Saas Platform
+      to:
+        simple: ${incident.saassecurityincidentowneremail}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 620,
+          "y": 220
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 6bbbc81d-69ff-43de-80cb-8a1d90992f6c
+    type: condition
+    task:
+      id: 6bbbc81d-69ff-43de-80cb-8a1d90992f6c
+      version: -1
+      name: Check Severity Level
+      description: "Gets a value and return it. This is to be used in playbook conditional
+        tasks - get a value from incident field, label or context, and act accordingly.
+        \nIf an array is returned. the first value will be the decision making value."
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.saassecurityincidentseveritylevel
+            iscontext: true
+          right:
+            value:
+              simple: High
+          ignorecase: true
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.saassecurityincidentseveritylevel
+            iscontext: true
+          right:
+            value:
+              simple: Medium
+    view: |-
+      {
+        "position": {
+          "x": 620,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: a89a4c12-afc4-483e-802d-91ad1c553826
+    type: title
+    task:
+      id: a89a4c12-afc4-483e-802d-91ad1c553826
+      description: End of flow
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 1120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 2fd4a42b-d3a9-4ff6-8b35-b462b8c276dd
+    type: condition
+    task:
+      id: 2fd4a42b-d3a9-4ff6-8b35-b462b8c276dd
+      description: Check if the incident is assigned to a user
+      version: -1
+      name: Check If the Incident is Assigned to a User
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: match
+          left:
+            value:
+              simple: incident.saassecurityincidentassignee
+            iscontext: true
+          right:
+            value:
+              simple: (?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 21b076c4-6589-4c86-8608-ff87535b99bc
+    type: condition
+    task:
+      id: 21b076c4-6589-4c86-8608-ff87535b99bc
+      description: Check if the incident state is open.
+      version: -1
+      name: Check State Open
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.saassecurityincidentstate
+            iscontext: true
+          right:
+            value:
+              simple: open
+    view: |-
+      {
+        "position": {
+          "x": 620,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 62246c22-b73f-4792-8cb5-28e1e505887f
+    type: playbook
+    task:
+      id: 62246c22-b73f-4792-8cb5-28e1e505887f
+      version: -1
+      name: Send Action Taken Email to Assignee
+      description: This sub-playbook will send email notification to the Saas Security
+        Admin for taking remediation action on the incident.
+      playbookName: Saas Security Take Action on the Incident
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      asset_id:
+        simple: ${incident.saassecurityassetid}
+      asset_name:
+        simple: ${incident.saassecurityassetname}
+      email:
+        simple: ${incident.saassecurityincidentassignee}
+      incident_id:
+        simple: ${incident.saassecurityincidentid}
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 9194ef95-6841-43f5-88c2-dba037ef659e
+    type: playbook
+    task:
+      id: 9194ef95-6841-43f5-88c2-dba037ef659e
+      version: -1
+      name: Send Action Taken Email to Tenant Admin
+      description: This sub-playbook will send email notification to the Saas Security
+        Admin for taking remediation action on the incident.
+      playbookName: Saas Security Take Action on the Incident
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      asset_id:
+        simple: ${incident.saassecurityassetid}
+      asset_name:
+        simple: ${incident.saassecurityassetname}
+      email:
+        simple: ${inputs.tenant_admin}
+      incident_id:
+        simple: ${incident.saassecurityincidentid}
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "5_11_#default#": 0.89
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1185,
+        "width": 1100,
+        "x": 230,
+        "y": 0
+      }
+    }
+  }
+inputs:
+- key: updated_at
+  value:
+    simple: ${incident.saassecurityincidentupdatedat}
+  required: false
+  description: This is the incident updated at timestamp.
+  playbookInputQuery: null
+- key: tenant_admin
+  value: {}
+  required: false
+  description: This is the tenant admin email.
+  playbookInputQuery: null
+outputs:
+- contextPath: SaasSecurity.Incident.incident_id
+  description: Incident ID.
+- contextPath: SaasSecurity.Incident.tenant
+  description: Tenant associated with the incident.
+- contextPath: SaasSecurity.Incident.app_id
+  description: Application ID.
+- contextPath: SaasSecurity.Incident.app_name
+  description: Application name.
+- contextPath: SaasSecurity.Incident.app_type
+  description: Application type.
+- contextPath: SaasSecurity.Incident.cloud_id
+  description: Cloud ID.
+- contextPath: SaasSecurity.Incident.asset_name
+  description: Asset name.
+- contextPath: SaasSecurity.Incident.asset_sha256
+  description: SHA256 hash value of the asset.
+- contextPath: SaasSecurity.Incident.asset_id
+  description: Asset ID.
+- contextPath: SaasSecurity.Incident.asset_page_uri
+  description: Asset page URI.
+- contextPath: SaasSecurity.Incident.asset_cloud_uri
+  description: Asset cloud URI.
+- contextPath: SaasSecurity.Incident.exposure_type
+  description: Exposure type (Internal/External).
+- contextPath: SaasSecurity.Incident.exposure_level
+  description: Exposure level.
+- contextPath: SaasSecurity.Incident.policy_id
+  description: Policy ID.
+- contextPath: SaasSecurity.Incident.policy_name
+  description: Policy name.
+- contextPath: SaasSecurity.Incident.policy_version
+  description: Policy version.
+- contextPath: SaasSecurity.Incident.policy_page_uri
+  description: Policy page URI.
+- contextPath: SaasSecurity.Incident.severity
+  description: Severity of the incident.
+- contextPath: SaasSecurity.Incident.status
+  description: Incident status.
+- contextPath: SaasSecurity.Incident.state
+  description: Incident state.
+- contextPath: SaasSecurity.Incident.category
+  description: Incident category.
+- contextPath: SaasSecurity.Incident.resolved_by
+  description: Name of the user who resolved the incident.
+- contextPath: SaasSecurity.Incident.resolution_date
+  description: Date the incident was resolved.
+- contextPath: SaasSecurity.Incident.created_at
+  description: Date the incident was created, e.g., `2021-08-23T09:26:25.872Z`.
+- contextPath: SaasSecurity.Incident.updated_at
+  description: Date the incident was last updated. e.g., `2021-08-24T09:26:25.872Z`.
+- contextPath: SaasSecurity.Incident.asset_owner_id
+  description: ID of the asset owner.
+- contextPath: SaasSecurity.Incident.asset_owner_name
+  description: Name of the asset owner.
+- contextPath: SaasSecurity.Incident.asset_owner_email
+  description: Email address of the asset owner.
+
+fromversion: 6.0.0
+tests:
+  -  No tests
