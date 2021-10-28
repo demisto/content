@@ -95,7 +95,7 @@ def main():
     # polling the workflow status while is in progress
     while status in ['queued', 'in_progress'] and elapsed < GET_WORKFLOWS_TIMEOUT_THRESHOLD:
         logging.info(f'Workflow {workflow_id} status is {status}, current step: {step}')
-        time.sleep(10)
+        time.sleep(60)
         status, conclusion, step = get_workflow_status(github_token, workflow_id)
         elapsed = time.time() - start
 
