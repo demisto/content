@@ -71,10 +71,11 @@ class Client(BaseClient):
             headers=self.headers
         )
         if res:
-            username = res.get('Work_Email__c')
+            email = res.get('Work_Email__c')
+            username = res.get('Name')
             is_active = True
 
-            return IAMUserAppData(user_id, username, is_active, res)
+            return IAMUserAppData(user_id, username, is_active, res, email=email)
         return None
 
     def get_user(self, filter_name: str, filter_value: str) -> Optional['IAMUserAppData']:
@@ -120,10 +121,11 @@ class Client(BaseClient):
             headers=self.headers
         )
         user_id = res.get('id')
-        username = user_data.get('Name')
+        email = res.get('Work_Email__c')
+        username = res.get('Name')
         is_active = True
 
-        return IAMUserAppData(user_id, username, is_active, res)
+        return IAMUserAppData(user_id, username, is_active, res, email=email)
 
     def update_user(self, user_id: str, user_data: Dict[str, Any]):
         """ Updates a user in the application using REST API.

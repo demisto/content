@@ -387,7 +387,7 @@ class IAMCommand:
                     action=IAMActions.GET_USER,
                     active=user_app_data.is_active,
                     iden=user_app_data.id,
-                    email=user_profile.get_attribute('email'),
+                    email=user_profile.get_attribute('email') or user_app_data.email,
                     username=user_app_data.username,
                     details=user_app_data.full_data
                 )
