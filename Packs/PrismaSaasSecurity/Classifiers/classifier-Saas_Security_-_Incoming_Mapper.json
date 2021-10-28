@@ -16,7 +16,7 @@
         },
         "Saas Security Incident Severity Level": {
           "complex": null,
-          "simple": "severity_level"
+          "simple": "severity"
         },
         "Policy URI": {
           "complex": null,
@@ -104,7 +104,7 @@
         },
         "severity": {
           "complex": null,
-          "simple": "severity"
+          "simple": "severity_level"
         },
         "dbotMirrorDirection": {
             "complex": null,

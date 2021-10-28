@@ -102,7 +102,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: incident.saassecurityincidentseveritylevel
+              simple: incident.severity
             iscontext: true
           right:
             value:
@@ -113,7 +113,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: incident.saassecurityincidentseveritylevel
+              simple: incident.severity
             iscontext: true
           right:
             value:
