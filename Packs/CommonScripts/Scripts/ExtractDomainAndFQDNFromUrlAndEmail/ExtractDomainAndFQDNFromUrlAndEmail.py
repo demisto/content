@@ -102,7 +102,9 @@ def extract_fqdn_or_domain(the_input, is_fqdn=None, is_domain=None):
             indicator = get_fld(full_domain, fail_silently=True)
 
     # convert None to empty string if needed
-    indicator = '' if not indicator else indicator
+    if (indicator and get_tld(indicator, fail_silently=True, fix_protocol=True) == 'zip') or not indicator:
+        indicator = ''
+
     return indicator
 
 
