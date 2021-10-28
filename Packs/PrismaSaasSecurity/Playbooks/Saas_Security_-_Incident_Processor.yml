@@ -7,24 +7,24 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 366308c5-3400-4314-8141-cc6ab0fdfb47
+    taskid: fe6b714a-dcc4-464f-8d4e-a2bffb9ac103
     type: start
     task:
-      id: 366308c5-3400-4314-8141-cc6ab0fdfb47
-      description: Start the playbook.
+      id: fe6b714a-dcc4-464f-8d4e-a2bffb9ac103
       version: -1
       name: ""
+      description: Start the playbook.
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "12"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 620,
-          "y": 0
+          "y": -240
         }
       }
     note: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 712f2bae-3ed7-4231-8189-aee181d8114e
+    taskid: 7b268a62-57e7-4d0b-8714-fe3614150f7e
     type: regular
     task:
-      id: 712f2bae-3ed7-4231-8189-aee181d8114e
+      id: 7b268a62-57e7-4d0b-8714-fe3614150f7e
       version: -1
       name: Send Notification Email
       description: Sends an email using EWS.
@@ -78,10 +78,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 6bbbc81d-69ff-43de-80cb-8a1d90992f6c
+    taskid: 2f812095-ff07-47a7-8667-1b4b71c41ab5
     type: condition
     task:
-      id: 6bbbc81d-69ff-43de-80cb-8a1d90992f6c
+      id: 2f812095-ff07-47a7-8667-1b4b71c41ab5
       version: -1
       name: Check Severity Level
       description: "Gets a value and return it. This is to be used in playbook conditional\
@@ -134,13 +134,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: a89a4c12-afc4-483e-802d-91ad1c553826
+    taskid: 187e6986-9803-441f-829a-be8a5ad36caf
     type: title
     task:
-      id: a89a4c12-afc4-483e-802d-91ad1c553826
-      description: End of flow
+      id: 187e6986-9803-441f-829a-be8a5ad36caf
       version: -1
       name: Done
+      description: End of flow
       type: title
       iscommand: false
       brand: ""
@@ -161,13 +161,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 2fd4a42b-d3a9-4ff6-8b35-b462b8c276dd
+    taskid: 85250591-c0ba-4e35-8087-b532ee94ad62
     type: condition
     task:
-      id: 2fd4a42b-d3a9-4ff6-8b35-b462b8c276dd
-      description: Check if the incident is assigned to a user
+      id: 85250591-c0ba-4e35-8087-b532ee94ad62
       version: -1
       name: Check If the Incident is Assigned to a User
+      description: Check if the incident is assigned to a user
       type: condition
       iscommand: false
       brand: ""
@@ -204,13 +204,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 21b076c4-6589-4c86-8608-ff87535b99bc
+    taskid: 417828c4-5812-48b4-805a-aa8eb236dc54
     type: condition
     task:
-      id: 21b076c4-6589-4c86-8608-ff87535b99bc
-      description: Check if the incident state is open.
+      id: 417828c4-5812-48b4-805a-aa8eb236dc54
       version: -1
       name: Check State Open
+      description: Check if the incident state is open.
       type: condition
       iscommand: false
       brand: ""
@@ -247,12 +247,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 62246c22-b73f-4792-8cb5-28e1e505887f
+    taskid: aa257a6e-28fc-4c9d-8bf6-00b87b8e9a78
     type: playbook
     task:
-      id: 62246c22-b73f-4792-8cb5-28e1e505887f
+      id: aa257a6e-28fc-4c9d-8bf6-00b87b8e9a78
       version: -1
-      name: Saas Security Take Action on the Incident
+      name: Saas Security - Take Action on the Incident
       description: This sub-playbook will send email notification to the Saas Security
         Admin for taking remediation action on the incident.
       playbookName: Saas Security - Take Action on the Incident
@@ -293,12 +293,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 9194ef95-6841-43f5-88c2-dba037ef659e
+    taskid: f5fe16f9-9d90-4559-8985-b6905312d91f
     type: playbook
     task:
-      id: 9194ef95-6841-43f5-88c2-dba037ef659e
+      id: f5fe16f9-9d90-4559-8985-b6905312d91f
       version: -1
-      name: Saas Security Take Action on the Incident
+      name: Saas Security - Take Action on the Incident
       description: This sub-playbook will send email notification to the Saas Security
         Admin for taking remediation action on the incident.
       playbookName: Saas Security - Take Action on the Incident
@@ -337,6 +337,45 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 4bb33b38-813d-4921-8d29-258f54ac6b62
+    type: condition
+    task:
+      id: 4bb33b38-813d-4921-8d29-258f54ac6b62
+      version: -1
+      name: Is Saas Security Available?
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "3"
+      "yes":
+      - "1"
+    scriptarguments:
+      brandname:
+        simple: SaasSecurity
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 620,
+          "y": -25
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -344,10 +383,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1185,
+        "height": 1425,
         "width": 1100,
         "x": 230,
-        "y": 0
+        "y": -240
       }
     }
   }
@@ -420,7 +459,6 @@ outputs:
   description: Name of the asset owner.
 - contextPath: SaasSecurity.Incident.asset_owner_email
   description: Email address of the asset owner.
-
-fromversion: 6.0.0
 tests:
-- No tests
+- SaasSecurity-Test
+fromversion: 6.0.0
