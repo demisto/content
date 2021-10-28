@@ -85,7 +85,7 @@ class Client(BaseClient):
             params = {
                 "q": filter_value,
                 "sobject": "FF__Key_Contact__c",
-                "FF__Key_Contact__c.where": f"Work_Email__c='{filter_value}'",
+                "FF__Key_Contact__c.where": f"{filter_name}='{filter_value}'",
                 "FF__Key_Contact__c.fields": "Id, FF__First_Name__c, FF__Last_Name__c, Work_Email__c, Name",
             }
 
@@ -120,7 +120,7 @@ class Client(BaseClient):
             headers=self.headers
         )
         user_id = res.get('id')
-        username = res.get('userName')
+        username = user_data.get('Name')
         is_active = True
 
         return IAMUserAppData(user_id, username, is_active, res)
