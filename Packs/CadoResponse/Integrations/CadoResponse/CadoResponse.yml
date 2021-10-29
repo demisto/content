@@ -1,0 +1,202 @@
+category: Forensics & Malware Analysis
+commonfields:
+  id: CadoResponse
+  version: -1
+configuration:
+- display: Cado Response Instance
+  additionalinfo: The URL for your Cado Response Instance
+  name: url
+  required: true
+  type: 0
+- display: API Key
+  additionalinfo: The API Key to use for connection
+  name: apikey
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Default Cado Response Project
+  additionalinfo: Provides a fallback Project ID from Cado Response if you forget
+    to add an ID to a command. If you're not sure, don't change!
+  name: CadoResponse_DefaultProject
+  required: true
+  type: 0
+- display: Default AWS Region
+  additionalinfo: Provides a default AWS region to fallback to if you forget to add
+    it to a command.
+  name: CadoResponse_DefaultRegion
+  required: true
+  type: 0
+- display: Default S3 Bucket
+  additionalinfo: Provides a default S3 bucket to fallback to if you forget to add
+    it to a command.
+  name: CadoResponse_DefaultBucket
+  required: true
+  type: 0
+description: Automate data collection. Process data at cloud speed. Analyze with purpose.
+display: Cado Response
+name: CadoResponse
+script:
+  commands:
+  - name: cado-create-project
+    arguments:
+    - name: project_name
+      default: true
+      description: Name of the project
+      isArray: false
+      required: true
+      secret: false
+    - name: project_description
+      default: false
+      description: Description for the project
+      isArray: false
+      required: false
+      secret: false
+    deprecated: false
+    description: Create a project in Cado Response
+    execution: false
+    outputs:
+    - contextPath: CadoResponse.Project.id
+      description: The Project ID of the newly created project
+      type: Number
+  - name: cado-get-project
+    arguments:
+    - name: project_id
+      default: true
+      description: ID of the project to retrieve
+      isArray: false
+      required: false
+      secret: false
+    deprecated: false
+    description: Get project details from Cado Response
+    execution: false
+    outputs:
+    - contextPath: CadoResponse.Project.id
+      description: ID of the retrieved project
+      type: Number
+    - contextPath: CadoResponse.Project.caseName
+      description: Name of the retrieved project
+      type: String
+    - contextPath: CadoResponse.Project.description
+      description: Description of the retrieved project
+      type: String
+    - contextPath: CadoResponse.Project.users
+      description: Array of users assigned to the retrieved project
+      type: Array
+    - contextPath: CadoResponse.Project.created
+      description: Creation date of the project
+      type: Date
+  - name: cado-list-projects
+    deprecated: false
+    description: Get a list of projects from Cado Response
+    execution: false
+    outputs:
+    - contextPath: CadoResponse.Projects.id
+      description: ID of the retrieved project
+      type: Number
+    - contextPath: CadoResponse.Projects.caseName
+      description: Name of the retrieved project
+      type: String
+    - contextPath: CadoResponse.Projects.description
+      description: Description of the retrieved project
+      type: String
+    - contextPath: CadoResponse.Projects.users
+      description: Array of users assigned to the retrieved project
+      type: Array
+    - contextPath: CadoResponse.Projects.created
+      description: Creation date of the project
+      type: Date
+  - name: cado-get-pipeline
+    arguments:
+    - name: pipeline_id
+      description: The id of the pipeline to retrieve
+      isArray: false
+      required: true
+      secret: false
+    - name: project_id
+      default: false
+      description: The id of the project the pipeline belongs to
+      isArray: false
+      required: false
+      secret: false
+    deprecated: false
+    description: Get pipeline details from Cado Response
+    execution: false
+    outputs:
+    - contextPath: CadoResponse.Pipeline.pipeline_id
+      description: The ID of the retrieved pipeline
+      type: Number
+    - contextPath: CadoResponse.Pipeline.pipeline_type
+      description: The type of pipeline that was retrieved
+      type: String
+    - contextPath: CadoResponse.Pipeline.created
+      description: The date at which the retrieved pipeline was started
+      type: Date
+    - contextPath: CadoResponse.Pipeline.evidence_id
+      description: The evidence ID linked to the retrieved pipeline
+      type: Number
+    - contextPath: CadoResponse.Pipeline.project_id
+      description: The ID of the project the pipeline belongs to
+      type: Number
+    - contextPath: CadoResponse.Pipeline.is_terminated
+      description: A boolean which says if the retrieved pipeline has been finished/terminated
+      type: Boolean
+    - contextPath: CadoResponse.Pipeline.summary
+      description: An array of values containing the cancelled, failed, pending, running
+        and successful pipeline subtasks
+      type: Array
+    - contextPath: CadoResponse.Pipeline.subtask
+      description: An array of tasks in the retrieved pipeline
+      type: Array
+  - name: cado-get-pipelines
+    arguments:
+    - name: project_id
+      default: true
+      description: The id of the project the pipelines belongs to
+      isArray: false
+      required: false
+      secret: false
+    deprecated: false
+    description: Get a list of pipelines from Cado Response
+    execution: false
+    outputs:
+    - contextPath: CadoResponse.Pipelines.pipeline_id
+      description: The ID of the retrieved pipeline
+      type: Number
+    - contextPath: CadoResponse.Pipelines.pipeline_type
+      description: The type of pipeline that was retrieved
+      type: String
+    - contextPath: CadoResponse.Pipelines.created
+      description: The date at which the retrieved pipeline was started
+      type: Date
+    - contextPath: CadoResponse.Pipelines.evidence_id
+      description: The evidence ID linked to the retrieved pipeline
+      type: Number
+    - contextPath: CadoResponse.Pipelines.project_id
+      description: The ID of the project the pipeline belongs to
+      type: Number
+    - contextPath: CadoResponse.Pipelines.is_terminated
+      description: A boolean which says if the retrieved pipeline has been finished/terminated
+      type: Boolean
+    - contextPath: CadoResponse.Pipelines.summary
+      description: An array of values containing the cancelled, failed, pending, running
+        and successful pipeline subtasks
+      type: Array
+    - contextPath: CadoResponse.Pipelines.subtask
+      description: An array of tasks in the retrieved pipeline
+      type: Array
+  isfetch: false
+  runonce: false
+  script: "-"
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.9.7.24076
+fromversion: "6.0.0"
+tests:
+- No tests (auto formatted)
