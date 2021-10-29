@@ -47,9 +47,7 @@ class Client(BaseClient):
         return response
 
     def bulk_action(self, action_type, entities):
-        if type(entities) == list:
-            entities = entities
-        else:
+        if type(entities) == str:
             entities = json.loads(entities)
         url_suffix = f'rest/{self.tenant_id}/ems/bulk'
         payload = {
@@ -74,7 +72,7 @@ def login(server: str, tenant:  str, username: str, password: str, verify_certif
     return token
 
 
-def validate_fetch_params(fetch_limit: str, fetch_start:  str):
+def validate_fetch_params(fetch_limit, fetch_start):
     try:
         fetch_limit = int(fetch_limit)
     except:
