@@ -76,8 +76,9 @@ class Client(BaseClient):
             user_id = user_app_data.get('id')
             is_active = user_app_data.get('is_active')
             username = user_app_data.get('login')
+            email = user_app_data.get('email')
 
-            return IAMUserAppData(user_id, username, is_active, user_app_data)
+            return IAMUserAppData(user_id, username, is_active, user_app_data, email)
         return None
 
     def create_user(self, user_data: Dict[str, Any]) -> IAMUserAppData:
