@@ -1620,7 +1620,6 @@ script:
     - default: false
       description: 'The string representation of the indicator.
       Either ioc_id or ioc_type and value must be provided.'
-      description: The string representation of the indicator.
       isArray: false
       name: value
       required: false
