@@ -3073,7 +3073,7 @@ Returns a list of your uploaded IOCs that match the search criteria
 | types | A comma-separated list of indicator types. Valid types are: "sha256", "sha1", "md5", "domain", "ipv4", "ipv6". | Optional | 
 | values | A comma-separated list of indicator values. | Optional | 
 | sources | A comma-separated list of IOC sources. | Optional | 
-| expiration | The date on which the indicator will become inactive. (YYYY-MM-DD format). | Optional | 
+| expiration | The date on which the indicator will become inactive (ISO 8601 format, i.e. YYYY-MM-DDThh:mm:ss). | Optional | 
 | limit | The maximum number of records to return. The minimum is 1 and the maximum is 500. Default is 50. | Optional | 
 | sort | The order in which the results are returned. Possible values are: "type.asc", "type.desc", "value.asc", "value.desc", "policy.asc", "policy.desc", "share_level.asc", "share_level.desc", "expiration_timestamp.asc", and "expiration_timestamp.desc". | Optional | 
 | offset | The offset to begin the list from. For example, start from the 10th record and return the list. Default is 0. | Optional | 
@@ -3139,8 +3139,9 @@ Gets the full definition of one or more indicators that you are watching.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| type | The IOC type to retrieve. Possible values are: "sha256", "sha1", "md5", "domain", "ipv4", and "ipv6". | Required | 
-| value | The IOC value to retrieve. | Required | 
+| type | The IOC type to retrieve. Possible values are: "sha256", "sha1", "md5", "domain", "ipv4", and "ipv6". Either ioc_id or ioc_type and value must be provided. | Optional | 
+| value | The IOC value to retrieve. Either ioc_id or ioc_type and value must be provided. | Optional | 
+| ioc_id | The ID of the IOC to get. Can be retrieved by running the cs-falcon-search-custom-iocs command. Either ioc_id or ioc_type and value must be provided. | Optional | 
 
 
 #### Context Output
@@ -3209,7 +3210,7 @@ Uploads an indicator for CrowdStrike to monitor.
 | action | Action to take when a host observes the custom IOC. Possible values are: no_action - Save the indicator for future use, but take no action. No severity required. allow - Applies to hashes only. Allow the indicator and do not detect it. Severity does not apply and should not be provided. prevent_no_ui - Applies to hashes only. Block and detect the indicator, but hide it from Activity > Detections. Has a default severity value. prevent - Applies to hashes only. Block the indicator and show it as a detection at the selected severity. detect - Enable detections for the indicator at the selected severity. | Required | 
 | platforms | The platforms that the indicator applies to. You can enter multiple platform names, separated by commas. Possible values are: mac, windows and linux. | Required | 
 | severity | The severity level to apply to this indicator. Possible values are: informational, low, medium, high and critical. | Required for the prevent and detect actions. Optional for no_action. | 
-| expiration | The date on which the indicator will become inactive. (YYYY-MM-DD format). | Optional | 
+| expiration | The date on which the indicator will become inactive (ISO 8601 format, i.e. YYYY-MM-DDThh:mm:ss). | Optional | 
 | source | The source where this indicator originated. This can be used for tracking where this indicator was defined. Limited to 200 characters. | Optional | 
 | description | A meaningful description of the indicator. Limited to 200 characters. | Optional | 
 
@@ -3275,13 +3276,14 @@ Updates an indicator for CrowdStrike to monitor.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ioc_id | The ID of the IOC to delete. Can be retrieved by running the cs-falcon-search-custom-iocs command. | Required | 
-| action | Action to take when a host observes the custom IOC. Possible values are: no_action - Save the indicator for future use, but take no action. No severity required. allow - Applies to hashes only. Allow the indicator and do not detect it. Severity does not apply and should not be provided. prevent_no_ui - Applies to hashes only. Block and detect the indicator, but hide it from Activity > Detections. Has a default severity value. prevent - Applies to hashes only. Block the indicator and show it as a detection at the selected severity. detect - Enable detections for the indicator at the selected severity. | Required | 
-| platforms | The platforms that the indicator applies to. You can enter multiple platform names, separated by commas. Possible values are: mac, windows and linux. | Required | 
+| action | Action to take when a host observes the custom IOC. Possible values are: no_action - Save the indicator for future use, but take no action. No severity required. allow - Applies to hashes only. Allow the indicator and do not detect it. Severity does not apply and should not be provided. prevent_no_ui - Applies to hashes only. Block and detect the indicator, but hide it from Activity > Detections. Has a default severity value. prevent - Applies to hashes only. Block the indicator and show it as a detection at the selected severity. detect - Enable detections for the indicator at the selected severity. | Optional | 
+| platforms | The platforms that the indicator applies to. You can enter multiple platform names, separated by commas. Possible values are: mac, windows and linux. | Optional | 
 | severity | The severity level to apply to this indicator. Possible values are: informational, low, medium, high and critical. | Required for the prevent and detect actions. Optional for no_action. | 
-| expiration | The date on which the indicator will become inactive. (YYYY-MM-DD format). | Optional | 
+| expiration | The date on which the indicator will become inactive (ISO 8601 format, i.e. YYYY-MM-DDThh:mm:ss). | Optional | 
 | source | The source where this indicator originated. This can be used for tracking where this indicator was defined. Limited to 200 characters. | Optional | 
 | description | A meaningful description of the indicator. Limited to 200 characters. | Optional | 
-
+| applied_globally | Whether the indicator is applied globally. Possible values are: true and false. Either applied_globally or host_groups must be provided. | Optional |
+| host_groups | List of host group IDs that the indicator applies to. Can be retrieved by running the cs-falcon-list-host-groups command. Either applied_globally or host_groups must be provided. | Optional |
 
 #### Context Output
 

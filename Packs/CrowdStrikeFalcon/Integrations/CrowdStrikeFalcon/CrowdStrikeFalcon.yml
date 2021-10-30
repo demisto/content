@@ -1513,7 +1513,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The date on which the indicator will become inactive. (YYYY-MM-DD format).
+      description: The date on which the indicator will become inactive (ISO 8601 format, i.e. YYYY-MM-DDThh:mm:ss).
       isArray: false
       name: expiration
       required: false
@@ -1598,7 +1598,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: 'The IOC type to retrieve. Possible values are: "sha256", "sha1",
-        "md5", "domain", "ipv4", and "ipv6".'
+        "md5", "domain", "ipv4", and "ipv6". Either ioc_id or ioc_type and value must be provided.'
       isArray: false
       name: type
       predefined:
@@ -1608,13 +1608,22 @@ script:
       - domain
       - ipv4
       - ipv6
-      required: true
+      required: false
       secret: false
     - default: false
-      description: The IOC value to retrieve.
+      description: 'The IOC value to retrieve.
+      Either ioc_id or ioc_type and value must be provided.'
       isArray: false
       name: value
-      required: true
+      required: false
+      secret: false
+    - default: false
+      description: 'The ID of the IOC to get. 
+      Can be retrieved by running the cs-falcon-search-custom-iocs command.
+      Either ioc_id or ioc_type and value must be provided.'
+      isArray: false
+      name: ioc_id
+      required: false
       secret: false
     deprecated: false
     description: Gets the full definition of one or more indicators that you are watching.
@@ -1724,7 +1733,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The date on which the indicator will become inactive. (YYYY-MM-DD format).
+      description: The date on which the indicator will become inactive (ISO 8601 format, i.e. YYYY-MM-DDThh:mm:ss).
       isArray: false
       name: expiration
       required: false
@@ -1740,6 +1749,25 @@ script:
       description: A meaningful description of the indicator. Limited to 200 characters.
       isArray: false
       name: description
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Whether the indicator is applied globally. 
+      Either applied_globally or host_groups must be provided.'
+      isArray: false
+      name: applied_globally
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: 'List of host group IDs that the indicator applies to. 
+      Can be retrieved by running the cs-falcon-list-host-groups command.
+      Either applied_globally or host_groups must be provided.'
+      isArray: true
+      name: host_groups
       required: false
       secret: false
     deprecated: false
@@ -1806,7 +1834,7 @@ script:
       - prevent_no_ui
       - prevent
       - detect
-      required: true
+      required: false
       secret: false
     - auto: PREDEFINED
       default: false
@@ -1818,7 +1846,7 @@ script:
       - mac
       - windows
       - linux
-      required: true
+      required: false
       secret: false
     - auto: PREDEFINED
       default: false
@@ -1836,7 +1864,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The date on which the indicator will become inactive. (YYYY-MM-DD format).
+      description: The date on which the indicator will become inactive (ISO 8601 format, i.e. YYYY-MM-DDThh:mm:ss).
       isArray: false
       name: expiration
       required: false

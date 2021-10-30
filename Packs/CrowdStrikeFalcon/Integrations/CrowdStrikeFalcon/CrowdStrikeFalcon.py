@@ -227,11 +227,14 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
             reason = res.reason
             resources = res_json.get('resources', {})
             if resources:
-                for host_id, resource in resources.items():
-                    errors = resource.get('errors', [])
-                    if errors:
-                        error_message = errors[0].get('message')
-                        reason += f'\nHost ID {host_id} - {error_message}'
+                if isinstance(resources, list):
+                    reason += f'\n{str(resources)}'
+                else:
+                    for host_id, resource in resources.items():
+                        errors = resource.get('errors', [])
+                        if errors:
+                            error_message = errors[0].get('message')
+                            reason += f'\nHost ID {host_id} - {error_message}'
             elif res_json.get('errors'):
                 errors = res_json.get('errors', [])
                 for error in errors:
@@ -1136,23 +1139,29 @@ def search_custom_iocs(
     :param sort: The order of the results. Format
     :param offset: The offset to begin the list from
     """
-    filter_str = ''
+    filter_list = []
     if types:
-        filter_str += f'type:"{types}" '
+        filter_list.append(f'type:{types}')
     if values:
-        filter_str += f'value:"{values}" '
+        filter_list.append(f'value:{values}')
     if sources:
-        filter_str += f'source:"{sources}" '
+        filter_list.append(f'source:{sources}')
     if expiration:
-        filter_str += f'expiration:"{expiration}" '
+        filter_list.append(f'expiration:"{expiration}"')
+
     params = {
-        'filter': filter_str.rstrip(),
+        'filter': '+'.join(filter_list),
         'sort': sort,
         'offset': offset,
         'limit': limit,
     }
 
     return http_request('GET', '/iocs/combined/indicators/v1', params=params)
+
+
+def get_custom_ioc(ioc_id: str) -> dict:
+    params = {'ids': ioc_id}
+    return http_request('GET', '/iocs/entities/indicators/v1', params=params)
 
 
 def upload_custom_ioc(
@@ -1164,6 +1173,8 @@ def upload_custom_ioc(
     source: Optional[str] = None,
     description: Optional[str] = None,
     expiration: Optional[str] = None,
+    applied_globally: Optional[bool] = None,
+    host_groups: Optional[List[str]] = None,
 ) -> dict:
     """
     Create a new IOC (or replace an existing one)
@@ -1178,6 +1189,8 @@ def upload_custom_ioc(
             source=source,
             description=description,
             expiration=expiration,
+            applied_globally=applied_globally,
+            host_groups=host_groups,
         )]
     }
 
@@ -1739,17 +1752,27 @@ def search_custom_iocs_command(
 
 
 def get_custom_ioc_command(
-    ioc_type: str,
-    value: str,
+    ioc_type: Optional[str] = None,
+    value: Optional[str] = None,
+    ioc_id: Optional[str] = None,
 ) -> dict:
     """
     :param ioc_type: IOC type
     :param value: IOC value
+    :param ioc_id: IOC ID
     """
-    raw_res = search_custom_iocs(
-        types=ioc_type,
-        values=value,
-    )
+
+    if not ioc_id and not (ioc_type and value):
+        raise ValueError('Either ioc_id or ioc_type and value must be provided.')
+
+    if ioc_id:
+        raw_res = get_custom_ioc(ioc_id)
+    else:
+        raw_res = search_custom_iocs(
+            types=argToList(ioc_type),
+            values=argToList(value),
+        )
+
     iocs = raw_res.get('resources')
     handle_response_errors(raw_res)
     if not iocs:
@@ -1771,6 +1794,8 @@ def upload_custom_ioc_command(
     source: Optional[str] = None,
     description: Optional[str] = None,
     expiration: Optional[str] = None,
+    applied_globally: Optional[bool] = None,
+    host_groups: Optional[List[str]] = None,
 ) -> dict:
     """
     :param ioc_type: The type of the indicator.
@@ -1781,6 +1806,8 @@ def upload_custom_ioc_command(
     :param source: The source where this indicator originated.
     :param description: A meaningful description of the indicator.
     :param expiration: The date on which the indicator will become inactive.
+    :param applied_globally: Whether the indicator is applied globally.
+    :param host_groups: List of host group IDs that the indicator applies to.
     """
     if action in {'prevent', 'detect'} and not severity:
         raise ValueError(f'Severity is required for action {action}.')
@@ -1788,11 +1815,13 @@ def upload_custom_ioc_command(
         ioc_type,
         value,
         action,
-        platforms,
+        argToList(platforms),
         severity,
         source,
         description,
         expiration,
+        argToBoolean(applied_globally) if applied_globally else None,
+        argToList(host_groups),
     )
     handle_response_errors(raw_res)
     iocs = raw_res.get('resources', [])
@@ -1826,7 +1855,7 @@ def update_custom_ioc_command(
     raw_res = update_custom_ioc(
         ioc_id,
         action,
-        platforms,
+        argToList(platforms),
         severity,
         source,
         description,
@@ -3019,7 +3048,8 @@ def main():
         elif command == 'cs-falcon-search-custom-iocs':
             return_results(search_custom_iocs_command(**args))
         elif command == 'cs-falcon-get-custom-ioc':
-            return_results(get_custom_ioc_command(ioc_type=args.get('type'), value=args.get('value')))
+            return_results(get_custom_ioc_command(
+                ioc_type=args.get('type'), value=args.get('value'), ioc_id=args.get('ioc_id')))
         elif command == 'cs-falcon-upload-custom-ioc':
             return_results(upload_custom_ioc_command(**args))
         elif command == 'cs-falcon-update-custom-ioc':
