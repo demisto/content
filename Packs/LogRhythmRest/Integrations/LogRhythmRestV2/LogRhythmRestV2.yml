@@ -582,7 +582,7 @@ script:
       description: 'The long description of the network where the event originated.'
     - type: String
       contextPath: LogRhythm.AlarmEvents.originNetwork.name
-      description: 'The name of the network where the event originated.'.'
+      description: 'The name of the network where the event originated.'
     - type: Number
       contextPath: LogRhythm.AlarmEvents.originNetwork.networkId
       description: 'The ID of the network where the event originated.'
