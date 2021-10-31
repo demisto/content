@@ -1,5 +1,5 @@
 {
-    "id": "Threat Actor",
+    "id": "generic_ThreatIntelReport_Threat Actor",
     "layout": "Threat Actor Report",
     "locked": false,
     "name": "Threat Actor",
