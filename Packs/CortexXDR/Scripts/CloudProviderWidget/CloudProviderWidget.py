@@ -11,20 +11,33 @@ Linting: https://xsoar.pan.dev/docs/integrations/linting
 
 """
 
-import demistomock as demisto
 from CommonServerPython import *
 
 from typing import Dict, Any
 import traceback
 
+COLORS = {'AWS': 'ff0000',
+          'GCP': '339966',
+          'Azure': '0000ff'}
+
+HTML_START = """<h1 style="color: #2e6c80; height: 100px; line-height: 100px; text-align: center;">"""
+HTML = """<span style="color: #{color};"><strong>{provider}&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </strong></span>"""
+
+
 ''' COMMAND FUNCTION '''
 
 
-def get_image_from_alerts() -> CommandResults:
+def get_image_from_alerts():
     incident = demisto.incident()
     xdr_alerts = incident.get('CustomFields').get('xdralerts')
     cloud_providers = list(set([alert.get('cloudprovider') for alert in xdr_alerts]))
-    return CommandResults(readable_output='\n'.join(cloud_providers))
+    results = [HTML_START]
+    results.extend([HTML.format(provider=provider, color=COLORS.get(provider)) for provider in cloud_providers])
+
+    html_result = ''.join(results)
+    return {'ContentsFormat': EntryFormat.HTML,
+            'Type': EntryType.NOTE,
+            'Contents': html_result}
 
 
 ''' MAIN FUNCTION '''
