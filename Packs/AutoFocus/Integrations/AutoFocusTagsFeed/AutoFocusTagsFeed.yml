@@ -136,4 +136,4 @@ script:
   type: python
 tests:
 - AutoFocusTagsFeed-test
-fromversion: 6.5.0b0
+fromversion: 6.5.0
