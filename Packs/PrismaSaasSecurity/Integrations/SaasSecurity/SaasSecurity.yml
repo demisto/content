@@ -28,7 +28,7 @@ configuration:
   required: false
 - additionalinfo: 'Choose the direction to mirror the incident: Incoming (from SaasSecurity
     to Cortex XSOAR), Outgoing (from Cortex XSOAR to SaasSecurity), Incoming And Outgoing (from/to
-    Cortex XSOAR and SaasSecurity), or None.  Note that Outgoing mirrors out the status only for closed Cortex XSOAR incidents,
+    Cortex XSOAR and SaasSecurity), or None. Note that Outgoing mirrors out the status only for closed Cortex XSOAR incidents,
     because the API limitation does not allow updating the status for open incidents.'
   defaultvalue: None
   display: Incident Mirroring Direction
