@@ -50,8 +50,8 @@ tasks:
       version: -1
       name: Do we have original emails attached?
       description: Identify whether the incident includes an email message attached
-        as an eml or msg file and return the answer to playbook. Also saves the identified
-        entry ID to context for use for later. Commonly used in automated playbooks
+        as an eml or msg file and returns the answer to a playbook. Also saves the identified
+        entry ID to context for later use. Commonly used in automated playbooks
         that handle phishing reports sent to a special phishing mailbox set up by
         the security team.
       scriptName: IdentifyAttachedEmail
@@ -339,7 +339,7 @@ tasks:
       id: 6d65c30c-731e-4eeb-84d3-fcf30b3cd04c
       version: -1
       name: Should the original email be retrieved?
-      description: If True, retrieve the original email in the thread
+      description: If True, retrieves the original email in the thread
       type: condition
       iscommand: false
       brand: ""
@@ -1348,8 +1348,8 @@ tasks:
       version: -1
       name: Do we have original emails attached?
       description: Identify whether the incident includes an email message attached
-        as an eml or msg file and return the answer to playbook. Also saves the identified
-        entry ID to context for use for later. Commonly used in automated playbooks
+        as an eml or msg file and returns the answer to a playbook. Also saves the identified
+        entry ID to context for later use. Commonly used in automated playbooks
         that handle phishing reports sent to a special phishing mailbox set up by
         the security team.
       scriptName: IdentifyAttachedEmail
@@ -1437,7 +1437,7 @@ tasks:
       version: -1
       name: Get Original Email - Generic v2
       description: |-
-        Use this playbook to retrieve the original email in the thread, including headers and attahcments, when the reporting user forwarded the original email not as an attachment.
+        Use this playbook to retrieve the original email in the thread, including headers and attachments, when the reporting user forwarded the original email not as an attachment.
 
         You must have the necessary permissions in your email service to execute global search.
 
@@ -1576,7 +1576,7 @@ inputs:
     complex:
       root: File
   required: false
-  description: An EML or MSG file with
+  description: An EML or MSG file.
   playbookInputQuery:
 - key: Email
   value:
@@ -1660,7 +1660,7 @@ inputs:
 - key: MessageID
   value: {}
   required: false
-  description: The original email message id to retrieve. This should hold the value
+  description: The original email message id to retrieve. Holds the value
     of the "Message-ID" header of the original email. This value will be passed as
     an input to the playbook "Get Original Email - Generic v2"
   playbookInputQuery:
@@ -1679,8 +1679,8 @@ inputs:
             value:
               simple: $1
   required: false
-  description: The user's email address which we want to retrieve the original email
-    from. This value will be passed as an input to the playbook "Get Original Email
+  description: The user's email address for which to retrieve the original email.
+    This value will be passed as an input to the playbook "Get Original Email
     - Generic v2".
   playbookInputQuery:
 - key: Thread-Topic
