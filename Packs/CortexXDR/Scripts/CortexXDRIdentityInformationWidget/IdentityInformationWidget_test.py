@@ -7,7 +7,7 @@ More details: https://xsoar.pan.dev/docs/integrations/unit-testing
 """
 
 from CommonServerPython import *
-from IdentityInformationWidget import get_identity_info
+from CortexXDRIdentityInformationWidget import get_identity_info
 import json
 import io
 

@@ -1,10 +1,10 @@
 comment: '[Enter a description of the script, including what function it performs
   and any important information users need to know, for example required permissions.]'
 commonfields:
-  id: IdentityInformationWidget
+  id: CortexXDRIdentityInformationWidget
   version: -1
 enabled: false
-name: IdentityInformationWidget
+name: CortexXDRIdentityInformationWidget
 script: '-'
 system: false
 tags:

@@ -1,10 +1,10 @@
 comment: '[Enter a description of the script, including what function it performs
   and any important information users need to know, for example required permissions.]'
 commonfields:
-  id: CloudProviderWidget
+  id: CortexXDRCloudProviderWidget
   version: -1
 enabled: false
-name: CloudProviderWidget
+name: CortexXDRCloudProviderWidget
 outputs:
 - contextPath: BaseScript.Output
   description: '[Enter a description of the data returned in this output.]'
