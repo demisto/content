@@ -964,7 +964,7 @@ def search_attributes(demisto_args: dict) -> CommandResults:
         return CommandResults(readable_output=f"No attributes found in MISP for the given filters: {args}")
 
 
-def build_events_search_response(response: Union[dict, requests.Response]) -> dict:
+def build_events_search_response(response: Union[dict, requests.Response], demisto_args: dict = dict) -> dict:
     """
     Convert the response of event search returned from MISP to the context output format.
     please note: attributes are excluded from search-events output as the information is too big. User can use the
@@ -983,7 +983,7 @@ def build_events_search_response(response: Union[dict, requests.Response]) -> di
         build_galaxy_output(events[i])
         build_tag_output(events[i])
         build_object_output(events[i])
-        build_attribute_feed_hit(events[i])
+        build_attribute_feed_hit(events[i], demisto_args)
         events[i]['timestamp'] = misp_convert_timestamp_to_date_string(events[i].get('timestamp'))
         events[i]['publish_timestamp'] = misp_convert_timestamp_to_date_string(events[i].get('publish_timestamp'))
 
@@ -991,15 +991,20 @@ def build_events_search_response(response: Union[dict, requests.Response]) -> di
     return formatted_events  # type: ignore
 
 
-def build_attribute_feed_hit(event: dict):
-    if event.get('Attribute'):
-        event['Attribute'] = [
-            {
-                'id': attribute.get('id'),
-                'value': attribute.get('value'),
-                'Feed': attribute.get('Feed')
-            } for attribute in event['Attribute']
-        ]
+def build_attribute_feed_hit(event: dict, demisto_args: dict = dict):
+    """ We want to have the Attribute data as part of the search-events results only if the user asked for
+    include_feed_correlations. Otherwise, we don't want to return attributes data at all."""
+    if demisto_args and argToBoolean(demisto_args.get('include_feed_correlations', False)):
+        if event.get('Attribute'):
+            event['Attribute'] = [
+                {
+                    'id': attribute.get('id'),
+                    'value': attribute.get('value'),
+                    'Feed': attribute.get('Feed')
+                } for attribute in event['Attribute']
+            ]
+    else:
+        event.pop('Attribute')
 
 
 def event_to_human_readable_tag_list(event):
@@ -1052,7 +1057,7 @@ def search_events(demisto_args: dict) -> CommandResults:
 
     response = PYMISP.search(**args)
     if response:
-        response_for_context = build_events_search_response(response)
+        response_for_context = build_events_search_response(response, demisto_args)
         event_outputs_to_human_readable = event_to_human_readable(response_for_context)
 
         pagination_message = f"Current page size: {limit}\n"

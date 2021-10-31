@@ -548,7 +548,7 @@ def test_build_events_search_response(mocker):
     from MISPV3 import build_events_search_response, EVENT_FIELDS
     search_response = util_load_json("test_data/search_event_by_tag.json")
     search_expected_output = util_load_json("test_data/search_event_by_tag_outputs.json")
-    search_outputs = build_events_search_response(search_response)
+    search_outputs = build_events_search_response(search_response, {'include_feed_correlations': True})
     for actual_event, expected_event in zip(search_outputs, search_expected_output):
         for event_field in EVENT_FIELDS:
             if actual_event.get(event_field):
