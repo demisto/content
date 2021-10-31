@@ -1,0 +1,6 @@
+!taegis-create-investigation priority=1 description="XSOAR Created Investigation"
+!taegis-fetch-alerts ids=`["6594e97f-a898-5b28-82b2-ea03293cdaa1"]`
+!taegis-fetch-investigation-alerts id=936c1cc1-db8f-430c-837c-1c914fcca35a
+!taegis-fetch-investigation
+!taegis-fetch-investigation investigation_id="936c1cc1-db8f-430c-837c-1c914fcca35a"
+!taegis-update-investigation investigation_id="936c1cc1-db8f-430c-837c-1c914fcca35a" status=Open description="XSOAR Modified Investigation"
