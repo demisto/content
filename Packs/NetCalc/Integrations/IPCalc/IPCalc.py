@@ -187,6 +187,7 @@ def return_subnet_binary_command(args: Dict[str, Any]) -> CommandResults:
         outputs=binary_object
     )
 
+
 ''' MAIN FUNCTION '''
 
 
@@ -205,6 +206,9 @@ def main() -> None:
         elif demisto.command() == 'ipcalc-return-subnet-binary':
             return_results(return_subnet_binary_command(demisto.args()))
 
+        elif demisto.command() == 'ipcalc-return-subnet-collision':
+            return_results(return_check_collision_command(demisto.args()))
+
         elif demisto.command() == 'ipcalc-return-subnet-addresses':
             return_results(return_subnet_addresses_command(demisto.args()))
 
@@ -216,6 +220,9 @@ def main() -> None:
 
         elif demisto.command() == 'ipcalc-return-subnet-last-address':
             return_results(return_subnet_last_address_command(demisto.args()))
+
+        elif demisto.command() == 'ipcalc-return-subnet-broadcast-address':
+            return_results(return_subnet_broadcast_address_command(demisto.args()))
 
         elif demisto.command() == 'ipcalc-check-subnet-collision':
             return_results(return_check_collision_command(demisto.args()))

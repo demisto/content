@@ -9,7 +9,7 @@ configuration:
   name: ipversion
   required: false
   type: 0
-description: An integration to help you automate IP calulations commands
+description: An integration to help you automate IP calulations
 display: IPCalc
 name: IPCalc
 script:
@@ -25,6 +25,10 @@ script:
     description: Return a list of ip addresses in a subnet
     execution: false
     name: ipcalc-return-subnet-addresses
+    outputs:
+    - contextPath: IPCalc.IP.Address
+      description: Subnet addresses
+      type: String
   - arguments:
     - default: false
       description: Subnet to use
@@ -36,6 +40,10 @@ script:
     description: Return the network id of a subnet
     execution: false
     name: ipcalc-return-subnet-network
+    outputs:
+    - contextPath: IPCalc.IP.Network
+      description: Subnet network
+      type: String
   - arguments:
     - default: false
       description: Subnet to use
@@ -47,6 +55,10 @@ script:
     description: Return subnet first address
     execution: false
     name: ipcalc-return-subnet-first-address
+    outputs:
+    - contextPath: IPCalc.IP.Address
+      description: First ip address
+      type: String
   - arguments:
     - default: false
       description: Subnet to use
@@ -58,6 +70,10 @@ script:
     description: Return subnet last address
     execution: false
     name: ipcalc-return-subnet-last-address
+    outputs:
+    - contextPath: IPCalc.IP.Address
+      description: Last ip address
+      type: String
   - arguments:
     - default: false
       description: Subnet to use
@@ -69,6 +85,10 @@ script:
     description: Return subnet broadcast address
     execution: false
     name: ipcalc-return-subnet-broadcast-address
+    outputs:
+    - contextPath: IPCalc.IP.Address
+      description: Subnet addresses
+      type: String
   - arguments:
     - default: false
       description: First subnet
@@ -86,6 +106,16 @@ script:
     description: Return subnet collision address
     execution: false
     name: ipcalc-check-subnet-collision
+    outputs:
+    - contextPath: IPCalc.IP.Collision.subnet1
+      description: Collission first subnet
+      type: String
+    - contextPath: IPCalc.IP.Collision.subnet2
+      description: Collission second subnet
+      type: String
+    - contextPath: IPCalc.IP.Collision.collision
+      description: Collission result
+      type: String
   - arguments:
     - default: false
       description: Subnet to use
@@ -97,6 +127,13 @@ script:
     description: Return subnet iana allocation information
     execution: false
     name: ipcalc-return-subnet-iana-allocation
+    outputs:
+    - contextPath: IPCalc.IP.Allocation.allocation
+      description: IANA IP allocation type
+      type: String
+    - contextPath: IPCalc.IP.Allocation.subnet
+      description: Subnet
+      type: String
   - arguments:
     - default: false
       description: Subnet to use
@@ -108,6 +145,13 @@ script:
     description: Return subnet in binary format
     execution: false
     name: ipcalc-return-subnet-binary
+    outputs:
+    - contextPath: IPCalc.IP.Binary.binary
+      description: Subnet binary
+      type: String
+    - contextPath: IPCalc.IP.Binary.subnet
+      description: Subnet address
+      type: String
   dockerimage: aymanam/ipcalc:latest
   feed: false
   isfetch: false
