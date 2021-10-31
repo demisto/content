@@ -1520,7 +1520,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The date on which the indicator will become inactive (ISO 8601 format, i.e. YYYY-MM-DDThh:mm:ss).
+      description: The date on which the indicator will become inactive (ISO 8601 format, i.e. YYYY-MM-DDThh:mm:ssZ).
       isArray: false
       name: expiration
       required: false
@@ -1740,7 +1740,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The date on which the indicator will become inactive (ISO 8601 format, i.e. YYYY-MM-DDThh:mm:ss).
+      description: The date on which the indicator will become inactive (ISO 8601 format, i.e. YYYY-MM-DDThh:mm:ssZ).
       isArray: false
       name: expiration
       required: false
@@ -1871,7 +1871,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The date on which the indicator will become inactive (ISO 8601 format, i.e. YYYY-MM-DDThh:mm:ss).
+      description: The date on which the indicator will become inactive (ISO 8601 format, i.e. YYYY-MM-DDThh:mm:ssZ).
       isArray: false
       name: expiration
       required: false
