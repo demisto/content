@@ -1494,6 +1494,7 @@ script:
     name: cs-falcon-delete-ioc
   - arguments:
     - default: false
+      auto: PREDEFINED
       description: 'A comma-separated list of indicator types. Valid types are: "sha256",
         "sha1", "md5", "domain", "ipv4", "ipv6".'
       isArray: true
