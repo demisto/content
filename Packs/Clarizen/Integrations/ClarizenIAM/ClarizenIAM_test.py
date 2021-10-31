@@ -34,6 +34,7 @@ class TestGetUserCommand:
     def setup(self, mocker) -> None:
         mocker.patch.object(Client, 'get_session_id', return_value='SessionID')
         mocker.patch.object(Client, 'get_manager_id', return_value='')
+        mocker.patch.object(Client, 'get_app_fields', return_value={})
         self.client = Client(base_url=BASE_URL, headers={})
 
     def test_existing_user(self):
@@ -138,6 +139,7 @@ class TestCreateUserCommand:
     def setup(self, mocker) -> None:
         mocker.patch.object(Client, 'get_session_id', return_value='SessionID')
         mocker.patch.object(Client, 'get_manager_id', return_value='')
+        mocker.patch.object(Client, 'get_app_fields', return_value={})
         self.client = Client(base_url=BASE_URL, headers={})
 
     def test_success(self):
@@ -217,6 +219,7 @@ class TestUpdateUserCommand:
     def setup(self, mocker) -> None:
         mocker.patch.object(Client, 'get_session_id', return_value='SessionID')
         mocker.patch.object(Client, 'get_manager_id', return_value='')
+        mocker.patch.object(Client, 'get_app_fields', return_value={})
         self.client = Client(base_url=BASE_URL, headers={})
 
     def test_non_existing_user(self):
@@ -317,6 +320,7 @@ class TestDisableUserCommand:
     def setup(self, mocker) -> None:
         mocker.patch.object(Client, 'get_session_id', return_value='SessionID')
         mocker.patch.object(Client, 'get_manager_id', return_value='')
+        mocker.patch.object(Client, 'get_app_fields', return_value={})
         self.client = Client(base_url=BASE_URL, headers={})
 
     def test_success(self):
@@ -346,10 +350,7 @@ class TestDisableUserCommand:
         outputs = get_outputs_from_user_profile(user_profile)
 
         assert outputs.get('action') == IAMActions.DISABLE_USER
-        assert outputs.get('success') is True
-        assert outputs.get('active') is False
-        assert outputs.get('id') == '1234'
-        assert outputs.get('username') == 'mock_user_name'
+        assert outputs.get('skipped')
         assert outputs.get('details', {}).get('first_name') == 'mock_first_name'
         assert outputs.get('details', {}).get('last_name') == 'mock_last_name'
 
