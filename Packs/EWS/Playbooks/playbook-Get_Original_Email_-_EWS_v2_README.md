@@ -1,5 +1,5 @@
-This v2 playbook retrieves the original email in the thread (as eml file) by using the EWS v2 integration.
-The main difference between this playbook and its previous version is that this playbook will retrieve the email as eml and not as an Email object. This version also reduces the amount of tasks needed to perform the fetch action.
+This v2 playbook retrieves the original email in the thread as eml an file by using the EWS v2 integration.
+This playbook will retrieve the email as eml and not as an Email object (like the previous version). It also reduces the amount of tasks needed to perform the fetch action.
 You must have the necessary permissions in the EWS integration to execute global search: eDiscovery
 
 ## Dependencies
@@ -23,7 +23,7 @@ This playbook does not use any sub-playbooks.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| TargetMailbox | The target mailbox to retrieve the eml file from. |  | Optional |
+| TargetMailbox | The target mailbox for which to retrieve the eml file. |  | Optional |
 | MessageID | The InReplyTo header in the forwarded email. |  | Optional |
 
 ## Playbook Outputs
