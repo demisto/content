@@ -518,15 +518,20 @@ def create_group_command(client, args):
 
     group_data = scim
     group_data['schemas'] = ['urn:ietf:params:scim:schemas:core:2.0:Group']
-    res = client.create_group(group_data)
-    res_json = res.json()
-
-    if res.status_code == 201:
-        generic_iam_context = OutputContext(success=True, id=res_json.get('id'), displayName=group_name)
-    else:
+    try:
+        res = client.create_group(group_data)
         res_json = res.json()
-        generic_iam_context = OutputContext(success=False, displayName=group_name, errorCode=res_json.get('code'),
-                                            errorMessage=res_json.get('message'), details=res_json)
+
+        if res.status_code == 201:
+            generic_iam_context = OutputContext(success=True, id=res_json.get('id'), displayName=group_name)
+        else:
+            res_json = res.json()
+            generic_iam_context = OutputContext(success=False, displayName=group_name, errorCode=res_json.get('code'),
+                                                errorMessage=res_json.get('message'), details=res_json)
+    except DemistoException as e:
+        res_json = e.res.json()
+        generic_iam_context = OutputContext(success=False, displayName=group_name, errorCode=res_json.get('status'),
+                                            errorMessage=res_json.get('detail'), details=res_json)
 
     readable_output = tableToMarkdown('Oracle Cloud Create Group:', generic_iam_context.data, removeNull=True)
 
