@@ -689,6 +689,23 @@ script:
       required: true
       secret: false
     - default: false
+      description: The comment ID.
+      isArray: false
+      name: comment_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Deletes a comment from incident in Azure Sentinel.
+    execution: false
+    name: azure-sentinel-incident-delete-comment
+  - arguments:
+    - default: false
+      description: The incident ID.
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    - default: false
       defaultValue: '50'
       description: The maximum number of related entities to return.
       isArray: false

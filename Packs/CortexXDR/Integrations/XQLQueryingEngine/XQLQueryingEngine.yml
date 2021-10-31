@@ -75,10 +75,24 @@ script:
       name: query_name
       required: true
       secret: false
+    - default: false
+      description: If set to 'true' and the query returns more than 1000 results, it will be extracted as JSON data to context
+        instead of being returned as a .gz file.
+        If set to 'false' and the query returns more than 1000 results, it will return the .gz file without extracting the results to context.
+      isArray: false
+      name: parse_result_file_to_context
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
+      defaultValue: "false"
+      required: false
+      secret: false
     deprecated: false
     description: |-
       Execute an XQL query and retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised.
-      When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file.
+      When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file,
+      unless the argument 'parse_result_file_to_context' is set to true and then the results will be extracted to the context.
     execution: false
     polling: true
     name: xdr-xql-generic-query
@@ -222,10 +236,24 @@ script:
       required: false
       secret: false
       defaultValue: 20
+    - default: false
+      description: If set to 'true' and the query returns more than 1000 results, it will be extracted as JSON data to context
+        instead of being returned as a .gz file.
+        If set to 'false' and the query returns more than 1000 results, it will return the .gz file without extracting the results to context.
+      isArray: false
+      name: parse_result_file_to_context
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
+      defaultValue: "false"
+      required: false
+      secret: false
     deprecated: false
     description: |-
       Retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised.
-      When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file.
+      When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file,
+      unless the argument 'parse_result_file_to_context' is set to true and then the results will be extracted to the context.
     execution: false
     hidden: false
     polling: true
@@ -394,6 +422,19 @@ script:
       name: query_name
       required: true
       secret: false
+    - default: false
+      description: If set to 'true' and the query returns more than 1000 results, it will be extracted as JSON data to context
+        instead of being returned as a .gz file.
+        If set to 'false' and the query returns more than 1000 results, it will return the .gz file without extracting the results to context.
+      isArray: false
+      name: parse_result_file_to_context
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
+      defaultValue: "false"
+      required: false
+      secret: false
     deprecated: false
     description: Query file events by the SHA256 file.
     execution: false
@@ -509,6 +550,19 @@ script:
       isArray: false
       name: query_name
       required: true
+      secret: false
+    - default: false
+      description: If set to 'true' and the query returns more than 1000 results, it will be extracted as JSON data to context
+        instead of being returned as a .gz file.
+        If set to 'false' and the query returns more than 1000 results, it will return the .gz file without extracting the results to context.
+      isArray: false
+      name: parse_result_file_to_context
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
+      defaultValue: "false"
+      required: false
       secret: false
     deprecated: false
     description: Query process events by the SHA256 process.
@@ -652,6 +706,19 @@ script:
       isArray: false
       name: query_name
       required: true
+      secret: false
+    - default: false
+      description: If set to 'true' and the query returns more than 1000 results, it will be extracted as JSON data to context
+        instead of being returned as a .gz file.
+        If set to 'false' and the query returns more than 1000 results, it will return the .gz file without extracting the results to context.
+      isArray: false
+      name: parse_result_file_to_context
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
+      defaultValue: "false"
+      required: false
       secret: false
     deprecated: false
     description: Query DLL module events by the SHA256 DLL.
@@ -805,6 +872,19 @@ script:
       name: query_name
       required: true
       secret: false
+    - default: false
+      description: If set to 'true' and the query returns more than 1000 results, it will be extracted as JSON data to context
+        instead of being returned as a .gz file.
+        If set to 'false' and the query returns more than 1000 results, it will return the .gz file without extracting the results to context.
+      isArray: false
+      name: parse_result_file_to_context
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
+      defaultValue: "false"
+      required: false
+      secret: false
     deprecated: false
     description: Query network connections between a source IP, destination IP and
       port.
@@ -950,6 +1030,19 @@ script:
       name: query_name
       required: true
       secret: false
+    - default: false
+      description: If set to 'true' and the query returns more than 1000 results, it will be extracted as JSON data to context
+        instead of being returned as a .gz file.
+        If set to 'false' and the query returns more than 1000 results, it will return the .gz file without extracting the results to context.
+      isArray: false
+      name: parse_result_file_to_context
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
+      defaultValue: "false"
+      required: false
+      secret: false
     deprecated: false
     description: Query windows registry by registry key name.
     execution: false
@@ -1086,6 +1179,19 @@ script:
       name: query_name
       required: true
       secret: false
+    - default: false
+      description: If set to 'true' and the query returns more than 1000 results, it will be extracted as JSON data to context
+        instead of being returned as a .gz file.
+        If set to 'false' and the query returns more than 1000 results, it will return the .gz file without extracting the results to context.
+      isArray: false
+      name: parse_result_file_to_context
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
+      defaultValue: "false"
+      required: false
+      secret: false
     deprecated: false
     description: Query event logs by event ID.
     execution: false
@@ -1219,6 +1325,19 @@ script:
       isArray: false
       name: query_name
       required: true
+      secret: false
+    - default: false
+      description: If set to 'true' and the query returns more than 1000 results, it will be extracted as JSON data to context
+        instead of being returned as a .gz file.
+        If set to 'false' and the query returns more than 1000 results, it will return the .gz file without extracting the results to context.
+      isArray: false
+      name: parse_result_file_to_context
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
+      defaultValue: "false"
+      required: false
       secret: false
     deprecated: false
     description: Query by DNS query or domain name.
@@ -1381,6 +1500,19 @@ script:
       name: query_name
       required: true
       secret: false
+    - default: false
+      description: If set to 'true' and the query returns more than 1000 results, it will be extracted as JSON data to context
+        instead of being returned as a .gz file.
+        If set to 'false' and the query returns more than 1000 results, it will return the .gz file without extracting the results to context.
+      isArray: false
+      name: parse_result_file_to_context
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
+      defaultValue: "false"
+      required: false
+      secret: false
     deprecated: false
     description: Search for the process that wrote the given file, by its SHA256 or
       file path.
@@ -1539,6 +1671,19 @@ script:
       isArray: false
       name: query_name
       required: true
+      secret: false
+    - default: false
+      description: If set to 'true' and the query returns more than 1000 results, it will be extracted as JSON data to context
+        instead of being returned as a .gz file.
+        If set to 'false' and the query returns more than 1000 results, it will return the .gz file without extracting the results to context.
+      isArray: false
+      name: parse_result_file_to_context
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
+      defaultValue: "false"
+      required: false
       secret: false
     deprecated: false
     description: Search for network connection created by a given process instance
@@ -1701,6 +1846,19 @@ script:
       isArray: false
       name: query_name
       required: true
+      secret: false
+    - default: false
+      description: If set to 'true' and the query returns more than 1000 results, it will be extracted as JSON data to context
+        instead of being returned as a .gz file.
+        If set to 'false' and the query returns more than 1000 results, it will return the .gz file without extracting the results to context.
+      isArray: false
+      name: parse_result_file_to_context
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
+      defaultValue: "false"
+      required: false
       secret: false
     deprecated: false
     description: Search for network connection created by a given process causality
