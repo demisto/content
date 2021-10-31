@@ -431,6 +431,17 @@
             "is_mockable": false
         },
         {
+            "integrations": "Azure Compute v2",
+            "playbookID": "Azure Compute - Login Test",
+            "instance_names": "ms_azure_compute_prod",
+            "is_mockable": false
+        },
+        {
+            "integrations": "Azure Compute v2",
+            "playbookID": "Azure Compute - Login Test",
+            "instance_names": "ms_azure_compute_self_deployed"
+        },
+        {
             "integrations": "Symantec Data Loss Prevention",
             "playbookID": "Symantec Data Loss Prevention - Test",
             "fromversion": "4.5.0"
