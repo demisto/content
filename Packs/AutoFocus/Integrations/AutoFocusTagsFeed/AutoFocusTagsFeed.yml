@@ -4,6 +4,11 @@ commonfields:
   version: -1
 defaultEnabled: true
 configuration:
+- display: AutoFocus Endpoint URL
+  name: url
+  defaultvalue: https://autofocus.paloaltonetworks.com/api/v1.0/
+  type: 0
+  required: true
 - displaypassword: API key
   hidden: false
   hiddenusername: true
@@ -11,11 +16,6 @@ configuration:
   required: false
   type: 9
   fromlicense: encrypted
-- display: AutoFocus Endpoint URL
-  name: url
-  defaultvalue: https://autofocus.paloaltonetworks.com/api/v1.0/
-  type: 0
-  required: true
 - defaultvalue: 'true'
   display: Fetch indicators
   name: feed
@@ -24,7 +24,7 @@ configuration:
 - additionalinfo: Incremental feeds pull only new or modified indicators that have been sent from the integration. As the determination if the indicator is new or modified happens on the 3rd-party vendor's side, and only indicators that are new or modified are sent to Cortex XSOAR, all indicators coming from these feeds are labeled new or modified.
   display: Incremental Feed
   name: feedIncremental
-  defaultvalue: true
+  defaultvalue: 'true'
   required: false
   type: 8
   hidden: true
@@ -136,4 +136,4 @@ script:
   type: python
 tests:
 - AutoFocusTagsFeed-test
-fromversion: 6.5.0
+fromversion: 6.5.0b0
