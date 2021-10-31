@@ -964,7 +964,7 @@ def search_attributes(demisto_args: dict) -> CommandResults:
         return CommandResults(readable_output=f"No attributes found in MISP for the given filters: {args}")
 
 
-def build_events_search_response(response: Union[dict, requests.Response], demisto_args: dict = dict) -> dict:
+def build_events_search_response(response: Union[dict, requests.Response], demisto_args=None) -> dict:
     """
     Convert the response of event search returned from MISP to the context output format.
     please note: attributes are excluded from search-events output as the information is too big. User can use the
@@ -991,7 +991,7 @@ def build_events_search_response(response: Union[dict, requests.Response], demis
     return formatted_events  # type: ignore
 
 
-def build_attribute_feed_hit(event: dict, demisto_args: dict = dict):
+def build_attribute_feed_hit(event: dict, demisto_args=None):
     """ We want to have the Attribute data as part of the search-events results only if the user asked for
     include_feed_correlations. Otherwise, we don't want to return attributes data at all."""
     if demisto_args and argToBoolean(demisto_args.get('include_feed_correlations', False)):
