@@ -291,6 +291,14 @@ class IAMUserProfile:
         raise DemistoException('Your user profile argument must contain at least one attribute that is mapped into one'
                                f' of the following attributes in the outgoing mapper: {iam_attrs}')
 
+    def set_user_is_already_disabled(self, details):
+        self.set_result(
+            action=IAMActions.DISABLE_USER,
+            skip=True,
+            skip_reason='User is already disabled.',
+            details=details
+        )
+
 
 class IAMUserAppData:
     """ Holds user attributes retrieved from an application.
@@ -424,14 +432,16 @@ class IAMCommand:
                 else:
                     if user_app_data.is_active:
                         user_app_data = client.disable_user(user_app_data.id)
-                    user_profile.set_result(
-                        action=IAMActions.DISABLE_USER,
-                        active=False,
-                        iden=user_app_data.id,
-                        email=user_profile.get_attribute('email'),
-                        username=user_app_data.username,
-                        details=user_app_data.full_data
-                    )
+                        user_profile.set_result(
+                            action=IAMActions.DISABLE_USER,
+                            active=False,
+                            iden=user_app_data.id,
+                            email=user_profile.get_attribute('email'),
+                            username=user_app_data.username,
+                            details=user_app_data.full_data
+                        )
+                    else:
+                        user_profile.set_user_is_already_disabled(user_app_data.full_data)
 
             except Exception as e:
                 client.handle_exception(user_profile, e, IAMActions.DISABLE_USER)

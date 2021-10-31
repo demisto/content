@@ -15,7 +15,7 @@ requests.packages.urllib3.disable_warnings()
 BATCH_SIZE = 2000
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 DEPROVISIONED_STATUS = 'DEPROVISIONED'
-USER_IS_DISABLED_MSG = 'Action failed because the user is disabled.'
+USER_IS_DISABLED_MSG = 'User is already disabled.'
 USER_IS_DISABLED_ERROR = 'E0000007'
 ERROR_CODES_TO_SKIP = [
     'E0000016',  # user is already enabled
@@ -371,7 +371,7 @@ def is_rate_limit_error(e):
     return False
 
 
-def handle_exception(user_profile, e, action):
+def handle_exception(user_profile, e, action, okta_user=None):
     """ Handles failed responses from Okta API by setting the User Profile object with the results.
 
     Args:
@@ -392,9 +392,9 @@ def handle_exception(user_profile, e, action):
         error_message = str(e)
 
     if error_code == USER_IS_DISABLED_ERROR:
-        error_message = USER_IS_DISABLED_MSG
+        user_profile.set_user_is_already_disabled(okta_user)
 
-    if error_code in ERROR_CODES_TO_SKIP:
+    elif error_code in ERROR_CODES_TO_SKIP:
         user_profile.set_result(action=action,
                                 skip=True,
                                 skip_reason=error_message)
@@ -489,6 +489,7 @@ def get_user_command(client, args, mapper_in, mapper_out):
 def disable_user_command(client, args, is_command_enabled, mapper_out):
     user_profile = IAMUserProfile(user_profile=args.get('user-profile'), mapper=mapper_out,
                                   incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
+    okta_user = None
     if not is_command_enabled:
         user_profile.set_result(action=IAMActions.DISABLE_USER,
                                 skip=True,
@@ -515,7 +516,7 @@ def disable_user_command(client, args, is_command_enabled, mapper_out):
                 )
 
         except Exception as e:
-            handle_exception(user_profile, e, IAMActions.DISABLE_USER)
+            handle_exception(user_profile, e, IAMActions.DISABLE_USER, okta_user)
 
     return user_profile
 

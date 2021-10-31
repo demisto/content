@@ -187,18 +187,21 @@ def disable_user_command(client, args, is_command_enabled, mapper_out):
                                         skip=True,
                                         skip_reason=error_message)
             else:
-                user_id = service_now_user.get('sys_id')
-                user_data = {'active': False}
-                updated_user = client.update_user(user_id, user_data)
-                user_profile.set_result(
-                    action=IAMActions.DISABLE_USER,
-                    success=True,
-                    active=False,
-                    iden=updated_user.get('sys_id'),
-                    email=updated_user.get('email'),
-                    username=updated_user.get('user_name'),
-                    details=updated_user
-                )
+                if service_now_user.get('active', 'true') == 'false':
+                    user_profile.set_user_is_already_disabled(service_now_user)
+                else:
+                    user_id = service_now_user.get('sys_id')
+                    user_data = {'active': False}
+                    updated_user = client.update_user(user_id, user_data)
+                    user_profile.set_result(
+                        action=IAMActions.DISABLE_USER,
+                        success=True,
+                        active=False,
+                        iden=updated_user.get('sys_id'),
+                        email=updated_user.get('email'),
+                        username=updated_user.get('user_name'),
+                        details=updated_user
+                    )
 
         except Exception as e:
             handle_exception(user_profile, e, IAMActions.DISABLE_USER)
