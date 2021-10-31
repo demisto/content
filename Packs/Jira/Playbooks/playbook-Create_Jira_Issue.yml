@@ -3,15 +3,15 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Create Jira Issue
-description: "Create Jira issue allows you to open new issues.\nWhen creating the
-  issue, you can decide to update based on on the issue's state, which will wait for
-  the issue to resolve or close with StatePolling.\nAlternatively, you can select
-  to mirror the Jira issue and incident fields.  To apply either of these options,
-  set the SyncTicket value in the playbook inputs to one of the following options:
-  \n1. StatePolling\n2. Mirror\n3. Leave Blank to use none\n\nWhen creating Jira issues
-  through XSOAR, using the mirroring function, make sure that you exclude those issues
-  when fetching incidents. To exclude these issues, tag the relevant issues with a
-  dedicated label and exclude that label from the JQL query (Labels!=)."
+description: "Create Jira issue allows you to open new issues.\nWhen creating the\
+  \ issue, you can decide to update based on on the issue's state, which will wait\
+  \ for the issue to resolve or close with StatePolling.\nAlternatively, you can select\
+  \ to mirror the Jira issue and incident fields.  To apply either of these options,\
+  \ set the SyncTicket value in the playbook inputs to one of the following options:\
+  \ \n1. StatePolling\n2. Mirror\n3. Leave Blank to use none\n\nWhen creating Jira\
+  \ issues through XSOAR, using the mirroring function, make sure that you exclude\
+  \ those issues when fetching incidents. To exclude these issues, tag the relevant\
+  \ issues with a dedicated label and exclude that label from the JQL query (Labels!=)."
 starttaskid: "0"
 tasks:
   "0":
@@ -43,10 +43,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 0b3b2175-cb09-4e1e-8dcd-dde5ee1e6459
+    taskid: e764c3a4-f26b-47ee-82e9-1e33da961f15
     type: regular
     task:
-      id: 0b3b2175-cb09-4e1e-8dcd-dde5ee1e6459
+      id: e764c3a4-f26b-47ee-82e9-1e33da961f15
       version: -1
       name: Create Jira issue
       description: Creates a new issue in Jira.
@@ -115,10 +115,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 27e18f12-3b11-4f21-835e-1bc20fa1a158
+    taskid: bcb3872c-e94b-47df-87e0-0104d51ebeeb
     type: condition
     task:
-      id: 27e18f12-3b11-4f21-835e-1bc20fa1a158
+      id: bcb3872c-e94b-47df-87e0-0104d51ebeeb
       version: -1
       name: Mirror or State Polling?
       description: Check for a playbook input to indicate which sync mode was selected.
@@ -170,10 +170,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 473aeae4-a375-461d-8642-bf786340dd20
+    taskid: f2d4551f-8dd6-43d3-8850-57a1acf773e1
     type: playbook
     task:
-      id: 473aeae4-a375-461d-8642-bf786340dd20
+      id: f2d4551f-8dd6-43d3-8850-57a1acf773e1
       version: -1
       name: Mirror Jira Ticket
       description: Mirror Jira Ticket is designed to serve as a sub-playbook, which
@@ -228,10 +228,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 89c9fc9f-d231-4bfa-8bf1-0423568ad0c8
+    taskid: d513362a-1605-4e4e-8b90-07c1d82f8310
     type: playbook
     task:
-      id: 89c9fc9f-d231-4bfa-8bf1-0423568ad0c8
+      id: d513362a-1605-4e4e-8b90-07c1d82f8310
       version: -1
       name: Jira Ticket State Polling
       description: |-
@@ -281,10 +281,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: 5467787d-f46a-44d4-86b3-63a86d124439
+    taskid: d1b67f95-6ce5-4ed5-8c45-e51b53567b2d
     type: regular
     task:
-      id: 5467787d-f46a-44d4-86b3-63a86d124439
+      id: d1b67f95-6ce5-4ed5-8c45-e51b53567b2d
       version: -1
       name: Initial Update Incident with Jira Information
       description: Fetches an issue from Jira.
@@ -316,10 +316,14 @@ tasks:
     fieldMapping:
     - incidentfield: Jira Status
       output:
-        simple: ${Ticket.[0].Status}
+        complex:
+          root: Ticket
+          accessor: Status
     - incidentfield: Jira Summary
       output:
-        simple: ${Ticket.[0].Summary}
+        complex:
+          root: Ticket
+          accessor: Summary
     - incidentfield: Jira Reporter Name
       output:
         complex:
@@ -373,10 +377,10 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: 4fa77bc3-1562-406d-83aa-7976d06e82ec
+    taskid: a253cb13-345f-4190-892d-6064744317ef
     type: condition
     task:
-      id: 4fa77bc3-1562-406d-83aa-7976d06e82ec
+      id: a253cb13-345f-4190-892d-6064744317ef
       version: -1
       name: Is Jira integration enabled?
       description: Returns 'yes' if integration brand is available. Otherwise returns
@@ -516,5 +520,5 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
-- no test
+- Jira-v2-Test
 fromversion: 6.0.0
