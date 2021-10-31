@@ -28,7 +28,7 @@ configuration:
   required: false
 - additionalinfo: 'Choose the direction to mirror the incident: Incoming (from SaasSecurity
     to XSOAR), Outgoing (from XSOAR to SaasSecurity), or Incoming and Outgoing (from/to
-    XSOAR and SaasSecurity). Note that the outgoing is to mirror out the status only for closed XSOAR incidents,
+    XSOAR and SaasSecurity).  Note that the outgoing is to mirror out the status only for closed XSOAR incidents,
     because the API limitation does not allow to update the status for open incidents.'
   defaultvalue: None
   display: Incident Mirroring Direction

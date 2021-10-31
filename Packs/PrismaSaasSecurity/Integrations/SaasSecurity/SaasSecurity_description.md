@@ -26,4 +26,4 @@ Choose the instance configuration base URL based on the server location:
 - https://api.aperture-apac.paloaltonetworks.com (APAC)
 
 
-Note: SaaS Security API currently allows to mirror out only closed incidents, and only their **state** and **category** fields.
+Note:  SaaS Security API currently allows to mirror out only closed incidents, and only their **state** and **category** fields.

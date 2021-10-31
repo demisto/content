@@ -29,6 +29,7 @@ Use the SaaS Security integration to protect against cloud‑based threats by sc
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## SaaS Security Incident Mirroring
+
 **Note this feature is available from Cortex XSOAR version 6.0.0**
 
 You can enable incident mirroring between Cortex XSOAR incidents and SaaS Security notables.
