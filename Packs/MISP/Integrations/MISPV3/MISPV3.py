@@ -991,9 +991,14 @@ def build_events_search_response(response: Union[dict, requests.Response], demis
     return formatted_events  # type: ignore
 
 
-def build_attribute_feed_hit(event: dict, demisto_args=None):
-    """ We want to have the Attribute data as part of the search-events results only if the user asked for
-    include_feed_correlations. Otherwise, we don't want to return attributes data at all."""
+def build_attribute_feed_hit(event: dict, demisto_args):
+    """
+    We want to have the attributes data as part of the search-events context results only if the user asked for
+    include_feed_correlations. The data we return includes some finite fields:
+    * A list of event_uuids, feed ID, name, provider, source format and a url. None of these fields doesn't include
+    some heavy data which can cause performance issues.
+    Otherwise, we don't want to return attributes data at all.
+    """
     if demisto_args and argToBoolean(demisto_args.get('include_feed_correlations', False)):
         if event.get('Attribute'):
             event['Attribute'] = [

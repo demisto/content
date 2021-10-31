@@ -152,9 +152,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether to return the event related feeds. Possible values: "true"
-        and "false". Note: Only if this argument set to "true" the response will include
-        attributes feed hits values.'
+      description: Whether to return the event related feeds. Possible values are
+        "true" and "false". Note, Only if this argument set to "true" the response
+        will include attributes' feed hits values.
       isArray: false
       name: include_feed_correlations
       predefined:
