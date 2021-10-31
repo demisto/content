@@ -1,0 +1,122 @@
+category: Utilities
+commonfields:
+  id: IPCalc
+  version: -1
+configuration:
+- defaultvalue: '4'
+  display: IP Version
+  hidden: false
+  name: ipversion
+  required: false
+  type: 0
+description: An integration to help you automate IP calulations commands
+display: IPCalc
+name: IPCalc
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Subnet to use
+      isArray: false
+      name: subnet
+      required: true
+      secret: false
+    deprecated: false
+    description: Return a list of ip addresses in a subnet
+    execution: false
+    name: ipcalc-return-subnet-addresses
+  - arguments:
+    - default: false
+      description: Subnet to use
+      isArray: false
+      name: subnet
+      required: true
+      secret: false
+    deprecated: false
+    description: Return the network id of a subnet
+    execution: false
+    name: ipcalc-return-subnet-network
+  - arguments:
+    - default: false
+      description: Subnet to use
+      isArray: false
+      name: subnet
+      required: true
+      secret: false
+    deprecated: false
+    description: Return subnet first address
+    execution: false
+    name: ipcalc-return-subnet-first-address
+  - arguments:
+    - default: false
+      description: Subnet to use
+      isArray: false
+      name: subnet
+      required: true
+      secret: false
+    deprecated: false
+    description: Return subnet last address
+    execution: false
+    name: ipcalc-return-subnet-last-address
+  - arguments:
+    - default: false
+      description: Subnet to use
+      isArray: false
+      name: subnet
+      required: true
+      secret: false
+    deprecated: false
+    description: Return subnet broadcast address
+    execution: false
+    name: ipcalc-return-subnet-broadcast-address
+  - arguments:
+    - default: false
+      description: First subnet
+      isArray: false
+      name: subnet_one
+      required: true
+      secret: false
+    - default: false
+      description: Second subnet
+      isArray: false
+      name: subnet_two
+      required: true
+      secret: false
+    deprecated: false
+    description: Return subnet collision address
+    execution: false
+    name: ipcalc-check-subnet-collision
+  - arguments:
+    - default: false
+      description: Subnet to use
+      isArray: false
+      name: subnet
+      required: true
+      secret: false
+    deprecated: false
+    description: Return subnet iana allocation information
+    execution: false
+    name: ipcalc-return-subnet-iana-allocation
+  - arguments:
+    - default: false
+      description: Subnet to use
+      isArray: false
+      name: subnet
+      required: true
+      secret: false
+    deprecated: false
+    description: Return subnet in binary format
+    execution: false
+    name: ipcalc-return-subnet-binary
+  dockerimage: aymanam/ipcalc:latest
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
