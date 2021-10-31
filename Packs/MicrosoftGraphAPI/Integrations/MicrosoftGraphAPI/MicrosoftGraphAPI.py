@@ -98,7 +98,7 @@ def generic_command(client: MsGraphClient, args: Dict[str, Any]) -> CommandResul
     results = {'raw_response': response}
 
     if args.get('populate_context'):
-        results['outputs'] = response.get('value')
+        results['outputs'] = response.get('value') or response.get('appliedConditionalAccessPolicies')
         results['outputs_prefix'] = 'MicrosoftGraph'
 
     return CommandResults(**results)
