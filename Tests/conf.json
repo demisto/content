@@ -4588,6 +4588,10 @@
             "playbookID": "TestAzureSentinelPlaybookV2"
         },
         {
+            "integrations": "AutoFocusTagsFeed",
+            "playbookID": "AutoFocusTagsFeed-test"
+        },
+        {
             "playbookID": "Tanium Threat Response V2 Test",
             "integrations": ["Tanium Threat Response v2", "Demisto REST API"],
             "fromversion": "6.0.0",
