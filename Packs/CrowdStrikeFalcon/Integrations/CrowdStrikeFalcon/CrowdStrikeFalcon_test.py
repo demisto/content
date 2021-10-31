@@ -2607,7 +2607,7 @@ def test_search_custom_iocs_command_does_not_exist(requests_mock):
     from CrowdStrikeFalcon import search_custom_iocs_command
     response = {'resources': []}
     requests_mock.get(
-        f'{SERVER_URL}/iocs/combined/indicators/v1',
+        f'{SERVER_URL}/iocs/combined/indicator/v1',
         json=response,
         status_code=200
     )
@@ -2642,7 +2642,7 @@ def test_search_custom_iocs_command_exists(requests_mock):
         }]
     }
     requests_mock.get(
-        f'{SERVER_URL}/iocs/combined/indicators/v1',
+        f'{SERVER_URL}/iocs/combined/indicator/v1',
         json=ioc_response,
         status_code=200
     )
@@ -2665,7 +2665,7 @@ def test_search_custom_iocs_command_error(requests_mock, mocker):
     """
     from CrowdStrikeFalcon import search_custom_iocs_command
     requests_mock.get(
-        f'{SERVER_URL}/iocs/combined/indicators/v1',
+        f'{SERVER_URL}/iocs/combined/indicator/v1',
         json={},
         status_code=404
     )
@@ -2702,7 +2702,7 @@ def test_search_custom_iocs_command_filter(requests_mock):
         }]
     }
     requests_mock.get(
-        f'{SERVER_URL}/iocs/combined/indicators/v1?filter=type%3A%5B%27{ioc_type}%27%5D%2Bvalue%3A%5B%27{ioc_value}%27%5D&limit=50',  # noqa: E501
+        f'{SERVER_URL}/iocs/combined/indicator/v1?filter=type%3A%5B%27{ioc_type}%27%5D%2Bvalue%3A%5B%27{ioc_value}%27%5D&limit=50',  # noqa: E501
         json=ioc_response,
         status_code=200
     )
@@ -2743,7 +2743,7 @@ def test_get_custom_ioc_command_exists(requests_mock):
     }
 
     requests_mock.get(
-        f'{SERVER_URL}/iocs/combined/indicators/v1?filter=type%3A%5B%27{ioc_type}%27%5D%2Bvalue%3A%5B%27{ioc_value}%27%5D&limit=50',  # noqa: E501
+        f'{SERVER_URL}/iocs/combined/indicator/v1?filter=type%3A%5B%27{ioc_type}%27%5D%2Bvalue%3A%5B%27{ioc_value}%27%5D&limit=50',  # noqa: E501
         json=ioc_response,
         status_code=200,
     )
@@ -2766,7 +2766,7 @@ def test_get_custom_ioc_command_does_not_exist(requests_mock):
     from CrowdStrikeFalcon import get_custom_ioc_command
     response = {'resources': [], 'errors': [{'code': 404, 'message': 'md5:testmd5 - Resource Not Found'}]}
     requests_mock.get(
-        f'{SERVER_URL}/iocs/combined/indicators/v1',
+        f'{SERVER_URL}/iocs/combined/indicator/v1',
         json=response,
         status_code=200
     )

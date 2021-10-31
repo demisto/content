@@ -1156,7 +1156,7 @@ def search_custom_iocs(
         'limit': limit,
     }
 
-    return http_request('GET', '/iocs/combined/indicators/v1', params=params)
+    return http_request('GET', '/iocs/combined/indicator/v1', params=params)
 
 
 def get_custom_ioc(ioc_id: str) -> dict:
