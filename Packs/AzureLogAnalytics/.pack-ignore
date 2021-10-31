@@ -1,2 +1,5 @@
 [file:README.md]
 ignore=RM104
+
+[file:AzureLogAnalytics.yml]
+ignore=IN145
