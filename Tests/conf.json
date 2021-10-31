@@ -4620,6 +4620,9 @@
             "timeout": 2400
         },
         {
+            "integrations": [
+                "Demisto REST API"
+            ],
             "playbookID": "GetTasksWithSections SetIRProcedures end to end test",
             "fromversion": "6.0.0"
         }
