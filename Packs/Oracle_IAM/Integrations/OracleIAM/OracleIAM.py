@@ -245,7 +245,7 @@ class Client(BaseClient):
 
         return self._http_request(
             method='GET',
-            url_suffix=f'admin/v1/Groups/{group_id}',
+            url_suffix=f'admin/v1/Groups/{group_id}?attributes=id,displayName,members',
             resp_type='response',
         )
 
@@ -264,7 +264,7 @@ class Client(BaseClient):
         }
         return self._http_request(
             method='GET',
-            url_suffix='admin/v1/Groups',
+            url_suffix='admin/v1/Groups?attributes=id,displayName,members',
             params=query_params,
             resp_type='response',
         )
@@ -473,7 +473,8 @@ def get_group_command(client, args):
             res = client.get_group_by_id(group_id)
             res_json = res.json()
             if res.status_code == 200:
-                generic_iam_context = OutputContext(success=True, id=group_id, displayName=res_json.get('displayName'))
+                generic_iam_context = OutputContext(success=True, id=group_id, displayName=res_json.get('displayName'),
+                                                    members=res_json.get('members'))
         except DemistoException as exc:
             if exc.res.status_code == 404:
                 generic_iam_context = OutputContext(success=False, displayName=group_name, id=group_id,
@@ -488,7 +489,8 @@ def get_group_command(client, args):
             res_json = res.json()
             if res.status_code == 200 and res_json.get('totalResults') > 0:
                 res_json = res_json['Resources'][0]
-                generic_iam_context = OutputContext(success=True, id=res_json.get('id'), displayName=group_name)
+                generic_iam_context = OutputContext(success=True, id=res_json.get('id'), displayName=group_name,
+                                                    members=res_json.get('members'))
         except DemistoException as exc:
             if exc.res.status_code == 404:
                 generic_iam_context = OutputContext(success=False, displayName=group_name, id=group_id, errorCode=404,
