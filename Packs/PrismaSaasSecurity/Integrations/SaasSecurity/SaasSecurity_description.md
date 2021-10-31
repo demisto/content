@@ -14,7 +14,7 @@ For more information see [Saas Security Documentation](https://docs.paloaltonetw
  Required Scopes
 ---
 - Log access — Access log files. You can either provide this API client log access or add a syslog receiver for this purpose.
-- Incident management — Retrieve and change incident status.
+- Incident management — Retrieve and change the incident status.
 - Quarantine management — Quarantine assets and restore quarantined assets.
 
 
@@ -26,4 +26,4 @@ Choose the instance configuration base URL based on the server location:
 - https://api.aperture-apac.paloaltonetworks.com (APAC)
 
 
-Note:  SaaS Security API currently allows to mirror out only closed incidents, and only their **state** and **category** fields.
+Note: SaaS Security API currently allows you to mirror out only closed incidents, and only their **state** and **category** fields.
