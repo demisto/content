@@ -10,7 +10,7 @@ import rarfile
 import os
 
 
-def extract(rf: rarfile.RarFile, dir_path=None) -> Tuple[CommandResults, list]:
+def extract(rf: rarfile.RarFile, dir_path=None, password=None) -> Tuple[CommandResults, list]:
 
     file_base_names = []
     contents = []
@@ -23,7 +23,7 @@ def extract(rf: rarfile.RarFile, dir_path=None) -> Tuple[CommandResults, list]:
                 'Path': file_path
             })
 
-    rf.extractall(path=dir_path)
+    rf.extractall(path=dir_path, pwd=password)
     for root, _, files in os.walk(dir_path):
         for file_ in files:
             file_base_name = os.path.basename(file_)
@@ -47,9 +47,10 @@ def main():
         try:
             args = demisto.args()
             file_entry_id = args.get('entry_id')
+            password = args.get('password')
             archive_path = demisto.getFilePath(file_entry_id).get('path')
             rf = rarfile.RarFile(archive_path)
-            results, files = extract(rf, dir_path)
+            results, files = extract(rf, dir_path, password)
             for file_ in files:
                 file_base_name = os.path.basename(file_)
                 demisto.results(fileResult(file_base_name, open(file_).read()))

@@ -5,6 +5,12 @@ args:
   name: entry_id
   required: true
   secret: false
+- default: false
+  description: The password to use for extracting.
+  isArray: false
+  name: password
+  required: false
+  secret: false
 comment: UnPack a RAR archive using file entry ID.  Files unpacked will be pushed
   to the war room and names will be pushed to the context.
 commonfields:
@@ -24,6 +30,6 @@ tags:
 timeout: '0'
 type: python
 dockerimage: devdemisto/unzip:1.0.1.24299
-fromversion: 6.0.0
 tests:
-  - UnPackFileV2-Test
+- UnPackFileV2-Test
+fromversion: 6.0.0
