@@ -876,6 +876,7 @@ def create_user_iam(default_base_dn, args, mapper_out, disabled_users_group_cn):
         iam_user_profile = IAMUserProfile(user_profile=user_profile, user_profile_delta=user_profile_delta,
                                           mapper=mapper_out, incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
         ad_user = iam_user_profile.map_object(mapper_name=mapper_out, incident_type=IAMUserProfile.CREATE_INCIDENT_TYPE)
+        ad_user = {k: v for k, v in ad_user.items() if v}
 
         sam_account_name = ad_user.get("sAMAccountName")
 
@@ -938,6 +939,7 @@ def get_iam_user_profile(user_profile, mapper_out):
                                       incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
     ad_user = iam_user_profile.map_object(mapper_name=mapper_out, incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
     sam_account_name = ad_user.get("sAMAccountName")
+    ad_user = {k: v for k, v in ad_user.items() if v}
 
     old_user_data = iam_user_profile.get_attribute('olduserdata')
     if old_user_data:
