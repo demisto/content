@@ -4,8 +4,8 @@ contentitemexportablefields:
   contentitemfields: {}
 name: Get Original Email - EWS v2
 description: |-
-  This v2 playbook retrieves the original email in the thread (as eml file) by using the EWS v2 integration.
-  The main difference between this playbook and its previous version is that this playbook will retrieve the email as eml and not as an Email object. This version also reduces the amount of tasks needed to perform the fetch action.
+  This v2 playbook retrieves the original email in the thread as an eml file by using the EWS v2 integration.
+  This playbook will retrieve the email as eml and not as an Email object (like the previous version). It also reduces the amount of tasks needed to perform the fetch action.
   You must have the necessary permissions in the EWS integration to execute global search: eDiscovery
 starttaskid: "0"
 tasks:
@@ -46,7 +46,7 @@ tasks:
       id: 43203523-8fe7-4403-8c1b-ba175d568d59
       version: -1
       name: Is EWS v2 enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
+      description: Returns 'yes' if an integration brand is available. Otherwise returns
         'no'
       scriptName: IsIntegrationAvailable
       type: condition
@@ -112,7 +112,7 @@ tasks:
       id: 15ad973f-06c8-417d-8f63-9fcb9dfc7bef
       version: -1
       name: Verify required inputs
-      description: Verify that the required input values for retrieving the original
+      description: Verifies whether the required input values for retrieving the original
         email exists.
       type: condition
       iscommand: false
@@ -160,7 +160,7 @@ tasks:
       id: f5a63cbd-d9d6-49ca-8812-88c74426bb82
       version: -1
       name: Search for messages by MessageID
-      description: Retrieve all messages found in the thread of the forwarded email.
+      description: Retrieves all messages found in the thread of the forwarded email.
       script: EWS v2|||ews-search-mailbox
       type: regular
       iscommand: true
@@ -200,7 +200,7 @@ tasks:
       id: 2c433705-840b-4ad0-8214-ed8db8588d35
       version: -1
       name: Was a matching email found?
-      description: Verify that an email object with a Message-Id that matches the
+      description: Verifies that an email object with a Message-Id that matches the
         InReplayTo ID of the forwarded email was found.
       type: condition
       iscommand: false
@@ -243,7 +243,7 @@ tasks:
       id: 095d6baa-7a84-4f34-87d1-5b2d5a4287f2
       version: -1
       name: Get original email as eml
-      description: Retrieves items by item ID and uploads it's content as eml file.
+      description: Retrieves items by item ID and uploads the content as an eml file.
       script: EWS v2|||ews-get-items-as-eml
       type: regular
       iscommand: true
@@ -291,7 +291,7 @@ inputs:
 - key: TargetMailbox
   value: {}
   required: false
-  description: The target mailbox to retrieve the eml file from.
+  description: The target mailbox for which to retrieve the eml file.
   playbookInputQuery:
 - key: MessageID
   value: {}
@@ -300,7 +300,7 @@ inputs:
   playbookInputQuery:
 outputs:
 - contextPath: File
-  description: The original email as eml file.
+  description: The original email as an eml file.
   type: unknown
 tests:
 - Get Original Email - EWS v2 - test
