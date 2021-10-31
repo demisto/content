@@ -30,7 +30,7 @@
 					"complex": null,
 					"simple": "mobilephone"
 				},
-				"Username": {
+				"UserName": {
 					"complex": null,
 					"simple": "username"
 				},
@@ -87,7 +87,7 @@
 					"complex": null,
 					"simple": "mobilephone"
 				},
-				"Username": {
+				"UserName": {
 					"complex": null,
 					"simple": "username"
 				},

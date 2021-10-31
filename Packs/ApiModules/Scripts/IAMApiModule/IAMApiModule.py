@@ -269,7 +269,7 @@ class IAMUserProfile:
             app_data = safe_load_json(app_data)
         self._user_profile = demisto.mapObject(app_data, mapper_name, incident_type)
 
-    def get_first_available_iam_user_attr(self, iam_attrs: List[str], use_old_user_data: bool = True):
+    def get_first_available_iam_user_attr(self, iam_attrs: List[str], use_old_user_data: bool = False):
         # Special treatment for ID field, because he is not included in outgoing mappers.
         for iam_attr in iam_attrs:
             # Special treatment for ID field, because he is not included in outgoing mappers.

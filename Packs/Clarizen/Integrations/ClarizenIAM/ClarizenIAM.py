@@ -108,9 +108,10 @@ class Client(BaseClient):
             user_id = user_app_data.get('id').replace('/User/', '')
             user_name = user_app_data.get('username')
             active = user_app_data.get('state', {}).get('id').replace('/State/', '')
+            email = user_app_data.get('Email')
             is_active = False if active == 'Disabled' else True
 
-            return IAMUserAppData(user_id, user_name, is_active, user_app_data)
+            return IAMUserAppData(user_id, user_name, is_active, user_app_data, email=email)
         return None
 
     def create_user(self, user_data: Dict[str, Any]) -> IAMUserAppData:
@@ -370,7 +371,7 @@ def main():
 
     iam_command = IAMCommand(is_create_enabled, is_enable_enabled, is_disable_enabled, is_update_enabled,
                              create_if_not_exists, mapper_in, mapper_out,
-                             get_user_iam_attrs=['id', 'Username', 'Email'])
+                             get_user_iam_attrs=['id', 'Email'])
 
     headers = {
         'Content-Type': 'application/json',
