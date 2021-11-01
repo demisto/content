@@ -290,7 +290,7 @@ def get_user_command(client, args, mapper_in, mapper_out):
         user_profile = args.get("user-profile")
         iam_user_profile = IAMUserProfile(user_profile=user_profile, mapper=mapper_out,
                                           incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
-        iam_attr, iam_attr_value = user_profile.get_first_available_iam_user_attr(GET_USER_ATTRIBUTES)
+        iam_attr, iam_attr_value = iam_user_profile.get_first_available_iam_user_attr(GET_USER_ATTRIBUTES)
         salesforce_user = client.get_user(iam_attr, iam_attr_value)
         if not salesforce_user:
             error_code, error_message = IAMErrors.USER_DOES_NOT_EXIST
@@ -335,7 +335,7 @@ def create_user_command(client, args, mapper_out, is_create_enabled, is_update_e
                                         skip_reason='Command is disabled.')
 
         else:
-            iam_attr, iam_attr_value = user_profile.get_first_available_iam_user_attr(GET_USER_ATTRIBUTES)
+            iam_attr, iam_attr_value = iam_user_profile.get_first_available_iam_user_attr(GET_USER_ATTRIBUTES)
             salesforce_user = client.get_user(iam_attr, iam_attr_value)
             if salesforce_user:
                 create_if_not_exists = False
@@ -462,6 +462,8 @@ def disable_user_command(client, args, mapper_out, is_command_enabled):
                 iam_user_profile.set_result(success=True,
                                             iden=user_id,
                                             active=False,
+                                            email=salesforce_user.get('Email'),
+                                            username=salesforce_user.get('Username'),
                                             action=IAMActions.DISABLE_USER,
                                             details=res
                                             )

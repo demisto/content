@@ -195,7 +195,7 @@
 				},
 				"Username": {
 					"complex": null,
-					"simple": "email"
+					"simple": "username"
 				}
 			}
 		},
@@ -260,7 +260,7 @@
 				},
 				"Username": {
 					"complex": null,
-					"simple": "email"
+					"simple": "username"
 				}
 			}
 		},
@@ -321,7 +321,7 @@
 				},
 				"Username": {
 					"complex": null,
-					"simple": "email"
+					"simple": "username"
 				}
 			}
 		}
