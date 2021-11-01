@@ -13,17 +13,25 @@ handle_proxy()
 
 ''' GLOBAL VARS '''
 LACEWORK_ACCOUNT = demisto.params().get('lacework_account')
+LACEWORK_SUBACCOUNT = demisto.params().get('lacework_subaccount', None)
 LACEWORK_API_KEY = demisto.params()['lacework_api_key']
 LACEWORK_API_SECRET = demisto.params()['lacework_api_secret']
 LACEWORK_EVENT_SEVERITY = demisto.params()['lacework_event_severity']
 LACEWORK_EVENT_HISTORY_DAYS = demisto.params()['lacework_event_history']
 
 try:
-    lacework_client = LaceworkClient(instance=LACEWORK_ACCOUNT,
-                                     api_key=LACEWORK_API_KEY,
-                                     api_secret=LACEWORK_API_SECRET)
-except Exception:
-    demisto.results("Lacework API authentication failed. Please validate Instance Name, API Key, and API Secret.")
+    if LACEWORK_SUBACCOUNT:
+        lacework_client = LaceworkClient(account=LACEWORK_ACCOUNT,
+                                         subaccount=LACEWORK_SUBACCOUNT,
+                                         api_key=LACEWORK_API_KEY,
+                                         api_secret=LACEWORK_API_SECRET)
+    else:
+        lacework_client = LaceworkClient(account=LACEWORK_ACCOUNT,
+                                         api_key=LACEWORK_API_KEY,
+                                         api_secret=LACEWORK_API_SECRET)
+except Exception as e:
+    demisto.results("Lacework API authentication failed. Please validate Account, \
+                    Sub-Account, API Key, and API Secret. Error: {}".format(e))
 
 ''' HELPER FUNCTIONS '''
 

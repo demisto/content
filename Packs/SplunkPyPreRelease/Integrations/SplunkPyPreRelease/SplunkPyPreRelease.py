@@ -1,7 +1,7 @@
 import hashlib
-import io
 import json
 import re
+import io
 import ssl
 from datetime import timedelta, datetime
 
@@ -272,7 +272,6 @@ def fetch_notables(service, cache_object=None, enrich_notables=False):
     for item in reader:
         extensive_log('[SplunkPyPreRelease] Incident data before parsing to notable: {}'.format(item))
         notable_incident = Notable(data=item)
-        notables.append(notable_incident)
         inc = notable_incident.to_incident()
         extensive_log('[SplunkPyPreRelease] Incident data after parsing to notable: {}'.format(inc))
         incident_id = create_incident_custom_id(inc)
@@ -280,6 +279,7 @@ def fetch_notables(service, cache_object=None, enrich_notables=False):
         if incident_id not in last_run_fetched_ids:
             incident_ids_to_add.append(incident_id)
             incidents.append(inc)
+            notables.append(notable_incident)
         else:
             extensive_log('[SplunkPyPreRelease] SplunkPyPreRelease - Dropped incident {} due to duplication.'.format(incident_id))
 
@@ -328,7 +328,7 @@ def fetch_notables(service, cache_object=None, enrich_notables=False):
         extensive_log('[SplunkPyPreRelease] SplunkPyPreRelease - '
                       'Next run time with too many incidents:  {}'.format(last_run_time))
         new_last_run = {
-            'time': last_run_time,
+            'time': occured_start_time,
             'offset': search_offset + FETCH_LIMIT,
             'found_incidents_ids': last_run_fetched_ids
         }

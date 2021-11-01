@@ -32,7 +32,7 @@
 /Packs/VirusTotal/* @jochman
 
 # Important Scripts
-/Packs/CommonScripts/Scripts/SetGridField/* @yaakovi
+/Packs/CommonScripts/Scripts/SetGridField/* @yaakovi @David-BMS
 /Packs/CommonScripts/Scripts/SearchIncidentsV2/* @demisto/content-leaders
 
 # Build related

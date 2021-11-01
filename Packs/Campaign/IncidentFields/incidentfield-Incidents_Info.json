@@ -6,7 +6,7 @@
     "content": true,
     "description": "Display incidents info in MD format",
     "editForm": true,
-    "fieldCalcScript": "a9ec37d9-cb8f-48fd-8c48-1e276893307d",
+    "fieldCalcScript": "GetCampaignIncidentsInfo",
     "group": 0,
     "hidden": false,
     "id": "incident_incidentsinfo",

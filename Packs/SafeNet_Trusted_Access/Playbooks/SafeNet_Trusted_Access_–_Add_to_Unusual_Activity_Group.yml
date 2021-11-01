@@ -294,7 +294,6 @@ tasks:
       emailclassification: {}
       id:
         simple: ${incident.id}
-      phishingsubtype: {}
       safenettrustedaccessremoveuserfromunusualactivitygroup: {}
     separatecontext: false
     skipunavailable: false
@@ -408,7 +407,6 @@ tasks:
       emailclassification: {}
       id:
         simple: ${foundIncidents.id}
-      phishingsubtype: {}
       safenettrustedaccessremoveuserfromunusualactivitygroup: {}
     separatecontext: false
     skipunavailable: false
@@ -649,7 +647,6 @@ tasks:
       emailclassification: {}
       id:
         simple: ${incident.id}
-      phishingsubtype: {}
       safenettrustedaccessremoveuserfromunusualactivitygroup: {}
     separatecontext: false
     skipunavailable: false

@@ -17,10 +17,12 @@ args:
   description: The json to transform to a markdown table.
 - name: title
   description: The markdown title.
+- name: headers
+  description: A comma-separated list of table header values. Default will include all available table headers.
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.9.5.21272
+dockerimage: demisto/python3:3.9.7.24076
 runas: DBotWeakRole
 tests:
   - No test.

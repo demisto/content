@@ -290,7 +290,7 @@
                         "minW": 1,
                         "moved": false,
                         "name": "Pentera Insights",
-                        "query": "757b362f-2d99-43b4-8ca8-9bf6aa54005c",
+                        "query": "PenteraDynamicTable",
                         "queryType": "script",
                         "static": false,
                         "type": "dynamic",

@@ -186,7 +186,7 @@ script:
     description: Query Coralogix for information
     execution: false
     name: coralogix-search
-  dockerimage: demisto/python3:3.8.5.11789
+  dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: true
   longRunning: false

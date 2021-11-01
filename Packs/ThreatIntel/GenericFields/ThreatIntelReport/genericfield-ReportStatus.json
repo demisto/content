@@ -1,8 +1,5 @@
 {
-    "associatedToAll": false,
-    "associatedTypes": [
-        "Threat Actor"
-    ],
+    "associatedToAll": true,
     "caseInsensitive": true,
     "cliName": "reportstatus",
     "id": "generic_ThreatIntelReport_reportstatus",
@@ -22,7 +19,12 @@
     "sla": 0,
     "system": false,
     "threshold": 72,
-    "type": "shortText",
+    "type": "singleSelect",
+    "selectValues": [
+        "Draft",
+        "Review",
+        "Published"
+    ],
     "unmapped": false,
     "unsearchable": false,
     "useAsKpi": false,

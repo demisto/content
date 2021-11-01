@@ -6,7 +6,7 @@ comment: Parses a YAML string into context
 commonfields:
   id: ParseYAML
   version: -1
-dockerimage: demisto/python3:3.9.2.17246
+dockerimage: demisto/python3:3.9.7.24076
 enabled: true
 name: ParseYAML
 outputs:

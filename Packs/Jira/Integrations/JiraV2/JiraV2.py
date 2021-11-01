@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, Optional
 
 from requests_oauthlib import OAuth1
 from dateparser import parse
@@ -580,6 +580,9 @@ def get_issue(issue_id, headers=None, expand_links=False, is_update=False, get_a
     # handle issues were we allowed incorrect values of true
     if get_attachments == "true" or get_attachments == "\"true\"":
         get_attachments = True
+    else:
+        get_attachments = False
+
     if get_attachments and attachments:
         attachment_urls = [attachment['content'] for attachment in attachments]
         for attachment_url in attachment_urls:

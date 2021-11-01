@@ -109,7 +109,7 @@ script:
       description: 'When the domain within destination list was created'
     - contextPath: Umbrella.Destinations.comment
       description: 'Comment associated with domain within destination list'
-  dockerimage: demisto/python3:3.9.6.22912
+  dockerimage: demisto/python3:3.9.7.24076
   runonce: false
   script: ''
   subtype: python3

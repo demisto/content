@@ -1,0 +1,78 @@
+{
+    "brandName": "Lacework",
+    "fromVersion": "5.0.0",
+    "toVersion": "5.9.9",
+    "custom": true,
+    "defaultIncidentType": "Lacework Event",
+    "id": "LaceworkClassifier",
+    "keyTypeMap": {},
+    "mapping": {
+        "Lacework Event": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Lacework Event ID": {
+                    "complex": null,
+                    "simple": "EVENT_ID"
+                },
+                "Lacework Event Type": {
+                    "complex": null,
+                    "simple": "EVENT_TYPE"
+                },
+                "Lacework Event Actor": {
+                    "complex": null,
+                    "simple": "EVENT_ACTOR"
+                },
+                "Lacework Event Model": {
+                    "complex": null,
+                    "simple": "EVENT_MODEL"
+                },
+                "Lacework Recommendation Account Alias": {
+                    "complex": {
+                        "accessor": "ACCOUNT_ALIAS",
+                        "filters": [],
+                        "root": "ENTITY_MAP.RecId",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Lacework Recommendation Account ID": {
+                    "complex": {
+                        "accessor": "ACCOUNT_ID",
+                        "filters": [],
+                        "root": "ENTITY_MAP.RecId",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Lacework Recommendation ID": {
+                    "complex": {
+                        "accessor": "REC_ID",
+                        "filters": [],
+                        "root": "ENTITY_MAP.RecId",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Lacework Recommendation Title": {
+                    "complex": {
+                        "accessor": "TITLE",
+                        "filters": [],
+                        "root": "ENTITY_MAP.RecId",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "severity": {
+                    "complex": null,
+                    "simple": "SEVERITY"
+                }
+            }
+        }
+    },
+    "transformer": {
+        "complex": null,
+        "simple": ""
+    },
+    "unclassifiedCases": {},
+    "version": -1
+}
