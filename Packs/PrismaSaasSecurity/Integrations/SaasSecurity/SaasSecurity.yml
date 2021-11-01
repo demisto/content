@@ -27,9 +27,9 @@ configuration:
   type: 13
   required: false
 - additionalinfo: 'Choose the direction to mirror the incident: Incoming (from SaasSecurity
-    to XSOAR), Outgoing (from XSOAR to SaasSecurity), or Incoming and Outgoing (from/to
-    XSOAR and SaasSecurity). Note that the outgoing is to mirror out the status only for closed XSOAR incidents,
-    because the API limitation does not allow to update the status for open incidents.'
+    to Cortex XSOAR), Outgoing (from Cortex XSOAR to SaasSecurity), Incoming And Outgoing (from/to
+    Cortex XSOAR and SaasSecurity), or None. Note that Outgoing mirrors out the status only for closed Cortex XSOAR incidents,
+    because the API limitation does not allow updating the status for open incidents.'
   defaultvalue: None
   display: Incident Mirroring Direction
   hidden: false
@@ -46,7 +46,7 @@ configuration:
   defaultvalue: "20"
   type: 0
   required: true
-  additionalinfo: Minimum is 10, Maximum is 1000.
+  additionalinfo: Minimum is 10. Maximum is 1000.
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   defaultvalue: 3 days
@@ -460,7 +460,7 @@ script:
   - name: get-remote-data
     arguments:
     - default: false
-      description: The remote incident id
+      description: The remote incident ID.
       isArray: false
       name: id
       required: true
@@ -474,8 +474,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get remote data from a remote incident. Please note that this method
-      will not update the current incident, it's here for debugging purposes.
+    description: Get remote data from a remote incident. Note that this method
+      will not update the current incident. It's used for debugging purposes.
     execution: false
   - deprecated: false
     description: Returns the list of fields for an incident type.
@@ -491,7 +491,7 @@ script:
         secret: false
     deprecated: false
     description: Get the list of incidents that were modified since the last update.
-      Please note that this method is here for debugging purposes. get-modified-remote-data
+      Note that this method is used for debugging purposes. get-modified-remote-data
       is used as part of a Mirroring feature, which is available since version 6.1.
     execution: false
     name: get-modified-remote-data
