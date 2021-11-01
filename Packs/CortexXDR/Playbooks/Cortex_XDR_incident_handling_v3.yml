@@ -165,10 +165,10 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: 1b923143-5244-4ef4-8c87-590515cf879d
+    taskid: da71ad47-f1a2-4dc1-875d-a3788df06edb
     type: regular
     task:
-      id: 1b923143-5244-4ef4-8c87-590515cf879d
+      id: da71ad47-f1a2-4dc1-875d-a3788df06edb
       version: -1
       name: Cortex XDR - close incident
       description: Updates one or more fields of a specified incident. Missing fields
@@ -191,7 +191,7 @@ tasks:
       manual_severity: {}
       resolve_comment: {}
       status:
-        simple: RESOLVED_THREAT_HANDLED
+        simple: RESOLVED_TRUE_POSITIVE
       unassign_user: {}
     separatecontext: false
     view: |-
@@ -1756,6 +1756,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -1855,9 +1856,9 @@ inputs:
   required: false
   description: The organizations internal domain name. This is provided for the script
     IsInternalHostName that checks if the detected host names are internal or external
-    if the hosts contain the internal domains suffix. For example, demisto.com. If
+    if the hosts contain the internal domains suffix. For example, paloaltonetworks.com. If
     there is more than one domain, use the | character to separate values such as
-    (demisto.com|test.com).
+    (paloaltonetworks.com|test.com).
   playbookInputQuery:
 - key: TimeStamp
   value:
@@ -1876,5 +1877,4 @@ inputs:
 outputs: []
 tests:
 - Test XDR Playbook
-- Cortex XDR - IOC - Test
 fromversion: 6.0.0
