@@ -1,0 +1,7 @@
+{
+    "id": "5AC55058-622D-4929-8E5D-8FF554F312FE",
+    "idType": "partner",
+    "apiHosts": {
+        "global": "https://api.central.sophos.com"
+    }
+}

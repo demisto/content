@@ -3180,6 +3180,12 @@ MIRROR_ENTRIES = [
     {'type': None, 'category': None, 'contents': 'This is a comment', 'contentsFormat': None,
      'tags': ['comments', 'work_notes'], 'note': True}]
 
+MIRROR_ENTRIES_WITH_EMPTY_USERNAME = [
+    {'Contents': '', 'ContentsFormat': 'text', 'type': 3, 'File': 'test.txt',
+     'FileID': '20eb1079-d6c3-47cf-81bf-95968f93f6d3', 'user': ''},
+    {'type': None, 'category': None, 'contents': 'This is a comment', 'contentsFormat': None,
+     'tags': ['comments', 'work_notes'], 'note': True, 'user': ''}]
+
 OAUTH_PARAMS = {
     'insecure': False,
     'credentials': {

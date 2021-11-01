@@ -1,0 +1,292 @@
+id: Block Domain - Generic
+version: -1
+name: Block Domain - Generic
+description: |-
+  This playbook blocks malicious Domains using all integrations that are enabled.
+
+  Supported integrations for this playbook:
+  * Zscaler
+  * Symantec Messaging Gateway
+  * FireEye EX
+  * Trend Micro Apex One
+  * Proofpoint Threat Response
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: aa69480c-0a5e-4e81-86c2-b80a2fc7c10d
+    type: start
+    task:
+      id: aa69480c-0a5e-4e81-86c2-b80a2fc7c10d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+      - "3"
+      - "4"
+      - "6"
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 97beb953-6513-4650-8c99-b66cb37e24cc
+    type: playbook
+    task:
+      id: 97beb953-6513-4650-8c99-b66cb37e24cc
+      version: -1
+      name: Block Domain - Symantec Messaging Gateway
+      playbookName: Block Domain - Symantec Messaging Gateway
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      Domain:
+        complex:
+          root: inputs.Domain
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: f9253412-d3de-4e67-821b-e501fd7dd69e
+    type: playbook
+    task:
+      id: f9253412-d3de-4e67-821b-e501fd7dd69e
+      version: -1
+      name: Block Domain - FireEye Email Security
+      playbookName: Block Domain - FireEye Email Security
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      Domain:
+        complex:
+          root: inputs.Domain
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 549d870d-c306-4283-8b5e-8e503693daf1
+    type: playbook
+    task:
+      id: 549d870d-c306-4283-8b5e-8e503693daf1
+      version: -1
+      name: Block Domain - Zscaler
+      playbookName: Block Domain - Zscaler
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      Domain:
+        complex:
+          root: inputs.Domain
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -240,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 56106ad2-8509-4c5b-89a6-8c8cc10223c5
+    type: title
+    task:
+      id: 56106ad2-8509-4c5b-89a6-8c8cc10223c5
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: c657a3e5-d9ec-449d-8feb-7651fc58598d
+    type: playbook
+    task:
+      id: c657a3e5-d9ec-449d-8feb-7651fc58598d
+      version: -1
+      name: Block Domain - Trend Micro Apex One
+      playbookName: Block Domain - Trend Micro Apex One
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      Domain:
+        complex:
+          root: inputs.Domain
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1140,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: aa0604fa-2059-484a-8498-ecfc54afe2d7
+    type: playbook
+    task:
+      id: aa0604fa-2059-484a-8498-ecfc54afe2d7
+      version: -1
+      name: Block Domain - Proofpoint Threat Response
+      playbookName: Block Domain - Proofpoint Threat Response
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      Domain:
+        complex:
+          root: inputs.Domain
+      DomainBlackListID:
+        complex:
+          root: inputs.DomainBlackListID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1600,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 495,
+        "width": 2220,
+        "x": -240,
+        "y": 100
+      }
+    }
+  }
+inputs:
+- key: Domain
+  value: {}
+  required: false
+  description: The Domain to block.
+  playbookInputQuery:
+- key: DomainBlackListID
+  value: {}
+  required: false
+  description: |-
+    The Domain List ID to add the Domain to.
+    product: Proofpoint Threat Response
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 5.5.0

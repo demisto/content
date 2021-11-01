@@ -1,0 +1,422 @@
+category: Utilities
+commonfields:
+  id: OracleIAM
+  version: -1
+configuration:
+- display: Base URL
+  name: url
+  required: true
+  type: 0
+- display: Client ID
+  displaypassword: Client Secret
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: 'true'
+  display: Allow creating users
+  name: create_user_enabled
+  required: false
+  type: 8
+- defaultvalue: 'true'
+  display: Allow updating users
+  name: update_user_enabled
+  required: false
+  type: 8
+- defaultvalue: 'true'
+  display: Allow enabling users
+  name: enable_user_enabled
+  required: false
+  type: 8
+- defaultvalue: 'true'
+  display: Allow disabling users
+  name: disable_user_enabled
+  required: false
+  type: 8
+- defaultvalue: 'true'
+  display: Automatically create user if not found in update command
+  name: create_if_not_exists
+  required: false
+  type: 8
+- defaultvalue: User Profile - SCIM (Incoming)
+  display: Incoming Mapper
+  name: mapper_in
+  required: true
+  type: 0
+- defaultvalue: User Profile - SCIM (Outgoing)
+  display: Outgoing Mapper
+  name: mapper_out
+  required: true
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Integrate with Oracle's services to execute CRUD and Group operations for employee lifecycle processes.
+display: Oracle IAM
+name: OracleIAM
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: User Profile indicator details.
+      isArray: false
+      name: user-profile
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: 'When set to true, after the command execution the status of the
+        user in the 3rd-party integration will be active. Possible values: "true"
+        and "false".'
+      isArray: false
+      name: allow-enable
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a user.
+    execution: true
+    name: iam-create-user
+    outputs:
+    - contextPath: IAM.Vendor.active
+      description: When true, indicates that the employee's status is active in the
+        3rd-party integration.
+      type: Boolean
+    - contextPath: IAM.Vendor.brand
+      description: Name of the integration.
+      type: String
+    - contextPath: IAM.Vendor.details
+      description: Provides the raw data from the 3rd-party integration.
+      type: string
+    - contextPath: IAM.Vendor.email
+      description: The employee's email address.
+      type: String
+    - contextPath: IAM.Vendor.errorCode
+      description: HTTP error response code.
+      type: Number
+    - contextPath: IAM.Vendor.errorMessage
+      description: Reason why the API failed.
+      type: String
+    - contextPath: IAM.Vendor.id
+      description: The employee's user ID in the app.
+      type: String
+    - contextPath: IAM.Vendor.instanceName
+      description: Name of the integration instance.
+      type: string
+    - contextPath: IAM.Vendor.success
+      description: When true, indicates that the command was executed successfully.
+      type: Boolean
+    - contextPath: IAM.Vendor.username
+      description: The employee's username in the app.
+      type: String
+  - arguments:
+    - default: false
+      description: A User Profile indicator.
+      isArray: false
+      name: user-profile
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves a single user resource.
+    execution: false
+    name: iam-get-user
+    outputs:
+    - contextPath: IAM.Vendor.active
+      description: When true, indicates that the employee's status is active in the
+        3rd-party integration.
+      type: Boolean
+    - contextPath: IAM.Vendor.brand
+      description: Name of the integration.
+      type: String
+    - contextPath: IAM.Vendor.details
+      description: Provides the raw data from the 3rd-party integration.
+      type: string
+    - contextPath: IAM.Vendor.email
+      description: The employee's email address.
+      type: String
+    - contextPath: IAM.Vendor.errorCode
+      description: HTTP error response code.
+      type: Number
+    - contextPath: IAM.Vendor.errorMessage
+      description: Reason why the API failed.
+      type: String
+    - contextPath: IAM.Vendor.id
+      description: The employee's user ID in the app.
+      type: String
+    - contextPath: IAM.Vendor.instanceName
+      description: Name of the integration instance.
+      type: string
+    - contextPath: IAM.Vendor.success
+      description: When true, indicates that the command was executed successfully.
+      type: Boolean
+    - contextPath: IAM.Vendor.username
+      description: The employee's username in the app.
+      type: String
+  - arguments:
+    - default: false
+      description: A User Profile indicator.
+      isArray: false
+      name: user-profile
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: 'When set to true, after the command execution the status of the
+        user in the 3rd-party integration will be active. Possible values: "true"
+        and "false".'
+      isArray: false
+      name: allow-enable
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Updates an existing user with the data passed in the user-profile
+      argument.
+    execution: true
+    name: iam-update-user
+    outputs:
+    - contextPath: IAM.Vendor.active
+      description: When true, indicates that the employee's status is active in the
+        3rd-party integration.
+      type: Boolean
+    - contextPath: IAM.Vendor.brand
+      description: Name of the integration.
+      type: String
+    - contextPath: IAM.Vendor.details
+      description: Provides the raw data from the 3rd-party integration.
+      type: string
+    - contextPath: IAM.Vendor.email
+      description: The employee's email address.
+      type: String
+    - contextPath: IAM.Vendor.errorCode
+      description: HTTP error response code.
+      type: Number
+    - contextPath: IAM.Vendor.errorMessage
+      description: Reason why the API failed.
+      type: String
+    - contextPath: IAM.Vendor.id
+      description: The employee's user ID in the app.
+      type: String
+    - contextPath: IAM.Vendor.instanceName
+      description: Name of the integration instance.
+      type: string
+    - contextPath: IAM.Vendor.success
+      description: When true, indicates that the command was executed successfully.
+      type: Boolean
+    - contextPath: IAM.Vendor.username
+      description: The employee's username in the app.
+      type: String
+  - arguments:
+    - default: false
+      description: A User Profile indicator.
+      isArray: false
+      name: user-profile
+      required: true
+      secret: false
+    deprecated: false
+    description: Disable an active user.
+    execution: true
+    name: iam-disable-user
+    outputs:
+    - contextPath: IAM.Vendor.active
+      description: When true, indicates that the employee's status is active in the
+        3rd-party integration.
+      type: Boolean
+    - contextPath: IAM.Vendor.brand
+      description: Name of the integration.
+      type: String
+    - contextPath: IAM.Vendor.details
+      description: Provides the raw data from the 3rd-party integration.
+      type: string
+    - contextPath: IAM.Vendor.email
+      description: The employee's email address.
+      type: String
+    - contextPath: IAM.Vendor.errorCode
+      description: HTTP error response code.
+      type: Number
+    - contextPath: IAM.Vendor.errorMessage
+      description: Reason why the API failed.
+      type: String
+    - contextPath: IAM.Vendor.id
+      description: The employee's user ID in the app.
+      type: String
+    - contextPath: IAM.Vendor.instanceName
+      description: Name of the integration instance.
+      type: string
+    - contextPath: IAM.Vendor.success
+      description: When true, indicates that the command was executed successfully.
+      type: Boolean
+    - contextPath: IAM.Vendor.username
+      description: The employee's username in the app.
+      type: String
+  - arguments:
+    - default: false
+      description: Group SCIM data with the display name.
+      isArray: false
+      name: scim
+      required: true
+      secret: false
+    deprecated: false
+    description: Creates an empty group.
+    execution: true
+    name: iam-create-group
+    outputs:
+    - contextPath: CreateGroup.id
+      description: Group ID.
+      type: String
+    - contextPath: CreateGroup.displayName
+      description: Display name of the group.
+      type: String
+    - contextPath: CreateGroup.success
+      description: Success status of the command.
+      type: Boolean
+    - contextPath: CreateGroup.errorCode
+      description: Error code if there is a failure.
+      type: Number
+    - contextPath: CreateGroup.errorMessage
+      description: Error details if there is a failure.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Group SCIM data.
+      isArray: false
+      name: scim
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: 'Whether members need to be included in the response. Possible
+        values: "true" and "false".'
+      isArray: false
+      name: includeMembers
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves the group information including members.
+    execution: false
+    name: iam-get-group
+    outputs:
+    - contextPath: GetGroup.id
+      description: Group ID.
+      type: String
+    - contextPath: GetGroup.displayName
+      description: Display name of the group.
+      type: String
+    - contextPath: GetGroup.members.display
+      description: Display name of the group member.
+      type: String
+    - contextPath: GetGroup.members.value
+      description: ID of the group member.
+      type: String
+    - contextPath: GetGroup.success
+      description: Success status of the command.
+      type: Boolean
+    - contextPath: GetGroup.errorCode
+      description: Error code if there is a failure.
+      type: Number
+    - contextPath: GetGroup.errorMessage
+      description: Error details if there is a failure.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Group SCIM with ID.
+      isArray: false
+      name: scim
+      required: true
+      secret: false
+    deprecated: false
+    description: Permanently removes a group.
+    execution: true
+    name: iam-delete-group
+    outputs:
+    - contextPath: DeleteGroup.id
+      description: Group ID.
+      type: String
+    - contextPath: DeleteGroup.displayName
+      description: Display name of the group.
+      type: String
+    - contextPath: DeleteGroup.success
+      description: Success status of the command.
+      type: Boolean
+    - contextPath: DeleteGroup.errorCode
+      description: Error code if there is a failure.
+      type: Number
+    - contextPath: DeleteGroup.errorMessage
+      description: Error details if there is a failure.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Group SCIM data.
+      isArray: false
+      name: scim
+      required: true
+      secret: false
+    - default: false
+      description: List of members IDs to add. A maximum of 15,000 users per call
+        can be modified using this command.
+      isArray: true
+      name: memberIdsToAdd
+      required: false
+      secret: false
+    - default: false
+      description: List of members IDs to be deleted from the group. A maximum of
+        15,000 users per call can be modified using this command
+      isArray: true
+      name: memberIdsToDelete
+      required: false
+      secret: false
+    deprecated: false
+    description: Updates an existing group resource. This command allows individual
+      (or groups of) users to be added or removed from the group with a single operation.
+      A maximum of 15,000 users can be modified in a single call.
+    execution: true
+    name: iam-update-group
+    outputs:
+    - contextPath: UpdateGroup.id
+      description: Group ID.
+      type: String
+    - contextPath: UpdateGroup.displayName
+      description: Display name of the group.
+      type: Unknown
+    - contextPath: UpdateGroup.success
+      description: Success status of the command.
+      type: Boolean
+    - contextPath: UpdateGroup.errorCode
+      description: Error code if there is a failure.
+      type: Number
+    - contextPath: UpdateGroup.errorMessage
+      description: Error details if there is a failure.
+      type: Unknown
+  - deprecated: false
+    description: Retrieves a User Profile schema, which holds all of the user fields
+      within the application. Used for outgoing-mapping through the Get Schema option.
+    execution: false
+    name: get-mapping-fields
+  dockerimage: demisto/python3:3.9.7.24076
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+  ismappable: true
+  isremotesyncout: true
+tests:
+- No tests
+fromversion: 6.0.0

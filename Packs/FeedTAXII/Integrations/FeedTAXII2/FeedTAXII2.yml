@@ -225,3 +225,4 @@ script:
 tests:
 - TAXII 2 Feed Test
 fromversion: 5.5.0
+autoUpdateDockerImage: false

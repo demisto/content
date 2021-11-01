@@ -1,0 +1,24 @@
+{
+    "name": "CVE-2021-40444 - MSHTML RCE",
+    "description": "This pack handles Microsoft MSHTML RCE CVE-2021-40444. CVE-2021-4044 refers to the MSHTML engine, that has been found vulnerable to arbitrary code execution by a specially crafted Microsoft Office document or rich text format file. ",
+    "support": "xsoar",
+    "currentVersion": "1.0.1",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [],
+    "tags": [
+        "Incident Response"
+    ],
+    "useCases": [
+        "Hunting",
+        "Incident Response"
+    ],
+    "keywords": [
+        "zero-day",
+        "0-day",
+        "zero day",
+        "Microsoft",
+        "Microsoft Office"
+    ]
+}

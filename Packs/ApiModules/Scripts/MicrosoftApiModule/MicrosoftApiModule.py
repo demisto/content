@@ -14,6 +14,7 @@ class Scopes:
     graph = 'https://graph.microsoft.com/.default'
     security_center = 'https://api.securitycenter.windows.com/.default'
     security_center_apt_service = 'https://securitycenter.onmicrosoft.com/windowsatpservice/.default'
+    management_azure = 'https://management.azure.com/.default'
 
 
 # authorization types
@@ -46,6 +47,7 @@ class MicrosoftClient(BaseClient):
                  verify: bool = True,
                  self_deployed: bool = False,
                  azure_ad_endpoint: str = 'https://login.microsoftonline.com',
+                 timeout: Optional[int] = None,
                  *args, **kwargs):
         """
         Microsoft Client class that implements logic to authenticate with oproxy or self deployed applications.
@@ -91,6 +93,7 @@ class MicrosoftClient(BaseClient):
         self.auth_type = SELF_DEPLOYED_AUTH_TYPE if self_deployed else OPROXY_AUTH_TYPE
         self.verify = verify
         self.azure_ad_endpoint = azure_ad_endpoint
+        self.timeout = timeout
 
         self.multi_resource = multi_resource
         if self.multi_resource:
@@ -113,7 +116,7 @@ class MicrosoftClient(BaseClient):
         Returns:
             Response from api according to resp_type. The default is `json` (dict or list).
         """
-        if 'ok_codes' not in kwargs:
+        if 'ok_codes' not in kwargs and not self._ok_codes:
             kwargs['ok_codes'] = (200, 201, 202, 204, 206, 404)
         token = self.get_access_token(resource=resource, scope=scope)
         default_headers = {
@@ -124,6 +127,10 @@ class MicrosoftClient(BaseClient):
 
         if headers:
             default_headers.update(headers)
+
+        if self.timeout:
+            kwargs['timeout'] = self.timeout
+
         response = super()._http_request(  # type: ignore[misc]
             *args, resp_type="response", headers=default_headers, **kwargs)
 
@@ -187,8 +194,7 @@ class MicrosoftClient(BaseClient):
             if self.epoch_seconds() < valid_until:
                 return access_token
 
-        auth_type = self.auth_type
-        if auth_type == OPROXY_AUTH_TYPE:
+        if self.auth_type == OPROXY_AUTH_TYPE:
             if self.multi_resource:
                 for resource_str in self.resources:
                     access_token, expires_in, refresh_token = self._oproxy_authorize(resource_str)

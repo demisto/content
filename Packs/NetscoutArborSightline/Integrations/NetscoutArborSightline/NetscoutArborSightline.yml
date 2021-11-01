@@ -989,7 +989,7 @@ script:
       description: Get a list of available TMS groups.
       execution: false
       name: na-sightline-tms-group-list
-  dockerimage: demisto/python3:3.9.6.22912
+  dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: true
   longRunning: false
