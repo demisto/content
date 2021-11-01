@@ -278,6 +278,11 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
+              simple: inputs.QRadarSha256ReferenceSetName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
               complex:
                 root: playbookQuery
                 filters:
