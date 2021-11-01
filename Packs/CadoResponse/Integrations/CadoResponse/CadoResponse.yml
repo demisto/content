@@ -191,6 +191,144 @@ script:
     - contextPath: CadoResponse.Pipelines.subtask
       description: An array of tasks in the retrieved pipeline
       type: Array
+  - name: cado-list-ec2
+    arguments:
+    - name: region
+      description: The AWS region to list instances in
+      isArray: false
+      required: true
+      default: true
+      secret: false
+    - name: project_id
+      default: false
+      description: The ID of the project you wish to attach the acquisition to
+      isArray: false
+      required: false
+      secret: false
+    deprecated: false
+    description: Get a list of EC2 instances in a region
+    execution: false
+    outputs:
+    - contextPath: CadoResponse.EC2Instances.id
+      description: AWS ID of the EC2 Instance
+      type: Number
+    - contextPath: CadoResponse.EC2Instances.instance_name
+      description: Name of the EC2 Instance
+      type: String
+    - contextPath: CadoResponse.EC2Instances.instance_type
+      description: AWS Type of the EC2 instance
+      type: String
+    - contextPath: CadoResponse.EC2Instances.region
+      description: AWS region of the EC2 instance
+      type: String
+  - name: cado-list-s3
+    arguments:
+    - name: project_id
+      default: true
+      description: The ID of the project you wish to attach the acquisition to
+      isArray: false
+      required: false
+      secret: false
+    deprecated: false
+    description: Get a list of S3 buckets
+    execution: false
+    outputs:
+    - contextPath: CadoResponse.S3Buckets.buckets
+      description: An array of S3 buckets available to the project
+      type: Array
+  - name: cado-trigger-ec2
+    arguments:
+    - name: project_id
+      default: true
+      description: The ID of the project you wish to attach the acquisition to
+      isArray: false
+      required: false
+      secret: false
+    - name: instance_id
+      default: false
+      description: ID of the EC2 instance to acquire
+      isArray: false
+      required: true
+      secret: false
+    - name: region
+      default: false
+      description: AWS region in which the EC2 instance is located
+      isArray: false
+      required: false
+      secret: false
+    - name: bucket
+      default: false
+      description: S3 bucket where the uploaded disk image resides
+      isArray: false
+      required: false
+      secret: false
+    - name: compress
+      default: false
+      description: Flag indicating if disk compression is enabled
+      isArray: false
+      required: false
+      secret: false
+    - name: include_disks
+      default: false
+      description: Flag indicating if we include disk images in the acquisition
+      isArray: false
+      required: false
+      secret: false
+    - name: include_hash
+      default: false
+      description: Flag indicating if we calculate the hash of the disk
+      isArray: false
+      required: false
+      secret: false
+    - name: include_logs
+      default: false
+      description: Flag indicating if we include system logs in the acquisition
+      isArray: false
+      required: false
+      secret: false
+    - name: include_screenshot
+      default: false
+      description: Flag indicating if we include a screenshot of the system in the
+        acquisition
+      isArray: false
+      required: false
+      secret: false
+    deprecated: false
+    description: Trigger a disk acquisition and processing pipeline in Cado Response
+      for a given EC2 instance
+    execution: false
+    outputs:
+    - contextPath: CadoResponse.EC2Acquisition.pipeline_id
+      description: ID of the created pipeline
+      type: Number
+  - name: cado-trigger-s3
+    arguments:
+    - name: project_id
+      default: true
+      description: The ID of the project you wish to attach the acquisition to
+      isArray: false
+      required: false
+      secret: false
+    - name: bucket
+      default: false
+      description: The S3 bucket name containing the file
+      isArray: false
+      required: true
+      secret: false
+    - name: file_name
+      default: false
+      description: The name of the file to process
+      isArray: false
+      required: true
+      secret: false
+    deprecated: false
+    description: Trigger a disk acquisition and processing pipeline in Cado Response
+      for a given file in an S3 bucket
+    execution: false
+    outputs:
+    - contextPath: CadoResponse.S3Acquisition.pipeline_id
+      description: ID of the created pipeline
+      type: Number
   isfetch: false
   runonce: false
   script: "-"

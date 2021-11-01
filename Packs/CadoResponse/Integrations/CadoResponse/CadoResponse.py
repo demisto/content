@@ -1,17 +1,21 @@
 ''' Cado Response API Integration for the Cortex XSOAR Platform '''
 
+import time
+import traceback
+from typing import Any, Dict, Optional
+
+from CommonServerPython import *
+
+from CommonServerUserPython import *
+
 import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
 
 import requests
-import traceback
-from typing import Dict, Any, Optional
-import time
+
 
 ''' Module Level Declarations '''
 
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+requests.packages.urllib3.disable_warnings()
 
 DATE_FORMAT: str = '%Y-%m-%dT%H:%M:%SZ'
 
@@ -182,7 +186,7 @@ class Client(BaseClient):
             url_suffix=f'/projects/{project_id}/imports/s3'
         )
 
-    def trigger_instance_acquisition(self, project_id: Optional[int], instance_id: str, region: Optional[str],
+    def trigger_instance_acquisition(self, project_id: Optional[int], instance_id: Optional[str], region: Optional[str],
                                      bucket: Optional[str], compress: bool = True, include_disks: bool = True,
                                      include_hash: bool = False, include_logs: bool = True,
                                      include_screenshot: bool = True) -> Dict[str, Any]:
@@ -236,7 +240,7 @@ class Client(BaseClient):
 
             :param Optional[int] project_id: The ID of the project you wish to attach the acquisition to
             :param Optional[str] bucket: The S3 bucket name containing the file
-            :param Optional[str] file_name: The name of the file to process
+            :param str file_name: The name of the file to process
 
             :return JSON response from /projects/{id}/imports/ec2 endpoint
             :rtype Dict[str, Any]
@@ -248,11 +252,9 @@ class Client(BaseClient):
             bucket = demisto.params().get('CadoResponse_DefaultBucket', 'cado-default-bucket')
 
         payload: Dict[str, Any] = {
-            'bucket': bucket
+            'bucket': bucket,
+            'file_name': file_name
         }
-
-        if not file_name:
-            payload['file_name'] = file_name
 
         return self._http_request(
             method='POST',
@@ -344,6 +346,82 @@ def get_pipelines_command(client: Client, args: Dict[str, Any]) -> CommandResult
     )
 
 
+def list_ec2_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    ''' Command handler for cado-list-ec2 '''
+    project_id: Optional[int] = args.get('project_id', None)
+    region: Optional[str] = args.get('region', None)
+
+    result: Dict[str, Any] = client.list_instances(project_id, region)
+
+    return CommandResults(
+        outputs_prefix='CadoResponse.EC2Instances',
+        outputs_key_field='id',
+        outputs=result.get('instances', {})
+    )
+
+
+def list_s3_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    ''' Command handler for cado-list-s3 '''
+    project_id: Optional[int] = args.get('project_id', None)
+
+    result: Dict[str, Any] = client.list_buckets(project_id)
+
+    return CommandResults(
+        outputs_prefix='CadoResponse.S3Buckets',
+        outputs=result
+    )
+
+
+def trigger_ec2_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    ''' Command handler for cado-trigger-ec2 '''
+
+    project_id: Optional[int] = args.get('project_id', None)
+    instance_id: Optional[str] = args.get('instance_id', None)
+    region: Optional[str] = args.get('region', None)
+    bucket: Optional[str] = args.get('bucket', None)
+    compress: bool = args.get('compress', True)
+    include_disks: bool = args.get('include_disks', True)
+    include_hash: bool = args.get('include_hash', False)
+    include_logs: bool = args.get('include_logs', True)
+    include_screenshot: bool = args.get('include_screenshot', True)
+
+    if not instance_id:
+        raise DemistoException('region is a required parameter!')
+
+    result: Dict[str, Any] = client.trigger_instance_acquisition(
+        project_id, instance_id, region, bucket, compress,
+        include_disks, include_hash, include_logs, include_screenshot
+    )
+
+    return CommandResults(
+        outputs_prefix='CadoResponse.EC2Acquistion',
+        outputs_key_field='pipeline_id',
+        outputs=result
+    )
+
+
+def trigger_s3_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    ''' Command handler for cado-trigger-s3 '''
+
+    project_id: Optional[int] = args.get('project_id', None)
+    bucket: Optional[str] = args.get('bucket', None)
+    file_name: Optional[str] = args.get('file_name', None)
+
+    if not bucket:
+        raise DemistoException('bucket is a required parameter!')
+
+    if not file_name:
+        raise DemistoException('file_name is a required parameter!')
+
+    result: Dict[str, Any] = client.trigger_bucket_acquisition(project_id, bucket, file_name)
+
+    return CommandResults(
+        outputs_prefix='CadoResponse.S3Acquisition',
+        outputs_key_field='pipeline_id',
+        outputs=result.get('pipelines')
+    )
+
+
 ''' Helper Functions '''
 
 
@@ -396,6 +474,14 @@ def main() -> None:
             return_results(get_pipeline_command(client, args))
         elif command == 'cado-get-pipelines':
             return_results(get_pipelines_command(client, args))
+        elif command == 'cado-list-ec2':
+            return_results(list_ec2_command(client, args))
+        elif command == 'cado-list-s3':
+            return_results(list_s3_command(client, args))
+        elif command == 'cado-trigger-ec2':
+            return_results(trigger_ec2_command(client, args))
+        elif command == 'cado-trigger-s3':
+            return_results(trigger_s3_command(client, args))
 
     except Exception as e:
         message: str = str(e)
