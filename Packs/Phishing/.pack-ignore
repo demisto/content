@@ -132,3 +132,6 @@ ignore=BA101
 
 [file:FindDuplicateEmailIncidents.yml]
 ignore=SC105
+
+[file:Phishing_Investigation_-_Generic_v2.yml]
+ignore=PB110

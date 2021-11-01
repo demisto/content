@@ -63,7 +63,7 @@ script:
   - arguments:
     - default: true
       description: 'The CVE ID. For example: CVE-2014-1234.'
-      isArray: false
+      isArray: true
       name: cve_id
       required: true
       secret: false

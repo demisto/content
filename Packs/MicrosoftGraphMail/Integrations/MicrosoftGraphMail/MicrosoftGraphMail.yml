@@ -181,6 +181,19 @@ script:
     - contextPath: MSGraphMail.UserID
       description: The ID of the user.
       type: String
+    - contextPath: MSGraphMail.ConversationID
+      description: The ID of the conversation.
+      type: String
+    - contextPath: MSGraphMail.InternetMessageID
+      description: Internet Message ID of the message
+      type: String
+    - contextPath: MSGraphMail.Recipients.Name
+      description: The name of the user in the 'toRecipients' field of the email.
+      type: String
+    - contextPath: MSGraphMail.Recipients.Address
+      description: The email address of the user in the 'toRecipients' field of the
+        email.
+      type: String
     - contextPath: MSGraphMail.NextPage
       description: A token to pass to the next list command to retrieve additional
         results.
@@ -289,6 +302,19 @@ script:
       type: String
     - contextPath: MSGraphMail.UserID
       description: The ID of the user.
+      type: String
+    - contextPath: MSGraphMail.ConversationID
+      description: The ID of the conversation.
+      type: String
+    - contextPath: MSGraphMail.InternetMessageID
+      description: Internet Message ID of the message
+      type: String
+    - contextPath: MSGraphMail.Recipients.Name
+      description: The name of the user in the 'toRecipients' field of the email.
+      type: String
+    - contextPath: MSGraphMail.Recipients.Address
+      description: The email address of the user in the 'toRecipients' field of the
+        email.
       type: String
   - arguments:
     - default: false

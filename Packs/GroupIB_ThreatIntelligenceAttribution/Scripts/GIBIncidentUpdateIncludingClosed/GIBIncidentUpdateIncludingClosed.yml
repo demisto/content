@@ -1,0 +1,18 @@
+comment: This script prevents duplication of existing incidents.
+commonfields:
+  id: GIBIncidentUpdateIncludingClosed
+  version: -1
+dockerimage: demisto/python3:3.9.7.24076
+enabled: true
+name: GIBIncidentUpdateIncludingClosed
+runas: DBotRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- preProcessing
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

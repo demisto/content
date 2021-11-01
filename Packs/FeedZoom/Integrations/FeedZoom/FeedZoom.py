@@ -3,6 +3,7 @@ from CommonServerPython import *
 from typing import Dict, List, Tuple, Any, Callable, Optional
 
 import urllib3
+import subprocess
 from bs4 import BeautifulSoup
 
 # disable insecure warnings
@@ -31,8 +32,14 @@ class Client(BaseClient):
             A list of objects, containing the indicators.
         """
         result = []
-        r = self._http_request("GET", url_suffix="", full_url=self._base_url, resp_type="text")
-
+        try:
+            if self._verify:
+                r = subprocess.check_output(['wget', '-O-', self._base_url], stderr=subprocess.STDOUT)
+            else:
+                r = subprocess.check_output(['wget', '--no-check-certificate', '-O-', self._base_url],
+                                            stderr=subprocess.STDOUT)
+        except subprocess.CalledProcessError as e:
+            raise DemistoException(f"Unable to get the url content. Error: {e}.")
         soup = BeautifulSoup(r, "html.parser")
 
         try:

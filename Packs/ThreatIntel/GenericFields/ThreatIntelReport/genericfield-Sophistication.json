@@ -1,7 +1,8 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Threat Actor"
+        "Threat Actor",
+        "Campaign"
     ],
     "caseInsensitive": true,
     "cliName": "sophistication",

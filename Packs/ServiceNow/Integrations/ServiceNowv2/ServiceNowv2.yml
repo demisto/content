@@ -120,6 +120,13 @@ configuration:
   name: mirror_limit
   required: false
   type: 0
+- display: Custom Fields to Mirror
+  name: custom_fields
+  required: false
+  type: 12
+  additionalinfo: 'Custom (user defined) fields in the format: u_fieldname1,u_fieldname2
+    custom fields start with a ''u_''. These fields will be included in the mirroring capabilities,
+    if added here.'
 - additionalinfo: When selected, closing the ServiceNow ticket is mirrored in Cortex
     XSOAR.
   defaultvalue: 'false'
@@ -2400,7 +2407,7 @@ script:
       is used as part of a Mirroring feature, which is available from version 6.1.
     execution: false
     name: get-modified-remote-data
-  dockerimage: demisto/python3:3.9.6.22912
+  dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: true
   longRunning: false

@@ -11,7 +11,6 @@ from datetime import datetime
 from Tests.private_build.upload_packs_private import download_and_extract_index, update_index_with_priced_packs, \
     extract_packs_artifacts
 from Tests.Marketplace.marketplace_services import init_storage_client
-from Tests.Marketplace.marketplace_constants import GCPConfig
 from Tests.scripts.utils.log_util import install_logging
 
 MAX_SECONDS_TO_WAIT_FOR_LOCK = 600
@@ -212,12 +211,10 @@ def main():
     dummy_index_blob = public_storage_bucket.blob(dummy_index_path)
 
     with lock_and_unlock_dummy_index(public_storage_bucket, dummy_index_lock_path):
-        if storage_base_path:
-            GCPConfig.STORAGE_BASE_PATH = storage_base_path
 
         extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
         public_index_folder_path, public_index_blob, _ = download_and_extract_index(public_storage_bucket,
-                                                                                    extract_public_index_path)
+                                                                                    extract_public_index_path, storage_base_path)
 
         # In order for the packs to be downloaded successfully, their price has to be 0
         change_packs_price_to_zero(public_index_folder_path)

@@ -315,7 +315,7 @@ tasks:
       subject:
         simple: 'Re: Phishing Investigation - ${incident.name}'
       to:
-        simple: $ReporterAddress}
+        simple: ${ReporterAddress}
     reputationcalc: 1
     separatecontext: false
     view: |-

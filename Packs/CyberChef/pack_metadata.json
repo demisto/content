@@ -1,0 +1,17 @@
+{
+    "name": "CyberChef",
+    "description": "Integration with your CyberChef server or https://prod.apifor.io service for CyberChef.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Harri Ruuttila",
+    "url": "",
+    "email": "",
+    "created": "2021-10-18T06:36:03Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "Hruuttila"
+    ]
+}

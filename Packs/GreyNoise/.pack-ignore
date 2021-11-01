@@ -1,5 +1,5 @@
 [file:GreyNoise.yml]
-ignore=IN136
+ignore=IN136,IN145
 
 [file:GreyNoise_Community.yml]
-ignore=BA108,BA109,BA111
+ignore=BA108,BA109,BA111,IN145
