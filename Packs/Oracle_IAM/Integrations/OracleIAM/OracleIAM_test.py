@@ -472,15 +472,15 @@ class TestCreateGroupCommand:
 
         with requests_mock.Mocker() as m:
             m.post('https://test.com/oauth2/v1/token', json={})
-            m.post('https://test.com/admin/v1/Groups', status_code=400, text="Group already exist")
+            m.post('https://test.com/admin/v1/Groups', status_code=400, json={"detail": "Group already exist",
+                                                                              "status": 400})
 
             client = mock_client()
 
-            with pytest.raises(Exception) as e:
-                create_group_command(client, args)
+            res = create_group_command(client, args)
 
-        assert e.value.res.status_code == 400
-        assert 'Group already exist' in str(e.value)
+        assert res.raw_response.get("errorCode") == 400
+        assert 'Group already exist' in res.raw_response.get("errorMessage")
 
     def test_display_name_empty(self):
         """
