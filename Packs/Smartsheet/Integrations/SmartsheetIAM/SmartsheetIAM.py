@@ -27,11 +27,14 @@ class Client:
 
     def test(self):
         """ Tests connectivity with the application. """
-        res = self.user.get_current_user().to_dict()
-        if res.get('id'):
-            return 'ok'
-        else:
-            return res.get('result', {}).get('message') or res
+        try:
+            res = self.user.get_current_user().to_dict()
+            if res.get('id'):
+                return 'ok'
+            else:
+                return res.get('result', {}).get('message') or res
+        except KeyError:
+            return 'Error occurred during call to SmartSheet. Make sure your Access Token is valid.'
 
     def get_user(self, attr_name: str, attr_value: str) -> Optional[IAMUserAppData]:
         """ Queries the user in the application using smartsheet SDK by its id/email, and returns an IAMUserAppData 
@@ -253,7 +256,7 @@ def main():
     send_mail = params.get("send_mail")
 
     iam_command = IAMCommand(is_create_enabled, is_enable_enabled, is_disable_enabled, is_update_enabled,
-                             create_if_not_exists, mapper_in, mapper_out, get_user_iam_attrs=['id', 'email'])
+                             create_if_not_exists, mapper_in, mapper_out)
 
     smartsheet_obj = smartsheet.Smartsheet(access_token=access_token)
     smartsheet_obj.errors_as_exceptions(False)
