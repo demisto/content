@@ -3,3 +3,6 @@ ignore=PA125
 
 [file:README.md]
 ignore=RM104
+
+[file:ILert.yml]
+ignore=IN145

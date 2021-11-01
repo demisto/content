@@ -2,7 +2,7 @@
 ignore=auto-test
 
 [file:xMatters.yml]
-ignore=IN136
+ignore=IN136,IN145
 
 [file:README.md]
 ignore=RM102
