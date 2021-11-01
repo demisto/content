@@ -11,8 +11,6 @@ trigger-private-build:
   extends:
     - .default-job-settings
   rules:
-    - if: '$SKIP_PRIVATE_BUILD == "true"'
-      when: never
     - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
       when: never
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
@@ -20,9 +18,11 @@ trigger-private-build:
   script:
     - echo "====Trigger Private Build===="
     - python3 Utils/trigger_private_build.py --github-token $GITHUB_TOKEN
+    - sleep 60
     - python3 Utils/get_private_build_status.py --github-token $GITHUB_TOKEN
 
 
+# runs in circle for the on-push flow (because we need to run it there for contributors anyways)
 run-unittests-and-lint:
   extends:
     - .run-unittests-and-lint
@@ -30,6 +30,7 @@ run-unittests-and-lint:
     - if: '$NIGHTLY'
 
 
+# runs in circle for the on-push flow (because we need to run it there for contributors anyways)
 run-validations:
   extends:
     - .run-validations

@@ -100,7 +100,11 @@ def fetch_credentials(client, args: dict):
     demisto.debug('name of cred used: ', creds_name)
 
     if creds_name:
-        creds_list = [client.get_credentials(creds_name)]
+        try:
+            creds_list = [client.get_credentials(creds_name)]
+        except Exception as e:
+            demisto.debug(f"Could not fetch credentials: {creds_name}. Error: {e}")
+            creds_list = []
     else:
         creds_list = client.list_credentials()
     credentials = []

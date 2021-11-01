@@ -1,5 +1,5 @@
 {
-    "id": "Campaign",
+    "id": "generic_ThreatIntelReport_Campaign",
     "layout": "Campaign Report",
     "locked": false,
     "name": "Campaign",
