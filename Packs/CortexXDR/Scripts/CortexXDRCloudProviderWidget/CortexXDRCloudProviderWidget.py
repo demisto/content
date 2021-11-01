@@ -20,7 +20,7 @@ COLORS = {'AWS': 'ff0000',
           'GCP': '339966',
           'Azure': '0000ff'}
 
-HTML_START = """<h1 style="color: #2e6c80; height: 100px; line-height: 100px; text-align: center;">"""
+HTML_START = """<h1 style="color: #2e6c80; height: 170px; line-height: 170px; text-align: center;">"""
 HTML = """<span style="color: #{color};"><strong>{provider}&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </strong></span>"""
 
 
