@@ -1,2 +1,2 @@
 [file:AWS-NetworkFirewall.yml]
-ignore=BA108,BA109
+ignore=BA108,BA109,IN145
