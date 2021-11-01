@@ -97,19 +97,23 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 4b313761-6a13-4a7e-84fb-7ee29697fead
+    taskid: 737b7c84-dcb5-417f-8779-1e78855970ee
     type: regular
     task:
-      id: 4b313761-6a13-4a7e-84fb-7ee29697fead
+      id: 737b7c84-dcb5-417f-8779-1e78855970ee
       version: -1
       name: task 5
-      scriptName: a
+      description: Will encode an input using Base64 format.
+      scriptName: Base64Encode
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "9"
+    scriptarguments:
+      input:
+        simple: a
     separatecontext: false
     view: |-
       {
@@ -166,17 +170,21 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 51f6cda4-e562-44cd-8757-174a74ba06c6
+    taskid: f74cf399-ecbb-4d64-8fcc-a1e802d95c95
     type: regular
     task:
-      id: 51f6cda4-e562-44cd-8757-174a74ba06c6
+      id: f74cf399-ecbb-4d64-8fcc-a1e802d95c95
       version: -1
       name: |
         task 4
-      scriptName: a
+      description: Will encode an input using Base64 format.
+      scriptName: Base64Encode
       type: regular
       iscommand: false
       brand: ""
+    scriptarguments:
+      input:
+        simple: a
     separatecontext: false
     view: |-
       {
@@ -194,16 +202,20 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 6d9b5533-4b53-4095-8f90-b642f067ad70
+    taskid: f3ad9b60-7ecf-4557-8238-015c81f2cd40
     type: regular
     task:
-      id: 6d9b5533-4b53-4095-8f90-b642f067ad70
+      id: f3ad9b60-7ecf-4557-8238-015c81f2cd40
       version: -1
       name: task 6
-      scriptName: a
+      description: Will encode an input using Base64 format.
+      scriptName: Base64Encode
       type: regular
       iscommand: false
       brand: ""
+    scriptarguments:
+      input:
+        simple: a
     separatecontext: false
     view: |-
       {
@@ -250,16 +262,20 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 40b39b9b-e360-4999-8592-671197aa521c
+    taskid: c098ab6c-d5be-4c02-8ce7-a3a10c1891db
     type: regular
     task:
-      id: 40b39b9b-e360-4999-8592-671197aa521c
+      id: c098ab6c-d5be-4c02-8ce7-a3a10c1891db
       version: -1
       name: task 7
-      scriptName: a
+      description: Will encode an input using Base64 format.
+      scriptName: Base64Encode
       type: regular
       iscommand: false
       brand: ""
+    scriptarguments:
+      input:
+        simple: a
     separatecontext: false
     view: |-
       {
@@ -572,19 +588,23 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 94845d75-defb-4696-8952-b094e5d6aace
+    taskid: 96082166-8384-4a55-82af-d9ae8bd2ee0b
     type: regular
     task:
-      id: 94845d75-defb-4696-8952-b094e5d6aace
+      id: 96082166-8384-4a55-82af-d9ae8bd2ee0b
       version: -1
       name: task
-      scriptName: a
+      description: Will encode an input using Base64 format.
+      scriptName: Base64Encode
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "3"
+    scriptarguments:
+      input:
+        simple: a
     separatecontext: false
     view: |-
       {
