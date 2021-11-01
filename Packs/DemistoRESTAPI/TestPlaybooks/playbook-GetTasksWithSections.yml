@@ -16,45 +16,16 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
       - "6"
       - "16"
       - "19"
+      - "21"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 1125,
           "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
-    taskid: f75db933-ea2b-4e4a-8089-b51dbe8718df
-    type: regular
-    task:
-      id: f75db933-ea2b-4e4a-8089-b51dbe8718df
-      version: -1
-      name: task 1
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 195
         }
       }
     note: false
@@ -126,12 +97,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: c10da2d0-092a-4708-83f9-4205a12aff9d
+    taskid: 4b313761-6a13-4a7e-84fb-7ee29697fead
     type: regular
     task:
-      id: c10da2d0-092a-4708-83f9-4205a12aff9d
+      id: 4b313761-6a13-4a7e-84fb-7ee29697fead
       version: -1
       name: task 5
+      scriptName: a
       type: regular
       iscommand: false
       brand: ""
@@ -181,7 +153,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 1125,
           "y": 195
         }
       }
@@ -194,13 +166,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 5d51ecf6-0785-4a0b-8320-247123149c26
+    taskid: 51f6cda4-e562-44cd-8757-174a74ba06c6
     type: regular
     task:
-      id: 5d51ecf6-0785-4a0b-8320-247123149c26
+      id: 51f6cda4-e562-44cd-8757-174a74ba06c6
       version: -1
       name: |
         task 4
+      scriptName: a
       type: regular
       iscommand: false
       brand: ""
@@ -208,7 +181,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 1125,
           "y": 370
         }
       }
@@ -221,12 +194,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 8961ee26-d2f6-4c1b-803f-a43764eee9af
+    taskid: 6d9b5533-4b53-4095-8f90-b642f067ad70
     type: regular
     task:
-      id: 8961ee26-d2f6-4c1b-803f-a43764eee9af
+      id: 6d9b5533-4b53-4095-8f90-b642f067ad70
       version: -1
       name: task 6
+      scriptName: a
       type: regular
       iscommand: false
       brand: ""
@@ -276,12 +250,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 5f3d4589-29c0-4937-882a-5eda2b0acfbb
+    taskid: 40b39b9b-e360-4999-8592-671197aa521c
     type: regular
     task:
-      id: 5f3d4589-29c0-4937-882a-5eda2b0acfbb
+      id: 40b39b9b-e360-4999-8592-671197aa521c
       version: -1
       name: task 7
+      scriptName: a
       type: regular
       iscommand: false
       brand: ""
@@ -372,12 +347,11 @@ tasks:
     nexttasks:
       '#none#':
       - "17"
-      - "3"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1750,
+          "x": 1555,
           "y": 195
         }
       }
@@ -494,8 +468,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1760,
-          "y": 420
+          "x": 1555,
+          "y": 370
         }
       }
     note: false
@@ -520,8 +494,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
-          "y": 610
+          "x": 1555,
+          "y": 545
         }
       }
     note: false
@@ -552,7 +526,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2220,
+          "x": 1985,
           "y": 195
         }
       }
@@ -585,8 +559,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2220,
-          "y": 440
+          "x": 1985,
+          "y": 370
         }
       }
     note: false
@@ -596,6 +570,22 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 94845d75-defb-4696-8952-b094e5d6aace
+    type: regular
+    task:
+      id: 94845d75-defb-4696-8952-b094e5d6aace
+      version: -1
+      name: task
+      scriptName: a
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
 view: |-
   {
     "linkLabelsPosition": {},
