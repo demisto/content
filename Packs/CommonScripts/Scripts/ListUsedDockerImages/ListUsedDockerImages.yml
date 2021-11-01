@@ -10,6 +10,17 @@ args:
      - "true"
      - "false"
   defaultValue: "true"
+- default: false
+  description: 'Whether to ignore deprecated automation. Possible values: "true" and "false".'
+  isArray: false
+  name: ignore_deprecated_automations
+  required: false
+  secret: false
+  auto: PREDEFINED
+  predefined:
+     - "true"
+     - "false"
+  defaultValue: "true"
 comment: 'List all Docker images that are in use by the installed integrations and automations.'
 commonfields:
   id: ListUsedDockerImages

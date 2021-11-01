@@ -1,0 +1,17 @@
+commonfields:
+  id: OnboardingCleanup
+  version: -1
+name: OnboardingCleanup
+script: ''
+type: python
+tags: []
+comment: Cleanup the incidents and indicators created by OnboardingIntegration
+enabled: true
+scripttarget: 0
+runonce: false
+dockerimage: demisto/python3:3.9.7.24076
+subtype: python3
+runas: DBotRole
+tests:
+- No Tests
+fromversion: 5.0.0

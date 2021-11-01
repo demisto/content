@@ -1,4 +1,4 @@
-Tanium Threat Response
+Tanium Threat Response - This Integration works with Tanium Threat Response version below 3.0.159. In order to use Tanium Threat Response version 3.0.159 and above, use Tanium Threat Response V2 Integration.
 
 ## Configure Tanium Threat Response on Cortex XSOAR
 

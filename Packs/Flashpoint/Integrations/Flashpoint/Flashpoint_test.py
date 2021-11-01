@@ -679,7 +679,9 @@ class MyTestCase(unittest.TestCase):
         args = prepare_args_for_fetch_compromised_credentials(max_fetch=15, start_time=START_DATE,
                                                               is_fresh=True, last_run={})
 
-        assert args == expected_args
+        assert args.get('limit') == expected_args.get('limit')
+        assert args.get('skip') == expected_args.get('skip')
+        assert args.get('sort') == expected_args.get('sort')
 
     def test_prepare_args_for_compromised_credentials_when_max_fetch_is_invalid(self):
         """ Test case scenario when argument named max_fetch is invalid """

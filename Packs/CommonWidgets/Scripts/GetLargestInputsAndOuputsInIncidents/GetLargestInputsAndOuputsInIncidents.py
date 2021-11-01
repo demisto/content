@@ -72,14 +72,21 @@ def get_extra_data_from_investigations(investigations: list) -> list:
 
 def main():
     try:
-        args = demisto.args()
+        args: Dict = demisto.args()
+        if is_demisto_version_ge("6.2.0"):
+            deprecate_msg = "Warning: This script has been deprecated. Please checkout the System Diagnostic page " \
+                            "for an alternative."
+            if not argToBoolean(args.get('ignore_deprecated')):
+                raise DemistoException(deprecate_msg)
+            else:
+                demisto.info(deprecate_msg)
         is_table_result = argToBoolean(args.get('table_result', False))
-
         raw_output = demisto.executeCommand('GetLargestInvestigations',
                                             args={
                                                 'from': args.get('from'),
                                                 'to': args.get('to'),
                                                 'table_result': 'true',
+                                                'ignore_deprecated': 'true',
                                             })
         if is_error(raw_output):
             raise DemistoException(f'Failed to run GetLargestInvestigations:\n{get_error(raw_output)}')
