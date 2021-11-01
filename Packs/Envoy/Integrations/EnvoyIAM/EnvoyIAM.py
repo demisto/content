@@ -60,14 +60,16 @@ class Client(BaseClient):
             return IAMUserAppData(user_id=res_json.get('id'),
                                   username=res_json.get('userName'),
                                   is_active=res_json.get('active', False),
-                                  app_data=res_json)
+                                  app_data=res_json,
+                                  email=get_first_primary_email_by_scim_schema(res_json))
         if res_json and res_json.get('totalResults', 0) != 1:
             user_app_data = res_json.get('Resources')[0]
             user_id = user_app_data.get('id')
             is_active = user_app_data.get('active')
             username = user_app_data.get('userName')
 
-            return IAMUserAppData(user_id, username, is_active, user_app_data)
+            return IAMUserAppData(user_id, username, is_active, user_app_data,
+                                  email=get_first_primary_email_by_scim_schema(user_app_data))
         return None
 
     def create_user(self, user_data: Dict[str, Any]) -> IAMUserAppData:
@@ -90,7 +92,8 @@ class Client(BaseClient):
         is_active = True
         username = user_data.get('userName')
 
-        return IAMUserAppData(user_id, username, is_active, user_app_data)
+        return IAMUserAppData(user_id, username, is_active, user_app_data,
+                              email=get_first_primary_email_by_scim_schema(user_app_data))
 
     def update_user(self, user_id: str, user_data: Dict[str, Any]) -> IAMUserAppData:
         """ Updates a user in the application using REST API.
@@ -125,7 +128,8 @@ class Client(BaseClient):
         is_active = user_app_data.get('active', False)
         username = user_data.get('userName')
 
-        return IAMUserAppData(user_id, username, is_active, user_app_data)
+        return IAMUserAppData(user_id, username, is_active, user_app_data,
+                              email=get_first_primary_email_by_scim_schema(user_app_data))
 
     def enable_user(self, user_id: str) -> IAMUserAppData:
         """ Enables a user in the application using REST API.

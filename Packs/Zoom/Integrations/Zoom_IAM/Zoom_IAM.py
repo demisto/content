@@ -49,10 +49,11 @@ class Client(BaseClient):
             user_app_data = res
             user_id = user_app_data.get('id')
             is_active = True if user_app_data.get('status') == 'active' else False
+            email = user_app_data.get('email')
             # the API does not provide user name
             username = ''
 
-            return IAMUserAppData(user_id, username, is_active, user_app_data)
+            return IAMUserAppData(user_id, username, is_active, user_app_data, email=email)
         return None
 
     def update_user(self, user_id: str, user_data: Dict[str, Any]) -> IAMUserAppData:

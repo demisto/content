@@ -542,3 +542,7 @@ class IAMCommand:
                 client.handle_exception(user_profile, e, IAMActions.UPDATE_USER)
 
         return user_profile
+
+
+def get_first_primary_email_by_scim_schema(res: Dict):
+    return next((email.get('value') for email in res.get('emails', []) if email.get('primary')), None)
