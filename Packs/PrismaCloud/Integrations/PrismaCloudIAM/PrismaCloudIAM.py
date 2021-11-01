@@ -59,7 +59,8 @@ class Client(BaseClient):
         if user_app_data:
             user_id = email
             is_active = user_app_data.get('enabled')
-            return IAMUserAppData(user_id, user_id, is_active, user_app_data)
+            email = user_app_data.get('email')
+            return IAMUserAppData(user_id, user_id, is_active, user_app_data, email)
 
         return None
 

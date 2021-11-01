@@ -38,7 +38,9 @@ class Client(BaseClient):
             user_id = user_app_data.get('id')
             is_active = user_app_data.get('active')
             username = user_app_data.get('userName')
-            return IAMUserAppData(user_id, username, is_active, user_app_data)
+            email = get_first_primary_email_by_scim_schema(user_app_data)
+
+            return IAMUserAppData(user_id, username, is_active, user_app_data, email)
         return None
 
     def create_user(self, user_data):
@@ -57,8 +59,9 @@ class Client(BaseClient):
         user_id = user_app_data.get('id')
         is_active = user_app_data.get('active')
         username = user_app_data.get('userName')
+        email = get_first_primary_email_by_scim_schema(user_app_data)
 
-        return IAMUserAppData(user_id, username, is_active, user_app_data)
+        return IAMUserAppData(user_id, username, is_active, user_app_data, email)
 
     def update_user(self, user_id, user_data):
         uri = f'/Users/{user_id}'
@@ -76,8 +79,9 @@ class Client(BaseClient):
         user_id = user_app_data.get('id')
         is_active = user_app_data.get('active')
         username = user_app_data.get('userName')
+        email = get_first_primary_email_by_scim_schema(user_app_data)
 
-        return IAMUserAppData(user_id, username, is_active, user_app_data)
+        return IAMUserAppData(user_id, username, is_active, user_app_data, email)
 
     def disable_user(self, user_id):
         user_data = {'active': False}

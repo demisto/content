@@ -431,14 +431,14 @@ class IAMCommand:
                                             skip_reason=error_message)
                 else:
                     if user_app_data.is_active:
-                        user_app_data = client.disable_user(user_app_data.id)
+                        disabled_user = client.disable_user(user_app_data.id)
                         user_profile.set_result(
                             action=IAMActions.DISABLE_USER,
                             active=False,
-                            iden=user_app_data.id,
-                            email=user_profile.get_attribute('email'),
-                            username=user_app_data.username,
-                            details=user_app_data.full_data
+                            iden=disabled_user.id,
+                            email=user_profile.get_attribute('email') or user_app_data.email,
+                            username=disabled_user.username,
+                            details=disabled_user.full_data
                         )
                     else:
                         user_profile.set_user_is_already_disabled(user_app_data.full_data)
@@ -479,7 +479,7 @@ class IAMCommand:
                         action=IAMActions.CREATE_USER,
                         active=created_user.is_active,
                         iden=created_user.id,
-                        email=user_profile.get_attribute('email'),
+                        email=user_profile.get_attribute('email') or created_user.email,
                         username=created_user.username,
                         details=created_user.full_data
                     )
@@ -525,7 +525,7 @@ class IAMCommand:
                         action=IAMActions.UPDATE_USER,
                         active=updated_user.is_active,
                         iden=updated_user.id,
-                        email=user_profile.get_attribute('email') or updated_user.email,
+                        email=user_profile.get_attribute('email') or updated_user.email or user_app_data.email,
                         username=updated_user.username,
                         details=updated_user.full_data
                     )

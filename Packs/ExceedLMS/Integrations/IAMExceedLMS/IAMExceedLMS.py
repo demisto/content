@@ -104,7 +104,9 @@ class Client(BaseClient):
         user_id = user_app_data.get('id')
         is_active = user_app_data.get('is_active')
         username = user_app_data.get('login')
-        return IAMUserAppData(user_id, username, is_active, user_app_data)
+        email = user_app_data.get('email')
+
+        return IAMUserAppData(user_id, username, is_active, user_app_data, email)
 
     def update_user(self, user_id: str, user_data: Dict[str, Any]) -> IAMUserAppData:
         """ Updates a user in the application using REST API.

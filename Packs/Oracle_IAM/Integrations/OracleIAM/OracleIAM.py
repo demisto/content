@@ -88,8 +88,9 @@ class Client(BaseClient):
         if user_app_data:
             user_name = user_app_data.get('userName')
             is_active = user_app_data.get('active')
+            email = get_first_primary_email_by_scim_schema(user_app_data)
 
-            return IAMUserAppData(user_id, user_name, is_active, user_app_data)
+            return IAMUserAppData(user_id, user_name, is_active, user_app_data, email)
         return None
 
     def get_user(self, filter_name: str, filter_value: str) -> Optional['IAMUserAppData']:
@@ -145,8 +146,9 @@ class Client(BaseClient):
         user_id = user_app_data.get('id')
         is_active = user_app_data.get('active')
         username = user_app_data.get('userName')
+        email = get_first_primary_email_by_scim_schema(user_app_data)
 
-        return IAMUserAppData(user_id, username, is_active, user_app_data)
+        return IAMUserAppData(user_id, username, is_active, user_app_data, email)
 
     def update_user(self, user_id, new_user_data):
         old_user_data = self._http_request(
@@ -162,8 +164,9 @@ class Client(BaseClient):
 
         is_active = user_app_data.get('active')
         username = user_app_data.get('userName')
+        email = get_first_primary_email_by_scim_schema(user_app_data)
 
-        return IAMUserAppData(user_id, username, is_active, user_app_data)
+        return IAMUserAppData(user_id, username, is_active, user_app_data, email)
 
     def enable_user(self, user_id: str):
         """ Enables a user in the application using REST API.
@@ -195,8 +198,9 @@ class Client(BaseClient):
         if user_app_data:
             user_name = user_app_data.get('userName')
             is_active = user_app_data.get('active')
+            email = get_first_primary_email_by_scim_schema(user_app_data)
 
-            return IAMUserAppData(user_id, user_name, is_active, user_app_data)
+            return IAMUserAppData(user_id, user_name, is_active, user_app_data, email)
         return None
 
     def disable_user(self, user_id: str):
@@ -229,8 +233,9 @@ class Client(BaseClient):
         if user_app_data:
             user_name = user_app_data.get('userName')
             is_active = user_app_data.get('active')
+            email = get_first_primary_email_by_scim_schema(user_app_data)
 
-            return IAMUserAppData(user_id, user_name, is_active, user_app_data)
+            return IAMUserAppData(user_id, user_name, is_active, user_app_data, email)
         return None
 
     def get_group_by_id(self, group_id: str):
