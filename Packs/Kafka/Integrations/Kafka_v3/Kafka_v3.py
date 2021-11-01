@@ -72,22 +72,58 @@ class KafkaCommunicator:
                                    on_delivery=self.delivery_report)
         kafka_producer.flush()
 
-    def consume(self, topic, partition=-1, offset='earliest'):
+    def consume(self, topic: str, partition: int = -1, offset=0):
         kafka_consumer = Consumer(self.conf_consumer)
         topic_partitions = []
         if partition != -1:
-            topic_partitions = [TopicPartition(topic=topic, partition=partition, offset=0)]
+            demisto.debug(f"creating simple topic partition")
+            topic_partitions = [TopicPartition(topic=topic, partition=int(partition), offset=int(offset))]
         else:
             topics = self.get_topics(client=kafka_consumer)
             topic_metadata = topics[topic]
             for metadata_partition in topic_metadata.partitions.values():
-                topic_partitions += [TopicPartition(topic=topic, partition=metadata_partition.id, offset=0)]
+                topic_partitions += [TopicPartition(topic=topic, partition=metadata_partition.id, offset=int(offset))]
 
         kafka_consumer.assign(topic_partitions)
-        return kafka_consumer.poll(1.0)
+        polled_msg = kafka_consumer.poll(1.0)
+        demisto.debug(f"polled {polled_msg}")
+        return polled_msg
 
 
-''' COMMANDS + REQUESTS FUNCTIONS '''
+''' HELPER FUNCTIONS '''
+
+
+def get_offset_for_partition(kafka, topic, partition, offset):
+    offset = int(offset)
+    earliest_offset, oldest_offset = kafka.get_partition_offsets(topic=topic, partition=partition)
+    if offset.lower() == 'earliest':
+        offset = earliest_offset
+    elif offset.lower() == 'latest':
+        offset = oldest_offset
+    else:
+        offset = int(offset)
+        if offset < int(earliest_offset) or offset > int(oldest_offset):
+            return_error(f'Offset {offset} for topic {topic} and partition {partition} is out of bounds '
+                         f'[{earliest_offset}, {oldest_offset}]')
+    return offset
+
+
+def get_topic_partitions(kafka, topic, partition, offset):
+    topic_partitions = []
+    if partition != -1:
+        offset = get_offset_for_partition(kafka, topic, partition, offset)
+        topic_partitions = [TopicPartition(topic=topic, partition=int(partition), offset=int(offset))]
+    else:
+        topics = kafka.get_topics()
+        topic_metadata = topics[topic]
+        for metadata_partition in topic_metadata.partitions.values():
+            offset = get_offset_for_partition(kafka, topic, partition, offset)
+            topic_partitions += [TopicPartition(topic=topic, partition=metadata_partition.id, offset=int(offset))]
+
+    return topic_partitions
+
+
+''' COMMANDS '''
 
 
 def test_module(kafka):
@@ -167,45 +203,48 @@ def consume_message(kafka):
     Consuming one message from topic
     """
     topic = demisto.args().get('topic')
-    offset = demisto.args().get('offset', 0)
-    partition = demisto.args().get('partition', '-1')
+    partition = int(demisto.args().get('partition', -1))
+    offset = demisto.args().get('offset', '0')
 
-    #kafka_topics = kafka.get_topics().values()
-    #partitions = topic.partitions.values()
+    if offset.lower() == 'earliest' or offset.lower() == 'latest':
+        # TODO: handle case with partition=-1
+        earliest_offset, oldest_offset = kafka.get_partition_offsets(topic=topic, partition=partition)
+        if offset.lower() == 'earliest':
+            offset = earliest_offset
+        else:
+            offset = oldest_offset
 
-    message = kafka.consume(topic=topic, partition=partition, offset=offset)
+    message = kafka.consume(topic=topic, partition=partition, offset=int(offset))
+    demisto.debug(f"got message {message} from kafka")
     if not message:
-        return_results('No message was consumed.')
+        demisto.results('No message was consumed.')
     else:
-        #markdown = tableToMarkdown(f'Message consumed from topic *{topic}*',
-        #                           [{'Offset': message.offset(), 'Message': message.value()}])
-        #return_results(f'Message was successfully produced to '
-        #               f'topic \'{message.offset()}\', partition {message.value()}')
-        demisto.debug([{'Offset': message.offset(), 'Message': message.value()}])
+        message_value = message.value()
+        dict_for_debug = [{'Offset': message.offset(), 'Message': message_value.decode('utf-8')}]
+        demisto.debug(f"The dict for debug: {dict_for_debug}")
         message_value = message.value()
         readable_output = tableToMarkdown(f'Message consumed from topic {topic}',
                                           [{'Offset': message.offset(), 'Message': message_value.decode("utf-8")}])
-        return_results(f"{message.offset()} {message_value.decode('utf-8')}")
-        # entry_context = {
-        #     'Kafka.Topic(val.Name === obj.Name)': {
-        #         'Name': topic,
-        #         'Message': {
-        #             'Value': message.value(),
-        #             'Offset': message.offset()
-        #         }
-        #     }
-        # }
-        # demisto.results({
-        #     'Type': EntryType.NOTE,
-        #     'Contents': {
-        #         'Message': message.value(),
-        #         'Offset': message.offset()
-        #     },
-        #     'ContentsFormat': formats['json'],
-        #     'HumanReadable': readable_output,
-        #     'ReadableContentsFormat': formats['markdown'],
-        #     'EntryContext': entry_context
-        # })
+        entry_context = {
+            'Kafka.Topic(val.Name === obj.Name)': {
+                'Name': topic,
+                'Message': {
+                    'Value': message_value.decode('utf-8'),
+                    'Offset': message.offset()
+                }
+            }
+        }
+        demisto.results({
+            'Type': EntryType.NOTE,
+            'Contents': {
+                'Message': message_value.decode('utf-8'),
+                'Offset': message.offset()
+            },
+            'ContentsFormat': formats['json'],
+            'HumanReadable': readable_output,
+            'ReadableContentsFormat': formats['markdown'],
+            'EntryContext': entry_context
+        })
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
