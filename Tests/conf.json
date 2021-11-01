@@ -4620,6 +4620,13 @@
             "timeout": 2400
         },
         {
+            "integrations": [
+                "Demisto REST API"
+            ],
+            "playbookID": "GetTasksWithSections SetIRProcedures end to end test",
+            "fromversion": "6.0.0"
+        },
+        {
           "integrations": "Azure Key Vault",
           "playbookID": "playbook-AzureKeyVault-Test",
           "fromversion": "6.0.1"
