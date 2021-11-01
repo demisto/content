@@ -372,6 +372,7 @@ tasks:
     nexttasks:
       '#none#':
       - "17"
+      - "3"
     separatecontext: false
     view: |-
       {
