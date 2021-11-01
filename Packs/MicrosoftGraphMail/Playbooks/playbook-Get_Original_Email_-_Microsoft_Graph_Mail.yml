@@ -75,8 +75,8 @@ tasks:
       id: 0db04b60-0358-4214-851a-42598fa48cd3
       version: -1
       name: Is Microsoft Graph Mail enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+      description: Returns 'yes' if an integration brand is available. Otherwise returns
+        'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -115,7 +115,7 @@ tasks:
       version: -1
       name: Search for messages by MessageID
       description: Gets the properties of returned emails. Typically shows partial
-        results, use the "page_size" and "pages_to_pull" arguments to get all results.
+        results. Use the "page_size" and "pages_to_pull" arguments to get all results.
       script: MicrosoftGraphMail|||msgraph-mail-list-emails
       type: regular
       iscommand: true
@@ -153,7 +153,7 @@ tasks:
       id: b22d3fc0-5801-4c61-8b57-87dfc491682e
       version: -1
       name: Was a matching email found?
-      description: Verify that an email object with a Message-Id that matches the
+      description: Verifies that an email object with a Message-Id that matches the
         InReplyTo ID of the forwarded email was found.
       type: condition
       iscommand: false
@@ -263,8 +263,8 @@ tasks:
       id: 015f4932-563b-458f-8009-e7daafc60547
       version: -1
       name: Verify required inputs
-      description: Verify that the required input values for retrieving the original
-        email exists.
+      description: Verifies that the required input values exist for retrieving the original
+        email.
       type: condition
       iscommand: false
       brand: ""
@@ -333,7 +333,7 @@ inputs:
 - key: UserID
   value: {}
   required: false
-  description: Email address of the reporting user.
+  description: The email address of the reporting user.
   playbookInputQuery:
 - key: MessageID
   value: {}
@@ -347,7 +347,7 @@ inputs:
   playbookInputQuery:
 outputs:
 - contextPath: File
-  description: The original email as eml file.
+  description: The original email as an eml file.
   type: unknown
 tests:
 - Get Original Email - Microsoft Graph Mail - test
