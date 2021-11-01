@@ -13,7 +13,6 @@ if [ -n "$DEMISTO_SDK_NIGHTLY" ]; then
 fi
 
 if [ -n "$BUCKET_UPLOAD" ]; then
-    #echo "BUCKET_UPLOAD env var is set: $BUCKET_UPLOAD"
     exit 0
 fi
 
