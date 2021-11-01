@@ -35,7 +35,7 @@ This playbook does not use any commands.
 | MessgaeID | The original email message id to retrieve. This should hold the value of the "Message-ID" header of the original email. |  | Optional |
 | UserID | The user's email address. The "me" special value can be used to indicate the authenticated user \(gmail\). |  | Optional |
 | EmailSubject | The original email subject. |  | Optional |
-| EmailBrand | When this value supplied, only the relevant playbook will run.<br/>Possible values:<br/>- Gmail<br/>- EWS v2<br/>- MicrosoftGraphMail<br/><br/>If none of the above values is supplied, all of the playbooks will run. |  | Optional |
+| EmailBrand | When this value is supplied only the relevant playbook will run.<br/>Possible values:<br/>- Gmail<br/>- EWS v2<br/>- MicrosoftGraphMail<br/><br/>If none of the above values is supplied, all of the playbooks will run. |  | Optional |
 
 ## Playbook Outputs
 ---
