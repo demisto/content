@@ -25,7 +25,7 @@ This playbook does not use any sub-playbooks.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| UserID | Email address of the reporting user. |  | Optional |
+| UserID | The email address of the reporting user. |  | Optional |
 | MessageID | The InReplyTo header in the forwarded email. |  | Optional |
 | ThreadTopic | The ThreadTopic header in the forwarded email. |  | Optional |
 
@@ -34,7 +34,7 @@ This playbook does not use any sub-playbooks.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| File | The original email as eml file. | unknown |
+| File | The original email as an eml file. | unknown |
 
 ## Playbook Image
 ---
