@@ -149,7 +149,7 @@ content_list_invalid_arg_value = [
     ({"offset": 2147483648}, MESSAGES["START"].format(2147483648)),
     ({"type": "dummy"}, MESSAGES['INVALID_CONTENT_TYPE']),
     ({"sort_order": "asc"}, MESSAGES['REQUIRED_SORT_KEY']),
-    ({"date": "dummy"}, MESSAGES['INVALID_DATE']),
+    ({"creation_date": "dummy"}, MESSAGES['INVALID_DATE']),
     ({"status": "dummy"}, MESSAGES['INVALID_STATUS_SEARCH'])
 ]
 

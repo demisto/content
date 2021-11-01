@@ -539,7 +539,7 @@ def test_confluence_cloud_content_list_command_when_valid_response_is_returned(r
         "sort_order": "asc",
         "sort_key": "id",
         "status": "current",
-        "date": "6 Aug 2021"
+        "creation_date": "6 Aug 2021"
     }
     response = confluence_cloud_content_list_command(client, args)
 

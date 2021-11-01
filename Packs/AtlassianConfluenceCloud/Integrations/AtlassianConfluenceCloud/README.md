@@ -2965,7 +2965,7 @@ Returns the list of contents of confluence.
 | type | Specify the type to retrieve the contents. <br/>Possible values: page, blogpost. <br/><br/>Default is page. | Optional | 
 | sort_order | Order in which the response will be sorted. <br/>Possible values: asc, desc.<br/><br/>Note: If ‘sort_key’ is specified, default value for ‘sort_order’ is ascending. | Optional | 
 | sort_key | Key based on which the response will be sorted.<br/><br/>Note: If 'sort_order' is specified, 'sort_key' is required. | Optional | 
-| date | Specify the date to return the content created on that specific date. <br/>Formats accepted: 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd. | Optional | 
+| creation_date | Specify the date to return the content created on that specific date. <br/>Formats accepted: 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd. | Optional | 
 | status | Filter the results to a set of content based on their status. If set to any, content with any status is returned. <br/>Possible values: any, current, trashed, draft, archived.<br/><br/>Note: The term 'current' refers to content that is currently active. | Optional | 
 | expand | Indicates which properties to expand. <br/>For reference visit https://developer.atlassian.com/cloud/confluence/rest/api-group-content/#api-wiki-rest-api-content-get.<br/><br/>Note: To separate multiple values, use commas. Expanded properties will be populated in context data only. | Optional | 
 

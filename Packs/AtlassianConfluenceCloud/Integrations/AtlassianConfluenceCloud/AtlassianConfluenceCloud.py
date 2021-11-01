@@ -758,7 +758,7 @@ def prepare_list_content_argument(args: Dict[str, str]) -> Dict[str, Any]:
     elif sort_key:
         params['orderby'] = f'{sort_key}'
 
-    content_creation_date = arg_to_datetime(args.get('date'))
+    content_creation_date = arg_to_datetime(args.get('creation_date'))
     if content_creation_date:
         params['postingDay'] = content_creation_date.date()  # type: ignore
 
