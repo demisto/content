@@ -3,7 +3,6 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
-import requests
 import traceback
 from typing import Dict, Any
 import ipcalc
@@ -226,7 +225,6 @@ def main() -> None:
 
         elif demisto.command() == 'ipcalc-check-subnet-collision':
             return_results(return_check_collision_command(demisto.args()))
-
 
     except Exception as e:
         demisto.error(traceback.format_exc())
