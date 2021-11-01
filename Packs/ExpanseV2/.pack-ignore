@@ -14,3 +14,9 @@ ignore=IF100
 
 [file:incidentfield-Expanse_Issue_Type.json]
 ignore=IF100
+
+[file:ExpanseV2.yml]
+ignore=IN145
+
+[file:FeedExpanse.yml]
+ignore=IN145

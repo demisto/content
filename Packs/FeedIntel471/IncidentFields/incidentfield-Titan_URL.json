@@ -1,0 +1,31 @@
+{
+    "id": "incident_titanurl",
+    "version": -1,
+    "modified": "2021-10-08T09:55:05.248561846Z",
+    "name": "Titan URL",
+    "ownerOnly": true,
+    "description": "URL of the source object in Intel 471's Titan Portal",
+    "cliName": "titanurl",
+    "type": "url",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Intel 471 Watcher Alert"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}
