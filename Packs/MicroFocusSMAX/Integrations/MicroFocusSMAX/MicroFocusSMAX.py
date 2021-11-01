@@ -64,8 +64,7 @@ class Client(BaseClient):
 
 def login(server: str, tenant:  str, username: str, password: str, verify_certificate: bool):
     response = requests.post(f'{server}/auth/authentication-endpoint/authenticate/token?TENANTID={tenant}',
-                             verify=verify_certificate,
-                             json={'Login': username, 'Password': password})
+                             verify=verify_certificate, json={'Login': username, 'Password': password})
     token = response.text
     if not token:
         raise DemistoException(f'Authorization Error: please check your credentials. \n\nError:\n{response}')
