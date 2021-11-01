@@ -4618,6 +4618,11 @@
             "is_mockable": false,
             "instance_names": "MISP_feed_instance",
             "timeout": 2400
+        },
+        {
+          "integrations": "Azure Key Vault",
+          "playbookID": "playbook-AzureKeyVault-Test",
+          "fromversion": "6.0.1"
         }
     ],
     "skipped_tests": {
