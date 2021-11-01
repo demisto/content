@@ -286,10 +286,10 @@ def test_module(client):
 
 
 def get_user_command(client, args, mapper_in, mapper_out):
+    user_profile = args.get("user-profile")
+    iam_user_profile = IAMUserProfile(user_profile=user_profile, mapper=mapper_out,
+                                      incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
     try:
-        user_profile = args.get("user-profile")
-        iam_user_profile = IAMUserProfile(user_profile=user_profile, mapper=mapper_out,
-                                          incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
         iam_attr, iam_attr_value = iam_user_profile.get_first_available_iam_user_attr(GET_USER_ATTRIBUTES)
         salesforce_user = client.get_user(iam_attr, iam_attr_value)
         if not salesforce_user:
@@ -324,11 +324,10 @@ def get_user_command(client, args, mapper_in, mapper_out):
 
 
 def create_user_command(client, args, mapper_out, is_create_enabled, is_update_enabled, is_enable_enabled):
+    user_profile = args.get("user-profile")
+    iam_user_profile = IAMUserProfile(user_profile=user_profile, mapper=mapper_out,
+                                      incident_type=IAMUserProfile.CREATE_INCIDENT_TYPE)
     try:
-        user_profile = args.get("user-profile")
-        iam_user_profile = IAMUserProfile(user_profile=user_profile, mapper=mapper_out,
-                                          incident_type=IAMUserProfile.CREATE_INCIDENT_TYPE)
-
         if not is_create_enabled:
             iam_user_profile.set_result(action=IAMActions.CREATE_USER,
                                         skip=True,
@@ -371,9 +370,9 @@ def create_user_command(client, args, mapper_out, is_create_enabled, is_update_e
 
 def update_user_command(client, args, mapper_out, is_command_enabled, is_enable_enabled,
                         is_create_user_enabled, create_if_not_exists):
+    iam_user_profile = IAMUserProfile(user_profile=args.get('user-profile'), mapper=mapper_out,
+                                      incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
     try:
-        iam_user_profile = IAMUserProfile(user_profile=args.get('user-profile'), mapper=mapper_out,
-                                          incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
         allow_enable = args.get('allow-enable') == 'true'
 
         if not is_command_enabled:
@@ -431,11 +430,10 @@ def update_user_command(client, args, mapper_out, is_command_enabled, is_enable_
 
 
 def disable_user_command(client, args, mapper_out, is_command_enabled):
+    user_profile = args.get("user-profile")
+    iam_user_profile = IAMUserProfile(user_profile=user_profile, mapper=mapper_out,
+                                      incident_type=IAMUserProfile.DISABLE_INCIDENT_TYPE)
     try:
-        user_profile = args.get("user-profile")
-        iam_user_profile = IAMUserProfile(user_profile=user_profile, mapper=mapper_out,
-                                          incident_type=IAMUserProfile.DISABLE_INCIDENT_TYPE)
-
         if not is_command_enabled:
             user_profile.set_result(action=IAMActions.DISABLE_USER,
                                     skip=True,
