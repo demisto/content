@@ -139,9 +139,10 @@ class Client(BaseClient):
 
         user_id = user_app_data.get('id').replace('/User/', '')
         user_name = user_app_data.get('username')
+        email = user_app_data.get('Email')
         is_active = True
 
-        return IAMUserAppData(user_id, user_name, is_active, user_app_data)
+        return IAMUserAppData(user_id, user_name, is_active, user_app_data, email=email)
 
     def update_user(self, user_id: str, user_data: Dict[str, Any]) -> IAMUserAppData:
         """ Updates a user in the application using REST API.
@@ -198,11 +199,11 @@ class Client(BaseClient):
         )
 
         user_app_data = self.get_user_by_id(f'/User/{user_id}')
-
+        email = user_app_data.get('Email')
         user_name = user_app_data.get('username')
         is_active = True
 
-        return IAMUserAppData(user_id, user_name, is_active, user_app_data)
+        return IAMUserAppData(user_id, user_name, is_active, user_app_data, email=email)
 
     def disable_user(self, user_id: str) -> IAMUserAppData:
         """ Disables a user in the application using REST API.
@@ -228,11 +229,11 @@ class Client(BaseClient):
         )
 
         user_app_data = self.get_user_by_id(f'/User/{user_id}')
-
+        email = user_app_data.get('Email')
         user_name = user_app_data.get('username')
         is_active = False
 
-        return IAMUserAppData(user_id, user_name, is_active, user_app_data)
+        return IAMUserAppData(user_id, user_name, is_active, user_app_data, email=email)
 
     def get_app_fields(self) -> Dict[str, Any]:
         """ Gets a dictionary of the user schema fields in the application and their description.
