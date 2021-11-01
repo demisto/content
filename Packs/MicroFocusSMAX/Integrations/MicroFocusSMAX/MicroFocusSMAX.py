@@ -75,17 +75,17 @@ def login(server: str, tenant:  str, username: str, password: str, verify_certif
 def validate_fetch_params(fetch_limit, fetch_start):
     try:
         fetch_limit = int(fetch_limit)
-    except:
-        raise DemistoException(f'Fetch limit has to be a number')
+    except Exception as e:
+        raise DemistoException(f'Fetch limit has to be a number, Error Details: {e}')
     if not fetch_limit or fetch_limit > 200:
-        raise DemistoException(f'Fetch limit has to be in a range between 1 and 200')
+        raise DemistoException('Fetch limit has to be in a range between 1 and 200')
 
     try:
         fetch_start = int(fetch_start)
-    except:
-        raise DemistoException(f'Fetch start has to be a number')
+    except Exception as e:
+        raise DemistoException(f'Fetch start has to be a number, Error Details: {e}')
     if not fetch_start:
-        raise DemistoException(f'Fetch start is not specified')
+        raise DemistoException('Fetch start is not specified')
 
 
 ''' COMMAND FUNCTIONS '''
@@ -109,7 +109,7 @@ def fetch_incidents_command(client: Client, object_to_fetch="Incident", fetch_qu
 
     last_run = demisto.getLastRun()
     if last_run and 'start_time' in last_run:
-        start_time = last_run.get('start_time')+1
+        start_time = last_run.get('start_time') + 1
     else:
         start_time = round((datetime.now() - timedelta(days=int(fetch_start))).timestamp() * 1000)
     if fetch_query_filter:
@@ -124,7 +124,7 @@ def fetch_incidents_command(client: Client, object_to_fetch="Incident", fetch_qu
     for entity in results.get('entities'):
         properties = entity.get('properties')
         created_at_epoch = int(properties.get('EmsCreationTime'))
-        created_at_date = datetime.fromtimestamp(round(created_at_epoch/1000), timezone.utc)
+        created_at_date = datetime.fromtimestamp(round(created_at_epoch / 1000), timezone.utc)
         entity_id = properties.get('Id')
         raw_json = {'Type': entity.get('entity_type')}
         raw_json.update(properties)
@@ -176,7 +176,7 @@ def get_entity_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         )
     else:
         return CommandResults(
-                readable_output="The entity is not found",
+            readable_output="The entity is not found"
         )
 
 
@@ -230,7 +230,7 @@ def query_entities_command(client: Client, args: Dict[str, Any]):
         ]
     else:
         return CommandResults(
-                readable_output="No entities found",
+            readable_output="No entities found"
         )
 
 
