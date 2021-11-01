@@ -1,0 +1,24 @@
+commonfields:
+  id: aac752ab-0dbc-424b-83f8-026a661efa4f
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 8ca3d92f-45cd-4dd8-8328-c9fd55022abd
+    propagationLabels:
+    - all
+    toServerVersion: ""
+dockerimage: demisto/python3:3.9.7.24076
+enabled: true
+engineinfo: {}
+name: ItayIsTesting
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
