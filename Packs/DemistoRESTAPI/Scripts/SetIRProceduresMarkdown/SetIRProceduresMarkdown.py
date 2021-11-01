@@ -2,7 +2,7 @@ from CommonServerPython import *
 
 import traceback
 
-SECTIONS_TO_KEEP = ['Threat Hunting', 'Mitigation', 'Remediation', 'Eradication']
+SECTIONS_TO_KEEP = ('Threat Hunting', 'Mitigation', 'Remediation', 'Eradication')
 
 HEADER_TRANSFORM = {'id': 'Task ID', 'name': 'Task Name', 'state': 'Task State', 'completedDate': 'Completion Time'}
 

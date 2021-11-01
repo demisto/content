@@ -21,12 +21,18 @@ def traverse_tasks(tasks: Dict[str, Dict],
     A function to traverse playbook tasks and gather all the information about the tasks in `results`
 
     Args:
-        tasks: Tasks in the structure of the DEMISTO API
-        current_task: The current task we traverse on
-        results: The results Dictionary. The tasks will be stored on the path of the task
-        prev_task: The task we we're previously on
-        path: This is a list of the section headers in the way to the task
-        visited: Set if the visited tasks
+        tasks:
+            Tasks in the structure of the DEMISTO API
+        current_task:
+            The current task we traverse on
+        results:
+            The results Dictionary. The tasks will be stored on the path of the task
+        prev_task:
+            The task we we're previously on
+        path:
+            This is a list of the section headers in the way to the task
+        visited:
+            Set if the visited tasks
 
     Returns:
 
@@ -98,12 +104,14 @@ def add_url_to_tasks(tasks: List[Dict[str, str]], workplan_url: str):
     return tasks
 
 
-def get_tasks_command(incident_id: str):
+def get_tasks(incident_id: str):
     urls = demisto.demistoUrls()  # works in multi tenant env as well
     workplan_url = urls.get('workPlan')
     res = demisto.executeCommand('demisto-api-get', {'uri': f'/investigation/{incident_id}/workplan'})
     if isError(res[0]):
-        raise DemistoException('Demisto REST API is not set on this instance')
+        raise DemistoException(
+            'Encountered an error while getting workplan.'
+            ' Please make sure your Demisto REST API is configured properly.')
     workplan = demisto.get(res[0], 'Contents.response.invPlaybook')
     tasks = workplan.get('tasks')
     if not workplan or not tasks:
@@ -125,6 +133,9 @@ def get_tasks_and_readable(tasks_nested_results: Dict[str, Dict], workplan_url: 
     task_results: List[Dict] = []
     md_lst = []
     headers = ['id', 'name', 'state', 'completedDate']
+
+    # Go over all nested task, and fill the md table accordingly, and fill the tasks list
+    # I assume the nested task is nested only in two levels
     for k1, v1 in tasks_nested_results.items():
         if 'tasks' in v1.keys():
             tasks = v1.get('tasks')
@@ -147,7 +158,7 @@ def main():
         incident_id = demisto.args().get('investigation_id')
         if not incident_id:
             incident_id = demisto.incident().get('id')
-        return_results(get_tasks_command(incident_id))
+        return_results(get_tasks(incident_id))
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute  GetTasksWithSections.\nError:\n{str(e)}')
