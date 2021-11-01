@@ -1,5 +1,3 @@
-This is an alpha pack, which lets you implement and test pre-release software. Since the pack is alpha, it might contain bugs. Updates to the pack during the alpha phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the pack to help us identify issues, fix them, and continually improve.
-
 The XSOAR marketplace provides some of the best use-cases that we can imagine, that will suit any organization out there, but every organization is unique, it has its own protocols, processes and needs.
 
 This pack provides the ability to control your XSOAR system, your use-cases, and your unique configurations all in one place. 

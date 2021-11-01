@@ -20,6 +20,7 @@
   "CommonWidgets",
   "TIM_Processing",
   "TIM_SIEM",
+  "ThreatIntel",
   "HelloWorld",
   "ExportIndicators",
   "Malware",
@@ -28,5 +29,6 @@
   "ThreatIntelligenceManagement",
   "ipinfo",
   "FeedMitreAttackv2",
-  "FeedUnit42v2"
+  "FeedUnit42v2",
+  "Palo_Alto_Networks_WildFire"
 ]

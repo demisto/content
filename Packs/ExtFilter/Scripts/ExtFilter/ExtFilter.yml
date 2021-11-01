@@ -1,9 +1,6 @@
 commonfields:
   id: ExtFilter
   version: -1
-contentitemexportablefields:
-  contentitemfields:
-    fromServerVersion: ""
 name: ExtFilter
 script: ''
 type: python
