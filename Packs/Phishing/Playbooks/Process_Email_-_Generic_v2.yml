@@ -1644,7 +1644,7 @@ inputs:
   playbookInputQuery:
 - key: GetOriginalEmail
   value:
-    simple: "True"
+    simple: "False"
   required: false
   description: |-
     Retrieves the original email in the thread. Default is "False".
