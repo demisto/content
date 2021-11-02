@@ -34,8 +34,8 @@ script:
       assigning the incident to. This information is saved in the output, but the
       incident will not be automatically assigned.'
     outputs:
-      - contextPath: ThreatStream.Analysis.ReportID
-        description: The ID of the report submitted to the sandbox.
+      - contextPath: Penfield.Recommended.Analyst
+        description: The XSOAR analsyt Penfield recommends assigning the incident to.
         type: String
     arguments:
     - name: analyst_ids

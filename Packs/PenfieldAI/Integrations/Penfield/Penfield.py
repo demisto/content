@@ -26,13 +26,7 @@ class Client(BaseClient):
             url_suffix='/api/v1/xsoar_live_assign/',
             params=params
         )
-
-        return CommandResults(
-            readable_output=response['analyst'],
-            outputs_prefix='Penfield.Recommended',
-            outputs_key_field='',
-            outputs=response['analyst']
-        )
+        return response
 
     def test(self) -> str:
         response = self._http_request(
@@ -52,7 +46,16 @@ def get_assignee(client: Client, args) -> CommandResults:
     arg_id = args.get('id')
     name = args.get('name')
     severity = args.get('severity')
-    return client.live_assign_get(analyst_ids, category, created, arg_id, name, severity)
+    raw_response = client.live_assign_get(analyst_ids, category, created, arg_id, name, severity)
+    analyst = raw_response.get('analyst')
+    human_readable=tableToMarkdown('Analyst Penfield Recommends', analyst, headerTransform=pascalToSpace, removeNull=True)
+    return CommandResults(
+            readable_output=human_readable,
+            outputs_prefix='Penfield.Recommended',
+            outputs_key_field='Analyst',
+            outputs=analyst
+      )
+
 
 def test_api(client: Client):
     return client.test()
