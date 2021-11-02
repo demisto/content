@@ -21,6 +21,7 @@
     "Description": "Test description",
     "ConfidenceLevel": "Unknown",
     "Severity": "Medium",
+    "Status": "Resolved",
     "VendorName": "Microsoft",
     "ProductName": "Azure Sentinel",
     "ProductComponentName": "Scheduled Alerts"
@@ -47,6 +48,7 @@
     "Description": "Test description",
     "ConfidenceLevel": "Unknown",
     "Severity": "Medium",
+    "Status": "New",
     "VendorName": "Microsoft",
     "ProductName": "Azure Sentinel",
     "ProductComponentName": "Scheduled Alerts"
