@@ -35,7 +35,7 @@ script:
       incident will not be automatically assigned.'
     outputs:
       - contextPath: Penfield.Recommended.Analyst
-        description: The XSOAR analsyt Penfield recommends assigning the incident to.
+        description: The XSOAR analyst Penfield recommends assigning the incident to.
         type: String
     arguments:
     - name: analyst_ids

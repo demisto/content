@@ -84,7 +84,7 @@ def main() -> None:
 
         if demisto.command() == 'test-module':
             result = test_api(client)
-            if result == 'healthy':
+            if int(result) == 0:
                 return_results('ok')
             else:
                 raise RuntimeError('Penfield API cannot be reached')
