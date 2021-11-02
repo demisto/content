@@ -1039,6 +1039,7 @@ Gets a list of an incident's alerts from Azure Sentinel.
 | AzureSentinel.IncidentAlert.Description | String | The description of the alert. | 
 | AzureSentinel.IncidentAlert.ConfidenceLevel | String | The confidence level of this alert. | 
 | AzureSentinel.IncidentAlert.Severity | String | The severity of the alert. | 
+| AzureSentinel.IncidentAlert.Status | String | The status of the alert. | 
 | AzureSentinel.IncidentAlert.VendorName | String | The name of the vendor that raise the alert. | 
 | AzureSentinel.IncidentAlert.ProductName | String | The name of the product that published this alert. | 
 | AzureSentinel.IncidentAlert.ProductComponentName | String | The name of a component inside the product which generated the alert. | 
@@ -1061,6 +1062,7 @@ Gets a list of an incident's alerts from Azure Sentinel.
             "ProductComponentName": "Scheduled Alerts",
             "ProductName": "Azure Sentinel",
             "Severity": "Medium",
+            "Status": "New",
             "Tactic": [
                 "InitialAccess",
                 "Persistence",
