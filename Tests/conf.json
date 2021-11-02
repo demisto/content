@@ -4641,6 +4641,13 @@
                 "EWS v2"
             ],
             "instance_names": "ewv2_regular"
+       },
+       {
+            "integrations": [
+                "Demisto REST API"
+            ],
+            "playbookID": "GetTasksWithSections SetIRProcedures end to end test",
+            "fromversion": "6.0.0"
         }
     ],
     "skipped_tests": {
