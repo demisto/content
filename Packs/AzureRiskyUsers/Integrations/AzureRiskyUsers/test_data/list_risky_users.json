@@ -1,0 +1,39 @@
+{
+    "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#identityProtection/riskyUsers",
+    "@odata.nextLink": null,
+    "value": [
+        {
+            "id": "111",
+            "isDeleted": false,
+            "isProcessing": false,
+            "riskDetail": "adminDismissedAllRiskForUser",
+            "riskLastUpdatedDateTime": "2021-08-09T11:47:58.5581222Z",
+            "riskLevel": "none",
+            "riskState": "dismissed",
+            "userDisplayName": "Itay Israeli",
+            "userPrincipalName": "itayi@test.com"
+        },
+        {
+            "id": "222",
+            "isDeleted": false,
+            "isProcessing": false,
+            "riskDetail": "userPerformedSecuredPasswordReset",
+            "riskLastUpdatedDateTime": "2020-11-05T18:35:39.2628939Z",
+            "riskLevel": "none",
+            "riskState": "remediated",
+            "userDisplayName": "Avraham Israeli",
+            "userPrincipalName": "avrahami@test.com"
+        },
+        {
+            "id": "333",
+            "isDeleted": false,
+            "isProcessing": false,
+            "riskDetail": "adminDismissedAllRiskForUser",
+            "riskLastUpdatedDateTime": "2021-02-08T15:21:43.1677221Z",
+            "riskLevel": "none",
+            "riskState": "dismissed",
+            "userDisplayName": "Shaul Israeli",
+            "userPrincipalName": "shauli@test.com"
+        }
+    ]
+}
