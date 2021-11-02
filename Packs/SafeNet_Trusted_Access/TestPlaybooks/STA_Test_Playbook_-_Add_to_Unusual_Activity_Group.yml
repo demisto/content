@@ -91,8 +91,8 @@ tasks:
         a configurable period of time.
       id: 9efbc076-6bc8-412e-8917-84acd98c6be4
       iscommand: false
-      name: SafeNet Trusted Access – Add to Unusual Activity Group
-      playbookId: SafeNet Trusted Access – Add to Unusual Activity Group
+      name: SafeNet Trusted Access - Add to Unusual Activity Group
+      playbookId: SafeNet Trusted Access - Add to Unusual Activity Group
       type: playbook
       version: -1
     taskid: 9efbc076-6bc8-412e-8917-84acd98c6be4

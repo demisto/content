@@ -85,8 +85,8 @@ tasks:
         login attempt following the unlocking of the account, authentication is required.
       id: a2b39809-a04c-4e89-8ae6-2695fb58e982
       iscommand: false
-      name: SafeNet Trusted Access – Terminate User SSO Sessions
-      playbookId: SafeNet Trusted Access – Terminate User SSO Sessions
+      name: SafeNet Trusted Access - Terminate User SSO Sessions
+      playbookId: SafeNet Trusted Access - Terminate User SSO Sessions
       type: playbook
       version: -1
     taskid: a2b39809-a04c-4e89-8ae6-2695fb58e982

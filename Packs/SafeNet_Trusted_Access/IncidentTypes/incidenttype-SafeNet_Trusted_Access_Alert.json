@@ -18,7 +18,7 @@
     "locked": false,
     "name": "SafeNet Trusted Access Alert",
     "onChangeRepAlg": 0,
-    "playbookId": "SafeNet Trusted Access – Add to Unusual Activity Group",
+    "playbookId": "SafeNet Trusted Access - Add to Unusual Activity Group",
     "readonly": false,
     "reputationCalc": 0,
     "system": false,

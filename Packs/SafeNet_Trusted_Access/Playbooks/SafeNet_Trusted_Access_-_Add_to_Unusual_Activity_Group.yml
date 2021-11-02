@@ -3,7 +3,7 @@ description: This playbook adds the user to a group that was created to identify
   account and provide stronger protection when handling access events from users who
   are members of the group. The user is added to this group for a configurable period
   of time.
-id: SafeNet Trusted Access – Add to Unusual Activity Group
+id: SafeNet Trusted Access - Add to Unusual Activity Group
 inputs:
 - description: Username of the user.
   key: UserName
@@ -29,7 +29,7 @@ inputs:
   required: true
   value:
     simple: ${lists.sta_user_in_unusual_activity_group_hours}
-name: SafeNet Trusted Access – Add to Unusual Activity Group
+name: SafeNet Trusted Access - Add to Unusual Activity Group
 outputs: []
 starttaskid: "0"
 tasks:

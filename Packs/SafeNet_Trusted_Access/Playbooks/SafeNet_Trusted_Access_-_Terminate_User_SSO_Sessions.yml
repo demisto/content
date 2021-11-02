@@ -1,6 +1,6 @@
 description: This playbook terminates user SSO sessions so that upon the next login
   attempt following the unlocking of the account, authentication is required.
-id: SafeNet Trusted Access – Terminate User SSO Sessions
+id: SafeNet Trusted Access - Terminate User SSO Sessions
 inputs:
 - description: Username of the user.
   key: UserName
@@ -14,7 +14,7 @@ inputs:
   required: true
   value:
     simple: ${incident.safenettrustedaccessinstancename}
-name: SafeNet Trusted Access – Terminate User SSO Sessions
+name: SafeNet Trusted Access - Terminate User SSO Sessions
 outputs: []
 starttaskid: "0"
 tasks:

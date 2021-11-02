@@ -17,7 +17,7 @@
     "locked": false,
     "name": "SafeNet Trusted Access Account Lockout Alert",
     "onChangeRepAlg": 0,
-    "playbookId": "SafeNet Trusted Access – Terminate User SSO Sessions",
+    "playbookId": "SafeNet Trusted Access - Terminate User SSO Sessions",
     "readonly": false,
     "reputationCalc": 0,
     "system": false,
