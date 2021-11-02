@@ -87,10 +87,33 @@ def test_get_user_command_url_saved_chars(mocker):
     from MicrosoftGraphUser import MsGraphClient, get_user_command
     from MicrosoftApiModule import MicrosoftClient, BaseClient
 
-    user_name = "?dbot+"
+    user_name = "dbot^"
     client = MsGraphClient('tenant_id', 'auth_id', 'enc_key', 'app_name', 'http://base_url', 'verify', 'proxy',
                            'self_deployed', 'redirect_uri', 'auth_code')
     http_mock = mocker.patch.object(BaseClient, '_http_request')
     mocker.patch.object(MicrosoftClient, 'get_access_token')
     hr, _, _ = get_user_command(client, {'user': user_name})
-    assert 'users/%3Fdbot%2B' == http_mock.call_args[1]["url_suffix"]
+    assert 'users/dbot%5E' == http_mock.call_args[1]["url_suffix"]
+
+
+def test_format_user(mocker):
+    """
+    Given:
+        - User with unsupported characters
+    When:
+        - Calling format_user
+    Then:
+        - Validate special characters were removed
+        - Validate info message contains the removed chars
+    """
+    import demistomock as demisto
+    from MicrosoftGraphUser import format_user
+    info_mocker = mocker.patch.object(demisto, "info")
+    invalid_chars = '%&*+/=?`{|}'
+    invalid_user = f'demi{invalid_chars}sto'
+    expected_user = 'demisto'
+
+    assert format_user(invalid_user) == expected_user
+    info_args = info_mocker.call_args.args[0]
+    for char in invalid_chars:
+        assert char in info_args

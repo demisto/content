@@ -13,6 +13,7 @@ BLOCK_ACCOUNT_JSON = '{"accountEnabled": false}'
 UNBLOCK_ACCOUNT_JSON = '{"accountEnabled": true}'
 NO_OUTPUTS: dict = {}
 APP_NAME = 'ms-graph-user'
+INVALID_USER_CHARS_REGEX = re.compile(r'[%&*+/=?`{|}]')
 
 
 def camel_case_to_readable(text):
@@ -207,14 +208,14 @@ def test_function(client, _):
 
 
 def terminate_user_session_command(client: MsGraphClient, args: Dict):
-    user = args.get('user')
+    user = format_user(args.get('user'))
     client.terminate_user_session(user)
     human_readable = f'user: "{user}" session has been terminated successfully'
     return human_readable, None, None
 
 
 def unblock_user_command(client: MsGraphClient, args: Dict):
-    user = args.get('user')
+    user = format_user(args.get('user'))
     client.unblock_user(user)
     human_readable = f'"{user}" unblocked. It might take several minutes for the changes to take affect across all ' \
                      f'applications. '
@@ -222,7 +223,7 @@ def unblock_user_command(client: MsGraphClient, args: Dict):
 
 
 def delete_user_command(client: MsGraphClient, args: Dict):
-    user = args.get('user')
+    user = format_user(args.get('user'))
     client.delete_user(user)
     human_readable = f'user: "{user}" was deleted successfully'
     return human_readable, None, None
@@ -261,7 +262,7 @@ def create_user_command(client: MsGraphClient, args: Dict):
 
 
 def update_user_command(client: MsGraphClient, args: Dict):
-    user = args.get('user')
+    user = format_user(args.get('user'))
     updated_fields = args.get('updated_fields')
 
     client.update_user(user, updated_fields)
@@ -269,7 +270,7 @@ def update_user_command(client: MsGraphClient, args: Dict):
 
 
 def change_password_user_command(client: MsGraphClient, args: Dict):
-    user = str(args.get('user'))
+    user = format_user(str(args.get('user')))
     password = str(args.get('password'))
     force_change_password_next_sign_in = args.get('force_change_password_next_sign_in', 'true') == 'true'
     force_change_password_with_mfa = args.get('force_change_password_with_mfa', False) == 'true'
@@ -291,7 +292,7 @@ def get_delta_command(client: MsGraphClient, args: Dict):
 
 
 def get_user_command(client: MsGraphClient, args: Dict):
-    user = args.get('user')
+    user = format_user(args.get('user'))
     properties = args.get('properties', '*')
     user_data = client.get_user(user, properties)
 
@@ -305,6 +306,19 @@ def get_user_command(client: MsGraphClient, args: Dict):
     human_readable = tableToMarkdown(name=f"{user} data", t=user_readable, removeNull=True)
     outputs = {'MSGraphUser(val.ID == obj.ID)': user_outputs}
     return human_readable, outputs, user_data
+
+
+def format_user(user: str):
+    """
+    Removes characters that are not supported by the MsGraph API.
+    """
+    if not user:
+        return user
+    formatted_user = user.translate(str.maketrans('', '', '%&*+/=?`{|}'))
+    if len(user) != len(formatted_user):
+        removed_chars = set(INVALID_USER_CHARS_REGEX.findall(user))
+        demisto.info(f'removed special characters {removed_chars} found in user {user}')
+    return formatted_user
 
 
 def list_users_command(client: MsGraphClient, args: Dict):
@@ -327,7 +341,7 @@ def list_users_command(client: MsGraphClient, args: Dict):
 
 
 def get_direct_reports_command(client: MsGraphClient, args: Dict):
-    user = args.get('user')
+    user = format_user(args.get('user'))
 
     raw_reports = client.get_direct_reports(user)
 
@@ -344,7 +358,7 @@ def get_direct_reports_command(client: MsGraphClient, args: Dict):
 
 
 def get_manager_command(client: MsGraphClient, args: Dict):
-    user = args.get('user')
+    user = format_user(args.get('user'))
     manager_data = client.get_manager(user)
     manager_readable, manager_outputs = parse_outputs(manager_data)
     human_readable = tableToMarkdown(name=f"{user} - manager", t=manager_readable, removeNull=True)
@@ -358,7 +372,7 @@ def get_manager_command(client: MsGraphClient, args: Dict):
 
 
 def assign_manager_command(client: MsGraphClient, args: Dict):
-    user = args.get('user')
+    user = format_user(args.get('user'))
     manager = args.get('manager')
     client.assign_manager(user, manager)
     human_readable = f'A manager was assigned to user "{user}". It might take several minutes for the changes ' \
