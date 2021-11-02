@@ -32,7 +32,7 @@ description: FireMon Security Manager delivers comprehensive rule lifecycle mana
   to help you manage and automate every stage of the change management process. Workflows
   can be customized and automated to conform to your security goals and standards,
   with tools at your disposal to evolve policy and protection over time.
-display: FireMon Security Manager - CORTEX XSOAR
+display: FireMon Security Manager
 name: FireMonSecurityManager
 script:
   commands:
