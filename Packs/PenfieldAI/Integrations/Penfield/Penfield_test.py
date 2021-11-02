@@ -53,4 +53,4 @@ def test_get_assignee(mocker):
         proxy=proxy
     )
 
-    assert get_assignee(client, demisto.args()) == "test_cr_response"
+    assert type(get_assignee(client, demisto.args())).__name__ == "CommandResults"
