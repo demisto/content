@@ -1,0 +1,17 @@
+{
+    "name": "foo-contrib",
+    "description": "Test Anar",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Anar",
+    "url": "",
+    "email": "",
+    "created": "2021-11-02T19:48:05Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "anara123"
+    ]
+}

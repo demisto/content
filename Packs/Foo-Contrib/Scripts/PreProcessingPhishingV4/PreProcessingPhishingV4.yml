@@ -1,0 +1,25 @@
+commonfields:
+  id: d47f04ea-70ed-4220-81cb-67b00cf07d7f
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 92fca98f-ee66-4f1f-83a2-0a7fc2604b00
+    propagationLabels:
+    - all
+    toServerVersion: ""
+dockerimage: demisto/python3:3.7.3.286
+enabled: true
+engineinfo: {}
+name: PreProcessingPhishingV4
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- preProcessing
+type: python
