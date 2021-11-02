@@ -1,22 +1,21 @@
 {
-    "fromVersion": "5.5.0",
+    "fromVersion": "5.0.0",
     "associatedToAll": false,
     "associatedTypes": [
-        "GraCase",
-        "GraHighRiskUser"
+        "GRACase"
     ],
     "caseInsensitive": true,
-    "cliName": "graanomalyriskscore",
+    "cliName": "gracaseopendate",
     "closeForm": false,
     "content": true,
-    "description": "Gra Anomaly Risk Score",
+    "description": "GRA Case Open Date",
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_graanomalyriskscore",
+    "id": "incident_gracaseopendate",
     "isReadOnly": false,
     "locked": false,
-    "name": "Gra Anomaly Risk Score",
+    "name": "GRA Case Open Date",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,
