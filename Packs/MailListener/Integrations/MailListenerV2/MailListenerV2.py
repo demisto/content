@@ -262,6 +262,14 @@ def fetch_mails(client: IMAPClient,
     demisto.debug(f'Messages to fetch: {messages_uids}')
     for mail_id, message_data in client.fetch(messages_uids, 'RFC822').items():
         message_bytes = message_data.get(b'RFC822')
+        # For cases the message_bytes is returned as a string. If failed, will try to use the message_bytes returned.
+        try:
+            demisto.debug("Converting data to bytes.")
+            message_bytes = bytes(message_bytes)
+            demisto.debug("Converted data successfuly.")
+        except Exception as e:
+            demisto.debug(f"Converting data was un-successful. {mail_id=}, {message_data=}")
+
         if not message_bytes:
             continue
         email_message_object = Email(message_bytes, include_raw_body, save_file, mail_id)
