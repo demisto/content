@@ -2757,23 +2757,22 @@ tasks:
     isautoswitchedtoquietmode: false
   "89":
     id: "89"
-    taskid: f8d0c2a7-c4b6-4756-8165-4984d819c69c
+    taskid: 48c9ebe0-8ea6-4c27-8f39-c8197b823ef1
     type: playbook
     task:
-      id: f8d0c2a7-c4b6-4756-8165-4984d819c69c
+      id: 48c9ebe0-8ea6-4c27-8f39-c8197b823ef1
       version: -1
       name: Cisco FirePower- Append network group object
+      description: This Playbook will append a network group object with new elements
+        ( IPs or network objects ).
       playbookName: Cisco FirePower- Append network group object
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "2"
     scriptarguments:
-      ID:
-        simple: ${inputs.CiscoFPID}
       IP:
         complex:
           root: BlockList
@@ -2784,8 +2783,6 @@ tasks:
               separator:
                 value:
                   simple: ','
-      Name:
-        simple: ${inputs.CiscoFPName}
       Override:
         simple: "False"
     separatecontext: true
@@ -3562,18 +3559,6 @@ inputs:
   required: false
   description: Signal Sciences WAF - Enter the Site Name for the integration to be
     applied. The site name can be found in your instance console.
-  playbookInputQuery:
-- key: CiscoFPName
-  value: {}
-  required: false
-  description: Cisco FirePower - Enter the Object Group Name to be appended with the
-    blocklisted IPs.
-  playbookInputQuery:
-- key: CiscoFPID
-  value: {}
-  required: false
-  description: Cisco FirePower - Enter the Object Group ID  to be appended with the
-    blocklisted IPs.
   playbookInputQuery:
 - key: AkamaiNetworkListID
   value: {}
