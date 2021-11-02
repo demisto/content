@@ -1,7 +1,7 @@
-id: GraCase
+id: GRACase
 version: -1
 fromversion: 5.0.0
-name: GraCase
+name: GRACase
 starttaskid: "0"
 description: Playbook for fetching cases assosiated to high risk users.
 tasks:
@@ -50,7 +50,7 @@ tasks:
       - "2"
     scriptarguments:
       value:
-        simple: ${incident.graanomalyname}${incident.graanomalies}
+        simple: ${incident.graanomalyname}${incident.gracaseanomalydetails}
     separatecontext: false
     view: |-
       {
