@@ -78,6 +78,6 @@ def test_get_feed_integration_errors(mocker):
     assert table['data'] == [{
         'Brand': feed_brand,
         'Instance': feed_brand_instance_1,
-        'Instance Last Modified Time': modified,
+        'Instance Last Modified Time': '2021-10-14 10:42:29+0300',
         'Error Information': error,
     }]

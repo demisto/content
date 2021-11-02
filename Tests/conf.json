@@ -431,6 +431,17 @@
             "is_mockable": false
         },
         {
+            "integrations": "Azure Compute v2",
+            "playbookID": "Azure Compute - Login Test",
+            "instance_names": "ms_azure_compute_prod",
+            "is_mockable": false
+        },
+        {
+            "integrations": "Azure Compute v2",
+            "playbookID": "Azure Compute - Login Test",
+            "instance_names": "ms_azure_compute_self_deployed"
+        },
+        {
             "integrations": "Symantec Data Loss Prevention",
             "playbookID": "Symantec Data Loss Prevention - Test",
             "fromversion": "4.5.0"
@@ -1161,6 +1172,11 @@
             "playbookID": "TestEditServerConfig"
         },
         {
+            "playbookID": "MarketplacePackInstaller_Test",
+            "integrations": "Demisto REST API",
+            "fromversion": "6.0.0"
+        },
+        {
             "playbookID": "Default - Test",
             "integrations": [
                 "ThreatQ v2",
@@ -1829,7 +1845,6 @@
         {
             "integrations": "Tanium",
             "playbookID": "Tanium Test Playbook",
-            "nightly": true,
             "timeout": 1200,
             "pid_threshold": 10
         },
@@ -2243,6 +2258,13 @@
         },
         {
             "playbookID": "Ping Test Playbook"
+        },
+        {
+            "playbookID": "ParseWordDoc-Test"
+        },
+        {
+            "playbookID": "PDFUnlocker-Test",
+            "fromversion": "6.0.0"
         },
         {
             "playbookID": "Active Directory Test",
@@ -3964,15 +3986,6 @@
             ]
         },
         {
-            "playbookID": "test playbook - QRadarCorrelations",
-            "fromversion": "6.0.0",
-            "integrations": [
-                "QRadar_v2",
-                "QRadar v3",
-                "QRadar"
-            ]
-        },
-        {
             "playbookID": "SX - PC - Test Playbook",
             "fromversion": "5.5.0",
             "integrations": [
@@ -4575,6 +4588,10 @@
             "playbookID": "TestAzureSentinelPlaybookV2"
         },
         {
+            "integrations": "AutoFocusTagsFeed",
+            "playbookID": "AutoFocusTagsFeed-test"
+        },
+        {
             "playbookID": "Tanium Threat Response V2 Test",
             "integrations": ["Tanium Threat Response v2", "Demisto REST API"],
             "fromversion": "6.0.0",
@@ -4601,6 +4618,13 @@
             "is_mockable": false,
             "instance_names": "MISP_feed_instance",
             "timeout": 2400
+        },
+        {
+            "integrations": [
+                "Demisto REST API"
+            ],
+            "playbookID": "GetTasksWithSections SetIRProcedures end to end test",
+            "fromversion": "6.0.0"
         }
     ],
     "skipped_tests": {
@@ -4677,7 +4701,6 @@
         "Trend Micro Deep Security - Test": "outsourced",
         "Microsoft Teams - Test": "Issue 38263",
         "QualysVulnerabilityManagement-Test": "Issue 38640",
-        "test playbook - QRadarCorrelations": "Issue 38639",
         "EWS Extension: Powershell Online V2 Test": "Issue 39008",
         "O365 - EWS - Extension - Test": "Issue 39008",
         "Majestic Million Test Playbook": "Issue 30931",
@@ -4752,7 +4775,6 @@
         "GoogleCloudSCC": "No instance, outsourced",
         "FortiGate": "License expired, and not going to get one (issue 14723)",
         "Attivo Botsink": "no instance, not going to get it",
-        "VMware": "no License, and probably not going to get it",
         "AWS Sagemaker": "License expired, and probably not going to get it",
         "Symantec MSS": "No instance, probably not going to get it (issue 15513)",
         "Google Cloud Compute": "Can't test yet",
@@ -4874,6 +4896,7 @@
         "Awake Security": "Checking",
         "ArcSight ESM v2": "Checking",
         "Phish.AI": "Checking",
+        "VMware": "PyVim (SmartConnect class) does not support proxy",
         "Intezer": "Nightly - Checking",
         "ProtectWise": "Nightly - Checking",
         "google-vault": "Nightly - Checking",

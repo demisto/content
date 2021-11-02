@@ -5,7 +5,7 @@ ignore=BA101
 ignore=PA116
 
 [file:Cylance_Protect_v2.yml]
-ignore=IN126,BA108,BA109
+ignore=IN126,BA108,BA109,IN145
 
 [file:README.md]
 ignore=RM104
