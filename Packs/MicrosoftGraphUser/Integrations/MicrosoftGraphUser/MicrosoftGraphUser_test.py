@@ -96,24 +96,17 @@ def test_get_user_command_url_saved_chars(mocker):
     assert 'users/dbot%5E' == http_mock.call_args[1]["url_suffix"]
 
 
-def test_format_user(mocker):
+def test_get_unsupported_chars_in_user():
     """
     Given:
         - User with unsupported characters
     When:
-        - Calling format_user
+        - Calling get_unsupported_chars_in_user
     Then:
-        - Validate special characters were removed
-        - Validate info message contains the removed chars
+        - Validate special characters were extracted
     """
-    import demistomock as demisto
-    from MicrosoftGraphUser import format_user
-    info_mocker = mocker.patch.object(demisto, "info")
+    from MicrosoftGraphUser import get_unsupported_chars_in_user
     invalid_chars = '%&*+/=?`{|}'
     invalid_user = f'demi{invalid_chars}sto'
-    expected_user = 'demisto'
 
-    assert format_user(invalid_user) == expected_user
-    info_args = info_mocker.call_args.args[0]
-    for char in invalid_chars:
-        assert char in info_args
+    assert len(get_unsupported_chars_in_user(invalid_user).difference(set(invalid_chars))) == 0
