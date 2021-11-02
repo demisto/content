@@ -10,31 +10,31 @@ This playbook does not use any sub-playbooks.
 * SafeNetTrustedAccess
 
 ### Scripts
-* Sleep
+* IsIntegrationAvailable
 * PrintErrorEntry
 * Print
-* IsIntegrationAvailable
 * SearchIncidentsV2
+* Sleep
 
 ### Commands
+* sta-remove-user-group
+* closeInvestigation
+* sta-validate-tenant
+* sta-get-group-info
+* sta-get-user-info
+* setIncident
 * sta-add-user-group
 * sta-user-exist-group
-* sta-validate-tenant
-* closeInvestigation
-* setIncident
-* sta-get-group-info
-* sta-remove-user-group
-* sta-get-user-info
 
 ## Playbook Inputs
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| userName | Username of the user. | ${incident.safenettrustedaccessusername} | Required |
-| unusualActivityGroup | Name of the Unusual Activity Group. | ${lists.sta_unusual_activity_group} | Required |
-| instanceName | Name of the SafeNet Trusted Access integration instance. | ${incident.safenettrustedaccessinstancename} | Required |
-| sleepTime | Amount of time that the user will remain in the Unusual Activity Group. | ${lists.sta_user_in_unusual_activity_group_hours} | Required |
+| UserName | Username of the user. | ${incident.safenettrustedaccessusername} | Required |
+| UnusualActivityGroup | Name of the Unusual Activity Group. | ${lists.sta_unusual_activity_group} | Required |
+| InstanceName | Name of the SafeNet Trusted Access integration instance. | ${incident.safenettrustedaccessinstancename} | Required |
+| Time | Amount of time for which the user will remain in the Unusual Activity Group. | ${lists.sta_user_in_unusual_activity_group_hours} | Required |
 
 ## Playbook Outputs
 ---

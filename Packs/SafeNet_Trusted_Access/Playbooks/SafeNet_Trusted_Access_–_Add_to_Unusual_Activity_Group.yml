@@ -6,25 +6,25 @@ description: This playbook adds the user to a group that was created to identify
 id: SafeNet Trusted Access – Add to Unusual Activity Group
 inputs:
 - description: Username of the user.
-  key: userName
+  key: UserName
   playbookInputQuery:
   required: true
   value:
     simple: ${incident.safenettrustedaccessusername}
 - description: Name of the Unusual Activity Group.
-  key: unusualActivityGroup
+  key: UnusualActivityGroup
   playbookInputQuery:
   required: true
   value:
     simple: ${lists.sta_unusual_activity_group}
 - description: Name of the SafeNet Trusted Access integration instance.
-  key: instanceName
+  key: InstanceName
   playbookInputQuery:
   required: true
   value:
     simple: ${incident.safenettrustedaccessinstancename}
-- description: Amount of time that the user will remain in the Unusual Activity Group.
-  key: sleepTime
+- description: Amount of time for which the user will remain in the Unusual Activity Group.
+  key: Time
   playbookInputQuery:
   required: true
   value:
@@ -71,9 +71,9 @@ tasks:
     quietmode: 0
     scriptarguments:
       groupName:
-        simple: ${inputs.unusualActivityGroup}
+        simple: ${inputs.UnusualActivityGroup}
       using:
-        simple: ${inputs.instanceName}
+        simple: ${inputs.InstanceName}
     separatecontext: false
     skipunavailable: false
     task:
@@ -81,7 +81,7 @@ tasks:
       description: Get information for a specific group.
       id: e9b7ada1-1f13-453b-85e4-a667b0faae05
       iscommand: true
-      name: Get Group Information
+      name: Get Group Information.
       script: '|||sta-get-group-info'
       type: regular
       version: -1
@@ -143,11 +143,11 @@ tasks:
     quietmode: 0
     scriptarguments:
       groupName:
-        simple: ${inputs.unusualActivityGroup}
+        simple: ${inputs.UnusualActivityGroup}
       userName:
-        simple: ${inputs.userName}
+        simple: ${inputs.UserName}
       using:
-        simple: ${inputs.instanceName}
+        simple: ${inputs.InstanceName}
     separatecontext: false
     skipunavailable: false
     task:
@@ -155,7 +155,7 @@ tasks:
       description: Add user to the configured group.
       id: 23275b0c-d264-44b5-8965-1e3651794a78
       iscommand: true
-      name: Add user to Unusual Activity Group
+      name: Add user to Unusual Activity Group.
       script: '|||sta-add-user-group'
       type: regular
       version: -1
@@ -179,7 +179,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       message:
-        simple: The Unusual Activity Group - ${inputs.unusualActivityGroup} doesn't
+        simple: The Unusual Activity Group - ${inputs.UnusualActivityGroup} doesn't
           exist.
     separatecontext: false
     skipunavailable: false
@@ -188,7 +188,7 @@ tasks:
       description: Prints an error entry with a given message.
       id: a1b0e780-091f-4e9b-8afb-668b5f8dc3d8
       iscommand: false
-      name: Failed Message
+      name: Failed Message.
       script: PrintErrorEntry
       type: regular
       version: -1
@@ -213,7 +213,7 @@ tasks:
     scriptarguments:
       seconds:
         complex:
-          root: inputs.sleepTime
+          root: inputs.Time
           transformers:
           - args:
               by:
@@ -227,7 +227,7 @@ tasks:
       description: Sleep for X seconds
       id: 7cc173d6-6927-4e9a-86e2-4c04848ec66e
       iscommand: false
-      name: Sleep Time - User in the group for ${inputs.sleepTime} hours.
+      name: Sleep Time - User in the group for ${inputs.Time} hours.
       script: Sleep
       type: regular
       version: -1
@@ -251,11 +251,11 @@ tasks:
     quietmode: 0
     scriptarguments:
       groupName:
-        simple: ${inputs.unusualActivityGroup}
+        simple: ${inputs.UnusualActivityGroup}
       userName:
-        simple: ${inputs.userName}
+        simple: ${inputs.UserName}
       using:
-        simple: ${inputs.instanceName}
+        simple: ${inputs.InstanceName}
     separatecontext: false
     skipunavailable: false
     task:
@@ -263,7 +263,7 @@ tasks:
       description: Remove user from a group.
       id: 75c4fec4-965c-4ce0-8803-21f6f8cb8d48
       iscommand: true
-      name: Remove from Unusual Activity Group
+      name: Remove user from Unusual Activity Group.
       script: '|||sta-remove-user-group'
       type: regular
       version: -1
@@ -302,7 +302,7 @@ tasks:
       description: commands.local.cmd.close.inv
       id: 1ca0d049-7e43-4829-8dd1-cbdd231e872a
       iscommand: true
-      name: Close incident
+      name: Close Incident.
       script: Builtin|||closeInvestigation
       type: regular
       version: -1
@@ -326,11 +326,11 @@ tasks:
     quietmode: 0
     scriptarguments:
       groupName:
-        simple: ${inputs.unusualActivityGroup}
+        simple: ${inputs.UnusualActivityGroup}
       userName:
-        simple: ${inputs.userName}
+        simple: ${inputs.UserName}
       using:
-        simple: ${inputs.instanceName}
+        simple: ${inputs.InstanceName}
     separatecontext: false
     skipunavailable: false
     task:
@@ -441,11 +441,11 @@ tasks:
     scriptarguments:
       userName:
         complex:
-          root: inputs.userName
+          root: inputs.UserName
           transformers:
           - operator: trim
       using:
-        simple: ${inputs.instanceName}
+        simple: ${inputs.InstanceName}
     separatecontext: false
     skipunavailable: false
     task:
@@ -453,7 +453,7 @@ tasks:
       description: Get the profile information for a specific user.
       id: 1821d0e4-8ed9-4498-8d36-04ca58511aea
       iscommand: true
-      name: Get User Information
+      name: Get User Information.
       script: '|||sta-get-user-info'
       type: regular
       version: -1
@@ -515,7 +515,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       message:
-        simple: User - ${inputs.userName} doesn't exist in the tenant.
+        simple: User - ${inputs.UserName} doesn't exist in the tenant.
     separatecontext: false
     skipunavailable: false
     task:
@@ -523,7 +523,7 @@ tasks:
       description: Prints an error entry with a given message.
       id: 138098c5-5fa8-4900-8433-ada54e0ef22d
       iscommand: false
-      name: Failed Message
+      name: Failed Message.
       script: PrintErrorEntry
       type: regular
       version: -1
@@ -558,8 +558,8 @@ tasks:
       page: {}
       query:
         simple: sourceInstance:"${incident.sourceInstance}" and type:"${incident.type}"
-          and safenettrustedaccessinstancename:"${inputs.instanceName}" and status:"Active"
-          and safenettrustedaccessusername:"${inputs.userName}" and name:"${incident.name}"
+          and safenettrustedaccessinstancename:"${inputs.InstanceName}" and status:"Active"
+          and safenettrustedaccessusername:"${inputs.UserName}" and name:"${incident.name}"
           and -id:"${incident.id}"
       reason: {}
       size:
@@ -680,7 +680,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       using:
-        simple: ${inputs.instanceName}
+        simple: ${inputs.InstanceName}
     separatecontext: false
     skipunavailable: false
     task:
@@ -767,7 +767,7 @@ tasks:
       description: Prints an error entry with a given message.
       id: 4538ad6b-64ca-4d84-886b-8b7d998df99a
       iscommand: false
-      name: Failed Message
+      name: Failed Message.
       script: PrintErrorEntry
       type: regular
       version: -1
@@ -782,6 +782,7 @@ tasks:
         }
       }
   "34":
+    continueonerror: true
     id: "34"
     ignoreworker: false
     nexttasks:
@@ -791,14 +792,14 @@ tasks:
     quietmode: 0
     scriptarguments:
       safenettrustedaccessunusualactivitygroup:
-        simple: ${inputs.unusualActivityGroup}
+        simple: ${inputs.UnusualActivityGroup}
       safenettrustedaccessuserinunusualactivitygrouphours:
-        simple: ${lists.sta_user_in_unusual_activity_group_hours}
+        simple: ${inputs.Time}
       severity:
         simple: "2"
       sla:
         complex:
-          root: inputs.sleepTime
+          root: inputs.Time
           transformers:
           - args:
               by:
@@ -818,7 +819,7 @@ tasks:
       description: commands.local.cmd.set.incident
       id: e554f169-902c-4b4d-84e6-a2c997e08207
       iscommand: true
-      name: Set Incident Fields
+      name: Set Incident Fields.
       script: Builtin|||setIncident
       type: regular
       version: -1
@@ -854,7 +855,7 @@ tasks:
         'no'
       id: 3c308dd9-d447-48a1-83b6-93b9a4cab275
       iscommand: false
-      name: Is Integration Available
+      name: Is Integration Available?
       script: IsIntegrationAvailable
       type: condition
       version: -1
@@ -886,7 +887,7 @@ tasks:
       description: Prints text to war room (Markdown supported)
       id: 79a4dac1-617d-47d2-8c88-6bb120ed3ad6
       iscommand: false
-      name: Failed Message
+      name: Failed Message.
       script: Print
       type: regular
       version: -1

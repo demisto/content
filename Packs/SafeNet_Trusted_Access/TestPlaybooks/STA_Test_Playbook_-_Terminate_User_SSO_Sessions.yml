@@ -1,9 +1,10 @@
-description: This is a test playbook for SafeNet Trusted Access – Add to Unusual Activity
-  Group.
-id: Test Playbook STA
+description: This is a test playbook for SafeNet Trusted Access - Terminate User SSO
+  Sessions.
+id: Test Playbook Account Lockout  STA
 inputs: []
-name: Test Playbook STA
+name: STA Test Playbook - Terminate User SSO Sessions
 outputs: []
+sourceplaybookid: Test Playbook STA
 starttaskid: "0"
 tasks:
   "0":
@@ -18,12 +19,11 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: c009d899-92a9-4c54-8acb-bb74d7ea1a71
+      id: 4f9919bf-df4d-4f73-8323-0ce3f4518036
       iscommand: false
       name: ""
       version: -1
-      description: ''
-    taskid: c009d899-92a9-4c54-8acb-bb74d7ea1a71
+    taskid: 4f9919bf-df4d-4f73-8323-0ce3f4518036
     timertriggers: []
     type: start
     view: |-
@@ -42,13 +42,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 3f5bd5ff-1ec9-45ca-82b7-34aae0441615
+      id: 80f5acac-bc0d-408f-8133-a4dcf80fdd59
       iscommand: false
       name: Done
       type: title
       version: -1
-      description: ''
-    taskid: 3f5bd5ff-1ec9-45ca-82b7-34aae0441615
+    taskid: 80f5acac-bc0d-408f-8133-a4dcf80fdd59
     timertriggers: []
     type: title
     view: |-
@@ -72,33 +71,30 @@ tasks:
     note: false
     quietmode: 0
     scriptarguments:
-      instanceName:
-        simple: SpeDemo_Instance_1
-      sleepTime:
-        simple: "0.04"
-      unusualActivityGroup:
-        simple: TestUnusualActivityGroup
-      userName:
+      InstanceName:
+        simple: SafeNet Trusted Access_instance_1
+      UserName:
         simple: demouser
     separatecontext: true
     skipunavailable: false
     task:
       brand: ""
-      id: a354f5b2-c3cb-4a40-83ab-ca28891b0abc
+      description: This playbook terminates user SSO sessions so that upon the next
+        login attempt following the unlocking of the account, authentication is required.
+      id: a2b39809-a04c-4e89-8ae6-2695fb58e982
       iscommand: false
-      name: SafeNet Trusted Access – Add to Unusual Activity Group
-      playbookId: SafeNet Trusted Access – Add to Unusual Activity Group
+      name: SafeNet Trusted Access - Terminate User SSO Sessions
+      playbookId: SafeNet Trusted Access - Terminate User SSO Sessions
       type: playbook
       version: -1
-      description: ''
-    taskid: a354f5b2-c3cb-4a40-83ab-ca28891b0abc
+    taskid: a2b39809-a04c-4e89-8ae6-2695fb58e982
     timertriggers: []
     type: playbook
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 195
+          "y": 190
         }
       }
 version: -1
@@ -114,4 +110,3 @@ view: |-
       }
     }
   }
-fromversion: 6.0.0
