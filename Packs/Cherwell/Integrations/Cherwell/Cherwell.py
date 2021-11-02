@@ -199,8 +199,8 @@ def get_business_object_summary_by_name(name, is_fetch=False):
     return parse_response(response, "Could not get business object summary", is_fetch=is_fetch)
 
 
-def get_business_object_summary_by_id(obj_id, is_fetch=False):
-    url = BASE_URL + f'api/V1/getbusinessobjectsummary/busobid/{obj_id}'
+def get_business_object_summary_by_id(_id, is_fetch=False):
+    url = BASE_URL + f'api/V1/getbusinessobjectsummary/busobid/{_id}'
     response = make_request('GET', url, is_fetch=is_fetch)
     return parse_response(response, "Could not get business object summary", is_fetch=is_fetch)
 
