@@ -374,16 +374,19 @@ script:
       type: String
   - arguments:
     - name: business_object_id
+      description: The ID of the business object
       required: true
     - auto: PREDEFINED
       defaultValue: 'False'
       name: include_required
+      description: Include required fields
       predefined:
       - 'True'
       - 'False'
     - auto: PREDEFINED
       defaultValue: 'True'
       name: include_all
+      description: Include all fields
       predefined:
       - 'True'
       - 'False'
@@ -444,6 +447,7 @@ script:
     - auto: PREDEFINED
       defaultValue: 'false'
       name: required_only
+      description: Include only required fields
       predefined:
       - 'true'
       - 'false'
