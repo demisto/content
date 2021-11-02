@@ -13,6 +13,7 @@ USER_FIELDS = 'Name,Email,Region,Location,JobTitle,DirectManager,MobilePhone,Tim
 ERROR_CODES_TO_SKIP = [
     404
 ]
+EMAIL_ATTRIBUTE = 'Email'
 
 '''CLIENT CLASS'''
 
@@ -20,11 +21,22 @@ ERROR_CODES_TO_SKIP = [
 class Client(BaseClient):
     """ A client class that implements logic to authenticate with the application. """
 
-    def __init__(self, base_url, verify=True, proxy=False, ok_codes=(), headers=None, auth=None, manager_email=None):
-        super().__init__(base_url, verify, proxy, ok_codes, headers, auth)
-        self.username = auth[0]
-        self.password = auth[1]
+    def __init__(self, base_url, verify=True, proxy=False, ok_codes=(), headers=None,
+                 username=None, password=None, manager_email=None):
+        super().__init__(base_url, verify, proxy, ok_codes)
+        self.headers = headers
+        self.headers['Authorization'] = 'Session ' + self.get_session_id(username, password)
         self.manager_id = self.get_manager_id(manager_email)
+        self.app_fields = self.get_app_fields()
+
+    def get_session_id(self, username: str, password: str):
+        auth_uri = '/authentication/login'
+        params = {
+            "userName": username,
+            "Password": password
+        }
+        res = self._http_request('POST', auth_uri, params=params, headers=self.headers)
+        return res.get('sessionId')
 
     def get_manager_id(self, manager_email: Optional[str]) -> str:
         """ Gets the user's manager ID from manager email.
@@ -37,21 +49,15 @@ class Client(BaseClient):
         # Get manager ID.
         manager_id = ''
         if manager_email:
-            res = self.get_user(manager_email)
+            res = self.get_user(EMAIL_ATTRIBUTE, manager_email)
             if res is not None:
                 manager_id = res.id
         return manager_id
 
-    def test(self):
+    def test(self, username: str, password: str):
         """ Tests connectivity with the application. """
 
-        uri = '/authentication/login'
-        params = {
-            "userName": self.username,
-            "Password": self.password,
-        }
-
-        return self._http_request(method='POST', url_suffix=uri, data={}, params=params)
+        return self.get_session_id(username, password)
 
     def get_user_by_id(self, user_id):
         uri = f'/data/objects{user_id}'
@@ -63,39 +69,49 @@ class Client(BaseClient):
             method='GET',
             url_suffix=uri,
             params=params,
+            headers=self.headers
         )
 
-    def get_user(self, email: str) -> Optional[IAMUserAppData]:
+    def get_user(self, filter_name: str, filter_value: str) -> Optional[IAMUserAppData]:
         """ Queries the user in the application using REST API by its email, and returns an IAMUserAppData object
         that holds the user_id, username, is_active and app_data attributes given in the query response.
 
-        :type email: ``str``
-        :param email: Email address of the user
+        :type filter_name: ``str``
+        :param filter_name: Attribute name to filter by.
+
+        :type filter_value: ``str``
+        :param filter_value: The filter attribute value.
 
         :return: An IAMUserAppData object if user exists, None otherwise.
         :rtype: ``Optional[IAMUserAppData]``
         """
         uri = '/data/findUserQuery'
-        data = {'email': email}
+        data = {'email': filter_value,
+                'includeSuspendedUsers': True}
+        if filter_name == 'id':
+            res = self.get_user_by_id(f'/User/{filter_value}')
+            user_app_data = res
+        else:
+            res = self._http_request(
+                method='POST',
+                url_suffix=uri,
+                json_data=data,
+                headers=self.headers
+            )
+            if entities := res.get('entities'):
+                user_id = entities[0].get('id')
+                user_app_data = self.get_user_by_id(user_id)
+            else:
+                user_app_data = None
 
-        res = self._http_request(
-            method='POST',
-            url_suffix=uri,
-            json_data=data,
-        )
-
-        entities = res.get('entities')
-
-        if entities:
-            user_id = entities[0].get('id')
-            user_app_data = self.get_user_by_id(user_id)
-
+        if user_app_data:
             user_id = user_app_data.get('id').replace('/User/', '')
             user_name = user_app_data.get('username')
             active = user_app_data.get('state', {}).get('id').replace('/State/', '')
+            email = user_app_data.get('Email')
             is_active = False if active == 'Disabled' else True
 
-            return IAMUserAppData(user_id, user_name, is_active, user_app_data)
+            return IAMUserAppData(user_id, user_name, is_active, user_app_data, email=email)
         return None
 
     def create_user(self, user_data: Dict[str, Any]) -> IAMUserAppData:
@@ -109,12 +125,13 @@ class Client(BaseClient):
         """
         uri = '/data/objects/User'
         if self.manager_id:
-            user_data['manager_id'] = self.manager_id
-
+            user_data['DirectManager'] = self.manager_id
+        user_data = {k: v for k, v in user_data.items() if k in self.app_fields}
         res = self._http_request(
             method='PUT',
             url_suffix=uri,
             json_data=user_data,
+            headers=self.headers
         )
 
         user_id = res.get('id')
@@ -122,9 +139,10 @@ class Client(BaseClient):
 
         user_id = user_app_data.get('id').replace('/User/', '')
         user_name = user_app_data.get('username')
+        email = user_app_data.get('Email')
         is_active = True
 
-        return IAMUserAppData(user_id, user_name, is_active, user_app_data)
+        return IAMUserAppData(user_id, user_name, is_active, user_app_data, email=email)
 
     def update_user(self, user_id: str, user_data: Dict[str, Any]) -> IAMUserAppData:
         """ Updates a user in the application using REST API.
@@ -140,12 +158,13 @@ class Client(BaseClient):
         """
         uri = f'/data/objects/User/{user_id}'
         if self.manager_id:
-            user_data['manager_id'] = self.manager_id
-
+            user_data['DirectManager'] = self.manager_id
+        user_data = {k: v for k, v in user_data.items() if k in self.app_fields}
         self._http_request(
             method='POST',
             url_suffix=uri,
             json_data=user_data,
+            headers=self.headers
         )
 
         user_app_data = self.get_user_by_id(f'/User/{user_id}')
@@ -176,14 +195,15 @@ class Client(BaseClient):
             method='POST',
             url_suffix=uri,
             json_data=user_data,
+            headers=self.headers
         )
 
         user_app_data = self.get_user_by_id(f'/User/{user_id}')
-
+        email = user_app_data.get('Email')
         user_name = user_app_data.get('username')
         is_active = True
 
-        return IAMUserAppData(user_id, user_name, is_active, user_app_data)
+        return IAMUserAppData(user_id, user_name, is_active, user_app_data, email=email)
 
     def disable_user(self, user_id: str) -> IAMUserAppData:
         """ Disables a user in the application using REST API.
@@ -205,14 +225,15 @@ class Client(BaseClient):
             method='POST',
             url_suffix=uri,
             json_data=user_data,
+            headers=self.headers
         )
 
         user_app_data = self.get_user_by_id(f'/User/{user_id}')
-
+        email = user_app_data.get('Email')
         user_name = user_app_data.get('username')
         is_active = False
 
-        return IAMUserAppData(user_id, user_name, is_active, user_app_data)
+        return IAMUserAppData(user_id, user_name, is_active, user_app_data, email=email)
 
     def get_app_fields(self) -> Dict[str, Any]:
         """ Gets a dictionary of the user schema fields in the application and their description.
@@ -230,9 +251,10 @@ class Client(BaseClient):
             method='GET',
             url_suffix=uri,
             params=params,
+            headers=self.headers
         )
 
-        fields = res.get('entityDescriptions', {}).get('fields', [])
+        fields = res.get('entityDescriptions', [])[0].get('fields', [])
         return {field.get('name'): field.get('label') for field in fields}
 
     @staticmethod
@@ -282,7 +304,7 @@ class Client(BaseClient):
         user_profile.set_result(action=action,
                                 success=False,
                                 error_code=error_code,
-                                error_message=error_message)
+                                error_message=f'{error_message}\n{traceback.format_exc()}')
 
         demisto.error(traceback.format_exc())
 
@@ -307,14 +329,10 @@ def get_error_details(res: Dict[str, Any]) -> str:
 '''COMMAND FUNCTIONS'''
 
 
-def test_module(client: Client):
+def test_module(client: Client, username: str, password: str):
     """ Tests connectivity with the client. """
-
-    res = client.test()
-    if res.status_code == 200:
-        return_results('ok')
-    else:
-        return_error(f'Error testing {res.status_code} - {res.text}')
+    client.test(username, password)
+    return 'ok'
 
 
 def get_mapping_fields(client: Client) -> GetMappingFieldsResponse:
@@ -335,7 +353,7 @@ def get_mapping_fields(client: Client) -> GetMappingFieldsResponse:
 def main():
     user_profile = None
     params = demisto.params()
-    base_url = urljoin(params['url'].strip('/'), '/V2.0/services')
+    base_url = urljoin(params.get('url', '').strip('/'), '/V2.0/services')
     username = params.get('credentials', {}).get('identifier')
     password = params.get('credentials', {}).get('password')
     mapper_in = params.get('mapper_in')
@@ -344,7 +362,7 @@ def main():
     proxy = params.get('proxy', False)
     command = demisto.command()
     args = demisto.args()
-    manager_email = args.get('user-profile', {}).get('manageremailaddress')
+    manager_email = safe_load_json(args.get('user-profile', {})).get('manageremail')
 
     is_create_enabled = params.get("create_user_enabled")
     is_enable_enabled = params.get("enable_user_enabled")
@@ -353,7 +371,8 @@ def main():
     create_if_not_exists = params.get("create_if_not_exists")
 
     iam_command = IAMCommand(is_create_enabled, is_enable_enabled, is_disable_enabled, is_update_enabled,
-                             create_if_not_exists, mapper_in, mapper_out)
+                             create_if_not_exists, mapper_in, mapper_out,
+                             get_user_iam_attrs=['id', 'Email'])
 
     headers = {
         'Content-Type': 'application/json',
@@ -366,7 +385,8 @@ def main():
         proxy=proxy,
         headers=headers,
         ok_codes=(200, 201),
-        auth=(username, password),
+        username=username,
+        password=password,
         manager_email=manager_email,
     )
 
@@ -393,7 +413,7 @@ def main():
 
     try:
         if command == 'test-module':
-            test_module(client)
+            return_results(test_module(client, username, password))
 
         elif command == 'get-mapping-fields':
             return_results(get_mapping_fields(client))

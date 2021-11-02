@@ -293,6 +293,7 @@ def get_user_command(client, args, mapper_in, mapper_out):
         iam_attr, iam_attr_value = iam_user_profile.get_first_available_iam_user_attr(GET_USER_ATTRIBUTES)
         salesforce_user = client.get_user(iam_attr, iam_attr_value)
         if not salesforce_user:
+
             error_code, error_message = IAMErrors.USER_DOES_NOT_EXIST
             iam_user_profile.set_result(success=False,
                                         error_message=error_message,
