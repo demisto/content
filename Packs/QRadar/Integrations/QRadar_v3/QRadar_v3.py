@@ -3356,7 +3356,7 @@ def clear_integration_ctx(ctx: dict) -> dict:
 
     Returns: The cleared context_data
     """
-    fetch_id_ctx = ctx.get(LAST_FETCH_KEY, 0)
+    fetch_id_ctx = ctx.get(LAST_FETCH_KEY) or 0
     try:
         fetch_id = int(fetch_id_ctx)
     except ValueError:
@@ -3366,7 +3366,7 @@ def clear_integration_ctx(ctx: dict) -> dict:
             print_debug_msg(f"Could not retrive LAST_FETCH_KEY from {fetch_id_ctx} Setting to 0")
             fetch_id = 0
 
-    last_update_ctx = ctx.get('last_mirror_update', 0)
+    last_update_ctx = ctx.get('last_mirror_update') or 0
     try:
         last_update = str(int(last_update_ctx))
     except ValueError:
