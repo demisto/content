@@ -340,7 +340,11 @@ def should_drop_event(log_entry, email_to_user_profile):
         (bool) True iff the event should be dropped.
     """
     username = get_event_username(log_entry)
-    return username is not None and email_to_user_profile.get(username) is None
+    if username is not None and email_to_user_profile.get(username) is None:
+        demisto.info(f'Dropping incident for user with username {username} - '
+                     f'User Profile does not exist in XSOAR.')
+        return True
+    return False
 
 
 def add_user_profile_data_to_entry(log_entry, email_to_user_profile):
