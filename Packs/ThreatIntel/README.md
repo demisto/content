@@ -10,13 +10,13 @@ The pack comes with 5 out of the box report templates for easier use:
 The user may also add relationships to indicators via a special Relationships section in order to add additional data to the report. Markdown is supported in the report body allowing the user to add tables, images, change the color of the font or background and much more.
 
 Executive brief report
-![Layout](https://raw.githubusercontent.com/demisto/content/2fafdfd0d2d1959b8b998c22c84e0693859e640e/Packs/ThreatIntel/doc_files/layout.png)
+![Layout](https://raw.githubusercontent.com/demisto/content/db59767bf57ba1f2e1306f4a593f2c1b014d4e0c/Packs/ThreatIntel/doc_files/executive_brief.png)
 
 Malware report
-![Layout](https://raw.githubusercontent.com/demisto/content/2fafdfd0d2d1959b8b998c22c84e0693859e640e/Packs/ThreatIntel/doc_files/layout.png)
+![Layout](https://raw.githubusercontent.com/demisto/content/db59767bf57ba1f2e1306f4a593f2c1b014d4e0c/Packs/ThreatIntel/doc_files/malware.png)
 
 Threat actor report
-![Layout](https://raw.githubusercontent.com/demisto/content/2fafdfd0d2d1959b8b998c22c84e0693859e640e/Packs/ThreatIntel/doc_files/layout.png)
+![Layout](https://raw.githubusercontent.com/demisto/content/db59767bf57ba1f2e1306f4a593f2c1b014d4e0c/Packs/ThreatIntel/doc_files/threat_actor.png)
 
 Vulnerability report
-![Layout](https://raw.githubusercontent.com/demisto/content/2fafdfd0d2d1959b8b998c22c84e0693859e640e/Packs/ThreatIntel/doc_files/layout.png)
+![Layout](https://raw.githubusercontent.com/demisto/content/db59767bf57ba1f2e1306f4a593f2c1b014d4e0c/Packs/ThreatIntel/doc_files/vulnerability.png)
