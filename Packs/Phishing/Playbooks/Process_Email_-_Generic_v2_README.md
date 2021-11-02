@@ -1,5 +1,11 @@
 Add email details to the relevant context entities and handle the case where original emails are attached.
 
+Added on this v2 playbook:
+- Uses incident fields and not incident labels.
+- Provides separate paths to "Phishing Alerts".
+- Uses the new "Get Original Email - Generic v2" playbook to retrieve original emails as eml files for both EWS v2 and Microsoft Graph Mail integration. This will assist with parsing the email artifacts in a more efficient way.
+
+
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
@@ -11,31 +17,33 @@ This playbook does not use any integrations.
 
 ### Scripts
 * SetGridField
-* SetAndHandleEmpty
-* IdentifyAttachedEmail
-* ParseEmailFiles
 * Set
+* SetAndHandleEmpty
+* ParseEmailFiles
+* IdentifyAttachedEmail
 
 ### Commands
-* setIncident
 * rasterize-email
+* setIncident
 
 ## Playbook Inputs
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| File | An EML or MSG file with | File.None | Optional |
+| File | An EML or MSG file. | File.None | Optional |
 | Email | The receiving email address. | incident.emailto | Optional |
 | EmailCC | CC addresses. | incident.emailcc | Optional |
 | EmailFrom | The originator of the email. | incident.emailfrom | Optional |
 | EmailSubject | The email’s subject. | incident.emailsubject | Optional |
-| EmailText | The email’s text. | incident.labels.emailbody | Optional |
+| EmailText | The email’s text. | incident.emailbody | Optional |
 | EmailHtml | The email’s html. | incident.emailhtml | Optional |
-| EmailHeaders | The email’s headers. | incident.phishingemailthreadheaders | Optional |
+| EmailHeaders | The email’s headers. | incident.phishingreporteremailheaders | Optional |
 | EmailFormat | The email’s format. | incident.emailformat | Optional |
-| GetOriginalEmail | Retrieve the original email in the thread. Default is "False".<br/><br/>You must have the necessary permissions in your email service to execute global search.<br/><br/>- EWS: eDiscovery<br/>- Gmail: Google Apps Domain-Wide Delegation of Authority | False | Optional |
-| EmailBody | The email HTML body | ${incident.emailhtml} | Optional |
+| GetOriginalEmail | Retrieve the original email in the thread. Default is "False".<br/><br/>You must have the necessary permissions in your email service to execute global search.<br/><br/>- EWS: eDiscovery<br/>- Gmail: Google Apps Domain-Wide Delegation of Authority<br/>- MSGraph: As described here:<br/>  \* https://docs.microsoft.com/en-us/graph/api/message-get<br/>  \* https://docs.microsoft.com/en-us/graph/api/user-list-messages | False | Optional |
+| MessageID | The original email message id to retrieve. This should hold the value of the "Message-ID" header of the original email. This value will be passed as an input to the playbook "Get Original Email - Generic v2" |  | Optional |
+| UserID | The user's email address for which to retrieve the original email. This value will be passed as an input to the playbook "Get Original Email - Generic v2". | incident.emailfrom | Optional |
+| Thread-Topic | The value of the "Thread-Topic" header which holds the original email subject. This is necessary for forwarded emails scenarios. It will be passed as an input to the "Get Original Email - Generic v2" playbook to be used in the relevant sub-playbooks. |  | Optional |
 
 ## Playbook Outputs
 ---
