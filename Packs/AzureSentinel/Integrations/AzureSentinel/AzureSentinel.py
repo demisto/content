@@ -209,11 +209,12 @@ def alert_data_to_xsoar_format(alert_data):
         'Tactic': properties.get('tactics'),
         'DisplayName': properties.get('alertDisplayName'),
         'Description': properties.get('description'),
-        "ConfidenceLevel": properties.get('confidenceLevel'),
-        "Severity": properties.get('severity'),
-        "VendorName": properties.get('vendorName'),
-        "ProductName": properties.get('productName'),
-        'ProductComponentName': properties.get('productComponentName')
+        'ConfidenceLevel': properties.get('confidenceLevel'),
+        'Severity': properties.get('severity'),
+        'VendorName': properties.get('vendorName'),
+        'ProductName': properties.get('productName'),
+        'ProductComponentName': properties.get('productComponentName'),
+        'Status': properties.get('status')
     }
     return formatted_data
 
