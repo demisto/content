@@ -136,6 +136,7 @@ script:
       required: false
       secret: false
     - default: false
+      defaultValue: '0'
       description: Page number to retrieve the reports from the specified page.
       isArray: false
       name: page_number

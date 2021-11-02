@@ -1,5 +1,4 @@
 #### Steps to get an API token
-
 - Please make sure that the user is registered. If not, register at [HackerOne](https://hackerone.com/sign_up).
 - Log into the [HackerOne](https://hackerone.com/users/sign_in) account.
 - Go to Organization Settings and then navigate to the "API Tokens" tab.

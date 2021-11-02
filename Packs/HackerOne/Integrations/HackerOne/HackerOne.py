@@ -231,25 +231,25 @@ def prepare_fetch_incidents_parameters(max_fetch, first_fetch, program_handle, s
     fetch_params.update(
         prepare_filter_by_arguments(program_handle, severity, state, filters))
 
-    fetch_params["filter[created_at__gt]"] = arg_to_datetime(first_fetch).strftime(DATE_FORMAT)  # type:ignore
+    fetch_params["filter[created_at__gt]"] = arg_to_datetime(first_fetch).isoformat()[:-6] + 'Z'  # type:ignore
 
     return assign_params(**fetch_params)
 
 
-def validate_common_args(args: Dict[str, str]):
+def validate_common_args(**args):
     """
-    Validate page_size and page_number argument, raise ValueError on invalid arguments.
+        Validate page_size and page_number argument, raise ValueError on invalid arguments.
 
-    :type args: ``Dict[str, str]``
-    :param args: The command arguments provided by the user.
+        :type args: ``kwargs``
+        :param args: The command arguments provided by the user.
     """
 
-    page_size = arg_to_number(args.get("page_size", 50))
+    page_size = args.get("page_size")
     if page_size is not None:
         if page_size <= 0 or page_size > 100:
             raise ValueError(MESSAGES['PAGE_SIZE'].format(page_size))
 
-    page_number = arg_to_number(args.get("page_number"))
+    page_number = args.get("page_number")
     if page_number is not None:
         if page_number < 0 or page_number > INT32:
             raise ValueError(MESSAGES['PAGE_NUMBER'].format(page_number))
@@ -262,7 +262,7 @@ def validate_report_list_args(args):
     :type args: ``Dict[str, str]``
     :param args: The command arguments provided by the user.
     """
-    validate_common_args(args)
+
     filters = args.get("advanced_filter", "")
     if filters:
         try:
@@ -281,10 +281,13 @@ def prepare_report_list_args(args: Dict[str, Any]) -> Dict[str, Any]:
     :return: Parameters to send in request
     :rtype: ``Dict[str, Any]``
     """
+    page_size = arg_to_number(args.get("page_size", 50))
+    page_number = arg_to_number(args.get("page_number", 0))
+    validate_common_args(page_size=page_size, page_number=page_number)
 
     params: Dict[str, Any] = {
-        "page[size]": args.get("page_size", 50),
-        "page[number]": args.get("page_number"),
+        "page[size]": page_size,
+        "page[number]": page_number,
         "filter[keyword]": args.get("filter_by_keyword")
     }
 
@@ -294,11 +297,8 @@ def prepare_report_list_args(args: Dict[str, Any]) -> Dict[str, Any]:
                           for sort_value in sort_by]
 
     program_handle = argToList(args.get("program_handle", ""))
-
     state = argToList(args.get("state", ""))
-
     severity = argToList(args.get("severity", ""))
-
     filters = args.get("advanced_filter", "")
 
     params.update(
@@ -379,10 +379,10 @@ def test_module(client: Client) -> str:
         'ok' if test passed, anything else will fail the test.
     """
 
-    client.program_list(params={"page[size]": 1})
-
     if demisto.params().get('isFetch'):
         fetch_incidents(client, {})
+    else:
+        client.program_list(params={"page[size]": 1})
 
     return 'ok'
 
@@ -459,8 +459,10 @@ def hackerone_program_list_command(client: Client, args: Dict[str, str]) -> Comm
     :rtype: ``CommandResults``
     """
 
-    validate_common_args(args)
-    params: Dict[str, Any] = {"page[size]": args.get("page_size", 50), "page[number]": args.get("page_number")}
+    page_size = arg_to_number(args.get("page_size", 50))
+    page_number = arg_to_number(args.get("page_number", 0))
+    validate_common_args(page_size=page_size, page_number=page_number)
+    params: Dict[str, Any] = {"page[size]": page_size, "page[number]": page_number}
 
     # Sending http request
     response = client.program_list(params=assign_params(**params))
@@ -543,7 +545,8 @@ def main():
 
     demisto.debug(f'[HackerOne] Command being called is {command}')
 
-    max_fetch = arg_to_number(params.get("max_fetch") if params.get('max_fetch').strip() else DEFAULT_MAX_FETCH)  # type:ignore
+    max_fetch = arg_to_number(
+        params.get("max_fetch") if params.get('max_fetch').strip() else DEFAULT_MAX_FETCH)  # type:ignore
     first_fetch = params.get('first_fetch') if params.get('first_fetch').strip() else DEFAULT_FIRST_FETCH
     program_handle = argToList(params.get("program_handle", ""))
     severity = params.get('severity', "")
