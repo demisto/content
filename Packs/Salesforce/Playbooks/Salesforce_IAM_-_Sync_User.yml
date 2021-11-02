@@ -438,6 +438,20 @@ tasks:
                 value:
                   simple: IAM.Vendor.id
             operator: SetIfEmpty
+          - args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: None
+            operator: replace
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                iscontext: true
+                value:
+                  simple: GetUser.id
+            operator: SetIfEmpty
     separatecontext: true
     skipunavailable: false
     task:
@@ -690,6 +704,20 @@ tasks:
                 iscontext: true
                 value:
                   simple: IAM.Vendor.id
+            operator: SetIfEmpty
+          - args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: None
+            operator: replace
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                iscontext: true
+                value:
+                  simple: GetUser.id
             operator: SetIfEmpty
     separatecontext: true
     skipunavailable: false
@@ -1291,7 +1319,6 @@ view: |-
     "linkLabelsPosition": {
       "102_110_Created/Enabled": 0.44,
       "102_20_Updated": 0.12,
-      "108_20_#default#": 0.13,
       "109_71_#default#": 0.48,
       "111_20_Does not exist": 0.69,
       "111_89_#default#": 0.48,
