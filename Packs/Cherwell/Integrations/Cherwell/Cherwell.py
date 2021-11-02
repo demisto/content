@@ -1,14 +1,14 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
 
 import json
-import requests
+import os
 import traceback
 from datetime import datetime, timedelta
-import os
+
+import requests
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -20,6 +20,7 @@ FETCH_ATTACHMENTS = ''
 OBJECTS_TO_FETCH = ''
 MAX_RESULT = ''
 USERNAME = ''
+USERDOMAIN = ''  # added
 PASSWORD = ''
 SERVER = ''
 SECURED = False
@@ -27,6 +28,7 @@ CLIENT_ID = ''
 QUERY_STRING = ''
 DATE_FORMAT = ''
 BASE_URL = ''
+
 
 HTTP_CODES = {
     'unauthorized': 401,
@@ -125,17 +127,27 @@ def request_new_access_token(using_refresh):
     url = BASE_URL + "token"
     refresh_token = demisto.getIntegrationContext().get('refresh_token')
 
+    ''' Custom Code Start '''
+
+    if USERDOMAIN:
+        username = f'{USERDOMAIN}%5C{USERNAME}'
+    else:
+        username = f'{USERNAME}'
+
+    ''' Custom Code End '''
+
     if using_refresh:
         payload = f'client_id={CLIENT_ID}&grant_type=refresh_token&refresh_token={refresh_token}'
     else:
-        payload = f'client_id={CLIENT_ID}&grant_type=password&username={USERNAME}&password={PASSWORD}'
+        payload = f'client_id={CLIENT_ID}&grant_type=password&username={username}&password={PASSWORD}'
 
     headers = {
         'Accept': "application/json",
         'Content-Type': "application/x-www-form-urlencoded",
     }
 
-    response = http_request('POST', url, payload, custom_headers=headers)
+    # Added auth_mode=Auto to fix issues
+    response = http_request('POST', url + '?auth_mode=Auto', payload, custom_headers=headers)
     return response
 
 
@@ -187,8 +199,8 @@ def get_business_object_summary_by_name(name, is_fetch=False):
     return parse_response(response, "Could not get business object summary", is_fetch=is_fetch)
 
 
-def get_business_object_summary_by_id(_id, is_fetch=False):
-    url = BASE_URL + f'api/V1/getbusinessobjectsummary/busobid/{_id}'
+def get_business_object_summary_by_id(obj_id, is_fetch=False):
+    url = BASE_URL + f'api/V1/getbusinessobjectsummary/busobid/{obj_id}'
     response = make_request('GET', url, is_fetch=is_fetch)
     return parse_response(response, "Could not get business object summary", is_fetch=is_fetch)
 
@@ -227,12 +239,13 @@ def get_search_results(payload, is_fetch=False):
     return parse_response(response, "Could not search for business objects", is_fetch=is_fetch)
 
 
-def get_business_object_template(business_object_id, include_all=True, field_names=None, fields_ids=None,
+def get_business_object_template(business_object_id, include_all=True, include_required=True, field_names=None, fields_ids=None,
                                  is_fetch=False):
     url = BASE_URL + "api/V1/getbusinessobjecttemplate"
     payload = {
         "busObId": business_object_id,
-        "includeAll": include_all
+        "includeAll": include_all,
+        "includeRequired": include_required     # Custom Code
     }
 
     if field_names:
@@ -275,6 +288,40 @@ def get_business_object(name, object_id, id_type):
     parsed_business_object['PublicId'] = results.get('busObPublicId')
     parsed_business_object['RecordId'] = results.get('busObRecId')
     return parsed_business_object, results
+
+
+''' Custom Code Start '''
+
+
+def get_business_object_schema(object_id, include_relationships='false', required_only='false', is_fetch=False):
+    url = BASE_URL + f'api/V1/getbusinessobjectschema/busobid/{object_id}?includerelationships={include_relationships}'
+    response = make_request('GET', url, is_fetch=is_fetch)
+    parsed_response = parse_response(response, f'Could not get schema for {object_id}', is_fetch=is_fetch)
+
+    if required_only == 'true':
+
+        field_definitions = parsed_response.pop('fieldDefinitions', None)
+        # Parse response
+        if field_definitions is not None:
+            required_fields = []
+            for field in field_definitions:
+                if field['required']:
+                    required_fields.append(field)
+            parsed_response['fieldDefinitions'] = required_fields
+
+    return parsed_response
+
+
+def lookup_field_values(payload, is_fetch=False):
+    url = BASE_URL + '/api/V1/fieldvalueslookup'
+    response = make_request('POST', url, payload, is_fetch=is_fetch)
+
+    parsed_response = parse_response(response, 'Could not lookup values for request', is_fetch=is_fetch)
+
+    return parsed_response
+
+
+''' Custom Code End '''
 
 
 def delete_business_object(name, object_id, id_type):
@@ -352,14 +399,16 @@ def attachment_results(attachments):
     for attachment in attachments:
         attachment_content = attachment.get('Content')
         attachment_name = attachment.get('FileName')
-        return fileResult(attachment_name, attachment_content)
+        demisto.results(fileResult(attachment_name, attachment_content))
     return
 
 
-def run_query_on_business_objects(bus_id, filter_query, max_results, is_fetch):
+# def run_query_on_business_objects(bus_id, filter_query, max_results, is_fetch):
+def run_query_on_business_objects(bus_id, filter_query, max_results, fields, include_all_fields, is_fetch):         # custom code
     payload = {
         'busObId': bus_id,
-        'includeAllFields': True,
+        'includeAllFields': include_all_fields,             # custom code
+        # 'fields': [fields],                                 # custom code
         'filters': filter_query
     }
     if max_results:
@@ -519,6 +568,17 @@ def link_related_business_objects(action, parent_business_object_id, parent_busi
     return
 
 
+def get_related_business_objects(action, parent_business_object_id, parent_business_object_record_id, relationship_id,):
+    url_action_str = 'getrelatedbusinessobject'
+    url = BASE_URL + f"api/V1/{url_action_str}/parentbusobid/{parent_business_object_id}" \
+        f"/parentbusobrecid/{parent_business_object_record_id}" \
+        f"/relationshipid/{relationship_id}"
+    http_method = 'GET'
+    response = make_request(http_method, url)
+    parse_response(response, "Could not get related business objects")
+    return
+
+
 def business_objects_relation_action(action, parent_type_name, parent_record_id, child_type_name, child_record_id,
                                      relationship_id):
     parent_business_object_id = resolve_business_object_id_by_name(parent_type_name)
@@ -568,18 +628,19 @@ def build_query_dict(query, filed_ids_dict, is_fetch):
     }
 
 
-def build_query_dict_list(query_list, filed_ids_dict, is_fetch):
+def build_query_dict_list(query_list, field_ids_dict, is_fetch):
     query_dict_list = []
     for query in query_list:
-        query_dict = build_query_dict(query, filed_ids_dict, is_fetch)
+        query_dict = build_query_dict(query, field_ids_dict, is_fetch)
         query_dict_list.append(query_dict)
     return query_dict_list
 
 
-def query_business_object(query_list, business_object_id, max_results, is_fetch=False):
-    filed_ids_dict = get_key_value_dict_from_template('name', 'fieldId', business_object_id, is_fetch=is_fetch)
-    filters = build_query_dict_list(query_list, filed_ids_dict, is_fetch=is_fetch)
-    query_result = run_query_on_business_objects(business_object_id, filters, max_results, is_fetch=is_fetch)
+def query_business_object(query_list, business_object_id, max_results, is_fetch=False, fields='', include_all_fields=False):
+    field_ids_dict = get_key_value_dict_from_template('name', 'fieldId', business_object_id, is_fetch=is_fetch)
+    filters = build_query_dict_list(query_list, field_ids_dict, is_fetch=is_fetch)
+    query_result = run_query_on_business_objects(business_object_id, filters, max_results,
+                                                 fields, include_all_fields, is_fetch=is_fetch)
     business_objects = parse_fields_from_business_object_list(query_result)
     return business_objects, query_result
 
@@ -595,7 +656,9 @@ def parse_string_query_to_list(query_string, is_fetch=False):
     return query_list
 
 
-def query_business_object_string(business_object_name, query_string, max_results):
+# Changed function to add fields and include_all_fields
+# def query_business_object_string(business_object_name, query_string, max_results):
+def query_business_object_string(business_object_name, query_string, max_results, fields, include_all_fields):  # custom code
     if max_results:
         try:
             int(max_results)
@@ -603,7 +666,7 @@ def query_business_object_string(business_object_name, query_string, max_results
             return return_error('`max_results` argument received is not a number')
     business_object_id = resolve_business_object_id_by_name(business_object_name)
     query_filters_list = parse_string_query_to_list(query_string)
-    return query_business_object(query_filters_list, business_object_id, max_results)
+    return query_business_object(query_filters_list, business_object_id, max_results, fields, include_all_fields)
 
 
 def get_field_info(type, field_property):
@@ -688,6 +751,7 @@ def run_one_step_action(payload):
     response = make_request("POST", url, json.dumps(payload))
     return parse_response(response, "Could not run one step action")
 
+
 ########################################################################################################################
 
 
@@ -768,6 +832,60 @@ def get_business_object_command():
             'Cherwell.BusinessObjects(val.RecordId == obj.RecordId)': createContext(business_object)
         }
     }
+
+
+''' Custom Code Start '''
+
+
+def get_business_object_schema_command():
+    args = demisto.args()
+    busobjectid = args.get('busobjectid')
+    include_relationships = args.get('include_relationships')
+    required_only = args.get('required_only')
+    results = get_business_object_schema(busobjectid, include_relationships, required_only)
+    # md = tableToMarkdown(f'{type_name.capitalize()}: {busobjectid}', business_object,
+    #                     headerTransform=pascalToSpace)
+
+    return {
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': results,
+        'EntryContext': {
+            'Cherwell.BusinessObjects(val.busobjectid == obj.busobjectid)': createContext(results)
+        }
+    }
+
+
+def get_business_object_template_command():
+    demisto.debug('get_business_object_template_command called.')
+    args = demisto.args()
+    business_object_id = args.get('business_object_id')
+    include_all = args.get('include_all')
+    include_required = args.get('include_required')
+    list_only = args.get('list_only')
+    template_dict = get_business_object_template(business_object_id, include_all, include_required, is_fetch=False)
+
+    if list_only == 'True':
+        field_list = {}
+        for field in template_dict.get('fields'):
+            field_list[field['name']] = field['fieldId']
+        results = {"results": field_list}
+    else:
+        results = {"results": template_dict}
+
+    return results
+
+
+def lookup_field_values_command():
+    demisto.debug(f'lookup_field_values_command called.')
+    args = demisto.args()
+    payload = args.get('request')
+    results = lookup_field_values(payload)
+
+    return results
+
+
+''' Custom Code End '''
 
 
 def delete_business_object_command():
@@ -923,7 +1041,11 @@ def query_business_object_command():
     type_name = args.get('type')
     query_string = args.get('query')
     max_results = args.get('max_results')
-    results, raw_response = query_business_object_string(type_name, query_string, max_results)
+    fields = args.get('fields')             # custom code
+    include_all_fields = args.get('include_all_fields', False)  # custom code
+    #results, raw_response = query_business_object_string(type_name, query_string, max_results)
+    results, raw_response = query_business_object_string(
+        type_name, query_string, max_results, fields, include_all_fields)  # custom code
     md = tableToMarkdown('Query Results', results, headerTransform=pascalToSpace)
     return {
         'Type': entryTypes['note'],
@@ -1043,7 +1165,7 @@ def cherwell_run_one_step_action_command():
 
 
 def main():
-    global FETCHES_INCIDENTS, FETCH_TIME, FETCH_ATTACHMENTS, OBJECTS_TO_FETCH, MAX_RESULT, USERNAME, PASSWORD, SERVER, \
+    global FETCHES_INCIDENTS, FETCH_TIME, FETCH_ATTACHMENTS, OBJECTS_TO_FETCH, MAX_RESULT, USERNAME, USERDOMAIN, PASSWORD, SERVER, \
         SECURED, CLIENT_ID, QUERY_STRING, DATE_FORMAT, BASE_URL
 
     params = demisto.params()
@@ -1054,6 +1176,7 @@ def main():
     OBJECTS_TO_FETCH = params.get('objects_to_fetch').split(',')
     MAX_RESULT = params.get('max_results')
     USERNAME = params.get('credentials').get('identifier')
+    USERDOMAIN = params.get('userDomain')                       # added
     PASSWORD = params.get('credentials').get('password')
     # Remove trailing slash to prevent wrong URL path to service
     SERVER = params['url'][:-1] if (params['url'] and params['url'].endswith('/')) else params['url']
@@ -1074,6 +1197,9 @@ def main():
             'cherwell-create-business-object': create_business_object_command,
             'cherwell-update-business-object': update_business_object_command,
             'cherwell-get-business-object': get_business_object_command,
+            'cherwell-get-business-object-schema': get_business_object_schema_command,      # custom function
+            'cherwell-get-business-object-template': get_business_object_template_command,      # custom function
+            'cherwell-lookup-field-values': lookup_field_values_command,        # custom function
             'cherwell-delete-business-object': delete_business_object_command,
             'cherwell-download-attachments': download_attachments_command,
             'cherwell-get-attachments-info': get_attachments_info_command,
