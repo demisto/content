@@ -373,6 +373,57 @@ script:
       description: Business object name.
       type: String
   - arguments:
+    - default: false
+      description: The name of the business object.
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - default: false
+      description: The ID of the business object.
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    deprecated: false
+    description: Get a business object summary by name or ID.
+    execution: false
+    name: cherwell-get-business-object-summary
+    outputs:
+    - contextPath: Cherwell.BusinessObjectSummary.supporting
+      description: Whether the business object is a supporting business object or not.
+      type: Boolean
+    - contextPath: Cherwell.BusinessObjectSummary.major
+      description: Whether the business object is a major business object or not.
+      type: Boolean
+    - contextPath: Cherwell.BusinessObjectSummary.group
+      description: Whether the business object is a group business object or not.
+      type: Boolean
+    - contextPath: Cherwell.BusinessObjectSummary.name
+      description: The name of the business object.
+      type: String
+    - contextPath: Cherwell.BusinessObjectSummary.stateFieldId
+      description: The ID of the business object state field.
+      type: String
+    - contextPath: Cherwell.BusinessObjectSummary.busObId
+      description: The ID of the business object.
+      type: String
+    - contextPath: Cherwell.BusinessObjectSummary.states
+      description: The valid states of the business object.
+      type: String
+    - contextPath: Cherwell.BusinessObjectSummary.lookup
+      description: Whether the object is a lookup object or not.
+      type: Boolean
+    - contextPath: Cherwell.BusinessObjectSummary.displayName
+      description: The display name of the business object.
+      type: String
+    - contextPath: Cherwell.BusinessObjectSummary.firstRecIdField
+      description: The ID value of the first business object record ID (RecID) field.
+      type: String
+    - contextPath: Cherwell.BusinessObjectSummary.recIdFields
+      description: The IDs of business object record ID (RecID) fields.
+      type: String
+  - arguments:
     - name: business_object_id
       description: The ID of the business object
       required: true
