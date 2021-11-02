@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Censys
+  id: Censys_copy
   version: -1
 configuration:
 - defaultvalue: https://censys.io/api/v1/
@@ -24,12 +24,20 @@ configuration:
   name: proxy
   required: false
   type: 8
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 96e12e73-ad85-4ff6-8cc0-a5bfc882bd80
+    propagationLabels:
+    - all
+    toServerVersion: ""
 description: Censys is a search engine that allows computer scientists to ask questions
   about the devices and networks that compose the Internet. Driven by Internet-wide
   scanning, Censys lets researchers find specific hosts and create aggregate reports
   on how devices, websites, and certificates are configured and deployed.
-display: Censys
-name: Censys
+display: Censys_copy
+name: Censys_copy
 script:
   commands:
   - arguments:
@@ -60,13 +68,21 @@ script:
       - websites
       - certificates
       required: true
+    - defaultValue: "1"
+      description: Page to return (default 1)
+      name: page
     description: Searches for an attribute within the specified index.
     name: cen-search
+    outputs:
+    - contextPath: Censys.Search.response.results
+      description: Censys Search Results
+    - contextPath: Censys.metadata.pages
+      description: Censys Total Pages encountered
+    - contextPath: Censys.metadata.page
+      description: Current Search Page
   dockerimage: demisto/python:2.7.18.24066
   runonce: false
   script: ''
   subtype: python2
   type: python
-fromversion: 5.0.0
-tests:
-- No test
+sourcemoduleid: Censys

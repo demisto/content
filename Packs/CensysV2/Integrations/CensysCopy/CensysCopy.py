@@ -51,23 +51,26 @@ def censys_search_command():
     args = demisto.args()
     query = args.get('query')
     index = args.get('index')
-    results = []
+    page = int(args.get('page'))
     url_suffix = 'search/{0}'.format(index)
     data = {
         "query": query,
-        "page": 1
+        "page": page
     }
     raw = send_request('POST', url_suffix, json.dumps(data))
-    results += raw["results"]
-    if 'metadata' in raw:
-        if 'pages' in raw['metadata']:
-            for x in range(int(raw['metadata']['pages'])):
-                data["page"] += 1
-                raw = send_request('POST', url_suffix, json.dumps(data))
-                results += raw["results"]
-    raw["results"] = results
-    readable = tableToMarkdown("Search results for {0} in {1}".format(query, index), results)
-    return_outputs(readable, raw)
+    readable = tableToMarkdown("Search results for {0} in {1} - page {2}".format(query, index, page), raw["results"])
+    results = {'Censys':
+               {
+                   'Search':
+                   {
+                       'metadata': raw['metadata'],
+                       'response': raw['results']
+                   }
+
+               }
+
+               }
+    return_outputs(readable, results)
 
 
 ''' EXECUTION CODE '''
