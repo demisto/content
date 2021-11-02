@@ -1,6 +1,6 @@
 description: This is a test playbook for SafeNet Trusted Access - Terminate User SSO
   Sessions.
-id: Test Playbook Account Lockout  STA
+id: STA Test Playbook - Terminate User SSO Sessions
 inputs: []
 name: STA Test Playbook - Terminate User SSO Sessions
 outputs: []
@@ -23,6 +23,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ''
     taskid: 4f9919bf-df4d-4f73-8323-0ce3f4518036
     timertriggers: []
     type: start
@@ -47,6 +48,7 @@ tasks:
       name: Done
       type: title
       version: -1
+      description: ''
     taskid: 80f5acac-bc0d-408f-8133-a4dcf80fdd59
     timertriggers: []
     type: title
@@ -110,3 +112,4 @@ view: |-
       }
     }
   }
+fromversion: 6.0.0

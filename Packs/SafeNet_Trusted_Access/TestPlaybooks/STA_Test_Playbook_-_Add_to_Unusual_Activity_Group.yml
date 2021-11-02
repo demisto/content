@@ -1,6 +1,6 @@
 description: This is a test playbook for SafeNet Trusted Access – Add to Unusual Activity
   Group.
-id: Test Playbook STA
+id: STA Test Playbook - Add to Unusual Activity Group
 inputs: []
 name: STA Test Playbook - Add to Unusual Activity Group
 outputs: []
@@ -22,6 +22,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ''
     taskid: 49af7f50-e639-4632-89d1-65967a827c1d
     timertriggers: []
     type: start
@@ -46,6 +47,7 @@ tasks:
       name: Done
       type: title
       version: -1
+      description: ''
     taskid: 3b1c06ff-d582-44db-8bac-257d09cb86bb
     timertriggers: []
     type: title
@@ -116,3 +118,4 @@ view: |-
       }
     }
   }
+fromversion: 6.0.0
