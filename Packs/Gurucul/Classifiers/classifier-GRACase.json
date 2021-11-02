@@ -1,11 +1,11 @@
 {
-    "defaultIncidentType": "GraHighRiskUser",
+    "defaultIncidentType": "GRACase",
     "feed": false,
-    "id": "9474188a-4cc2-4ea2-8ad5-14cef42bdb03_custom",
+    "id": "GRACase-Classifier",
     "keyTypeMap": {
-        "HighRiskUser": "GraHighRiskUser"
+        "GRACase": "GRACase"
     },
-    "name": "Gurucul-HighRiskUsers - Classifier",
+    "name": "GRACase-Classifier",
     "transformer": {
         "complex": {
             "accessor": "",
@@ -18,5 +18,5 @@
     "type": "classification",
     "version": -1,
     "fromVersion": "6.0.0",
-    "description": "Classifies Gurucul GRA High Risk User Incident."
+    "description": "Classifies Gurucul GRA Case Incident."
 }
