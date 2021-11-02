@@ -1,7 +1,7 @@
 id: Cisco FirePower- Append network group object
 version: -1
 name: Cisco FirePower- Append network group object
-description: This Playbook will append a network group object with new elements (
+description: This playbook will append a network group object with new elements (
   IPs or network objects ).
 starttaskid: "0"
 tasks:
@@ -140,7 +140,7 @@ tasks:
       version: -1
       name: IP From Input
       description: Set a value in context under the key you entered. If no value is
-        entered, the script doesn't do anything.
+        entered, the script does nothing.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -188,7 +188,7 @@ tasks:
       version: -1
       name: Objects From Input
       description: Set a value in context under the key you entered. If no value is
-        entered, the script doesn't do anything.
+        entered, the script does nothing.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -236,7 +236,7 @@ tasks:
       version: -1
       name: IP From the Group
       description: Set a value in context under the key you entered. If no value is
-        entered, the script doesn't do anything.
+        entered, the script does nothing.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -281,7 +281,7 @@ tasks:
       version: -1
       name: Objects From the Group
       description: Set a value in context under the key you entered. If no value is
-        entered, the script doesn't do anything.
+        entered, the script does nothing.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -456,7 +456,7 @@ inputs:
 - key: ID
   value: {}
   required: true
-  description: "The Id of the network group object that you would like to append.\
+  description: "The ID of the network group object that you would like to append.\
     \ This information can be retrieved using -  \n!ciscofp-get-network-groups-object"
   playbookInputQuery:
 - key: Name
@@ -474,7 +474,7 @@ inputs:
 - key: IP
   value: {}
   required: false
-  description: Enter a list of IPs ( separated with,  ) that will be added to the
+  description: Enter a comma-separated list of IPs that will be added to the
     list.
   playbookInputQuery:
 - key: ObjectID
