@@ -1,4 +1,4 @@
-This playbook blocks malicious IPs using all integrations that are enabled. The direction of the traffic that will be blocked is determined by the XSOAR user ( and set by default to outgoing)
+This playbook blocks malicious IPs using all integrations that are enabled. By default, the blocked communication will be set to the outgoing (The blocked IP will be set as the destination).
 Please note the following:
 -  some of those integrations require specific parameters to run, which are based on the playbook inputs. Also, Certain integrations use FW rules or Appanded network objects
 - Note that the Appended Network objects should be specified in blocking rules inside the system later on. 

@@ -346,13 +346,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: bda9050c-0221-42c7-8c49-0f139132ccb5
+    taskid: ea380a05-56c6-491f-82ee-15270a836e00
     type: condition
     task:
-      id: bda9050c-0221-42c7-8c49-0f139132ccb5
+      id: ea380a05-56c6-491f-82ee-15270a836e00
       version: -1
       name: Is Cisco FirePower Integration Enabled?
-      description: Check if there is any Cisco Firepower integration available.
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
       brand: ""
@@ -361,39 +363,12 @@ tasks:
       - "9"
       "yes":
       - "2"
+    scriptarguments:
+      brandname:
+        simple: Cisco Firepower
+    results:
+    - brandInstances
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isExists
-                    left:
-                      value:
-                        simple: modules
-                      iscontext: true
-                - - operator: containsString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Cisco Firepower
-                    ignorecase: true
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-            iscontext: true
     view: |-
       {
         "position": {
@@ -486,4 +461,4 @@ inputs:
 outputs: []
 tests:
 - Cisco Firepower - Test
-fromversion: 5.5.0
+fromversion: 6.0.0
