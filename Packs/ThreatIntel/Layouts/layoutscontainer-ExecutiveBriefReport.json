@@ -171,7 +171,7 @@
 								"id": "91fc2880-34a6-11ec-b56b-f1e2c7048720",
 								"index": 2,
 								"name": "Publish",
-								"scriptId": "f04e1f5c-bd90-4ee3-82a1-c2b311cf3cb6",
+								"scriptId": "PublishThreatIntelReport",
 								"sectionItemType": "button",
 								"startCol": 0
 							},
@@ -185,7 +185,7 @@
 								"index": 2,
 								"listId": "vug7e0qild-8412e8d0-34a6-11ec-b56b-f1e2c7048720",
 								"name": "Unpublish",
-								"scriptId": "b0291b78-70bd-4ce2-8e42-4eaa47a43550",
+								"scriptId": "UnpublishThreatIntelReport",
 								"sectionItemType": "button",
 								"startCol": 1
 							}
