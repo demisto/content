@@ -8,10 +8,10 @@
     "disabled": false,
     "hours": 0,
     "hoursR": 0,
-    "id": "GraCase",
+    "id": "GRACase",
     "locked": false,
-    "name": "GraCase",
-    "playbookId": "GraCase",
+    "name": "GRACase",
+    "playbookId": "GRACase",
     "readonly": false,
     "reputationCalc": 0,
     "system": false,
@@ -19,5 +19,7 @@
     "weeks": 0,
     "weeksR": 0,
     "vcShouldIgnore": false,
-    "prevName": "GraCase"
+    "prevName": "GRACase",
+    "layout": "GRACaseLayout",
+    "closureScript": "GRAUpdateCaseStatus"
 }
