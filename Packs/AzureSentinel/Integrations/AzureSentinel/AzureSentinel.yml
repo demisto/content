@@ -822,6 +822,9 @@ script:
       description: The name of a component inside the product which generated the
         alert.
       type: String
+    - contextPath: AzureSentinel.IncidentAlert.Status
+      description: The status of the alert
+      type: String
   - arguments:
     - default: false
       description: The alias of the watchlist.
