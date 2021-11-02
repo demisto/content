@@ -62,7 +62,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def login(server: str, tenant:  str, username: str, password: str, verify_certificate: bool):
+def login(server: str, tenant: str, username: str, password: str, verify_certificate: bool):
     response = requests.post(f'{server}/auth/authentication-endpoint/authenticate/token?TENANTID={tenant}',
                              verify=verify_certificate, json={'Login': username, 'Password': password})
     token = response.text
