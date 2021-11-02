@@ -30,7 +30,7 @@
 								"fieldId": "creator",
 								"height": 53,
 								"id": "29c6a860-00d2-11ec-a297-5338d677a3d9",
-								"index": 2,
+								"index": 1,
 								"listId": "vug7e0qild-ceba8ff0-b30a-11eb-941c-e725acf1fbbc",
 								"sectionItemType": "field",
 								"startCol": 0
@@ -40,7 +40,7 @@
 								"fieldId": "tags",
 								"height": 53,
 								"id": "19541f60-00ca-11ec-a297-5338d677a3d9",
-								"index": 3,
+								"index": 2,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -50,7 +50,7 @@
 								"fieldId": "created",
 								"height": 53,
 								"id": "30e4dcc0-00d2-11ec-a297-5338d677a3d9",
-								"index": 2,
+								"index": 1,
 								"listId": "vug7e0qild-ceba8ff0-b30a-11eb-941c-e725acf1fbbc",
 								"sectionItemType": "field",
 								"startCol": 1
@@ -61,7 +61,7 @@
 								"fieldId": "modified",
 								"height": 53,
 								"id": "71e1c250-00c9-11ec-a297-5338d677a3d9",
-								"index": 2,
+								"index": 1,
 								"listId": "vug7e0qild-ceba8ff0-b30a-11eb-941c-e725acf1fbbc",
 								"sectionItemType": "field",
 								"startCol": 2
@@ -89,7 +89,6 @@
 								"startCol": 3
 							}
 						],
-						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"moved": false,
@@ -103,7 +102,7 @@
 						"displayType": "CARD",
 						"h": 5,
 						"hideItemTitleOnlyOne": true,
-						"hideName": false,
+						"hideName": true,
 						"i": "vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-ea684940-b30a-11eb-941c-e725acf1fbbc",
 						"items": [
 							{
@@ -116,7 +115,6 @@
 								"startCol": 0
 							}
 						],
-						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"moved": false,
@@ -130,7 +128,6 @@
 						"h": 7,
 						"i": "vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-00d25a90-b30b-11eb-941c-e725acf1fbbc",
 						"items": [],
-						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"moved": false,
@@ -177,7 +174,6 @@
 								"startCol": 0
 							}
 						],
-						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"moved": false,
@@ -214,51 +210,33 @@
 								"startCol": 0
 							},
 							{
-								"endCol": 2,
-								"fieldId": "roles",
-								"height": 22,
-								"id": "0b7715c0-30cf-11ec-b47a-c9c7aa670747",
-								"index": 2,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"args": {
-									"roles": {
-										"simple": "Admin,Analyst,Read-Only"
-									}
-								},
+								"args": {},
 								"buttonClass": "primary",
 								"endCol": 1,
 								"fieldId": "",
 								"height": 44,
 								"id": "1531ee00-30cf-11ec-b47a-c9c7aa670747",
-								"index": 3,
+								"index": 2,
 								"name": "Publish",
-								"scriptId": "Builtin|||setThreatIntelReport",
+								"scriptId": "PublishThreatIntelReport",
 								"sectionItemType": "button",
 								"startCol": 0
 							},
 							{
-								"args": {
-									"roles": {
-										"simple": "Admin"
-									}
-								},
+								"args": {},
 								"dropEffect": "move",
 								"endCol": 2,
 								"fieldId": "",
 								"height": 44,
 								"id": "177e9d20-30cf-11ec-b47a-c9c7aa670747",
-								"index": 3,
+								"index": 2,
 								"listId": "vug7e0qild-feaf2490-30ce-11ec-b47a-c9c7aa670747",
 								"name": "Unpublish",
-								"scriptId": "Builtin|||setThreatIntelReport",
+								"scriptId": "UnpublishThreatIntelReport",
 								"sectionItemType": "button",
 								"startCol": 1
 							}
 						],
-						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"moved": false,
@@ -273,18 +251,18 @@
 				"type": "custom"
 			},
 			{
-				"hidden": false,
+				"hidden": true,
 				"id": "hresggmems",
-				"name": "PDF Export",
+				"name": "Campaign Report - Export",
 				"sections": [
 					{
 						"displayType": "CARD",
-						"h": 3,
+						"h": 2,
 						"hideName": false,
 						"i": "vug7e0qild-67fb6800-3273-11ec-b393-053bb5ecdeef",
 						"items": [
 							{
-								"endCol": 6,
+								"endCol": 3,
 								"fieldId": "creator",
 								"height": 53,
 								"id": "7584fb80-3273-11ec-b393-053bb5ecdeef",
@@ -294,32 +272,12 @@
 							},
 							{
 								"dropEffect": "move",
-								"endCol": 6,
-								"fieldId": "trafficlightprotocol",
-								"height": 53,
-								"id": "79f59c10-3273-11ec-b393-053bb5ecdeef",
-								"index": 1,
-								"listId": "vug7e0qild-67fb6800-3273-11ec-b393-053bb5ecdeef",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 6,
+								"endCol": 3,
 								"fieldId": "created",
 								"height": 53,
 								"id": "812eab70-3273-11ec-b393-053bb5ecdeef",
-								"index": 2,
+								"index": 1,
 								"listId": "vug7e0qild-67fb6800-3273-11ec-b393-053bb5ecdeef",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 6,
-								"fieldId": "modified",
-								"height": 53,
-								"id": "88e79930-3273-11ec-b393-053bb5ecdeef",
-								"index": 3,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -328,9 +286,31 @@
 								"fieldId": "tags",
 								"height": 53,
 								"id": "8d87ae30-3273-11ec-b393-053bb5ecdeef",
-								"index": 4,
+								"index": 2,
 								"sectionItemType": "field",
 								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 6,
+								"fieldId": "trafficlightprotocol",
+								"height": 53,
+								"id": "79f59c10-3273-11ec-b393-053bb5ecdeef",
+								"index": 0,
+								"listId": "vug7e0qild-67fb6800-3273-11ec-b393-053bb5ecdeef",
+								"sectionItemType": "field",
+								"startCol": 3
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 6,
+								"fieldId": "modified",
+								"height": 53,
+								"id": "88e79930-3273-11ec-b393-053bb5ecdeef",
+								"index": 2,
+								"listId": "vug7e0qild-67fb6800-3273-11ec-b393-053bb5ecdeef",
+								"sectionItemType": "field",
+								"startCol": 3
 							}
 						],
 						"maxW": 3,
@@ -349,20 +329,24 @@
 						"i": "vug7e0qild-91db9f00-3273-11ec-b393-053bb5ecdeef",
 						"items": [
 							{
+								"dropEffect": "move",
 								"endCol": 6,
 								"fieldId": "threatactor",
 								"height": 53,
 								"id": "a13a67b0-3273-11ec-b393-053bb5ecdeef",
 								"index": 0,
+								"listId": "vug7e0qild-91db9f00-3273-11ec-b393-053bb5ecdeef",
 								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
+								"dropEffect": "move",
 								"endCol": 6,
 								"fieldId": "objective",
 								"height": 53,
 								"id": "a5bdf400-3273-11ec-b393-053bb5ecdeef",
 								"index": 1,
+								"listId": "vug7e0qild-91db9f00-3273-11ec-b393-053bb5ecdeef",
 								"sectionItemType": "field",
 								"startCol": 0
 							}
@@ -374,11 +358,11 @@
 						"static": false,
 						"w": 3,
 						"x": 0,
-						"y": 3
+						"y": 2
 					},
 					{
 						"displayType": "ROW",
-						"h": 3,
+						"h": 2,
 						"hideItemTitleOnlyOne": true,
 						"hideName": true,
 						"i": "vug7e0qild-aa90b1c0-3273-11ec-b393-053bb5ecdeef",
@@ -402,22 +386,21 @@
 						"static": false,
 						"w": 3,
 						"x": 0,
-						"y": 5
+						"y": 4
 					},
 					{
-						"displayType": "ROW",
 						"h": 2,
-						"hideName": false,
-						"i": "vug7e0qild-d5a45fb0-3273-11ec-b393-053bb5ecdeef",
+						"i": "vug7e0qild-fbc6c590-3a2d-11ec-8aed-3d3ab0ae463a",
 						"items": [],
 						"maxW": 3,
 						"minH": 1,
 						"moved": false,
 						"name": "Relationships",
 						"static": false,
+						"type": "relationshipsTable",
 						"w": 3,
 						"x": 0,
-						"y": 8
+						"y": 6
 					}
 				],
 				"type": "custom"
