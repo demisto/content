@@ -49,6 +49,19 @@ def parse_outputs(users_data):
         return user_readable, user_outputs
 
 
+def format_user(user: Optional[str]):
+    """
+    Removes characters that are not supported by the MsGraph API.
+    """
+    if not user:
+        return user
+    formatted_user = user.translate(str.maketrans('', '', '%&*+/=?`{|}'))
+    if len(user) != len(formatted_user):
+        removed_chars = set(INVALID_USER_CHARS_REGEX.findall(user))
+        demisto.info(f'removed special characters {removed_chars} found in user {user}')
+    return formatted_user
+
+
 class MsGraphClient:
     """
     Microsoft Graph Mail Client enables authorized access to a user's Office 365 mail data in a personal account.
@@ -306,19 +319,6 @@ def get_user_command(client: MsGraphClient, args: Dict):
     human_readable = tableToMarkdown(name=f"{user} data", t=user_readable, removeNull=True)
     outputs = {'MSGraphUser(val.ID == obj.ID)': user_outputs}
     return human_readable, outputs, user_data
-
-
-def format_user(user: str):
-    """
-    Removes characters that are not supported by the MsGraph API.
-    """
-    if not user:
-        return user
-    formatted_user = user.translate(str.maketrans('', '', '%&*+/=?`{|}'))
-    if len(user) != len(formatted_user):
-        removed_chars = set(INVALID_USER_CHARS_REGEX.findall(user))
-        demisto.info(f'removed special characters {removed_chars} found in user {user}')
-    return formatted_user
 
 
 def list_users_command(client: MsGraphClient, args: Dict):
