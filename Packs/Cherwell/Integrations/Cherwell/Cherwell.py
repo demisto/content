@@ -877,7 +877,7 @@ def get_business_object_template_command():
 
 
 def lookup_field_values_command():
-    demisto.debug(f'lookup_field_values_command called.')
+    demisto.debug('lookup_field_values_command called.')
     args = demisto.args()
     payload = args.get('request')
     results = lookup_field_values(payload)
@@ -1043,7 +1043,6 @@ def query_business_object_command():
     max_results = args.get('max_results')
     fields = args.get('fields')             # custom code
     include_all_fields = args.get('include_all_fields', False)  # custom code
-    #results, raw_response = query_business_object_string(type_name, query_string, max_results)
     results, raw_response = query_business_object_string(
         type_name, query_string, max_results, fields, include_all_fields)  # custom code
     md = tableToMarkdown('Query Results', results, headerTransform=pascalToSpace)
@@ -1165,8 +1164,8 @@ def cherwell_run_one_step_action_command():
 
 
 def main():
-    global FETCHES_INCIDENTS, FETCH_TIME, FETCH_ATTACHMENTS, OBJECTS_TO_FETCH, MAX_RESULT, USERNAME, USERDOMAIN, PASSWORD, SERVER, \
-        SECURED, CLIENT_ID, QUERY_STRING, DATE_FORMAT, BASE_URL
+    global FETCHES_INCIDENTS, FETCH_TIME, FETCH_ATTACHMENTS, OBJECTS_TO_FETCH, MAX_RESULT, USERNAME, USERDOMAIN, \
+        PASSWORD, SERVER, SECURED, CLIENT_ID, QUERY_STRING, DATE_FORMAT, BASE_URL
 
     params = demisto.params()
 
