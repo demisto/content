@@ -9,6 +9,7 @@ from CommonServerPython import *
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
+
 COMMAND_NOT_IMPLEMENTED_MSG = 'Command not implemented'
 
 TICKET_STATES = {
@@ -2287,6 +2288,12 @@ def get_modified_remote_data_command(
     return GetModifiedRemoteDataResponse(modified_records_ids)
 
 
+def add_custom_fields(params):
+    global SNOW_ARGS
+    custom_fields = argToList(params.get('custom_fields'))
+    SNOW_ARGS += custom_fields
+
+
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
@@ -2344,6 +2351,7 @@ def main():
     get_attachments = params.get('get_attachments', False)
     update_timestamp_field = params.get('update_timestamp_field', 'sys_updated_on') or 'sys_updated_on'
     mirror_limit = params.get('mirror_limit', '100') or '100'
+    add_custom_fields(params)
 
     raise_exception = False
     try:
