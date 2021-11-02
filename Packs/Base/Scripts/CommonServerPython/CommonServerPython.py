@@ -2454,7 +2454,7 @@ class Common(object):
                 raise TypeError('indicator_type must be of type DBotScoreType enum')
 
             if not Common.DBotScore.is_valid_score(score):
-                raise TypeError('indicator_type must be of type DBotScore enum')
+                raise TypeError('indicator `score` must be of type DBotScore enum')
 
             if reliability and not DBotScoreReliability.is_valid_type(reliability):
                 raise TypeError('reliability must be of type DBotScoreReliability enum')
