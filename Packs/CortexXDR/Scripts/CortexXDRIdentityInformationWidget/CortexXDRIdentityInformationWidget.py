@@ -25,21 +25,23 @@ def get_identity_info() -> CommandResults:
     context = demisto.context()
     alerts = demisto.get(context, 'PaloAltoNetworksXDR.OriginalAlert')
     users = demisto.get(context, 'AWS.IAM.Users')
+    if not users:
+        raise DemistoException('AWS users are not in context')
+    access_keys = users[0].get('AccessKeys', [])
     if not isinstance(alerts, list):
         alerts = [alerts]
     results = []
     for alert in alerts:
         alert_event = alert.get('event')
         username = alert_event.get('identity_orig').get('userName')
-        access_keys = chain(*[user.get('AccessKeys', {}) for user in users])
-        access_keys = [access_key.get('AccessKeyId') for access_key in access_keys if
-                       access_key.get('UserName') == username]
+        access_keys_ids = [access_key.get('AccessKeyId') for access_key in access_keys
+                           if access_key and access_key.get('UserName') == username]
         res = {'Name': alert_event.get('identity_name'),
                'Type': alert_event.get('identity_type'),
                'Sub Type': alert_event.get('identity_sub_type'),
                'Uuid': alert_event.get('identity_uuid'),
                'Provider': alert_event.get('cloud_provider'),
-               'Access Keys': access_keys}
+               'Access Keys': access_keys_ids}
         if res not in results:
             results.append(res)
     return CommandResults(

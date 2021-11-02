@@ -18,5 +18,5 @@ def util_load_json(path):
 
 
 def test_access_keys(mocker):
-    mocker.patch.object(demisto, 'context', return_value=util_load_json('test_data/context_data.json'))
+    mocker.patch.object(demisto, 'context', return_value=util_load_json('/Users/ierukhimovic/dev/demisto/content/Packs/CortexXDR/Scripts/CortexXDRIdentityInformationWidget/test_data/another_context_data.json'))
     get_identity_info()
