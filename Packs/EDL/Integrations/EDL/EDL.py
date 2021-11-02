@@ -139,8 +139,8 @@ def create_new_edl(request_args: RequestArguments) -> str:
         new_iocs = find_indicators_to_limit(indicator_searcher)
         iocs.extend(new_iocs)
         formatted_iocs = format_indicators(iocs, request_args)
-        # continue searching iocs if 1) iocs was truncated or 2) got all available iocs
-        if len(formatted_iocs) >= len(iocs) or indicator_searcher.total <= current_limit:
+        # break search if 1) cannot fetch new indicators or 2) iocs was not truncated
+        if indicator_searcher.is_search_done() or len(formatted_iocs) >= len(iocs):
             break
     return iterable_to_str(list(formatted_iocs)[request_args.offset:limit])
 

@@ -4960,8 +4960,8 @@ class TestIndicatorsSearcher:
         Then:
           - Get 7 indicators
           - Advance page to 17
-          - _is_search_done returns True when search_after is supported
-          - _is_search_done returns False when search_after is not supported
+          - is_search_done returns True when search_after is supported
+          - is_search_done returns False when search_after is not supported
         """
         from CommonServerPython import IndicatorsSearcher
         mocker.patch.object(demisto, 'searchIndicators', side_effect=self.mock_search_after_output)
@@ -4973,7 +4973,7 @@ class TestIndicatorsSearcher:
             results.append(res)
         assert len(results) == 7
         assert search_indicators.page == 17
-        assert search_indicators._is_search_done() is True
+        assert search_indicators.is_search_done() is True
 
         search_indicators._can_use_search_after = False
         results = []
@@ -4981,7 +4981,7 @@ class TestIndicatorsSearcher:
             results.append(res)
         assert len(results) == 7
         assert search_indicators.page == 17
-        assert search_indicators._is_search_done() is True
+        assert search_indicators.is_search_done() is True
 
     def test_iterator__empty_page(self, mocker):
         """

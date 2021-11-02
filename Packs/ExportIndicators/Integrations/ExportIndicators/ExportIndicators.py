@@ -199,8 +199,8 @@ def refresh_outbound_context(request_args: RequestArguments, on_demand: bool = F
         out_dict, actual_indicator_amount = create_values_for_returned_dict(iocs, request_args)
         if request_args.out_format in [FORMAT_CSV, FORMAT_XSOAR_CSV]:
             actual_indicator_amount = actual_indicator_amount - 1
-        if actual_indicator_amount >= len(iocs) or (indicator_searcher.total and indicator_searcher.total <= limit):
-            # continue searching iocs if 1) iocs was truncated or 2) got all available iocs
+        # break search if 1) cannot fetch new indicators or 2) iocs was not truncated
+        if indicator_searcher.is_search_done() or actual_indicator_amount >= len(iocs):
             break
         # advance search window with gap size
         limit += (limit - actual_indicator_amount)

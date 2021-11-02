@@ -8009,7 +8009,7 @@ class IndicatorsSearcher:
             raise StopIteration
         if self._next_limit:
             self._next_limit -= fetched_len
-        self._search_is_done = self._is_search_done()
+        self._search_is_done = self.is_search_done()
         return res
 
     @property
@@ -8028,7 +8028,7 @@ class IndicatorsSearcher:
     def limit(self, value):
         self._next_limit = self._original_limit = value
 
-    def _is_search_done(self):
+    def is_search_done(self):
         """
         Checks one of these conditions:
         1. self.limit is set, and it's updated to be less or equal to zero
