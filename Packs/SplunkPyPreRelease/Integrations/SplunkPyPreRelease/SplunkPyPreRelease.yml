@@ -32,6 +32,12 @@ configuration:
   name: fetch_limit
   required: false
   type: 0
+- defaultvalue: '200'
+  display: Query Batch Size
+  name: batch_size
+  required: false
+  type: 0
+  additionalinfo: The maximum number of the results returned from the api in one request.
 - display: Fetch incidents
   name: isFetch
   required: false
