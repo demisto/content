@@ -125,7 +125,7 @@ class Client(BaseClient):
         """
         uri = '/data/objects/User'
         if self.manager_id:
-            user_data['manager_id'] = self.manager_id
+            user_data['DirectManager'] = self.manager_id
         user_data = {k: v for k, v in user_data.items() if k in self.app_fields}
         res = self._http_request(
             method='PUT',
@@ -158,7 +158,7 @@ class Client(BaseClient):
         """
         uri = f'/data/objects/User/{user_id}'
         if self.manager_id:
-            user_data['manager_id'] = self.manager_id
+            user_data['DirectManager'] = self.manager_id
         user_data = {k: v for k, v in user_data.items() if k in self.app_fields}
         self._http_request(
             method='POST',
@@ -362,7 +362,7 @@ def main():
     proxy = params.get('proxy', False)
     command = demisto.command()
     args = demisto.args()
-    manager_email = safe_load_json(args.get('user-profile', {})).get('manageremailaddress')
+    manager_email = safe_load_json(args.get('user-profile', {})).get('manageremail')
 
     is_create_enabled = params.get("create_user_enabled")
     is_enable_enabled = params.get("enable_user_enabled")
