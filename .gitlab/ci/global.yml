@@ -191,7 +191,7 @@
         if [[ -f $ARTIFACTS_FOLDER/coverage_report/.coverage ]]; then
           if [ -n "${NIGHTLY}" ]; then
             demisto-sdk coverage-analyze -i $ARTIFACTS_FOLDER/coverage_report/.coverage --report-dir $ARTIFACTS_FOLDER/coverage_report --report-type all --no-min-coverage-enforcement
-            python3 Utils/upload_code_coverage_report.py --service_account $GCS_MARKET_KEY --source_file_name $ARTIFACTS_FOLDER/coverage_report/coverage.json --minimal_file_name $ARTIFACTS_FOLDER/coverage_report/coverage_data.json
+            python3 Utils/upload_code_coverage_report.py --service_account $GCS_MARKET_KEY --source_file_name $ARTIFACTS_FOLDER/coverage_report/coverage.json --minimal_file_name $ARTIFACTS_FOLDER/coverage_report/coverage-min.json
           else
             demisto-sdk coverage-analyze -i $ARTIFACTS_FOLDER/coverage_report/.coverage --report-dir $ARTIFACTS_FOLDER/coverage_report --report-type html,xml
           fi
