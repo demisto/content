@@ -1,6 +1,6 @@
 category: Endpoint
 commonfields:
-  id: jamf v2
+  id: jamf v2_copy
   version: -1
 configuration:
 - display: Server URL
@@ -19,19 +19,27 @@ configuration:
   name: proxy
   required: false
   type: 8
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 6b5a58a7-b0b2-4f70-8791-7136f69d8a48
+    propagationLabels:
+    - all
+    toServerVersion: ""
 description: Enterprise Mobility Management (EMM) for Apple devices (Mac, iPhone,
   Apple TV, iPad). Can be used to control various configurations via different policies,
   install and uninstall applications, lock devices, smart groups searches, and more.
-display: JAMF v2
-name: jamf v2
+display: jamf v2_copy
+name: jamf v2_copy
 script:
   commands:
   - arguments:
-    - defaultValue: '50'
+    - defaultValue: "50"
       description: The maximum number of results to be returned on each page. The
         maximum size is 200.
       name: limit
-    - defaultValue: '0'
+    - defaultValue: "0"
       description: The number of the requested page.
       name: page
     description: Returns a list of all computers with their associated IDs. By default,
@@ -54,11 +62,11 @@ script:
       description: The number of the requested page.
       type: Number
   - arguments:
-    - defaultValue: '50'
+    - defaultValue: "50"
       description: The maximum number of results to be returned on each page. The
         maximum size is 200.
       name: limit
-    - defaultValue: '0'
+    - defaultValue: "0"
       description: The number of the requested page.
       name: page
     description: 'Returns the “basic” subset for all of the computers. The “basic”
@@ -236,11 +244,11 @@ script:
       description: The computer iTunes store account.
       type: Boolean
   - arguments:
-    - defaultValue: '50'
+    - defaultValue: "50"
       description: The maximum number of results to be returned on each page. The
         maximum size is 200.
       name: limit
-    - defaultValue: '0'
+    - defaultValue: "0"
       description: The number of the requested page.
       name: page
     - description: 'Match computers by specific characteristics (supports wildcards)
@@ -1208,10 +1216,10 @@ script:
       description: The computer ID.
       type: String
   - arguments:
-    - defaultValue: '50'
+    - defaultValue: "50"
       description: Maximum number of users to retrieve. The maximal value is 200.
       name: limit
-    - defaultValue: '0'
+    - defaultValue: "0"
       description: The number of the requested page.
       name: page
     description: Returns a list of users with their IDs and names. By default, returns
@@ -1539,10 +1547,10 @@ script:
       description: If the user group is smart.
       type: Boolean
   - arguments:
-    - defaultValue: '50'
+    - defaultValue: "50"
       description: Maximum number of devices to retrieve. Maximal value is 200.
       name: limit
-    - defaultValue: '0'
+    - defaultValue: "0"
       description: Number of requested page.
       name: page
     description: Returns a list of devices with  basic data on each. By default, returns
@@ -1785,12 +1793,12 @@ script:
         “match=C52F72FACB9T”. (Supports wildcards)'
       name: match
       predefined:
-      - ''
+      - ""
       required: true
-    - defaultValue: '50'
+    - defaultValue: "50"
       description: Maximum number of devices to retrieve. (Maximal value is 200).
       name: limit
-    - defaultValue: '0'
+    - defaultValue: "0"
       description: The number of the requested page.
       name: page
     description: Matches mobile devices by specific characteristics and returns general
@@ -2577,10 +2585,10 @@ script:
     - description: The application’s version (supports wildcards). Applicable only
         when “application” parameter value is set.
       name: version
-    - defaultValue: '50'
+    - defaultValue: "50"
       description: Maximum number of devices to retrieve. (Maximal value is 200).
       name: limit
-    - defaultValue: '0'
+    - defaultValue: "0"
       description: The number of the requested page.
       name: page
     description: Returns a list of computers with basic information on each.
@@ -2641,19 +2649,19 @@ script:
       name: id
       required: true
     - auto: PREDEFINED
-      defaultValue: 'False'
+      defaultValue: "False"
       description: Whether to retain cellular data plans (iOS 11 or later).
       name: preserve_data_plan
       predefined:
-      - 'True'
-      - 'False'
+      - "True"
+      - "False"
     - auto: PREDEFINED
-      defaultValue: 'False'
+      defaultValue: "False"
       description: Whether to clear activation lock on the device.
       name: clear_activation_code
       predefined:
-      - 'True'
-      - 'False'
+      - "True"
+      - "False"
     description: |-
       This is a beta command - couldn't be tested due to technical limitations.
       Permanently erases all data on the device and deactivates the device.
@@ -2682,12 +2690,6 @@ script:
     - description: The endpoint hostname.
       isArray: true
       name: hostname
-    - default: true
-      description: ''
-      isArray: true
-      name: endpoint
-      required: true
-      secret: false
     description: Returns information about an endpoint.
     name: endpoint
     outputs:
@@ -2720,6 +2722,4 @@ script:
   script: ''
   subtype: python3
   type: python
-fromversion: 5.5.0
-tests:
-- Jamf_v2_test
+sourcemoduleid: jamf v2

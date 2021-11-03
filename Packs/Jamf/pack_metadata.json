@@ -1,0 +1,17 @@
+{
+    "name": "Jamf",
+    "description": "Jamf device management",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "",
+    "email": "",
+    "created": "2021-11-03T09:20:13Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "barchen1"
+    ]
+}
