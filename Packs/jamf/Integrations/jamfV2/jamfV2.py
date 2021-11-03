@@ -1,13 +1,12 @@
-import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
-
-import requests
 import traceback
-from typing import Dict, Any
-from bs4 import BeautifulSoup
+from typing import Any, Dict
 
-# Disable insecure warnings
+import demistomock as demisto  # noqa: F401
+import requests
+from bs4 import BeautifulSoup
+from CommonServerPython import *  # noqa: F401
+
+# Disable insecure warnings-test
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
@@ -201,7 +200,6 @@ class Client(BaseClient):
         return res
 
     def get_mobile_devices_subset_request(self, identifier: str, identifier_value: str, subset: str):
-
         """Retrieve the mobile device subset results.
         Args:
             identifier: The identifier to search mobile device.
