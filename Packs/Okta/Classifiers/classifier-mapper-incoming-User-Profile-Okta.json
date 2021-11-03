@@ -68,7 +68,7 @@
 				},
 				"Username": {
 					"complex": null,
-					"simple": "userName"
+					"simple": "login"
 				},
 				"Zip Code": {
 					"complex": null,
