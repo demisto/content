@@ -175,7 +175,7 @@ class Taxii2FeedClient:
                 self.auth = requests.auth.HTTPBasicAuth(username, password)
 
         if (certificate and not key) or (not certificate and key):
-            raise DemistoException('You can not configure either certificate or key, both should be provided.')
+            raise DemistoException('Both certificate and key should be provided or neither should be.')
         if certificate and key:
             self.crt = (self.build_certificate(certificate), self.build_certificate(key))
 
