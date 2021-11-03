@@ -1,8 +1,7 @@
 description: This playbook adds the user to a group that was created to identify unusual
-  activity. SafeNet Trusted Access policies can be configured to take this into
-  account and provide stronger protection when handling access events from users who
-  are members of the group. The user is added to this group for a configurable period
-  of time.
+  activity. SafeNet Trusted Access policies can be configured to take this into account
+  and provide stronger protection when handling access events from users who are members
+  of the group. The user is added to this group for a configurable period of time.
 id: SafeNet Trusted Access - Add to Unusual Activity Group
 inputs:
 - description: Username of the user.
@@ -23,7 +22,8 @@ inputs:
   required: true
   value:
     simple: ${incident.safenettrustedaccessinstancename}
-- description: Amount of time for which the user will remain in the Unusual Activity Group.
+- description: Amount of time for which the user will remain in the Unusual Activity
+    Group.
   key: Time
   playbookInputQuery:
   required: true
