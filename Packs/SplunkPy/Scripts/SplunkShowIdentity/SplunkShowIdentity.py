@@ -11,6 +11,10 @@ def main():
                      "from context but returned None")
     custom_fields = incident.get('CustomFields', {})
     identity_results_str = custom_fields.get('identitytable', {})
+    is_successful = custom_fields.get('successfuldrilldownenrichment', '')
+    if is_successful == 'false':
+        return {'ContentsFormat': formats['markdown'], 'Contents': 'Drilldown enrichment failed.'}
+
     identity_results = json.loads(identity_results_str)
 
     if not identity_results:

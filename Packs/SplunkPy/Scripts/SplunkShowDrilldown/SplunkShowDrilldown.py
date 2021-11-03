@@ -11,6 +11,10 @@ def main():
                      "from context but returned None")
     custom_fields = incident.get('CustomFields', {})
     drilldown_results_str = custom_fields.get('notabledrilldown', {})
+    is_successful = custom_fields.get('successfuldrilldownenrichment', '')
+    if is_successful == 'false':
+        return {'ContentsFormat': formats['markdown'], 'Contents': 'Drilldown enrichment failed.'}
+
     drilldown_results = json.loads(drilldown_results_str)
 
     if not drilldown_results:
