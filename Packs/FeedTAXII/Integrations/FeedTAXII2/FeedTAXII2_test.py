@@ -133,6 +133,17 @@ class TestFetchIndicators:
         assert last_run.get(mock_client.collections[1]) == 'test'
 
 
+def test_get_collections_function():
+    mock_client = Taxii2FeedClient(url='', collection_to_fetch=None, proxies=[], verify=False, objects_to_fetch='')
+    mock_client.collections = [MockCollection("first id", 'first name'), MockCollection("second id", 'second name')]
+
+    result = get_collections_command(mock_client)
+
+    assert len(result.outputs) == 2
+    assert result.outputs[0] == {"Name": "first name", "ID": "first id"}
+    assert result.outputs[1] == {"Name": "second name", "ID": "second id"}
+
+
 class TestHelperFunctions:
     def test_try_parse_integer(self):
         assert try_parse_integer(None, '') is None
