@@ -1,33 +1,18 @@
 {
-	"brands": null,
-	"defaultIncidentType": "Azure DevOps",
-	"description": "",
-	"feed": false,
-	"fromServerVersion": "",
-	"id": "361dc502-4904-4889-8bf8-c893d70ad463",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {},
-	"locked": false,
-	"logicalVersion": 2,
-	"mapping": null,
-	"name": "Azure DevOps Classifier",
-	"nameRaw": "Azure DevOps Classifier",
-	"packID": "",
-	"propagationLabels": [
-		"all"
-	],
-	"sortValues": null,
-	"sourceClassifierId": "af445a9a-e982-47c3-8c2c-6809a79fc1ed",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {
-		"complex": null,
-		"simple": ""
-	},
-	"type": "classification",
-	"unclassifiedCases": null,
-	"version": -1
+    "defaultIncidentType": "Azure DevOps",
+    "description": "",
+    "feed": false,
+    "id": "Azure DevOps",
+    "keyTypeMap": {},
+    "name": "Azure DevOps Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "complex": null,
+        "simple": ""
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
 }

@@ -1,112 +1,89 @@
 {
-	"brands": null,
-	"defaultIncidentType": "",
-	"description": "",
-	"feed": false,
-	"fromServerVersion": "",
-	"id": "6dab2d6b-1e0a-4006-8df5-33418a27f839",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {},
-	"locked": false,
-	"logicalVersion": 6,
-	"mapping": {
-		"Azure DevOps": {
-			"dontMapEventToLabels": true,
-			"internalMapping": {
-				"Azure DevOps Created By": {
-					"complex": null,
-					"simple": "created_by"
-				},
-				"Azure DevOps Creation Date": {
-					"complex": null,
-					"simple": "creation_date"
-				},
-				"Azure DevOps Project ID": {
-					"complex": null,
-					"simple": "project_id"
-				},
-				"Azure DevOps Project Name": {
-					"complex": null,
-					"simple": "project_name"
-				},
-				"Azure DevOps Pull Request ID": {
-					"complex": null,
-					"simple": "pull_request_id"
-				},
-				"Azure DevOps Repository ID": {
-					"complex": null,
-					"simple": "repository_id"
-				},
-				"Azure DevOps Repository Name": {
-					"complex": null,
-					"simple": "repository_name"
-				},
-				"AzureDevOps Description": {
-					"complex": null,
-					"simple": "description"
-				},
-				"AzureDevOps Status": {
-					"complex": null,
-					"simple": "status"
-				},
-				"AzureDevOps Title": {
-					"complex": null,
-					"simple": "title"
-				}
-			}
-		},
-		"dbot_classification_incident_type_all": {
-			"dontMapEventToLabels": false,
-			"internalMapping": {
-				"Created By": {
-					"complex": null,
-					"simple": "created_by"
-				},
-				"Created Date": {
-					"complex": null,
-					"simple": "creation_date"
-				},
-				"Description": {
-					"complex": null,
-					"simple": "description"
-				},
-				"dbotMirrorDirection": {
-					"complex": null,
-					"simple": "mirror_direction"
-				},
-				"dbotMirrorId": {
-					"complex": null,
-					"simple": "pull_request_id"
-				},
-				"dbotMirrorInstance": {
-					"complex": null,
-					"simple": "mirror_instance"
-				},
-				"occurred": {
-					"complex": null,
-					"simple": "creation_date"
-				}
-			}
-		}
-	},
-	"name": "Azure DevOps Incoming Mapper",
-	"nameRaw": "Azure DevOps Incoming Mapper",
-	"packID": "",
-	"propagationLabels": [
-		"all"
-	],
-	"sortValues": null,
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {
-		"complex": null,
-		"simple": ""
-	},
-	"type": "mapping-incoming",
-	"unclassifiedCases": null,
-	"version": -1
+    "description": "",
+    "feed": false,
+    "id": "Azure DevOps Incoming Mapper",
+    "mapping": {
+        "Azure DevOps": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Azure DevOps Created By": {
+                    "complex": null,
+                    "simple": "created_by"
+                },
+                "Azure DevOps Creation Date": {
+                    "complex": null,
+                    "simple": "creation_date"
+                },
+                "Azure DevOps Project ID": {
+                    "complex": null,
+                    "simple": "project_id"
+                },
+                "Azure DevOps Project Name": {
+                    "complex": null,
+                    "simple": "project_name"
+                },
+                "Azure DevOps Pull Request ID": {
+                    "complex": null,
+                    "simple": "pull_request_id"
+                },
+                "Azure DevOps Repository ID": {
+                    "complex": null,
+                    "simple": "repository_id"
+                },
+                "Azure DevOps Repository Name": {
+                    "complex": null,
+                    "simple": "repository_name"
+                },
+                "AzureDevOps Description": {
+                    "complex": null,
+                    "simple": "description"
+                },
+                "AzureDevOps Status": {
+                    "complex": null,
+                    "simple": "status"
+                },
+                "AzureDevOps Title": {
+                    "complex": null,
+                    "simple": "title"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Created By": {
+                    "complex": null,
+                    "simple": "created_by"
+                },
+                "Created Date": {
+                    "complex": null,
+                    "simple": "creation_date"
+                },
+                "Description": {
+                    "complex": null,
+                    "simple": "description"
+                },
+                "dbotMirrorDirection": {
+                    "complex": null,
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "complex": null,
+                    "simple": "pull_request_id"
+                },
+                "dbotMirrorInstance": {
+                    "complex": null,
+                    "simple": "mirror_instance"
+                },
+                "occurred": {
+                    "complex": null,
+                    "simple": "creation_date"
+                }
+            }
+        }
+    },
+    "name": "Azure DevOps Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
 }

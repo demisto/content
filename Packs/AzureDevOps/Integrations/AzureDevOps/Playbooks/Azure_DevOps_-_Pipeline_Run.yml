@@ -1,12 +1,7 @@
 id: Azure_DevOps - Pipeline Run
 version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    itemVersion: 1.2.1
-    fromServerVersion: ""
-    toServerVersion: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: Azure_DevOps - Pipeline Run
 description: This playbook runs a pipeline on Azure DevOps Environment
 starttaskid: "0"
@@ -38,8 +33,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "1":
     id: "1"
     taskid: c8c1d796-08f6-428d-8c85-71634d0db775
@@ -79,8 +72,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "2":
     id: "2"
     taskid: ead107ae-7494-4860-8400-9832ef0bde43
@@ -121,8 +112,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "3":
     id: "3"
     taskid: 27a751a6-0f0e-4e26-87dc-526abafbc9b8
@@ -185,8 +174,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "4":
     id: "4"
     taskid: 5a5cc6a5-33b7-4874-87f0-fd2b71a53ba1
@@ -227,8 +214,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "5":
     id: "5"
     taskid: 172877e1-d636-4b2a-8b3e-70dddf7ea585
@@ -254,8 +239,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "6":
     id: "6"
     taskid: dd650110-2927-40cf-8380-597c91fdb582
@@ -300,8 +283,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -319,23 +300,23 @@ inputs:
   value: {}
   required: true
   description: The name of the pipeline project.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Pipeline ID
   value: {}
   required: true
   description: The ID of the pipeline.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Branch Name
   value: {}
   required: true
   description: The name of the repository branch which runs the pipeline.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: interval
   value:
     simple: "10"
   required: true
   description: Indicates how long to wait between each poll.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Timeout
   value:
     simple: "60"
@@ -343,7 +324,7 @@ inputs:
   description: The amount of time until the playbook stops waiting for the process
     to finish. After this time has passed, the playbook finishes its run, even if
     it didn't receive confirmation that the remote process completed.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: AzureDevOps.Project
   description: The result of the search
@@ -353,3 +334,6 @@ outputs:
 - contextPath: AzureDevOps.Project.Pipeline.Run
   description: AzureDevOps Pipeling Run
   type: unknown
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
