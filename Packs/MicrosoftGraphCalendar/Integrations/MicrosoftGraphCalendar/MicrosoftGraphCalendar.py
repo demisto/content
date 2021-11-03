@@ -11,6 +11,13 @@ NO_OUTPUTS: dict = {}
 APP_NAME = 'ms-graph-calendar'
 EVENT_HEADERS = ['Subject', 'Organizer', 'Attendees', 'Start', 'End', 'ID']
 CALENDAR_HEADERS = ['Name', 'Owner Name', 'Owner Address', 'ID']
+GRAPH_BASE_ENDPOINTS = {
+    'https://graph.microsoft.com': 'com',
+    'https://graph.microsoft.us': 'gcc-high',
+    'https://dod-graph.microsoft.us': 'dod',
+    'https://graph.microsoft.de': 'de',
+    'https://microsoftgraph.chinacloudapi.cn': 'cn'
+}
 
 
 def camel_case_to_readable(cc: Union[str, Dict], fields_to_drop: List[str] = None) -> Union[str, Dict]:
@@ -133,10 +140,10 @@ def process_event_params(body: str = '', start: str = '', end: str = '', time_zo
 class MsGraphClient:
 
     def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify,
-                 proxy, default_user, self_deployed):
+                 proxy, default_user, self_deployed, endpoint):
         self.ms_client = MicrosoftClient(tenant_id=tenant_id, auth_id=auth_id,
                                          enc_key=enc_key, app_name=app_name, base_url=base_url, verify=verify,
-                                         proxy=proxy, self_deployed=self_deployed)
+                                         proxy=proxy, self_deployed=self_deployed, endpoint=endpoint)
         self.default_user = default_user
 
     def test_function(self):
@@ -507,7 +514,9 @@ def module_test_function_command(client: MsGraphClient, args: Dict) -> Tuple[str
 
 def main():
     params: dict = demisto.params()
-    url = params.get('url', '').rstrip('/') + '/v1.0/'
+    host = params.get('url', '').rstrip('/')
+    url = host + '/v1.0/'
+    endpoint = GRAPH_BASE_ENDPOINTS.get(host, 'com')
     tenant = params.get('tenant_id')
     auth_and_token_url = params.get('auth_id', '')
     enc_key = params.get('enc_key')
@@ -532,7 +541,7 @@ def main():
     try:
         client: MsGraphClient = MsGraphClient(tenant_id=tenant, auth_id=auth_and_token_url, enc_key=enc_key,
                                               app_name=APP_NAME, base_url=url, verify=verify, proxy=proxy,
-                                              default_user=default_user, self_deployed=self_deployed)
+                                              default_user=default_user, self_deployed=self_deployed, endpoint=endpoint)
         if 'user' not in demisto.args():
             demisto.args()['user'] = client.default_user
         # Run the command
