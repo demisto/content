@@ -5,7 +5,7 @@
       "objectId": "e776e6c047b57580e3d0c56b71395023e9b9c48c",
       "creator": {
         "displayName": "XSOAR Test",
-        "url": "https://spsprodweu5.vssps.visualstudio.com/A2dd9b443-d691-4c04-b9dc-07061750fa07/_apis/Identities/XXXX",
+        "url": "https://vssps.visualstudio.com/XXXX/_apis/Identities/XXXX",
         "_links": {
           "avatar": {
             "href": "https://dev.azure.com/xsoar-organization/_apis/GraphProfile/MemberAvatars/aad.ZWFlMjk2ZGYtMzYwOS03YWY3LWFkNzMtYzNlYmRhZDM3ZmQ5"
@@ -23,7 +23,7 @@
       "objectId": "df0cc6ba5ce6984e4a379e8a5cea4d5db16aa67e",
       "creator": {
         "displayName": "XSOAR Test",
-        "url": "https://spsprodweu5.vssps.visualstudio.com/A2dd9b443-d691-4c04-b9dc-07061750fa07/_apis/Identities/XXXX",
+        "url": "https://vssps.visualstudio.com/XXXX/_apis/Identities/XXXX",
         "_links": {
           "avatar": {
             "href": "https://dev.azure.com/xsoar-organization/_apis/GraphProfile/MemberAvatars/aad.ZWFlMjk2ZGYtMzYwOS03YWY3LWFkNzMtYzNlYmRhZDM3ZmQ5"

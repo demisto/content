@@ -18,7 +18,7 @@
       "status": "active",
       "createdBy": {
         "displayName": "Xsoar Test",
-        "url": "https://spsprodweu5.vssps.visualstudio.com/A2dd9b443-d691-4c04-b9dc-07061750fa07/_apis/Identities/XXXX",
+        "url": "https://vssps.visualstudio.com/XXXX/_apis/Identities/XXXX",
         "_links": {
           "avatar": {
             "href": "https://dev.azure.com/xsoar/_apis/GraphProfile/MemberAvatars/aad.ZWFlMjk2ZGYtMzYwOS03YWY3LWFkNzMtYzNlYmRhZDM3ZmQ5"

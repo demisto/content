@@ -1,7 +1,7 @@
 {
   "results": [
     {
-      "queryToken": "xsoar-organization@qmasters",
+      "queryToken": "xsoar-organization@xsoar",
       "identities": [
         {
           "entityId": "vss.ds.v1.aad.user.13423bdd9b6941429f872dd4dcf74bda",
