@@ -8,7 +8,7 @@ def main():
     incident = demisto.incident()
     if not incident:
         raise ValueError("Error - demisto.incident() expected to return current incident "
-                     "from context but returned None")
+                         "from context but returned None")
     custom_fields = incident.get('CustomFields', {})
     drilldown_results_str = custom_fields.get('notabledrilldown', {})
     is_successful = custom_fields.get('successfuldrilldownenrichment', '')
