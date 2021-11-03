@@ -3,15 +3,16 @@ from CommonServerPython import *
 from IAMApiModule import *
 import traceback
 import urllib3
+
 # Disable insecure warnings
 urllib3.disable_warnings()
-
 
 ERROR_CODES_TO_SKIP = [
     404
 ]
-SUPPORTED_GET_USER_IAM_ATTRIBUTES = ['id', 'user_name', 'email', 'employee_id']
+SUPPORTED_GET_USER_IAM_ATTRIBUTES = ['ID', 'USERNAME', 'EMAIL', 'SSNO']
 SCIM_EXTENSION_SCHEMA = "urn:scim:schemas:extension:custom:1.0:user"
+ACTIVE_FIELD = "ACTIVE__XR"
 
 '''CLIENT CLASS'''
 
@@ -19,7 +20,8 @@ SCIM_EXTENSION_SCHEMA = "urn:scim:schemas:extension:custom:1.0:user"
 class Client(BaseClient):
     """ A client class that implements logic to authenticate with the application. """
 
-    def __init__(self, base_url, username, version, password, verify=True, proxy=False, headers=None, auth=None, ok_codes=None):
+    def __init__(self, base_url, username, version, password, verify=True, proxy=False, headers=None, auth=None,
+                 ok_codes=None):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers, auth=auth, ok_codes=ok_codes)
         self.username = username
         self.password = password
@@ -86,10 +88,10 @@ class Client(BaseClient):
         uri = '/instances'
         cardholder_filter = self.get_cardholder(iam_attribute, iam_attribute_val)
         query_params = {
-                'filter': cardholder_filter,
-                'version': self.version,
-                'type_name': 'Lnl_Cardholder'
-            }
+            'filter': cardholder_filter,
+            'version': self.version,
+            'type_name': 'Lnl_Cardholder'
+        }
 
         res = self._http_request(
             method='GET',
@@ -101,7 +103,7 @@ class Client(BaseClient):
 
         if result and count and count == 1:
             result = result[0]
-            lenel_active = result['property_value_map'].get('ACTIVE__XR')
+            lenel_active = result['property_value_map'].get(ACTIVE_FIELD)
             is_active = lenel_active and lenel_active.lower() == 'true'
             user_id = result['property_value_map']['ID']
             username = result['property_value_map']['USERNAME']
@@ -125,6 +127,7 @@ class Client(BaseClient):
             'version': self.version
         }
         lenel_user['property_value_map'] = user_data
+        lenel_user['property_value_map'][ACTIVE_FIELD] = True
         res = self._http_request(
             method='POST',
             url_suffix=uri,
@@ -134,7 +137,7 @@ class Client(BaseClient):
         property_value_map = res['property_value_map']
         user_id = property_value_map.get('ID')
         username = property_value_map.get('USERNAME')
-        return IAMUserAppData(user_id, username, is_active=True, app_data=res)
+        return IAMUserAppData(user_id, username, is_active=lenel_user['property_value_map'][ACTIVE_FIELD], app_data=res)
 
     def update_user(self, user_id: str, user_data: Dict[str, Any]) -> Optional[IAMUserAppData]:
         """ Updates a user in the application using REST API.
@@ -155,7 +158,6 @@ class Client(BaseClient):
             'version': self.version
         }
         lenel_user['property_value_map'] = user_data
-        return_warning(lenel_user)
         self._http_request(
             method='PUT',
             url_suffix=uri,
@@ -181,7 +183,7 @@ class Client(BaseClient):
         lenel_user = {
             "property_value_map": {
                 'ID': user_id,
-                'ACTIVE__XR': True,
+                ACTIVE_FIELD: True,
             }
         }
         return self.update_user(user_id, lenel_user)
@@ -268,14 +270,26 @@ class Client(BaseClient):
         :rtype: ``Dict[str, str]``
         """
 
-        uri = '/schema'
-        res = self._http_request(
-            method='GET',
-            url_suffix=uri
-        )
-
-        fields = res.get('result', [])
-        return {field.get('name'): field.get('description') for field in fields}
+        return {
+            "USERNAME": '',
+            "FIRSTNAME": '',
+            "LASTNAME": '',
+            "EMAIL": '',
+            "TITLE": '',
+            "CITY": '',
+            "MOBILEPHONE": '',
+            "OPHONE": '',
+            "STATE": '',
+            "ADDRESS": '',
+            "ZIPCODE": '',
+            "COUNTRYCODE__XR": '',
+            "COUNTRY__XR": '',
+            "DEPARTMENT": '',
+            "SSNO": '',
+            "TYPE__XR": '',
+            "HIREDATE": '',
+            "ACTIVE__XR": '',
+        }
 
     @staticmethod
     def handle_exception(user_profile: IAMUserProfile,
@@ -393,7 +407,8 @@ def main():
     create_if_not_exists = params.get("create_if_not_exists")
 
     iam_command = IAMCommand(is_create_enabled, is_enable_enabled, is_disable_enabled, is_update_enabled,
-                             create_if_not_exists, mapper_in, mapper_out, get_user_iam_attrs=SUPPORTED_GET_USER_IAM_ATTRIBUTES)
+                             create_if_not_exists, mapper_in, mapper_out,
+                             get_user_iam_attrs=SUPPORTED_GET_USER_IAM_ATTRIBUTES)
 
     headers = {
         'Content-Type': 'application/json',

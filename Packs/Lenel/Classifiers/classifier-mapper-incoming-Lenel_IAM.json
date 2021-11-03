@@ -73,6 +73,10 @@
 				"Hire Date": {
 					"complex": null,
 					"simple": "HIREDATE"
+				},
+				"Is Active": {
+					"complex": null,
+					"simple": "ACTIVE__XR"
 				}
 			}
 		}

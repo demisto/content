@@ -52,7 +52,7 @@
 				},
 				"COUNTRYCODE__XR": {
 					"complex": null,
-					"simple": "countrycode"
+					"simple": "country"
 				},
 				"COUNTRY__XR": {
 					"complex": null,
@@ -73,6 +73,10 @@
 				"HIREDATE": {
 					"complex": null,
 					"simple": "hiredate"
+				},
+				"ACTIVE__XR": {
+					"complex": null,
+					"simple": "isactive"
 				}
 			}
 		},
@@ -146,6 +150,10 @@
 				"HIREDATE": {
 					"complex": null,
 					"simple": "hiredate"
+				},
+				"ACTIVE__XR": {
+					"complex": null,
+					"simple": "isactive"
 				}
 			}
 		}
