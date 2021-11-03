@@ -8,11 +8,11 @@ from CommonServerPython import *  # noqa: F401
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
-''' CONSTANTS TESTTESTTTTffdgdgdg'''
+''' CONSTANTS testttsdfsdfsdfsdfds'''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
-''' CLIENT CLASS gdfgdg'''
+''' CLIENT CLASS gdfgdhjg'''
 
 
 class Client(BaseClient):

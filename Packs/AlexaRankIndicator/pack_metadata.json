@@ -1,16 +1,17 @@
 {
     "name": "Alexa Rank Indicator",
     "description": "Alexa provides website ranking information that can be useful in determining if the domain in question has a strong web presence.",
-    "support": "xsoar",
-    "currentVersion": "2.0.3",
+    "support": "community",
+    "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
+    "url": "",
     "email": "",
-    "created": "2020-04-14T00:00:00Z",
-    "categories": [
-        "Data Enrichment & Threat Intelligence"
-    ],
+    "created": "2021-11-03T13:48:05Z",
+    "categories": [],
     "tags": [],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "githubUser": [
+        "barchen1"
+    ]
 }
