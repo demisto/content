@@ -10,10 +10,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 5642ffa3-bf7f-4348-81c6-4ed09abf01a8
+    taskid: 173ec49d-83c4-41ab-82c2-b88bae01b38f
     type: start
     task:
-      id: 5642ffa3-bf7f-4348-81c6-4ed09abf01a8
+      id: 173ec49d-83c4-41ab-82c2-b88bae01b38f
       version: -1
       name: ""
       iscommand: false
@@ -21,13 +21,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "25"
+      - "27"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 60,
-          "y": -150
+          "y": -330
         }
       }
     note: false
@@ -35,12 +35,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 6df026e9-d609-4e89-8c01-821e98b9c452
+    taskid: a4dcd309-73d0-4f48-82d6-22ea5a9140f6
     type: condition
     task:
-      id: 6df026e9-d609-4e89-8c01-821e98b9c452
+      id: a4dcd309-73d0-4f48-82d6-22ea5a9140f6
       version: -1
       name: Should indicators be extracted and enriched?
       description: Checks whether the Enrich playbook input is set to True.
@@ -52,9 +54,6 @@ tasks:
       - "2"
       "yes":
       - "3"
-    scriptarguments:
-      left: {}
-      right: {}
     separatecontext: false
     conditions:
     - label: "yes"
@@ -73,7 +72,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": 230
+          "y": 290
         }
       }
     note: false
@@ -81,12 +80,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 38d63fdb-c3a1-4445-8fff-d00a7867a822
+    taskid: 06fc2c02-ba06-467e-87a9-5cc025103615
     type: regular
     task:
-      id: 38d63fdb-c3a1-4445-8fff-d00a7867a822
+      id: 06fc2c02-ba06-467e-87a9-5cc025103615
       version: -1
       name: Assign analyst to incident
       description: Assigns a random analyst to this incident.
@@ -96,21 +97,18 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "30"
     scriptarguments:
       assignBy:
         simple: random
-      email: {}
       onCall:
         complex:
           root: inputs.OnCall
-      roles: {}
-      username: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 60,
           "y": 1040
         }
       }
@@ -119,12 +117,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 8508b8e0-2c34-43bc-8950-31f628902041
+    taskid: 2e7fc4e6-863b-4277-8be2-a2c7f5caf278
     type: title
     task:
-      id: 8508b8e0-2c34-43bc-8950-31f628902041
+      id: 2e7fc4e6-863b-4277-8be2-a2c7f5caf278
       version: -1
       name: Enrich indicators
       type: title
@@ -139,7 +139,7 @@ tasks:
       {
         "position": {
           "x": 390,
-          "y": 450
+          "y": 470
         }
       }
     note: false
@@ -147,80 +147,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "7":
-    id: "7"
-    taskid: 4a2366db-81b0-41b5-8c8f-41b09e83a215
-    type: condition
-    task:
-      id: 4a2366db-81b0-41b5-8c8f-41b09e83a215
-      version: -1
-      name: Manually review the incident.
-      description: Manually review and investigate this incident.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "No":
-      - "12"
-      "Yes":
-      - "8"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "8":
-    id: "8"
-    taskid: 9ed78579-2deb-4871-8c5c-f6118f6e1ac2
-    type: regular
-    task:
-      id: 9ed78579-2deb-4871-8c5c-f6118f6e1ac2
-      version: -1
-      name: Close Investigation
-      description: Closes the current incident.
-      script: Builtin|||closeInvestigation
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "12"
-    scriptarguments:
-      assetid: {}
-      closeNotes:
-        simple: Default Enrichment Playbook
-      closeReason: {}
-      emailclassification: {}
-      id: {}
-      phishingsubtype: {}
-    reputationcalc: 1
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 310,
-          "y": 1380
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 4f6ac682-09ce-4456-8c40-7d87e3ecc917
+    taskid: b9155732-55c9-4ce3-84ce-cda59a981abf
     type: regular
     task:
-      id: 4f6ac682-09ce-4456-8c40-7d87e3ecc917
+      id: b9155732-55c9-4ce3-84ce-cda59a981abf
       version: -1
       name: Extract indicators from incident
       description: Extracts all indicators that match the regex for the indicator
@@ -232,11 +166,8 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "10"
+      - "28"
     scriptarguments:
-      entryID: {}
-      filePath: {}
-      investigationID: {}
       text:
         complex:
           root: incident
@@ -249,7 +180,7 @@ tasks:
       {
         "position": {
           "x": 390,
-          "y": 550
+          "y": 590
         }
       }
     note: false
@@ -257,41 +188,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "10":
-    id: "10"
-    taskid: f0c60bb3-91c7-4002-86d5-578516c12c33
-    type: playbook
-    task:
-      id: f0c60bb3-91c7-4002-86d5-578516c12c33
-      version: -1
-      name: Entity Enrichment - Generic v2
-      playbookName: Entity Enrichment - Generic v2
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "11"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 390,
-          "y": 690
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 6c25be48-c422-4c7d-8b86-03986f0c28e3
+    taskid: 1f2807d2-abeb-422d-87c6-c99541bb2f21
     type: playbook
     task:
-      id: 6c25be48-c422-4c7d-8b86-03986f0c28e3
+      id: 1f2807d2-abeb-422d-87c6-c99541bb2f21
       version: -1
       name: Calculate Severity - Generic v2
       playbookName: Calculate Severity - Generic v2
@@ -307,7 +211,7 @@ tasks:
       {
         "position": {
           "x": 390,
-          "y": 840
+          "y": 880
         }
       }
     note: false
@@ -315,12 +219,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 99978df1-e154-472e-8a57-78d8cb93fe89
+    taskid: ad08fb63-63c7-4dfa-87cd-c872e03f2251
     type: title
     task:
-      id: 99978df1-e154-472e-8a57-78d8cb93fe89
+      id: ad08fb63-63c7-4dfa-87cd-c872e03f2251
       version: -1
       name: Done
       type: title
@@ -331,8 +237,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1540
+          "x": 60,
+          "y": 1345
         }
       }
     note: false
@@ -340,12 +246,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 4a7a3835-0129-44b0-8911-4d4dca2cd21c
+    taskid: 5fb65a6b-f142-454d-841b-9dc15d444f51
     type: regular
     task:
-      id: 4a7a3835-0129-44b0-8911-4d4dca2cd21c
+      id: 5fb65a6b-f142-454d-841b-9dc15d444f51
       version: -1
       name: Fetch initial entries
       description: Get the entries data from a remote incident.
@@ -364,7 +272,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": -45
+          "y": -15
         }
       }
     note: false
@@ -372,12 +280,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 1305fb53-86f5-4649-811d-bd010c7517dd
+    taskid: ee52634e-726f-4b5e-8f06-24a6369b78bf
     type: regular
     task:
-      id: 1305fb53-86f5-4649-811d-bd010c7517dd
+      id: ee52634e-726f-4b5e-8f06-24a6369b78bf
       version: -1
       name: Add comments/logs as evidence
       description: Adds new comment notes as evidence in the timeline.
@@ -393,7 +303,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": 90
+          "y": 140
         }
       }
     note: false
@@ -401,19 +311,122 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 41e9754d-c935-426b-8e4d-c32fbf09fdbd
+    type: condition
+    task:
+      id: 41e9754d-c935-426b-8e4d-c32fbf09fdbd
+      version: -1
+      name: IsIntegrationAvailable
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "12"
+      "yes":
+      - "25"
+    scriptarguments:
+      brandname:
+        simple: ZeroTrustAnalyticsPlatform
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -350,
+          "y": -190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: b4fcb01b-b848-4c7b-8bde-9b4b4f30467d
+    type: playbook
+    task:
+      id: b4fcb01b-b848-4c7b-8bde-9b4b4f30467d
+      version: -1
+      name: Entity Enrichment - Generic v3
+      playbookName: Entity Enrichment - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 390,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: bd3e5093-c358-4c11-8703-9d6a4b6f93d1
+    type: regular
+    task:
+      id: bd3e5093-c358-4c11-8703-9d6a4b6f93d1
+      version: -1
+      name: Take action(s) indicated by SOC
+      description: |-
+        Review and take actions as indicated by the alert comment in the timeline.
+
+        If action is needed by CriticalStart, add a note with the "escalate" tag to send the alert back to CriticalStart, otherwise close the incident.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
-      "1_2_#default#": 0.17,
-      "7_12_No": 0.65,
-      "7_8_Yes": 0.71
+      "1_2_#default#": 0.17
     },
     "paper": {
       "dimensions": {
-        "height": 1755,
-        "width": 720,
-        "x": 50,
-        "y": -150
+        "height": 1740,
+        "width": 1120,
+        "x": -350,
+        "y": -330
       }
     }
   }
@@ -432,6 +445,6 @@ inputs:
     Cortex XSOAR v5.5 or later.
   playbookInputQuery:
 outputs: []
-fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+fromversion: 6.0.0
