@@ -21,7 +21,6 @@ name: SendPANWIoTDevicesToCiscoISE
 outputs:
 - contextPath: PaloAltoIoTIntegrationBase.Status
   description: Total number of devices updated or created on ISE.
-runas: DBotRole
 runonce: true
 script: ''
 scripttarget: 0
