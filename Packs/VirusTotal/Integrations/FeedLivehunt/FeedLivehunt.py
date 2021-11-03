@@ -1,4 +1,5 @@
 import urllib3
+import logging
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -20,7 +21,8 @@ class Client(BaseClient):
         return f'{malicious}/{total}'
 
 
-    def build_iterator(self) -> List:
+    def build_iterator(self, limit: int = 10,
+                             filter_: Optional[str] = None) -> List:
         """Retrieves all entries from the feed.
         Returns:
             A list of objects, containing the indicators.
@@ -28,7 +30,7 @@ class Client(BaseClient):
 
         result = []
 
-        response = self.list_notifications_files()
+        response = self.list_notifications_files(limit, filter_)
 
         try:
             for indicator in response.get('data'):
@@ -44,14 +46,11 @@ class Client(BaseClient):
 
     def list_notifications_files(
             self,
-            tag: Optional[str] = None,
-            limit: Optional[int] = None
+            limit: Optional[int] = None,
+            filter_: Optional[str] = None
     ) -> dict:
         """Retrieve VT Hunting Livehunt notifications files.
         """
-        filter_ = ''
-        if tag:
-            filter_ = f'{tag}'
         return self._http_request(
             'GET',
             'intelligence/hunting_notification_files',
@@ -65,21 +64,22 @@ def test_module(client: Client, args: dict) -> str:
     client.list_notifications_files()
     return 'ok'
 
-def fetch_indicators(client: Client,
-                     tlp_color: Optional[str] = None,
-                     feed_tags: List = [],
-                     limit: int = -1,
-                     tag: Optional[str] = None) -> List[Dict]:
+def fetch_indicators_command(client: Client,
+                             tlp_color: Optional[str] = None,
+                             feed_tags: List = [],
+                             limit: Optional[int] = 10,
+                             filter_: Optional[str] = None) -> List[Dict]:
     """Retrieves indicators from the feed
     Args:
         client (Client): Client object with request
         tlp_color (str): Traffic Light Protocol color
         feed_tags (list): tags to assign fetched indicators
         limit (int): limit the results
+        filter_ (string): filter response by ruleset name
     Returns:
         Indicators.
     """
-    iterator = client.build_iterator()
+    iterator = client.build_iterator(limit, filter_)
     indicators = []
     if limit > 0:
         iterator = iterator[:limit]
@@ -96,17 +96,21 @@ def fetch_indicators(client: Client,
         }
 
         # Create indicator object for each value.
-        # The object consists of a dictionary with required and optional keys and values, as described blow.
+        # The object consists of a dictionary with required and optional keys
+        # and values, as described blow.
         indicator_obj = {
             # The indicator value.
             'value': attributes['sha256'],
             # The indicator type as defined in Cortex XSOAR.
-            # One can use the FeedIndicatorType class under CommonServerPython to populate this field.
+            # One can use the FeedIndicatorType class under CommonServerPython
+            # to populate this field.
             'type': type_,
             # The name of the service supplying this feed.
             'service': 'VirusTotal',
-            # A dictionary that maps values to existing indicator fields defined in Cortex XSOAR.
-            # One can use this section in order to map custom indicator fields previously defined
+            # A dictionary that maps values to existing indicator fields defined
+            # in Cortex XSOAR.
+            # One can use this section in order to map custom indicator fields
+            # previously defined
             # in Cortex XSOAR to their values.
             'fields': {
                 'md5': attributes['md5'],
@@ -114,7 +118,8 @@ def fetch_indicators(client: Client,
                 'sha256': attributes['sha256'],
                 'ssdeep': attributes['ssdeep'],
             },
-            # A dictionary of the raw data returned from the feed source about the indicator.
+            # A dictionary of the raw data returned from the feed source about
+            # the indicator.
             'rawJSON': raw_data,
             'sha256': attributes['sha256'],
             'detections': client.get_detections_str(attributes.get('last_analysis_stats')),
@@ -148,10 +153,11 @@ def get_indicators_command(client: Client,
         Outputs.
     """
     limit = int(args.get('limit', 10))
-    tag = args.get('tag')
+    filter_ = args.get('filter')
     tlp_color = params.get('tlp_color')
     feed_tags = argToList(params.get('feedTags', ''))
-    indicators = fetch_indicators(client, tlp_color, feed_tags, limit, tag)
+    indicators = fetch_indicators_command(client, tlp_color,
+                                          feed_tags, limit, filter_)
 
     human_readable = tableToMarkdown('Indicators from VirusTotal Livehunt Feed:',
                                      indicators,
@@ -178,6 +184,8 @@ def main():
     """
 
     params = demisto.params()
+    feed_tags = argToList(params.get('feedTags'))
+    tlp_color = params.get('tlp_color')
 
     # If your Client class inherits from BaseClient, SSL verification is
     # handled out of the box by it, just pass ``verify_certificate`` to
@@ -190,7 +198,8 @@ def main():
 
     command = demisto.command()
     args = demisto.args()
-
+    limit = int(args.get('limit', 10))
+    filter_ = args.get('filter')
 
     demisto.debug(f'Command being called is {command}')
 
@@ -199,7 +208,10 @@ def main():
             base_url='https://www.virustotal.com/api/v3/',
             verify=insecure,
             proxy=proxy,
-            headers={'x-apikey': params['credentials']['password']}
+            headers={
+                'x-apikey': params['credentials']['password'],
+                'x-tool': 'CortexVirusTotalLivehuntFeed',
+            }
         )
 
         if command == 'test-module':
@@ -217,7 +229,11 @@ def main():
             # integration instance is configured to fetch indicators, then this
             # is the commandthat will be executed at the specified feed fetch
             # interval.
-            indicators = fetch_indicators_command(client, params)
+            indicators = fetch_indicators_command(client,
+                                                  tlp_color,
+                                                  feed_tags,
+                                                  limit,
+                                                  filter_)
             for iter_ in batch(indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
 
