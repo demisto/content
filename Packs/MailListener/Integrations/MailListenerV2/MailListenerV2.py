@@ -266,7 +266,7 @@ def fetch_mails(client: IMAPClient,
         try:
             demisto.debug("Converting data to bytes.")
             message_bytes = bytes(message_bytes)
-            demisto.debug("Converted data successfuly.")
+            demisto.debug("Converted data successfully.")
         except Exception as e:
             demisto.debug(f"Converting data was un-successful. {mail_id=}, {message_data=}. Error: {e}")
 
