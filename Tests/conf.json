@@ -4625,6 +4625,11 @@
             ],
             "playbookID": "GetTasksWithSections SetIRProcedures end to end test",
             "fromversion": "6.0.0"
+        },
+        {
+            "playbookID": "AzureRiskyUsers",
+            "fromversion": "6.0.0",
+            "integrations": "AzureRiskyUsers"
         }
     ],
     "skipped_tests": {
