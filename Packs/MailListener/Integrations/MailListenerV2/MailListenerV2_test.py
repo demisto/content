@@ -139,6 +139,7 @@ def test_generate_labels():
     for label in EXPECTED_LABELS:
         assert label in labels, f'Label {label} was not found in the generated labels, {labels}'
 
+
 @pytest.mark.parametrize('src_data, expected', [(r"C:\User\u".encode('utf-8'), br'C:\User\u'),
                                                 (br'C:\User\u', br'C:\User\u')])
 def test_convert_to_bytes(mocker, src_data, expected):
@@ -151,7 +152,6 @@ def test_convert_to_bytes(mocker, src_data, expected):
     Then:
         Fails if the casting to bytes fails.
     """
-
     from MailListenerV2 import _convert_to_bytes
     import demistomock as demisto
 
