@@ -160,29 +160,6 @@ def remove_old_incident_ids(last_run_fetched_ids, start_time_query, end_time_que
     return new_last_run_fetched_ids
 
 
-def remove_old_incident_ids(last_run_fetched_ids, current_epoch_time, occurred_look_behind):
-    """Remove all the IDs of all the incidents that were found more than twice the look behind time frame,
-    to stop our IDs dict from becoming too large.
-
-    Args:
-        last_run_fetched_ids (list): All the event IDs that weren't out of date in the last run + all the new event IDs
-        from newly fetched events in this run.
-        current_epoch_time (int): The current time in epoch.
-        occurred_look_behind (int): The max look behind time (parameter, as defined by the user).
-
-    Returns:
-        new_last_run_fetched_ids (list): The updated list of IDs, without old IDs.
-    """
-    new_last_run_fetched_ids = {}
-    for inc_id, addition_time in last_run_fetched_ids.items():
-        max_look_behind_in_seconds = occurred_look_behind * 60
-        deletion_threshold_in_seconds = max_look_behind_in_seconds * 2
-        if current_epoch_time - addition_time < deletion_threshold_in_seconds:
-            new_last_run_fetched_ids[inc_id] = addition_time
-
-    return new_last_run_fetched_ids
-
-
 def enforce_look_behind_time(last_run_time, now, look_behind_time):
     """ Verifies that the start time of the fetch is at X minutes before
     the end time, X being the number of minutes specified in the look_behind parameter.
@@ -233,17 +210,16 @@ def get_fetch_start_times(dem_params, service, last_run_time, occurence_time_loo
     return occured_start_time, now
 
 
-def build_fetch_kwargs(dem_params, occured_start_time, now):
+def build_fetch_kwargs(dem_params, batch_size, occured_start_time, now):
     occurred_start_time_fieldname = dem_params.get("earliest_occurrence_time_fieldname", "earliest_time")
     occurred_end_time_fieldname = dem_params.get("latest_occurrence_time_fieldname", "latest_time")
-    batch_size = dem_params.get('batch_size')
     extensive_log('[SplunkPyPreRelease] occurred_start_time_fieldname: {}'.format(occurred_start_time_fieldname))
     extensive_log('[SplunkPyPreRelease] occured_start_time: {}'.format(occured_start_time))
 
     kwargs_oneshot = {
         occurred_start_time_fieldname: occured_start_time,
         occurred_end_time_fieldname: now,
-        "count": batch_size,  # TODO: remove, change to no limit
+        "count": batch_size
     }
 
     return kwargs_oneshot
@@ -276,16 +252,16 @@ def fetch_notables(service, cache_object=None, enrich_notables=False):
     occured_start_time, now = get_fetch_start_times(dem_params, service, last_run_time, occurred_look_behind)
     extensive_log('[SplunkPyPreRelease] SplunkPyPreRelease last run time: {}, now: {}'.format(last_run_time, now))
 
-    kwargs_oneshot = build_fetch_kwargs(dem_params, occured_start_time, now)
+    batch_size = last_run_data.get('batch_size') or dem_params.get('batch_size', 200)
+    extensive_log('[SplunkPyPreRelease] SplunkPyPreRelease batch size is : {}'.format(batch_size))
+
+    kwargs_oneshot = build_fetch_kwargs(dem_params, batch_size, occured_start_time, now)
     fetch_query = build_fetch_query(dem_params)
 
     oneshotsearch_results = service.jobs.oneshot(fetch_query, **kwargs_oneshot)  # type: ignore
     reader = results.ResultsReader(oneshotsearch_results)
 
     last_run_fetched_ids = last_run_data.get('found_incidents_ids', {})
-
-    last_run_fetched_ids = {k: False for k, v in last_run_fetched_ids.items()}  # Each key will have the False value
-    # that will change to True if this id has seen at the current fetch
 
     incidents = []
     notables = []
@@ -306,10 +282,9 @@ def fetch_notables(service, cache_object=None, enrich_notables=False):
         else:
             extensive_log('[SplunkPyPreRelease] SplunkPyPreRelease - Dropped incident {} due to duplication.'.format(incident_id))
 
-    current_epoch_time = int(time.time())
     extensive_log('[SplunkPyPreRelease] Size of last_run_fetched_ids before adding new IDs: {}'.format(len(last_run_fetched_ids)))
     for incident_id in incident_ids_to_add:
-        last_run_fetched_ids[incident_id] = incident_ids_to_add[incident_id]  # All those incident appeared on the current fetch, add them with the occurence time.
+        last_run_fetched_ids[incident_id] = incident_ids_to_add[incident_id]  # Adding the new incidents with the occurence time.
     extensive_log(
         '[SplunkPyPreRelease] Size of last_run_fetched_ids after adding new IDs: {}'.format(len(last_run_fetched_ids)))
     last_run_fetched_ids = remove_old_incident_ids(last_run_fetched_ids, occured_start_time, now)
@@ -333,21 +308,21 @@ def fetch_notables(service, cache_object=None, enrich_notables=False):
 
     if len(incidents) == 0:
         next_run = get_next_start_time(last_run_time, now, False)
-        extensive_log('[SplunkPyPreRelease] SplunkPyPreRelease - Next run time with no incidents found: {}'.format(next_run))
+        extensive_log('[SplunkPyPreRelease] SplunkPyPreRelease - Next run time with no incidents found: {}.'.format(next_run))
         new_last_run = {
             'time': next_run,
-            'found_incidents_ids': last_run_fetched_ids
+            'found_incidents_ids': last_run_fetched_ids,
+            'batch_size': dem_params.get('batch_size')
         }
     else:
-        batch_size = dem_params.get('batch_size')
         if len(last_run_fetched_ids) + FETCH_LIMIT >= batch_size:
-            # If we almost saw all the events return from the query, we should increase the batch size to see
+            # If we almost saw all the events return from the query, we should increase the batch size to reach
             # the new events.
             batch_size += batch_size
         latest_incident_fetched_time = get_latest_incident_time(incidents)
         next_run = get_next_start_time(latest_incident_fetched_time, now, were_new_incidents_found=True)
         extensive_log('[SplunkPyPreRelease] SplunkPyPreRelease - '
-                      'Next run time with too many incidents:  {}. New Batch size: {}'.format(next_run, batch_size))
+                      'Next run time with too many incidents:  {}. Batch size: {}'.format(next_run, batch_size))
         new_last_run = {
             'time': next_run,
             'found_incidents_ids': last_run_fetched_ids,
