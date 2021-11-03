@@ -82,6 +82,11 @@ script:
       process.
     execution: false
     name: azure-devops-auth-reset
+  - deprecated: false
+    description: Get mapping fields from remote incident. Please note that this method
+      will not update the current incident, it's here for debugging purposes.
+    execution: false
+    name: get-mapping-fields
   - arguments:
     - default: false
       description: The name of the project.
