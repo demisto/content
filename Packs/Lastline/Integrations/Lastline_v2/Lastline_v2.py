@@ -1,10 +1,9 @@
 import hashlib
 from typing import Dict, List
-from urllib3 import disable_warnings
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
 
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+from urllib3 import disable_warnings
 
 INTEGRATION_COMMAND_NAME = "lastline"
 INTEGRATION_NAME = "Lastline v2"
@@ -15,6 +14,8 @@ SUFFIX_TRANSFORMER = {'/analysis/submit/file': {'url': 'papi/analysis/submit_fil
                       '/analysis/submit/url': {'url': 'papi/analysis/submit_url', 'method': 'POST'}}
 
 disable_warnings()
+
+# lalalalalla
 
 
 class Client(BaseClient):
