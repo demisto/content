@@ -186,6 +186,8 @@ def main():
     params = demisto.params()
     feed_tags = argToList(params.get('feedTags'))
     tlp_color = params.get('tlp_color')
+    limit = int(params.get('limit', 10))
+    filter_ = params.get('filter')
 
     # If your Client class inherits from BaseClient, SSL verification is
     # handled out of the box by it, just pass ``verify_certificate`` to
@@ -197,9 +199,6 @@ def main():
     proxy = params.get('proxy', False)
 
     command = demisto.command()
-    args = demisto.args()
-    limit = int(args.get('limit', 10))
-    filter_ = args.get('filter')
 
     demisto.debug(f'Command being called is {command}')
 
@@ -221,7 +220,7 @@ def main():
         elif command == 'vt-livehunt-get-indicators':
             # This is the command that fetches a limited number of indicators
             # from the feed source and displays them in the war room.
-            return_results(get_indicators_command(client, params, args))
+            return_results(get_indicators_command(client, params, demisto.args()))
 
         elif command == 'fetch-indicators':
             # This is the command that initiates a request to the feed endpoint
