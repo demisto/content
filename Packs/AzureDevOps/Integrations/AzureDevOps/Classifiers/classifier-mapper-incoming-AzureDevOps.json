@@ -1,36 +1,36 @@
 {
     "description": "",
     "feed": false,
-    "id": "Azure DevOps Incoming Mapper",
+    "id": "AzureDevOps Incoming Mapper",
     "mapping": {
-        "Azure DevOps": {
+        "AzureDevOps": {
             "dontMapEventToLabels": true,
             "internalMapping": {
-                "Azure DevOps Created By": {
+                "AzureDevOps Created By": {
                     "complex": null,
                     "simple": "created_by"
                 },
-                "Azure DevOps Creation Date": {
+                "AzureDevOps Creation Date": {
                     "complex": null,
                     "simple": "creation_date"
                 },
-                "Azure DevOps Project ID": {
+                "AzureDevOps Project ID": {
                     "complex": null,
                     "simple": "project_id"
                 },
-                "Azure DevOps Project Name": {
+                "AzureDevOps Project Name": {
                     "complex": null,
                     "simple": "project_name"
                 },
-                "Azure DevOps Pull Request ID": {
+                "AzureDevOps Pull Request ID": {
                     "complex": null,
                     "simple": "pull_request_id"
                 },
-                "Azure DevOps Repository ID": {
+                "AzureDevOps Repository ID": {
                     "complex": null,
                     "simple": "repository_id"
                 },
-                "Azure DevOps Repository Name": {
+                "AzureDevOps Repository Name": {
                     "complex": null,
                     "simple": "repository_name"
                 },
@@ -82,7 +82,7 @@
             }
         }
     },
-    "name": "Azure DevOps Incoming Mapper",
+    "name": "AzureDevOps Incoming Mapper",
     "type": "mapping-incoming",
     "version": -1,
     "fromVersion": "6.0.0"

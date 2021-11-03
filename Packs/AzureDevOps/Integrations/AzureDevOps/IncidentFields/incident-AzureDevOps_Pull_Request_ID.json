@@ -1,11 +1,11 @@
 {
-    "id": "incident_azuredevopscreationdate",
+    "id": "incident_azuredevopspullrequestid",
     "version": -1,
-    "modified": "2021-10-21T15:40:52.842283273+03:00",
-    "name": "Azure DevOps Creation Date",
+    "modified": "2021-10-21T15:15:41.994596933+03:00",
+    "name": "AzureDevOps Pull Request ID",
     "ownerOnly": false,
-    "cliName": "azuredevopscreationdate",
-    "type": "date",
+    "cliName": "azuredevopspullrequestid",
+    "type": "shortText",
     "closeForm": false,
     "editForm": true,
     "required": false,
@@ -18,7 +18,7 @@
     "group": 0,
     "hidden": false,
     "associatedTypes": [
-        "Azure DevOps"
+        "AzureDevOps"
     ],
     "associatedToAll": false,
     "unmapped": false,

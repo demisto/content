@@ -1,10 +1,10 @@
 {
-    "id": "incident_azuredevopsrepositoryid",
+    "id": "incident_azuredevopsdescription",
     "version": -1,
-    "modified": "2021-10-21T15:14:57.718403572+03:00",
-    "name": "Azure DevOps Repository ID",
+    "modified": "2021-10-21T15:09:58.398705465+03:00",
+    "name": "AzureDevOps Description",
     "ownerOnly": false,
-    "cliName": "azuredevopsrepositoryid",
+    "cliName": "azuredevopsdescription",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
@@ -18,7 +18,7 @@
     "group": 0,
     "hidden": false,
     "associatedTypes": [
-        "Azure DevOps"
+        "AzureDevOps"
     ],
     "associatedToAll": false,
     "unmapped": false,

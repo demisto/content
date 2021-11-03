@@ -1,9 +1,9 @@
-id: Azure_DevOps - Pipeline Run
+id: AzureDevOps - Pipeline Run
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
-name: Azure_DevOps - Pipeline Run
-description: This playbook runs a pipeline on Azure DevOps Environment
+name: AzureDevOps - Pipeline Run
+description: This playbook runs a pipeline on AzureDevOps Environment
 starttaskid: "0"
 tasks:
   "0":
@@ -40,7 +40,7 @@ tasks:
     task:
       id: c8c1d796-08f6-428d-8c85-71634d0db775
       version: -1
-      name: Azure DevOps Pipeline run
+      name: AzureDevOps Pipeline run
       description: Run a pipeline.
       script: '|||azure-devops-pipeline-run'
       type: regular
@@ -79,7 +79,7 @@ tasks:
     task:
       id: ead107ae-7494-4860-8400-9832ef0bde43
       version: -1
-      name: Azure DevOps Pipeline Run Get
+      name: AzureDevOps Pipeline Run Get
       description: Retrieve pipeline run information.
       script: '|||azure-devops-pipeline-run-get'
       type: regular
@@ -181,7 +181,7 @@ tasks:
     task:
       id: 5a5cc6a5-33b7-4874-87f0-fd2b71a53ba1
       version: -1
-      name: Azure DevOps pipeline run get
+      name: AzureDevOps pipeline run get
       description: Retrieve pipeline run information.
       script: '|||azure-devops-pipeline-run-get'
       type: regular
