@@ -1,0 +1,31 @@
+{
+    "name": "QintelFeed",
+    "description": "Supports ingesting intelligence feeds from the Qintel suite of products.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Qintel, LLC",
+    "url": "https://qintel.com",
+    "email": "integrations-support@qintel.com",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Dark Web",
+        "Threat Intelligence"
+    ],
+    "useCases": [
+        "Threat Intelligence Management"
+    ],
+    "keywords": [
+        "qintel",
+        "intelligence",
+        "reputation"
+    ],
+    "devEmail": [
+        "integrations@qintel.com"
+    ],
+    "githubUser": [
+        "calvin-qintel",
+        "scott-qintel"
+    ]
+}
