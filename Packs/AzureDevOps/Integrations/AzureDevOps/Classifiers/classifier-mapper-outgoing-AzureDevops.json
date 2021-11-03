@@ -1,0 +1,80 @@
+{
+	"brands": null,
+	"defaultIncidentType": "",
+	"description": "",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "909ffe7d-8711-41b7-8676-3e63f45860d5",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {},
+	"locked": false,
+	"logicalVersion": 3,
+	"mapping": {
+		"Azure DevOps": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"description": {
+					"complex": null,
+					"simple": "azuredevopsdescription"
+				},
+				"status": {
+					"complex": null,
+					"simple": "azuredevopsstatus"
+				},
+				"title": {
+					"complex": null,
+					"simple": "azuredevopstitle"
+				}
+			}
+		},
+		"dbot_classification_incident_type_all": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"description": {
+					"complex": null,
+					"simple": "azuredevopsdescription"
+				},
+				"project": {
+					"complex": null,
+					"simple": "azuredevopsprojectname"
+				},
+				"pull_request_id": {
+					"complex": null,
+					"simple": "azuredevopspullrequestid"
+				},
+				"repository_id": {
+					"complex": null,
+					"simple": "azuredevopsrepositoryid"
+				},
+				"status": {
+					"complex": null,
+					"simple": "azuredevopsstatus"
+				},
+				"title": {
+					"complex": null,
+					"simple": "azuredevopstitle"
+				}
+			}
+		}
+	},
+	"name": "Azure Devops Outgoing Mapper",
+	"nameRaw": "Azure Devops Outgoing Mapper",
+	"packID": "",
+	"propagationLabels": [
+		"all"
+	],
+	"sortValues": null,
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {
+		"complex": null,
+		"simple": ""
+	},
+	"type": "mapping-outgoing",
+	"unclassifiedCases": null,
+	"version": -1
+}

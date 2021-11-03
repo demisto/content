@@ -1,0 +1,1060 @@
+category: IT Services
+commonfields:
+  id: AzureDevOps
+  version: -1
+configuration:
+- additionalinfo: App Registration Client ID
+  display: Client ID
+  name: client_id
+  required: true
+  type: 4
+- additionalinfo: Organizaion name
+  display: Organization
+  name: organization
+  required: true
+  type: 0
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- additionalinfo: Default is 50. Maximum is 200.
+  defaultvalue: '50'
+  display: Maximum incidents for one fetch.
+  hidden: false
+  name: max_fetch
+  required: false
+  type: 0
+- additionalinfo: The name of the project which the pull requests belongs to. This
+    argument is mandatory for Fetch functionality.
+  display: Pull-request project name
+  hidden: false
+  name: project
+  required: false
+  type: 0
+- additionalinfo: The name of the repository pull request's target branch. This argument
+    is mandatory for Fetch functionality.
+  display: Pull-request repository name
+  hidden: false
+  name: repository
+  required: false
+  type: 0
+- additionalinfo: Indicated the first pull-request ID to fetch. If this argument will
+    not be provided, the first pull-request to fetch will be the oldest pull-request
+    ID.
+  display: First pull-request ID
+  hidden: false
+  name: first_pull_request_id
+  required: false
+  type: 0
+description: Create and manage Git repositories in Azure DevOps Services.
+display: AzureDevOps
+name: AzureDevOps
+script:
+  commands:
+  - deprecated: false
+    description: Tests the connectivity to Azure.
+    execution: false
+    name: azure-devops-auth-test
+  - deprecated: false
+    description: Run this command to start the authorization process and follow the
+      instructions in the command results.
+    execution: false
+    name: azure-devops-auth-start
+  - deprecated: false
+    description: Run this command to complete the authorization process. Should be
+      used after running the azure-devops-auth-start command.
+    execution: false
+    name: azure-devops-auth-complete
+  - deprecated: false
+    description: Run this command if for some reason you need to rerun the authentication
+      process.
+    execution: false
+    name: azure-devops-auth-reset
+  - arguments:
+    - default: false
+      description: The name of the project.
+      isArray: false
+      name: project
+      required: true
+      secret: false
+    - default: false
+      description: The ID of the pipeline.
+      isArray: false
+      name: pipeline_id
+      required: true
+      secret: false
+    - default: false
+      description: The name of the repository branch which runs the pipeline.
+      isArray: false
+      name: branch_name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'False'
+      description: Use XSOAR built-in polling to retrieve the result when it's ready.
+      isArray: false
+      name: polling
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '30'
+      description: Indicates how long to wait between commands execution (in seconds)
+        when 'polling' argument is true. Default is 10 seconds,  minimum is 10 seconds.
+      isArray: false
+      name: interval
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '60'
+      description: Indicates the time in seconds until the polling sequence timeouts.
+        Default is 60 seconds
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+    - default: false
+      description: The ID of the pipeline run to retrieve when polling argument is
+        'True'. Intended for use by the Polling process and does not need to be provided
+        by the user.
+      isArray: false
+      name: run_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Run a pipeline.
+    execution: false
+    polling: true
+    name: azure-devops-pipeline-run
+    outputs:
+    - contextPath: AzureDevOps.Project.name
+      description: The name of the project.
+      type: String
+    - contextPath: AzureDevOps.Project.Pipeline.id
+      description: The ID of the pipeline.
+      type: Number
+    - contextPath: AzureDevOps.Project.Pipeline.revision
+      description: Pipeline revision number
+      type: Number
+    - contextPath: AzureDevOps.Project.Pipeline.name
+      description: Pipeline repository name
+      type: String
+    - contextPath: AzureDevOps.Project.Pipeline.folder
+      description: Pipeline folder
+      type: String
+    - contextPath: AzureDevOps.Project.Pipeline.Run.state
+      description: The run state.
+      type: String
+    - contextPath: AzureDevOps.Project.Pipeline.Run.createdDate
+      description: Run-pipeline creation date.
+      type: Date
+    - contextPath: AzureDevOps.Project.Pipeline.Run.url
+      description: The URL of the run.
+      type: String
+    - contextPath: AzureDevOps.Project.Pipeline.Run.id
+      description: The ID of the run.
+      type: Number
+    - contextPath: AzureDevOps.Project.Pipeline.Run.name
+      description: The name of the run.
+      type: String
+    - contextPath: AzureDevOps.Project.Pipeline.Run.name
+      description: The result of the pipeline running. If the run is in progress,
+        the default value is 'unknown'.
+      type: String
+  - arguments:
+    - default: false
+      description: The Email of the user to add to the organization.
+      isArray: false
+      name: user_email
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The type of account license (e.g. Express, Stakeholder etc.).
+        More information can be found here: https://docs.microsoft.com/en-us/rest/api/azure/devops/memberentitlementmanagement/user-entitlements/add?view=azure-devops-rest-6.1#accountlicensetype
+        .'
+      isArray: false
+      name: account_license_type
+      predefined:
+      - express
+      - stakeholder
+      - advanced
+      - earlyAdopter
+      - professional
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Project Group type (e.g. Contributor, Reader etc.). More information
+        can be found here: https://docs.microsoft.com/en-us/rest/api/azure/devops/memberentitlementmanagement/user-entitlements/add?view=azure-devops-rest-6.1#grouptype
+        .'
+      isArray: false
+      name: group_type
+      predefined:
+      - projectReader
+      - projectContributor
+      - projectAdministrator
+      - projectStakeholder
+      required: true
+      secret: false
+    - default: false
+      description: The ID of the project.
+      isArray: false
+      name: project_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Add a user, assign license and extensions and make them a member
+      of a project group in an account.
+    execution: false
+    name: azure-devops-user-add
+    outputs:
+    - contextPath: AzureDevOps.User.id
+      description: The ID of the user.
+      type: String
+    - contextPath: AzureDevOps.User.accountLicenseType
+      description: The type of account license.
+      type: String
+    - contextPath: AzureDevOps.User.lastAccessedDate
+      description: Date the user last accessed the collection.
+      type: Date
+  - arguments:
+    - default: false
+      description: The ID of the user to remove from the organization.
+      isArray: false
+      name: user_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Remove the user from all project memberships.
+    execution: false
+    name: azure-devops-user-remove
+  - arguments:
+    - default: false
+      description: The name of the project.
+      isArray: false
+      name: project
+      required: true
+      secret: false
+    - default: false
+      description: The repository ID of the pull request's target branch.
+      isArray: false
+      name: repository_id
+      required: true
+      secret: false
+    - default: false
+      description: The name of the source branch of the pull request.
+      isArray: false
+      name: source_branch
+      required: true
+      secret: false
+    - default: false
+      description: The name of the target branch of the pull request.
+      isArray: false
+      name: target_branch
+      required: true
+      secret: false
+    - default: false
+      description: The title of the pull request.
+      isArray: false
+      name: title
+      required: true
+      secret: false
+    - default: false
+      description: The description of the pull request.
+      isArray: false
+      name: description
+      required: true
+      secret: false
+    - default: false
+      description: Comma-separated list of the pull request reviewers IDs.
+      isArray: false
+      name: reviewers_ids
+      required: true
+      secret: false
+    deprecated: false
+    description: Create a new pull request.
+    execution: false
+    name: azure-devops-pull-request-create
+    outputs:
+    - contextPath: AzureDevOps.Project.name
+      description: The name of the project.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.id
+      description: The ID of the repository.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.name
+      description: The name of the repository.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.url
+      description: The URL of the repository.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.size
+      description: The size of the repository.
+      type: Number
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.Id
+      description: The ID of the pull request.
+      type: Number
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.status
+      description: The status of the pull request.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.CreatedBy.displayName
+      description: The display name of the pull request creator.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.CreatedBy.id
+      description: The ID of the pull request creator.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.CreatedBy.uniqueName
+      description: The unique name of the pull request creator.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.creationDate
+      description: The creation date of the pull request.
+      type: Date
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.title
+      description: The title of the pull request
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.description
+      description: The description of the pull request.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.sourceRefName
+      description: The source branch of the pull request.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.targetRefName
+      description: The target branch of the pull request.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.mergeStatus
+      description: The current status of the pull request merge.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.isDraft
+      description: Draft / WIP pull request.
+      type: Boolean
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.LastMergeSourceCommit.commitId
+      description: The ID of the commit at the head of the source branch at the time
+        of the last pull request merge.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.LastMergeSourceCommit.url
+      description: The REST URL for this resource.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.LastMergeTargetCommit.commitId
+      description: The ID of the commit at the head of the target branch at the time
+        of the last pull request merge.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.LastMergeTargetCommit.url
+      description: The REST URL for this resource.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.reviewerUrl
+      description: URL to retrieve information about the reviewer identity.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.vote
+      description: 'Vote on a pull request: 10 - approved 5 - approved with suggestions
+        0 - no vote -5 - waiting for author -10 - rejected'
+      type: Number
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.hasDeclined
+      description: Indicates if this reviewer has declined to review this pull request.
+      type: Boolean
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.isFlagged
+      description: Indicates if this reviewer is flagged for attention on this pull
+        request.
+      type: Boolean
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.displayName
+      description: The display name of the pull request reviewer.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.id
+      description: The ID of the pull request reviewer.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.uniqueName
+      description: The unique name of the pull request reviewer.
+      type: String
+  - arguments:
+    - default: false
+      description: The name of the project.
+      isArray: false
+      name: project
+      required: true
+      secret: false
+    - default: false
+      description: The repository ID of the pull request's target branch.
+      isArray: false
+      name: repository_id
+      required: true
+      secret: false
+    - default: false
+      description: The ID of the pull request to update.
+      isArray: false
+      name: pull_request_id
+      required: true
+      secret: false
+    - default: false
+      description: The updated pull-request title.
+      isArray: false
+      name: title
+      required: false
+      secret: false
+    - default: false
+      description: The updated pull-request description.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The updated pull-request status.
+      isArray: false
+      name: status
+      predefined:
+      - abandoned
+      - completed
+      - active
+      required: false
+      secret: false
+    deprecated: false
+    description: 'Update a pull request. At least one of the arguments: title, description,
+      or status must be provided.'
+    execution: false
+    name: azure-devops-pull-request-update
+    outputs:
+    - contextPath: AzureDevOps.Project.name
+      description: The name of the project.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.id
+      description: The ID of the repository.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.name
+      description: The name of the repository.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.url
+      description: The URL of the repository.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.size
+      description: The size of the repository.
+      type: Number
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.Id
+      description: The ID of the pull request.
+      type: Number
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.status
+      description: The status of the pull request.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.CreatedBy.displayName
+      description: The display name of the pull request creator.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.CreatedBy.id
+      description: The ID of the pull request creator.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.CreatedBy.uniqueName
+      description: The unique name of the pull request creator.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.creationDate
+      description: The creation date of the pull request.
+      type: Date
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.title
+      description: The title of the pull request
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.description
+      description: The description of the pull request.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.sourceRefName
+      description: The source branch of the pull request.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.targetRefName
+      description: The target branch of the pull request.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.mergeStatus
+      description: The current status of the pull request merge.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.isDraft
+      description: Draft / WIP pull request.
+      type: Boolean
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.LastMergeSourceCommit.commitId
+      description: The ID of the commit.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.LastMergeSourceCommit.url
+      description: The REST URL for this resource.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.LastMergeTargetCommit.commitId
+      description: The ID of the commit.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.reviewerUrl
+      description: URL to retrieve information about the reviewer identity.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.vote
+      description: 'Vote on a pull request: 10 - approved 5 - approved with suggestions
+        0 - no vote -5 - waiting for author -10 - rejected'
+      type: Number
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.hasDeclined
+      description: Indicates if this reviewer has declined to review this pull request.
+      type: Boolean
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.isFlagged
+      description: Indicates if this reviewer is flagged for attention on this pull
+        request.
+      type: Boolean
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.displayName
+      description: The display name of the pull request reviewer.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.id
+      description: The ID of the pull request reviewer.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.uniqueName
+      description: The unique name of the pull request reviewer.
+      type: String
+  - arguments:
+    - default: false
+      description: The name of the project which the pull requests belongs to.
+      isArray: false
+      name: project
+      required: true
+      secret: false
+    - default: false
+      description: The name of the repository pull request's target branch.
+      isArray: false
+      name: repository
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '1'
+      description: The page number of the results to retrieve. Default is 1, minimum
+        is 1.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The number of results to retrieve. Default is 50, minimum is 1.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieve pull requests in repository.
+    execution: false
+    name: azure-devops-pull-request-list
+    outputs:
+    - contextPath: AzureDevOps.Project.name
+      description: The name of the project.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.id
+      description: The ID of the repository.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.name
+      description: The name of the repository.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.url
+      description: The URL of the repository.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.Id
+      description: The ID of the pull request.
+      type: Number
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.status
+      description: The status of the pull request.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.CreatedBy.displayName
+      description: The display name of the pull request creator.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.CreatedBy.id
+      description: The ID of the pull request creator.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.CreatedBy.uniqueName
+      description: The unique name of the pull request creator.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.creationDate
+      description: The creation date of the pull request.
+      type: Date
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.title
+      description: The title of the pull request
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.description
+      description: The description of the pull request.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.sourceRefName
+      description: The source branch of the pull request.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.targetRefName
+      description: The target branch of the pull request.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.mergeStatus
+      description: The current status of the pull request merge.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.isDraft
+      description: Draft / WIP pull request.
+      type: Boolean
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.LastMergeSourceCommit.commitId
+      description: The ID of the commit.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.LastMergeSourceCommit.url
+      description: The REST URL for this resource.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.LastMergeTargetCommit.commitId
+      description: The ID of the commit.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.reviewerUrl
+      description: URL to retrieve information about the reviewer identity.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.vote
+      description: 'Vote on a pull request: 10 - approved 5 - approved with suggestions
+        0 - no vote -5 - waiting for author -10 - rejected'
+      type: Number
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.hasDeclined
+      description: Indicates if this reviewer has declined to review this pull request.
+      type: Boolean
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.isFlagged
+      description: Indicates if this reviewer is flagged for attention on this pull
+        request.
+      type: Boolean
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.displayName
+      description: The display name of the pull request reviewer.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.id
+      description: The ID of the pull request reviewer.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.uniqueName
+      description: The unique name of the pull request reviewer.
+      type: String
+  - arguments:
+    - default: false
+      defaultValue: '1'
+      description: The page number of the results to retrieve. Default is 1, minimum
+        is 1.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The number of results to retrieve. Default is 50, minimum is 1.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieve all projects in the organization that the authenticated
+      user has access to.
+    execution: false
+    name: azure-devops-project-list
+    outputs:
+    - contextPath: AzureDevOps.Project.name
+      description: The name of the project.
+      type: String
+    - contextPath: AzureDevOps.Project.state
+      description: The state of the project.
+      type: String
+    - contextPath: AzureDevOps.Project.revision
+      description: The revision number of the project.
+      type: Number
+    - contextPath: AzureDevOps.Project.visibility
+      description: Indicates whom the project is visible to.
+      type: String
+    - contextPath: AzureDevOps.Project.lastUpdateTime
+      description: Project last update time.
+      type: Date
+    - contextPath: AzureDevOps.Project.id
+      description: The ID of the Project
+      type: String
+  - arguments:
+    - default: false
+      description: The name of the project to which the repositories belong to.
+      isArray: false
+      name: project
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The number of results to retrieve. Default is 50, minimum is 1.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1'
+      description: The page number of the results to retrieve. Default is 1, minimum
+        is 1.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieve git repositories in the organization project.
+    execution: false
+    name: azure-devops-repository-list
+    outputs:
+    - contextPath: AzureDevOps.Project.name
+      description: The name of the project.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.id
+      description: The ID of the repository.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.name
+      description: The name of the repository.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.url
+      description: The URL of the repository.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.size
+      description: The size of the repository.
+      type: Number
+  - arguments:
+    - default: false
+      description: Users or organization query prefix. For example, If we want to
+        retrieve information about the user 'Tom' we can enter the value of this argument
+        as 'Tom' .
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    deprecated: false
+    description: Query users  in the organization.
+    execution: false
+    name: azure-devops-user-list
+    outputs:
+    - contextPath: AzureDevOps.User.entityType
+      description: The type of the entity.
+      type: String
+    - contextPath: AzureDevOps.User.id
+      description: The ID of the identity.
+      type: String
+    - contextPath: AzureDevOps.User.email
+      description: The email address of the user.
+      type: String
+  - arguments:
+    - default: false
+      description: The name of the project.
+      isArray: false
+      name: project
+      required: true
+      secret: false
+    - default: false
+      description: The repository ID of the pull request's target branch.
+      isArray: false
+      name: repository_id
+      required: true
+      secret: false
+    - default: false
+      description: The ID of the pull request to retrieve.
+      isArray: false
+      name: pull_request_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve pull-request.
+    execution: false
+    name: azure-devops-pull-request-get
+    outputs:
+    - contextPath: AzureDevOps.Project.name
+      description: The name of the project.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.id
+      description: The ID of the repository.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.name
+      description: The name of the repository.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.url
+      description: The URL of the repository.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.size
+      description: The size of the repository.
+      type: Number
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.Id
+      description: The ID of the pull request.
+      type: Number
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.status
+      description: The status of the pull request.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.CreatedBy.displayName
+      description: The display name of the pull request creator.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.CreatedBy.id
+      description: The ID of the pull request creator.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.CreatedBy.uniqueName
+      description: The unique name of the pull request creator.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.creationDate
+      description: The creation date of the pull request.
+      type: Date
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.title
+      description: The title of the pull request
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.description
+      description: The description of the pull request.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.sourceRefName
+      description: The source branch of the pull request.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.targetRefName
+      description: The target branch of the pull request.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.mergeStatus
+      description: The current status of the pull request merge.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.isDraft
+      description: Draft / WIP pull request.
+      type: Boolean
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.LastMergeSourceCommit.commitId
+      description: The ID of the commit at the head of the source branch at the time
+        of the last pull request merge.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.LastMergeSourceCommit.url
+      description: The REST URL for this resource.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.LastMergeTargetCommit.commitId
+      description: The ID of the commit at the head of the target branch at the time
+        of the last pull request merge.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.LastMergeTargetCommit.url
+      description: The REST URL for this resource.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.reviewerUrl
+      description: URL to retrieve information about the reviewer identity.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.vote
+      description: 'Vote on a pull request: 10 - approved 5 - approved with suggestions
+        0 - no vote -5 - waiting for author -10 - rejected'
+      type: Number
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.hasDeclined
+      description: Indicates if this reviewer has declined to review this pull request.
+      type: Boolean
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.isFlagged
+      description: Indicates if this reviewer is flagged for attention on this pull
+        request.
+      type: Boolean
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.displayName
+      description: The display name of the pull request reviewer.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.id
+      description: The ID of the pull request reviewer.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.PullRequest.Reviewers.uniqueName
+      description: The unique name of the pull request reviewer.
+      type: String
+  - arguments:
+    - default: false
+      description: The name of the project.
+      isArray: false
+      name: project
+      required: true
+      secret: false
+    - default: false
+      description: The ID of the pipeline to retrieve.
+      isArray: false
+      name: pipeline_id
+      required: true
+      secret: false
+    - default: false
+      description: The ID of the pipeline run to retrieve.
+      isArray: false
+      name: run_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve pipeline run information.
+    execution: false
+    name: azure-devops-pipeline-run-get
+    outputs:
+    - contextPath: AzureDevOps.Project.name
+      description: The name of the project.
+      type: String
+    - contextPath: AzureDevOps.Project.Pipeline.id
+      description: The ID of the pipeline.
+      type: Number
+    - contextPath: AzureDevOps.Project.Pipeline.revision
+      description: Pipeline revision number
+      type: Number
+    - contextPath: AzureDevOps.Project.Pipeline.name
+      description: Pipeline repository name
+      type: String
+    - contextPath: AzureDevOps.Project.Pipeline.folder
+      description: Pipeline folder
+      type: String
+    - contextPath: AzureDevOps.Project.Pipeline.Run.state
+      description: The run state.
+      type: String
+    - contextPath: AzureDevOps.Project.Pipeline.Run.createdDate
+      description: Run-pipeline creation date.
+      type: Date
+    - contextPath: AzureDevOps.Project.Pipeline.Run.url
+      description: The URL of the run.
+      type: String
+    - contextPath: AzureDevOps.Project.Pipeline.Run.id
+      description: The ID of the run.
+      type: Number
+    - contextPath: AzureDevOps.Project.Pipeline.Run.name
+      description: The name of the run.
+      type: String
+    - contextPath: AzureDevOps.Project.Pipeline.Run.name
+      description: The result of the pipeline running. If the run is in progress,
+        the default value is 'unknown'.
+      type: String
+  - arguments:
+    - default: false
+      description: The name of the organizaion project.
+      isArray: false
+      name: project
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '1'
+      description: The page number of the results to retrieve. Default is 1, minimum
+        is 1.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The number of results to retrieve. Default is 50, minimum is 1.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: The ID of the pipeline which the runs belongs to.
+      isArray: false
+      name: pipeline_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve pipeline runs list. The command retrieves up to the top
+      10000 runs for a particular pipeline.
+    execution: false
+    name: azure-devops-pipeline-run-list
+    outputs:
+    - contextPath: AzureDevOps.Project.name
+      description: The name of the project.
+      type: String
+    - contextPath: AzureDevOps.Project.Pipeline.id
+      description: The ID of the pipeline.
+      type: Number
+    - contextPath: AzureDevOps.Project.Pipeline.revision
+      description: Pipeline revision number
+      type: Number
+    - contextPath: AzureDevOps.Project.Pipeline.name
+      description: Pipeline repository name
+      type: String
+    - contextPath: AzureDevOps.Project.Pipeline.folder
+      description: Pipeline folder
+      type: String
+    - contextPath: AzureDevOps.Project.Pipeline.Run.state
+      description: The run state.
+      type: String
+    - contextPath: AzureDevOps.Project.Pipeline.Run.createdDate
+      description: Run-pipeline creation date.
+      type: Date
+    - contextPath: AzureDevOps.Project.Pipeline.Run.url
+      description: The URL of the run.
+      type: String
+    - contextPath: AzureDevOps.Project.Pipeline.Run.id
+      description: The ID of the run.
+      type: Number
+    - contextPath: AzureDevOps.Project.Pipeline.Run.name
+      description: The name of the run.
+      type: String
+    - contextPath: AzureDevOps.Project.Pipeline.Run.name
+      description: The result of the pipeline running. If the run is in progress,
+        the default value is 'unknown'.
+      type: String
+  - arguments:
+    - default: false
+      description: The name of the organizaion project.
+      isArray: false
+      name: project
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '1'
+      description: The page number of the results to retrieve. Default is 1, minimum
+        is 1.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The number of results to retrieve. Default is 50, minimum is 1.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieve project pipelines list.
+    execution: false
+    name: azure-devops-pipeline-list
+    outputs:
+    - contextPath: AzureDevOps.Project.name
+      description: The name of the project.
+      type: String
+    - contextPath: AzureDevOps.Project.Pipeline.id
+      description: The ID of the pipeline.
+      type: Number
+    - contextPath: AzureDevOps.Project.Pipeline.revision
+      description: Pipeline revision number
+      type: Number
+    - contextPath: AzureDevOps.Project.Pipeline.name
+      description: Pipeline repository name
+      type: String
+    - contextPath: AzureDevOps.Project.Pipeline.folder
+      description: Pipeline folder
+      type: String
+  - arguments:
+    - default: false
+      description: The name of the organizaion project.
+      isArray: false
+      name: project
+      required: true
+      secret: false
+    - default: false
+      description: The name of the project repository.
+      isArray: false
+      name: repository
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '1'
+      description: The page number of the results to retrieve. Default is 1, minimum
+        is 1.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The number of results to retrieve. Default is 50, minimum is 1.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieve repository branches list.
+    execution: false
+    name: azure-devops-branch-list
+    outputs:
+    - contextPath: AzureDevOps.Project.name
+      description: The name of the project.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.name
+      description: The name of the repository.
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.Branch.name
+      description: The name of the branch
+      type: String
+    - contextPath: AzureDevOps.Project.Repository.Branch.creator
+      description: Thr creator of the branch.
+      type: String
+  dockerimage: demisto/python3:3.9.7.24076
+  isremotesyncin: true
+  isremotesyncout: true
+  ismappable: true
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
