@@ -57,7 +57,7 @@ script:
     deprecated: false
     description: Changes user status
     execution: false
-    name: change-user-status
+    name: fileorbis-change-user-status
     outputs:
     - contextPath: FileOrbis.UserStatus.UserID
       description: User Id to change its status.
