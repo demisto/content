@@ -102,8 +102,10 @@ def generate_basic_oauth():
 
 
 def get_auth():
+    access_token = demisto.getParam('accessToken')
     is_basic = USERNAME and (PASSWORD or API_TOKEN)
-    is_oauth1 = demisto.getParam('consumerKey') and demisto.getParam('accessToken') and demisto.getParam('privateKey')
+    is_oauth1 = demisto.getParam('consumerKey') and access_token and demisto.getParam('privateKey')
+    is_bearer = access_token and not is_oauth1
 
     if is_basic:
         return generate_basic_oauth()
@@ -112,10 +114,15 @@ def get_auth():
         HEADERS.update({'X-Atlassian-Token': 'nocheck'})
         return generate_oauth1()
 
+    elif is_bearer:
+        HEADERS.update({'Authorization': f'Bearer {access_token}'})
+        return
+
     return_error(
         'Please provide the required Authorization information:'
         '- Basic Authentication requires user name and password or API token'
         '- OAuth 1.0 requires ConsumerKey, AccessToken and PrivateKey'
+        '- Personal Access Tokens requires AccessToken'
     )
 
 
