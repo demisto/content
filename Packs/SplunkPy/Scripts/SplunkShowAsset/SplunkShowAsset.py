@@ -6,12 +6,15 @@ from CommonServerPython import *  # noqa: F401
 
 def main():
     incident = demisto.incident()
+    if not incident:
+        raise ValueError("Error - demisto.incident() expected to return current incident "
+                         "from context but returned None")
     custom_fields = incident.get('CustomFields', {})
     asset_results_str = custom_fields.get('assettable', {})
     asset_results = json.loads(asset_results_str)
 
     if not asset_results:
-        return CommandResults()
+        return {'ContentsFormat': formats['markdown'], 'Contents': 'No assets were found in notable'}
 
     if isinstance(asset_results, list):
         events_arr = []
@@ -29,4 +32,4 @@ if __name__ in ('__main__', '__builtin__', 'builtins'):
     try:
         return_results(main())
     except Exception as e:
-        return_error('Got an error while parsing Splunk events', error=e)
+        return_error(f'Got an error while parsing Splunk events {e}', error=e)

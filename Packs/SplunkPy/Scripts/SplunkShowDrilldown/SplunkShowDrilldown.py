@@ -6,12 +6,15 @@ from CommonServerPython import *  # noqa: F401
 
 def main():
     incident = demisto.incident()
+    if not incident:
+        raise ValueError("Error - demisto.incident() expected to return current incident "
+                     "from context but returned None")
     custom_fields = incident.get('CustomFields', {})
     drilldown_results_str = custom_fields.get('notabledrilldown', {})
     drilldown_results = json.loads(drilldown_results_str)
 
     if not drilldown_results:
-        return CommandResults()
+        return {'ContentsFormat': formats['markdown'], 'Contents': 'drill-down was not configured for notable'}
 
     if isinstance(drilldown_results, list):
         events_arr = []
@@ -29,4 +32,4 @@ if __name__ in ('__main__', '__builtin__', 'builtins'):
     try:
         return_results(main())
     except Exception as e:
-        return_error('Got an error while parsing Splunk events', error=e)
+        return_error(f'Got an error while parsing Splunk events: {e}', error=e)
