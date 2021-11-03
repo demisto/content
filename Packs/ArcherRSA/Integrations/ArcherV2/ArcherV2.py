@@ -813,7 +813,6 @@ def get_field_command(client: Client, args: Dict[str, str]):
 
 def get_mapping_by_level_command(client: Client, args: Dict[str, str]):
     level = args.get('level')
-
     res = client.do_request('GET', f'{API_ENDPOINT}/core/system/fielddefinition/level/{level}')
 
     items = []
