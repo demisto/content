@@ -14,13 +14,6 @@ UNBLOCK_ACCOUNT_JSON = '{"accountEnabled": true}'
 NO_OUTPUTS: dict = {}
 APP_NAME = 'ms-graph-user'
 INVALID_USER_CHARS_REGEX = re.compile(r'[%&*+/=?`{|}]')
-GRAPH_BASE_ENDPOINTS = {
-    'https://graph.microsoft.com': 'com',
-    'https://graph.microsoft.us': 'gcc-high',
-    'https://dod-graph.microsoft.us': 'dod',
-    'https://graph.microsoft.de': 'de',
-    'https://microsoftgraph.chinacloudapi.cn': 'cn'
-}
 
 
 def camel_case_to_readable(text):
@@ -71,13 +64,13 @@ class MsGraphClient:
     """
 
     def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed,
-                 redirect_uri, auth_code, endpoint):
+                 redirect_uri, auth_code):
         grant_type = AUTHORIZATION_CODE if self_deployed else CLIENT_CREDENTIALS
         resource = None if self_deployed else ''
         self.ms_client = MicrosoftClient(tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
                                          base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed,
                                          redirect_uri=redirect_uri, auth_code=auth_code, grant_type=grant_type,
-                                         resource=resource, endpoint=endpoint)
+                                         resource=resource)
 
     #  If successful, this method returns 204 No Content response code.
     #  Using resp_type=text to avoid parsing error.
@@ -393,9 +386,7 @@ def assign_manager_command(client: MsGraphClient, args: Dict):
 
 def main():
     params: dict = demisto.params()
-    host = params.get('host', '').rstrip('/')
-    url = host + '/v1.0/'
-    endpoint = GRAPH_BASE_ENDPOINTS.get(host, 'com')
+    url = params.get('host', '').rstrip('/') + '/v1.0/'
     tenant = params.get('tenant_id')
     auth_and_token_url = params.get('auth_id', '')
     enc_key = params.get('enc_key')
@@ -428,7 +419,7 @@ def main():
         client: MsGraphClient = MsGraphClient(tenant_id=tenant, auth_id=auth_and_token_url, enc_key=enc_key,
                                               app_name=APP_NAME, base_url=url, verify=verify, proxy=proxy,
                                               self_deployed=self_deployed, redirect_uri=redirect_uri,
-                                              auth_code=auth_code, endpoint=endpoint)
+                                              auth_code=auth_code)
         human_readable, entry_context, raw_response = commands[command](client, demisto.args())  # type: ignore
         return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=raw_response)
 
