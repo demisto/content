@@ -1033,7 +1033,6 @@ def list_users_command(client: Client, args: Dict[str, str]):
 
     if isinstance(res, dict):
         res = [res]
-
     users = []
     for user in res:
         if user.get('RequestedObject') and user.get('IsSuccessful'):
