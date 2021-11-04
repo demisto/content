@@ -289,7 +289,7 @@
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
-                        "name": "AzureDevOps Information",
+                        "name": "Azure DevOps Information",
                         "static": false,
                         "w": 1,
                         "x": 0,
@@ -475,7 +475,7 @@
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
-                        "name": "AzureDevOps Information",
+                        "name": "Azure DevOps Information",
                         "static": false,
                         "w": 1,
                         "x": 1,
@@ -764,7 +764,7 @@
         ]
     },
     "group": "incident",
-    "id": "AzureDevOps Layout",
+    "id": "Azure DevOps Layout",
     "mobile": {
         "sections": [
             {
@@ -858,7 +858,7 @@
             }
         ]
     },
-    "name": "AzureDevOps Layout",
+    "name": "Azure DevOps Layout",
     "quickView": {
         "sections": [
             {

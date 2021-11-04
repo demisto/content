@@ -1,9 +1,9 @@
 {
     "description": "",
     "feed": false,
-    "id": "AzureDevOps Outgoing Mapper",
+    "id": "Azure Devops Outgoing Mapper",
     "mapping": {
-        "AzureDevOps": {
+        "Azure DevOps": {
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "description": {
@@ -50,7 +50,7 @@
             }
         }
     },
-    "name": "AzureDevOps Outgoing Mapper",
+    "name": "Azure Devops Outgoing Mapper",
     "type": "mapping-outgoing",
     "version": -1,
     "fromVersion": "6.0.0"

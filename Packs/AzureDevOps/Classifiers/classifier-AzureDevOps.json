@@ -1,10 +1,10 @@
 {
-    "defaultIncidentType": "AzureDevOps",
+    "defaultIncidentType": "Azure DevOps",
     "description": "",
     "feed": false,
-    "id": "AzureDevOps",
+    "id": "Azure DevOps Classifier",
     "keyTypeMap": {},
-    "name": "AzureDevOps Classifier",
+    "name": "Azure DevOps Classifier",
     "propagationLabels": [
         "all"
     ],

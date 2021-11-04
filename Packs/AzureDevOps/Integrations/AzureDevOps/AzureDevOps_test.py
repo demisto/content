@@ -143,7 +143,7 @@ def test_azure_devops_user_remove_command(requests_mock):
 
     assert result.outputs is None
     assert result.outputs_prefix is None
-    assert result.readable_output == f'The User successfully removed from the organization.'
+    assert result.readable_output == 'The User successfully removed from the organization.'
 
 
 def test_azure_devops_pull_request_create_command(requests_mock):

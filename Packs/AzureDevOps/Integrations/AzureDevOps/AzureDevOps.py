@@ -1,3 +1,4 @@
+# type: ignore
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -69,17 +70,20 @@ class Client:
         """
         params = {'api-version': '6.1-preview.3'}
         data = {"accessLevel": {"accountLicenseType": account_license_type},
-                "projectEntitlements": [{
-                    "group": {
-                        "groupType": group_type
-                    },
-                    "projectRef": {
-                        "id": project_id}
-                }],
+                "projectEntitlements": [
+                    {
+                        "group": {
+                            "groupType": group_type
+                        },
+                        "projectRef": {
+                            "id": project_id}
+                    }
+                ],
                 "user": {
                     "principalName": user_email,
                     "subjectKind": "user"
-                }}
+                }
+                }
 
         full_url = f"https://vsaex.dev.azure.com/{self.organization}/_apis/UserEntitlements"
 
@@ -161,7 +165,8 @@ class Client:
             title (str): The updated pull-request title.
             description (str): The updated pull-request description.
             status (str): The updated pull-request status.
-            last_merge_source_commit (dict): Commit object at the head of the source branch at the time of the last pull request merge.
+            last_merge_source_commit (dict): Commit object at the head of the source branch
+                                             at the time of the last pull request merge.
 
         Returns:
             dict: API response from Azure.
