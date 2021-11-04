@@ -1,13 +1,14 @@
+# type: ignore
+# Disable insecure warnings
 from CommonServerPython import *
 
 ''' IMPORTS '''
 import uuid
-from typing import Dict, Tuple, List
+from typing import Dict, List
 import requests
 from azure.kusto.data.response import KustoResponseDataSet, KustoResponseDataSetV1
 from datetime import datetime
-# type: ignore
-# Disable insecure warnings
+
 ''' CONSTANTS '''
 MANAGEMENT_URL_SUFFIX = "/v1/rest/mgmt"
 DEFAULT_PAGE_NUMBER = '1'
@@ -517,6 +518,7 @@ def main() -> None:
                          " due a client cancel request.")
         else:
             return_error(str(e))
+
 
 from MicrosoftApiModule import *  # noqa: E402
 
