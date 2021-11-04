@@ -163,7 +163,7 @@ def test_generate_labels():
 
 
 def mock_email():
-    from mock import patch
+    from unittest.mock import patch
     from MailListenerV2 import Email
     with patch.object(Email, '__init__', lambda a, b, c, d, e: None):
         email = Email('data', False, False, 0)
@@ -192,6 +192,6 @@ def test_fetch_mail_gets_bytes(mocker, src_data, expected):
     mocker.patch.object(demisto, 'debug')
     mocker.patch.object(IMAPClient, 'search')
     mocker.patch.object(IMAPClient, 'fetch', return_value=src_data)
-    mocker.patch.object(IMAPClient,'_create_IMAP4')
+    mocker.patch.object(IMAPClient, '_create_IMAP4')
     fetch_mails(IMAPClient('http://example_url.com'))
     assert mail_mocker.call_args[0][0] == expected
