@@ -18,7 +18,7 @@ def main():
     drilldown_results = json.loads(drilldown_results_str)
 
     if not drilldown_results:
-        return {'ContentsFormat': formats['markdown'], 'Contents': 'drill-down was not configured for notable'}
+        return {'ContentsFormat': formats['markdown'], 'Contents': 'Drilldown was not configured for notable'}
 
     if isinstance(drilldown_results, list):
         events_arr = []

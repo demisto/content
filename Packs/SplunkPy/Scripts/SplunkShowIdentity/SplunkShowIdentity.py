@@ -13,7 +13,7 @@ def main():
     identity_results_str = custom_fields.get('identitytable', {})
     is_successful = custom_fields.get('successfuldrilldownenrichment', '')
     if is_successful == 'false':
-        return {'ContentsFormat': formats['markdown'], 'Contents': 'Drilldown enrichment failed.'}
+        return {'ContentsFormat': formats['markdown'], 'Contents': 'Identity enrichment failed.'}
 
     identity_results = json.loads(identity_results_str)
 
