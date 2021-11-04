@@ -1,0 +1,45 @@
+args:
+- name: DocFileName
+  required: true
+- name: PlaybookName
+  required: true
+- auto: PREDEFINED
+  name: Output_Format
+  predefined:
+  - Table
+  - Paragraph
+comment: |-
+  Purpose:      This automation will produce docx file detailing the tasks in the given playbook. It can produce a table or paragraph format of the report.
+
+  Author:       Mahmood Azmat
+
+  Input1:       Name of the playbook (Mandatory)
+  Input2:       Format type needed. Table or Paragraph. Paragraph is default.
+  Input3:       Name of the docx file that will be produced. Give the full name including the ".docx" extension. (Mandatory)
+
+  Requirements: This automation requires "Demisto REST API" integration enabled and connected to the XSOAR itself. Automation uses it to read the objects of the playbook.
+commonfields:
+  id: e4f27c24-5c59-4099-8ab8-3cc6dbec21bf
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: f33b17c9-b22e-490b-8778-51203ee7ea32
+    propagationLabels:
+    - all
+    toServerVersion: ""
+dockerimage: demisto/sane-doc-reports:1.0.0.20692
+enabled: true
+engineinfo: {}
+name: create-playbook-doc
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- General
+- Utility
+type: python
