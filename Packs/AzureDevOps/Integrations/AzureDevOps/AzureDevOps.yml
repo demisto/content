@@ -1059,7 +1059,7 @@ script:
     - contextPath: AzureDevOps.Project.Repository.Branch.creator
       description: Thr creator of the branch.
       type: String
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/crypto:1.0.0.24037
   isremotesyncin: true
   isremotesyncout: true
   ismappable: true
