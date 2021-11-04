@@ -16,7 +16,7 @@ configuration:
   required: false
   type: 8
 description: Azure Risky Users provides access to all at-risk users and risk detections
-  in Azure AD environment.
+  in the Azure AD environment.
 display: Azure Risky Users
 name: AzureRiskyUsers
 script:
@@ -26,24 +26,23 @@ script:
     execution: false
     name: azure-risky-users-auth-test
   - deprecated: false
-    description: Run this command to start the authorization process and follow the
+    description: Starts the authorization process. You then follow the
       instructions in the command results.
     execution: false
     name: azure-risky-users-auth-start
   - deprecated: false
-    description: Run this command to complete the authorization process. Should be
-      used after running the azure-risky-users-auth-start command.
+    description: Completes the authorization process. Run this command after executing the azure-risky-users-auth-start command.
     execution: false
     name: azure-risky-users-auth-complete
   - deprecated: false
-    description: Run this command whenever you need to rerun the authentication
+    description: Reruns the authentication.
       process.
     execution: false
     name: azure-risky-users-auth-reset
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: Specify to only get results with the specified Risk State.
+      description: Sets the Risk State to retrieve. Possible values are: "atRisk", "confirmedCompromised", "remediated", or "dismissed"
       isArray: false
       name: risk_state
       predefined:
@@ -55,21 +54,21 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: Limit of results to retrieve. Default value is 50
+      description: Limit of results to retrieve.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
       defaultValue: '1'
-      description: Page number. Default value is 1
+      description: Page number.
       isArray: false
       name: page
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Specify to only get results with the specified Risk Level.
+      description: Sets the Risk Level to retrieve. Possible values are: "low", "medium", or "high"
       isArray: false
       name: risk_level
       predefined:
@@ -79,7 +78,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: List all risky users and their properties.
+    description: Returns a comma separated list of all risky users and their properties.
     execution: false
     name: azure-risky-users-list
     outputs:
@@ -126,7 +125,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Retrieve properties and relationships of a Risky User.
+    description: Retrieves properties and relationships of a Risky User.
     execution: false
     name: azure-risky-user-get
     outputs:
@@ -169,7 +168,7 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: Limit of results to retrieve. Default value is 50
+      description: Limit of results to retrieve.
       isArray: false
       name: limit
       predefined:
@@ -178,14 +177,14 @@ script:
       secret: false
     - default: false
       defaultValue: '1'
-      description: Page number. Default value is 1
+      description: Page number.
       isArray: false
       name: page
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Specify to only get results with the specified Risk State.
+      description: Sets the Risk State to retrieve. Possible values are: "atRisk", "confirmedCompromised", "remediated", or "dismissed"
       isArray: false
       name: risk_state
       predefined:
@@ -198,7 +197,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Specify to only get results with the specified Risk Level.
+      description: Sets the Risk Level to retrieve. Possible values are: "low", "medium", or "high".
       isArray: false
       name: risk_level
       predefined:
@@ -208,21 +207,21 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get a list of the Risk Detection objects and their properties.
+    description: Returns a comma separated list of the Risk Detection objects and their properties.
     execution: false
     name: azure-risky-users-risk-detections-list
     outputs:
     - contextPath: AzureRiskyUsers.RiskDetection.id
-      description: Unique ID of the risk detection. Inherited from entity.
+      description: Unique ID of the risk detection. Inherited from the entity.
       type: String
     - contextPath: AzureRiskyUsers.RiskDetection.userId
-      description: Unique ID of the user.
+      description: The unique user ID.
       type: String
     - contextPath: AzureRiskyUsers.RiskDetection.userDisplayName
-      description: The user display name of the user.
+      description: The user display name.
       type: String
     - contextPath: AzureRiskyUsers.RiskDetection.userPrincipalName
-      description: The user principal name (UPN) of the user.
+      description: The user principal name (UPN).
       type: String
     - contextPath: AzureRiskyUsers.RiskDetection.riskDetail
       description: 'Details of the detected risk. Possible values are: none, adminGeneratedTemporaryPassword,
@@ -231,13 +230,13 @@ script:
         adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, unknownFutureValue.'
       type: String
     - contextPath: AzureRiskyUsers.RiskDetection.riskEventType
-      description: The type of risk event detected. The possible values are unlikelyTravel,
+      description: The type of risk event detected. Possible values are: unlikelyTravel,
         anonymizedIPAddress, maliciousIPAddress, unfamiliarFeatures, malwareInfectedIPAddress,
         suspiciousIPAddress, leakedCredentials, investigationsThreatIntelligence,
         generic,adminConfirmedUserCompromised, mcasImpossibleTravel, mcasSuspiciousInboxManipulationRules,
         investigationsThreatIntelligenceSigninLinked, maliciousIPAddressValidCredentialsBlockedIP,
         and unknownFutureValue. If the risk detection is a premium detection, will
-        show generic
+        show generic.
       type: String
     - contextPath: AzureRiskyUsers.RiskDetection.riskLevel
       description: 'Level of the detected risk. Possible values are: low, medium,
@@ -249,10 +248,10 @@ script:
         unknownFutureValue.'
       type: String
     - contextPath: AzureRiskyUsers.RiskDetection.ipAddress
-      description: Provides the IP address of the client from where the risk occurred.
+      description: The IP address of the client where the risk occurred.
       type: String
     - contextPath: AzureRiskyUsers.RiskDetection.source
-      description: Source of the risk detection. For example, activeDirectory.
+      description: The source of the risk detection. For example, activeDirectory.
       type: String
     - contextPath: AzureRiskyUsers.RiskDetection.detectionTimingType
       description: 'Timing of the detected risk (real-time/offline). Possible values
@@ -298,27 +297,27 @@ script:
       type: String
   - arguments:
     - default: false
-      description: ID of risk detection to retrieve.
+      description: The risk detection ID to retrieve.
       isArray: false
       name: id
       required: true
       secret: false
     deprecated: false
-    description: Read the properties and relationships of a riskDetection object.
+    description: Reads the properties and relationships of a riskDetection object.
     execution: false
     name: azure-risky-users-risk-detection-get
     outputs:
     - contextPath: AzureRiskyUsers.RiskDetection.id
-      description: Unique ID of the risk detection. Inherited from entity.
+      description: Unique ID of the risk detection. Inherited from the entity.
       type: String
     - contextPath: AzureRiskyUsers.RiskDetection.userId
-      description: Unique ID of the user.
+      description: The unique user ID.
       type: String
     - contextPath: AzureRiskyUsers.RiskDetection.userDisplayName
-      description: The user display name of the user.
+      description: The user display name.
       type: String
     - contextPath: AzureRiskyUsers.RiskDetection.userPrincipalName
-      description: The user principal name (UPN) of the user.
+      description: The user principal name (UPN).
       type: String
     - contextPath: AzureRiskyUsers.RiskDetection.riskDetail
       description: 'Details of the detected risk. Possible values are: none, adminGeneratedTemporaryPassword,
@@ -345,10 +344,10 @@ script:
         unknownFutureValue.'
       type: String
     - contextPath: AzureRiskyUsers.RiskDetection.ipAddress
-      description: Provides the IP address of the client from where the risk occurred.
+      description: The IP address of the client where the risk occurred.
       type: String
     - contextPath: AzureRiskyUsers.RiskDetection.source
-      description: Source of the risk detection. For example, activeDirectory.
+      description: The source of the risk detection. For example, activeDirectory.
       type: String
     - contextPath: AzureRiskyUsers.RiskDetection.detectionTimingType
       description: 'Timing of the detected risk (real-time/offline). Possible values
