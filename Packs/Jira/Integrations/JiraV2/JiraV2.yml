@@ -20,11 +20,13 @@ configuration:
   required: false
   type: 4
 - defaultvalue: OauthKey
+  additionalinfo: If other required field are not provided (both Access Token and Private Key), will be ignored.
   display: Consumer key (OAuth 1.0)
   name: consumerKey
   required: false
   type: 0
-- display: Access token
+- display: Access Token
+  additionalinfo: Used for both OAuth 1.0 and Personal Access Token authentication methods.
   name: accessToken
   required: false
   type: 0
