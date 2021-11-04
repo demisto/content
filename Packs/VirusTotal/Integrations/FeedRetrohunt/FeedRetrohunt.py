@@ -19,7 +19,7 @@ class Client(BaseClient):
 
         return f'{malicious}/{total}'
 
-    def build_iterator(self) -> List:
+    def build_iterator(self, limit: int = 10, job_id: str = '') -> List:
         """Retrieves all entries from the feed.
         Returns:
             A list of objects, containing the indicators.
@@ -27,7 +27,7 @@ class Client(BaseClient):
 
         result = []
 
-        response = self.list_last_job_matches()
+        response = self.list_last_job_matches(limit, job_id)
 
         try:
             for indicator in response.get('data'):
@@ -43,29 +43,26 @@ class Client(BaseClient):
 
     def list_last_job_matches(
             self,
-            limit: Optional[int] = None
+            limit: Optional[int] = None,
+            job_id: Optional[str] = None
     ) -> dict:
-        """ Retrieve latest retrohunt job matches.
+        """ Retrieve matches for a given retrohunt job (latest by default).
         """
-        jobs = self._http_request(
-            'GET',
-            'intelligence/retrohunt_jobs',
-            params=assign_params(limit=limit)
-        )
-
-        if jobs.get('data'):
-            latestJobId = jobs.get('data')[0].get('id')
-        else:
-            # If no jobs exist, return empty list
-            return {}
+        if not job_id:
+          jobs = self._http_request(
+              'GET',
+              'intelligence/retrohunt_jobs',
+              params=assign_params(limit=limit)
+          )
+          if not jobs.get('data'):
+              return {}
+          job_id = jobs.get('data')[0].get('id')
 
         return self._http_request(
             'GET',
-            'intelligence/retrohunt_jobs/{}/matching_files'.format(latestJobId),
+            'intelligence/retrohunt_jobs/{}/matching_files'.format(job_id),
             params=assign_params(limit=limit)
         )
-
-        # intelligence/retrohunt_jobs/Diviei-1634553210/matching_files
 
 def test_module(client: Client, args: dict) -> str:
     client.list_last_job_matches()
@@ -74,8 +71,8 @@ def test_module(client: Client, args: dict) -> str:
 def fetch_indicators(client: Client,
                      tlp_color: Optional[str] = None,
                      feed_tags: List = [],
-                     limit: int = -1,
-                     tag: Optional[str] = None) -> List[Dict]:
+                     limit: int = 10,
+                     job_id: Optional[str] = None) -> List[Dict]:
     """Retrieves indicators from the feed
     Args:
         client (Client): Client object with request
@@ -85,7 +82,7 @@ def fetch_indicators(client: Client,
     Returns:
         Indicators.
     """
-    iterator = client.build_iterator()
+    iterator = client.build_iterator(limit, job_id)
     indicators = []
     if limit > 0:
         iterator = iterator[:limit]

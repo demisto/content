@@ -90,15 +90,22 @@ name: VirusTotal Retrohunt Feed
 script:
   commands:
   - arguments:
-    - default: false
+    - name: limit
       defaultValue: '10'
       description: The maximum number of results to return. The default value is 10.
       isArray: false
-      name: limit
+      default: false
+      required: false
+      secret: false
+    - name: job-id
+      defaultValue: ''
+      description: VT Retrohunt job's ID
+      isArray: false
+      default: false
       required: false
       secret: false
     deprecated: false
-    description: Gets the matches from latest Virustotal's retrohunt job.
+    description: Gets the matches from a given retrohunt job's id or the latest by default.
     execution: false
     name: vt-retrohunt-get-indicators
   dockerimage: demisto/python3:3.9.7.24076
