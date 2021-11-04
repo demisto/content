@@ -13,12 +13,12 @@ def main():
     drilldown_results_str = custom_fields.get('notabledrilldown', {})
     is_successful = custom_fields.get('successfuldrilldownenrichment', '')
     if is_successful == 'false':
-        return {'ContentsFormat': formats['markdown'], 'Contents': 'Drilldown enrichment failed.'}
+        return CommandResults(readable_output='Drilldown enrichment failed.')
 
     drilldown_results = json.loads(drilldown_results_str)
 
     if not drilldown_results:
-        return {'ContentsFormat': formats['markdown'], 'Contents': 'Drilldown was not configured for notable'}
+        return CommandResults(readable_output='Drilldown was not configured for notable.')
 
     if isinstance(drilldown_results, list):
         events_arr = []

@@ -13,12 +13,12 @@ def main():
     identity_results_str = custom_fields.get('identitytable', {})
     is_successful = custom_fields.get('successfulidentityenrichment', '')
     if is_successful == 'false':
-        return {'ContentsFormat': formats['markdown'], 'Contents': 'Identity enrichment failed.'}
+        return CommandResults(readable_output='Identity enrichment failed.')
 
     identity_results = json.loads(identity_results_str)
 
     if not identity_results:
-        return {'ContentsFormat': formats['markdown'], 'Contents': 'No users were found in the notable.'}
+        return CommandResults(readable_output='No users were found in the notable.')
 
     if isinstance(identity_results, list):
         events_arr = []

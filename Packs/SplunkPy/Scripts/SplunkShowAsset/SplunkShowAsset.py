@@ -13,12 +13,12 @@ def main():
     asset_results_str = custom_fields.get('assettable', {})
     is_successful = custom_fields.get('successfulassetenrichment', '')
     if is_successful == 'false':
-        return {'ContentsFormat': formats['markdown'], 'Contents': 'Asset enrichment failed.'}
+        return CommandResults(readable_output='Asset enrichment failed.')
 
     asset_results = json.loads(asset_results_str)
 
     if not asset_results:
-        return {'ContentsFormat': formats['markdown'], 'Contents': 'No assets were found in the notable'}
+        return CommandResults(readable_output='No assets were found in the notable')
 
     if isinstance(asset_results, list):
         events_arr = []
