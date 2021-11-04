@@ -306,73 +306,6 @@ script:
       required: true
       secret: false
     - default: false
-      defaultValue: '3'
-      description: Set days parameter.
-      isArray: false
-      name: days
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: all
-      description: This setting can only be insecure,secure and all.
-      isArray: false
-      name: result
-      predefined:
-      - All
-      - Secure
-      - Insecure
-      required: false
-      secret: false
-    deprecated: true
-    description: Returns the list of the attack results have optional parameters for
-      filtration.
-    execution: false
-    name: Picus_getAttackResults
-  - arguments:
-    - default: false
-      description: Threat ID list ("111,222,333,...") or single threat ID can be given.
-      isArray: false
-      name: threat_ids
-      required: true
-      secret: false
-    - default: false
-      description: Untrusted peer name.
-      isArray: false
-      name: attacker_peer
-      required: true
-      secret: false
-    - default: false
-      description: Trusted peer name.
-      isArray: false
-      name: victim_peer
-      required: true
-      secret: false
-    - default: false
-      description: Example variant=HTTP
-      isArray: false
-      name: variant
-      required: true
-      secret: false
-    deprecated: true
-    description: Returns the list of the attack results of a single threat have optional
-      parameters for filtration.
-    execution: false
-    name: Picus_getThreatResults
-  - arguments:
-    - default: false
-      description: Untrusted peer name.
-      isArray: false
-      name: attacker_peer
-      required: true
-      secret: false
-    - default: false
-      description: Trusted peer name.
-      isArray: false
-      name: victim_peer
-      required: true
-      secret: false
-    - default: false
       description: Example variant=HTTP
       isArray: false
       name: variant
@@ -397,26 +330,6 @@ script:
     description: Set parameter on playbook. (This command is only used on playbook)
     execution: false
     name: Picus_setParamPB
-  - arguments:
-    - default: false
-      description: Threat ID list ("111,222,333,...") or single threat ID can be given.
-      isArray: false
-      name: threat_ids
-      required: true
-      secret: false
-    - default: false
-      description: Products info of the mitigation. This parameter can be Check Point
-        NGFW, ForcepointNGFW, McAfee IPS, PaloAlto IPS, SourceFire IPS, TippingPoint,
-        F5 BIG-IP, Fortigate WAF, FortiWeb, Fortigate IPS, Snort, CitrixWAF, and ModSecurity.
-      isArray: false
-      name: product
-      required: true
-      secret: false
-    deprecated: true
-    description: Returns the list of the mitigations of threats have optional parameters
-      for filtration, this route may not be used associated with your license.
-    execution: false
-    name: Picus_getMitigationList
   - arguments:
     - default: false
       description: Untrusted peer name.
