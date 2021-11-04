@@ -7,6 +7,8 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 DATE_FORMAT = '%a, %d %b %Y %H:%M:%S GMT'
+account_sas_token = ""
+storage_account_name = ""
 
 
 class Client:
@@ -137,7 +139,8 @@ class Client:
         try:
             shutil.copy(xsoar_system_file_path, blob_name)
         except FileNotFoundError:
-            raise Exception('Failed to prepare file for upload.')
+            raise Exception('Failed to prepare file for upload. '
+                            'The process of importing and copying the file data from XSOAR failed.')
 
         try:
             with open(blob_name, 'rb') as file:
@@ -265,9 +268,12 @@ class Client:
         return response
 
 
-def get_pagination_next_element(limit: str, page: int, client_request: Callable, params: dict) -> str:
+def get_pagination_next_marker_element(limit: str, page: int, client_request: Callable, params: dict) -> str:
     """
     Get next marker element for request pagination.
+    'marker' is a string value that identifies the portion of the list to be returned with the next list operation.
+    The operation returns a NextMarker element within the response body if the list returned was not complete.
+    This value may then be used as a query parameter in a subsequent call to request the next portion of the list items.
     Args:
         limit (str): Number of elements to retrieve.
         page (str): Page number.
@@ -306,8 +312,9 @@ def list_containers_command(client: Client, args: Dict[str, Any]) -> CommandResu
     readable_message = f'Containers List:\n Current page size: {limit}\n Showing page {page} out others that may exist'
 
     if page > 1:  # type: ignore
-        marker = get_pagination_next_element(limit=limit, page=page,  # type: ignore
-                                             client_request=client.list_containers_request, params={"prefix": prefix})
+        marker = get_pagination_next_marker_element(limit=limit, page=page,  # type: ignore
+                                                    client_request=client.list_containers_request,
+                                                    params={"prefix": prefix})
 
         if not marker:
             return CommandResults(
@@ -421,7 +428,7 @@ def get_container_properties_command(client: Client, args: Dict[str, Any]) -> Co
     response_headers = list(raw_response.keys())
     outputs = {}
 
-    properties = replace_dict_keys(raw_response, response_headers)
+    properties = transform_response_to_context_format(raw_response, response_headers)
 
     outputs['name'] = container_name
     outputs['Property'] = properties
@@ -488,10 +495,10 @@ def list_blobs_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     readable_message = f'{container_name} Container Blobs List:\n Current page size: {limit}\n ' \
                        f'Showing page {page} out others that may exist'
     if page > 1:  # type: ignore
-        marker = get_pagination_next_element(limit=limit, page=page,  # type: ignore
-                                             client_request=client.list_blobs_request,
-                                             params={"container_name": container_name,
-                                                     "prefix": prefix})  # type: ignore
+        marker = get_pagination_next_marker_element(limit=limit, page=page,  # type: ignore
+                                                    client_request=client.list_blobs_request,
+                                                    params={"container_name": container_name,
+                                                            "prefix": prefix})  # type: ignore
 
         if not marker:
             return CommandResults(
@@ -738,9 +745,9 @@ def delete_blob_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     return command_results
 
 
-def replace_dict_keys(data: dict, keys: list) -> dict:
+def transform_response_to_context_format(data: dict, keys: list) -> dict:
     """
-    Remove and replace keys in dictionary.
+    Transform API response data to suitable XSOAR context data.
     Remove 'x-ms' prefix and replace '-' to '_' for more readable and conventional variables.
     Args:
         data (dict): Data to exchange.
@@ -777,7 +784,7 @@ def get_blob_properties_command(client: Client, args: Dict[str, Any]) -> Command
     response_headers = list(raw_response.keys())
     outputs = {}
 
-    properties = replace_dict_keys(raw_response, response_headers)
+    properties = transform_response_to_context_format(raw_response, response_headers)
 
     outputs['name'] = container_name
     outputs['Blob'] = {'name': blob_name, 'Property': properties}
@@ -875,6 +882,8 @@ def main() -> None:
     verify_certificate: bool = not params.get('insecure', False)
     proxy = params.get('proxy', False)
 
+    global account_sas_token
+    global storage_account_name
     account_sas_token = params['account_sas_token']
     storage_account_name = params['storage_account_name']
     api_version = "2020-10-02"

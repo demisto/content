@@ -5,6 +5,8 @@ import copy
 from requests import Response
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
+account_sas_token = ""
+storage_account_name = ""
 
 
 class Client:
@@ -592,6 +594,8 @@ def main() -> None:
     verify_certificate: bool = not params.get('insecure', False)
     proxy = params.get('proxy', False)
 
+    global account_sas_token
+    global storage_account_name
     account_sas_token = params['account_sas_token']
     storage_account_name = params['storage_account_name']
     api_version = "2020-10-02"

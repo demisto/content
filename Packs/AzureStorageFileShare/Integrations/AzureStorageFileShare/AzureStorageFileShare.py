@@ -9,6 +9,8 @@ from CommonServerPython import *  # noqa: F401
 
 GENERAL_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 DATE_FORMAT = "%a, %d %b %Y %H:%M:%S GMT"
+account_sas_token = ''
+storage_account_name = ''
 
 
 class Client:
@@ -178,7 +180,9 @@ class Client:
         try:
             shutil.copy(xsoar_system_file_path, new_file_name)
         except FileNotFoundError:
-            raise Exception('Failed to prepare file for upload.')
+            raise Exception(
+                'Failed to prepare file for upload. '
+                'The process of importing and copying the file data from XSOAR failed.')
 
         try:
             with open(new_file_name, 'rb') as file:
@@ -218,7 +222,8 @@ class Client:
         try:
             shutil.copy(xsoar_system_file_path, new_file_name)
         except FileNotFoundError:
-            raise Exception('Failed to prepare file for upload.')
+            raise Exception('Failed to prepare file for upload. '
+                            'The process of importing and copying the file data from XSOAR failed.')
 
         try:
             with open(new_file_name, 'rb') as file:
@@ -336,9 +341,12 @@ def delete_share_command(client: Client, args: Dict[str, Any]) -> CommandResults
     return command_results
 
 
-def get_pagination_next_element(limit: str, page: int, client_request: Callable, params: dict) -> str:
+def get_pagination_next_marker_element(limit: str, page: int, client_request: Callable, params: dict) -> str:
     """
     Get next marker element for request pagination.
+    'marker' is a string value that identifies the portion of the list to be returned with the next list operation.
+    The operation returns a NextMarker element within the response body if the list returned was not complete.
+    This value may then be used as a query parameter in a subsequent call to request the next portion of the list items.
     Args:
         limit (str): Number of elements to retrieve.
         page (str): Page number.
@@ -374,8 +382,9 @@ def list_shares_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     readable_message = f'Shares List:\n Current page size: {limit}\n Showing page {page} out others that may exist'
 
     if page > 1:  # type: ignore
-        marker = get_pagination_next_element(limit=limit, page=page,  # type: ignore
-                                             client_request=client.list_shares_request, params={"prefix": prefix})
+        marker = get_pagination_next_marker_element(limit=limit, page=page,  # type: ignore
+                                                    client_request=client.list_shares_request,
+                                                    params={"prefix": prefix})
         if not marker:
             return CommandResults(
                 readable_output=readable_message,
@@ -393,16 +402,9 @@ def list_shares_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     outputs = []
 
     for element in root.iter('Share'):
-        data = {}
-        data['Name'] = element.findtext('Name')
-        outputs.append(dict(data))
-        properties = {}
-        for share_property in element.findall('Properties'):
-            for attribute in share_property:
-                properties[attribute.tag] = attribute.text
-
-        data['Properties'] = properties  # type: ignore
+        data = handle_content_properties_information(element)
         raw_response.append(data)
+        outputs.append({'Name': element.findtext('Name')})
 
     readable_output = tableToMarkdown(
         readable_message,
@@ -420,6 +422,27 @@ def list_shares_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
     return command_results
+
+
+def handle_content_properties_information(element: object) -> dict:
+    """
+    Handle API response 'properties' information.
+    Args:
+        element (object): An XML element hierarchy data.
+
+    Returns:
+        dict: Transformed dictionary of properties information.
+
+    """
+
+    data = {'Name': element.findtext('Name')}  # type: ignore
+    properties = {}
+    for share_property in element.findall('Properties'):  # type: ignore
+        for attribute in share_property:
+            properties[attribute.tag] = attribute.text
+    data['Properties'] = properties  # type: ignore
+
+    return data
 
 
 def handle_directory_content_response(response: str) -> dict:
@@ -440,15 +463,8 @@ def handle_directory_content_response(response: str) -> dict:
 
     for path in xml_path:
         for element in root.iter(path):
-            data = {}
-            data['Name'] = element.findtext('Name')
+            data = handle_content_properties_information(element)
             data['FileId'] = element.findtext('FileId')
-            properties = {}
-            for share_property in element.findall('Properties'):
-                for attribute in share_property:
-                    properties[attribute.tag] = attribute.text
-            data['Properties'] = properties  # type: ignore
-
             raw_response[path].append(data)  # type: ignore
 
     return raw_response
@@ -539,10 +555,10 @@ def list_directories_and_files_command(client: Client, args: Dict[str, Any]) -> 
     readable_message = f'Directories and Files List:\n Current page size: {limit}\n Showing page {page} out others that may exist'
 
     if page > 1:  # type: ignore
-        marker = get_pagination_next_element(limit=limit, page=page,  # type: ignore
-                                             client_request=client.list_directories_and_files_request,
-                                             params={"prefix": prefix, "share_name": share_name,
-                                                     "directory_path": directory_path})
+        marker = get_pagination_next_marker_element(limit=limit, page=page,  # type: ignore
+                                                    client_request=client.list_directories_and_files_request,
+                                                    params={"prefix": prefix, "share_name": share_name,
+                                                            "directory_path": directory_path})
 
         if not marker:
             return CommandResults(
@@ -735,6 +751,9 @@ def main() -> None:
     args: Dict[str, Any] = demisto.args()
     verify_certificate: bool = not params.get('insecure', False)
     proxy = params.get('proxy', False)
+
+    global account_sas_token
+    global storage_account_name
     account_sas_token = params['account_sas_token']
     storage_account_name = params['storage_account_name']
     api_version = "2020-10-02"

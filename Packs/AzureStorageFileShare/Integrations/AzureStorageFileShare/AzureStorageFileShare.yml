@@ -26,7 +26,8 @@ script:
   commands:
   - arguments:
     - default: false
-      description: The name of the new Share to create.
+      description: 'The name of the new Share to create. Rules for naming shares can
+        be found here: https://docs.microsoft.com/en-us/rest/api/storageservices/naming-and-referencing-shares--directories--files--and-metadata'
       isArray: false
       name: share_name
       required: true

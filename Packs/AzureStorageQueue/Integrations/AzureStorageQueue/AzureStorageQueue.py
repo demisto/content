@@ -8,6 +8,8 @@ import copy
 from requests import Response
 
 DATE_FORMAT = '%a, %d %b %Y %H:%M:%S GMT'
+account_sas_token = ""
+storage_account_name = ""
 
 
 class Client:
@@ -302,9 +304,12 @@ def encode_message(string: str) -> str:
     return base64.b64encode(message_bytes).decode("utf-8")
 
 
-def get_pagination_next_element(limit: str, page: int, client_request: Callable, params: dict) -> str:
+def get_pagination_next_marker_element(limit: str, page: int, client_request: Callable, params: dict) -> str:
     """
     Get next marker element for request pagination.
+    'marker' is a string value that identifies the portion of the list to be returned with the next list operation.
+    The operation returns a NextMarker element within the response body if the list returned was not complete.
+    This value may then be used as a query parameter in a subsequent call to request the next portion of the list items.
     Args:
         limit (str): Number of elements to retrieve.
         page (str): Page number.
@@ -342,8 +347,9 @@ def list_queues_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     readable_message = f'Queues List:\n Current page size: {limit}\n Showing page {page} out others that may exist'
 
     if page > 1:  # type: ignore
-        marker = get_pagination_next_element(limit=limit, page=page,  # type: ignore
-                                             client_request=client.list_queues_request, params={"prefix": prefix})
+        marker = get_pagination_next_marker_element(limit=limit, page=page,  # type: ignore
+                                                    client_request=client.list_queues_request,
+                                                    params={"prefix": prefix})
 
         if not marker:
             return CommandResults(
@@ -432,7 +438,7 @@ def delete_queue_command(client: Client, args: Dict[str, Any]) -> CommandResults
     return command_results
 
 
-def iso_time_format(data: dict, keys: list):
+def date_values_to_iso(data: dict, keys: list):
     """
     Convert time data values to ISO 8601 time format.
     input example: keys = ['InsertionTime','ExpirationTime'] , data = {
@@ -490,7 +496,7 @@ def create_message_command(client: Client, args: Dict[str, Any]) -> CommandResul
 
     message_outputs = copy.deepcopy(raw_response)[0]
 
-    iso_time_format(message_outputs, ['ExpirationTime', 'InsertionTime', 'TimeNextVisible'])
+    date_values_to_iso(message_outputs, ['ExpirationTime', 'InsertionTime', 'TimeNextVisible'])
 
     outputs = {'name': queue_name, 'Message': message_outputs}
 
@@ -539,7 +545,7 @@ def get_messages_command(client: Client, args: Dict[str, Any]) -> CommandResults
 
     for message in message_outputs:
         message['MessageText'] = decode_message(message['MessageText'])
-        iso_time_format(message, ['ExpirationTime', 'InsertionTime', 'TimeNextVisible'])
+        date_values_to_iso(message, ['ExpirationTime', 'InsertionTime', 'TimeNextVisible'])
 
     outputs = {'name': queue_name, 'Message': message_outputs}
 
@@ -585,7 +591,7 @@ def peek_messages_command(client: Client, args: Dict[str, Any]) -> CommandResult
 
     for message in message_outputs:
         message['MessageText'] = decode_message(message['MessageText'])
-        iso_time_format(message, ['ExpirationTime', 'InsertionTime'])
+        date_values_to_iso(message, ['ExpirationTime', 'InsertionTime'])
 
     outputs = {'name': queue_name, 'Message': message_outputs}
 
@@ -776,8 +782,8 @@ def fetch_incidents(client: Client, queue_name: str, max_fetch: str) -> None:
     demisto.incidents(incidents)
 
     for message in raw_response:
-        client.delete_message_request(queue_name=queue_name, message_id=message.get("MessageId"),
-                                      pop_receipt=message.get("PopReceipt"))
+        client.delete_message_request(queue_name=queue_name, message_id=message["MessageId"],
+                                      pop_receipt=message["PopReceipt"])
 
 
 def test_module(client: Client, max_fetch: str) -> None:
@@ -821,6 +827,9 @@ def main() -> None:
     args: Dict[str, Any] = demisto.args()
     verify_certificate: bool = not params.get('insecure', False)
     proxy = params.get('proxy', False)
+
+    global account_sas_token
+    global storage_account_name
     account_sas_token = params['account_sas_token']
     storage_account_name = params['storage_account_name']
     api_version = "2020-10-02"

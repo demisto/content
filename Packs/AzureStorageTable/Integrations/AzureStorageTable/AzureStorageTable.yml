@@ -26,7 +26,8 @@ script:
   commands:
   - arguments:
     - default: false
-      description: The name of the new table to create.
+      description: 'The name of the new table to create. Rules for naming tables can
+        be found here: https://docs.microsoft.com/en-us/rest/api/storageservices/understanding-the-table-service-data-model'
       isArray: false
       name: table_name
       required: true
@@ -214,7 +215,7 @@ script:
     - default: false
       description: Comma-separated Entity properties to return. If not specified -
         all fields will be retrieved.
-      isArray: false
+      isArray: true
       name: select
       required: false
       secret: false

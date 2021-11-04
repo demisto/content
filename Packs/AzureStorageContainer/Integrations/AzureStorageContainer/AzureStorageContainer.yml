@@ -56,7 +56,9 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The name of the Container to create.
+      description: |
+        The name of the Container to create. Rules for naming containers can be found here:
+        https://docs.microsoft.com/en-us/rest/api/storageservices/naming-and-referencing-containers--blobs--and-metadata
       isArray: false
       name: container_name
       required: true

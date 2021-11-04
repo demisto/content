@@ -77,7 +77,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The name of the Queue to create.
+      description: 'The name of the Queue to create.  Rules for naming queues can
+        be found here: https://docs.microsoft.com/en-us/rest/api/storageservices/naming-queues-and-metadata'
       isArray: false
       name: queue_name
       required: true
