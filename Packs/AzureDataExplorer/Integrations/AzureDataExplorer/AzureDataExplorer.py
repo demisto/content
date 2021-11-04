@@ -1,6 +1,4 @@
-import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 
 ''' IMPORTS '''
 import uuid
@@ -31,7 +29,7 @@ class DataExplorerClient:
             self_deployed=True,
             auth_id=client_id,
             token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
-            grant_type=DEVICE_CODE,  # disable-secrets-detection
+            grant_type=DEVICE_CODE,
             base_url=cluster_url,
             verify=verify,
             proxy=proxy,
@@ -123,7 +121,6 @@ class DataExplorerClient:
         """
         mgmt_query = f".show queries | where ClientActivityId=='{client_activity_id}'" if client_activity_id \
             else ".show queries | sort by StartedOn"
-        demisto.log(mgmt_query)
         data = {
             "db": database_name,
             "csl": mgmt_query
