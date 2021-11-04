@@ -1502,3 +1502,43 @@ def test_integration_health(mocker):
     results = demisto.results.call_args[0]
     assert len(results) == 1
     assert results[0]['HumanReadable'] == expected_results
+
+
+@pytest.mark.parametrize('endpoint, expected_graph_url',
+                         [('Default - Worldwide (.com)', 'https://graph.microsoft.com'),
+                          ('GCC-High (US)', 'https://graph.microsoft.us'),
+                          ('Department of Defence - DoD (US)', 'https://dod-graph.microsoft.us'),
+                          ('Germany (.de)', 'https://graph.microsoft.de'),
+                          ('China (.cn)', 'https://microsoftgraph.chinacloudapi.cn')])
+def test_graph_url(endpoint, expected_graph_url):
+    """
+    Given:
+        - The different possible endpoints
+    When:
+        - Replacing the given endpoint with the corresponding graph URL
+    Then:
+        - Verify that the endpoint is translated to the correct URL
+    """
+    from MicrosoftTeams import GRAPH_ENDPOINTS
+
+    assert GRAPH_ENDPOINTS.get(endpoint) == expected_graph_url
+
+
+@pytest.mark.parametrize('endpoint, expected_login_url',
+                         [('Default - Worldwide (.com)', 'https://login.microsoftonline.com'),
+                          ('GCC-High (US)', 'https://login.microsoftonline.us'),
+                          ('Department of Defence - DoD (US)', 'https://login.microsoftonline.us'),
+                          ('Germany (.de)', 'https://login.microsoftonline.de'),
+                          ('China (.cn)', 'https://login.chinacloudapi.cn')])
+def test_login_url(endpoint, expected_login_url):
+    """
+    Given:
+        - The different possible endpoints
+    When:
+        - Replacing the given endpoint with the corresponding login URL
+    Then:
+        - Verify that the endpoint is translated to the correct URL
+    """
+    from MicrosoftTeams import LOGIN_ENDPOINTS
+
+    assert LOGIN_ENDPOINTS.get(endpoint) == expected_login_url
