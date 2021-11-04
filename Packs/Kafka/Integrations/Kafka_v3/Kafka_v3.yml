@@ -159,7 +159,7 @@ script:
       description: A topic to filter by
       isArray: false
       name: topic
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Fetch partitions for a topic.

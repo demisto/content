@@ -1,13 +1,10 @@
 import demistomock as demisto
 from CommonServerPython import *
 from confluent_kafka.admin import AdminClient
-from confluent_kafka import Consumer, TopicPartition, Producer, KafkaError, KafkaException, TIMESTAMP_NOT_AVAILABLE
+from confluent_kafka import Consumer, TopicPartition, Producer, KafkaException, TIMESTAMP_NOT_AVAILABLE
 
 ''' IMPORTS '''
 import requests
-import traceback
-
-
 import traceback
 
 # Disable insecure warnings
@@ -20,32 +17,58 @@ SUPPORTED_GENERAL_OFFSETS = ['smallest', 'earliest', 'beginning', 'largest', 'la
 
 class KafkaCommunicator:
     """Client class to interact with Kafka."""
-    conf_admin = None
+    conf_producer = None
     conf_consumer = None
 
-    def __init__(self, brokers: str, offset: str = 'earliest', group_id: str = 'my_group',
-                 message_max_bytes: int = None, enable_auto_commit: bool = False):
-        self.conf_admin = {'bootstrap.servers': brokers}
-        # if offset not in SUPPORTED_GENERAL_OFFSETS:
-        #     return_error(f'General offset {offset} not found in supported offsets: {SUPPORTED_GENERAL_OFFSETS}')
+    def __init__(self, brokers: str, offset: str = 'earliest', group_id: str = 'xsoar_group',
+                 message_max_bytes: int = None, enable_auto_commit: bool = False, ca_cert=None,
+                 client_cert=None, client_cert_key=None, ssl_password=None):
+        self.conf_producer = {'bootstrap.servers': brokers}
+
+        if offset not in SUPPORTED_GENERAL_OFFSETS:
+            return_error(f'General offset {offset} not found in supported offsets: {SUPPORTED_GENERAL_OFFSETS}')
 
         self.conf_consumer = {'bootstrap.servers': brokers,
                               'session.timeout.ms': 2000,
                               'auto.offset.reset': offset,
-                              'group.id': group_id,
+                              'group.id': group_id,  # TODO: Need to sort this
                               'enable.auto.commit': enable_auto_commit}
 
         if message_max_bytes:
             self.conf_consumer.update({'message.max.bytes': int(message_max_bytes)})
 
+        if ca_cert:
+            ca_path = 'ca.cert'  # type: ignore
+            with open(ca_path, 'wb') as file:
+                file.write(ca_cert)
+                ca_path = os.path.abspath(ca_path)
+            self.conf_producer.update({'ssl.ca.location': ca_path})
+            self.conf_consumer.update({'ssl.ca.location': ca_path})
+        if client_cert:
+            client_path = 'client.cert'
+            with open(client_path, 'wb') as file:
+                file.write(client_cert)
+                client_path = os.path.abspath(client_path)
+            self.conf_producer.update({'ssl.certificate.location': client_path})
+            self.conf_consumer.update({'ssl.certificate.location': client_path})
+        if client_cert_key:
+            client_key_path = 'client_key.key'
+            with open(client_key_path, 'wb') as file:
+                file.write(client_cert_key)
+                self.conf_producer.update({'ssl.key.location': client_key_path})
+                self.conf_consumer.update({'ssl.key.location': client_key_path})
+        if ssl_password:
+            self.conf_producer.update({'ssl.key.password': ssl_password})
+            self.conf_consumer.update({'ssl.key.password': ssl_password})
+
     def test_connection(self):
         try:
-            AdminClient(self.conf_admin)  # doesn't work!
+            # AdminClient(self.conf_producer)  # doesn't work!
             Consumer(self.conf_consumer)
-            Producer(self.conf_admin)
-            self.get_topics(AdminClient(self.conf_admin))
+            Producer(self.conf_producer)
+            # self.get_topics(AdminClient(self.conf_producer))
             self.get_topics(Consumer(self.conf_consumer))
-            self.get_topics(Producer(self.conf_admin))
+            self.get_topics(Producer(self.conf_producer))
 
         except Exception as e:
             raise DemistoException(f'Error connecting to kafka: {str(e)}\n{traceback.format_exc()}')
@@ -63,7 +86,7 @@ class KafkaCommunicator:
 
     def get_topics(self, client=None):
         if not client:
-            client = AdminClient(self.conf_admin)
+            client = Producer(self.conf_producer)
         cluster_metadata = client.list_topics()
         return cluster_metadata.topics
 
@@ -73,7 +96,7 @@ class KafkaCommunicator:
         return kafka_consumer.get_watermark_offsets(partition=partition)
 
     def produce(self, topic, value, partition):
-        kafka_producer = Producer(self.conf_admin)
+        kafka_producer = Producer(self.conf_producer)
         if partition:
             kafka_producer.produce(topic=topic, value=value, partition=partition,
                                    on_delivery=self.delivery_report)
@@ -82,7 +105,7 @@ class KafkaCommunicator:
                                    on_delivery=self.delivery_report)
         kafka_producer.flush()
 
-    def consume(self, topic: str, partition: int = -1, offset='0', close_session=False):
+    def consume(self, topic: str, partition: int = -1, offset='0'):
         kafka_consumer = Consumer(self.conf_consumer)
         kafka_consumer.assign(self.get_topic_partitions(kafka_consumer, topic, partition, offset))
         polled_msg = kafka_consumer.poll(1.0)
@@ -372,6 +395,33 @@ def fetch_incidents(demisto_params):
     demisto.incidents(incidents)
 
 
+def create_certificate(ca_cert=None, client_cert=None, client_cert_key=None, password=None):
+    """Create certificate"""
+    ca_path = None
+    client_path = None
+    client_key_path = None
+    if ca_cert:
+        ca_path = 'ca.cert'  # type: ignore
+        with open(ca_path, 'wb') as file:
+            file.write(ca_cert)
+            ca_path = os.path.abspath(ca_path)
+    if client_cert:
+        client_path = 'client.cert'
+        with open(client_path, 'wb') as file:
+            file.write(client_cert)
+            client_path = os.path.abspath(client_path)
+    if client_cert_key:
+        client_key_path = 'client_key.key'
+        with open(client_key_path, 'wb') as file:
+            file.write(client_cert_key)
+    return {
+        'ssl.ca.location': ca_path,
+        'ssl.certificate.location': client_path,
+        'ssl.key.location': client_key_path,
+        'ssl.key.password': password
+    }
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -381,25 +431,26 @@ def main():
     demisto_args = demisto.args()
     demisto.debug(f'Command being called is {command}')
     brokers = demisto_params.get('brokers')
-    offset = demisto_params.get('offset', 'earliest')
-    offset = offset if offset else 'earliest'
+    offset = handle_empty(demisto_params.get('offset', 'earliest'), 'earliest')
 
     # Should we use SSL
     use_ssl = demisto_params.get('use_ssl', False)
 
-    # Certificates
-    ca_cert = demisto_params.get('ca_cert', None)
-    client_cert = demisto_params.get('client_cert', None)
-    client_cert_key = demisto_params.get('client_cert_key', None)
-    password = demisto_params.get('additional_password', None)
+    if use_ssl:
+        # Add Certificates
+        ca_cert = demisto_params.get('ca_cert', None)
+        client_cert = demisto_params.get('client_cert', None)
+        client_cert_key = demisto_params.get('client_cert_key', None)
+        ssl_password = demisto_params.get('additional_password', None)
+        kafka = KafkaCommunicator(brokers=brokers, ca_cert=ca_cert, client_cert=client_cert,
+                                  client_cert_key=client_cert_key, ssl_password=ssl_password, offset=offset)
+    else:
+        kafka = KafkaCommunicator(brokers=brokers, offset=offset)
 
     demisto_command = demisto.command()
 
-    kafka = KafkaCommunicator(brokers=brokers)
-
     try:
         if demisto_command == 'test-module':
-            # This is the call made when pressing the integration test button.
             test_module(kafka)
         elif demisto_command == 'kafka-print-topics':
             print_topics(kafka, demisto_args)
@@ -415,7 +466,7 @@ def main():
     except Exception as e:
         debug_log = 'Debug logs:'
         error_message = str(e)
-        if demisto.command() != 'test-module':
+        if demisto_command != 'test-module':
             stacktrace = traceback.format_exc()
             if stacktrace:
                 debug_log += f'\nFull stacktrace:\n\n{stacktrace}'
