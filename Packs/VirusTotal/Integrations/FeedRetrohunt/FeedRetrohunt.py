@@ -147,7 +147,7 @@ def get_indicators_command(client: Client,
         Outputs.
     """
     limit = int(args.get('limit', 10))
-    job_id = args.get('job-id')
+    job_id = args.get('job_id')
     tlp_color = params.get('tlp_color')
     feed_tags = argToList(params.get('feedTags', ''))
     indicators = fetch_indicators(client, tlp_color, feed_tags, limit, job_id)

@@ -97,7 +97,7 @@ script:
       default: false
       required: false
       secret: false
-    - name: job-id
+    - name: job_id
       defaultValue: ''
       description: VT Retrohunt job's ID
       isArray: false
