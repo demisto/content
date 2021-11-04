@@ -1,0 +1,571 @@
+id: playbook-AzureDataExplorer-Test
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: playbook-AzureDataExplorer-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ddc242a0-d8c8-4826-841c-31d92fb61ace
+    type: start
+    task:
+      id: ddc242a0-d8c8-4826-841c-31d92fb61ace
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: c323a4fe-c626-47a1-8524-863341bfce06
+    type: regular
+    task:
+      id: c323a4fe-c626-47a1-8524-863341bfce06
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 8013ca70-290c-475a-8c3e-3bd78a796974
+    type: regular
+    task:
+      id: 8013ca70-290c-475a-8c3e-3bd78a796974
+      version: -1
+      name: azure-data-explorer-search-query-execute
+      script: AzureDataExplorer|||azure-data-explorer-search-query-execute
+      type: regular
+      iscommand: true
+      brand: AzureDataExplorer
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      database_name:
+        simple: Samples
+      query:
+        simple: StormEvents| limit 2
+      timeout: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 7b44fa47-52d3-4e59-8573-9a376958c796
+    type: condition
+    task:
+      id: 7b44fa47-52d3-4e59-8573-9a376958c796
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDataExplorer.SearchQueryResults.Query
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDataExplorer.SearchQueryResults.ClientActivityID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDataExplorer.SearchQueryResults.PrimaryResults
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: b9dbc00c-4570-473a-8523-3d4bb7233d20
+    type: regular
+    task:
+      id: b9dbc00c-4570-473a-8523-3d4bb7233d20
+      version: -1
+      name: azure-data-explorer-search-query-list
+      script: AzureDataExplorer|||azure-data-explorer-search-query-list
+      type: regular
+      iscommand: true
+      brand: AzureDataExplorer
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      client_activity_id: {}
+      database_name:
+        simple: Samples
+      limit:
+        simple: "2"
+      page:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: cb1bbefe-6688-4546-860f-ff67ce266b33
+    type: condition
+    task:
+      id: cb1bbefe-6688-4546-860f-ff67ce266b33
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDataExplorer.SearchQuery.ClientActivityId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDataExplorer.SearchQuery.Text
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDataExplorer.SearchQuery.Database
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDataExplorer.SearchQuery.StartedOn
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDataExplorer.SearchQuery.LastUpdatedOn
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDataExplorer.SearchQuery.Duration
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDataExplorer.SearchQuery.State
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDataExplorer.SearchQuery.RootActivityId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDataExplorer.SearchQuery.User
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDataExplorer.SearchQuery.FailureReason
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDataExplorer.SearchQuery.TotalCpu
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDataExplorer.SearchQuery.CacheStatistics.Memory.Hits
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDataExplorer.SearchQuery.CacheStatistics.Memory.Misses
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDataExplorer.SearchQuery.CacheStatistics.Disk.Hits
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDataExplorer.SearchQuery.CacheStatistics.Disk.Misses
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDataExplorer.SearchQuery.CacheStatistics.Shards.Hot.HitBytes
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDataExplorer.SearchQuery.CacheStatistics.Shards.Hot.MissBytes
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDataExplorer.SearchQuery.CacheStatistics.Shards.Hot.RetrieveBytes
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDataExplorer.SearchQuery.CacheStatistics.Shards.Cold.HitBytes
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDataExplorer.SearchQuery.CacheStatistics.Shards.Cold.MissBytes
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDataExplorer.SearchQuery.CacheStatistics.Shards.Cold.RetrieveBytes
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDataExplorer.SearchQuery.CacheStatistics.Shards.BypassBytes
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDataExplorer.SearchQuery.MemoryPeak
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDataExplorer.SearchQuery.ScannedExtentsStatistics.MinDataScannedTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDataExplorer.SearchQuery.ScannedExtentsStatistics.MaxDataScannedTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDataExplorer.SearchQuery.ScannedExtentsStatistics.TotalExtentsCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDataExplorer.SearchQuery.ScannedExtentsStatistics.ScannedExtentsCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDataExplorer.SearchQuery.ScannedExtentsStatistics.TotalRowsCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDataExplorer.SearchQuery.ScannedExtentsStatistics.ScannedRowsCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDataExplorer.SearchQuery.Principal
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AzureDataExplorer.SearchQuery.ClientRequestProperties.SecurityTokenPresent
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDataExplorer.SearchQuery.ClientRequestProperties.AuthorizationScheme
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDataExplorer.SearchQuery.ClientRequestProperties.RequestHostName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDataExplorer.SearchQuery.ClientRequestProperties.LocalClusterName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDataExplorer.SearchQuery.ClientRequestProperties.OriginClusterName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDataExplorer.SearchQuery.ClientRequestProperties.Options.api_version
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AzureDataExplorer.SearchQuery.ClientRequestProperties.Options.request_readonly
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDataExplorer.SearchQuery.ClientRequestProperties.Options.servertimeout
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDataExplorer.SearchQuery.ClientRequestProperties.Options.query_datascope
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDataExplorer.SearchQuery.ClientRequestProperties.Options.query_fanout_nodes_percent
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDataExplorer.SearchQuery.ClientRequestProperties.Options.query_fanout_threads_percent
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDataExplorer.SearchQuery.ClientRequestProperties.Options.maxmemoryconsumptionperiterator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDataExplorer.SearchQuery.ClientRequestProperties.Options.max_memory_consumption_per_query_per_node
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDataExplorer.SearchQuery.ClientRequestProperties.Options.truncationmaxsize
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDataExplorer.SearchQuery.ClientRequestProperties.Options.truncationmaxrecords
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDataExplorer.SearchQuery.ResultSetStatistics.TableCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDataExplorer.SearchQuery.ResultSetStatistics.TablesStatistics.RowCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDataExplorer.SearchQuery.ResultSetStatistics.TablesStatistics.TableSize
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDataExplorer.SearchQuery.WorkloadGroup
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 03115251-690a-4400-8017-b0210f676d1c
+    type: regular
+    task:
+      id: 03115251-690a-4400-8017-b0210f676d1c
+      version: -1
+      name: azure-data-explorer-running-search-query-cancel
+      script: AzureDataExplorer|||azure-data-explorer-running-search-query-cancel
+      type: regular
+      iscommand: true
+      brand: AzureDataExplorer
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      client_activity_id:
+        simple: xsoar-test playbook
+      database_name:
+        simple: Samples
+      reason:
+        simple: playbook-test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 2fb1d8c0-9136-4978-8e4f-8142d0c5eeee
+    type: condition
+    task:
+      id: 2fb1d8c0-9136-4978-8e4f-8142d0c5eeee
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: AzureDataExplorer.CanceledSearchQuery.RunningQueryCanceled
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDataExplorer.CanceledSearchQuery.ClientRequestId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDataExplorer.CanceledSearchQuery.ReasonPhrase
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 4e8e28ae-6846-4882-878f-7f69ca047b4d
+    type: title
+    task:
+      id: 4e8e28ae-6846-4882-878f-7f69ca047b4d
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1715,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
