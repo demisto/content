@@ -1,0 +1,102 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Alexa Rank Indicator v2
+  version: -1
+configuration:
+- defaultvalue: 'https://awis.api.alexa.com/api'
+  display: Base API URL
+  name: base_url
+  required: true
+  type: 0
+- displaypassword: API Key
+  name: credentials
+  type: 9
+  required: true
+  hiddenusername: true
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- additionalinfo: If the domain's Alexa rank is over this threshold, the domain is marked as suspicious. If the rank is between the threshold for suspicious domains and top domains, the domain is marked as unknown.
+  display: Rank Threshold For Suspicious Domain
+  name: suspicious_domain_threshold
+  required: false
+  type: 0
+- additionalinfo: If the domain's Alexa rank is under this threshold, the domain is considered trusted and marked as good. If the rank is between the threshold for suspicious domains and top domains, the domain is marked as unknown.
+  defaultvalue: '1000'
+  display: Rank Threshold For Top Domains
+  name: top_domain_threshold
+  required: true
+  type: 0
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: A - Completely reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+description: Alexa provides website ranking information that can be useful when determining
+  if a domain has a strong web presence.
+display: Alexa Rank Indicator v2
+name: Alexa Rank Indicator v2
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: Domain(s) to search.
+      isArray: true
+      name: domain
+      required: true
+      secret: false
+    deprecated: false
+    description: Provides an Alexa ranking of the domain.
+    execution: false
+    name: domain
+    outputs:
+    - contextPath: Domain.Name
+      description: The domain being checked.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: Alexa.Domain.Indicator
+      description: The domain being checked.
+      type: String
+    - contextPath: Alexa.Domain.Name
+      description: The domain being checked.
+      type: String
+    - contextPath: Alexa.Domain.Rank
+      description: Alexa rank as determined by Amazon.
+      type: String
+  dockerimage: demisto/python3:3.9.7.24076
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- AlexaV2 Test Playbook
+fromversion: 5.5.0

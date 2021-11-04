@@ -1,0 +1,436 @@
+category: Case Management
+commonfields:
+  id: Trello
+  version: -1
+configuration:
+- defaultvalue: https://api.trello.com
+  display: Server URL (e.g. https://api.trello.com)
+  name: url
+  required: true
+  type: 0
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- additionalinfo: ID of Trello board used both to fetch incidents and as the default
+    for all integration commands.
+  display: Default and Fetch Board ID
+  hidden: false
+  name: board_id
+  required: false
+  type: 0
+- display: API Key
+  hidden: false
+  name: credentials
+  required: true
+  type: 9
+- additionalinfo: Optional - If specified, incidents will only be fetched when cards
+    are created in this specific list. Use trello-list-lists command to display IDs
+    of available lists in Board.
+  display: List to Fetch Incidents from
+  hidden: false
+  name: list_id
+  required: false
+  type: 0
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+description: Interact with the Trello task manager
+display: Trello
+name: Trello
+script:
+  commands:
+  - deprecated: false
+    description: List the boards available to the provided API Key
+    execution: false
+    name: trello-list-boards
+    outputs:
+    - contextPath: Trello.Boards.Id
+      description: The board ID
+      type: Unknown
+    - contextPath: Trello.Boards.Name
+      description: Board name
+      type: Unknown
+    - contextPath: Trello.Boards.Closed
+      description: Bool - True if board closed.
+      type: Unknown
+    - contextPath: Trello.Boards.DateLastActivity
+      description: The last time this board was updated.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: 'Optional - the ID of  the board to query, if not provided will
+        use configured '
+      isArray: false
+      name: board_id
+      required: false
+      secret: false
+    deprecated: false
+    description: List all the lists associated with the trello board.
+    execution: false
+    name: trello-list-lists
+    outputs:
+    - contextPath: Trello.Lists.Id
+      description: List ID
+      type: Unknown
+    - contextPath: Trello.Lists.Name
+      description: List Name
+      type: Unknown
+    - contextPath: Trello.Lists.Closed
+      description: Bool - True if list is closed
+      type: Unknown
+    - contextPath: Trello.Lists.IdBoard
+      description: ID Of the board this list belongs to
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Card name
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: Card Description - Markdown Compatible
+      isArray: false
+      name: desc
+      required: false
+      secret: false
+    - default: false
+      description: ID of list to create card within
+      isArray: false
+      name: list_id
+      required: true
+      secret: false
+    - default: false
+      description: CSV list of Labels (by ID) to add to the card. Use trello-list-labels
+        command to display.
+      isArray: false
+      name: idLabels
+      required: false
+      secret: false
+    deprecated: false
+    description: Create a new card.
+    execution: false
+    name: trello-create-card
+    outputs:
+    - contextPath: Trello.CreatedCard.Id
+      description: ID of created card
+      type: Unknown
+    - contextPath: Trello.CreatedCard.Name
+      description: Name of created card
+      type: Unknown
+    - contextPath: Trello.CreatedCard.Url
+      description: URL Of created card
+      type: Unknown
+    - contextPath: Trello.CreatedCard.IdList
+      description: ID of list this card belongs to
+      type: Unknown
+  - arguments:
+    - default: false
+      description: ID of card to be updated
+      isArray: false
+      name: card_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: If true, archives the card.
+      isArray: false
+      name: closed
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: CSV Of Trello Label IDs to add to card
+      isArray: false
+      name: idLabels
+      required: false
+      secret: false
+    - default: false
+      description: ID Of list to move card to.
+      isArray: false
+      name: idList
+      required: false
+      secret: false
+    deprecated: false
+    description: Update an existing card
+    execution: false
+    name: trello-update-card
+    outputs:
+    - contextPath: Trello.UpdatedCard.Id
+      description: ID of Updated Card
+      type: Unknown
+    - contextPath: Trello.UpdatedCard.Name
+      description: Name of updated card
+      type: Unknown
+  - arguments:
+    - default: false
+      description: ID of card to delete
+      isArray: false
+      name: card_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Delete a card
+    execution: false
+    name: trello-delete-card
+  - arguments:
+    - default: false
+      description: 'Optional - the ID of  the board to query, if not provided will
+        use configured '
+      isArray: false
+      name: board_id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: CSV of action types used to filter response.
+      isArray: false
+      name: filter
+      predefined:
+      - acceptEnterpriseJoinRequest
+      - addAttachmentToCard
+      - addChecklistToCard
+      - addLabelToCard
+      - addMemberToBoard
+      - addMemberToCard
+      - addMemberToOrganization
+      - addOrganizationToEnterprise
+      - addToEnterprisePluginWhitelist
+      - addToOrganizationBoard
+      - commentCard
+      - convertToCardFromCheckItem
+      - copyBoard
+      - copyCard
+      - copyChecklist
+      - createLabel
+      - copyCommentCard
+      - createBoard
+      - createBoardInvitation
+      - createBoardPreference
+      - createCard
+      - createList
+      - createOrganization
+      - createOrganizationInvitation
+      - deleteAttachmentFromCard
+      - deleteBoardInvitation
+      - deleteCard
+      - deleteCheckItem
+      - deleteLabel
+      - deleteOrganizationInvitation
+      - disableEnterprisePluginWhitelist
+      - disablePlugin
+      - disablePowerUp
+      - emailCard
+      - enableEnterprisePluginWhitelist
+      - enablePlugin
+      - enablePowerUp
+      - makeAdminOfBoard
+      - makeAdminOfOrganization
+      - makeNormalMemberOfBoard
+      - makeNormalMemberOfOrganization
+      - makeObserverOfBoard
+      - memberJoinedTrello
+      - moveCardFromBoard
+      - moveCardToBoard
+      - moveListFromBoard
+      - moveListToBoard
+      - removeAdminFromBoard (Deprecated in favor of makeNormalMemberOfBoard) removeAdminFromOrganization (Deprecated in favor of - makeNormalMemberOfOrganization)
+      - removeChecklistFromCard
+      - removeFromEnterprisePluginWhitelist
+      - removeFromOrganizationBoard
+      - removeLabelFromCard
+      - removeMemberFromBoard
+      - removeMemberFromCard
+      - removeMemberFromOrganization
+      - removeOrganizationFromEnterprise
+      - unconfirmedBoardInvitation
+      - unconfirmedOrganizationInvitation
+      - updateBoard
+      - updateCard
+      - updateCheckItem
+      - updateCheckItemStateOnCard
+      - updateChecklist
+      - updateLabel
+      - updateList
+      - updateMember
+      - updateOrganization
+      - voteOnCard
+      required: false
+      secret: false
+    - default: false
+      description: First action time
+      isArray: false
+      name: since
+      required: false
+      secret: false
+    - default: false
+      description: Last action time
+      isArray: false
+      name: before
+      required: false
+      secret: false
+    deprecated: false
+    description: List all actions on a board, such as card updates, additions, and
+      deletes.
+    execution: false
+    name: trello-list-actions
+    outputs:
+    - contextPath: Trello.Actions.Id
+      description: Action ID
+      type: Unknown
+    - contextPath: Trello.Actions.Type
+      description: Type of action
+      type: Unknown
+    - contextPath: Trello.Actions.Date
+      description: Date of action
+      type: Date
+    - contextPath: Trello.Actions.ListId
+      description: List ID - Null if not card or list action
+      type: Unknown
+    - contextPath: Trello.Actions.CardId
+      description: Card ID - Null if not card action
+      type: Unknown
+    - contextPath: Trello.Actions.BoardId
+      description: Board ID
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Optional - Board ID
+      isArray: false
+      name: board_id
+      required: false
+      secret: false
+    deprecated: false
+    description: List all the labels in a given board
+    execution: false
+    name: trello-list-labels
+    outputs:
+    - contextPath: Trello.Labels.Id
+      description: Label ID
+      type: Unknown
+    - contextPath: Trello.Labels.Name
+      description: Label Name
+      type: Unknown
+    - contextPath: Trello.Labels.Color
+      description: Label Color
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Optional - Board ID
+      isArray: false
+      name: board_id
+      required: false
+      secret: false
+    - default: false
+      description: Name of Label
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Label Color
+      isArray: false
+      name: color
+      predefined:
+      - yellow
+      - purple
+      - blue
+      - red
+      - green
+      - orange
+      - black
+      - sky
+      - pink
+      - lime
+      required: false
+      secret: false
+    deprecated: false
+    description: Create a new trello label
+    execution: false
+    name: trello-create-label
+    outputs:
+    - contextPath: Trello.CreatedLabel.Id
+      description: ID Of created label
+      type: Unknown
+    - contextPath: Trello.CreatedLabel.Name
+      description: Name of created label
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Comment to add.
+      isArray: false
+      name: text
+      required: true
+      secret: false
+    - default: false
+      description: Card to add comment to
+      isArray: false
+      name: card_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Add a comment to a Trello card
+    execution: false
+    name: trello-add-comment
+    outputs:
+    - contextPath: Trello.AddedComment.Id
+      description: ID Of comment action
+      type: Unknown
+    - contextPath: Trello.AddedComment.Date
+      description: Date of comment
+      type: Unknown
+  - arguments:
+    - default: false
+      description: ID of list containing cards
+      isArray: false
+      name: list_id
+      required: false
+      secret: false
+    deprecated: false
+    description: List all the trello cards
+    execution: false
+    name: trello-list-cards
+    outputs:
+    - contextPath: Trello.Cards.Id
+      description: Card ID
+      type: Unknown
+    - contextPath: Trello.Cards.Name
+      description: Card Name
+      type: Unknown
+    - contextPath: Trello.Cards.IdList
+      description: ID of parent list
+      type: Unknown
+    - contextPath: Trello.Cards.Due
+      description: Due date of card
+      type: Date
+    - contextPath: Trello.Cards.Labels
+      description: List of labels associated with card
+      type: Unknown
+    - contextPath: Trello.Cards.Desc
+      description: Card description
+      type: Unknown
+    - contextPath: Trello.Cards.Start
+      description: Card Start date
+      type: Date
+    - contextPath: Trello.Cards.Labels.id
+      description: Label ID
+      type: Unknown
+  dockerimage: demisto/python3:3.9.7.24076
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 6.0.0

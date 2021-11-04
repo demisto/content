@@ -1,7 +1,7 @@
 
 Use the JSON feed integration to fetch indicators from a JSON feed. This integration allows for a wide variety of user configuration to support different types of JSON feeds.
 
-## Configure JSON Feed on Demisto
+## Configure JSON Feed on Cortex XSOAR
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
@@ -15,8 +15,7 @@ Use the JSON feed integration to fetch indicators from a JSON feed. This integra
     | Indicator Reputation | The reputation applied to indicators from this integration instance. The default value is "Bad". |
     | Source Reliability | The reliability of the source providing the intelligence data. The default value is "C - Fairly reliable" |
     | Traffic Light Protocol Color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at https://us-cert.cisa.gov/tlp |
-    | Indicator Expiration Method | The method by which to expire indicators from this feed for this integration instance. |
-    | Indicator Expiration Interval | How often to expire the indicators from this integration instance (in minutes). This only applies if the `feedExpirationPolicy` is set to "interval". The default value is 20160 (two weeks). |
+    | Indicator Expiration Method | The method by which to expire indicators from this feed for this integration instance. |    
     | Feed Fetch Interval | How often to fetch indicators from the feed for this integration instance (in minutes). The default value is 60. | 
     | URL | The URL of the feed. | 
     | Auto detect indicator type | Whether a type auto detection mechanism will take place for each indicator, if checked. |
@@ -25,8 +24,9 @@ Use the JSON feed integration to fetch indicators from a JSON feed. This integra
     | JMESPath Extractor | The JMESPath expression for extracting the indicators from. You can check the expression in the [JMESPath site](http://jmespath.org/) to verify this expression will return the following array of objects. |    
     | JSON Indicator Attribute | The JSON attribute whose value is the indicator. The default is "indicator". |
     | POST Data | Send specified data in a POST request. When specified, by default will add the header: `Content-Type: application/x-www-form-urlencoded`. To specify a different Content-Type (for example: application/json) use the **Headers** config param. | 
-    | Headers | Headers to add to the http request. Specify each header on a single line in the format: `Name: Value`.
-    | Bypass exclusion list | Whether the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. |
+    | Headers | Headers to add to the http request. Specify each header on a single line in the format: `Name: Value`. |
+    | Include indicator type for mapping | When using a custom classifier and mapper with this feed, use this option to include the indicator type in the raw json used for classification and mapping. The type will be included under the key `_indicator_type`. |
+    | Bypass Exclusion List | Whether the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. |
 
 4. Click __Test__ to validate the URLs and connection.
 
@@ -58,7 +58,7 @@ We can use `Set up a new classification rule` using actual data from the feed.
 
 ## Commands
 ---
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### Get indicators from the feed

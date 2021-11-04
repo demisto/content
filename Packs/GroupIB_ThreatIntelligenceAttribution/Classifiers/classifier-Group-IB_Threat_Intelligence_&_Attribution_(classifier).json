@@ -1,0 +1,24 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Group-IB Threat Intelligence & Attribution",
+    "keyTypeMap": {
+        "bp/domain": "GIB Brand Protection Domain",
+        "bp/phishing": "GIB Brand Protection Phishing",
+        "bp/phishing_kit": "GIB Brand Protection Phishing Kit",
+        "compromised/account": "GIB Compromised Account",
+        "compromised/breached": "GIB Data Breach",
+        "compromised/card": "GIB Compromised Card",
+        "malware/targeted_malware": "GIB Targeted Malware",
+        "osi/git_leak": "GIB OSI Git Leak",
+        "osi/public_leak": "GIB OSI Public Leak"
+    },
+    "name": "Group-IB Threat Intelligence & Attribution (classifier)",
+    "transformer": {
+        "complex": null,
+        "simple": "gibType"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

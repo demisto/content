@@ -203,7 +203,7 @@ class XM:
 
     def search_entities(self, search_string):
         return self.client.get_paginated(URLS.Entities, {
-            'search': f'/^{search_string}$/i'
+            'search': f'{{"$regex": "/{search_string}/i"}}'
         })
 
     def get_techniques(self, time_id=DEFAULT_TIME_ID, page_size=None, max_pages=None):

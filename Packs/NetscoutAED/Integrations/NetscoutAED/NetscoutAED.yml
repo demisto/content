@@ -1,0 +1,1285 @@
+beta: false
+category: Network Security
+commonfields:
+  id: NetscoutAED
+  version: -1
+configuration:
+- display: Server URL
+  name: base_url
+  required: true
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- name: User
+  displaypassword: API Key
+  required: false
+  hiddenusername: true
+  type: 9
+description: Use the Netscout Arbor Edge Defense integration to detect and stop both inbound threats
+  and outbound malicious communication from compromised internal devices.
+display: Netscout Arbor Edge Defense
+name: NetscoutAED
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: An ISO-standardized country code to get a specific country in the
+        results. Can be retrieved by running the "na-ed-country-code-list" command.
+      isArray: false
+      name: country
+      required: false
+      secret: false
+    - default: false
+      description: 'Search strings, separated by “+” to filter the results. (example:
+        "AZ+BS").'
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      description: The page of the results to return.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: Maximal number of results to retrieve. Also sets the size of the
+        returned page.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets the countries on the outbound blacklist. By default, 10 blacklisted
+      countries are returned.
+    execution: false
+    name: na-ed-outbound-blacklisted-countries-list
+    outputs:
+    - contextPath: NetscoutAED.OutboundBlacklistCountry.annotation
+      description: A message associated with each country in the outbound blacklist.
+      type: String
+    - contextPath: NetscoutAED.OutboundBlacklistCountry.country
+      description: An ISO standardized country code.
+      type: String
+    - contextPath: NetscoutAED.OutboundBlacklistCountry.update_time
+      description: The time that the country code was added to the list.
+      type: Date
+  - arguments:
+    - default: false
+      description: 'Search strings, separated by “+” to filter the results. (example:
+        "AZ+BS")'
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      description: The page of the results to return.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: Maximal number of results to retrieve. Also sets the size of the
+        returned page.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets a country or list of countries (country name and ISO-standardized
+      country code).
+    execution: false
+    name: na-ed-country-code-list
+    outputs:
+    - contextPath: NetscoutAED.Country.country_name
+      description: The country's name.
+      type: String
+    - contextPath: NetscoutAED.Country.iso_code
+      description: The ISO-standardized country code.
+      type: String
+  - arguments:
+    - default: false
+      description: An ISO standardized country code or a comma-separated list of country
+        codes. Can be retrieved by running the "na-ed-country-code-list" command.
+      isArray: true
+      name: country
+      required: true
+      secret: false
+    - default: false
+      description: A message to associate with each country that you add to the outbound
+        blacklist.
+      isArray: false
+      name: annotation
+      required: false
+      secret: false
+    deprecated: false
+    description: Adds one or more countries to the outbound blacklist.
+    execution: false
+    name: na-ed-outbound-blacklisted-countries-add
+    outputs:
+    - contextPath: NetscoutAED.OutboundBlacklistCountry.annotation
+      description: A message associated with each country in the outbound blacklist.
+      type: String
+    - contextPath: NetscoutAED.OutboundBlacklistCountry.country
+      description: An ISO standardized country code.
+      type: String
+    - contextPath: NetscoutAED.OutboundBlacklistCountry.update_time
+      description: The time that the country code was added to the list.
+      type: Date
+  - arguments:
+    - default: false
+      description: An ISO-standardized country code or a comma-separated list of ISO-standardized
+        country codes to remove. Can be retrieved by running the "na-ed-country-code-list"
+        command.
+      isArray: true
+      name: country
+      required: true
+      secret: false
+    deprecated: false
+    description: Removes one or more countries from the outbound blacklist.
+    execution: false
+    name: na-ed-outbound-blacklisted-countries-remove
+  - arguments:
+    - default: false
+      description: A comma-separated list of central configuration IDs. Cannot be
+        used with the pgid parameter.
+      isArray: true
+      name: cid
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of protection group IDs. Cannot be used
+        with the cid parameter.
+      isArray: true
+      name: pgid
+      required: false
+      secret: false
+    - default: false
+      description: An ISO-standardized country code to get a specific country in the
+        results. Can be retrieved by running the "na-ed-country-code-list"command.
+      isArray: false
+      name: country
+      required: false
+      secret: false
+    - default: false
+      description: 'Search strings, separated by “+” to filter the results. (example:
+        "AZ+BS").'
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      description: The page of the results to return.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: Maximal number of results to retrieve. Also sets the size of the
+        returned page.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets the inbound blacklisted countries. By default, 10 blacklisted
+      countries are returned. To return blacklisted countries for specific protection
+      groups, specify a list of protection group IDs or central configuration IDs.
+      An ID of -1 selects countries that are globally blacklisted.
+    execution: false
+    name: na-ed-inbound-blacklisted-countries-list
+    outputs:
+    - contextPath: NetscoutAED.InboundBlacklistCountry.annotation
+      description: List of messages associated with each country in the inbound blacklist.
+      type: Unknown
+    - contextPath: NetscoutAED.InboundBlacklistCountry.cid
+      description: List of central configuration IDs
+      type: Unknown
+    - contextPath: NetscoutAED.InboundBlacklistCountry.country
+      description: An ISO standardized country code.
+      type: String
+    - contextPath: NetscoutAED.InboundBlacklistCountry.pgid
+      description: List of protection group IDs.
+      type: Unknown
+    - contextPath: NetscoutAED.InboundBlacklistCountry.update_time
+      description: The time that the country code was added to the list.
+      type: Date
+  - arguments:
+    - default: false
+      description: A specific central configuration ID or -1 for global. Cannot be
+        used with the pgid parameter.
+      isArray: false
+      name: cid
+      required: false
+      secret: false
+    - default: false
+      description: A specific protection group ID or -1 for global. Cannot be used
+        with the cid parameter.
+      isArray: false
+      name: pgid
+      required: false
+      secret: false
+    - default: false
+      description: A message to associate with each country that you add to the inbound
+        blacklist.
+      isArray: false
+      name: annotation
+      required: false
+      secret: false
+    - default: false
+      description: ISO standardized country code or a comma-separated list of country
+        codes. Can be retrieved by running the "na-ed-country-code-list" command.
+      isArray: true
+      name: country
+      required: true
+      secret: false
+    deprecated: false
+    description: Adds one or more countries to the inbound blacklist by pgid or cid.
+    execution: false
+    name: na-ed-inbound-blacklisted-countries-add
+    outputs:
+    - contextPath: NetscoutAED.InboundBlacklistCountry.annotation
+      description: List of messages associated with each country in the inbound blacklist.
+      type: Unknown
+    - contextPath: NetscoutAED.InboundBlacklistCountry.cid
+      description: List of central configuration IDs
+      type: Unknown
+    - contextPath: NetscoutAED.InboundBlacklistCountry.country
+      description: An ISO standardized country code.
+      type: String
+    - contextPath: NetscoutAED.InboundBlacklistCountry.pgid
+      description: List of protection group IDs.
+      type: Unknown
+    - contextPath: NetscoutAED.InboundBlacklistCountry.update_time
+      description: The time that the country code was added to the list.
+      type: Date
+  - arguments:
+    - default: false
+      description: A specific central configuration ID or -1 for global. Cannot be
+        used with the pgid parameter.
+      isArray: false
+      name: cid
+      required: false
+      secret: false
+    - default: false
+      description: A specific protection group ID or -1 for global. Cannot be used
+        with the cid parameter.
+      isArray: false
+      name: pgid
+      required: false
+      secret: false
+    - default: false
+      description: ISO standardized country code or a comma-separated list of country
+        codes. Can be retrieved by running the "na-ed-country-code-list" command.
+      isArray: true
+      name: country
+      required: true
+      secret: false
+    deprecated: false
+    description: Removes one or more countries from the blacklist for a specific protection
+      group or for all protection groups.
+    execution: false
+    name: na-ed-inbound-blacklisted-countries-remove
+  - arguments:
+    - default: false
+      description: A comma-separated list of IPv4 host addresses or CIDRs.
+      isArray: true
+      name: host_address
+      required: false
+      secret: false
+    - default: false
+      description: 'Search strings, separated by “+” to filter the results. (example:
+        "AZ+BS").'
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      description: The page of the results to return.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: Maximal number of results to retrieve. Also sets the size of the
+        returned page.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets the outbound blacklisted hosts. By default, 10 blacklisted hosts
+      are returned.
+    execution: false
+    name: na-ed-outbound-blacklisted-hosts-list
+    outputs:
+    - contextPath: NetscoutAED.OutboundBlacklistHost.annotation
+      description: A description of the host.
+      type: String
+    - contextPath: NetscoutAED.OutboundBlacklistHost.host_address
+      description: IPv4 host address or CIDRs.
+      type: String
+    - contextPath: NetscoutAED.OutboundBlacklistHost.update_time
+      description: The time the host was last updated/set
+      type: Date
+  - arguments:
+    - default: false
+      description: A single IPv4 host address or CIDR or a comma-separated list of
+        IPv4 host addresses or CIDRs.
+      isArray: true
+      name: host_address
+      required: true
+      secret: false
+    - default: false
+      description: A single description that applies to all of the specified hosts
+        or a comma-separated list of descriptions, each of which applies to a specific
+        host.
+      isArray: true
+      name: annotation
+      required: false
+      secret: false
+    deprecated: false
+    description: Adds one or more hosts to the outbound blacklist.
+    execution: false
+    name: na-ed-outbound-blacklisted-hosts-add
+    outputs:
+    - contextPath: NetscoutAED.OutboundBlacklistHost.annotation
+      description: A description of the host.
+      type: String
+    - contextPath: NetscoutAED.OutboundBlacklistHost.host_address
+      description: IPv4 host address or CIDRs.
+      type: String
+    - contextPath: NetscoutAED.OutboundBlacklistHost.update_time
+      description: The time the host was last updated/set.
+      type: Date
+  - arguments:
+    - default: false
+      description: A single IPv4 host address or CIDR or a comma-separated list of
+        IPv4 host addresses or CIDRs.
+      isArray: true
+      name: host_address
+      required: true
+      secret: false
+    - default: false
+      description: A single description that applies to all of the specified hosts
+        or a comma-separated list of descriptions, each of which applies to a specific
+        host.
+      isArray: true
+      name: annotation
+      required: false
+      secret: false
+    deprecated: false
+    description: Replaces all the hosts on the outbound blacklisted list.
+    execution: false
+    name: na-ed-outbound-blacklisted-hosts-replace
+    outputs:
+    - contextPath: NetscoutAED.OutboundBlacklistHost.annotation
+      description: A description of the host.
+      type: String
+    - contextPath: NetscoutAED.OutboundBlacklistHost.host_address
+      description: IPv4 host address or CIDRs.
+      type: String
+    - contextPath: NetscoutAED.OutboundBlacklistHost.update_time
+      description: The time the host was last updated/set.
+      type: Date
+  - arguments:
+    - default: false
+      description: A single IPv4 host address or CIDR to remove, or a comma-separated
+        list of IPv4 host addresses or CIDRs to remove.
+      isArray: true
+      name: host_address
+      required: true
+      secret: false
+    deprecated: false
+    description: Removes one or more hosts or CIDRS from the outbound blacklist.
+    execution: false
+    name: na-ed-outbound-blacklisted-hosts-remove
+  - arguments:
+    - default: false
+      description: A comma-separated list of IPv4 host addresses or CIDRs.
+      isArray: true
+      name: host_address
+      required: false
+      secret: false
+    - default: false
+      description: 'Search strings, separated by “+” to filter the results. (example:
+        "AZ+BS")'
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      description: The page of the results to return.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: Maximal number of results to retrieve. Also sets the size of the
+        returned page.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets the outbound whitelisted hosts. By default, 10 whitelisted hosts
+      are returned.
+    execution: false
+    name: na-ed-outbound-whitelisted-hosts-list
+    outputs:
+    - contextPath: NetscoutAED.OutboundWhitelistHost.annotation
+      description: A description of the host.
+      type: String
+    - contextPath: NetscoutAED.OutboundWhitelistHost.host_address
+      description: IPv4 host address or CIDRs.
+      type: String
+    - contextPath: NetscoutAED.OutboundWhitelistHost.update_time
+      description: The time the host was last updated/set.
+      type: Date
+  - arguments:
+    - default: false
+      description: A single IPv4 host address or CIDR or a comma-separated list of
+        IPv4 host addresses or CIDRs to add.
+      isArray: true
+      name: host_address
+      required: true
+      secret: false
+    - default: false
+      description: A single description that applies to all of the specified hosts
+        or a comma-separated list of descriptions, each of which applies to a specific
+        host.
+      isArray: true
+      name: annotation
+      required: false
+      secret: false
+    deprecated: false
+    description: Adds one or more hosts to the outbound whitelisted list
+    execution: false
+    name: na-ed-outbound-whitelisted-hosts-add
+    outputs:
+    - contextPath: NetscoutAED.OutboundWhitelistHost.annotation
+      description: A description of the host.
+      type: String
+    - contextPath: NetscoutAED.OutboundWhitelistHost.host_address
+      description: IPv4 host address or CIDRs.
+      type: String
+    - contextPath: NetscoutAED.OutboundWhitelistHost.update_time
+      description: The time the host was last updated/set
+      type: Date
+  - arguments:
+    - default: false
+      description: A single IPv4 host address or CIDR or a comma-separated list of
+        IPv4 host addresses or CIDRs to update.
+      isArray: true
+      name: host_address
+      required: true
+      secret: false
+    - default: false
+      description: A single description that applies to all of the specified hosts
+        or a comma-separated list of descriptions, each of which applies to a specific
+        host.
+      isArray: true
+      name: annotation
+      required: false
+      secret: false
+    deprecated: false
+    description: Replaces all the hosts on the outbound whitelisted list.
+    execution: false
+    name: na-ed-outbound-whitelisted-hosts-replace
+    outputs:
+    - contextPath: NetscoutAED.OutboundWhitelistHost.annotation
+      description: A description of the host.
+      type: String
+    - contextPath: NetscoutAED.OutboundWhitelistHost.host_address
+      description: IPv4 host address or CIDRs.
+      type: String
+    - contextPath: NetscoutAED.OutboundWhitelistHost.update_time
+      description: The time the host was last updated/set
+      type: Date
+  - arguments:
+    - default: false
+      description: List of protection group IDs.
+      isArray: false
+      name: pgid
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: 'Set the protection group mode to active (true) or inactive (false).'
+      isArray: false
+      name: active
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: low
+      description: 'The protection level (None = use the global protection level, low, medium, high).'
+      isArray: false
+      name: protection_level
+      predefined:
+      - low
+      - medium
+      - high
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Turn traffic profiling on (true) or off (false) for one or more
+        of the protection groups.
+      isArray: false
+      name: profiling
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Specify the number of days, from 1 to 14, over which profiling
+        will run. Required when profiling is set to true.
+      isArray: false
+      name: profiling_duration
+      predefined:
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      - '5'
+      - '6'
+      - '7'
+      - '8'
+      - '9'
+      - '10'
+      - '11'
+      - '12'
+      - '13'
+      - '14'
+      required: false
+      secret: false
+    deprecated: false
+    description: Updates the settings for one or more protection groups.
+    execution: false
+    name: na-ed-protection-groups-update
+    outputs:
+    - contextPath: NetscoutAED.ProtectionGroup.active
+      description: True if the protection group mode is active, false if inactive.
+      type: Boolean
+    - contextPath: NetscoutAED.ProtectionGroup.bps_dropped
+      description: Number of dropped bps.
+      type: Number
+    - contextPath: NetscoutAED.ProtectionGroup.bps_passed
+      description: Number of passed bps.
+      type: Number
+    - contextPath: NetscoutAED.ProtectionGroup.bytes_dropped
+      description: Number of dropped bytes.
+      type: Number
+    - contextPath: NetscoutAED.ProtectionGroup.bytes_passed
+      description: Number of passed bytes.
+      type: Number
+    - contextPath: NetscoutAED.ProtectionGroup.description
+      description: Description of the protection group.
+      type: String
+    - contextPath: NetscoutAED.ProtectionGroup.name
+      description: Protection group name.
+      type: String
+    - contextPath: NetscoutAED.ProtectionGroup.packets_dropped
+      description: Number of dropped packets.
+      type: Number
+    - contextPath: NetscoutAED.ProtectionGroup.packets_passed
+      description: Number of passed packets.
+      type: Number
+    - contextPath: NetscoutAED.ProtectionGroup.pgid
+      description: Protection group identifier.
+      type: Number
+    - contextPath: NetscoutAED.ProtectionGroup.pps_passed
+      description: Number of passed pps.
+      type: Number
+    - contextPath: NetscoutAED.ProtectionGroup.pps_dropped
+      description: Number of dropped pps.
+      type: Number
+    - contextPath: NetscoutAED.ProtectionGroup.prefixes
+      description: A comma-separated list of prefixes belonging to the protection
+        group.
+      type: Unknown
+    - contextPath: NetscoutAED.ProtectionGroup.profiling
+      description: A traffic profile capture for a protection group’s rate-based protection
+        settings is running (true) or not (false).
+      type: Boolean
+    - contextPath: NetscoutAED.ProtectionGroup.profiling_duration
+      description: The duration, in days, of an active traffic profile capture. A
+        0 indicates that profiling is not active.
+      type: Number
+    - contextPath: NetscoutAED.ProtectionGroup.profiling_start
+      description: A UNIX epoch timestamp that indicates when a traffic profile capture
+        began. A 0 indicates that profiling was never started.
+      type: Date
+    - contextPath: NetscoutAED.ProtectionGroup.protection_level
+      description: The protection level (None = use the global protection level, low,
+        medium, high).
+      type: String
+    - contextPath: NetscoutAED.ProtectionGroup.server_name
+      description: The protection group’s server name.
+      type: String
+    - contextPath: NetscoutAED.ProtectionGroup.server_type
+      description: The protection group’s server type.
+      type: Number
+    - contextPath: NetscoutAED.ProtectionGroup.time_created
+      description: The time when the protection group was created.
+      type: Date
+  - arguments:
+    - default: false
+      description: Protection group identifier.
+      isArray: false
+      name: pgid
+      required: false
+      secret: false
+    - default: false
+      description: Protection group name.
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether the protection group is active or not.
+      isArray: false
+      name: active
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: 'Search strings, separated by “+” to filter the results. (example:
+        "AZ+BS")'
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets a list of the protection groups.
+    execution: false
+    name: na-ed-protection-groups-list
+    outputs:
+    - contextPath: NetscoutAED.ProtectionGroup.active
+      description: True if the protection group mode is active, false if inactive.
+      type: Boolean
+    - contextPath: NetscoutAED.ProtectionGroup.bps_dropped
+      description: Number of dropped bps.
+      type: Number
+    - contextPath: NetscoutAED.ProtectionGroup.bps_passed
+      description: Number of passed bps.
+      type: Number
+    - contextPath: NetscoutAED.ProtectionGroup.bytes_dropped
+      description: Number of dropped bytes.
+      type: Number
+    - contextPath: NetscoutAED.ProtectionGroup.bytes_passed
+      description: Number of passed bytes.
+      type: Number
+    - contextPath: NetscoutAED.ProtectionGroup.description
+      description: Description of the protection group.
+      type: String
+    - contextPath: NetscoutAED.ProtectionGroup.name
+      description: Protection group name.
+      type: String
+    - contextPath: NetscoutAED.ProtectionGroup.packets_dropped
+      description: Number of dropped packets.
+      type: Number
+    - contextPath: NetscoutAED.ProtectionGroup.packets_passed
+      description: Number of passed packets.
+      type: Number
+    - contextPath: NetscoutAED.ProtectionGroup.pgid
+      description: Protection group identifier.
+      type: Number
+    - contextPath: NetscoutAED.ProtectionGroup.pps_passed
+      description: Number of passed pps.
+      type: Number
+    - contextPath: NetscoutAED.ProtectionGroup.pps_dropped
+      description: Number of dropped pps.
+      type: Number
+    - contextPath: NetscoutAED.ProtectionGroup.prefixes
+      description: A comma-separated list of prefixes belonging to the protection
+        group.
+      type: Unknown
+    - contextPath: NetscoutAED.ProtectionGroup.profiling
+      description: A traffic profile capture for a protection group’s rate-based protection
+        settings is running (true) or not (false).
+      type: Boolean
+    - contextPath: NetscoutAED.ProtectionGroup.profiling_duration
+      description: The duration, in days, of an active traffic profile capture. A
+        0 indicates that profiling is not active.
+      type: Number
+    - contextPath: NetscoutAED.ProtectionGroup.profiling_start
+      description: A UNIX epoch timestamp that indicates when a traffic profile capture
+        began. A 0 indicates that profiling was never started.
+      type: Date
+    - contextPath: NetscoutAED.ProtectionGroup.protection_level
+      description: The protection level (None = use the global protection level, low,
+        medium, high).
+      type: String
+    - contextPath: NetscoutAED.ProtectionGroup.server_name
+      description: The protection group’s server name.
+      type: String
+    - contextPath: NetscoutAED.ProtectionGroup.server_type
+      description: The protection group’s server type.
+      type: Number
+    - contextPath: NetscoutAED.ProtectionGroup.time_created
+      description: The time when the protection group was created.
+      type: Date
+    - contextPath: NetscoutAED.ProtectionGroup.cid
+      description: Central configuration ID.
+      type: Number
+  - arguments:
+    - default: false
+      description: A comma-separated list of IPv4 host addresses or CIDRs.
+      isArray: true
+      name: host_address
+      required: false
+      secret: false
+    - default: false
+      description: 'Search strings, separated by “+” to filter the results. (example:
+        "AZ+BS")'
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      description: The page of the results to return.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: Maximal number of results to retrieve. Also sets the size of the
+        returned page.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets the inbound blacklisted hosts. By default, 10 blacklisted hosts
+      are returned. To return blacklisted hosts for specific protection groups, specify
+      a list of protection group IDs or central configuration IDs. An ID of -1 selects
+      hosts that are globally blacklisted.
+    execution: false
+    name: na-ed-inbound-blacklisted-hosts-list
+    outputs:
+    - contextPath: NetscoutAED.InboundBlacklistHost.annotation
+      description: List of messages associated with each host in the inbound blacklist.
+      type: Unknown
+    - contextPath: NetscoutAED.InboundBlacklistHost.cid
+      description: List of central configuration IDs.
+      type: Unknown
+    - contextPath: NetscoutAED.InboundBlacklistHost.host_address
+      description: IPv4 host addresses or CIDRs.
+      type: String
+    - contextPath: NetscoutAED.InboundBlacklistHost.pgid
+      description: List of protection group IDs.
+      type: Unknown
+    - contextPath: NetscoutAED.InboundBlacklistHost.update_time
+      description: The time that the host address was added to the list.
+      type: Date
+  - arguments:
+    - default: false
+      description: A single IPv4 or IPv6 host address or CIDR or a comma-separated
+        list of host addresses or CIDRs.
+      isArray: true
+      name: host_address
+      required: true
+      secret: false
+    - default: false
+      description: A single description that applies to all of the specified hosts
+        or a comma-separated list of descriptions, each of which applies to a specific
+        host.
+      isArray: true
+      name: annotation
+      required: false
+      secret: false
+    deprecated: false
+    description: Adds one or more hosts to the inbound blacklisted list.
+    execution: false
+    name: na-ed-inbound-blacklisted-hosts-add
+    outputs:
+    - contextPath: NetscoutAED.InboundBlacklistHost.annotation
+      description: List of messages associated with each host in the inbound blacklist.
+      type: Unknown
+    - contextPath: NetscoutAED.InboundBlacklistHost.cid
+      description: List of central configuration IDs
+      type: Unknown
+    - contextPath: NetscoutAED.InboundBlacklistHost.host_address
+      description: IPv4 host addresses or CIDRs.
+      type: String
+    - contextPath: NetscoutAED.InboundBlacklistHost.pgid
+      description: List of protection group IDs.
+      type: Unknown
+    - contextPath: NetscoutAED.InboundBlacklistHostupdate_time
+      description: The time that the host address was added to the list.
+      type: Date
+  - arguments:
+    - default: false
+      description: A single IPv4 or IPv6 host address or CIDR or a comma-separated
+        list of host addresses or CIDRs.
+      isArray: true
+      name: host_address
+      required: true
+      secret: false
+    - default: false
+      description: A single description that applies to all of the specified hosts
+        or a comma-separated list of descriptions, each of which applies to a specific
+        host.
+      isArray: true
+      name: annotation
+      required: false
+      secret: false
+    deprecated: false
+    description: Replaces all the hosts on the inbound blacklist.
+    execution: false
+    name: na-ed-inbound-blacklisted-hosts-replace
+    outputs:
+    - contextPath: NetscoutAED.InboundBlacklistHost.annotation
+      description: List of messages associated with each host in the inbound blacklist.
+      type: Unknown
+    - contextPath: NetscoutAED.InboundBlacklistHost.cid
+      description: List of central configuration IDs
+      type: Unknown
+    - contextPath: NetscoutAED.InboundBlacklistHost.host_address
+      description: IPv4 host addresses or CIDRs.
+      type: String
+    - contextPath: NetscoutAED.InboundBlacklistHost.pgid
+      description: List of protection group IDs.
+      type: Unknown
+    - contextPath: NetscoutAED.InboundBlacklistHost.update_time
+      description: The time that the host address was added to the list.
+      type: Date
+  - arguments:
+    - default: false
+      description: A single IPv4 or IPv6 host address or CIDR, or a comma-separated
+        list of host addresses or CIDRs.
+      isArray: true
+      name: host_address
+      required: true
+      secret: false
+    deprecated: false
+    description: Removes one or more hosts or CIDRs from the blacklist for a specific
+      protection group or for all protection groups.
+    execution: false
+    name: na-ed-inbound-blacklisted-hosts-remove
+  - arguments:
+    - default: false
+      description: A comma-separated list of IPv4 or IPv6 host addresses or CIDRs.
+      isArray: true
+      name: host_address
+      required: false
+      secret: false
+    - default: false
+      description: 'Search strings, separated by “+” to filter the results. (example:
+        "AZ+BS").'
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      description: The page of the results to return.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: Maximal number of results to retrieve. Also sets the size of the
+        returned page.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Get the whitelisted hosts. By default, 10 whitelisted hosts are returned.
+      To return whitelisted hosts for specific protection groups, specify a list of
+      protection group IDs or central configuration IDs. An ID of -1 selects hosts
+      that are globally whitelisted.
+    execution: false
+    name: na-ed-inbound-whitelisted-hosts-list
+    outputs:
+    - contextPath: NetscoutAED.InboundWhitelistHost.annotation
+      description: List of messages associated with each host in the inbound whitelisted
+        list.
+      type: Unknown
+    - contextPath: NetscoutAED.InboundWhitelistHost.cid
+      description: List of central configuration IDs.
+      type: Unknown
+    - contextPath: NetscoutAED.InboundWhitelistHost.host_address
+      description: IPv4 host addresses or CIDRs.
+      type: String
+    - contextPath: NetscoutAED.InboundWhitelistHost.pgid
+      description: List of protection group IDs.
+      type: Unknown
+    - contextPath: NetscoutAED.InboundWhitelistHost.update_time
+      description: The time that the host address was added to the list.
+      type: Date
+  - arguments:
+    - default: false
+      description: A single IPv4 or IPv6 host address or CIDR or a comma-separated
+        list of host addresses or CIDRs to add.
+      isArray: true
+      name: host_address
+      required: true
+      secret: false
+    - default: false
+      description: A single description that applies to all of the specified hosts
+        or a comma-separated list of descriptions, each of which applies to a specific
+        host.
+      isArray: true
+      name: annotation
+      required: false
+      secret: false
+    deprecated: false
+    description: Adds one or more hosts to the inbound whitelisted list.
+    execution: false
+    name: na-ed-inbound-whitelisted-hosts-add
+    outputs:
+    - contextPath: NetscoutAED.InboundWhitelistHost.annotation
+      description: List of messages associated with each host in the inbound whitelisted
+        list.
+      type: Unknown
+    - contextPath: NetscoutAED.InboundWhitelistHost.cid
+      description: List of central configuration IDs.
+      type: Unknown
+    - contextPath: NetscoutAED.InboundWhitelistHost.host_address
+      description: IPv4 host addresses or CIDRs.
+      type: String
+    - contextPath: NetscoutAED.InboundWhitelistHost.pgid
+      description: List of protection group IDs.
+      type: Unknown
+    - contextPath: NetscoutAED.InboundWhitelistHost.update_time
+      description: The time that the host address was added to the list.
+      type: Date
+  - arguments:
+    - default: false
+      description: A single IPv4 or IPv6 host address or CIDR or a comma-separated
+        list of host addresses or CIDRs to update.
+      isArray: true
+      name: host_address
+      required: true
+      secret: false
+    - default: false
+      description: A single description that applies to all of the specified hosts
+        or a comma-separated list of descriptions, each of which applies to a specific
+        host.
+      isArray: true
+      name: annotation
+      required: false
+      secret: false
+    deprecated: false
+    description: Replaces all the hosts on the inbound whitelist.
+    execution: false
+    name: na-ed-inbound-whitelisted-hosts-replace
+    outputs:
+    - contextPath: NetscoutAED.InboundWhitelistHost.annotation
+      description: List of messages associated with each host in the inbound whitelisted
+        list.
+      type: Unknown
+    - contextPath: NetscoutAED.InboundWhitelistHost.cid
+      description: List of central configuration IDs.
+      type: Unknown
+    - contextPath: NetscoutAED.InboundWhitelistHost.host_address
+      description: IPv4 host addresses or CIDRs.
+      type: String
+    - contextPath: NetscoutAED.InboundWhitelistHost.pgid
+      description: List of protection group IDs.
+      type: Unknown
+    - contextPath: NetscoutAED.InboundWhitelistHost.update_time
+      description: The time that the host address was added to the list.
+      type: Date
+  - arguments:
+    - default: false
+      description: A single IPv4 or IPv6 host address or CIDR, or a comma-separated
+        list of host addresses or CIDRs to remove.
+      isArray: true
+      name: host_address
+      required: true
+      secret: false
+    deprecated: false
+    description: Removes one or more hosts or CIDRs from the whitelist for a specific
+      protection group or for all protection groups.
+    execution: false
+    name: na-ed-inbound-whitelisted-hosts-remove
+  - arguments:
+    - default: false
+      description: A comma-separated list of central configuration IDs. Cannot be
+        used with the pgid parameter.
+      isArray: true
+      name: cid
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of protection group IDs. Cannot be used
+        with the cid parameter.
+      isArray: true
+      name: pgid
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of domains.
+      isArray: true
+      name: domain
+      required: false
+      secret: false
+    - default: false
+      description: 'Search strings, separated by “+” to filter the results. (example:
+        "AZ+BS").'
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      description: The page of the results to return.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: Maximal number of results to retrieve. Also sets the size of the
+        returned page.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets the blacklisted domains. By default, 10 blacklisted domains
+      are returned. To return blacklisted domains for specific protection groups,
+      specify a list of protection group IDs or central configuration IDs. An ID of
+      -1 selects domains that are globally blacklisted.
+    execution: false
+    name: na-ed-inbound-blacklisted-domains-list
+    outputs:
+    - contextPath: NetscoutAED.InboundBlacklistDomain.annotation
+      description: List of messages associated with each domain in the inbound blacklist.
+      type: Unknown
+    - contextPath: NetscoutAED.InboundBlacklistDomain.cid
+      description: List of central configuration IDs.
+      type: Unknown
+    - contextPath: NetscoutAED.InboundBlacklistDomain.domain
+      description: Domain name.
+      type: String
+    - contextPath: NetscoutAED.InboundBlacklistDomain.pgid
+      description: List of protection group IDs.
+      type: Unknown
+    - contextPath: NetscoutAED.InboundBlacklistDomain.update_time
+      description: The time that the domain was added to the list.
+      type: Date
+  - arguments:
+    - default: false
+      description: A specific central configuration ID or -1 for global. Cannot be
+        used with the pgid parameter.
+      isArray: false
+      name: cid
+      required: false
+      secret: false
+    - default: false
+      description: A specific protection group ID or -1 for global. Cannot be used
+        with the cid parameter.
+      isArray: false
+      name: pgid
+      required: false
+      secret: false
+    - default: false
+      description: Domain name or a comma-separated list of domain names.
+      isArray: true
+      name: domain
+      required: true
+      secret: false
+    - default: false
+      description: A message to associate with each domain that you add to the blacklist.
+      isArray: false
+      name: annotation
+      required: false
+      secret: false
+    deprecated: false
+    description: Adds one or more domains to the blacklist by pgid or cid.
+    execution: false
+    name: na-ed-inbound-blacklisted-domains-add
+    outputs:
+    - contextPath: NetscoutAED.InboundBlacklistDomain.annotation
+      description: List of messages associated with each domain in the inbound blacklist.
+      type: Unknown
+    - contextPath: NetscoutAED.InboundBlacklistDomain.cid
+      description: List of central configuration IDs
+      type: Unknown
+    - contextPath: NetscoutAED.InboundBlacklistDomain.domain
+      description: Domain name
+      type: String
+    - contextPath: NetscoutAED.InboundBlacklistDomain.pgid
+      description: List of protection group IDs.
+      type: Unknown
+    - contextPath: NetscoutAED.InboundBlacklistDomain.update_time
+      description: The time that the domain was added to the list.
+      type: Date
+  - arguments:
+    - default: false
+      description: Domain name or a comma-separated list of domain names.
+      isArray: true
+      name: domain
+      required: true
+      secret: false
+    deprecated: false
+    description: Removes one or more domains from the blacklist for a specific protection
+      group or for all protection groups.
+    execution: false
+    name: na-ed-inbound-blacklisted-domains-remove
+  - arguments:
+    - default: false
+      description: A comma-separated list of central configuration IDs. Cannot be
+        used with the pgid parameter.
+      isArray: true
+      name: cid
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of protection group IDs. Cannot be used
+        with the cid parameter.
+      isArray: true
+      name: pgid
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of URLs.
+      isArray: true
+      name: url
+      required: false
+      secret: false
+    - default: false
+      description: 'Search strings, separated by “+” to filter the results. (example:
+        "AZ+BS").'
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      description: The page of the results to return.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: Maximal number of results to retrieve. Also sets the size of the
+        returned page.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets the blacklisted URLs. By default, 10 blacklisted URLs are returned.
+      To return blacklisted URLs for specific protection groups, specify a list of
+      protection group IDs or central configuration IDs. An ID of -1 selects URLs
+      that are globally blacklisted.
+    execution: false
+    name: na-ed-inbound-blacklisted-urls-list
+    outputs:
+    - contextPath: NetscoutAED.InboundBlacklistUrl.annotation
+      description: List of messages associated with each url in the inbound blacklist.
+      type: Unknown
+    - contextPath: NetscoutAED.InboundBlacklistUrl.cid
+      description: List of central configuration IDs
+      type: Unknown
+    - contextPath: NetscoutAED.InboundBlacklistUrl.url
+      description: URL address.
+      type: String
+    - contextPath: NetscoutAED.InboundBlacklistUrl.pgid
+      description: List of protection group IDs.
+      type: Unknown
+    - contextPath: NetscoutAED.InboundBlacklistUrl.update_time
+      description: The time that the domain was added to the list.
+      type: Date
+  - arguments:
+    - default: false
+      description: A specific central configuration ID or -1 for global. Cannot be
+        used with the pgid parameter.
+      isArray: false
+      name: cid
+      required: false
+      secret: false
+    - default: false
+      description: A specific protection group ID or -1 for global. Cannot be used
+        with the cid parameter.
+      isArray: false
+      name: pgid
+      required: false
+      secret: false
+    - default: false
+      description: URL or a comma-separated list of URLs to add.
+      isArray: true
+      name: url
+      required: true
+      secret: false
+    - default: false
+      description: A message to associate with each URL that you add to the blacklist.
+      isArray: false
+      name: annotation
+      required: false
+      secret: false
+    deprecated: false
+    description: Adds one or more URLs to the blacklist by pgid or cid.
+    execution: false
+    name: na-ed-inbound-blacklisted-urls-add
+    outputs:
+    - contextPath: NetscoutAED.InboundBlacklistUrl.annotation
+      description: List of messages associated with each url in the inbound blacklist.
+      type: Unknown
+    - contextPath: NetscoutAED.InboundBlacklistUrl.cid
+      description: List of central configuration IDs.
+      type: Unknown
+    - contextPath: NetscoutAED.InboundBlacklistUrl.url
+      description: URL address.
+      type: String
+    - contextPath: NetscoutAED.InboundBlacklistUrl.pgid
+      description: List of protection group IDs.
+      type: Unknown
+    - contextPath: NetscoutAED.InboundBlacklistUrl.update_time
+      description: The time that the domain was added to the list.
+      type: Date
+  - arguments:
+    - default: false
+      description: URL or a comma-separated list of URLs.
+      isArray: true
+      name: url
+      required: true
+      secret: false
+    deprecated: false
+    description: Removes one or more URLs from the blacklist for a specific protection
+      group or for all protection groups.
+    execution: false
+    name: na-ed-inbound-blacklisted-urls-remove
+  - arguments:
+    - default: false
+      description: A single IPv4 host address or CIDR, or a comma-separated list of
+        IPv4 host addresses or CIDRs to remove.
+      isArray: true
+      name: host_address
+      required: true
+      secret: false
+    deprecated: false
+    description: Removes one or more hosts or CIDRs from the outbound whitelist.
+    execution: false
+    name: na-ed-outbound-whitelisted-hosts-remove
+  dockerimage: demisto/python3:3.9.7.24076
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- NetscoutAED-Test
+defaultclassifier: 'null'
+fromversion: 5.5.0

@@ -1,0 +1,38 @@
+[
+    {
+        "description": "An archive folder for all outbound messages.  By default, messages are kept for 3 months.",
+        "folderId": 1007,
+        "folderType": 1,
+        "iconIndex": 0,
+        "isDeleted": false,
+        "isFingerprintingEnabled": false,
+        "isPassThru": false,
+        "isPublishedInbound": false,
+        "isPublishedOutbound": false,
+        "isReadOnly": true,
+        "name": "Archive Out",
+        "numFiles": 0,
+        "parentId": 1,
+        "path": "A11F07EA-7569-4596-9BC5-B4A25D428BAE",
+        "retention": 93,
+        "securityDescription": ""
+    },
+    {
+        "description": "Contains messages blocked because they contain profanity.",
+        "folderId": 1008,
+        "folderType": 1,
+        "iconIndex": 0,
+        "isDeleted": false,
+        "isFingerprintingEnabled": false,
+        "isPassThru": false,
+        "isPublishedInbound": false,
+        "isPublishedOutbound": false,
+        "isReadOnly": false,
+        "name": "Language",
+        "numFiles": 0,
+        "parentId": 1,
+        "path": "6F1422E1-CDB6-4669-ACC7-794CC0669663",
+        "retention": 7,
+        "securityDescription": ""
+    }
+]

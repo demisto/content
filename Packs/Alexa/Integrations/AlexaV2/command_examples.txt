@@ -1,0 +1,1 @@
+!domain domain="google.com,xsoar.com" using="Alexa Rank Indicator V2_instance_1"

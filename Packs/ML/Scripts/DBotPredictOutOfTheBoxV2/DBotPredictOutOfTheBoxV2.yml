@@ -106,10 +106,11 @@ subtype: python3
 system: false
 timeout: 60µs
 type: python
-dockerimage: demisto/ml:1.0.0.19023
+dockerimage:  demisto/ml:1.0.0.20606
 runonce: true
 tests:
 - DbotPredictOufOfTheBoxTestV2
+- VerifyOOBV2Predictions-Test
 tags:
 - phishing
 - ml

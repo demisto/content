@@ -21,9 +21,15 @@ class Email(object):
             include_raw_body: Whether to include the raw body of the mail in the incident's body
             save_file: Whether to save the .eml file of the incident's mail
         """
-        email_object = parse_from_bytes(message_bytes)
-        self.id = id_
         self.mail_bytes = message_bytes
+        try:
+            email_object = parse_from_bytes(message_bytes)
+        except UnicodeDecodeError as e:
+            demisto.info(f'Failed parsing mail from bytes: [{e}]\n{traceback.format_exc()}.'
+                         '\nWill replace backslash and try to parse again')
+            message_bytes = message_bytes.replace(b'\\U', b'\\\\U').replace(b'\\u', b'\\\\u')
+            email_object = parse_from_bytes(message_bytes)
+        self.id = id_
         self.to = [mail_addresses for _, mail_addresses in email_object.to]
         self.cc = [mail_addresses for _, mail_addresses in email_object.cc]
         self.bcc = [mail_addresses for _, mail_addresses in email_object.bcc]
@@ -256,6 +262,12 @@ def fetch_mails(client: IMAPClient,
     demisto.debug(f'Messages to fetch: {messages_uids}')
     for mail_id, message_data in client.fetch(messages_uids, 'RFC822').items():
         message_bytes = message_data.get(b'RFC822')
+        # For cases the message_bytes is returned as a string. If failed, will try to use the message_bytes returned.
+        try:
+            message_bytes = bytes(message_bytes)
+        except Exception as e:
+            demisto.debug(f"Converting data was un-successful. {mail_id=}, {message_data=}. Error: {e}")
+
         if not message_bytes:
             continue
         email_message_object = Email(message_bytes, include_raw_body, save_file, mail_id)
@@ -373,6 +385,13 @@ def get_email_as_eml(client: IMAPClient, message_id: int) -> dict:
     mails_fetched, _, _ = fetch_mails(client, message_id=message_id)
     mail_file = [fileResult('original-email-file.eml', mail.mail_bytes) for mail in mails_fetched]
     return mail_file[0] if mail_file else {}
+
+
+def _convert_to_bytes(data) -> bytes:
+    demisto.debug("Converting data to bytes.")
+    bytes_data = bytes(data)
+    demisto.debug("Converted data successfully.")
+    return bytes_data
 
 
 def main():

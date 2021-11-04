@@ -1,0 +1,431 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: Trello - Generic
+inputs:
+- description: If set, after the investigation is concluded, the card will be moved
+    to the given list id.
+  key: MoveToList
+  playbookInputQuery:
+  required: false
+  value:
+    simple: 605ac66f9f37c20f9f3205d9
+name: Trello - Generic
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: adeff520-4f44-465f-813e-a2767752643b
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: adeff520-4f44-465f-813e-a2767752643b
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    reputationcalc: 2
+    scriptarguments:
+      entryID: {}
+      filePath: {}
+      investigationID: {}
+      text:
+        complex:
+          root: incident
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.extract.indicators
+      id: 496870a8-f378-48a6-8830-e4f92bdd81ca
+      iscommand: true
+      name: Extract All Indicators
+      script: Builtin|||extractIndicators
+      type: regular
+      version: -1
+    taskid: 496870a8-f378-48a6-8830-e4f92bdd81ca
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 180
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0d5ecf48-f9e3-4263-8a53-2835de2361ad
+      iscommand: false
+      name: Entity Enrichment - Generic v3
+      playbookId: Entity Enrichment - Generic v3
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 0d5ecf48-f9e3-4263-8a53-2835de2361ad
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 340
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6ba4ad29-52d3-4dea-8333-4ae423e3e687
+      iscommand: false
+      name: Calculate Severity - Generic v2
+      playbookId: Calculate Severity - Generic v2
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 6ba4ad29-52d3-4dea-8333-4ae423e3e687
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 500
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 22e3587c-4af0-43c7-8a9b-d725265c50b4
+      iscommand: false
+      name: d729d64d-0865-41a7-89e4-95c1227dd9d5
+      playbookId: d729d64d-0865-41a7-89e4-95c1227dd9d5
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 22e3587c-4af0-43c7-8a9b-d725265c50b4
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 660
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      card_id:
+        simple: ${incident.trellocardid}
+      text:
+        complex:
+          accessor: Indicator
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: DBotScore.Score
+              operator: greaterThanOrEqual
+              right:
+                value:
+                  simple: "3"
+          root: DBotScore
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: ' * '
+              suffix: {}
+            operator: concat
+          - args:
+              separator:
+                value:
+                  simple: |2+
+
+            operator: join
+          - args:
+              prefix:
+                value:
+                  simple: |
+                    ### XSOAR has extracted the following indicators from this card
+              suffix: {}
+            operator: concat
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Add a comment to a Trello card
+      id: 52b39299-d69d-4ac5-89d3-4e8286f6a6fe
+      iscommand: true
+      name: Add Comment With Indicators
+      script: '|||trello-add-comment'
+      type: regular
+      version: -1
+    taskid: 52b39299-d69d-4ac5-89d3-4e8286f6a6fe
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 1000
+        }
+      }
+  "7":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: DBotScore.Score
+                    operator: greaterThanOrEqual
+                    right:
+                      value:
+                        simple: "3"
+                root: DBotScore
+          operator: isNotEmpty
+      label: "yes"
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      description: Check for indicators in the incident, to add to Trello comment
+      brand: ""
+      id: 1d0b1ae2-6b56-464b-876d-995917691e2c
+      iscommand: false
+      name: Do we have indicators?
+      type: condition
+      version: -1
+    taskid: 1d0b1ae2-6b56-464b-876d-995917691e2c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 820
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      card_id:
+        simple: ${incident.trellocardid}
+      text:
+        simple: XSOAR Has enriched and updated the data in this card.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Add a comment to a Trello card
+      id: 4f492048-469e-4ffd-8c07-568f6b5999b0
+      iscommand: true
+      name: Add Comment without Indicaotrs
+      script: '|||trello-add-comment'
+      type: regular
+      version: -1
+    taskid: 4f492048-469e-4ffd-8c07-568f6b5999b0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 1000
+        }
+      }
+  "9":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.MoveToList
+          operator: isNotEmpty
+      label: "yes"
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      description: Check the provided playbook inputs and, if set, move the card. 
+      brand: ""
+      id: 3b81e041-4576-4ac3-85a6-7112176427ec
+      iscommand: false
+      name: Should card be moved to next list?
+      type: condition
+      version: -1
+    taskid: 3b81e041-4576-4ac3-85a6-7112176427ec
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1170
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      card_id:
+        simple: ${incident.trellocardid}
+      closed: {}
+      idLabels: {}
+      idList:
+        simple: ${inputs.MoveToList}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Update an existing card
+      id: 144702e9-a123-41fe-8741-f774cbd9bae2
+      iscommand: true
+      name: Move to list
+      script: '|||trello-update-card'
+      type: regular
+      version: -1
+    taskid: 144702e9-a123-41fe-8741-f774cbd9bae2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1370
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 906019bc-340c-4f4b-883a-db51fb1f8861
+      iscommand: false
+      name: Finish
+      type: title
+      version: -1
+      description: ''
+    taskid: 906019bc-340c-4f4b-883a-db51fb1f8861
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1590
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1605,
+        "width": 780,
+        "x": 250,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests
+fromversion: 6.0.0
+description: A generic extract and enrichment playbook for incidents based on Trello Card data.

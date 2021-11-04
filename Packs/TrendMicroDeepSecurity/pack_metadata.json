@@ -1,0 +1,16 @@
+{
+    "name": "Trend Micro Deep Security",
+    "description": "Trend Micro Deep Security provides runtime security for workloads (physical, virtual, cloud, and containers).",
+    "support": "xsoar",
+    "currentVersion": "1.0.1",
+    "author": "",
+    "url": "",
+    "email": "",
+    "categories": [
+        "Endpoint"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": []
+}

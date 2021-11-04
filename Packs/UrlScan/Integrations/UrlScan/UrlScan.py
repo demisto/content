@@ -26,42 +26,15 @@ BRAND = 'urlscan.io'
 
 """ RELATIONSHIP TYPE"""
 RELATIONSHIP_TYPE = {
-    'lists': {
-        'domains': {
-            'indicator_type': FeedIndicatorType.Domain,
-            'name': EntityRelation.Relations.RELATED_TO,
-            'detect_type': False
-        },
-        'hashes': {
-            'indicator_type': FeedIndicatorType.File,
-            'name': EntityRelation.Relations.RELATED_TO,
-            'detect_type': False
-        },
-        'ips': {
-            'indicator_type': '',
-            'name': EntityRelation.Relations.RELATED_TO,
-            'detect_type': True
-        },
-        'linkDomains': {
-            'indicator_type': FeedIndicatorType.Domain,
-            'name': EntityRelation.Relations.RELATED_TO,
-            'detect_type': False
-        },
-        'urls': {
-            'indicator_type': FeedIndicatorType.URL,
-            'name': EntityRelation.Relations.RELATED_TO,
-            'detect_type': False
-        }
-    },
     'page': {
         'domain': {
             'indicator_type': FeedIndicatorType.Domain,
-            'name': EntityRelation.Relations.HOSTED_ON,
+            'name': EntityRelationship.Relationships.HOSTED_ON,
             'detect_type': False
         },
         'ip': {
             'indicator_type': FeedIndicatorType.IP,
-            'name': EntityRelation.Relations.HOSTED_ON,
+            'name': EntityRelationship.Relationships.HOSTED_ON,
             'detect_type': False
         }
     }
@@ -231,18 +204,18 @@ def create_relationship(scan_type, field, entity_a, entity_a_type, entity_b, ent
     """
     Create a single relation with the given arguments.
     """
-    return EntityRelation(name=RELATIONSHIP_TYPE.get(scan_type, {}).get(field, {}).get('name', ''),
-                          entity_a=entity_a,
-                          entity_a_type=entity_a_type,
-                          entity_b=entity_b,
-                          entity_b_type=entity_b_type,
-                          source_reliability=reliability,
-                          brand=BRAND)
+    return EntityRelationship(name=RELATIONSHIP_TYPE.get(scan_type, {}).get(field, {}).get('name', ''),
+                              entity_a=entity_a,
+                              entity_a_type=entity_a_type,
+                              entity_b=entity_b,
+                              entity_b_type=entity_b_type,
+                              source_reliability=reliability,
+                              brand=BRAND)
 
 
 def create_list_relationships(scans_dict, url, reliability):
     """
-    Creates a list of EntityRelations object from all of the lists in scans_dict according to RELATIONSHIP_TYPE dict.
+    Creates a list of EntityRelationships object from all of the lists in scans_dict according to RELATIONSHIP_TYPE dict.
     """
     relationships_list = []
     for scan_name, scan_dict in scans_dict.items():
@@ -251,19 +224,19 @@ def create_list_relationships(scans_dict, url, reliability):
             indicators = scan_dict.get(field)
             if not isinstance(indicators, list):
                 indicators = [indicators]
-            relation_dict = RELATIONSHIP_TYPE.get(scan_name, {}).get(field, {})
-            indicator_type = relation_dict.get('indicator_type', '')
+            relationship_dict = RELATIONSHIP_TYPE.get(scan_name, {}).get(field, {})
+            indicator_type = relationship_dict.get('indicator_type', '')
             for indicator in indicators:
                 # For a case where the destination side does not exist
                 if not indicator:
                     pass
                 # For a case where the type of the IP indicator should be detected, whether its IPv6/IP
-                if not indicator_type and relation_dict.get('detect_type'):
+                if not indicator_type and relationship_dict.get('detect_type'):
                     indicator_type = detect_ip_type(indicator)
-                relation = create_relationship(scan_type=scan_name, field=field, entity_a=url,
-                                               entity_a_type=FeedIndicatorType.URL, entity_b=indicator,
-                                               entity_b_type=indicator_type, reliability=reliability)
-                relationships_list.append(relation)
+                relationship = create_relationship(scan_type=scan_name, field=field, entity_a=url,
+                                                   entity_a_type=FeedIndicatorType.URL, entity_b=indicator,
+                                                   entity_b_type=indicator_type, reliability=reliability)
+                relationships_list.append(relationship)
     return relationships_list
 
 
@@ -395,7 +368,7 @@ def format_results(client, uuid):
     if 'overall' in scan_verdicts:
         human_readable['Malicious URLs Found'] = scan_stats['malicious']
         if scan_verdicts['overall'].get('malicious'):
-            human_readable['Malicious'] = 'Malicious'
+            human_readable['Verdict'] = 'Malicious'
             url_cont['Data'] = demisto.args().get('url')
             cont['Data'] = demisto.args().get('url')
             dbot_score['Indicator'] = demisto.args().get('url')
@@ -411,7 +384,7 @@ def format_results(client, uuid):
             dbot_score['Indicator'] = demisto.args().get('url')
             dbot_score['Score'] = 0
             dbot_score['Type'] = 'url'
-            human_readable['Malicious'] = 'Benign'
+            human_readable['Verdict'] = 'Unknown'
         dbot_score['Reliability'] = client.reliability
     if 'urlscan' in scan_verdicts and 'tags' in scan_verdicts['urlscan']:
         url_cont['Tags'] = scan_verdicts['urlscan']['tags']
@@ -442,7 +415,7 @@ def format_results(client, uuid):
                                                                    indicator_type=related_indicator['type']))
         url_cont['FeedRelatedIndicators'] = related_indicators
     if demisto.params().get('create_relationships') is True:
-        relationships = create_list_relationships({'lists': scan_lists, 'page': scan_page}, url_query,
+        relationships = create_list_relationships({'page': scan_page}, url_query,
                                                   client.reliability)
     outputs = {
         'URLScan(val.URL && val.URL == obj.URL)': cont,
@@ -459,7 +432,7 @@ def format_results(client, uuid):
                                   integration_name=BRAND, score=dbot_score.get('Score'),
                                   reliability=dbot_score.get('Reliability'))
 
-    url = Common.URL(url=url_cont.get('Data'), dbot_score=dbot_score, relations=relationships,
+    url = Common.URL(url=url_cont.get('Data'), dbot_score=dbot_score, relationships=relationships,
                      feed_related_indicators=url_cont.get('FeedRelatedIndicators'))
 
     command_result = CommandResults(
@@ -467,7 +440,7 @@ def format_results(client, uuid):
         outputs=outputs,
         indicator=url,
         raw_response=response,
-        relations=relationships
+        relationships=relationships
     )
 
     demisto.results(command_result.to_context())

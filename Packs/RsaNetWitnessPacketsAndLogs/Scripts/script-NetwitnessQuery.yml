@@ -42,3 +42,6 @@ dependson:
   - nw-sdk-query
 timeout: 0s
 fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.24066
+tests:
+- No tests (auto formatted)

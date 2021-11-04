@@ -1,4 +1,4 @@
-This playbook isolates a given endpoint using the Cybereason integration.
+This playbook isolates an endpoint based on the hostname provided.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -7,26 +7,31 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* Cybereason
+Cybereason
 
 ### Scripts
 This playbook does not use any scripts.
 
 ### Commands
+* cybereason-is-probe-connected
 * cybereason-isolate-machine
 
 ## Playbook Inputs
 ---
 
-| **Name** | **Description** | **Default Value** | **Source** | **Required** |
-| --- | --- | --- | --- | --- |
-| Hostname | The hostname of the endpoint to isolate using Cybereason. |  |  | Required |
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| Hostname | The hostname of the endpoint to isolate using Cybereason. |  | Optional |
 
 ## Playbook Outputs
 ---
-There are no outputs for this playbook.
+
+| **Path** | **Description** | **Type** |
+| --- | --- | --- |
+| Cybereason.Machine | Machine name. | unknown |
+| Cybereason.IsIsolated | Is the machine isolated. | unknown |
+| Endpoint.Hostname | Machine name. | unknown |
 
 ## Playbook Image
 ---
-![Isolate Endpoint - Cybereason](https://raw.githubusercontent.com/demisto/content/master/docs/images/playbooks/Isolate_Endpoint_-_Cybereason.png)
-
+![Isolate Endpoint - Cybereason](../doc_files/Isolate_Endpoint_-_Cybereason.png)

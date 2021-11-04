@@ -59,9 +59,10 @@ configuration:
 - display: Retries
   name: retries
   defaultvalue: 5
-  additionalinfo: The maximum retry attempts when connection or throttling errors
-    are encountered. Set to 0 to disable retries. You may also override the value
-    when executing the aws-lambda-invoke command.
+  additionalinfo: "The maximum number of retry attempts when connection or throttling errors
+    are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10.
+    Note: Increasing the number of retries will increase the execution time. You may also override the value
+    when executing the aws-lambda-invoke command."
   required: false
   type: 0
 - display: Trust any certificate (not secure)
@@ -174,7 +175,7 @@ script:
     - contextPath: AWS.Lambda.Functions.Configuration.MemorySize
       description: The memory allocated to the function
       type: number
-    - contextPath: 'AWS.Lambda.Functions.Configuration.LastModified '
+    - contextPath: 'AWS.Lambda.Functions.Configuration.LastModified'
       description: The date and time that the function was last updated, in ISO-8601
         format (YYYY-MM-DDThh:mm:ss.sTZD).
       type: date
@@ -692,7 +693,7 @@ script:
     - contextPath: AWS.Lambda.AccountUsage. FunctionCount
       description: The number of Lambda functions.
       type: number
-  dockerimage: demisto/boto3py3:1.0.0.19032
+  dockerimage: demisto/boto3py3:1.0.0.24037
   isfetch: false
   runonce: false
   subtype: python3

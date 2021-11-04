@@ -357,13 +357,15 @@ script:
       required: true
       secret: false
     - default: false
-      description: The Start time of the time range. For example, 2018-08-01T11:50:16 or "30 days ago".
+      description: The Start time of the time range. For example, 2018-08-01T11:50:16
+        or "30 days ago".
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: The end time of the time range. For example, 2018-08-01T11:50:16 or "1 week ago".
+      description: The end time of the time range. For example, 2018-08-01T11:50:16
+        or "1 week ago".
       isArray: false
       name: end_time
       required: false
@@ -1592,7 +1594,315 @@ script:
     - contextPath: Exabeam.ContextTableUpdate.record.value
       description: The raw data of the context table update.
       type: Unknown
-  dockerimage: demisto/python3:3.9.1.15759
+  - arguments:
+    - default: false
+      description: The maximum number of returned results.
+      isArray: false
+      name: limit
+      required: true
+      secret: false
+    - default: false
+      description: The time period for which to fetch notable users, such as 3 months,
+        2 days, 4 hours, 1 year, and so on.
+      isArray: true
+      name: time_period
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns notable assets.
+    execution: false
+    name: exabeam-get-notable-assets
+    outputs:
+    - contextPath: Exabeam.NotableAsset.HostName
+      description: The notable asset host name.
+      type: String
+    - contextPath: Exabeam.NotableAsset.IPAddress
+      description: The notable asset IP address.
+      type: String
+    - contextPath: Exabeam.NotableAsset.AssetType
+      description: The notable asset type.
+      type: String
+    - contextPath: Exabeam.NotableAsset.FirstSeen
+      description: Time when the asset was first seen.
+      type: Date
+    - contextPath: Exabeam.NotableAsset.LastSeen
+      description: Time when the asset was last seen.
+      type: Date
+    - contextPath: Exabeam.NotableAsset.highestRiskScore
+      description: The highest risk score of the asset.
+      type: Number
+    - contextPath: Exabeam.NotableAsset.id
+      description: The notable asset ID.
+      type: String
+    - contextPath: Exabeam.NotableAsset.entityName
+      description: The entity name of the asset.
+      type: String
+    - contextPath: Exabeam.NotableAsset.entityValue
+      description: The entity value of the asset.
+      type: String
+    - contextPath: Exabeam.NotableAsset.day
+      description: The notable asset date.
+      type: Date
+    - contextPath: Exabeam.NotableAsset.triggeredRuleCountOpt
+      description: The number that asset triggered rule count opt.
+      type: Number
+    - contextPath: Exabeam.NotableAsset.riskScoreOpt
+      description: Risk score opt of the asset.
+      type: Number
+    - contextPath: Exabeam.NotableAsset.incidentIds
+      description: The incident IDs of the notable asset.
+      type: Unknown
+    - contextPath: Exabeam.NotableAsset.commentId
+      description: The comment ID of the notable asset.
+      type: String
+    - contextPath: Exabeam.NotableAsset.commentType
+      description: The comment type of the notable asset.
+      type: String
+    - contextPath: Exabeam.NotableAsset.commentObjectId
+      description: The comment object ID of the notable asset.
+      type: String
+    - contextPath: Exabeam.NotableAsset.text
+      description: The notable asset text.
+      type: String
+    - contextPath: Exabeam.NotableAsset.exaUser
+      description: The notable asset exaUser.
+      type: String
+    - contextPath: Exabeam.NotableAsset.exaUserFullname
+      description: The notable asset exaUser fullname.
+      type: String
+    - contextPath: Exabeam.NotableAsset.createTime
+      description: Time when the asset was created.
+      type: Date
+    - contextPath: Exabeam.NotableAsset.updateTime
+      description: Time when the asset was updated.
+      type: Date
+    - contextPath: Exabeam.NotableAsset.edited
+      description: Whether or not the notable asset is edited.
+      type: Boolean
+    - contextPath: Exabeam.NotableAsset.zone
+      description: The number that asset triggered rule count opt.
+      type: String
+  - arguments:
+    - default: false
+      description: ID of the asset to fetch info for.
+      isArray: false
+      name: asset_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: date
+      description: The key to sort results by.
+      isArray: false
+      name: sort_by
+      predefined:
+      - date
+      - riskScore
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: desc
+      description: The order of the results (ascending or descending).
+      isArray: false
+      name: sort_order
+      predefined:
+      - asc
+      - desc
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Maximum number of results.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns notable session details.
+    execution: false
+    name: exabeam-get-notable-session-details
+    outputs:
+    - contextPath: Exabeam.NotableSession.users.UserName
+      description: The notable session user name.
+      type: String
+    - contextPath: Exabeam.NotableSession.users.RiskScore
+      description: The notable session risk score.
+      type: number
+    - contextPath: Exabeam.NotableSession.users.AverageRiskScore
+      description: The average risk score of the notable session.
+      type: number
+    - contextPath: Exabeam.NotableSession.users.FirstSeen
+      description: Time when the notable session was first seen.
+      type: Date
+    - contextPath: Exabeam.NotableSession.users.LastSeen
+      description: Time when the notable session was last seen.
+      type: Date
+    - contextPath: Exabeam.NotableSession.users.lastActivityType
+      description: The last activity type of the user.
+      type: String
+    - contextPath: Exabeam.NotableSession.users.Labels
+      description: The labels of the user.
+      type: Unknown
+    - contextPath: Exabeam.NotableSession.users.LastSessionID
+      description: The last session ID of the user.
+      type: String
+    - contextPath: Exabeam.NotableSession.users.EmployeeType
+      description: The employee type of the user.
+      type: String
+    - contextPath: Exabeam.NotableSession.users.Department
+      description: The department of the user.
+      type: String
+    - contextPath: Exabeam.NotableSession.users.Title
+      description: The role of the user.
+      type: String
+    - contextPath: Exabeam.NotableSession.users.Location
+      description: The location of the user.
+      type: String
+    - contextPath: Exabeam.NotableSession.users.Email
+      description: The email of the user.
+      type: String
+    - contextPath: Exabeam.NotableSession.sessions.SessionID
+      description: The Session ID.
+      type: String
+    - contextPath: Exabeam.NotableSession.sessions.InitialRiskScore
+      description: Initial risk score of the session.
+      type: Number
+    - contextPath: Exabeam.NotableSession.sessions.LoginHost
+      description: The host from which the user was logged in.
+      type: String
+    - contextPath: Exabeam.NotableSession.sessions.Accounts
+      description: Accounts in the session.
+      type: String
+    - contextPath: Exabeam.NotableSession.executiveUserFlags
+      description: Whether the user is a executive user.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The asset ID for which to fetch data.
+      isArray: false
+      name: asset_id
+      required: true
+      secret: false
+    - default: false
+      description: The Start time of the time range. For example, 2018-08-01T11:50:16.
+      isArray: false
+      name: start_time
+      required: false
+      secret: false
+    - default: false
+      description: The end time of the time range. For example, 2018-08-01T11:50:16.
+      isArray: false
+      name: end_time
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Maximum number of rules to retrieve.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Results page number.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns sequence details for the given asset ID and time range.
+    execution: false
+    name: exabeam-get-notable-sequence-details
+    outputs:
+    - contextPath: Exabeam.Sequence.sequenceId
+      description: The ID of the sequence.
+      type: String
+    - contextPath: Exabeam.Sequence.isWhitelisted
+      description: Whether or not the sequence is white listed.
+      type: Boolean
+    - contextPath: Exabeam.Sequence.areAllTriggeredRulesWhiteListed
+      description: Whether or not the sequence are all triggered rules white listed.
+      type: Boolean
+    - contextPath: Exabeam.Sequence.hasBeenPartiallyWhiteListed
+      description: Whether or not the sequence has been partially white listed.
+      type: Boolean
+    - contextPath: Exabeam.Sequence.riskScore
+      description: The sequence risk score.
+      type: Number
+    - contextPath: Exabeam.Sequence.startTime
+      description: Start time of the sequence.
+      type: Date
+    - contextPath: Exabeam.Sequence.endTime
+      description: End time of the sequence.
+      type: Date
+    - contextPath: Exabeam.Sequence.numOfReasons
+      description: Number of reasons in the sequence.
+      type: Number
+    - contextPath: Exabeam.Sequence.numOfEvents
+      description: Number of events in the sequence.
+      type: Number
+    - contextPath: Exabeam.Sequence.numOfUsers
+      description: Number of users in the sequence.
+      type: Number
+    - contextPath: Exabeam.Sequence.numOfSecurityEvents
+      description: Number of security events in the sequence.
+      type: Number
+    - contextPath: Exabeam.Sequence.numOfZones
+      description: Number of zones in the sequence.
+      type: Number
+    - contextPath: Exabeam.Sequence.numOfAssets
+      description: Number of assets in the sequence.
+      type: Number
+    - contextPath: Exabeam.Sequence.assetId
+      description: The asset ID of the sequence.
+      type: String
+  - arguments:
+    - default: false
+      description: The asset sequence ID
+      isArray: false
+      name: asset_sequence_id
+      required: true
+      secret: false
+    - default: false
+      description: String to search for inside display name.
+      isArray: false
+      name: search_str
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Maximum number of rules to retrieve.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Results page number.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns sequence event types for the given asset sequence ID and
+      time range.
+    execution: false
+    name: exabeam-get-sequence-eventtypes
+    outputs:
+    - contextPath: Exabeam.SequenceEventTypes.eventType
+      description: The sequence event type.
+      type: String
+    - contextPath: Exabeam.SequenceEventTypes.displayName
+      description: The sequence display name.
+      type: String
+    - contextPath: Exabeam.SequenceEventTypes.count
+      description: The number of the sequences.
+      type: Number
+    - contextPath: Exabeam.SequenceEventTypes.sequenceId
+      description: The sequence ID.
+      type: String
+  dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: false
   longRunning: false

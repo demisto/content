@@ -1,0 +1,47 @@
+{
+  "ITEM_PURCHASE_RESPONSE": [
+    {
+      "data": [
+        {
+          "id": 0,
+          "alias": "TEST"
+        }
+      ]
+    },
+    {
+      "data": {
+        "feed_property_id": "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "sub_type": 16,
+        "bot_id": "xxxxxxxxxxx"
+      }
+    },
+    {
+      "data": {
+        "chat": {
+          "room": {
+            "id": "zzzzzzzzzzzzzzzzzzzzzzzz"
+          }
+        }
+      }
+    },
+    {
+      "data": {
+        "value": true
+      }
+    },
+    {
+    "data": {
+        "roomId": "zzzzzzzzzzzzzzzzzzzzzzzz"
+      }
+    }
+  ],
+  "ITEM_PURCHASE_ARGS": {
+    "item_id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  },
+  "ITEM_PURCHASE_RUNTIME_PARAMS": {
+    "incident_id": "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"
+  },
+  "ITEM_PURCHASE_COMMAND_RESULTS": {
+    "readable_output": "Bot ID ('xxxxxxxxxxx') marked for purchasing."
+  }
+}

@@ -44,7 +44,7 @@ function Get-InfocyteTaskStatus {
     ReturnOutputs2 -ReadableOutput $MDOutput -Outputs $Output -RawResponse $task
 }
 
-function Get-InfocyteAlerts {
+function Get-InfocyteAlert {
     if (-NOT $max_fetch) {
         $max_fetch = 10
     }
@@ -426,10 +426,10 @@ function Main {
                 ReturnOutputs2 "ok" | Out-Null
             }
             "fetch-incidents" {
-                Get-InfocyteAlerts | Out-Null
+                Get-InfocyteAlert | Out-Null
             }
             "infocyte-get-alerts" {
-                Get-InfocyteAlerts | Out-Null
+                Get-InfocyteAlert | Out-Null
             }
             "infocyte-scan-host" {
                 Invoke-InfocyteScan | Out-Null

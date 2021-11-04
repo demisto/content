@@ -1,0 +1,16 @@
+{
+    "data": [
+        {
+            "project": {
+                "id": 1511896439667,
+                "url-identifier": "g/my-devsecops/galaxy",
+                "name": "my-devsecops/galaxy",
+                "url": "https://lgtm.com/projects/g/my-devsecops/galaxy"
+            },
+            "status": "success",
+            "total": 0,
+            "internal": 0,
+            "external": 0
+        }
+    ]
+}

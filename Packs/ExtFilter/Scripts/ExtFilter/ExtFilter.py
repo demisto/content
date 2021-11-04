@@ -10,13 +10,13 @@ from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-PATALG_BINARY = 0
+PATALG_BINARY: int = 0
 PATALG_WILDCARD: int = 1
-PATALG_REGEX = 2
+PATALG_REGEX: int = 2
 
-ITERATE_NODE = 0
-ITERATE_VALUE = 1
-ITERATE_KEY = 2
+ITERATE_NODE: int = 0
+ITERATE_VALUE: int = 1
+ITERATE_KEY: int = 2
 
 
 class Value:
@@ -76,14 +76,15 @@ class Ddict:
     @staticmethod
     def get_value(node: Dict[str, Any], path: str) -> Optional[Value]:
         val = None
+        key = None
         comps = path.split('.')
         while comps:
             res = Ddict.__search(node if val is None else val, comps)
             if res is None:
                 return None
-            _, val, comps = res
+            key, val, comps = res
 
-        return None if val is None else Value(val)
+        return None if key is None else Value(val)
 
     @staticmethod
     def get(node: Dict[str, Any], path: str) -> Any:
@@ -172,12 +173,30 @@ def exit_error(err_msg: str):
     raise RuntimeError(err_msg)
 
 
-def lower(value: Any, recursive: bool = False) -> Any:
+def lower(value: Any, recursive: bool = False, dict_value: bool = False, dict_key: bool = False) -> Any:
     if isinstance(value, list):
         if recursive:
             return [lower(v) for v in value]
         else:
             return [v.lower() if isinstance(v, str) else v for v in value]
+    elif isinstance(value, dict):
+        if dict_key:
+            if recursive:
+                value = {lower(k, recursive, dict_value, dict_key): v for k, v in value.items()}
+            else:
+                value = {
+                    k.lower() if isinstance(k, str) else lower(k, False, False, False): v
+                    for k, v in value.items()
+                }
+        if dict_value:
+            if recursive:
+                value = {k: lower(v, recursive, dict_value, dict_key) for k, v in value.items()}
+            else:
+                value = {
+                    k: v.lower() if isinstance(v, str) else lower(v, False, False, False)
+                    for k, v in value.items()
+                }
+        return value
     elif isinstance(value, str):
         return value.lower()
     else:
@@ -549,6 +568,18 @@ class ExtFilter:
                 pass
             return False
 
+        elif optype == "in":
+            return lhs in listize(rhs)
+
+        elif optype == "not in":
+            return lhs not in listize(rhs)
+
+        elif optype == "in caseless":
+            return lower(lhs, True, True) in listize(lower(rhs, True, True))
+
+        elif optype == "not in caseless":
+            return lower(lhs, True, True) not in listize(lower(rhs, True, True))
+
         elif optype == "in range":
             if not isinstance(rhs, str):
                 return False
@@ -843,11 +874,17 @@ class ExtFilter:
 
             for x in self.__conds_items(conds, root):
                 coptype, cconds = x
-                child = self.filter_value(
-                    child, coptype, cconds, None, inlist and parent is None)
-                if not child:
-                    return None
-                child = child.value
+
+                if coptype in ("is", "isn't") and \
+                   isinstance(cconds, str) and cconds == "existing key":
+                    if (coptype == "is") != bool(path and Ddict.get_value(root, path)):
+                        return None
+                else:
+                    child = self.filter_value(
+                        child, coptype, cconds, None, inlist and parent is None)
+                    if not child:
+                        return None
+                    child = child.value
 
                 if parent:
                     if isinstance(parent, dict):
@@ -1015,6 +1052,9 @@ class ExtFilter:
             exit_error(
                 f"ABORT: value = {root}, conds = {conds}, path = {path}")
 
+        elif optype == "is collectively transformed with":
+            return self.filter_value(root, "is transformed with", conds, path, True)
+
         elif optype == "is transformed with":
             conds = listize(self.parse_conds_json(conds))
 
@@ -1085,15 +1125,11 @@ class ExtFilter:
             if not inlist and isinstance(root, list):
                 return self.filter_values(root, optype, conds, path)
 
-            filstr = conds
-            if isinstance(filstr, str) and filstr == "existing key":
-                if optype == "is":
-                    if path and Ddict.get_value(root, path):
-                        return Value(root)
-                else:  # isn't
-                    if not path or not Ddict.get_value(root, path):
-                        return Value(root)
+            if isinstance(conds, str) and conds == "existing key":
+                if (optype == "is") == bool(path and Ddict.get_value(root, path)):
+                    return Value(root)
                 return None
+
         if path:
             if not inlist and isinstance(root, list):
                 return self.filter_values(root, optype, conds, path)
@@ -1323,7 +1359,7 @@ class ExtFilter:
         elif optype == "contains":
             rhs = self.extract_value(conds, root)
             lhs = listize(root)
-            if isinstance(rhs, str) and rhs in lhs:
+            if rhs in lhs:
                 return Value(root)
             else:
                 return None
@@ -1331,7 +1367,7 @@ class ExtFilter:
         elif optype == "contains caseless":
             rhs = self.extract_value(conds, root)
             lhs = listize(root)
-            if isinstance(rhs, str) and rhs.lower() in lower(lhs):
+            if lower(rhs, True, True) in lower(lhs, True, True):
                 return Value(root)
             else:
                 return None
@@ -1565,9 +1601,9 @@ class ExtFilter:
             rhs = self.parse_and_extract_conds_json(conds, root)
             lhs = root
             if isinstance(lhs, dict) and isinstance(rhs, dict):
-                lhs.update(rhs)
+                lhs.update(copy.deepcopy(rhs))
             elif isinstance(lhs, list) and len(lhs) == 1 and isinstance(lhs[0], dict):
-                lhs[0].update(rhs)
+                lhs[0].update(copy.deepcopy(rhs))
             else:
                 lhs = rhs
             return Value(lhs)
@@ -1685,7 +1721,11 @@ class ExtFilter:
         """
         if only_parse_for_string and not isinstance(jstr, str):
             return jstr
-        return json.loads(jstr)
+
+        try:
+            return json.loads(jstr)
+        except json.JSONDecodeError:
+            return jstr
 
     def parse_and_extract_conds_json(
             self,
@@ -1731,5 +1771,7 @@ if __name__ in ('__builtin__', 'builtins', '__main__'):
     value = xfilter.filter_value(value, optype, conds, path)
     value = value.value if value else None
     value = marshal(value)
+    value = value if value is not None else []
+    value = value if isinstance(value, list) else [value]
 
     demisto.results(value)

@@ -9,6 +9,7 @@ from sklearn.base import BaseEstimator, TransformerMixin
 import json
 import pandas as pd
 from scipy.spatial.distance import cdist
+from typing import List, Dict, Union
 
 warnings.simplefilter("ignore")
 
@@ -51,8 +52,8 @@ CONST_PARAMETERS_INDICATORS_SCRIPT = {'threshold': '0',
 KEYS_ARGS_INDICATORS = ['indicatorsTypes', 'maxIncidentsInIndicatorsForWhiteList', 'minNumberOfIndicators',
                         'incidentId']
 
-REGEX_DATE_PATTERN = [re.compile("^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})Z"),
-                      re.compile("(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}).*")]
+REGEX_DATE_PATTERN = [re.compile(r"^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})Z"),
+                      re.compile(r"(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}).*")]
 REGEX_IP = re.compile(
     r'(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])')
 REPLACE_COMMAND_LINE = {"=": " = ", "\\": "/", "[": "", "]": "", '"': "", "'": "", }
@@ -160,7 +161,7 @@ def normalize_json(obj) -> str:  # type: ignore
         return " "
     my_dict = recursive_filter(obj, REGEX_DATE_PATTERN, "None", "N/A", None, "")
     my_string = json.dumps(my_dict)
-    pattern = re.compile('([^\s\w]|_)+')
+    pattern = re.compile(r'([^\s\w]|_)+')
     my_string = pattern.sub(" ", my_string)
     my_string = my_string.lower()
     return my_string
@@ -172,6 +173,9 @@ def normalize_command_line(command: str) -> str:
     :param command: command line
     :return: Normalized command line
     """
+
+    if command and isinstance(command, list):
+        command = ' '.join(set(command))
     if command and isinstance(command, str):
         my_string = command.lower()
         my_string = "".join([REPLACE_COMMAND_LINE.get(c, c) for c in my_string])
@@ -189,12 +193,12 @@ def fill_nested_fields(incidents_df: pd.DataFrame, incidents: pd.DataFrame, *lis
             if '.' in field:
                 if isinstance(incidents, list):
                     value_list = [wrapped_list(demisto.dt(incident, field)) for incident in incidents]
-                    value_list = [' '.join(list(filter(lambda x: x not in ['None', None, 'N/A'], x))) for x in
+                    value_list = [' '.join(set(list(filter(lambda x: x not in ['None', None, 'N/A'], x)))) for x in
                                   value_list]
                 else:
                     value_list = wrapped_list(demisto.dt(incidents, field))
                     value_list = ' '.join(  # type: ignore
-                        list(filter(lambda x: x not in ['None', None, 'N/A'], value_list)))  # type: ignore
+                        set(list(filter(lambda x: x not in ['None', None, 'N/A'], value_list))))  # type: ignore
                 incidents_df[field] = value_list
     return incidents_df
 
@@ -400,10 +404,12 @@ class Model:
         """
         remove_list = []
         for field in self.field_for_command_line:
-            if field not in self.incident_to_match.columns or not self.incident_to_match[field].values[
-                0] or not isinstance(self.incident_to_match[field].values[0], str) or \
-                    self.incident_to_match[field].values[0] == 'None' or self.incident_to_match[field].values[
-                    0] == 'N/A':
+            if field not in self.incident_to_match.columns \
+                    or not self.incident_to_match[field].values[0] \
+                    or (not isinstance(self.incident_to_match[field].values[0], str) and not isinstance(
+                    self.incident_to_match[field].values[0], list)) \
+                    or self.incident_to_match[field].values[0] == 'None' \
+                    or self.incident_to_match[field].values[0] == 'N/A':
                 remove_list.append(field)
         self.field_for_command_line = [x for x in self.field_for_command_line if x not in remove_list]
 

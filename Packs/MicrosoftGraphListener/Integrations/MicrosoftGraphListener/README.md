@@ -1,4 +1,4 @@
-<p>Microsoft Graph allows Demisto authorized access to a user's Outlook mail data in a personal or organization account. This integration was tested with version 1.0 of Microsoft Graph Mail Single User.</p>
+<p>Microsoft Graph allows Cortex XSOAR authorized access to a user's Outlook mail data in a personal or organization account. This integration was tested with version 1.0 of Microsoft Graph Mail Single User.</p>
 <h2>Use Cases</h2>
 <ul>
 <li>Monitor a specific email account and create incidents from incoming emails to the defined folder.</li>
@@ -6,10 +6,12 @@
 </ul>
 
 <h2>Fetch Incidents</h2>
-<p>The integration imports email messages from the destination folder in the target mailbox as incidents. If the message contains any attachments, they are uploaded to the War Room as files. If the attachment is an email (item attachment), Demisto fetches information about the attached email and downloads all of its attachments (if there are any) as files. To use Fetch incidents, configure a new instance and select the Fetches incidents option in the instance settings.</p>
+<p>The integration imports email messages from the destination folder in the target mailbox as incidents. If the message contains any attachments, they are uploaded to the War Room as files. If the attachment is an email (item attachment), Cortex XSOAR fetches information about the attached email and downloads all of its attachments (if there are any) as files. To use Fetch incidents, configure a new instance and select the Fetches incidents option in the instance settings.</p>
 
 <h2>Authentication</h2>
 For more details about the authentication used in this integration, see <a href="https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication">Microsoft Integrations - Authentication</a>.
+
+<b>Note:</b> For this integration, you cannot use a "Shared mailbox" regardless of the authentication method used.
 
 <h3>Required Permissions</h3>
 The following permissions are required for all commands:
@@ -18,11 +20,11 @@ The following permissions are required for all commands:
  <li>Mail.Send - Delegated</li>
  <li>User.Read - Delegated</li>
 </ul>
-<h2>Configure Microsoft Graph Mail Single User on Cortex XSOAR</h2>
+<h2>Configure O365 Outlook Mail Single User (Using Graph API) on Cortex XSOAR</h2>
 <ol>
   <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
   &nbsp;&gt;&nbsp;<strong>Servers &amp; Services</strong>.</li>
-  <li>Search for Microsoft Graph Mail Single User.</li>
+  <li>Search for O365 Outlook Mail Single User (Using Graph API).</li>
   <li>
     Click&nbsp;<strong>Add instance</strong>&nbsp;to create and configure a new integration instance.
     <ul>
@@ -48,7 +50,7 @@ The following permissions are required for all commands:
 
 <h2>Commands</h2>
 <p>
-  You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+  You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
   After you successfully execute a command, a DBot message appears in the War Room with the command details.
 </p>
 <ol>
@@ -352,11 +354,6 @@ The following permissions are required for all commands:
   </tbody>
 </table>
 
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="send-mail">2. send-mail</h3>
@@ -587,11 +584,14 @@ The following permissions are required for all commands:
   </tbody>
 </table>
 
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
+</p>
+<p>
+  <h5>Sending mails with embedded images</h5>
+  In order to send a mail with embedded image, the image content ID should be passed the <b>attach_cids</b> argument and referenced in the HTML mark-up.
+  Note: You will have to specify this CID reference when you add the attachment to the mail message.
+  For example:
+
+  <code>!send-mail subject="Mail with an embedded image" attach_cids=1@2 body_type=HTML body="&lt;h1&gt;A mail with an embedded image &lt;img src='cid:1@2' /&gt;&lt;/h1&gt;"</code>
 </p>
 
 <h3 id="msgraph-mail-reply-to">3. msgraph-mail-reply-to</h3>
@@ -655,11 +655,6 @@ There are no context output for this command.
 <h5>Human Readable Output</h5>
 <p>
 <h3>Replied to: test@demistodev.onmicrosoft.com with comment: Reply message</h3>
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="msgraph-mail-send-draft">4. msgraph-mail-send-draft</h3>
@@ -713,11 +708,6 @@ There are no context output for this command.
 <h5>Human Readable Output</h5>
 <p>
 <h3>Draft with: message_id id was sent successfully.</h3>
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="msgraph-mail-test">5. msgraph-mail-test</h3>
@@ -750,3 +740,66 @@ There are no context output for this command.
 <p>
 ✅ Success!
 </p>
+
+### reply-mail
+***
+Replies to an email using Graph Mail Single User.
+#### Base Command
+`reply-mail`
+#### Input
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| to | A CSV list of email addresses for the 'to' field. | Required |
+| body | The contents (body) of the email to be sent. | Optional |
+| subject | Subject for the email to be sent. | Required |
+| inReplyTo | ID of the item to reply to. | Required |
+| attachIDs | A CSV list of War Room entry IDs that contain files, and are used to attach files to the outgoing email. For example: attachIDs=15@8,19@8. | Optional |
+| cc | A CSV list of email addresses for the 'cc' field. | Optional |
+| bcc | A CSV list of email addresses for the 'bcc' field. | Optional |
+| htmlBody | HTML formatted content (body) of the email to be sent. This argument overrides the "body" argument. | Optional |
+| attachNames | A CSV list of names of attachments to send. Should be the same number of elements as attachIDs. | Optional |
+| attachCIDs | A CSV list of CIDs to embed attachments within the email itself. | Optional |
+| from | Email address of the sender. | Optional |
+#### Context Output
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftGraph.SentMail.body | String | The body of the email. |
+| MicrosoftGraph.SentMail.bodyPreview | String | The body preview of the email. |
+| MicrosoftGraph.SentMail.subject | String | The subject of the email. |
+| MicrosoftGraph.SentMail.toRecipients | String | The 'To' recipients of the email. |
+| MicrosoftGraph.SentMail.ccRecipients | String | The CC recipients of the email. |
+| MicrosoftGraph.SentMail.bccRecipients | String | The BCC recipients of the email. |
+| MicrosoftGraph.SentMail.ID | String | The immutable ID of the message. |
+#### Command Example
+``` !reply-mail to=dev@demistodev.onmicrosoft.com body="This is the body" subject="This is the subject" inReplyTo=AAMkAGY3OTQyM cc=dev3@demistodev.onmicrosoft.com bcc=dev2@demistodev.onmicrosoft.com attachCIDs=3604@6e069bc4-2a1e-43ea-8ed3-ea558e377751 ```
+##### Context Example
+```
+{
+    "MicrosoftGraph": {
+        "SentMail": {
+            "ID": "AAMkAGY3OTQyM",
+            "body": {
+                "content": "This is the body",
+                "contentType": "html"
+            },
+            "bodyPreview" : "This is the body",
+            "subject": "Re: This is the subject",
+            "ccRecipients": [
+                "dev3@demistodev.onmicrosoft.com"
+            ],
+            "bccRecipients": [
+                "dev2@demistodev.onmicrosoft.com"
+            ],
+            "toRecipients": [
+                "dev@demistodev.onmicrosoft.com"
+            ]
+        }
+    }
+}
+```
+
+##### Human Readable Output
+##### Replied message was successfully sent to dev@demistodev.onmicrosoft.com
+|ID|subject|toRecipients|
+|---|---|---|
+|AAMkAGY3OTQyM | Re: This is the subject | dev@demistodev.onmicrosoft.com |

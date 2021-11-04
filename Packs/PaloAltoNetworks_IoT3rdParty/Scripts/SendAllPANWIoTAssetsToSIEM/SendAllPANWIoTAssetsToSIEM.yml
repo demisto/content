@@ -27,7 +27,7 @@ dependson:
   - '|||panw-iot-3rd-party-report-status-to-panw'
   - '|||panw-iot-3rd-party-convert-assets-to-external-format'
   - '|||syslog-send'
-dockerimage: demisto/python3:3.9.1.15759
+dockerimage: demisto/python3:3.9.7.24076
 enabled: true
 name: SendAllPANWIoTAssetsToSIEM
 runas: DBotWeakRole

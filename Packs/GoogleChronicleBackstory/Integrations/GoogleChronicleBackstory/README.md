@@ -5,15 +5,53 @@ Use the Chronicle integration to retrieve Asset alerts or IOC Domain matches as 
 
 **Note:** The `gcb-list-alerts` command would fetch both Asset as well as User alerts depending upon the argument `alert_type`. In this case, the total number of alerts fetched might not match with the value of the page_size argument and this is a known behaviour with respect to the endpoint from which we are fetching the alerts.
 
+**Note:** The `gcb-list-rules` command would filter rules depending upon the argument `live_rule`.In this case, the total number of rules fetched might not match with the value of the page_size argument and this is a known behaviour with respect to the endpoint from which we are fetching the rules.
 #### Troubleshoot
 
-##### Problem
-Demisto invokes data pull every minute and looks for alerts/events generated at the last minute. The alert/event has 2 timestamps; the time when the event was generated (event timestamp) on the source product(EDR, Firewall, etc) and the event hit Chronicle(ingestion timestamp).
+##### Problem #1
+Cortex XSOAR invokes data pull every minute and looks for alerts/events generated at the last minute. The alert/event has 2 timestamps; the time when the event was generated (event timestamp) on the source product(EDR, Firewall, etc) and the event hit Chronicle(ingestion timestamp).
 
-Considering the latency of the data pipeline usually, the ingestion timestamp can be significantly delayed compared to the event timestamp. Given the fact that Chronicle APIs fetches the alerts/events based on event timestamp, if queried in real-time there are high chances of the alerts getting missed. Considering Demisto queries for events in the last 1 minute and if the pipeline latency is greater than a minute, such events are missed in Demisto.
+Considering the latency of the data pipeline usually, the ingestion timestamp can be significantly delayed compared to the event timestamp. Given the fact that Chronicle APIs fetches the alerts/events based on event timestamp, if queried in real-time there are high chances of the alerts getting missed. Considering Cortex XSOAR queries for events in the last 1 minute and if the pipeline latency is greater than a minute, such events are missed in Cortex XSOAR.
 
-##### Solution
+##### Solution #1
 In order to fetch the missed events, the ingestion should query the historical time range. i.e. the time window to query needs to be increased from the current last minute to a larger window (15 mins, 30 mins, etc). The time window parameter in the integration configuration is provided to achieve the same. Select the time window to query Chronicle with a historical time range. While selecting the time window consider the time delay for an event to appear in Chronicle after generation.
+
+##### Problem #2
+Duplication of rule detection incidents when fetched from Chronicle.
+
+##### Solution #2
+- The incidents are re-fetched starting from first fetch time window when user resets the last run time stamp. 
+- To avoid duplication of incidents with duplicate detection ids and to drop them, XSOAR provides inbuilt features of Pre-process rules. 
+- This setting XSOAR platform end users have to set on their own as it's not part of the integration pack.
+- Pre-processing rules enable users to perform certain actions on incidents as they are ingested into XSOAR. 
+- Using these rules users can choose incoming events on which to perform actions for example drop all the incoming incidents, drop and update incoming incidents if certain conditions are met.
+- Please refer for information on Pre-Process rules:
+  https://xsoar.pan.dev/docs/incidents/incident-pre-processing#:~:text=Creating%20Rules&text=Navigate%20to%20Settings%20%3E%20Integrations%20%3E%20Pre,viewing%20the%20list%20of%20rules.
+
+## FAQ - Fetch Detections
+
+##### Question #1
+If we have 3 rules added in the configuration (R1, R2, R3) and we are getting 429 or 500 errors in R2. Will my integration stop fetching the detections or will it fetch detections of rule R3?
+
+###### Case #1: When HTTP 429 error resumes before 60 retry attempts:
+
+- System will re-attempt to fetch the detection after 1 min for the same R2 rule. The system will re-attempt to get the detections for Rule R2, 60 times.
+If 429 error is recovered before 60 attempts, the system will fetch the detections for Rule R2 and then proceed ahead for Rule R3.
+
+###### Case #2: When HTTP 429 error does not resume for 60 retry attempts:
+
+- System will re-attempt after 1 min for the same R2 rule. The system will re-attempt to get the detections for Rule R2 60 times.
+If 429 error does not recover for 60 attempts, the system will skip Rule R2 and then proceed ahead for rule R3 to fetch its detections by adding a log.
+
+##### Question #2
+What if R1 is an invalid rule id? Would it be able to fetch R2 and R3 detections?
+
+- There will not be any retry attempts for invalid rule ids. The system will skip the invalid rule ids and move to the next rule id. So if R1 is invalid, the system will skip it without any retry attempts and move to R2.
+
+##### Question #3
+What if R1 is deleted rule id? Would it be able to fetch R2 and R3 detections?
+
+- There will not be any retry attempts for deleted rule ids. The system will skip the deleted rule ids and move to the next rule id. So if R1 is deleted, the system will skip it without any retry attempts and move to R2.
 
 ## Configure Chronicle on Cortex XSOAR
 ---
@@ -23,6 +61,7 @@ In order to fetch the missed events, the ingestion should query the historical t
 3. Click __Add instance__ to create and configure a new integration instance.
     * __Name__: a textual name for the integration instance.
     * __User's Service Account JSON__
+    * __Region__: Select the region based on the location of the chronicle backstory instance.
     * __Provide comma(',') separated categories (e.g. APT-Activity, Phishing). Indicators belonging to these "categories" would be considered as "malicious" when executing reputation commands.__
     * __Provide comma(',') separated categories (e.g. Unwanted, VirusTotal YARA Rule Match). Indicators belonging to these "categories" would be considered as "suspicious" when executing reputation commands.__
     * __Specify the "severity" of indicator that should be considered as "malicious" irrespective of the category.  If you wish to consider all indicators with High severity as Malicious, set this parameter to 'High'. Allowed values are 'High', 'Medium' and 'Low'. This configuration is applicable to reputation commands only.__
@@ -46,7 +85,7 @@ In order to fetch the missed events, the ingestion should query the historical t
 
 ## Fetched Incidents Data
 ---
-Fetch-incidents feature can pull events from Google Chronicle which can be converted into actionable incidents for further investigation. It is the function that Demisto calls every minute to import new incidents and can be enabled by the "Fetches incidents" parameter in the integration configuration.
+Fetch-incidents feature can pull events from Google Chronicle which can be converted into actionable incidents for further investigation. It is the function that Cortex XSOAR calls every minute to import new incidents and can be enabled by the "Fetches incidents" parameter in the integration configuration.
 
 #### Configuration Parameters for Fetch-incidents
  - First fetch time interval. The time range to consider for initial data fetch.(&lt;number&gt; &lt;unit&gt;, e.g. 1 day, 7 days, 3 months, 1 year): **Default** 3 days
@@ -110,7 +149,7 @@ Fetch-incidents feature can pull events from Google Chronicle which can be conve
 
 ## Commands
 ---
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 1. gcb-list-iocs
 2. gcb-assets
@@ -120,6 +159,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 6. gcb-list-alerts
 7. gcb-list-events
 8. gcb-list-detections
+9. gcb-list-rules
 ### 1. gcb-list-iocs
 ---
 Lists the IOC Domain matches within your enterprise for the specified time interval. The indicator of compromise (IOC) domain matches lists for which the domains that your security infrastructure has flagged as both suspicious and that have been seen recently within your enterprise.
@@ -187,7 +227,7 @@ Lists the IOC Domain matches within your enterprise for the specified time inter
 ### IOC Domain Matches
 |Domain|Category|Source|Confidence|Severity|IOC ingest time|First seen|Last seen|
 |---|---|---|---|---|---|---|---|
-| `anx.tb.ask.com` | Spyware Reporting Server | ET Intelligence Rep List | Low | Medium | 7 days ago | a year ago | 3 hours ago |
+| [anx.tb.ask.com]() | Spyware Reporting Server | ET Intelligence Rep List | Low | Medium | 7 days ago | a year ago | 3 hours ago |
 
 
 ### 2. gcb-assets
@@ -1729,3 +1769,102 @@ Return the Detections for a specified Rule Version.
 >
 >Note: If a specific version of the rule is provided then detections for that specific version will be fetched.
 >Maximum number of detections specified in page_size has been returned. To fetch the next set of detections, execute the command with the page token as foobar_page_token.
+
+
+### 9. gcb-list-rules
+***
+List the latest versions of all Rules.
+
+
+##### Base Command
+
+`gcb-list-rules`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| live_rule | To filter live rules. | Optional |
+| page_size | Specify the maximum number of Rules to return. You can specify between 1 and 1,000. The default is 100. | Optional |
+| page_token | A page token, received from a previous call.  Provide this to retrieve the subsequent page. | Optional |
+
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GoogleChronicleBackstory.Rules.ruleId | String | Unique identifier for a Rule. |
+| GoogleChronicleBackstory.Rules.versionId | String | Unique identifier for a specific version of a rule. |
+| GoogleChronicleBackstory.Rules.ruleName | String | Name of the rule, as parsed from ruleText. |
+| GoogleChronicleBackstory.Rules.ruleText | String | Source code for the rule, as defined by the user. |
+| GoogleChronicleBackstory.Rules.liveRuleEnabled | Boolean | Whether the rule is enabled to run as a "Live Rule". |
+| GoogleChronicleBackstory.Rules.alertingEnabled | Boolean | Whether the rule is enabled to generate Alerts. |
+| GoogleChronicleBackstory.Rules.versionCreateTime | String | A string representing the time in ISO-8601 format. |
+| GoogleChronicleBackstory.Rules.compilationState | String | Compilation state of the rule. It can be SUCCEEDED or FAILED. |
+| GoogleChronicleBackstory.Rules.compilationError | String | A compilation error if compilationState is FAILED, absent if compilationState is SUCCEEDED. |
+| GoogleChronicleBackstory.Rules.Metadata.severity | String | Severity for the rule. |
+| GoogleChronicleBackstory.Rules.Metadata.author | String | Name of author for the rule. |
+| GoogleChronicleBackstory.Rules.Metadata.description | String | Description of the rule. |
+| GoogleChronicleBackstory.Rules.Metadata.reference | String | Reference link for the rule. |
+| GoogleChronicleBackstory.Rules.Metadata.created | String | Time at which the rule is created. |
+| GoogleChronicleBackstory.Rules.Metadata.updated | String | Time at which the rule is updated. |
+| GoogleChronicleBackstory.Token.name | String | The name of the command to which the value of the nextPageToken corresponds. | 
+| GoogleChronicleBackstory.Token.nextPageToken | String | A page token that can be provided to the next call to view the next page of Rules. Absent if this is the last page. |
+
+
+##### Command Example
+```!gcb-list-rules page_size=2```
+
+##### Context Example
+```json
+
+{
+    "GoogleChronicleBackstory": {
+       "rules": [
+          {
+             "ruleId": "ru_c5b129e4-9e20-44ad-ad23-78117bd2a2af",
+             "versionId": "ru_c5b129e4-9e20-44ad-ad23-78117bd2a2af@v_1614773287_876527000",
+             "ruleName": "malicious_extensions",
+             "metadata": {
+                "author": "analyst5",
+                "description": "Use to detects malicious extentions from email attachments.",
+                "severity": "High"
+             },
+             "ruleText": "rule malicious_extensions {\n  meta:\n    author = \"analyst5\"\n    description = \"Use to detects malicious extentions from email attachments.\"\n    severity = \"High\"\n\n  events:\n    $event.metadata.event_type = \"EMAIL_TRANSACTION\"\n    $event.about.file.mime_type = /^.*\\.(com|exe|bat|cmd|cpl|jar|js|msi|rar|reg)$/\n\n  condition:\n      $event\n    \n}\n",
+             "alertingEnabled": true,
+             "versionCreateTime": "2021-03-03T12:08:07.876527Z",
+             "compilationState": "SUCCEEDED"
+          },
+          {
+             "ruleId": "ru_d63cfaeb-23d7-4e0a-b342-5f880f6129f9",
+             "versionId": "ru_d63cfaeb-23d7-4e0a-b342-5f880f6129f9@v_1614369854_162095000",
+             "ruleName": "empire_monkey",
+             "metadata": {
+                "version": "0.01",
+                "created": "2019/04/02",
+                "category": "process_creation",
+                "product": "windows",
+                "mitre": "t1086, execution",
+                "author": "Markus Neis",
+                "description": "Detects EmpireMonkey APT reported Activity  License: https://github.com/Neo23x0/sigma/blob/master/LICENSE.Detection.Rules.md.",
+                "reference": "https://tdm.socprime.com/tdm/info/jFbYfF51ECXh"
+             },
+             "ruleText": "rule empire_monkey {\n\tmeta:\n\t\tauthor = \"Markus Neis\"\n\t\tdescription = \"Detects EmpireMonkey APT reported Activity  License: https://github.com/Neo23x0/sigma/blob/master/LICENSE.Detection.Rules.md.\"\n\t\treference = \"https://tdm.socprime.com/tdm/info/jFbYfF51ECXh\"\n\t\tversion = \"0.01\"\n\t\tcreated = \"2019/04/02\"\n\t\tcategory = \"process_creation\"\n\t\tproduct = \"windows\"\n\t\tmitre = \"t1086, execution\"\n\n\tevents:\n(re.regex($selection_cutil.target.process.command_line, `.*/i:%APPDATA%\\\\logs\\.txt scrobj\\.dll`) and (re.regex($selection_cutil.target.process.file.full_path, `.*\\\\cutil\\.exe`) or $selection_cutil.metadata.description = \"Microsoft(C) Registerserver\"))\n\n\tcondition:\n\t\t$selection_cutil\n}\n",
+             "versionCreateTime": "2021-02-26T20:04:14.162095Z",
+             "compilationState": "SUCCEEDED"
+          }
+       ],
+       "nextPageToken": "foobar_page_token"
+    }
+}
+```
+
+##### Human Readable Output
+
+>### Rule(s) Details
+>| Rule ID | Rule Name | Compilation State |
+>| --- | --- | --- |
+>| ru_42f02f52-544c-4b6e-933c-df17648d5831 | email_execution | SUCCEEDED |
+>| ru_f13faad1-0041-476c-a05a-40e01c942796 | rule_1616480950177 | SUCCEEDED |
+>
+> Maximum number of rules specified in page_size has been returned. To fetch the next set of detections, execute the command with the page token as foobar_page_token.

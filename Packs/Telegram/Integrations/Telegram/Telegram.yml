@@ -7,6 +7,10 @@ configuration:
   name: token
   required: true
   type: 4
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 description: Telegram integration
 display: Telegram (Beta)
 name: Telegram_Beta
@@ -39,7 +43,7 @@ script:
     description: List users
     execution: false
     name: telegram-list-users
-  dockerimage: demisto/python3:3.7.3.221
+  dockerimage: demisto/python3:3.9.7.24076
   isfetch: false
   runonce: false
   script: '-'

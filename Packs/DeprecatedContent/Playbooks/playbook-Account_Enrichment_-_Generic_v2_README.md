@@ -1,29 +1,26 @@
-DEPRECATED. Use "Account Enrichment - Generic v2.1" playbook instead. Enriches accounts using one or more integration.
-
-Supported integrations:
-- Active Directory
+Deprecated. Use "Account Enrichment - Generic v2.1" playbook instead. Enrich accounts using one or more integrations. Supported integrations - - Active Directory
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
-## Sub-playbooks
+### Sub-playbooks
 This playbook does not use any sub-playbooks.
 
-## Integrations
+### Integrations
 This playbook does not use any integrations.
 
-## Scripts
+### Scripts
 * ADGetUser
 
-## Commands
+### Commands
 This playbook does not use any commands.
 
 ## Playbook Inputs
 ---
 
-| **Name** | **Description** | **Default Value** | **Source** | **Required** |
-| --- | --- | --- | --- | --- |
-| Username | The username to enrich. | Username | Account | Optional |
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| Username | The username to enrich. | Account.Username | Optional |
 
 ## Playbook Outputs
 ---
@@ -32,7 +29,7 @@ This playbook does not use any commands.
 | --- | --- | --- |
 | Account | The account object. | unknown |
 | Account.Type | The account entity type. | string |
-| Account.ID | The unique account DN (Distinguished Name). | string |
+| Account.ID | The unique account DN \(Distinguished Name\). | string |
 | Account.Username | The account username. | string |
 | Account.Email | The email address associated with the account. | unknown |
 | Account.Groups | The groups the account belongs to. | unknown |

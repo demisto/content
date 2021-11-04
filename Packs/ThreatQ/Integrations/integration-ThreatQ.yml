@@ -456,6 +456,7 @@ script:
       description: DBotScore Malicious status
     description: Run file check against ThreatQ
   runonce: false
+  dockerimage: demisto/python:2.7.18.24066
 beta: true
 tests:
 - No test

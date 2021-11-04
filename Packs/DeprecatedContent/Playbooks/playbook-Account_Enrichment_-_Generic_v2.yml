@@ -2,7 +2,8 @@ id: Account Enrichment - Generic v2
 version: -1
 fromversion: 5.0.0
 name: Account Enrichment - Generic v2
-description: Deprecated. Use "Account Enrichment - Generic v2.1" playbook instead. Enrich accounts using one or more integrations. Supported integrations - - Active Directory
+description: Deprecated. Use "Account Enrichment - Generic v2.1" playbook instead.\
+  \ Enrich accounts using one or more integrations. Supported integrations - - Active Directory
 starttaskid: "0"
 hidden: true
 tasks:
@@ -237,3 +238,4 @@ outputs:
   type: string
 tests:
 - No tests
+deprecated: true

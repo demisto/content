@@ -120,8 +120,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Type of query to run. Can be "EVENT", "FLOW", or "ASSETS". Default
-        is "EVENT".'
+      description: Type of query to run. Can be "EVENT", "FLOW", or "ASSETS". Default
+        is "EVENT".
       isArray: false
       name: queryType
       predefined:
@@ -175,6 +175,7 @@ script:
         PREVIOUS_MONTH, CURRENT_MONTH, PREVIOUS_WEEK, or CURRENT_WEEK.
       isArray: false
       name: timeRange
+      defaultValue: CURRENT_DAY
       predefined:
       - LAST_3_DAYS
       - LAST_2_DAYS
@@ -218,7 +219,6 @@ script:
       name: assignedUser
       predefined:
       - ME
-      - ''
       required: false
       secret: false
     deprecated: false
@@ -255,8 +255,8 @@ script:
       type: number
   - arguments:
     - default: false
-      description: 'Filters cases that were opened before this date. In the format
-        "<number><timeunit>". For example, 1 day,30 minutes,2 weeks,6 months,1 year.'
+      description: Filters cases that were opened before this date. In the format
+        "<number><timeunit>". For example, 1 day,30 minutes,2 weeks,6 months,1 year.
       isArray: false
       name: since
       required: false
@@ -386,6 +386,12 @@ script:
         command to view all organizations.
       isArray: false
       name: organization
+      required: false
+      secret: false
+    - default: false
+      description: 'Adding general notes to the case. '
+      isArray: false
+      name: notes
       required: false
       secret: false
     deprecated: false
@@ -735,55 +741,55 @@ script:
     - contextPath: McAfeeESM.AlarmEvent.Cases.Summary
       description: The summary of the case.
       type: string
-  - name: esm-get-watchlists
-    deprecated: false
-    execution: false
-    description: Returns a list of watchlists' names and IDs.
-    arguments:
-    - default: false
-      isArray: false
-      required: true
-      secret: false
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
       description: Whether to include hidden watchlists. Can be true or false.
+      isArray: false
       name: hidden
-      defaultValue: true
-      auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-    - default: false
-      isArray: false
       required: true
       secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
       description: Whether to include dynamic watchlists. Can be true or false.
+      isArray: false
       name: dynamic
-      defaultValue: true
-      auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-    - default: false
-      isArray: false
       required: true
       secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
       description: Whether to include write only watchlists. Can be true or false.
+      isArray: false
       name: write_only
-      defaultValue: false
-      auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-    - default: false
-      isArray: false
       required: true
       secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
       description: Whether to include indexed only watchlists. Can be true or false.
+      isArray: false
       name: indexed_only
-      defaultValue: false
-      auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns a list of watchlists' names and IDs.
+    execution: false
+    name: esm-get-watchlists
     outputs:
     - contextPath: McAfeeESM.Watchlist.name
       description: The name of the watchlist.
@@ -794,26 +800,20 @@ script:
     - contextPath: McAfeeESM.Watchlist.type
       description: The type of the watchlist.
       type: string
-  - name: esm-create-watchlist
-    deprecated: false
-    execution: false
-    description: Creates a new watchlist.
-    arguments:
+  - arguments:
     - default: true
-      isArray: false
-      required: true
-      secret: false
       description: The new watchlist name.
-      name: name
-    - default: false
       isArray: false
+      name: name
       required: true
       secret: false
+    - auto: PREDEFINED
+      default: false
       description: The type of the new watchlist. Can be "IPAddress", "Hash", "SHA1",
         "DSIDSigID", "Port" "MacAddress", "NormID", "AppID", "CommandID", "DomainID"
         "HostID", "ObjectID", "Filename", or "File_Hash".
+      isArray: false
       name: type
-      auto: PREDEFINED
       predefined:
       - IPAddress
       - Hash
@@ -829,6 +829,12 @@ script:
       - ObjectID
       - Filename
       - File_Hash
+      required: true
+      secret: false
+    deprecated: false
+    description: Creates a new watchlist.
+    execution: false
+    name: esm-create-watchlist
     outputs:
     - contextPath: McAfeeESM.Watchlist.name
       description: The name of the watchlist.
@@ -839,100 +845,100 @@ script:
     - contextPath: McAfeeESM.Watchlist.type
       description: The type of the watchlist.
       type: string
-  - name: esm-delete-watchlist
-    deprecated: false
-    execution: false
-    description: Deletes a watchlist.
-    arguments:
-    - name: ids
-      default: false
-      isArray: true
-      required: false
-      secret: false
+  - arguments:
+    - default: false
       description: The watchlist IDs to delete.
-    - name: names
-      default: false
       isArray: true
+      name: ids
       required: false
       secret: false
+    - default: false
       description: The watchlist names to delete.
-  - name: esm-watchlist-add-entry
-    deprecated: false
-    execution: false
-    description: Creates a new watchlist entry.
-    arguments:
-    - name: watchlist_name
-      default: false
-      isArray: false
-      required: false
-      secret: false
-      description: The watchlist name.
-    - name: watchlist_id
-      default: false
-      isArray: false
-      required: false
-      secret: false
-      description: The watchlist ID.
-    - name: values
-      default: false
       isArray: true
-      required: true
+      name: names
+      required: false
       secret: false
+    deprecated: false
+    description: Deletes a watchlist.
+    execution: false
+    name: esm-delete-watchlist
+  - arguments:
+    - default: false
+      description: The watchlist name.
+      isArray: false
+      name: watchlist_name
+      required: false
+      secret: false
+    - default: false
+      description: The watchlist ID.
+      isArray: false
+      name: watchlist_id
+      required: false
+      secret: false
+    - default: false
       description: A comma separated list of values to add to a watchlist.
-  - name: esm-watchlist-delete-entry
-    deprecated: false
-    execution: false
-    description: Deletes a watchlist entry.
-    arguments:
-    - name: watchlist_name
-      default: false
-      isArray: false
-      required: false
-      secret: false
-      description: The watchlist name.
-    - name: watchlist_id
-      default: false
-      isArray: false
-      required: false
-      secret: false
-      description: The watchlist ID.
-    - name: values
-      default: false
       isArray: true
+      name: values
       required: true
       secret: false
-      description: A comma separated list of values to remove from the watchlist.
-  - name: esm-watchlist-list-entries
     deprecated: false
+    description: Creates a new watchlist entry.
     execution: false
-    description: Returns a list of watchlist entries.
-    arguments:
-    - name: watchlist_name
-      default: false
-      isArray: false
-      required: false
-      secret: false
+    name: esm-watchlist-add-entry
+  - arguments:
+    - default: false
       description: The watchlist name.
-    - name: watchlist_id
-      default: false
       isArray: false
+      name: watchlist_name
       required: false
       secret: false
+    - default: false
       description: The watchlist ID.
-    - name: limit
-      default: false
       isArray: false
+      name: watchlist_id
+      required: false
+      secret: false
+    - default: false
+      description: A comma separated list of values to remove from the watchlist.
+      isArray: true
+      name: values
       required: true
       secret: false
-      defaultValue: 50
+    deprecated: false
+    description: Deletes a watchlist entry.
+    execution: false
+    name: esm-watchlist-delete-entry
+  - arguments:
+    - default: false
+      description: The watchlist name.
+      isArray: false
+      name: watchlist_name
+      required: false
+      secret: false
+    - default: false
+      description: The watchlist ID.
+      isArray: false
+      name: watchlist_id
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
       description: The maximum value count. Default is 50.
-    - name: offset
-      default: false
       isArray: false
+      name: limit
       required: true
       secret: false
-      defaultValue: 0
+    - default: false
+      defaultValue: '0'
       description: The page of the results to retrieve. Default is 0.
+      isArray: false
+      name: offset
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns a list of watchlist entries.
+    execution: false
+    name: esm-watchlist-list-entries
     outputs:
     - contextPath: McAfeeESM.Watchlist.data
       description: The data of the watchlist.
@@ -940,7 +946,7 @@ script:
     - contextPath: McAfeeESM.Watchlist.name
       description: The name of the watchlist.
       type: string
-  dockerimage: demisto/python3:3.9.2.17957
+  dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: true
   longRunning: false
@@ -949,8 +955,8 @@ script:
   script: '-'
   subtype: python3
   type: python
-fromversion: 5.0.0
 tests:
 - McAfee ESM v2 - Test
 - McAfee ESM v2 (v11.3) - Test
 - McAfee ESM Watchlists - Test
+fromversion: 5.0.0

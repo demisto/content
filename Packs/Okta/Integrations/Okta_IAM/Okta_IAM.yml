@@ -20,17 +20,22 @@ configuration:
   required: false
   type: 8
 - defaultvalue: 'true'
-  display: iam-create-user Command Enabled
+  display: Allow creating users
   name: create-user-enabled
   required: false
   type: 8
 - defaultvalue: 'true'
-  display: iam-update-user Command Enabled
+  display: Allow updating users
   name: update-user-enabled
   required: false
   type: 8
 - defaultvalue: 'true'
-  display: iam-disable-user Command Enabled
+  display: Allow enabling users
+  name: enable-user-enabled
+  required: false
+  type: 8
+- defaultvalue: 'true'
+  display: Allow disabling users
   name: disable-user-enabled
   required: false
   type: 8
@@ -419,7 +424,200 @@ script:
     - contextPath: Okta.Application.Status
       description: Status of the application.
       type: String
-  dockerimage: demisto/python3:3.9.4.18682
+  - arguments:
+    - default: false
+      description: Group SCIM Data
+      isArray: false
+      name: scim
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: 'Field to indicate if members need to be included in the response. '
+      isArray: false
+      name: includeMembers
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves the group information, including its members.
+    execution: false
+    name: iam-get-group
+    outputs:
+    - contextPath: GetGroup.id
+      description: ID of the group.
+      type: String
+    - contextPath: GetGroup.displayName
+      description: The display name of the group.
+      type: String
+    - contextPath: GetGroup.members.display
+      description: The display name of the group member.
+      type: String
+    - contextPath: GetGroup.members.value
+      description: ID of the group member.
+      type: String
+    - contextPath: GetGroup.success
+      description: Indicates whether the command succeeded.
+      type: Boolean
+    - contextPath: GetGroup.errorCode
+      description: HTTP error response code.
+      type: Number
+    - contextPath: GetGroup.errorMessage
+      description: Reason why the API failed.
+      type: String
+  - arguments:
+    - default: false
+      description: 'Useful for performing structured queries where constraints on
+        LogEvent attribute values can be explicitly targeted.  The following expressions
+        are supported for events with the filter query parameter: eventType eq " :eventType"
+        -Events that have a specific action; eventType target.id eq ":id" - Events
+        published with a specific target id; actor.id eq ":id"- Events published with
+        a specific actor ID. For more information about filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering'
+      isArray: false
+      name: filter
+      required: false
+      secret: false
+    - default: false
+      description: 'Filters the lower time bound of the log events in the Internet
+        Date/Time Format profile of ISO 8601. For example: 2017-05-03T16:22:18Z.'
+      isArray: false
+      name: since
+      required: false
+      secret: false
+    - default: false
+      description: 'Filters the upper time bound of the log events in the Internet
+        Date/Time Format profile of ISO 8601. For example: 2017-05-03T16:22:18Z.'
+      isArray: false
+      name: until
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: ASCENDING
+      description: The order of the returned events. Can be "ASCENDING" or "DESCENDING".
+        The default is "ASCENDING".
+      isArray: false
+      name: sortOrder
+      predefined:
+      - ASCENDING
+      - DESCENDING
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets logs by providing optional filters.
+    execution: false
+    name: okta-get-logs
+    outputs:
+    - contextPath: Okta.Logs.Events.actor.alternateId
+      description: Alternative ID of the actor.
+      type: String
+    - contextPath: Okta.Logs.Events.actor.displayName
+      description: Display name of the actor.
+      type: String
+    - contextPath: Okta.Logs.Events.actor.id
+      description: ID of the actor.
+      type: String
+    - contextPath: Okta.Logs.Events.client.userAgent.rawUserAgent
+      description: A raw string representation of user agent, formatted according
+        to section 5.5.3 of HTTP/1.1 Semantics and Content. Both the browser and the
+        OS fields can be derived from this field.
+      type: String
+    - contextPath: Okta.Logs.Events.client.userAgent.os
+      description: The operating system on which the client runs. For example, Microsoft
+        Windows 10.
+      type: String
+    - contextPath: Okta.Logs.Events.client.userAgent.browser
+      description: Identifies the type of web browser, if relevant. For example, Chrome.
+      type: String
+    - contextPath: Okta.Logs.Events.client.device
+      description: Type of device from which the client operated. For example, Computer.
+      type: String
+    - contextPath: Okta.Logs.Events.client.id
+      description: For OAuth requests, the ID of the OAuth client making the request.
+        For SSWS token requests, the ID of the agent making the request.
+      type: String
+    - contextPath: Okta.Logs.Events.client.ipAddress
+      description: IP address from which the client made its request.
+      type: String
+    - contextPath: Okta.Logs.Events.client.geographicalContext.city
+      description: The city encompassing the area containing the geo-location coordinates,
+        if available. For example, Seattle, San Francisco.
+      type: String
+    - contextPath: Okta.Logs.Events.client.geographicalContext.state
+      description: Full name of the state or province encompassing the area containing
+        the geo-location coordinates. For example, Montana, Incheon.
+      type: String
+    - contextPath: Okta.Logs.Events.client.geographicalContext.country
+      description: Full name of the country encompassing the area containing the geo-location
+        coordinates. For example, France, Uganda.
+      type: String
+    - contextPath: Okta.Logs.Events.displayMessage
+      description: The display message for an event.
+      type: String
+    - contextPath: Okta.Logs.Events.eventType
+      description: Type of event that was published.
+      type: String
+    - contextPath: Okta.Logs.Events.outcome.result
+      description: Result of the action. Can be "SUCCESS", "FAILURE", "SKIPPED", or
+        "UNKNOWN".
+      type: String
+    - contextPath: Okta.Logs.Events.outcome.reason
+      description: Reason for the result. For example, INVALID_CREDENTIALS.
+      type: String
+    - contextPath: Okta.Logs.Events.published
+      description: Timestamp when the event was published.
+      type: String
+    - contextPath: Okta.Logs.Events.severity
+      description: The event severity. Can be "DEBUG", "INFO", "WARN", or "ERROR".
+      type: String
+    - contextPath: Okta.Logs.Events.securityContext.asNumber
+      description: Autonomous system number associated with the autonomous system
+        that the event request was sourced to.
+      type: Number
+    - contextPath: Okta.Logs.Events.securityContext.asOrg
+      description: Organization associated with the autonomous system that the event
+        request was sourced to.
+      type: String
+    - contextPath: Okta.Logs.Events.securityContext.isp
+      description: Internet service provider used to send the event's request.
+      type: String
+    - contextPath: Okta.Logs.Events.securityContext.domain
+      description: Specifies whether an event's request is from a known proxy.
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.IP
+      description: IP address.
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.city
+      description: The city encompassing the area containing the geo-location coordinates,
+        if available. For example, Seattle, San Francisco.
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.state
+      description: Full name of the state or province encompassing the area containing
+        the geo-location coordinates. For example, Montana, Incheon.
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.geographicalContext.country
+      description: Full name of the country encompassing the area containing the geo-location
+        coordinates. For example, France, Uganda.
+      type: String
+    - contextPath: Okta.Logs.Events.request.ipChain.source
+      description: Details regarding the source.
+      type: String
+    - contextPath: Okta.Logs.Events.target.id
+      description: ID of a target.
+      type: String
+    - contextPath: Okta.Logs.Events.target.type
+      description: Type of a target.
+      type: String
+    - contextPath: Okta.Logs.Events.target.alternateId
+      description: Alternative ID of a target.
+      type: String
+    - contextPath: Okta.Logs.Events.target.displayName
+      description: Display name of a target.
+      type: String
+  dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: true
   longRunning: false

@@ -1,0 +1,207 @@
+args:
+- default: false
+  description: 'A comma-separated list of entities for which to search for relationships. For example: 192.168.1.1,192.168.1.2. The search applies to both entity A or entity B values. This argument can be used in conjunction with the entityType and the relationship arguments and all arguments will be treated with the AND operator.'
+  isArray: true
+  name: entities
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  description: 'A comma-separated list of entity types for which to search for relationships. For example: IP,URL. This argument can be used in conjunction with the entities and the relationship arguments and all arguments will be treated with the AND operator.'
+  isArray: true
+  name: entities_types
+  required: false
+  secret: false
+  predefined:
+  - IP
+  - Domain
+  - URL
+  - CVE
+  - DomainGlob
+  - Email
+  - FILE
+  - Host
+  - CIDR
+  - IPv6
+  - IPv6CIDR
+  - Registry Key
+  - ssdeep
+  - accountRep
+  - CIDR
+  - Attack Pattern
+  - Malware
+  - Report
+  - Threat Actor
+  - Tool
+  - Intrusion Set
+  - Campaign
+  - Course of Action
+  - Infrastructure.
+- default: false
+  description: 'A comma-separated list of relationship types for which to search for relationships. For example: related-to,contains. This argument can be used in conjunction with the entities and the entitiesTypes arguments and all arguments will be treated with the AND operator.'
+  isArray: true
+  auto: PREDEFINED
+  name: relationships
+  required: false
+  secret: false
+  predefined:
+  - applied
+  - attachment-of
+  - attaches
+  - attribute-of
+  - attributed-by
+  - attributed-to
+  - authored-by
+  - beacons-to
+  - bundled-in
+  - bundles
+  - communicated-with
+  - communicated-by
+  - communicates-with
+  - compromises
+  - contains
+  - controls
+  - created-by
+  - creates
+  - delivered-by
+  - delivers
+  - downloads
+  - downloads-from
+  - dropped-by
+  - drops
+  - duplicate-of
+  - embedded-in
+  - embeds
+  - executed
+  - executed-by
+  - exfiltrates-to
+  - exploits
+  - has
+  - hosted-on
+  - hosts
+  - impersonates
+  - indicated-by
+  - indicator-of
+  - injected-from
+  - injects-into
+  - investigates
+  - is-also
+  - mitigated-by
+  - mitigates
+  - originated-from
+  - owned-by
+  - owns
+  - part-of
+  - related-to
+  - remediates
+  - resolved-by
+  - resolved-from
+  - resolves-to
+  - seen-on
+  - sent
+  - sent-by
+  - sent-from
+  - sent-to
+  - similar-to
+  - sub-domain-of
+  - supra-domain-of
+  - subtechnique-of
+  - parent-technique-of
+  - targeted-by
+  - targets
+  - Types
+  - uploaded-to
+  - used-by
+  - used-on
+  - uses
+  - variant-of
+- default: false
+  defaultValue: '20'
+  description: 'The number of results to return. Default is 20.'
+  isArray: false
+  name: limit
+  required: false
+  secret: false
+- default: false
+  defaultValue: 'false'
+  description: 'Whether all of the relationships attributes will be returned or just the basic attributes. Default is false and the returned values will be name, entity A value, entity A type, entity B value, entity B type, relationships type. If true, all attributes will be returned.'
+  isArray: false
+  name: verbose
+  required: false
+  secret: false
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+- default: false
+  defaultValue: 'false'
+  description: 'The status of the relationships to return. Default is false.'
+  isArray: false
+  name: revoked
+  required: false
+  secret: false
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+comment: 'This automation outputs the indicator relationships to context according to the provided query, using the entities, entityTypes, and relationships arguments. All arguments will use the AND operator. For example, using the following arguments entities=8.8.8.8
+          entities_types=Domain will provide only relationships that the 8.8.8.8 indicator has with indicators of type domain.'
+commonfields:
+  id: SearchIndicatorRelationships
+  version: -1
+enabled: false
+name: SearchIndicatorRelationships
+outputs:
+- contextPath: Relationships.EntityA
+  description: The source of the relationship.
+  type: String
+- contextPath: Relationships.EntityB
+  description: The destination of the relationship.
+  type: string
+- contextPath: Relationships.Relationship
+  description: The name of the relationship.
+  type: string
+- contextPath: Relationships.Reverse
+  description: The name of the reverse relationship.
+  type: string
+- contextPath: Relationships.EntityAType
+  description: The type of the source of the relationship.
+  type: string
+- contextPath: Relationships.EntityBType
+  description: The type of the destination of the relationship.
+  type: string
+- contextPath: Relationships.ID
+  description: The ID of the relationship.
+  type: string
+- contextPath: Relationships.Reliability
+  description: The reliability of the relationship.
+  type: string
+- contextPath: Relationships.Brand
+  description: The brand of the relationship.
+  type: string
+- contextPath: Relationships.Revoked
+  description: True if the relationship is revoked.
+  type: string
+- contextPath: Relationships.FirstSeenBySource
+  description: The first time seen by the source of the relationship.
+  type: string
+- contextPath: Relationships.LastSeenBySource
+  description: The last time seen by the source of the relationship.
+  type: string
+- contextPath: Relationships.Description
+  description: The description of the relationship.
+  type: string
+- contextPath: Relationships.Type
+  description: The type of the relationship.
+  type: string
+script: '-'
+system: false
+tags:
+- basescript
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.9.7.24076
+fromversion: 6.2.0
+tests:
+- Relationships scripts - Test

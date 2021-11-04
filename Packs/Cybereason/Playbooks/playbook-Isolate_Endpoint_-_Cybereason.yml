@@ -1,55 +1,59 @@
 id: Isolate Endpoint - Cybereason
 version: -1
-fromversion: 5.0.0
+contentitemexportablefields:
+  contentitemfields: {}
 name: Isolate Endpoint - Cybereason
 description: This playbook isolates an endpoint based on the hostname provided.
-starttaskid: '0'
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
+  "0":
+    id: "0"
     taskid: 7b50bf9c-8ba7-412d-8901-3bcacfbe655f
     type: start
     task:
       id: 7b50bf9c-8ba7-412d-8901-3bcacfbe655f
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '1'
+      - "1"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 50
+          "y": -40
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  '1':
-    id: '1'
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
     taskid: 71221472-29d2-482b-8272-5a226ebf8d16
     type: condition
     task:
       id: 71221472-29d2-482b-8272-5a226ebf8d16
       version: -1
       name: Is Cybereason integration enabled?
-      description: "Check if the Cybereason integration is enabled.\n"
+      description: |
+        Check if the Cybereason integration is enabled.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '4'
-      'yes':
-      - '2'
+      - "4"
+      "yes":
+      - "2"
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: "yes"
       condition:
       - - operator: isExists
           left:
@@ -79,14 +83,16 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 200
+          "y": 130
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  '2':
-    id: '2'
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
     taskid: f9d63cb1-e655-4c14-8c4f-3c53d5bf3bd6
     type: condition
     task:
@@ -96,15 +102,15 @@ tasks:
       description: Checks whether there is an endpoint to isolate.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '4'
-      'yes':
-      - '3'
+      - "4"
+      "yes":
+      - "5"
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -115,29 +121,32 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 680,
-          "y": 380
+          "x": 690,
+          "y": 320
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  '3':
-    id: '3'
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
     taskid: 72580fee-68d4-40f6-88d8-f1a17877e084
     type: regular
     task:
       id: 72580fee-68d4-40f6-88d8-f1a17877e084
       version: -1
       name: Isolate endpoint
-      description: Isolates a machine that has been infected from the rest of the network.
+      description: Isolates a machine that has been infected from the rest of the
+        network.
       script: '|||cybereason-isolate-machine'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '4'
+      - "4"
     scriptarguments:
       machine:
         complex:
@@ -147,15 +156,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 890,
-          "y": 550
+          "x": 920,
+          "y": 940
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  '4':
-    id: '4'
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
     taskid: 641d5d3f-d8f4-4117-8121-0d2a40f1f542
     type: title
     task:
@@ -164,14 +175,14 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 720
+          "y": 1110
         }
       }
     note: false
@@ -179,20 +190,95 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "5":
+    id: "5"
+    taskid: b6d17961-11e6-4588-8f3d-ec1024925529
+    type: regular
+    task:
+      id: b6d17961-11e6-4588-8f3d-ec1024925529
+      version: -1
+      name: check if endpoint is online
+      description: Checks if the machine is currently connected to the Cybereason
+        server.
+      script: '|||cybereason-is-probe-connected'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      machine:
+        simple: ${inputs.Hostname}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 8f8bc72b-12db-4350-8825-bf8e39e32eba
+    type: condition
+    task:
+      id: 8f8bc72b-12db-4350-8825-bf8e39e32eba
+      version: -1
+      name: Is the endpoint online?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Cybereason.Machine.isConnected
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {
       "1_2_yes": 0.32,
       "1_4_#default#": 0.17,
-      "2_3_yes": 0.3,
-      "2_4_#default#": 0.19
+      "2_4_#default#": 0.19,
+      "6_4_#default#": 0.55
     },
     "paper": {
       "dimensions": {
-        "height": 735,
-        "width": 820,
+        "height": 1215,
+        "width": 850,
         "x": 450,
-        "y": 50
+        "y": -40
       }
     }
   }
@@ -201,13 +287,14 @@ inputs:
   value: {}
   required: false
   description: The hostname of the endpoint to isolate using Cybereason.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: Cybereason.Machine
-  description: Machine name
+  description: Machine name.
 - contextPath: Cybereason.IsIsolated
-  description: Is the machine isolated
+  description: Is the machine isolated.
 - contextPath: Endpoint.Hostname
-  description: Machine name
+  description: Machine name.
 tests:
-- No Test
+- no tests
+fromversion: 5.0.0

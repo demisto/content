@@ -3,3 +3,6 @@ ignore=PB105
 
 [file:layoutscontainer-NCSC_CAF_Assessment.json]
 ignore=BA101
+
+[file:README.md]
+ignore=RM104

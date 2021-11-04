@@ -40,7 +40,7 @@ configuration:
   name: timeout
   required: false
   type: 0
-- additionalinfo: The maximum number of incidents per fetch. cannot exceed 100.
+- additionalinfo: The maximum number of incidents per fetch. Cannot exceed 100.
   defaultvalue: '10'
   display: Maximum number of incidents per fetch
   name: max_fetch
@@ -73,7 +73,7 @@ configuration:
   required: false
   type: 8
 - additionalinfo: 'The statuses of the incidents that will be fetched. If no status
-    is provided then incidents of all the statuses will be fetched. Note: an incident
+    is provided then incidents of all the statuses will be fetched. Note: An incident
     whose status was changed to a filtered status after its creation time will not
     be fetched.'
   display: Incident Statuses to Fetch
@@ -85,6 +85,8 @@ configuration:
   - resolved_threat_handled
   - resolved_known_issue
   - resolved_false_positive
+  - resolved_true_positive
+  - resolved_security_testing
   - resolved_other
   - resolved_auto
   required: false
@@ -183,7 +185,8 @@ script:
       secret: false
     - default: false
       description: 'Filters only incidents in the specified status. The options are:
-     new, under_investigation, resolved_threat_handled, resolved_known_issue, resolved_false_positive, resolved_other, resolved_auto'
+        new, under_investigation, resolved_threat_handled, resolved_known_issue, resolved_false_positive, resolved_true_positive
+        resolved_security_testing, resolved_other, resolved_auto'
       isArray: false
       name: status
       required: false
@@ -239,7 +242,7 @@ script:
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.status
       description: |
-        Current status of the incident. Valid values are: "new","under_investigation","resolved_threat_handled","resolved_known_issue","resolved_duplicate","resolved_false_positive", or "resolved_other".
+        Current status of the incident. Valid values are: "new","under_investigation","resolved_threat_handled","resolved_known_issue","resolved_duplicate","resolved_false_positive","resolved_true_positive","resolved_security_testing" or "resolved_other".
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.description
       description: Dynamic calculated description of the incident.
@@ -303,7 +306,7 @@ script:
     - contextPath: PaloAltoNetworksXDR.Incident.status
       description: |-
         Current status of the incident. Valid values are:
-        "new","under_investigation","resolved_threat_handled","resolved_known_issue","resolved_duplicate","resolved_false_positive","resolved_other"
+        "new","under_investigation","resolved_threat_handled","resolved_known_issue","resolved_duplicate","resolved_false_positive","resolved_true_positive","resolved_security_testing","resolved_other"
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.severity
       description: 'Calculated severity of the incident. Valid values are: "low","medium","high"'
@@ -354,6 +357,12 @@ script:
     - contextPath: PaloAltoNetworksXDR.Incident.starred
       description: Incident starred.
       type: Boolean
+    - contextPath: PaloAltoNetworksXDR.Incident.wildfire_hits.mitre_techniques_ids_and_names
+      description: Incident Mitre techniques ids and names.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.wildfire_hits.mitre_tactics_ids_and_names
+      description: Incident Mitre tactics ids and names.
+      type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.alert_id
       description: Unique ID for each alert.
       type: String
@@ -641,8 +650,8 @@ script:
     - auto: PREDEFINED
       default: false
       description: 'Status of the incident. Valid values are: NEW, UNDER_INVESTIGATION,
-        RESOLVED_THREAT_HANDLED, RESOLVED_KNOWN_ISSUE, RESOLVED_DUPLICATE, RESOLVED_FALSE_POSITIVE,
-        RESOLVED_OTHER.'
+       RESOLVED_THREAT_HANDLED, RESOLVED_KNOWN_ISSUE, RESOLVED_DUPLICATE, RESOLVED_FALSE_POSITIVE,
+       RESOLVED_TRUE_POSITIVE, RESOLVED_SECURITY_TESTING, RESOLVED_OTHER.'
       isArray: false
       name: status
       predefined:
@@ -652,6 +661,8 @@ script:
       - RESOLVED_KNOWN_ISSUE
       - RESOLVED_DUPLICATE
       - RESOLVED_FALSE_POSITIVE
+      - RESOLVED_TRUE_POSITIVE
+      - RESOLVED_SECURITY_TESTING
       - RESOLVED_OTHER
       required: false
       secret: false
@@ -728,9 +739,10 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
+      defaultValue: Medium
       description: |-
         String value of alert severity. Valid values are:
-        Informational, Low, Medium, High, or Unknown
+        Informational, Low, Medium or High
       isArray: false
       name: severity
       predefined:
@@ -738,7 +750,6 @@ script:
       - Low
       - Medium
       - High
-      - Unknown
       required: false
       secret: false
     - default: false
@@ -776,11 +787,29 @@ script:
     name: xdr-insert-cef-alerts
   - arguments:
     - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
       description: The endpoint ID (string) to isolate. You can retrieve the string
         from the xdr-get-endpoints command.
       isArray: false
       name: endpoint_id
       required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether to suppress an error when trying to isolate a disconnected
+        endpoint. When sets to false, an error will be returned.
+      isArray: false
+      name: suppress_disconnected_endpoint_error
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
       secret: false
     deprecated: false
     description: Isolates the specified endpoint.
@@ -792,11 +821,29 @@ script:
       type: String
   - arguments:
     - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
       description: The endpoint ID (string) for which to reverse the isolation. You
         can retrieve it from the xdr-get-endpoints command.
       isArray: false
       name: endpoint_id
       required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether to suppress an error when trying to unisolate a disconnected
+        endpoint. When sets to false, an error will be returned.
+      isArray: false
+      name: suppress_disconnected_endpoint_error
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
       secret: false
     deprecated: false
     description: Reverses the isolation of an endpoint.
@@ -1033,13 +1080,25 @@ script:
       description: The domain of the endpoint.
       type: String
     - contextPath: Endpoint.OS
-      description: Endpoint OS.
+      description: The endpoint's operation system.
       type: String
     - contextPath: Account.Username
       description: The username in the relevant system.
       type: String
     - contextPath: Account.Domain
       description: The domain of the account.
+      type: String
+    - contextPath: Endpoint.Status
+      description: The endpoint's status.
+      type: String
+    - contextPath: Endpoint.IsIsolated
+      description: The endpoint's isolation status.
+      type: String
+    - contextPath: Endpoint.MACAddress
+      description: The endpoint's MAC address.
+      type: String
+    - contextPath: Endpoint.Vendor
+      description: The integration name of the endpoint vendor.
       type: String
   - deprecated: false
     description: Gets a list of all the agent versions to use for creating a distribution
@@ -1548,6 +1607,12 @@ script:
       type: String
   - arguments:
     - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
       description: String that represents a list of hashed files you want to blacklist.
         Must be a valid SHA256 hash.
       isArray: true
@@ -1567,6 +1632,12 @@ script:
     name: xdr-blacklist-files
   - arguments:
     - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
       description: String that represents a list of hashed files you want to whitelist.
         Must be a valid SHA256 hash.
       isArray: true
@@ -1585,6 +1656,12 @@ script:
     execution: false
     name: xdr-whitelist-files
   - arguments:
+    - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
     - default: false
       description: List of endpoint IDs.
       isArray: true
@@ -1634,6 +1711,12 @@ script:
     name: xdr-get-quarantine-status
   - arguments:
     - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
       description: String that represents the file in hash. Must be a valid SHA256
         hash.
       isArray: false
@@ -1653,6 +1736,12 @@ script:
     execution: false
     name: xdr-restore-file
   - arguments:
+    - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
     - default: false
       description: List of endpoint IDs.
       isArray: true
@@ -1738,17 +1827,19 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether to scan all of the endpoints or not. Default is false. Do note that scanning all the endpoints may cause performance issues and latency.
+      description: Whether to scan all of the endpoints or not. Default is false.
+        Scanning all of the endpoints may cause performance issues and latency.
       isArray: false
       name: all
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
       required: false
       secret: false
     deprecated: false
     description: Runs a scan on a selected endpoint. To scan all endpoints, run this
-      command with argument all=true. Do note that scanning all the endpoints may cause performance issues and latency.
+      command with argument all=true. Do note that scanning all the endpoints may
+      cause performance issues and latency.
     execution: true
     name: xdr-endpoint-scan
     outputs:
@@ -1759,6 +1850,12 @@ script:
       description: Was the scan aborted.
       type: Boolean
   - arguments:
+    - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
     - default: false
       description: List of endpoint IDs.
       isArray: true
@@ -1855,9 +1952,9 @@ script:
       secret: false
     deprecated: false
     description: Cancel the scan of selected endpoints. A scan can only be aborted
-      if the selected endpoints are Pending or In Progress. To scan all
-      endpoints, run the command with the argument all=true. Note that scanning all
-      of the endpoints may cause performance issues and latency.
+      if the selected endpoints are Pending or In Progress. To scan all endpoints,
+      run the command with the argument all=true. Note that scanning all of the endpoints
+      may cause performance issues and latency.
     execution: true
     name: xdr-endpoint-scan-abort
     outputs:
@@ -2198,6 +2295,12 @@ script:
       type: string
   - arguments:
     - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
       description: Comma-separated list of endpoint IDs.
       isArray: true
       name: endpoint_ids
@@ -2394,6 +2497,12 @@ script:
       type: number
   - arguments:
     - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
       description: Comma-separated list of endpoint IDs. Can be retrieved by running
         the xdr-get-endpoints command.
       isArray: false
@@ -2435,6 +2544,12 @@ script:
       type: Number
   - arguments:
     - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
       description: Comma-separated list of endpoint IDs. Can be retrieved by running
         the xdr-get-endpoints command.
       isArray: false
@@ -2462,7 +2577,7 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: Action ID retrieved from the xdr-run-script command.
+      description: Action IDs retrieved from the xdr-run-script command.
       isArray: true
       name: action_id
       required: true
@@ -2512,7 +2627,7 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: Action ID retrieved from the xdr-run-script command.
+      description: Action IDs retrieved from the xdr-run-script command.
       isArray: true
       name: action_id
       required: true
@@ -2614,6 +2729,12 @@ script:
       type: String
   - arguments:
     - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
       description: Comma-separated list of endpoint IDs. Can be retrieved by running
         the xdr-get-endpoints command.
       isArray: false
@@ -2646,15 +2767,23 @@ script:
       type: Number
   - arguments:
     - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
       description: Comma-separated list of endpoint IDs. Can be retrieved by running
         the xdr-get-endpoints command.
-      isArray: false
+      isArray: true
       name: endpoint_ids
       required: true
       secret: false
     - default: false
-      description: Path of the file to delete.
-      isArray: false
+      description: Paths of the files to delete, in a comma-separated list. Paths
+        of the files to check for existence. All of the given file paths will run
+        on all of the endpoints.
+      isArray: true
       name: file_path
       required: true
       secret: false
@@ -2679,15 +2808,22 @@ script:
       type: Number
   - arguments:
     - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
       description: Comma-separated list of endpoint IDs. Can be retrieved by running
         the xdr-get-endpoints command.
-      isArray: false
+      isArray: true
       name: endpoint_ids
       required: true
       secret: false
     - default: false
-      description: Path of the file to check for existence.
-      isArray: false
+      description: Paths of the files to check for existence, in a comma-separated
+        list. All of the given file paths will run on all of the endpoints.
+      isArray: true
       name: file_path
       required: true
       secret: false
@@ -2711,15 +2847,22 @@ script:
       type: Number
   - arguments:
     - default: false
+      description: Allows to link the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
       description: Comma-separated list of endpoint IDs. Can be retrieved by running
         the xdr-get-endpoints command.
-      isArray: false
+      isArray: true
       name: endpoint_ids
       required: true
       secret: false
     - default: false
-      description: Name of process to kill.
-      isArray: false
+      description: Names of processes to kill. Will kill all of the given processes
+        on all of the endpoints.
+      isArray: true
       name: process_name
       required: true
       secret: false
@@ -2741,7 +2884,235 @@ script:
     - contextPath: PaloAltoNetworksXDR.ScriptRun.endpoints_count
       description: Number of endpoints the action was initiated on.
       type: Number
-  dockerimage: demisto/python3:3.9.4.18682
+  - arguments:
+    - default: false
+      description: The endpoint ID.
+      isArray: true
+      name: id
+      required: false
+      secret: false
+    - default: true
+      description: The endpoint IP address.
+      isArray: true
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      description: The endpoint hostname.
+      isArray: true
+      name: hostname
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns information about an endpoint.
+    execution: false
+    name: endpoint
+    outputs:
+    - contextPath: Endpoint.Hostname
+      description: The endpoint's hostname.
+      type: String
+    - contextPath: Endpoint.OS
+      description: The endpoint's operation system.
+      type: String
+    - contextPath: Endpoint.IPAddress
+      description: The endpoint's IP address.
+      type: String
+    - contextPath: Endpoint.ID
+      description: The endpoint's ID.
+      type: String
+    - contextPath: Endpoint.Status
+      description: The endpoint's status.
+      type: String
+    - contextPath: Endpoint.IsIsolated
+      description: The endpoint's isolation status.
+      type: String
+    - contextPath: Endpoint.MACAddress
+      description: The endpoint's MAC address.
+      type: String
+    - contextPath: Endpoint.Vendor
+      description: The integration name of the endpoint vendor.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: The status of the endpoint to filter.
+      isArray: false
+      name: status
+      predefined:
+      - connected
+      - disconnected
+      - lost
+      - uninstalled
+      required: true
+      secret: false
+    - default: false
+      description: |-
+        All the agents that were last seen before {last_seen_gte}. Supported
+                values: 1579039377301 (time in milliseconds) "3 days" (relative date) "2019-10-21T23:45:00"
+                (date)
+      isArray: false
+      name: last_seen_gte
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        All the agents that were last seen before {last_seen_lte}. Supported
+                values: 1579039377301 (time in milliseconds) "3 days" (relative date) "2019-10-21T23:45:00"
+                (date)
+      isArray: false
+      name: last_seen_lte
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns the number of the connected\disconnected endpoints.
+    execution: false
+    name: xdr-get-endpoints-by-status
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.EndpointsStatus.status
+      description: The endpoint's status.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.EndpointsStatus.count
+      description: The number of endpoint's with this status.
+      type: Number
+  - arguments:
+    - default: false
+      description: A comma-separated list of alert IDs.
+      isArray: true
+      name: alert_ids
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns information about each alert ID.
+    execution: false
+    name: xdr-get-cloud-original-alerts
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event._time
+      description: The timestamp of the occurence of the event.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.vendor
+      description: Vendor name.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.event_timestamp
+      description: Event timestamp.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.event_type
+      description: Event type (static 500).
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.cloud_provider
+      description: The cloud provider - GCP, AZURE, or AWS.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.project
+      description: The project in which the event occurred.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.cloud_provider_event_id
+      description: The ID given to the event by the cloud provider, if the ID exists.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.cloud_correlation_id
+      description: The ID the cloud provider is using to aggregate events that are part of the same general event.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.operation_name_orig
+      description: The name of the operation that occurred, as supplied by the cloud provider.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.operation_name
+      description: The normalized name of the operation performed by the event.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.identity_orig
+      description: Contains the original identity related fields as provided by the cloud provider.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.identity_name
+      description: The name of the identity that initiated the action.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.identity_uuid
+      description: Same as identity_name but also contains the UUID of the identity if it exists.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.identity_type
+      description: An enum representing the type of the identity.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.identity_sub_type
+      description: An enum representing the sub-type of the identity, respective to its identity_type.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.identity_invoked_by_name
+      description: The name of the identity that invoked the action as it appears in the log.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.identity_invoked_by_uuid
+      description: The UUID of the identity that invoked the action as it appears in the log.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.identity_invoked_by_type
+      description: An enum that represents the type of identity event that invoked the action.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.identity_invoked_by_sub_type
+      description: An enum that represents the respective sub_type of the type of identity (identity_type) that has invoked the action.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.operation_status
+      description: Status of whether the operation has succeed or failed, if provided.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.operation_status_orig
+      description: The operation status code as it appears in the log, including lookup from code number to code name.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.operation_status_orig_code
+      description: The operation status code as it appears in the log.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.operation_status_reason_provided
+      description: Description of the error, if the log record indicates an error and the cloud provider supplied the reason.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.resource_type
+      description: The normalized type of the service that emitted the log row.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.resource_type_orig
+      description: The type of the service that omitted the log as provided by the cloud provider.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.resource_sub_type
+      description: The sub-type respective to the resource_type field, normalized across all cloud providers.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.resource_sub_type_orig
+      description: The sub-type of the service that emitted this log row as provided by the cloud provider.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.region
+      description: The cloud region of the resource that emitted the log.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.zone
+      description: The availability zone of the resource that emitted the log.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.referenced_resource
+      description: The cloud resource referenced in the audit log.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.referenced_resource_name
+      description: Same as referenced_resource but provides only the substring that represents the resource name instead of the full asset ID.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.referenced_resources_count
+      description: The number of extracted resources referenced in this audit log.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.user_agent
+      description: The user agent provided in the call to the API of the cloud provider.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.caller_ip
+      description: The IP of the caller that performed the action in the log.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.caller_ip_geolocation
+      description: The geolocation associated with the caller_ip's value.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.caller_ip_asn
+      description: The ASN of the caller_ip's value.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.caller_project
+      description: The project of the caller entity.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.raw_log
+      description: The raw log that is being normalized.
+      type: Unknown
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.log_name
+      description: The name of the log that contains the log row.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.caller_ip_asn_org
+      description: The organization associated with the ASN of the caller_ip's value.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.event_base_id
+      description: Event base ID.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.ingestion_time
+      description: Ingestion time.
+      type: String
+  dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: true
   longRunning: false

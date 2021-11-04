@@ -1,0 +1,1003 @@
+category: Network Security
+commonfields:
+  id: NetscoutArborSightline
+  version: -1
+configuration:
+  - defaultvalue: Netscout Arbor Sightline Alert
+    display: Incident type
+    name: incidentType
+    required: false
+    type: 13
+  - display: Server URL (e.g., https://192.168.0.1)
+    name: url
+    required: true
+    type: 0
+  - name: User
+    displaypassword: API Key
+    required: false
+    hiddenusername: true
+    type: 9
+  - display: Fetch incidents
+    name: isFetch
+    required: false
+    type: 8
+  - additionalinfo: First fetch query (<number> <time unit>, e.g., 12 hours, 7 days
+      or ISO format 2020-01-01T10:00:00). Maximal number of past events to fetch is
+      10,000.
+    defaultvalue: 3 days
+    display: First fetch time
+    hidden: false
+    name: first_fetch
+    required: false
+    type: 0
+  - additionalinfo: Maximum number of alerts per fetch. Default is 50, maximum is 100.
+    defaultvalue: '50'
+    display: Fetch Limit
+    name: max_fetch
+    required: false
+    type: 0
+  - additionalinfo: Alert class to filter by. Only one class can be configured at a
+      time. If none is chosen, all classes will be fetched.
+    display: Alert Class
+    hidden: false
+    name: alert_class
+    options:
+      - bgp
+      - cloudsignal
+      - data
+      - dos
+      - smart
+      - system_error
+      - system_event
+      - tms
+      - traffic
+    required: false
+    type: 16
+  - additionalinfo: Alert type to filter by. Only one type can be configured at a time.
+      If none is chosen, all types will be fetched.
+    display: Alert Type
+    hidden: false
+    name: alert_type
+    options:
+      - autoclassify_restart
+      - bgp_down
+      - bgp_hijack
+      - bgp_instability
+      - bgp_trap
+      - blob_thresh
+      - cloud_mit_request
+      - cloudsignal_fault
+      - collector_down
+      - collector_start
+      - config_change
+      - device_system_error
+      - dns_baseline
+      - dos
+      - dos_host_detection
+      - dos_mo_profiled
+      - dos_profiled_network
+      - dos_profiled_router
+      - fingerprint_thresh
+      - flexible_license_error
+      - flow_down
+      - flow_missing
+      - gre_down
+      - hw_failure
+      - smart_thresh
+      - interface_usage
+      - nucleus_fault
+      - routing_failover
+      - routing_interface_failover
+      - service_thresh
+      - smart_thresh
+      - snmp_down
+      - spcomm_failure
+      - tms_fault
+      - traffic_auto_mitigation
+    required: false
+    type: 16
+  - additionalinfo: Minimal alert importance to filter by. If none or Low is chosen, all importances will be fetched.
+    display: Minimal importance to fetch
+    hidden: false
+    name: importance
+    options:
+      - Low
+      - Medium
+      - High
+    required: false
+    type: 15
+  - additionalinfo: Alert status to filter by. If none is chosen, all statuses will
+      be fetched.
+    display: Event Status
+    hidden: false
+    name: ongoing
+    options:
+      - Ongoing
+      - Not Ongoing
+    required: false
+    type: 15
+  - display: Trust any certificate (not secure)
+    name: insecure
+    required: false
+    type: 8
+  - display: Use system proxy settings
+    name: proxy
+    required: false
+    type: 8
+description: DDoS protection and network visibility.
+display: Netscout Arbor Sightline (Peakflow)
+name: NetscoutArborSightline
+defaultmapperin: Netscout Arbor Sightline - Incoming Mapper
+script:
+  commands:
+    - arguments:
+        - default: true
+          description: Alert ID to list the annotation for. Can be obtained from the na-sightline-alert-list command.
+          isArray: false
+          name: alert_id
+          required: true
+          secret: false
+        - name: extend_data
+          description: Whether to extend the results with all available data.
+          auto: PREDEFINED
+          default: false
+          defaultValue: 'false'
+          isArray: false
+          predefined:
+            - 'true'
+            - 'false'
+          required: false
+          secret: false
+      outputs:
+        - contextPath: NASightline.AlertAnnotation.AlertID
+          description: The alert ID of the annotation.
+          type: String
+        - contextPath: NASightline.AlertAnnotation.Annotations.added
+          description: Date and time the annotation was made.
+          type: Date
+        - contextPath: NASightline.AlertAnnotation.Annotations.author
+          description: User ID of the annotation author.
+          type: String
+        - contextPath: NASightline.AlertAnnotation.Annotations.id
+          description: The ID of the annotation.
+          type: String
+        - contextPath: NASightline.AlertAnnotation.Annotations.text
+          description: Annotation text.
+          type: String
+        - contextPath: NASightline.AlertAnnotation.Annotations.type
+          description: Type of the returned object.
+          type: String
+        - contextPath: NASightline.AlertAnnotation.Annotations.relationships
+          description: Relationships of the annotation (only visible when extending the data).
+          type: Unknown
+      deprecated: false
+      description: Lists the collection of annotations for a given alert.
+      execution: false
+      name: na-sightline-alert-annotation-list
+    - arguments:
+        - default: true
+          description: Alert ID. If given, all other arguments will be ignored.
+          isArray: false
+          name: alert_id
+          required: false
+          secret: false
+        - auto: PREDEFINED
+          default: false
+          description: Alert class to filter by.
+          isArray: false
+          name: alert_class
+          predefined:
+            - bgp
+            - cloudsignal
+            - data
+            - dos
+            - smart
+            - system_error
+            - system_event
+            - tms
+            - traffic
+          required: false
+          secret: false
+        - auto: PREDEFINED
+          default: false
+          description: Alert type to filter by.
+          isArray: false
+          name: alert_type
+          predefined:
+            - autoclassify_restart
+            - bgp_down
+            - bgp_hijack
+            - bgp_instability
+            - bgp_trap
+            - blob_thresh
+            - cloud_mit_request
+            - cloudsignal_fault
+            - collector_down
+            - collector_start
+            - config_change
+            - device_system_error
+            - dns_baseline
+            - dos
+            - dos_host_detection
+            - dos_mo_profiled
+            - dos_profiled_network
+            - dos_profiled_router
+            - fingerprint_thresh
+            - flexible_license_error
+            - flow_down
+            - flow_missing
+            - gre_down
+            - hw_failure
+            - smart_thresh
+            - interface_usage
+            - nucleus_fault
+            - routing_failover
+            - routing_interface_failover
+            - service_thresh
+            - smart_thresh
+            - snmp_down
+            - spcomm_failure
+            - tms_fault
+            - traffic_auto_mitigation
+          required: false
+          secret: false
+        - auto: PREDEFINED
+          default: false
+          description: Alert classification to filter by.
+          isArray: false
+          name: classification
+          predefined:
+            - Possible Attack
+            - False Positive
+            - Verified Attack
+            - Network Failure
+            - Flash Crowd
+            - Trivial
+          required: false
+          secret: false
+        - auto: PREDEFINED
+          default: false
+          description: Alert importance to filter by. For more complex operators use the
+            'importance_operator' argument.
+          isArray: false
+          name: importance
+          predefined:
+            - Low
+            - Medium
+            - High
+          required: false
+          secret: false
+        - auto: PREDEFINED
+          default: false
+          description: 'The operator to apply on the importance argument (">" is greater
+          than, "<" is less than, "=" is equal to). For example: if the chosen operator
+          is ">" and the chosen importance is "Low", only alerts with and importance greater
+          than Low will be fetched.'
+          isArray: false
+          name: importance_operator
+          predefined:
+            - '<'
+            - '='
+            - '>'
+          required: false
+          secret: false
+        - auto: PREDEFINED
+          default: false
+          description: Alert status to filter by. If not set, all statuses will be fetched.
+          isArray: false
+          name: ongoing
+          predefined:
+            - 'true'
+            - 'false'
+          required: false
+          secret: false
+        - default: false
+          description: Alert start time to filter by. For more complex operators use the
+            'start_time_operator' argument.
+          isArray: false
+          name: start_time
+          required: false
+          secret: false
+        - auto: PREDEFINED
+          default: false
+          description: 'The operator to apply on the "start_time" argument. For example:
+        if the chosen operator is ">" and the given time is "2020-12-01T13:15:00",
+        only alerts with a starting time greater than "2020-12-01T13:15:00" will be
+        fetched.'
+          isArray: false
+          name: start_time_operator
+          predefined:
+            - '='
+            - '>'
+            - '<'
+          required: false
+          secret: false
+        - default: false
+          description: Alert stop time to filter by. For more complex operators use the
+            'stop_time_operator' argument.
+          isArray: false
+          name: stop_time
+          required: false
+          secret: false
+        - auto: PREDEFINED
+          default: false
+          description: 'The operator to apply on the "stop_time" argument. For example:
+        if the chosen operator is ">" and the given time is "2020-12-01T13:15:00",
+        only alerts with a stopping time greater than "2020-12-01T13:15:00" will be
+        fetched.'
+          isArray: false
+          name: stop_time_operator
+          predefined:
+            - '='
+            - '>'
+            - '<'
+          required: false
+          secret: false
+        - default: false
+          description: ID of the managed object associated with the alert. Can be obtained from the na-sightline-managed-object-list command.
+          isArray: false
+          name: managed_object_id
+          required: false
+          secret: false
+        - default: false
+          description: The page to return starting from 1.
+          isArray: false
+          name: page
+          required: false
+          secret: false
+        - default: false
+          description: Maximal number of alerts to retrieve. Also sets the size of
+            the returned page.
+          isArray: false
+          defaultValue: '50'
+          name: limit
+          required: false
+          secret: false
+        - name: extend_data
+          description: Whether to extend the results with all available data.
+          auto: PREDEFINED
+          default: false
+          defaultValue: 'false'
+          isArray: false
+          predefined:
+            - 'true'
+            - 'false'
+          required: false
+          secret: false
+      outputs:
+        - contextPath: NASightline.Alert.alert_class
+          description: 'The class of the alert. One of the following: bgp, cloudsignal, data, dos, smart, system_error, system_event ,tms ,traffic.'
+          type: String
+        - contextPath: NASightline.Alert.alert_type
+          description: 'The type of the alert. One of the following: bgp_hijack, bgp_instability, bgp_trap, cloudsignal,
+        cloudsignal_fault, cloud_mit_request, data, bgp_down, flow_down, snmp_down, dos, dos_host_detection,
+        dos_profiled_network, dos_profiled_router, mobile, mobile_fault, smart, smart_thresh, system_error,
+        collector_down, flexible_license, hw_failure, routing_failover, routing_failover_interface, spcomm_failure,
+        system_monitor, system_event, config_change, tms, dns_baseline, gre_down, tms_fault, traffic, blob_thresh,
+        fingerprint_thresh, interface_usage, service_thresh, traffic_auto_mitigation.'
+          type: String
+        - contextPath: NASightline.Alert.id
+          description: The ID of the alert.
+          type: String
+        - contextPath: NASightline.Alert.importance
+          description: 'Importance of the alert. One of the following 2: high, 1: medium, 0: low'
+          type: Number
+        - contextPath: NASightline.Alert.ongoing
+          description: Whether the alert is currently active.
+          type: Boolean
+        - contextPath: NASightline.Alert.relationships
+          description: Relationships of the alert (only visible when extending the data).
+          type: Unknown
+        - contextPath: NASightline.Alert.start_time
+          description: Date and time at which the alert activity was first detected.
+          type: Date
+        - contextPath: NASightline.Alert.type
+          description: Type of the returned object.
+          type: String
+        - contextPath: NASightline.Alert.classification
+          description: 'Classification of the alert. One of the following: False Positive, Flash Crowd, Network Failure,
+         Possible Attack, Trivial, Verified Attack '
+          type: String
+        - contextPath: NASightline.Alert.stop_time
+          description: Date and time at which the alert activity was no longer detected.
+          type: Date
+        - contextPath: NASightline.Alert.subobject
+          description: Subobject data (only visible when extending the data).
+          type: Unknown
+      deprecated: false
+      description: List all alerts. When an alert ID is given, only the relevant alert
+        will be fetched.
+      execution: false
+      name: na-sightline-alert-list
+    - arguments:
+        - default: true
+          description: The mitigation ID to get. Can be obtained from the na-sightline-mitigation-list command.
+          isArray: false
+          name: mitigation_id
+          required: false
+          secret: false
+        - default: false
+          description: The page to return starting from 1.
+          isArray: false
+          name: page
+          required: false
+          secret: false
+        - default: false
+          description: Maximal number of mitigations to retrieve. Also sets the size
+            of the returned page.
+          isArray: false
+          defaultValue: '50'
+          name: limit
+          required: false
+          secret: false
+        - name: extend_data
+          description: Whether to extend the results with all available data.
+          auto: PREDEFINED
+          default: false
+          defaultValue: 'false'
+          isArray: false
+          predefined:
+            - 'true'
+            - 'false'
+          required: false
+          secret: false
+      outputs:
+        - contextPath: NASightline.Mitigation.description
+          description: Description of the mitigation.
+          type: String
+        - contextPath: NASightline.Mitigation.id
+          description: The ID of the mitigation.
+          type: String
+        - contextPath: NASightline.Mitigation.ip_version
+          description: IP version of the traffic that is being mitigated.
+          type: Number
+        - contextPath: NASightline.Mitigation.is_automitigation
+          description: Whether the mitigation is an auto-mitigation.
+          type: Boolean
+        - contextPath: NASightline.Mitigation.name
+          description: Mitigation name.
+          type: String
+        - contextPath: NASightline.Mitigation.ongoing
+          description: Whether the mitigation is currently running.
+          type: Boolean
+        - contextPath: NASightline.Mitigation.start
+          description: Start date and time of the mitigation in ISO 8601 format.
+          type: String
+        - contextPath: NASightline.Mitigation.subtype
+          description: 'The type of mitigation. One of the following: blackhole, flowspec, tms.'
+          type: String
+        - contextPath: NASightline.Mitigation.type
+          description: Type of the returned object.
+          type: String
+        - contextPath: NASightline.Mitigation.user
+          description: The user who initiated a mitigation.
+          type: String
+        - contextPath: NASightline.Mitigation.relationships
+          description: Relationships of the mitigation (only visible when extending the data).
+          type: Unknown
+        - contextPath: NASightline.Mitigation.subobject
+          description: Subobject data (only visible when extending the data).
+          type: Unknown
+      deprecated: false
+      description: List all mitigations. When a mitigation ID is given, only the
+        relevant mitigation will be fetched.
+      execution: false
+      name: na-sightline-mitigation-list
+    - arguments:
+        - default: false
+          description: Mitigation name.
+          isArray: false
+          name: name
+          required: true
+          secret: false
+        - auto: PREDEFINED
+          default: false
+          description: IP version of the traffic that is being mitigated. This attribute
+            cannot be changed once it is set.
+          isArray: false
+          name: ip_version
+          predefined:
+            - IPv4
+            - IPv6
+          required: true
+          secret: false
+        - default: false
+          description: Description of the mitigation.
+          isArray: false
+          name: description
+          required: false
+          secret: false
+        - auto: PREDEFINED
+          default: false
+          defaultValue: 'false'
+          description: Whether to start the mitigation (true) or not (false).
+          isArray: false
+          name: ongoing
+          predefined:
+            - 'true'
+            - 'false'
+          required: false
+          secret: false
+        - auto: PREDEFINED
+          default: false
+          description: The type of mitigation.
+          isArray: false
+          name: sub_type
+          predefined:
+            - tms
+            - flowspec
+          required: true
+          secret: false
+        - default: false
+          description: 'JSON object that specifies the attributes specific to the mitigation
+        subtype. For example: {"bgp_announce": false, "protection_prefixes": ["192.0.2.0/24"]}.
+        List of values supported for each sub-type can be found in the Netscout Arbor
+        Sightline documentation: <your_server_url>/api/sp/doc/v7/mitigations.html#url-/mitigations/'
+          isArray: false
+          name: sub_object
+          required: true
+          secret: false
+        - default: false
+          description: ID of the alert associated with the mitigation. Can be obtained from the na-sightline-alert-list command.
+          isArray: false
+          name: alert_id
+          required: false
+          secret: false
+        - default: false
+          description: ID of the mitigation template applied to this mitigation. To get
+            a list of available templates and their IDs, run the na-sightline-mitigation-template-list command.
+          isArray: false
+          name: mitigation_template_id
+          required: false
+          secret: false
+        - default: false
+          description: (Flowspec mitigations only) Comma-separated list of IDs of the
+            routers to which the flowspec announcement is made. To get a list of available
+            routers and their IDs run the na-sightline-router-list command.
+          isArray: false
+          name: router_ids
+          required: false
+          secret: false
+        - default: false
+          description: (TMS mitigations only) ID of the managed object associated with
+            the alert. To get a list of available managed objects and their IDs run the
+            na-sightline-managed-object-list command.
+          isArray: false
+          name: managed_object_id
+          required: false
+          secret: false
+        - default: false
+          description: (TMS mitigations only) ID of the TMS group that the associated
+            managed object belongs to. To get a list of available TMS groups and their
+            IDs run the na-sightline-tms-group-list command.
+          isArray: false
+          name: tms_group_id
+          required: false
+          secret: false
+        - name: extend_data
+          description: Whether to extend the results with all available data.
+          auto: PREDEFINED
+          default: false
+          defaultValue: 'false'
+          isArray: false
+          predefined:
+            - 'true'
+            - 'false'
+          required: false
+          secret: false
+      outputs:
+        - contextPath: NASightline.Mitigation.id
+          description: The ID of the mitagation.
+          type: String
+        - contextPath: NASightline.Mitigation.ip_version
+          description: IP version of the traffic that is being mitigated.
+          type: Number
+        - contextPath: NASightline.Mitigation.is_automitigation
+          description: Whether the mitigation is an auto-mitigation.
+          type: Boolean
+        - contextPath: NASightline.Mitigation.name
+          description: Mitigation name.
+          type: String
+        - contextPath: NASightline.Mitigation.ongoing
+          description: Whether the mitigation is currently running.
+          type: Boolean
+        - contextPath: NASightline.Mitigation.subobject
+          description: Subobject data (only visible when extending the data).
+          type: Unknown
+        - contextPath: NASightline.Mitigation.subtype
+          description: 'The type of mitigation. One of the following: blackhole, flowspec, tms.'
+          type: String
+        - contextPath: NASightline.Mitigation.type
+          description: Type of the returned object.
+          type: String
+        - contextPath: NASightline.Mitigation.relationships
+          description: Relationships of the mitigation (only visible when extending the data).
+          type: Unknown
+      deprecated: false
+      description: Add a TMS or flowspec mitigation with the attributes and relationships passed in the JSON sub_object.
+      execution: false
+      name: na-sightline-mitigation-create
+    - arguments:
+        - default: true
+          description: The mitigation ID to delete. Can be obtained from the na-sightline-mitigation-list command.
+          isArray: false
+          name: mitigation_id
+          required: true
+          secret: false
+      deprecated: false
+      description: Delete a given mitigation.
+      execution: false
+      name: na-sightline-mitigation-delete
+    - arguments:
+        - name: extend_data
+          description: Whether to extend the results with all available data.
+          auto: PREDEFINED
+          default: false
+          defaultValue: 'false'
+          isArray: false
+          predefined:
+            - 'true'
+            - 'false'
+          required: false
+          secret: false
+      outputs:
+        - contextPath: NASightline.MitigationTemplate.description
+          description: The description of the mitigation template.
+          type: String
+        - contextPath: NASightline.MitigationTemplate.id
+          description: The ID of the mitigation template.
+          type: String
+        - contextPath: NASightline.MitigationTemplate.ip_version
+          description: The IP version of the traffic that you want to mitigate with this mitigation template.
+          type: Number
+        - contextPath: NASightline.MitigationTemplate.name
+          description: The name of the mitigation template.
+          type: String
+        - contextPath: NASightline.MitigationTemplate.subtype
+          description: The type of mitigation this template can be applied to.
+          type: String
+        - contextPath: NASightline.MitigationTemplate.system
+          description: System or custom object.
+          type: Boolean
+        - contextPath: NASightline.MitigationTemplate.type
+          description: Type of the returned object.
+          type: String
+        - contextPath: NASightline.MitigationTemplate.subobject
+          description: Subobject data (only visible when extending the data).
+          type: Unknown
+        - contextPath: NASightline.MitigationTemplate.relationships
+          description: Relationships of the mitigation template (only visible when extending the data).
+          type: Unknown
+      deprecated: false
+      description: Get a list of available mitigation templates.
+      execution: false
+      name: na-sightline-mitigation-template-list
+    - arguments:
+        - name: extend_data
+          description: Whether to extend the results with all available data.
+          auto: PREDEFINED
+          default: false
+          defaultValue: 'false'
+          isArray: false
+          predefined:
+            - 'true'
+            - 'false'
+          required: false
+          secret: false
+      outputs:
+        - contextPath: NASightline.Router.advanced_fallback_alg
+          description: 'The algorithm used to classify interfaces during auto-configuration that either report no traffic or have no associated BGP information: internal, external, or use_bgp_and_local. use_bgp_and_local classifies each observed flow, based on learned BGP information and the configured IP address space.'
+          type: String
+        - contextPath: NASightline.Router.advanced_use_simpson_flowspec_redirect_ip
+          description: If true, BGP Redirect-to-IP flowspec announcements are generated conforming to draft-simpson-idr-flowspec-redirect-02.txt.
+          type: Boolean
+        - contextPath: NASightline.Router.bgp2_capabilities_labeled_unicast
+          description: If true, Sightline is permitted to generate BGP 6PE diversion announcements for IPv6 destinations over the secondary BGP session per RFC 4798.
+          type: Boolean
+        - contextPath: NASightline.Router.bgp_capabilities_l3vpn_flowspec_ipv4
+          description: (MPLS Layer 3 VPNs only) If true, Sightline includes the route distinguisher (RD) and route target (RT) values in BGP flowspec diversion announcements for IPv4 traffic in flowspec mitigations and TMS mitigations.
+          type: Boolean
+        - contextPath: NASightline.Router.bgp_capabilities_l3vpn_flowspec_ipv6
+          description: (MPLS Layer 3 VPNs only) If true, Sightline includes the route distinguisher (RD) and route target (RT) values in BGP flowspec diversion announcements for IPv6 traffic in flowspec mitigations and TMS mitigations.
+          type: Boolean
+        - contextPath: NASightline.Router.bgp_capabilities_labeled_unicast
+          description: If true, Sightline is permitted to generate BGP 6PE diversion announcements for for IPv6 destinations over the primary BGP session per RFC 4798.
+          type: Boolean
+        - contextPath: NASightline.Router.description
+          description: Router description.
+          type: String
+        - contextPath: NASightline.Router.flow_alerting
+          description: If true, enables flow down alerting for this router.
+          type: Boolean
+        - contextPath: NASightline.Router.flow_export_ip
+          description: The IP address of the router that sends flow records to Sightline.
+          type: String
+        - contextPath: NASightline.Router.flow_flow_ignored
+          description: Either ignore NetFlow from this router (on) or not (off).
+          type: String
+        - contextPath: NASightline.Router.flow_flow_ignored_ipv6
+          description: Either ignore IPv6 NetFlow from this router (on) or not (off).
+          type: String
+        - contextPath: NASightline.Router.flow_sample_rate
+          description: The sample rate of the flow information sent by this router.
+          type: String
+        - contextPath: NASightline.Router.id
+          description: The ID of the router.
+          type: String
+        - contextPath: NASightline.Router.is_proxy
+          description: If true, Sightline treats the router as a proxy for other routers.
+          type: Boolean
+        - contextPath: NASightline.Router.license_type
+          description: 'The router license type: core, edge, or unset. For more information, see “Configuring Routers” in the Sightline and TMS User Guide.'
+          type: String
+        - contextPath: NASightline.Router.name
+          description: Router name
+          type: String
+        - contextPath: NASightline.Router.snmp_authprotocol
+          description: 'SNMP v3 authentication protocol. One of the following: md5, sha, sha-224, sha-256, sha-384, sha-512.'
+          type: String
+        - contextPath: NASightline.Router.snmp_priv_protocol
+          description: 'The SNMP v3 privacy protocol: DES or AES.'
+          type: String
+        - contextPath: NASightline.Router.snmp_security_level
+          description: 'SNMP v3 security level. One of the following: noAuthNoPriv (no pass-phrase authentication is performed), authNoPriv (pass-phrase authentication is performed, but there is no encryption of the data in the trap messages), authPriv (pass-phrase authentication is performed and the data in the trap messages is encrypted).'
+          type: String
+        - contextPath: NASightline.Router.snmp_version
+          description: 'SNMP version: 1, 2, or 3.'
+          type: Number
+        - contextPath: NASightline.Router.type
+          description: Type of the returned object.
+          type: String
+        - contextPath: NASightline.Router.advanced_local_as
+          description: The default local AS number override.
+          type: String
+        - contextPath: NASightline.Router.bgp_capabilities_flowspec
+          description: If true, Sightline can use the primary BGP peering session to generate BGP flowspec diversion announcements for IPv4 traffic in flowspec mitigations and TMS mitigations.
+          type: Boolean
+        - contextPath: NASightline.Router.bgp_capabilities_flowspec_ipv4
+          description: If true, Sightline can use the primary BGP peering session to generate BGP flowspec diversion announcements for IPv4 traffic in flowspec mitigations and TMS mitigations.
+          type: Boolean
+        - contextPath: NASightline.Router.bgp_capabilities_monitor_routes_ipv4
+          description: If primary, the primary BGP peering session is used to monitor the IPv4 routes on the router for the purposes of classifying IPv4 traffic. If secondary, the secondary BGP peering session is used. If disabled, IPv4 routes are not monitored and IPv4 traffic is not classified using BGP routing information from this router.
+          type: String
+        - contextPath: NASightline.Router.bgp_ip_address
+          description: The remote IP address that you want Sightline to use to create a BGP peering session with this router.
+          type: String
+        - contextPath: NASightline.Router.bgp_remote_as
+          description: The ASN of the router.
+          type: String
+        - contextPath: NASightline.Router.bgp_session_name
+          description: A name to help identify the BGP peering session in the Sightline UI when you create a blackhole or TMS mitigation.
+          type: String
+        - contextPath: NASightline.Router.relationships
+          description: Relationships of the router (only visible when extending the data).
+          type: Unknown
+      deprecated: false
+      description: Get a list of available routers.
+      execution: false
+      name: na-sightline-router-list
+    - arguments:
+        - default: false
+          description: The page to return starting from 1.
+          isArray: false
+          name: page
+          required: false
+          secret: false
+        - default: false
+          description: Maximal number of mitigations to retrieve. Also sets the size
+            of the returned page.
+          isArray: false
+          defaultValue: '50'
+          name: limit
+          required: false
+          secret: false
+        - name: extend_data
+          description: Whether to extend the results with all available data.
+          auto: PREDEFINED
+          default: false
+          defaultValue: 'false'
+          isArray: false
+          predefined:
+            - 'true'
+            - 'false'
+          required: false
+          secret: false
+      outputs:
+        - contextPath: NASightline.ManagedObject.autodetected
+          description: If true, Sightline automatically detects and configures VPN sites when the match type of a VPN managed object is a route target and the VPN sites match the configured route targets.
+          type: Boolean
+        - contextPath: NASightline.ManagedObject.automitigation_precise_protection_prefixes
+          description: If true, the precise protection prefixes feature for auto-mitigations is enabled.
+          type: Boolean
+        - contextPath: NASightline.ManagedObject.detection_network_country_enabled
+          description: If true, profiled country detection is enabled.
+          type: Boolean
+        - contextPath: NASightline.ManagedObject.detection_network_enabled
+          description: If true, profiled network detection is enabled.
+          type: Boolean
+        - contextPath: NASightline.ManagedObject.detection_profiled_autorate
+          description: If true, automatic rate calculation for profiled router detection is enabled.
+          type: Boolean
+        - contextPath: NASightline.ManagedObject.detection_profiled_enabled
+          description: If true, profiled router detection is enabled.
+          type: Boolean
+        - contextPath: NASightline.ManagedObject.detection_profiled_fast_flood_enabled
+          description: If true, fast flood detection for profiled routers is enabled.
+          type: Boolean
+        - contextPath: NASightline.ManagedObject.detection_profiled_outgoing_enabled
+          description: If true, outgoing detection for profiled router detection is enabled.
+          type: Boolean
+        - contextPath: NASightline.ManagedObject.detection_profiled_severity_duration
+          description: Number of seconds that traffic must exceed a given severity threshold before Sightline escalates its severity for profiled router detection.
+          type: Number
+        - contextPath: NASightline.ManagedObject.detection_profiled_severity_snmp_enabled
+          description: If true, SNMP link rate severity calculation is enabled for profiled router detection.
+          type: Boolean
+        - contextPath: NASightline.ManagedObject.detection_profiled_threshold_bandwidth
+          description: 'Threshold for interface bandwidth alerts for profiled router detection. An integer from 1 to 5, where: 1 = detect more alerts, 2 = default, 3 = detect fewer alerts, 4 = detect even fewer alerts, 5 = detect fewest alerts.'
+          type: Number
+        - contextPath: NASightline.ManagedObject.detection_profiled_threshold_packet_rate
+          description: 'Threshold for interface packet alerts for profiled router detection. An integer from 1 to 5, where: 1 = detect more alerts, 2 = default, 3 = detect fewer alerts, 4 = detect even fewer alerts, 5 = detect fewest alerts.'
+          type: Number
+        - contextPath: NASightline.ManagedObject.detection_profiled_threshold_protocol
+          description: 'Threshold for all protocol alerts for profiled router detection. An integer from 1 to 5, where: 1 = detect more alerts, 2 = default, 3 = detect fewer alerts, 4 = detect even fewer alerts, 5 = detect fewest alerts.'
+          type: Number
+        - contextPath: NASightline.ManagedObject.dynamic_match_enabled
+          description: If true, Sightline can monitor traffic for OTT domains that have frequently changing service IP addresses.
+          type: Boolean
+        - contextPath: NASightline.ManagedObject.editable
+          description: If true, is editable.
+          type: Boolean
+        - contextPath: NASightline.ManagedObject.family
+          description: 'A valid managed object type. Not all values appear in the UI as managed object types. One of the following: none, peer, profile, customer, worm (deprecated), vpn, vpnsite, service, subscriber.'
+          type: String
+        - contextPath: NASightline.ManagedObject.id
+          description: The ID of the managed object.
+          type: String
+        - contextPath: NASightline.ManagedObject.match
+          description: A value appropriate for the specified match_type.
+          type: String
+        - contextPath: NASightline.ManagedObject.match_enabled
+          description: If true, Sightline records flow for this managed object.
+          type: Boolean
+        - contextPath: NASightline.ManagedObject.match_type
+          description: 'The managed object’s match type. One of the following: advanced, appid, asregexp, cidr_blocks, cidr_groups, cidr_v6_blocks, community, extended_community, interface, profiled_interface_group, subas, peer_as, tmsports.'
+          type: String
+        - contextPath: NASightline.ManagedObject.mitigation_automitigation_stop_event
+          description: 'The event that stops this TMS auto-mitigation. One of the following: manual, after_mitigation_starts, after_alert_ends.'
+          type: String
+        - contextPath: NASightline.ManagedObject.mitigation_automitigation_stop_minutes
+          description: Stops the TMS auto-mitigation after the specified number of minutes for the after_mitigation_starts or after_alert_ends stop events. This is automatically set to 0 if mitigation_automitigation_stop_event is manual.
+          type: Number
+        - contextPath: NASightline.ManagedObject.mitigation_automitigation_tms_enabled
+          description: If true, TMS auto-mitigation is enabled.
+          type: Boolean
+        - contextPath: NASightline.ManagedObject.mitigation_blackhole_auto_enabled
+          description: If true, blackhole auto-mitigation is enabled.
+          type: Boolean
+        - contextPath: NASightline.ManagedObject.mitigation_flowspec_auto_enabled
+          description: If true, flowspec auto-mitigation is enabled.
+          type: Boolean
+        - contextPath: NASightline.ManagedObject.name
+          description: The managed object’s name.
+          type: String
+        - contextPath: NASightline.ManagedObject.num_children
+          description: The number of child managed objects assigned to this one.
+          type: Number
+        - contextPath: NASightline.ManagedObject.parent_editable
+          description: If false, parent is read-only.
+          type: Boolean
+        - contextPath: NASightline.ManagedObject.relationships
+          description: Relationships of the managed object (only visible when extending the data).
+          type: Unknown
+        - contextPath: NASightline.ManagedObject.scrub_insight_mo_match
+          description: If true, Sightline disassociates the managed object from the flow before sending the flow to Insight, thereby preventing the managed object from being subject to or appearing in Insight queries.
+          type: Boolean
+        - contextPath: NASightline.ManagedObject.tags
+          description: A list of tags that are applied to the managed object.
+          type: String
+        - contextPath: NASightline.ManagedObject.type
+          description: Type of the returned object.
+          type: String
+      deprecated: false
+      description: Get a list of available managed objects.
+      execution: false
+      name: na-sightline-managed-object-list
+    - arguments:
+        - name: extend_data
+          description: Whether to extend the results with all available data.
+          auto: PREDEFINED
+          default: false
+          defaultValue: 'false'
+          isArray: false
+          predefined:
+            - 'true'
+            - 'false'
+          required: false
+          secret: false
+      outputs:
+        - contextPath: NASightline.TMSGroup.check_available_bw
+          description: If true, ensures that all TMS appliances or Cisco ASR 9000 vDDoS Protection devices in a group use less than 90% of the allowed traffic rate in order for a mitigation to start.
+          type: Boolean
+        - contextPath: NASightline.TMSGroup.check_bgp_peering
+          description: If true, ensures that the TMS appliances or Cisco ASR 9000 vDDoS Protection devices are part of a peering session.
+          type: Boolean
+        - contextPath: NASightline.TMSGroup.check_group_allup
+          description: If true, requires all group members to be up before starting a mitigation. This ensures that sufficient resources are available before a mitigation starts.
+          type: Boolean
+        - contextPath: NASightline.TMSGroup.default_bgp_offramp
+          description: If true, the default BGP diversion nexthops of the TMS appliances or Cisco ASR 9000 vDDoS Protection devices in the TMS group are used.
+          type: Boolean
+        - contextPath: NASightline.TMSGroup.description
+          description: Description of the TMS group.
+          type: String
+        - contextPath: NASightline.TMSGroup.fail_open
+          description: If true, ends the mitigation if one or more group members fails or becomes unreachable.
+          type: Boolean
+        - contextPath: NASightline.TMSGroup.flowspec_redirect_ipv4_destination
+          description: In TMS flowspec diversion deployments, these attributes each specify a destination route target or IP address. The Sightline peer uses these destinations in TMS mitigations to advertise routes to its BGP peers.
+          type: String
+        - contextPath: NASightline.TMSGroup.flowspec_redirect_ipv4_type
+          description: In TMS flowspec diversion deployments, these attributes define whether the Sightline peer redirects TMS mitigation traffic to a route target or to an IP address.
+          type: String
+        - contextPath: NASightline.TMSGroup.flowspec_redirect_ipv6_destination
+          description: In TMS flowspec diversion deployments, these attributes each specify a destination route target or IP address. The Sightline peer uses these destinations in TMS mitigations to advertise routes to its BGP peers.
+          type: String
+        - contextPath: NASightline.TMSGroup.flowspec_redirect_ipv6_type
+          description: In TMS flowspec diversion deployments, these attributes define whether the Sightline peer redirects TMS mitigation traffic to a route target or to an IP address.
+          type: String
+        - contextPath: NASightline.TMSGroup.id
+          description: The TMS group ID.
+          type: String
+        - contextPath: NASightline.TMSGroup.l3vpn_flowspec_ipv4_route_distinguisher
+          description: The route distinguisher (RD) for a VPN, which uniquely identifies the routes for that VPN.
+          type: String
+        - contextPath: NASightline.TMSGroup.l3vpn_flowspec_ipv6_route_distinguisher
+          description: The route distinguisher (RD) for a VPN, which uniquely identifies the routes for that VPN.
+          type: String
+        - contextPath: NASightline.TMSGroup.member_limits_differ
+          description: If true, TMS device limits (such as maximum mitigations or filter lists) differ, which leads to either performance issues if devices change midstream for ongoing mitigations, or failure to start or save mitigations.
+          type: Boolean
+        - contextPath: NASightline.TMSGroup.mitigation_orchestration.bandwidth_threshold_percent
+          description: The percentage of total bandwidth capacity at which this TMS group will become overloaded.
+          type: Number
+        - contextPath: NASightline.TMSGroup.mitigation_orchestration.enabled
+          description: If true, mitigation orchestration is enabled for this TMS group.
+          type: Boolean
+        - contextPath: NASightline.TMSGroup.name
+          description: TMS group name.
+          type: String
+        - contextPath: NASightline.TMSGroup.nexthop
+          description: The IPv4 address for the BGP diversion nexthop. It overrides the default nexthops of the TMS appliances or Cisco ASR 9000 vDDoS Protection devices that are in the TMS group.
+          type: String
+        - contextPath: NASightline.TMSGroup.nexthop_v6
+          description: The IPv6 address for the BGP diversion nexthop. It overrides the default nexthops of the TMS appliances or Cisco ASR 9000 vDDoS Protection devices that are in the TMS group.
+          type: String
+        - contextPath: NASightline.TMSGroup.relationships
+          description: Relationships of the managed object (only visible when extending the data).
+          type: Unknown
+        - contextPath: NASightline.TMSGroup.system
+          description: If true, the TMS group is pre-configured in Sightline and is not editable.
+          type: Boolean
+        - contextPath: NASightline.TMSGroup.tms_group_type
+          description: Type of the TMS group.
+          type: String
+        - contextPath: NASightline.TMSGroup.type
+          description: Type of the returned object.
+          type: String
+      deprecated: false
+      description: Get a list of available TMS groups.
+      execution: false
+      name: na-sightline-tms-group-list
+  dockerimage: demisto/python3:3.9.7.24076
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+  - No tests (auto formatted)
+fromversion: 5.5.0

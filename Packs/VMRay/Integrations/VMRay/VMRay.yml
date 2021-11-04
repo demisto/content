@@ -3,6 +3,20 @@ commonfields:
   id: vmray
   version: -1
 configuration:
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: C - Fairly reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
 - defaultvalue: https://cloud.vmray.com
   display: Server URL (e.g., https://cloud.vmray.com)
   name: server
@@ -20,14 +34,14 @@ configuration:
   name: insecure
   required: false
   type: 8
-description: Ransomware analysis sandboxing.
+description: Malware analysis sandboxing.
 display: VMRay
 name: vmray
 script:
   commands:
   - arguments:
     - default: false
-      description: Entry ID  of the file to submit.
+      description: Entry ID of the file to submit.
       isArray: false
       name: entry_id
       required: true
@@ -60,16 +74,6 @@ script:
       - 'false'
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Analyze even if analyses already exist.
-      isArray: false
-      name: reanalyze
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
     - default: true
       defaultValue: '1'
       description: Maximum number of jobs to create (number).
@@ -81,6 +85,18 @@ script:
       description: A CSV list of tags to add to the sample.
       isArray: false
       name: tags
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Deprecated. Analyze even if analyses already exist. To control
+        analysis caching, use the API Key settings instead, which are available via
+        the Analysis Settings page, in the VMRay Web Interface.
+      isArray: false
+      name: reanalyze
+      predefined:
+      - 'true'
+      - 'false'
       required: false
       secret: false
     deprecated: false
@@ -106,15 +122,86 @@ script:
     - contextPath: VMRay.Sample.SampleID
       description: ID of the sample.
       type: Number
+    - contextPath: VMRay.Sample.SampleURL
+      description: URL to sample page.
+      type: String
     - contextPath: VMRay.Sample.Created
       description: Timestamp of sample creation.
       type: Date
     - contextPath: VMRay.Submission.SubmissionID
       description: Submission ID.
       type: Number
+    - contextPath: VMRay.Submission.SubmissionURL
+      description: URL to submission page.
+      type: String
   - arguments:
     - default: false
-      description: Analysis sample ID.
+      description: ' The URL to analyze. For example: https://demisto.com. '
+      isArray: false
+      name: url
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether the analysis is shareable.
+      isArray: false
+      name: shareable
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '1'
+      description: Maximum number of jobs to create (number).
+      isArray: false
+      name: max_jobs
+      required: false
+      secret: false
+    - default: false
+      description: A CSV list of tags to add to the sample.
+      isArray: false
+      name: tags
+      required: false
+      secret: false
+    deprecated: false
+    description: Submits a URL for analysis.
+    execution: false
+    name: vmray-upload-url
+    outputs:
+    - contextPath: VMRay.Job.JobID
+      description: ID of a new job
+      type: Number
+    - contextPath: VMRay.Job.Created
+      description: Timestamp of job creation.
+      type: Date
+    - contextPath: VMRay.Job.SampleID
+      description: ID of the sample.
+      type: Number
+    - contextPath: VMRay.Job.VMName
+      description: Name of the virtual machine.
+      type: String
+    - contextPath: VMRay.Job.VMID
+      description: ID of the virtual machine.
+      type: Number
+    - contextPath: VMRay.Sample.SampleID
+      description: ID of the sample.
+      type: Number
+    - contextPath: VMRay.Sample.SampleURL
+      description: URL to sample page.
+      type: String
+    - contextPath: VMRay.Sample.Created
+      description: Timestamp of sample creation.
+      type: Date
+    - contextPath: VMRay.Submission.SubmissionID
+      description: Submission ID.
+      type: Number
+    - contextPath: VMRay.Submission.SubmissionURL
+      description: URL to submission page.
+      type: String
+  - arguments:
+    - default: false
+      description: Sample ID.
       isArray: false
       name: sample_id
       required: true
@@ -133,11 +220,21 @@ script:
     - contextPath: VMRay.Analysis.AnalysisID
       description: Analysis ID.
       type: Number
+    - contextPath: VMRay.Analysis.AnalysisURL
+      description: URL to analysis page.
+      type: String
     - contextPath: VMRay.Analysis.SampleID
       description: Sample ID in the analysis.
       type: Number
+    - contextPath: VMRay.Analysis.Verdict
+      description: Verdict for the sample (Malicious, Suspicious, Clean, Not Available).
+      type: String
+    - contextPath: VMRay.Analysis.VerdictReason
+      description: Description of the Verdict Reason.
+      type: String
     - contextPath: VMRay.Analysis.Severity
-      description: Severity of the sample (Malicious, Suspicious, Good, Blacklisted, Whitelisted, Unknown).
+      description: Severity of the sample in the submission (Malicious, Suspicious,
+        Good, Blacklisted, Whitelisted, Unknown). Deprecated.
       type: String
     - contextPath: VMRay.Analysis.JobCreated
       description: Date when the analysis job started.
@@ -156,7 +253,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Job sample ID.
+      description: Sample ID.
       isArray: false
       name: sample_id
       required: true
@@ -198,7 +295,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: ID of the submission. Can be obtained by running the 'vmray-upload-sample' command.
+      description: ID of the submission. Can be obtained by running the 'vmray-upload-sample'
+        or 'vmray-upload-url' command.
       isArray: false
       name: submission_id
       required: true
@@ -217,6 +315,9 @@ script:
     - contextPath: VMRay.Submission.SubmissionID
       description: ID of the sample in the submission.
       type: Number
+    - contextPath: VMRay.Submission.SubmissionURL
+      description: URL of submission page.
+      type: String
     - contextPath: VMRay.Submission.MD5
       description: MD5 hash of the sample in the submission.
       type: String
@@ -229,8 +330,15 @@ script:
     - contextPath: VMRay.Submission.SSDeep
       description: ssdeep hash of the sample in the submission.
       type: String
+    - contextPath: VMRay.Submission.Verdict
+      description: Verdict for the sample (Malicious, Suspicious, Clean, Not Available).
+      type: String
+    - contextPath: VMRay.Submission.VerdictReason
+      description: Description of the Verdict Reason.
+      type: String
     - contextPath: VMRay.Submission.Severity
-      description: Severity of the sample in the submission (Malicious, Suspicious, Good, Blacklisted, Whitelisted, Unknown).
+      description: Severity of the sample in the submission (Malicious, Suspicious,
+        Good, Blacklisted, Whitelisted, Unknown). Deprecated.
       type: String
     - contextPath: VMRay.Submission.SampleID
       description: ID of the sample in the submission.
@@ -250,6 +358,9 @@ script:
     - contextPath: VMRay.Sample.SampleID
       description: ID of the sample.
       type: Number
+    - contextPath: VMRay.Sample.SampleURL
+      description: URL to sample page.
+      type: String
     - contextPath: VMRay.Sample.FileName
       description: File name of the sample.
       type: String
@@ -265,8 +376,15 @@ script:
     - contextPath: VMRay.Sample.SSDeep
       description: ssdeep hash of the sample.
       type: String
+    - contextPath: VMRay.Sample.Verdict
+      description: Verdict for the sample (Malicious, Suspicious, Clean, Not Available).
+      type: String
+    - contextPath: VMRay.Sample.VerdictReason
+      description: Description of the Verdict Reason.
+      type: String
     - contextPath: VMRay.Sample.Severity
-      description: Severity of the sample in the submission (Malicious, Suspicious, Good, Blacklisted, Whitelisted, Unknown).
+      description: Severity of the sample in the submission (Malicious, Suspicious,
+        Good, Blacklisted, Whitelisted, Unknown). Deprecated.
       type: String
     - contextPath: VMRay.Sample.Type
       description: File type.
@@ -277,9 +395,103 @@ script:
     - contextPath: VMRay.Sample.Classifications
       description: Classifications of the sample.
       type: String
+    - contextPath: VMRay.Sample.ChildSampleIDs
+      description: List of child sample IDs.
+      type: Number
+    - contextPath: VMRay.Sample.ParentSampleIDs
+      description: List of parent sample IDs.
+      type: Number
   - arguments:
     - default: false
-      description: ID of the sample. Can be obtaine from the 'VMRay.Sample.ID' output.
+      description: MD5, SHA1 or SHA256 hash of the sample.
+      isArray: false
+      name: hash
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves sample information by hash.
+    execution: false
+    name: vmray-get-sample-by-hash
+    outputs:
+    - contextPath: File.Name
+      description: The full file name (including file extension).
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.SSDeep
+      description: The SSDeep hash of the file.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: VMRay.Sample.SampleID
+      description: ID of the sample.
+      type: Number
+    - contextPath: VMRay.Sample.SampleURL
+      description: URL to sample page.
+      type: String
+    - contextPath: VMRay.Sample.FileName
+      description: File name of the sample.
+      type: String
+    - contextPath: VMRay.Sample.MD5
+      description: MD5 hash of the sample.
+      type: String
+    - contextPath: VMRay.Sample.SHA1
+      description: SHA1 hash of the sample.
+      type: String
+    - contextPath: VMRay.Sample.SHA256
+      description: SHA256 hash of the sample.
+      type: String
+    - contextPath: VMRay.Sample.SSDeep
+      description: ssdeep hash of the sample.
+      type: String
+    - contextPath: VMRay.Sample.Verdict
+      description: Verdict for the sample (Malicious, Suspicious, Clean, Not Available).
+      type: String
+    - contextPath: VMRay.Sample.VerdictReason
+      description: Description of the Verdict Reason.
+      type: String
+    - contextPath: VMRay.Sample.Severity
+      description: Severity of the sample in the submission (Malicious, Suspicious,
+        Good, Blacklisted, Whitelisted, Unknown). Deprecated.
+      type: String
+    - contextPath: VMRay.Sample.Type
+      description: File type.
+      type: String
+    - contextPath: VMRay.Sample.Created
+      description: Timestamp of sample creation.
+      type: Date
+    - contextPath: VMRay.Sample.Classifications
+      description: Classifications of the sample.
+      type: String
+    - contextPath: VMRay.Sample.ChildSampleIDs
+      description: List of child sample IDs.
+      type: Number
+    - contextPath: VMRay.Sample.ParentSampleIDs
+      description: List of parent sample IDs.
+      type: Number
+  - arguments:
+    - default: false
+      description: ID of the sample. Can be obtained from the 'VMRay.Sample.ID' output.
       isArray: false
       name: sample_id
       required: true
@@ -312,7 +524,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: ID of the analysis from which to delete tags.
+      description: ID of the analysis from which to add tags.
       isArray: false
       name: analysis_id
       required: false
@@ -357,94 +569,551 @@ script:
       name: sample_id
       required: true
       secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether all artifacts should be returned or only Indicators of
+        Compromise.
+      isArray: false
+      name: all_artifacts
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
     deprecated: false
-    description: Retrieves indicators of compropmise for a specified sample.
+    description: Retrieves Indicators of Compromise for a specified sample.
     execution: false
     name: vmray-get-iocs
     outputs:
-    - contextPath: VMRay.Sample.IOC.URL.AnalysisID
-      description: IDs of other analyses that contain the given URL.
-      type: Number
-    - contextPath: VMRay.Sample.IOC.URL.URL
-      description: URL.
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
       type: String
-    - contextPath: VMRay.Sample.IOC.URL.Operation
-      description: Operation of the specified URL.
+    - contextPath: DBotScore.Type
+      description: The indicator type.
       type: String
-    - contextPath: VMRay.Sample.IOC.URL.ID
-      description: ID of the URL.
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
       type: Number
-    - contextPath: VMRay.Sample.IOC.URL.Type
-      description: Type of URL.
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: Domain.Name
+      description: The domain name
+      type: String
+    - contextPath: IP.Address
+      description: IP address
+      type: String
+    - contextPath: URL.Data
+      description: The URL
+      type: String
+    - contextPath: Email.Address
+      description: The Email address
+      type: String
+    - contextPath: File.Path
+      description: The full file path.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.SSDeep
+      description: The SSDeep hash of the file.
       type: String
     - contextPath: VMRay.Sample.IOC.Domain.AnalysisID
-      description: IDs of other analyses that contain the given domain.
+      description: IDs of other analyses that contain the domain.
       type: Number
+    - contextPath: VMRay.Sample.IOC.Domain.Countries
+      description: Countries associated with the domain.
+      type: String
+    - contextPath: VMRay.Sample.IOC.Domain.CountryCodes
+      description: ISO 3166-1 two-letter country codes associated with the domain.
+      type: String
     - contextPath: VMRay.Sample.IOC.Domain.Domain
       description: Domain.
       type: String
     - contextPath: VMRay.Sample.IOC.Domain.ID
-      description: ID of the domain.
+      description: ID of the domain. (deprecated; is always 0)
       type: Number
+    - contextPath: VMRay.Sample.IOC.Domain.IsIOC
+      description: Whether this artifact is an Indicator of Compromise (IOC).
+      type: Boolean
+    - contextPath: VMRay.Sample.IOC.Domain.IOCType
+      description: Type of IOC.
+      type: String
+    - contextPath: VMRay.Sample.IOC.Domain.IpAddresses
+      description: IP addresses associated with the domain.
+      type: String
+    - contextPath: VMRay.Sample.IOC.Domain.OriginalDomains
+      description: Original domains associated with the domain.
+      type: String
+    - contextPath: VMRay.Sample.IOC.Domain.ParentProcesses
+      description: Full commandline of processes where the domain was used.
+      type: String
+    - contextPath: VMRay.Sample.IOC.Domain.ParentProcessesNames
+      description: Names of processes where the domain was used.
+      type: String
+    - contextPath: VMRay.Sample.IOC.Domain.Protocols
+      description: The protocols used for the domain in a request.
+      type: String
+    - contextPath: VMRay.Sample.IOC.Domain.Sources
+      description: The sources where the domain was obtained from.
+      type: String
     - contextPath: VMRay.Sample.IOC.Domain.Type
       description: Type of domain.
       type: String
-    - contextPath: VMRay.Sample.IOC.IP.AnalysisID
-      description: IDs of other analyses that contain the given IP address.
-      type: Number
-    - contextPath: VMRay.Sample.IOC.IP.IP
-      description: IP address.
+    - contextPath: VMRay.Sample.IOC.Domain.Verdict
+      description: Verdict for the artifact (Malicious, Suspicious, Clean, Not Available).
       type: String
-    - contextPath: VMRay.Sample.IOC.IP.Operation
-      description: Operation of the given IP.
+    - contextPath: VMRay.Sample.IOC.Domain.VerdictReason
+      description: Description of the Verdict Reason.
+      type: String
+    - contextPath: VMRay.Sample.IOC.EmailAddress.AnalysisID
+      description: IDs of other analyses that contain the email address.
+      type: Number
+    - contextPath: VMRay.Sample.IOC.EmailAddress.Classifications
+      description: The classifications of the email address.
+      type: String
+    - contextPath: VMRay.Sample.IOC.EmailAddress.EmailAddress
+      description: The email address.
+      type: String
+    - contextPath: VMRay.Sample.IOC.EmailAddress.IsIOC
+      description: Whether this artifact is an Indicator of Compromise (IOC).
+      type: Boolean
+    - contextPath: VMRay.Sample.IOC.EmailAddress.IsRecipient
+      description: Indicates whether this email address was used as a recipient email.
+      type: Boolean
+    - contextPath: VMRay.Sample.IOC.EmailAddress.IsSender
+      description: Indicates whether this email address was used as a sender email.
+      type: Boolean
+    - contextPath: VMRay.Sample.IOC.EmailAddress.IOCType
+      description: Type of IOC.
+      type: String
+    - contextPath: VMRay.Sample.IOC.EmailAddress.Subjects
+      description: Email subjects this email address was used in.
+      type: String
+    - contextPath: VMRay.Sample.IOC.EmailAddress.ThreatNames
+      description: The threat names of the email address.
+      type: String
+    - contextPath: VMRay.Sample.IOC.EmailAddress.Type
+      description: Type of email address.
+      type: String
+    - contextPath: VMRay.Sample.IOC.EmailAddress.Verdict
+      description: Verdict for the artifact (Malicious, Suspicious, Clean, Not Available).
+      type: String
+    - contextPath: VMRay.Sample.IOC.EmailAddress.VerdictReason
+      description: Description of the Verdict Reason.
+      type: String
+    - contextPath: VMRay.Sample.IOC.Email.AnalysisID
+      description: IDs of other analyses that contain the email.
+      type: Number
+    - contextPath: VMRay.Sample.IOC.Email.AttachmentTypes
+      description: MIME types of attachments found in this email.
+      type: String
+    - contextPath: VMRay.Sample.IOC.Email.Classifications
+      description: The classifications of the email.
+      type: String
+    - contextPath: VMRay.Sample.IOC.Email.Hashes.MD5
+      description: MD5 of given email.
+      type: String
+    - contextPath: VMRay.Sample.IOC.Email.Hashes.SSDeep
+      description: SSDeep of given email.
+      type: String
+    - contextPath: VMRay.Sample.IOC.Email.Hashes.SHA256
+      description: SHA256 of given email.
+      type: String
+    - contextPath: VMRay.Sample.IOC.Email.Hashes.SHA1
+      description: SHA1 of given email.
+      type: String
+    - contextPath: VMRay.Sample.IOC.Email.IsIOC
+      description: Whether this artifact is an Indicator of Compromise (IOC).
+      type: Boolean
+    - contextPath: VMRay.Sample.IOC.Email.IOCType
+      description: Type of IOC.
+      type: String
+    - contextPath: VMRay.Sample.IOC.Email.NrAttachments
+      description: Number of attachments found in the email.
+      type: Number
+    - contextPath: VMRay.Sample.IOC.Email.NrLinks
+      description: Number of links found in the email.
+      type: Number
+    - contextPath: VMRay.Sample.IOC.Email.Recipients
+      description: The email recipients.
+      type: String
+    - contextPath: VMRay.Sample.IOC.Email.Sender
+      description: Sender of the email.
+      type: String
+    - contextPath: VMRay.Sample.IOC.Email.Subject
+      description: Subject of the email.
+      type: String
+    - contextPath: VMRay.Sample.IOC.Email.ThreatNames
+      description: The threat names of the email.
+      type: String
+    - contextPath: VMRay.Sample.IOC.Email.Type
+      description: Type of email.
+      type: String
+    - contextPath: VMRay.Sample.IOC.Email.Verdict
+      description: Verdict for the artifact (Malicious, Suspicious, Clean, Not Available).
+      type: String
+    - contextPath: VMRay.Sample.IOC.Email.VerdictReason
+      description: Description of the Verdict Reason.
+      type: String
+    - contextPath: VMRay.Sample.IOC.Filename.AnalysisID
+      description: IDs of other analyses that contain the filename.
+      type: Number
+    - contextPath: VMRay.Sample.IOC.Filename.Categories
+      description: The filename categories.
+      type: String
+    - contextPath: VMRay.Sample.IOC.Filename.Classifications
+      description: The classifications of the filename.
+      type: String
+    - contextPath: VMRay.Sample.IOC.Filename.Filename
+      description: The filename.
+      type: String
+    - contextPath: VMRay.Sample.IOC.Filename.IsIOC
+      description: Whether this artifact is an Indicator of Compromise (IOC).
+      type: Boolean
+    - contextPath: VMRay.Sample.IOC.Filename.IOCType
+      description: Type of IOC.
+      type: String
+    - contextPath: VMRay.Sample.IOC.Filename.Operations
+      description: The filename operations that were performed, e.g., access, create,
+        read, write, and delete.
+      type: String
+    - contextPath: VMRay.Sample.IOC.Filename.ThreatNames
+      description: The threat names of the filename.
+      type: String
+    - contextPath: VMRay.Sample.IOC.Filename.Type
+      description: Type of filename.
+      type: String
+    - contextPath: VMRay.Sample.IOC.Filename.Verdict
+      description: Verdict for the artifact (Malicious, Suspicious, Clean, Not Available).
+      type: String
+    - contextPath: VMRay.Sample.IOC.Filename.VerdictReason
+      description: Description of the Verdict Reason.
+      type: String
+    - contextPath: VMRay.Sample.IOC.File.AnalysisID
+      description: IDs of other analyses that contain the file.
+      type: Number
+    - contextPath: VMRay.Sample.IOC.File.Categories
+      description: The file categories.
+      type: String
+    - contextPath: VMRay.Sample.IOC.File.Classifications
+      description: The classifications of the file.
+      type: String
+    - contextPath: VMRay.Sample.IOC.File.FileSize
+      description: The original size of the file in bytes.
+      type: Number
+    - contextPath: VMRay.Sample.IOC.File.Filename
+      description: Name of the file.
+      type: String
+    - contextPath: VMRay.Sample.IOC.File.Filenames
+      description: All known names of the file.
+      type: String
+    - contextPath: VMRay.Sample.IOC.File.Hashes.MD5
+      description: MD5 hash of the file.
+      type: String
+    - contextPath: VMRay.Sample.IOC.File.Hashes.SSDeep
+      description: SSDeep hash of the file.
+      type: String
+    - contextPath: VMRay.Sample.IOC.File.Hashes.SHA256
+      description: SHA256 hash of the file.
+      type: String
+    - contextPath: VMRay.Sample.IOC.File.Hashes.SHA1
+      description: SHA1 hash of the file.
+      type: String
+    - contextPath: VMRay.Sample.IOC.File.ID
+      description: ID of the file. (deprecated; is always 0)
+      type: Number
+    - contextPath: VMRay.Sample.IOC.File.IsIOC
+      description: Whether this artifact is an Indicator of Compromise (IOC).
+      type: Boolean
+    - contextPath: VMRay.Sample.IOC.File.IOCType
+      description: Type of IOC.
+      type: String
+    - contextPath: VMRay.Sample.IOC.File.MIMEType
+      description: The MIME type of the file.
+      type: String
+    - contextPath: VMRay.Sample.IOC.File.Name
+      description: Same as Filename.
+      type: String
+    - contextPath: VMRay.Sample.IOC.File.NormFilename
+      description: Normalized name of the file.
+      type: String
+    - contextPath: VMRay.Sample.IOC.File.Operation
+      description: Same as Operations, left in for backwards compatibility.
+      type: String
+    - contextPath: VMRay.Sample.IOC.File.Operations
+      description: The file operations which were performed, e.g., access, create,
+        read, write, and delete.
+      type: String
+    - contextPath: VMRay.Sample.IOC.File.ParentFiles
+      description: Files where this file was contained in.
+      type: String
+    - contextPath: VMRay.Sample.IOC.File.ParentProcesses
+      description: Full commandline of processes where the file was referenced.
+      type: String
+    - contextPath: VMRay.Sample.IOC.File.ParentProcessesNames
+      description: Names of processes where the file was referenced.
+      type: String
+    - contextPath: VMRay.Sample.IOC.File.ResourceURL
+      description: URL of where the file was downloaded.
+      type: String
+    - contextPath: VMRay.Sample.IOC.File.ThreatNames
+      description: The threat names of the file.
+      type: String
+    - contextPath: VMRay.Sample.IOC.File.Type
+      description: Type of file.
+      type: String
+    - contextPath: VMRay.Sample.IOC.File.Verdict
+      description: Verdict for the artifact (Malicious, Suspicious, Clean, Not Available).
+      type: String
+    - contextPath: VMRay.Sample.IOC.File.VerdictReason
+      description: Description of the Verdict Reason.
+      type: String
+    - contextPath: VMRay.Sample.IOC.IP.AnalysisID
+      description: IDs of other analyses that contain the IP address.
+      type: Number
+    - contextPath: VMRay.Sample.IOC.IP.Countries
+      description: Countries associated with the IP address.
+      type: String
+    - contextPath: VMRay.Sample.IOC.IP.CountryCodes
+      description: ISO 3166-1 two-letter country codes associated with the IP address.
+      type: String
+    - contextPath: VMRay.Sample.IOC.IP.Domains
+      description: Domains associated with the IP address.
+      type: String
+    - contextPath: VMRay.Sample.IOC.IP.IP
+      description: The IP address.
       type: String
     - contextPath: VMRay.Sample.IOC.IP.ID
-      description: ID of the IP address.
+      description: ID of the IP address. (deprecated; is always 0)
       type: Number
+    - contextPath: VMRay.Sample.IOC.IP.IsIOC
+      description: Whether this artifact is an Indicator of Compromise (IOC).
+      type: Boolean
+    - contextPath: VMRay.Sample.IOC.IP.IOCType
+      description: Type of IOC.
+      type: String
+    - contextPath: VMRay.Sample.IOC.IP.Operation
+      description: Deprecated, always empty.
+      type: String
+    - contextPath: VMRay.Sample.IOC.IP.ParentProcesses
+      description: Full commandline of processes where the IP address was referenced.
+      type: String
+    - contextPath: VMRay.Sample.IOC.IP.ParentProcessesNames
+      description: Names of processes where the IP address was referenced.
+      type: String
+    - contextPath: VMRay.Sample.IOC.IP.Protocols
+      description: Protocols used in communication with this IP.
+      type: String
+    - contextPath: VMRay.Sample.IOC.IP.Sources
+      description: The sources where the IP address was obtained from.
+      type: String
     - contextPath: VMRay.Sample.IOC.IP.Type
       description: Type of IP address.
       type: String
+    - contextPath: VMRay.Sample.IOC.IP.Verdict
+      description: Verdict for the artifact (Malicious, Suspicious, Clean, Not Available).
+      type: String
+    - contextPath: VMRay.Sample.IOC.IP.VerdictReason
+      description: Description of the Verdict Reason.
+      type: String
     - contextPath: VMRay.Sample.IOC.Mutex.AnalysisID
-      description: IDs of other analyses that containt the given IP.
+      description: IDs of other analyses that contain the mutex.
       type: Number
+    - contextPath: VMRay.Sample.IOC.Mutex.Classifications
+      description: The mutex classifications.
+      type: String
+    - contextPath: VMRay.Sample.IOC.Mutex.ID
+      description: ID of the mutex. (deprecated; is always 0)
+      type: Number
+    - contextPath: VMRay.Sample.IOC.Mutex.IsIOC
+      description: Whether this artifact is an Indicator of Compromise (IOC).
+      type: Boolean
+    - contextPath: VMRay.Sample.IOC.Mutex.IOCType
+      description: Type of IOC.
+      type: String
     - contextPath: VMRay.Sample.IOC.Mutex.Name
       description: Name of the mutex.
       type: String
     - contextPath: VMRay.Sample.IOC.Mutex.Operation
-      description: Operation of given mutex
+      description: Same as Operations, left in for backwards compatibility.
       type: String
-    - contextPath: VMRay.Sample.IOC.Mutex.ID
-      description: ID of the mutex.
-      type: Number
+    - contextPath: VMRay.Sample.IOC.Mutex.Operation
+      description: The mutex operations that were performed, e.g., access, create,
+        read, write, and delete.
+      type: String
+    - contextPath: VMRay.Sample.IOC.Mutex.ParentProcesses
+      description: Full commandline of processes where the mutex was used.
+      type: String
+    - contextPath: VMRay.Sample.IOC.Mutex.ParentProcessesNames
+      description: Names of processes where the mutex was used.
+      type: Unknown
+    - contextPath: VMRay.Sample.IOC.Mutex.ThreatNames
+      description: The threat names of the mutex.
+      type: String
     - contextPath: VMRay.Sample.IOC.Mutex.Type
       description: Type of mutex.
       type: String
-    - contextPath: VMRay.Sample.IOC.File.AnalysisID
-      description: IDs of other analyses that containt the given file.
+    - contextPath: VMRay.Sample.IOC.Mutex.Verdict
+      description: Verdict for the artifact (Malicious, Suspicious, Clean, Not Available).
+      type: String
+    - contextPath: VMRay.Sample.IOC.Mutex.VerdictReason
+      description: Description of the Verdict Reason.
+      type: String
+    - contextPath: VMRay.Sample.IOC.Process.AnalysisID
+      description: IDs of other analyses that contain the process.
       type: Number
-    - contextPath: VMRay.Sample.IOC.File.Name
-      description: Name of the file.
+    - contextPath: VMRay.Sample.IOC.Process.Classifications
+      description: The process classifications.
       type: String
-    - contextPath: VMRay.Sample.IOC.File.Operation
-      description: Operation of given file
+    - contextPath: VMRay.Sample.IOC.Process.CmdLine
+      description: Command line of the process.
       type: String
-    - contextPath: VMRay.Sample.IOC.File.ID
-      description: ID of the file.
+    - contextPath: VMRay.Sample.IOC.Process.ImageNames
+      description: Names of the process executable.
+      type: String
+    - contextPath: VMRay.Sample.IOC.Process.IsIOC
+      description: Whether this artifact is an Indicator of Compromise (IOC).
+      type: Boolean
+    - contextPath: VMRay.Sample.IOC.Process.IOCType
+      description: Type of IOC.
+      type: String
+    - contextPath: VMRay.Sample.IOC.Process.ParentProcesses
+      description: Full commandline of parent processes.
+      type: String
+    - contextPath: VMRay.Sample.IOC.Process.ParentProcessesNames
+      description: Names of parent processes.
+      type: String
+    - contextPath: VMRay.Sample.IOC.Process.ProcessNames
+      description: Names of the processes.
+      type: String
+    - contextPath: VMRay.Sample.IOC.Process.ThreatNames
+      description: The threat names of the process.
+      type: String
+    - contextPath: VMRay.Sample.IOC.Process.Type
+      description: Type of process.
+      type: String
+    - contextPath: VMRay.Sample.IOC.Process.Verdict
+      description: Verdict for the artifact (Malicious, Suspicious, Clean, Not Available).
+      type: String
+    - contextPath: VMRay.Sample.IOC.Process.VerdictReason
+      description: Description of the Verdict Reason.
+      type: String
+    - contextPath: VMRay.Sample.IOC.Registry.AnalysisID
+      description: IDs of other analyses that contain the registry key.
       type: Number
-    - contextPath: VMRay.Sample.IOC.File.Type
-      description: Type of file.
+    - contextPath: VMRay.Sample.IOC.Registry.Classifications
+      description: The registry key classifications.
       type: String
-    - contextPath: VMRay.Sample.IOC.File.Hashes.MD5
-      description: MD5 of given file.
+    - contextPath: VMRay.Sample.IOC.Registry.ID
+      description: ID of the registry key. (deprecated; is always 0)
+      type: Number
+    - contextPath: VMRay.Sample.IOC.Registry.IsIOC
+      description: Whether this artifact is an Indicator of Compromise (IOC).
+      type: Boolean
+    - contextPath: VMRay.Sample.IOC.Registry.IOCType
+      description: Type of IOC.
       type: String
-    - contextPath: VMRay.Sample.IOC.File.Hashes.SSDeep
-      description: SSDeep of given file.
+    - contextPath: VMRay.Sample.IOC.Registry.Name
+      description: The normalized registry key name.
       type: String
-    - contextPath: VMRay.Sample.IOC.File.Hashes.SHA256
-      description: SHA256 of given file.
+    - contextPath: VMRay.Sample.IOC.Registry.Operation
+      description: Same as Operations, left in for backwards compatibility.
       type: String
-    - contextPath: VMRay.Sample.IOC.File.Hashes.SHA1
-      description: SHA1 of given file.
+    - contextPath: VMRay.Sample.IOC.Registry.Operation
+      description: The registry operations that were performed, e.g., access, create,
+        read, write, and delete.
+      type: String
+    - contextPath: VMRay.Sample.IOC.Registry.ParentProcesses
+      description: Full commandline of processes where the registry key was referenced.
+      type: String
+    - contextPath: VMRay.Sample.IOC.Registry.ParentProcessesNames
+      description: Names of processes where the registry key was referenced.
+      type: String
+    - contextPath: VMRay.Sample.IOC.Registry.ThreatNames
+      description: The threat names of the registry key.
+      type: String
+    - contextPath: VMRay.Sample.IOC.Registry.Type
+      description: Type of registry key.
+      type: String
+    - contextPath: VMRay.Sample.IOC.Registry.ValueTypes
+      description: The registry key value type.
+      type: String
+    - contextPath: VMRay.Sample.IOC.Registry.Verdict
+      description: Verdict for the artifact (Malicious, Suspicious, Clean, Not Available).
+      type: String
+    - contextPath: VMRay.Sample.IOC.Registry.VerdictReason
+      description: Description of the Verdict Reason.
+      type: String
+    - contextPath: VMRay.Sample.IOC.URL.AnalysisID
+      description: IDs of other analyses that contain the given URL.
+      type: Number
+    - contextPath: VMRay.Sample.IOC.URL.Categories
+      description: The URL categories.
+      type: String
+    - contextPath: VMRay.Sample.IOC.URL.ContentTypes
+      description: Content types associated with the URL.
+      type: String
+    - contextPath: VMRay.Sample.IOC.URL.Countries
+      description: Countries associated with the URL.
+      type: String
+    - contextPath: VMRay.Sample.IOC.URL.CountryCodes
+      description: ISO 3166-1 two-letter country codes associated with the URL.
+      type: String
+    - contextPath: VMRay.Sample.IOC.URL.ID
+      description: ID of the URL. (deprecated; is always 0)
+      type: Number
+    - contextPath: VMRay.Sample.IOC.URL.IPAddresses
+      description: IP addresses associated with the URL.
+      type: String
+    - contextPath: VMRay.Sample.IOC.URL.Methods
+      description: Methods of HTTP requests directed at this URL.
+      type: String
+    - contextPath: VMRay.Sample.IOC.URL.Operation
+      description: Deprecated, always empty.
+      type: String
+    - contextPath: VMRay.Sample.IOC.URL.OriginalURLs
+      description: The origin URLs the malware used in the artifact operation.
+      type: String
+    - contextPath: VMRay.Sample.IOC.URL.ParentFiles
+      description: Names of files where the URL was referenced.
+      type: String
+    - contextPath: VMRay.Sample.IOC.URL.ParentProcesses
+      description: Full commandline of processes where the URL was referenced.
+      type: String
+    - contextPath: VMRay.Sample.IOC.URL.ParentProcessesNames
+      description: Names of processes where the URL was referenced.
+      type: String
+    - contextPath: VMRay.Sample.IOC.URL.Referrers
+      description: Other URLs that referred to this URL.
+      type: String
+    - contextPath: VMRay.Sample.IOC.URL.Source
+      description: The sources where the URL was obtained from.
+      type: String
+    - contextPath: VMRay.Sample.IOC.URL.Type
+      description: Type of the URL.
+      type: String
+    - contextPath: VMRay.Sample.IOC.URL.URL
+      description: The URL.
+      type: String
+    - contextPath: VMRay.Sample.IOC.URL.UserAgents
+      description: User agents used to connect to this URL.
+      type: String
+    - contextPath: VMRay.Sample.IOC.URL.Verdict
+      description: Verdict for the artifact (Malicious, Suspicious, Clean, Not Available).
+      type: String
+    - contextPath: VMRay.Sample.IOC.URL.VerdictReason
+      description: Description of the Verdict Reason.
       type: String
   - arguments:
     - default: false
@@ -490,13 +1159,39 @@ script:
       type: String
   - arguments:
     - default: false
+      description: ID of the analysis from which to retrieve the Summary JSON v2 from
+        (analysis ID is returned e.g. from vmray-get-analysis-by-sample).
+      isArray: false
+      name: analysis_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves the Summary JSON v2 for a specific analysis.
+    execution: false
+    name: vmray-get-summary
+    outputs:
+    - contextPath: InfoFile.Name
+      description: Filename
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the Summary JSON v2
+      type: string
+    - contextPath: InfoFile.Size
+      description: The file size of the Summary JSON v2
+      type: number
+    - contextPath: InfoFile.Info
+      description: MIME type of the Summary JSON v2
+      type: string
+  - arguments:
+    - default: false
       description: Sample ID.
       isArray: false
       name: sample_id
       required: true
       secret: false
     deprecated: true
-    description: This command performs a function similiar to the 'vmray-get-job-by-sample' command.
+    description: This command performs a function similiar to the 'vmray-get-job-by-sample'
+      command.
     execution: false
     name: get_job_sample
   - arguments:
@@ -514,10 +1209,15 @@ script:
     description: Retrieves a sample using the sample ID. (Deprecated)
     execution: false
     name: upload_sample
-  dockerimage: demisto/python:2.7.17.6981
+  dockerimage: demisto/python:2.7.18.24066
+  feed: false
   isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
-  script: ''
-  type: python
+  script: '-'
   subtype: python2
+  type: python
+tests:
+- No tests (auto formatted)
 fromversion: 5.0.0

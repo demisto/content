@@ -1,0 +1,77 @@
+category: Messaging
+commonfields:
+  id: iLert
+  version: -1
+configuration:
+- display: Server URL
+  name: url
+  defaultvalue: https://api.ilert.com/api/v1/
+  required: true
+  type: 0
+- display: The API key of the alert source (for triggering events only)
+  name: integrationKey
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Alert and notify users using iLert
+display: iLert
+name: iLert
+script:
+  commands:
+  - arguments:
+    - description: For ALERT events, the incident key can be used to deduplicate or
+        group events. If an open incident with the key already exists, the event will
+        be appended to the incident's event log. Otherwise a new incident will be
+        created. For ACCEPT and RESOLVE events, the incident key is used to reference
+        the open incident which is to be accepted or resolved by this event.
+      name: incident_key
+    - defaultValue: ALERT
+      description: Must be either ALERT, ACCEPT, or RESOLVE
+      predefined:
+      - ALERT
+      - ACCEPT
+      - RESOLVE
+      name: event_type
+    - description: The event summary. Will be used as the incident summary if a new
+        incident is created.
+      name: summary
+    - description: The event details. Will be used as the incident details if a new
+        incident is created.
+      name: details
+    - description: Must be either HIGH or LOW. Will overwrite the evaluated priority
+        of the alert source.
+      name: priority
+    description: Creates a new event/incident in iLert (in order to use this command you
+      have to enter the Integration Key in the integration settings)
+    name: ilert-submit-event
+  - arguments:
+    - description: The incident key is used to reference the open incident which is
+        to be accepted or resolved by this event.
+      name: incident_key
+    - description: The event summary. Will be used as the incident event reason.
+      name: summary
+    description: Acknowledges an existing event in iLert
+    name: ilert-acknowledge-event
+  - arguments:
+    - description: The incident key is used to reference the open incident which is
+        to be accepted or resolved by this event.
+      name: incident_key
+    - description: The event summary. Will be used as the incident event reason.
+      name: summary
+    description: Resolves an existing event in iLert
+    name: ilert-resolve-event
+  dockerimage: demisto/python3:3.9.7.24076
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

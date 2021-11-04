@@ -9,7 +9,7 @@ import requests
 requests.packages.urllib3.disable_warnings()
 
 ''' CONSTANTS '''
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 API_HOST = "https://api.twinwave.io"
 API_VERSION = "v1"
 EXPIRE_SECONDS = 86400
@@ -221,7 +221,7 @@ def submit_url(client, args):
         Submit the URL
     """
     url = args.get('url')
-    engines = args.get('engines')
+    engines = argToList(args.get('engines', '[]'))
     parameters = args.get('parameters')
     priority = args.get('priority', 10)
     profile = args.get('profile')
@@ -252,11 +252,12 @@ def submit_url(client, args):
 
 def submit_file(client, args):
     """
-        Submit the URL
+        Submit the File
     """
     file_entry_id = args.get('entry_id')
     file_path = demisto.getFilePath(file_entry_id)['path']
     file_name = demisto.getFilePath(file_entry_id)['name']
+    engines = argToList(args.get('engines', '[]'))
     priority = args.get('priority', 10)
     profile = args.get('profile')
 
@@ -264,7 +265,8 @@ def submit_file(client, args):
     priority = validate_priority(priority)
 
     with open(file_path, 'rb') as file:
-        result = client.submit_file(file_name=file_name, file_obj=file.read(), priority=priority, profile=profile)
+        result = client.submit_file(file_name=file_name, file_obj=file.read(), engine_list=engines,
+                                    priority=priority, profile=profile)
 
     readable_output = '## Submitted File\n'
     readable_output += tableToMarkdown('Twinwave Submissions', result,
@@ -590,7 +592,7 @@ def main():
 
     api_token = params.get('api-token')
     verify_certificate = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
+    proxy = handle_proxy()
 
     LOG(f'Command being called is {demisto.command()}')
     try:

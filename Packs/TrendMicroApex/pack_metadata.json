@@ -1,8 +1,8 @@
 {
-    "name": "Trend Micro Apex",
-    "description": "Trend Micro Apex central automation to manage agents and User-Defined Suspicious Objects",
+    "name": "Trend Micro Apex One",
+    "description": "Trend Micro Apex One central automation to manage agents and User-Defined Suspicious Objects",
     "support": "xsoar",
-    "currentVersion": "2.0.0",
+    "currentVersion": "2.0.3",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

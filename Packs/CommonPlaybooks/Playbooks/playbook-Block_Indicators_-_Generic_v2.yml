@@ -1,5 +1,7 @@
 id: Block Indicators - Generic v2
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Block Indicators - Generic v2
 description: |+
   This playbook blocks malicious Indicators using all integrations that are enabled, using the following sub-playbooks:
@@ -29,7 +31,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 910,
           "y": 50
         }
       }
@@ -54,7 +56,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 910,
           "y": 515
         }
       }
@@ -177,7 +179,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 910,
           "y": 195
         }
       }
@@ -263,7 +265,10 @@ tasks:
       id: 97c787e9-d72a-4c27-861e-f09f6c63723e
       version: -1
       name: Block File - Generic v2
-      description: "This playbook is used to block files from running on endpoints. \nThis playbook supports the following integrations:\n- Palo Alto Networks Traps\n- Cybereason\n- Carbon Black Enterprise Response\n- Cylance Protect v2\n"
+      description: "This playbook is used to block files from running on endpoints.\
+        \ \nThis playbook supports the following integrations:\n- Palo Alto Networks\
+        \ Traps\n- Cybereason\n- Carbon Black Enterprise Response\n- Cylance Protect\
+        \ v2\n"
       playbookName: Block File - Generic v2
       type: playbook
       iscommand: false
@@ -299,67 +304,33 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: f982443c-3d26-4bd7-80b6-29f073994f76
+    taskid: 162fc17e-709c-4896-8c47-32d03b660de2
     type: playbook
     task:
-      id: f982443c-3d26-4bd7-80b6-29f073994f76
+      id: 162fc17e-709c-4896-8c47-32d03b660de2
       version: -1
-      name: Block URL - Generic
-      description: |-
-        This playbook blocks malicious URLs using all integrations that are enabled.
-
-        Supported integrations for this playbook:
-        * Palo Alto Networks Minemeld
-        * Palo Alto Networks PAN-OS
-        * Zscaler
-      playbookName: Block URL - Generic
+      name: Block Email - Generic
+      playbookName: Block Email - Generic
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
     scriptarguments:
-      AutoCommit:
-        complex:
-          root: inputs.AutoCommit
-      CustomURLCategory:
-        complex:
-          root: inputs.CustomURLCategory
-      EDLServerIP:
-        complex:
-          root: inputs.EDLServerIP
-      LogForwarding:
-        complex:
-          root: inputs.LogForwarding
-      URL:
-        complex:
-          root: inputs.URL
-      URLBlacklistMiner:
-        complex:
-          root: inputs.URLBlacklistMiner
-      URLListName:
-        complex:
-          root: inputs.URLListName
-      categories:
-        complex:
-          root: inputs.categories
-      device-group:
-        complex:
-          root: inputs.device-group
-      type:
-        complex:
-          root: inputs.type
+      EmailToBlock:
+        simple: ${inputs.EmailToBlock}
     separatecontext: true
     loop:
       iscommand: false
       exitCondition: ""
       wait: 1
-      max: 0
+      max: 100
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 1780,
           "y": 340
         }
       }
@@ -375,7 +346,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 530,
-        "width": 1670,
+        "width": 2110,
         "x": 50,
         "y": 50
       }
@@ -544,7 +515,8 @@ inputs:
   value:
     simple: Demisto Remediation - URL EDL
   required: false
-  description: URL list from the instance context with which to override the remote file.
+  description: URL list from the instance context with which to override the remote
+    file.
   playbookInputQuery:
 - key: CustomURLCategory
   value:
@@ -566,6 +538,11 @@ inputs:
   value: {}
   required: false
   description: The list of categories. Relevant from PAN-OS v9.x.
+  playbookInputQuery:
+- key: EmailToBlock
+  value: {}
+  required: false
+  description: 'The email address that you wish to block.'
   playbookInputQuery:
 outputs:
 - contextPath: CheckpointFWRule.Domain
@@ -625,6 +602,7 @@ outputs:
   description: Percentage of rule hits
 - contextPath: CheckpointFWRule.Hits.Value
   description: Value of rule hits.
-fromversion: 5.0.0
 tests:
 - No Test
+fromversion: 5.0.0
+toversion: 5.4.9

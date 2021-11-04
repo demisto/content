@@ -1,0 +1,76 @@
+category: Authentication
+commonfields:
+  id: FortiAuthenticator
+  version: -1
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: server
+  required: true
+  type: 0
+- display: Username
+  displaypassword: Access Key
+  name: credentials
+  required: true
+  type: 9
+- display: Trust any certificate (not secure)
+  name: unsecure
+  required: false
+  type: 8
+- defaultvalue: "false"
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: This integration allows you to manage the user configuration on FortiAuthenticator.
+display: FortiAuthenticator
+name: FortiAuthenticator
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: localusers
+      description: 'The user type:  localusers (Local Users), ldapuser (Remote Users)'
+      name: user_type
+      predefined:
+      - localusers
+      - ldapusers
+      required: true
+    - name: email
+      description: The user's email that is defined in the User Information on FortiAuthenticator.
+    - name: username
+      description: The username that is defined in the User Information on FortiAuthenticator.
+    - name: token_serial
+      description: The serial no. of the assigned Token on FortiAuthenticator.
+    name: fortiauthenticator-get-user
+    description: Get the user details for specific user by email.
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: "true"
+      description: 'Define user''s active status:  false = Disabled, true = enabled'
+      name: active
+      predefined:
+      - "true"
+      - "false"
+      required: true
+    - auto: PREDEFINED
+      defaultValue: localusers
+      description: 'The user type:  localusers (Local Users), ldapuser (Remote Users)'
+      name: user_type
+      predefined:
+      - localusers
+      - ldapusers
+      required: true
+    - name: email
+      description: The user's email that is defined in the User Information on FortiAuthenticator.
+    - name: username
+      description: The username that is defined in the User Information on FortiAuthenticator.
+    name: fortiauthenticator-update-user
+    description: Update the active status for specific user by email
+  dockerimage: demisto/python3:3.9.7.24076
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

@@ -7,7 +7,7 @@ Retrieves the number of on-call hours per user.
 | --- | --- |
 | Script Type | python3 |
 | Tags | Shift Management, widget |
-| Demisto Version | 5.5.0 |
+| Cortex XSOAR Version | 5.5.0 |
 
 ## Inputs
 ---

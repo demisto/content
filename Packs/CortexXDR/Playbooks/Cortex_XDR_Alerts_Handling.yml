@@ -34,13 +34,13 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 0f3a6f6f-7078-49ee-8ddd-42591880d7d0
+    taskid: 7e32b542-4fd0-4a05-8f6a-914194fc2313
     type: condition
     task:
-      id: 0f3a6f6f-7078-49ee-8ddd-42591880d7d0
+      id: 7e32b542-4fd0-4a05-8f6a-914194fc2313
       version: -1
       name: Choose playbook by category
-      description: "Choose playbook to run by alert category."
+      description: Choose playbook to run by alert category.
       type: condition
       iscommand: false
       brand: ""
@@ -92,7 +92,7 @@ tasks:
                       value:
                         simple: inputs.alert_id
                       iscontext: true
-                accessor: Incident.alerts.category
+                accessor: Incident.alerts.name
             iscontext: true
           right:
             value:
@@ -127,9 +127,9 @@ tasks:
         \ analysis report. \nThe analyst can perform a manual memory dump for the\
         \ suspected endpoint based on the incident’s severity, and choose to isolate\
         \ the source endpoint with Traps.\nHunting tasks to find more endpoints that\
-        \ are infected are performed automatically based on a playbook input, and after\
-        \ all infected endpoints are found, remediation for all malicious IOCs is\
-        \ performed, including file quarantine, and IP and URLs blocking with Palo\
+        \ are infected are performed automatically based on a playbook input, and\
+        \ after all infected endpoints are found, remediation for all malicious IOCs\
+        \ is performed, including file quarantine, and IP and URLs blocking with Palo\
         \ Alto Networks FireWall components such as Dynamic Address Groups and Custom\
         \ URL Categories.\nAfter the investigation review, the incident is automatically\
         \ closed."
@@ -364,8 +364,8 @@ inputs:
 - key: alert_id
   value:
     complex:
-      root: PaloAltoNetworksXDR
-      accessor: Incident.alerts.alert_id
+      root: PaloAltoNetworksXDR.Incident.alerts
+      accessor: alert_id
   required: false
   description: Alert ID.
   playbookInputQuery:
@@ -478,5 +478,5 @@ outputs:
   description: Port Scan First Date time
   type: unknown
 tests:
-- No test.
+- No tests (auto formatted)
 fromversion: 5.0.0

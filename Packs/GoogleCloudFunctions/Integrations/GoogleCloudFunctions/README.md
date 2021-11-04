@@ -1,6 +1,6 @@
 Google Cloud Functions is an event-driven serverless compute platform that enables you to run your code locally or in the cloud without having to provision servers.
 This integration was integrated and tested with API version 1 of Google Cloud Functions
-## Configure Google Cloud Functions on Demisto
+## Configure Google Cloud Functions on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Google Cloud Functions.
@@ -16,7 +16,7 @@ This integration was integrated and tested with API version 1 of Google Cloud Fu
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### google-cloud-functions-list
 ***

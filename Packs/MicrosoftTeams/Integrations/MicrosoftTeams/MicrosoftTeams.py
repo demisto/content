@@ -43,6 +43,10 @@ MESSAGE_TYPES: dict = {
     'status_changed': 'incidentStatusChanged'
 }
 
+if '@' in BOT_ID:
+    BOT_ID, tenant_id, service_url = BOT_ID.split('@')
+    set_integration_context({'tenant_id': tenant_id, 'service_url': service_url})
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -81,20 +85,21 @@ def error_parser(resp_err: requests.Response, api: str = 'graph') -> str:
         return resp_err.text
 
 
-def translate_severity(severity: str) -> int:
+def translate_severity(severity: str) -> float:
     """
     Translates Demisto text severity to int severity
     :param severity: Demisto text severity
     :return: Demisto integer severity
     """
     severity_dictionary = {
-        'Unknown': 0,
-        'Low': 1,
-        'Medium': 2,
-        'High': 3,
-        'Critical': 4
+        'Unknown': 0.0,
+        'Informational': 0.5,
+        'Low': 1.0,
+        'Medium': 2.0,
+        'High': 3.0,
+        'Critical': 4.0
     }
-    return severity_dictionary.get(severity, 0)
+    return severity_dictionary.get(severity, 0.0)
 
 
 def create_incidents(demisto_user: dict, incidents: list) -> dict:
@@ -249,6 +254,9 @@ def create_adaptive_card(body: list, actions: list = None) -> dict:
             '$schema': 'http://adaptivecards.io/schemas/adaptive-card.json',
             'version': '1.0',
             'type': 'AdaptiveCard',
+            'msteams': {
+                'width': 'Full'
+            },
             'body': body
         }
     }
@@ -1154,9 +1162,19 @@ def send_message():
             or channel_name == INCIDENT_NOTIFICATIONS_CHANNEL:
         # Got a notification from server
         channel_name = demisto.params().get('incident_notifications_channel', 'General')
-        severity: int = int(demisto.args().get('severity'))
-        severity_threshold: int = translate_severity(demisto.params().get('min_incident_severity', 'Low'))
-        if severity < severity_threshold:
+        severity: float = float(demisto.args().get('severity'))
+
+        # Adding disable and not enable because of adding new boolean parameter always defaults to false value in server
+        if (disable_auto_notifications := demisto.params().get('auto_notifications')) is not None:
+            disable_auto_notifications = argToBoolean(disable_auto_notifications)
+        else:
+            disable_auto_notifications = False
+
+        if not disable_auto_notifications:
+            severity_threshold: float = translate_severity(demisto.params().get('min_incident_severity', 'Low'))
+            if severity < severity_threshold:
+                return
+        else:
             return
 
     team_member: str = demisto.args().get('team_member', '') or demisto.args().get('to', '')
@@ -1303,8 +1321,9 @@ def channel_mirror_loop():
     """
     while True:
         found_channel_to_mirror: bool = False
-        integration_context = get_integration_context()
+        integration_context = {}
         try:
+            integration_context = get_integration_context()
             teams: list = json.loads(integration_context.get('teams', '[]'))
             for team in teams:
                 mirrored_channels = team.get('mirrored_channels', [])
@@ -1755,6 +1774,7 @@ def main():
 
     ''' EXECUTION '''
     try:
+        support_multithreading()
         handle_proxy()
         command: str = demisto.command()
         LOG(f'Command being called is {command}')

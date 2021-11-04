@@ -1,6 +1,6 @@
 <!-- HTML_DOC -->
 <p class="has-line-data" data-line-start="3" data-line-end="5">Use the iDefense integration to manage cyber threats and security issues in the iDefense security platform.<br> </p>
-<h2 class="code-line" data-line-start="11" data-line-end="12">Configure iDefense on Demisto</h2>
+<h2 class="code-line" data-line-start="11" data-line-end="12">Configure iDefense on Cortex XSOAR</h2>
 <ol>
 <li class="has-line-data" data-line-start="14" data-line-end="15">Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li class="has-line-data" data-line-start="15" data-line-end="16">Search for iDefense.</li>
@@ -18,7 +18,7 @@
 </ol>
 <hr>
 <h2 class="code-line" data-line-start="26" data-line-end="27">Commands</h2>
-<p class="has-line-data" data-line-start="28" data-line-end="30">You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p class="has-line-data" data-line-start="28" data-line-end="30">You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li class="has-line-data" data-line-start="30" data-line-end="31"><a href="#h_1841b53d-16d5-42bd-954b-1012407df8b0" target="_self">Check IP address: ip</a></li>
 <li class="has-line-data" data-line-start="31" data-line-end="32"><a href="#h_4a9b6a96-3203-4228-a8f7-8900956ffc51" target="_self">Check a domain: domain</a></li>

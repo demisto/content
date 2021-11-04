@@ -31,7 +31,7 @@ args:
   name: demistoLogo
   required: false
   secret: false
-comment: Deprecated. Parse Sane-json-reports and export them as docx files (used internally, thus deprecated).
+comment: Parse Sane-json-reports and export them as docx files (used internally).
 commonfields:
   id: SaneDocReports
   version: -1
@@ -46,7 +46,7 @@ tags:
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/sane-doc-reports:1.0.0.13194
+dockerimage: demisto/sane-doc-reports:1.0.0.24118
 runas: DBotWeakRole
 runonce: false
 tests:

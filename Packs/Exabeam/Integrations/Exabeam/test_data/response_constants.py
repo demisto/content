@@ -89,3 +89,147 @@ RESPONSE_MODEL_DATA = {
     "scopeValue": "org",
     "trainIf": "TRUE"
 }
+
+RESPONSE_NOTABLE_ASSET_DATA = {
+    'assets': [{
+        'asset': {
+            'hostName': 'host',
+            'ipAddress': '1.1.1.1',
+            'assetType': 'test',
+            'firstSeen': 1591022160000,
+            'lastSeen': 1593820320000
+        },
+        'highestRiskScore': 150,
+        'highestRiskSequence': {
+            'id': '1111',
+            'entityName': 'asset',
+            'entityValue': 'test',
+            'day': 1593648000000,
+            'triggeredRuleCountOpt': 15,
+            'riskScoreOpt': 150.0
+        },
+        'latestAssetComment': {
+            'commentId': 'test1111',
+            'commentType': 'asset',
+            'commentObjectId': 'test',
+            'text': 'test',
+            'exaUser': 'test',
+            'exaUserFullname': '',
+            'createTime': 1612275291188,
+            'updateTime': 1612275291188,
+            'edited': False
+        }
+    }]
+}
+
+RESPONSE_NOTABLE_SESSION_DETAILS = {
+    'totalCount': 2, 'sessions': [
+        {'sessionId': 'session1', 'username': 'username1', 'startTime': 1593704040000,
+         'endTime': 1593727380000, 'initialRiskScore': 0, 'riskScore': 110, 'numOfReasons': 9,
+         'loginHost': 'host1', 'label': '', 'accounts': ['account1', 'account2'], 'numOfAccounts': 2,
+         'zones': ['zone1', 'zone2'], 'numOfZones': 2, 'numOfAssets': 7, 'numOfEvents': 6,
+         'numOfSecurityEvents': 0},
+        {'sessionId': 'session2', 'username': 'username2', 'startTime': 1593682380000,
+         'endTime': 1593727260000, 'initialRiskScore': 26, 'riskScore': 313, 'numOfReasons': 39, 'loginHost': 'host2',
+         'label': '', 'accounts': ['account1', 'account2'], 'numOfAccounts': 2,
+         'zones': ['zone1', 'zone2', 'zone3', 'zone4'], 'numOfZones': 4,
+         'numOfAssets': 17, 'numOfEvents': 30, 'numOfSecurityEvents': 1, 'riskTransferScore': 126.0}],
+     'users': {
+         'username2': {'username': 'username2', 'riskScore': 313.18, 'averageRiskScore': 171.41,
+                       'pastScores': [287.19, 218.36, 0.0, 0.0, 0.0, 0.0, 0.0], 'lastSessionId': 'session2',
+                       'firstSeen': 1591021500000, 'lastSeen': 1593820320000, 'lastActivityType': 'Account is active',
+                       'lastActivityTime': 1593818940000,
+                       'info': {'location': 'us',
+                                'photo': '',
+                                'phoneCell': '1234567890',
+                                'email': 'test@.com',
+                                'employeeType': 'employee', 'fullName': 'user username2',
+                                'departmentNumber': '000',
+                                'dn': 'test',
+                                'country': 'usa', 'division': 'division',
+                                'department': 'department',
+                                'manager': 'test',
+                                'phoneOffice': '1234567890',
+                                'employeeNumber': '1234',
+                                'title': 'title',
+                                'group': 'test'},
+                       'labels': [],
+                       'pendingRiskTransfers': []},
+        'mburgess': {'username': 'username1', 'riskScore': 109.73, 'averageRiskScore': 52.25,
+                     'pastScores': [109.7382543963077], 'lastSessionId': 'session1',
+                     'firstSeen': 1591025220000, 'lastSeen': 1593727380000, 'lastActivityType': 'Account is active',
+                     'lastActivityTime': 1593704040000,
+                     'info': {'location': 'us',
+                              'photo': '',
+                              'phoneCell': '1234567890',
+                              'email': 'test@.com',
+                              'employeeType': 'employee',
+                              'fullName': 'user username1', 'departmentNumber': '000',
+                              'dn': 'test',
+                              'country': 'usa', 'division': 'division',
+                              'department': 'department',
+                              'manager': 'test',
+                              'phoneOffice': '1234567890',
+                              'employeeNumber': '1234',
+                              'title': 'title',
+                              'group': 'test'}, 'labels': [],
+                     'pendingRiskTransfers': []}},
+     'executiveUserFlags': {'username1': False, 'username2': False}
+}
+
+RESPONSE_NOTABLE_SEQUENCE_DETAILS = [{
+    'sequenceId': 'ID',
+    'isWhitelisted': False,
+    'areAllTriggeredRulesWhiteListed': False,
+    'sequenceInfo': {
+        'startTime': 1593648000000,
+        'endTime': 1593734399999,
+        'riskScore': 150,
+        'numOfReasons': 8,
+        'numOfEvents': 18,
+        'numOfUsers': 4,
+        'numOfSecurityEvents': 0,
+        'numOfZones': 3,
+        'numOfAssets': 8,
+        'sequenceId': 'ID',
+        'assetId': 'ID'},
+    'hasBeenPartiallyWhiteListed': False
+}]
+
+RESPONSE_NOTABLE_SEQUENCE_EVENTS = [{
+    'eventType': 'type1',
+    'displayName': 'dn1',
+    'count': 1},
+    {'eventType': 'type2',
+     'displayName': 'dn2',
+     'count': 1},
+    {'eventType': 'type3',
+     'displayName': 'dn3',
+     'count': 1},
+    {'eventType': 'type4',
+     'displayName': 'dn4',
+     'count': 1},
+    {'eventType': 'type5',
+     'displayName': 'dn5',
+     'count': 2},
+    {'eventType': 'type6',
+     'displayName': 'dn6',
+     'count': 2},
+    {'eventType': 'type7',
+     'displayName': 'dn7',
+     'count': 8},
+    {'eventType': 'type8',
+     'displayName': 'dn8',
+     'count': 1},
+    {'eventType': 'type9',
+     'displayName': 'dn9',
+     'count': 1}
+]
+
+DELETE_RECORD_RESPONSE = {'sessionId': '56a5b19a-4193-4616-9978-0bbabb1e2d60',
+                          'recordChanges': [{
+                              'changeType': 'removed',
+                              'changeId': '4aad5392-20e7-4423-abcb-a9680c566215',
+                              'record': {'key': '', 'id': 'test_key'}
+                          }],
+                          'metadata': {'createdSize': 0, 'updatedSize': 0, 'removedSize': 1, 'duplicates': []}}

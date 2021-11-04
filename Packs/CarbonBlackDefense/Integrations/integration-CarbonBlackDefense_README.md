@@ -1,7 +1,7 @@
 <!-- HTML_DOC -->
 <h2>Overview</h2>
 <hr>
-<p>Use the VMware Carbon Black Endpoint Standard integration to manage Carbon Black policies, devices and processes on Demisto.</p>
+<p>Use the VMware Carbon Black Endpoint Standard integration to manage Carbon Black policies, devices and processes on Cortex XSOAR.</p>
 <h2>Use cases</h2>
 <hr>
 <ul>
@@ -10,7 +10,7 @@
 <li>Delete rules from policies.</li>
 <li>Create new policies.</li>
 </ul>
-<h2>Configure VMware Carbon Black Endpoint Standard on Demisto</h2>
+<h2>Configure VMware Carbon Black Endpoint Standard on Cortex XSOAR</h2>
 <hr>
 <ol>
 <li>Navigate to <strong>Settings </strong>&gt; <strong>Integrations </strong>&gt; <strong>Servers &amp; Services.</strong>

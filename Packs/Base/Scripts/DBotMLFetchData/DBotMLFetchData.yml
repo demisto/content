@@ -140,7 +140,7 @@ args:
   - 'False'
   required: false
   secret: false
-comment: Deprecated. Collect telemetry data from the environment.
+comment: Deprecated. No available replacement. Collect telemetry data from the environment.
 commonfields:
   id: DBotMLFetchData
   version: -1
@@ -151,9 +151,9 @@ subtype: python3
 system: false
 tags:
 - ml
-timeout: 100µs
+timeout: 1000µs
 type: python
-dockerimage: demisto/fetch-data:1.0.0.19057
+dockerimage: demisto/fetch-data:1.0.0.22177
 tests:
 - No tests
 deprecated: true

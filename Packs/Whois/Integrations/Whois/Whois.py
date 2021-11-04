@@ -2913,7 +2913,7 @@ tlds = {
         "host": "whois.nic.immobilien"
     },
     "in": {
-        "host": "whois.inregistry.net"
+        "host": "in.whois-servers.net"
     },
     "inc": {
         "_group": "uniregistry",
@@ -8380,16 +8380,13 @@ def domain_command(reliability):
     for domain in argToList(domains):
         whois_result = get_whois(domain)
         md, standard_ec, dbot_score = create_outputs(whois_result, domain, reliability)
+        dbot_score.update({Common.Domain.CONTEXT_PATH: standard_ec})
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['markdown'],
             'Contents': str(whois_result),
             'HumanReadable': tableToMarkdown('Whois results for {}'.format(domain), md),
-            'EntryContext': {
-                'Domain(val.Name && val.Name == obj.Name)': standard_ec,
-                'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor && val.Vendor == obj.Vendor)':
-                    dbot_score
-            }
+            'EntryContext': dbot_score,
         })
 
 
@@ -8401,7 +8398,7 @@ def get_whois_ip(ip):
         proxies = assign_params(http=handle_proxy().get('http'), https=handle_proxy().get('https'))
         handler = ProxyHandler(proxies)
         proxy_opener = build_opener(handler)
-        ip_obj = IPWhois(ip, proxy_opener)
+        ip_obj = IPWhois(ip, proxy_opener=proxy_opener)
     else:
         ip_obj = IPWhois(ip)
 
@@ -8452,16 +8449,13 @@ def whois_command(reliability):
     domain = get_domain_from_query(query)
     whois_result = get_whois(domain)
     md, standard_ec, dbot_score = create_outputs(whois_result, domain, reliability, query)
+    dbot_score.update({Common.Domain.CONTEXT_PATH: standard_ec})
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['markdown'],
         'Contents': str(whois_result),
         'HumanReadable': tableToMarkdown('Whois results for {}'.format(domain), md),
-        'EntryContext': {
-            'Domain(val.Name && val.Name == obj.Name)': standard_ec,
-            'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor && val.Vendor == obj.Vendor)':
-                dbot_score
-        }
+        'EntryContext': dbot_score,
     })
 
 

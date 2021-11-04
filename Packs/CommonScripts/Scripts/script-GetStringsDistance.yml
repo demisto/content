@@ -63,7 +63,7 @@ script: >-
                   'ContentsFormat': formats['text'],
                   'Contents': 'Unable to extract inputString - ' + input_string
               })
-              
+
       demisto.results(res)
 type: python
 subtype: python2
@@ -90,3 +90,6 @@ outputs:
 scripttarget: 0
 runonce: false
 fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.24066
+tests:
+- No tests (auto formatted)

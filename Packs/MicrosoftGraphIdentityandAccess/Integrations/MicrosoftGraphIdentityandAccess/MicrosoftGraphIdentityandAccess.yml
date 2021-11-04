@@ -29,9 +29,9 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use the Microsoft Graph Identity and Access integration to manage roles
-  and members.
-display: Microsoft Graph Identity & Access
+description: Use the Azure Active Directory Identity And Access integration to manage
+  roles and members.
+display: Azure Active Directory Identity And Access
 name: MicrosoftGraphIdentityandAccess
 script:
   commands:
@@ -90,13 +90,15 @@ script:
     arguments:
     - name: role_template_id
       default: false
-      description: ID of the role template to activate. Can be retrieved using the msgraph-identity-directory-roles-list command.
+      description: ID of the role template to activate. Can be retrieved using the
+        msgraph-identity-directory-roles-list command.
       isArray: false
       required: true
       secret: false
     outputs:
     - contextPath: MSGraphIdentity.Role.deletedDateTime
-      description: The time when the role was deleted. Displays only if the role was deleted.
+      description: The time when the role was deleted. Displays only if the role was
+        deleted.
       type: Date
     - contextPath: MSGraphIdentity.Role.description
       description: The description of the directory role.
@@ -117,7 +119,8 @@ script:
     arguments:
     - name: role_id
       default: false
-      description: The ID of the application for which to get its role members list. Can be retrieved using the msgraph-identity-directory-roles-list command.
+      description: The ID of the application for which to get its role members list.
+        Can be retrieved using the msgraph-identity-directory-roles-list command.
       isArray: false
       required: true
       secret: false
@@ -142,13 +145,15 @@ script:
     arguments:
     - name: role_id
       default: false
-      description: The ID of the role to add the user to. Can be retrieved using the msgraph-identity-directory-roles-list command.
+      description: The ID of the role to add the user to. Can be retrieved using the
+        msgraph-identity-directory-roles-list command.
       isArray: false
       required: true
       secret: false
     - name: user_id
       default: false
-      description: The ID of the user to add to the role. Can be retrieved using the msgraph-identity-directory-role-members-list command.
+      description: The ID of the user to add to the role. Can be retrieved using the
+        msgraph-identity-directory-role-members-list command.
       isArray: false
       required: true
       secret: false
@@ -159,13 +164,15 @@ script:
     arguments:
     - name: role_id
       default: false
-      description: ID of the role from which to remove the user. Can be retrieved using the msgraph-identity-directory-roles-list command.
+      description: ID of the role from which to remove the user. Can be retrieved
+        using the msgraph-identity-directory-roles-list command.
       isArray: false
       required: true
       secret: false
     - name: user_id
       default: false
-      description: ID of the user to remove from the role. Can be retrieved using the msgraph-identity-directory-role-members-list command.
+      description: ID of the user to remove from the role. Can be retrieved using
+        the msgraph-identity-directory-role-members-list command.
       isArray: false
       required: true
       secret: false
@@ -174,7 +181,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/crypto:1.0.0.17856
+  dockerimage: demisto/crypto:1.0.0.24037
 fromversion: 5.0.0
 tests:
 - Identity & Access test playbook

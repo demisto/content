@@ -52,8 +52,8 @@ configuration:
   name: max_fetch
   required: false
   type: 0
-description: Use this Content Pack to fetch incident logs from LogPoint, analyze them
-  for underlying threats, and respond to these threats in real-time.
+description: Use this Content Pack to search logs, fetch incident logs from LogPoint,
+  analyze them for underlying threats, and respond to these threats in real-time.
 display: LogPoint SIEM Integration
 name: LogPoint SIEM Integration
 script:
@@ -729,7 +729,126 @@ script:
     - contextPath: LogPoint.Incidents.users.usergroups
       description: LogPoint Incidents Users Usergroups
       type: String
-  dockerimage: demisto/python3:3.9.2.17246
+  - deprecated: false
+    description: Gets LogPoint user's preference such as timezone, date format, etc.
+    execution: false
+    name: lp-get-users-preference
+    outputs:
+    - contextPath: LogPoint.User.Preference.timezone
+      description: LogPoint user's timezone.
+      type: String
+    - contextPath: LogPoint.User.Preference.date_format
+      description: LogPoint user's date format.
+      type: String
+    - contextPath: LogPoint.User.Preference.hour_format
+      description: LogPoint user's hour format.
+      type: String
+  - deprecated: false
+    description: Gets user's LogPoints.
+    execution: false
+    name: lp-get-logpoints
+    outputs:
+    - contextPath: LogPoint.LogPoints.name
+      description: LogPoint name.
+      type: String
+    - contextPath: LogPoint.LogPoints.ip
+      description: LogPoint's IP address.
+      type: String
+  - deprecated: false
+    description: Gets the list of LogPoint repos that can be accessed by the user.
+    execution: false
+    name: lp-get-repos
+    outputs:
+    - contextPath: LogPoint.Repos.repo
+      description: LogPoint repo name.
+      type: String
+    - contextPath: LogPoint.Repos.address
+      description: LogPoint repo address.
+      type: String
+  - deprecated: false
+    description: Gets devices associated with LogPoint.
+    execution: false
+    name: lp-get-devices
+    outputs:
+    - contextPath: LogPoint.Devices.name
+      description: Device name.
+      type: String
+    - contextPath: LogPoint.Devices.address
+      description: Device IP address.
+      type: String
+  - deprecated: false
+    description: Gets live search results of the alerts and dashboards.
+    execution: false
+    name: lp-get-livesearches
+    outputs:
+    - contextPath: LogPoint.LiveSearches.generated_by
+      description: Who generated the live search.
+      type: String
+    - contextPath: LogPoint.LiveSearches.searchname
+      description: The name of the live search.
+      type: String
+    - contextPath: LogPoint.LiveSearches.description
+      description: A description of the live search.
+      type: String
+    - contextPath: LogPoint.LiveSearches.query
+      description: The live search query.
+      type: String
+  - arguments:
+    - default: false
+      description: LogPoint search query. This should be the exact query to use
+        to search logs in the LogPoint UI.
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - default: false
+      defaultValue: Last 5 minutes
+      description: 'Time range. For example: Last 30 minutes, Last 7 days, etc. If
+        not provided, it will use "Last 5 minutes" as the time range by default.'
+      isArray: false
+      name: time_range
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: Number of logs to fetch. If not provided, the first 100 logs will be
+        displayed.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of LogPoint repos from which logs are to be fetched. If not provided,
+        it will display logs from all repos.
+      isArray: true
+      name: repos
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets the search ID based on the provided search parameters.
+    execution: false
+    name: lp-get-searchid
+    outputs:
+    - contextPath: LogPoint.search_id
+      description: Search ID. Use this ID in the lp-search-logs command to get the search
+        result.
+      type: String
+  - arguments:
+    - default: false
+      description: Search ID obtained from the lp-get-searchid command.
+      isArray: false
+      name: search_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets LogPoint search results. Uses the value of search_id as an argument.
+    execution: false
+    name: lp-search-logs
+    outputs:
+    - contextPath: LogPoint.SearchLogs
+      description: Search results.
+      type: String
+  dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: true
   longRunning: false
@@ -741,6 +860,7 @@ script:
 tests:
 - LogPoint SIEM Integration - Test Playbook 1
 - LogPoint SIEM Integration - Test Playbook 2
+- LogPoint SIEM Integration - Test Playbook 3
 defaultmapperin: LogPoint-mapper
-defaultclassifier:
+defaultclassifier: null
 fromversion: 6.0.0

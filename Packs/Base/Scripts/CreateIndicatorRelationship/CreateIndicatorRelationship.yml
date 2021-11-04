@@ -1,0 +1,297 @@
+args:
+- default: false
+  description: 'The source of the relationship, for example 1.1.1.1. Only a single value is acceptable.'
+  isArray: false
+  name: entity_a
+  required: true
+  secret: false
+- auto: PREDEFINED
+  default: false
+  description: 'The source type of the relationship, for example IP. The value must be an accepted indicator type. Only a single value is acceptable.'
+  isArray: false
+  name: entity_a_type
+  predefined:
+  - IP
+  - Domain
+  - URL
+  - CVE
+  - DomainGlob
+  - Email
+  - File
+  - Host
+  - CIDR
+  - IPv6
+  - IPv6CIDR
+  - Registry Key
+  - ssdeep
+  - accountRep
+  - CIDR
+  - Attack Pattern
+  - Malware
+  - Report
+  - Threat Actor
+  - Tool
+  - Campaign
+  - Course of Action
+  - Infrastructure
+  - Intrusion Set
+  required: true
+  secret: false
+- default: false
+  description: 'A comma-separated list of destinations or second entity values, for example 3.3.3.3,2.2.2.2. This argument must be used with the entity_b_type argument and cannot be used in conjunction with the entity_b_query argument.'
+  isArray: true
+  name: entity_b
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  description: 'The destination type of the relationship, for example IP. Only a single value is acceptable. This argument must be used with the entity_b argument and cannot be used in conjunction with the entity_b_query argument.'
+  isArray: false
+  name: entity_b_type
+  predefined:
+  - IP
+  - Domain
+  - URL
+  - CVE
+  - DomainGlob
+  - Email
+  - File
+  - Host
+  - CIDR
+  - IPv6
+  - IPv6CIDR
+  - Registry Key
+  - ssdeep
+  - accountRep
+  - CIDR
+  - Attack Pattern
+  - Malware
+  - Report
+  - Threat Actor
+  - Tool
+  - Campaign
+  - Course of Action
+  - Infrastructure
+  - Intrusion Set
+  required: false
+  secret: false
+- default: false
+  description: 'The indicator query for all the entity_b results. The indicators that are the results of the query will be used as the destination of the relationship. For example type:ip AND tags:mytag. For more query examples, see https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/manage-indicators/understand-indicators/indicators-page.html. This argument cannot be used in conjunction with the entity_b argument or the entity_b_type argument.'
+  isArray: false
+  name: entity_b_query
+  required: false
+  secret: false
+- default: false
+  auto: PREDEFINED
+  description: 'The name of relationship to be created.'
+  isArray: false
+  name: relationship
+  defaultValue: 'related-to'
+  predefined:
+  - applied
+  - attachment-of
+  - attaches
+  - attribute-of
+  - attributed-by
+  - attributed-to
+  - authored-by
+  - beacons-to
+  - bundled-in
+  - bundles
+  - communicated-with
+  - communicated-by
+  - communicates-with
+  - compromises
+  - contains
+  - controls
+  - created-by
+  - creates
+  - delivered-by
+  - delivers
+  - downloads
+  - downloads-from
+  - dropped-by
+  - drops
+  - duplicate-of
+  - embedded-in
+  - embeds
+  - executed
+  - executed-by
+  - exfiltrates-to
+  - exploits
+  - has
+  - hosted-on
+  - hosts
+  - impersonates
+  - indicated-by
+  - indicator-of
+  - injected-from
+  - injects-into
+  - investigates
+  - is-also
+  - mitigated-by
+  - mitigates
+  - originated-from
+  - owned-by
+  - owns
+  - part-of
+  - related-to
+  - remediates
+  - resolved-by
+  - resolved-from
+  - resolves-to
+  - seen-on
+  - sent
+  - sent-by
+  - sent-from
+  - sent-to
+  - similar-to
+  - sub-domain-of
+  - supra-domain-of
+  - subtechnique-of
+  - parent-technique-of
+  - targeted-by
+  - targets
+  - Types
+  - uploaded-to
+  - used-by
+  - used-on
+  - uses
+  - variant-of
+  required: true
+  secret: false
+- default: false
+  description: "The reverse name of relationship to be created.
+                If the argument isn't provided by the user, the default reverse relation will be created."
+  isArray: false
+  auto: PREDEFINED
+  name: reverse_relationship
+  predefined:
+  - applied
+  - attachment-of
+  - attaches
+  - attribute-of
+  - attributed-by
+  - attributed-to
+  - authored-by
+  - beacons-to
+  - bundled-in
+  - bundles
+  - communicated-with
+  - communicated-by
+  - communicates-with
+  - compromises
+  - contains
+  - controls
+  - created-by
+  - creates
+  - delivered-by
+  - delivers
+  - downloads
+  - downloads-from
+  - dropped-by
+  - drops
+  - duplicate-of
+  - embedded-in
+  - embeds
+  - executed
+  - executed-by
+  - exfiltrates-to
+  - exploits
+  - has
+  - hosted-on
+  - hosts
+  - impersonates
+  - indicated-by
+  - indicator-of
+  - injected-from
+  - injects-into
+  - investigates
+  - is-also
+  - mitigated-by
+  - mitigates
+  - originated-from
+  - owned-by
+  - owns
+  - part-of
+  - related-to
+  - remediates
+  - resolved-by
+  - resolved-from
+  - resolves-to
+  - seen-on
+  - sent
+  - sent-by
+  - sent-from
+  - sent-to
+  - similar-to
+  - sub-domain-of
+  - supra-domain-of
+  - subtechnique-of
+  - parent-technique-of
+  - targeted-by
+  - targets
+  - Types
+  - uploaded-to
+  - used-by
+  - used-on
+  - uses
+  - variant-of
+  required: false
+  secret: false
+- default: false
+  description: 'Reliability of the source providing the intelligence data.'
+  auto: PREDEFINED
+  isArray: false
+  defaultValue: 'A - Completely reliable'
+  name: source_reliability
+  predefined:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: false
+  secret: false
+- default: false
+  description: 'Free text description to add to the relationship.'
+  isArray: false
+  name: description
+  required: false
+  secret: false
+- default: false
+  description: 'The time the relationship was seen. If left empty, the default value will be the time the relationship was created. Format (YYYY-MM-DDTHH:MM:SSZ). For example: 2020-02-02T19:00:00Z'
+  isArray: false
+  name: first_seen
+  required: false
+  secret: false
+- default: false
+  description: 'True, if the non-existing indicators will be created according to the specified entities and their types. Default 
+                is false.'
+  isArray: false
+  auto: PREDEFINED
+  name: create_indicator
+  defaultValue: 'false'
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+  secret: false
+comment: 'This automation creates a relationship between indicator objects.'
+commonfields:
+  id: CreateIndicatorRelationship
+  version: -1
+enabled: false
+name: CreateIndicatorRelationship
+script: '-'
+system: false
+tags:
+- basescript
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.9.7.24076
+fromversion: 6.2.0
+tests:
+- Relationships scripts - Test

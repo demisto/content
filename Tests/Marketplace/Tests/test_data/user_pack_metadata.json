@@ -6,6 +6,7 @@
   "author": "Cortex XSOAR",
   "url": "https://test.com",
   "email": "test@test.com",
+  "eulaLink": "https://my.eula.com",
   "categories": [
     "Messaging"
   ],

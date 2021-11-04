@@ -1,0 +1,44 @@
+{
+  "countries": [
+    {
+      "country": "XF",
+      "name": "6to4 Relay Anycast"
+    },
+    {
+      "country": "AF",
+      "name": "Afghanistan"
+    },
+    {
+      "country": "AX",
+      "name": "Aland Islands"
+    },
+    {
+      "country": "AL",
+      "name": "Albania"
+    },
+    {
+      "country": "DZ",
+      "name": "Algeria"
+    },
+    {
+      "country": "AS",
+      "name": "American Samoa"
+    },
+    {
+      "country": "AD",
+      "name": "Andorra"
+    },
+    {
+      "country": "AO",
+      "name": "Angola"
+    },
+    {
+      "country": "AI",
+      "name": "Anguilla"
+    },
+    {
+      "country": "AQ",
+      "name": "Antarctica"
+    }
+  ]
+}

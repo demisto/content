@@ -1,0 +1,167 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Ironscales
+  version: -1
+configuration:
+- defaultvalue: https://appapi.ironscales.com
+  display: Server URL (e.g. https://appapi.ironscales.com)
+  name: url
+  required: true
+  type: 0
+- display: API Key
+  name: apikey
+  required: true
+  type: 4
+- display: Company Id
+  name: company_id
+  required: true
+  type: 0
+- display: Scopes (e.g. "company.all")
+  name: scopes
+  required: true
+  type: 0
+- defaultvalue: '50'
+  display: Maximum number of incidents per fetch
+  name: max_fetch
+  required: false
+  type: 0
+- display: First fetch
+  name: first_fetch
+  required: false
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  defaultvalue: Ironscales
+  name: incidentType
+  required: false
+  type: 13
+description: IRONSCALES, a self-learning email security platform integration
+display: Ironscales
+name: Ironscales
+defaultmapperin: Ironscales - Incoming Mapper
+script:
+  commands:
+  - arguments:
+    - description: Incident ID.
+      name: incident_id
+      required: true
+    - description: Company Id - If empty, the Company Id from the instance configuration
+        is used.
+      name: company_id
+    description: Get incident data by ID.
+    name: ironscales-get-incident
+    outputs:
+    - contextPath: Ironscales.Incident.incident_id
+      description: Incident id.
+      type: string
+    - contextPath: Ironscales.Incident.attachments
+      description: Email attachments
+      type: string
+    - contextPath: Ironscales.Incident.banner_displayed
+      description: Email banners.
+      type: string
+    - contextPath: Ironscales.Incident.classification
+      description: Current classification(FP,Phishing,Spam,Report).
+      type: string
+    - contextPath: Ironscales.Incident.company_id
+      description: Company ID.
+      type: string
+    - contextPath: Ironscales.Incident.company_name
+      description: Company name.
+      type: string
+    - contextPath: Ironscales.Incident.federation
+      description: Federation data.
+      type: string
+    - contextPath: Ironscales.Incident.first_reported_by
+      description: First reporter.
+      type: string
+    - contextPath: Ironscales.Incident.first_reported_date
+      description: Reported date.
+      type: string
+    - contextPath: Ironscales.Incident.links
+      description: Links.
+      type: string
+    - contextPath: Ironscales.Incident.mail_server
+      description: Mail server.
+      type: string
+    - contextPath: Ironscales.Incident.reply_to
+      description: Reply to.
+      type: string
+    - contextPath: Ironscales.Incident.reports
+      description: Reports data.
+      type: string
+    - contextPath: Ironscales.Incident.sender_email
+      description: Sender email.
+      type: string
+    - contextPath: Ironscales.Incident.sender_is_internal
+      description: True is the email sender is internal, False otherwise.
+      type: boolean
+    - contextPath: Ironscales.Incident.sender_reputation
+      description: Sender reputation.
+      type: string
+    - contextPath: Ironscales.Incident.spf_result
+      description: spf results.
+      type: unknown
+    - contextPath: Ironscales.Incident.themis_proba
+      description: Themis proba.
+      type: number
+    - contextPath: Ironscales.Incident.themis_verdict
+      description: Themis verdict.
+      type: string
+  - arguments:
+    - description: Incident ID
+      name: incident_id
+      required: true
+    - auto: PREDEFINED
+      description: Classification
+      name: classification
+      required: true
+      predefined:
+      - Attack
+      - Spam
+      - False Positive
+    - auto: PREDEFINED
+      description: Current incident classification
+      name: prev_classification
+      required: true
+      predefined:
+      - Attack
+      - Spam
+      - False Positive
+      - Report
+    - description: Your Email Address
+      name: email
+      required: true
+    description: Classify incident by ID.
+    name: ironscales-classify-incident
+    outputs:
+    - contextPath: Ironscales.classifyincident
+      description: Classification succeeded
+      type: boolean
+  - arguments: []
+    description: Get open incident ids.
+    name: ironscales-get-open-incidents
+    outputs:
+    - contextPath: Ironscales.OpenIncidents.incident_ids
+      description: List of open incidents IDs.
+  dockerimage: demisto/python3:3.9.7.24076
+  isFetchSamples: true
+  isfetch: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

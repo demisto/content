@@ -1,0 +1,28 @@
+args:
+- description: 'Forensic file EntryID '
+  name: ForensicFileEntry
+  required: true
+comment: Analyzes the forensic data to detect brand impersonation attacks. 
+  This script uses the HMRC brand as an example, please modify the attributes 
+  associated with your company’s brand.
+commonfields:
+  id: BrandImpersonationDetection
+  version: -1
+dockerimage: demisto/python3:3.9.7.24076
+enabled: true
+name: BrandImpersonationDetection
+outputs:
+- contextPath: SlashNext.PhishingBrand
+  description: Target brand of phishing URL
+  type: string
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- phishing
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

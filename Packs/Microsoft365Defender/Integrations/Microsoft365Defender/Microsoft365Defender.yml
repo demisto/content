@@ -1,0 +1,334 @@
+category: Network Security
+commonfields:
+  id: Microsoft 365 Defender
+  version: -1
+configuration:
+- additionalinfo: The API key to use to connect.
+  defaultvalue: 9093c354-630a-47f1-b087-6768eb9427e6
+  display: Application ID
+  name: app_id
+  required: true
+  type: 4
+- additionalinfo: |-
+    The United States: api-us.security.microsoft.com
+    Europe: api-eu.security.microsoft.com
+    The United Kingdom: api-uk.security.microsoft.co
+  defaultvalue: https://api.security.microsoft.com
+  display: Endpoint URI
+  hidden: false
+  name: base_url
+  required: true
+  type: 0
+- additionalinfo: Use a self-deployed Azure application and authenticate using the Client Credentials flow.
+  display: Use Client Credentials Authorization Flow
+  name: client_credentials
+  required: false
+  type: 8
+- display: Tenant ID (for Client Credentials mode)
+  name: tenant_id
+  required: false
+  type: 4
+- display: Client Secret (for Client Credentials mode)
+  name: enc_key
+  required: false
+  type: 4
+- defaultvalue: 12 hours
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  hidden: false
+  name: first_fetch
+  required: false
+  type: 0
+- additionalinfo: The time limit in seconds for fetch incidents to run. Leave this
+    empty to cancel the timeout limit.
+  defaultvalue: '30'
+  display: Fetch incidents timeout
+  hidden: false
+  name: fetch_timeout
+  required: false
+  type: 0
+- additionalinfo: Due to API limitations, the maximum is 100.
+  defaultvalue: '10'
+  display: Number of incidents for each fetch.
+  hidden: false
+  name: max_fetch
+  required: false
+  type: 0
+- defaultvalue: Microsoft 365 Defender Incident
+  display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Microsoft 365 Defender is a unified pre- and post-breach enterprise defense
+  suite that natively coordinates detection, prevention, investigation, and response
+  across endpoints, identities, email, and applications to provide integrated protection
+  against sophisticated attacks.
+display: Microsoft 365 Defender (Beta)
+name: Microsoft 365 Defender
+script:
+  commands:
+  - deprecated: false
+    description: Run this command to start the authorization process and follow the
+      instructions in the command results. (for device-code mode)
+    execution: false
+    name: microsoft-365-defender-auth-start
+  - deprecated: false
+    description: Run this command to complete the authorization process. Should be
+      used after running the microsoft-365-defender-auth-start command. (for device-code mode)
+    execution: false
+    name: microsoft-365-defender-auth-complete
+  - deprecated: false
+    description: Run this command if you need to rerun the authentication process. (for device-code mode)
+    execution: false
+    name: microsoft-365-defender-auth-reset
+  - deprecated: false
+    description: Tests the connectivity to the Microsoft 365 Defender.
+    execution: false
+    name: microsoft-365-defender-auth-test
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Categorize incidents (as Active, Resolved, or Redirected).
+      isArray: false
+      name: status
+      predefined:
+      - Active
+      - Resolved
+      - Redirected
+      required: false
+      secret: false
+    - default: false
+      description: Owner of the incident.
+      isArray: false
+      name: assigned_to
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: Number of incidents in the list. Maximum is 100.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Number of entries to skip.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '30'
+      description: The time limit in seconds for the http request to run.
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+    deprecated: false
+    description: Get the most recent incidents.
+    execution: false
+    name: microsoft-365-defender-incidents-list
+    outputs:
+    - contextPath: Microsoft365Defender.Incident.incidentId
+      description: Incident's ID.
+      type: Number
+    - contextPath: Microsoft365Defender.Incident.redirectIncidentId
+      description: Only populated in case an incident is grouped together with another
+        incident, as part of the incident processing logic.
+      type: Unknown
+    - contextPath: Microsoft365Defender.Incident.incidentName
+      description: The name of the incident.
+      type: String
+    - contextPath: Microsoft365Defender.Incident.createdTime
+      description: The date and time (in UTC) the incident was created.
+      type: Date
+    - contextPath: Microsoft365Defender.Incident.lastUpdateTime
+      description: The date and time (in UTC) the incident was last updated.
+      type: Date
+    - contextPath: Microsoft365Defender.Incident.assignedTo
+      description: Owner of the incident.
+      type: String
+    - contextPath: Microsoft365Defender.Incident.classification
+      description: 'Specification of the incident. Possible values are: Unknown, FalsePositive,
+        and TruePositive.'
+      type: String
+    - contextPath: Microsoft365Defender.Incident.determination
+      description: 'The determination of the incident. Possible values are: NotAvailable,
+        Apt, Malware, SecurityPersonnel, SecurityTesting, UnwantedSoftware, and Other.'
+      type: String
+    - contextPath: Microsoft365Defender.Incident.status
+      description: 'The current status of the incident. Possible values are: Active,
+        Resolved, and Redirected.'
+      type: String
+    - contextPath: Microsoft365Defender.Incident.severity
+      description: 'Severity of the incident. Possible values are: UnSpecified, Informational,
+        Low, Medium, and High.'
+      type: String
+    - contextPath: Microsoft365Defender.Incident.alerts
+      description: List of alerts relevant for the incidents.
+      type: Unknown
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Categorize incidents (as Active, Resolved, or Redirected).
+      isArray: false
+      name: status
+      predefined:
+      - Active
+      - Resolved
+      - Redirected
+      required: false
+      secret: false
+    - default: false
+      description: Owner of the incident.
+      isArray: false
+      name: assigned_to
+      required: false
+      secret: false
+    - default: false
+      description: Incident's ID.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The specification for the incident.
+      isArray: false
+      name: classification
+      predefined:
+      - Unknown
+      - FalsePositive
+      - TruePositive
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Determination of the incident.
+      isArray: false
+      name: determination
+      predefined:
+      - NotAvailable
+      - Apt
+      - Malware
+      - SecurityPersonnel
+      - SecurityTesting
+      - UnwantedSoftware
+      - Other.
+      required: false
+      secret: false
+    - default: false
+      description: 'A comma-separated list of custom tags associated with an incident.
+        For example: tag1,tag2,tag3.'
+      isArray: true
+      name: tags
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '30'
+      description: The time limit in seconds for the http request to run.
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+    deprecated: false
+    description: Update the incident with the given ID.
+    execution: false
+    name: microsoft-365-defender-incident-update
+    outputs:
+    - contextPath: Microsoft365Defender.Incident.incidentId
+      description: Incident's ID.
+      type: Number
+    - contextPath: Microsoft365Defender.Incident.redirectIncidentId
+      description: Only populated in case an incident is grouped together with another
+        incident, as part of the incident processing logic.
+      type: Unknown
+    - contextPath: Microsoft365Defender.Incident.incidentName
+      description: The name of the incident.
+      type: String
+    - contextPath: Microsoft365Defender.Incident.createdTime
+      description: The date and time (in UTC) the incident was created.
+      type: Date
+    - contextPath: Microsoft365Defender.Incident.lastUpdateTime
+      description: The date and time (in UTC) the incident was last updated.
+      type: Date
+    - contextPath: Microsoft365Defender.Incident.assignedTo
+      description: Owner of the incident.
+      type: String
+    - contextPath: Microsoft365Defender.Incident.classification
+      description: 'Specification of the incident. Possible values are: Unknown, FalsePositive,
+        and TruePositive.'
+      type: String
+    - contextPath: Microsoft365Defender.Incident.determination
+      description: 'The determination of the incident. Possible values are: NotAvailable,
+        Apt, Malware, SecurityPersonnel, SecurityTesting, UnwantedSoftware, and Other.'
+      type: String
+    - contextPath: Microsoft365Defender.Incident.severity
+      description: 'Severity of the incident. Possible values are: UnSpecified, Informational,
+        Low, Medium, and High.'
+      type: String
+    - contextPath: Microsoft365Defender.Incident.status
+      description: 'The current status of the incident. Possible values are: Active,
+        Resolved, and Redirected.'
+      type: String
+    - contextPath: Microsoft365Defender.Incident.alerts
+      description: List of alerts relevant for the incidents.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Advanced hunting query.
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '30'
+      description: The time limit in seconds for the http request to run.
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Number of entries.  Enter -1 for unlimited query.
+      isArray: false
+      name: limit
+      required: true
+      secret: false
+    deprecated: false
+    description: 'Advanced hunting is a threat-hunting tool that uses specially constructed
+      queries to examine the past 30 days of event data in Microsoft 365 Defender.
+      Details on how to write queries: https://docs.microsoft.com/en-us/microsoft-365/security/defender/advanced-hunting-query-language?view=o365-worldwide.'
+    execution: false
+    name: microsoft-365-defender-advanced-hunting
+    outputs:
+    - contextPath: Microsoft365Defender.Hunt.query
+      description: The query used, also acted as a key.
+      type: String
+    - contextPath: Microsoft365Defender.Hunt.results.
+      description: The results of the query.
+      type: Unknown
+  dockerimage: demisto/crypto:1.0.0.24037
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests
+defaultmapperin: Microsoft 365 Defender - Incoming Mapper
+fromversion: 5.5.0
+beta: true

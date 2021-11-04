@@ -105,23 +105,23 @@ script:
       description: For malicious URLs, the reason the vendor tagged the URL as malicious.
       type: string
     - contextPath: DBotScore.Indicator
-      description: The URL that was tested.
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: The URL type.
+      description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: The vendor that calculated the DBot score.
+      description: The vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: The actual DBot score.
+      description: The actual score.
       type: number
   - arguments:
     - default: true
       description: A comma-separated list of IP address for which to look up the classification.
         For example, 8.8.8.8,1.2.3.4. The maximum number of URLs per call is 100.
         An IP address cannot exceed 1024 characters.
-      isArray: false
+      isArray: true
       name: ip
       required: true
       secret: false
@@ -148,16 +148,16 @@ script:
         address as malicious.
       type: string
     - contextPath: DBotScore.Indicator
-      description: The IP address that was tested.
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: The IP address type.
+      description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the DBot score.
+      description: The vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: The actual DBot score.
+      description: The actual score.
       type: number
   - arguments:
     - default: true
@@ -380,7 +380,7 @@ script:
       default: false
       defaultValue: 'false'
       description: Whether to display the URLs of each category in the War Room. Default
-        is 'false'.
+        is 'false'. URLs will always be returned to the Context Data.
       isArray: false
       name: displayURL
       predefined:
@@ -395,6 +395,17 @@ script:
         is 'false'.
       isArray: false
       name: custom_categories_only
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether to retrieve only a list containing URL category IDs and names. Even if *displayURL* is set to true, URLs will not be returned. Please note - the API does not support the combination of custom_only and get_ids_and_names_only.
+      isArray: false
+      name: get_ids_and_names_only
       predefined:
       - 'true'
       - 'false'
@@ -523,6 +534,7 @@ script:
   runonce: false
   script: '-'
   subtype: python2
+  dockerimage: demisto/python:2.7.18.24066
   type: python
 tests:
 - Zscaler Test

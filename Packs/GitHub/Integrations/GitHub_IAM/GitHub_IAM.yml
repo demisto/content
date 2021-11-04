@@ -24,17 +24,17 @@ configuration:
   required: false
   type: 8
 - defaultvalue: 'true'
-  display: Create User Command Enabled
+  display: Allow creating users
   name: create-user-enabled
   required: false
   type: 8
 - defaultvalue: 'true'
-  display: Update User Command Enabled
+  display: Allow updating users
   name: update-user-enabled
   required: false
   type: 8
 - defaultvalue: 'true'
-  display: Disable User Commands Enabled
+  display: Allow disabling users
   name: disable-user-enabled
   required: false
   type: 8
@@ -233,7 +233,7 @@ script:
       within the application. Used for outgoing-mapping through the Get Schema option.
     execution: false
     name: get-mapping-fields
-  dockerimage: demisto/python3:3.9.1.15759
+  dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: false
   longRunning: false

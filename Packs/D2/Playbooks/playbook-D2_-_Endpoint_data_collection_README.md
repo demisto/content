@@ -1,4 +1,4 @@
-Uses Demisto's D2 agent to collect data from an endpoint for IR purposes.
+Uses Cortex XSOAR's D2 agent to collect data from an endpoint for IR purposes.
 
 Input:
 * Hostname (default: ${Endpoint.Hostname})
@@ -33,7 +33,7 @@ This playbook does not use any commands.
 | --- | --- | --- | --- | 
 | Host | Deploys D2 on a target host. | ${Endpoint.Hostname} |Optional |
 | OS | The default OS type of target host. | Windows | Optional |
-| Credentials | The name of the credential set from Demisto **Settings -> Integrations -> Credentials**. | Admin | Optional |
+| Credentials | The name of the credential set from Cortex XSOAR **Settings -> Integrations -> Credentials**. | Admin | Optional |
 | Path | If initialized, D2 will try and collect the file at target path. | - | Optional |
 
 ## Playbook Outputs

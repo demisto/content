@@ -13,16 +13,6 @@ configuration:
   type: 9
   required: true
   hiddenusername: true
-- display: Use system proxy settings
-  name: proxy
-  defaultvalue: ''
-  type: 8
-  required: false
-- display: Trust any certificate (not secure)
-  name: insecure
-  defaultvalue: ''
-  type: 8
-  required: false
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: C - Fairly reliable
   display: Source Reliability
@@ -34,7 +24,7 @@ configuration:
   - C - Fairly reliable
   - D - Not usually reliable
   - E - Unreliable
-  - F - Reliability cannot be judged  
+  - F - Reliability cannot be judged
 - display: Premium Subscription
   name: is_premium_api
   defaultvalue: 'false'
@@ -100,6 +90,97 @@ configuration:
   defaultvalue: '3'
   type: 0
   required: false
+- additionalinfo: 'Select the list of relationships to retrieve from the API. Note that relationships that are signed with * key are
+                    available only for the VirusTotal premium API key.'
+  display: IP Relationships
+  name: ip_relationships
+  options:
+  - communicating files
+  - '* downloaded files'
+  - referrer files
+  - '* urls'
+  required: false
+  type: 16
+  defaultvalue: 'communicating files,* downloaded files,referrer files,* urls'
+- additionalinfo: 'Select the list of relationships to retrieve from the API. Note that relationships that are signed with * key are
+                    available only for the VirusTotal premium API key.'
+  display: Domain Relationships
+  name: domain_relationships
+  options:
+  - '* cname records'
+  - '* caa records'
+  - communicating files
+  - '* downloaded files'
+  - immediate parent
+  - '* mx records'
+  - '* ns records'
+  - parent
+  - referrer files
+  - siblings
+  - '* soa records'
+  - subdomains
+  - '* urls'
+  required: false
+  type: 16
+  defaultvalue: '* cname records,* caa records,communicating files,* downloaded files,immediate parent,* mx records,* ns records,parent,referrer files,siblings,* soa records,subdomains,* urls'
+- additionalinfo: 'Select the list of relationships to retrieve from the API. Note that relationships that are signed with * key are
+                    available only for the VirusTotal premium API key.'
+  display: URL Relationships
+  name: url_relationships
+  options:
+  - communicating files
+  - '* contacted domains'
+  - '* contacted ips'
+  - '* downloaded files'
+  - last serving ip address
+  - network location
+  - '* redirecting urls'
+  - '* redirects to'
+  - '* referrer files'
+  - '* referrer urls'
+  required: false
+  type: 16
+  defaultvalue: 'communicating files,* contacted domains,* contacted ips,* downloaded files,last serving ip address,network location,* redirecting urls,* redirects to,* referrer files,* referrer urls'
+- additionalinfo: 'Select the list of relationships to retrieve from the API. Note that relationships that are signed with * key are
+                    available only for the VirusTotal premium API key.'
+  display: File Relationships
+  name: file_relationships
+  options:
+  - '* carbonblack children'
+  - '* carbonblack parents'
+  - '* compressed parents'
+  - 'contacted domains'
+  - 'contacted ips'
+  - 'contacted urls'
+  - 'dropped files'
+  - '* email attachments'
+  - '* email parents'
+  - '* embedded domains'
+  - '* embedded ips'
+  - '* embedded urls'
+  - 'execution parents'
+  - '* itw domains'
+  - '* itw ips'
+  - '* overlay children'
+  - '* overlay parents'
+  - '* pcap children'
+  - '* pcap parents'
+  - 'pe resource children'
+  - 'pe resource parents'
+  - '* similar files'
+  required: false
+  type: 16
+  defaultvalue: "* carbonblack children,* carbonblack parents,* compressed parents,contacted domains,contacted ips,contacted urls,dropped files,* email attachments,* email parents,* embedded domains,* embedded ips,* embedded urls,execution parents,* itw domains,* itw ips,* overlay children,* overlay parents,* pcap children,* pcap parents,pe resource children,pe resource parents,* similar files"
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ''
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ''
+  type: 8
+  required: false
 script:
   script: ''
   type: python
@@ -128,6 +209,21 @@ script:
       description: Bad SHA1 hash.
     - contextPath: File.SHA256
       description: Bad SHA256 hash.
+    - contextPath: File.Relationships.EntityA
+      description: The source of the relationship.
+      type: string
+    - contextPath: File.Relationships.EntityB
+      description: The destination of the relationship.
+      type: string
+    - contextPath: File.Relationships.Relationship
+      description: The name of the relationship.
+      type: string
+    - contextPath: File.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: string
+    - contextPath: File.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: string
     - contextPath: File.Malicious.Vendor
       description: For malicious files, the vendor that made the decision.
     - contextPath: File.Malicious.Detections
@@ -354,6 +450,21 @@ script:
       description: Bad IP ASN.
     - contextPath: IP.Geo.Country
       description: Bad IP country.
+    - contextPath: IP.Relationships.EntityA
+      description: The source of the relationship.
+      type: string
+    - contextPath: IP.Relationships.EntityB
+      description: The destination of the relationship.
+      type: string
+    - contextPath: IP.Relationships.Relationship
+      description: The name of the relationship.
+      type: string
+    - contextPath: IP.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: string
+    - contextPath: IP.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: string
     - contextPath: IP.Malicious.Vendor
       description: For malicious IPs, the vendor that made the decision.
     - contextPath: IP.Malicious.Description
@@ -453,6 +564,21 @@ script:
       description: For malicious URLs, the vendor that made the decision.
     - contextPath: URL.Malicious.Description
       description: For malicious URLs, the reason that the vendor made the decision.
+    - contextPath: URL.Relationships.EntityA
+      description: The source of the relationship.
+      type: string
+    - contextPath: URL.Relationships.EntityB
+      description: The destination of the relationship.
+      type: string
+    - contextPath: URL.Relationships.Relationship
+      description: The name of the relationship.
+      type: string
+    - contextPath: URL.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: string
+    - contextPath: URL.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: string
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
     - contextPath: DBotScore.Type
@@ -581,6 +707,21 @@ script:
       description: For malicious domains, the vendor that made the decision.
     - contextPath: Domain.Malicious.Description
       description: For malicious domains, the reason that the vendor made the decision.
+    - contextPath: Domain.Relationships.EntityA
+      description: The source of the relationship.
+      type: string
+    - contextPath: Domain.Relationships.EntityB
+      description: The destination of the relationship.
+      type: string
+    - contextPath: Domain.Relationships.Relationship
+      description: The name of the relationship.
+      type: string
+    - contextPath: Domain.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: string
+    - contextPath: Domain.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: string
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
     - contextPath: DBotScore.Type
@@ -1229,7 +1370,7 @@ script:
         type: String
     description: Retrieves resolutions of the given IP.
   runonce: false
-  dockerimage: demisto/python3:3.9.2.18414
+  dockerimage: demisto/python3:3.9.7.24076
 tests:
 - VirusTotalV3-test
 - VirusTotal (API v3) Detonate Test

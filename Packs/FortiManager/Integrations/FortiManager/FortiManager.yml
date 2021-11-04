@@ -3012,7 +3012,7 @@ script:
     - contextPath: FortiManager.Installation.user
       description: The installation task user.
       type: String
-  dockerimage: demisto/python3:3.8.6.13358
+  dockerimage: demisto/python3:3.9.7.24076
   isfetch: false
   longRunning: false
   longRunningPort: false

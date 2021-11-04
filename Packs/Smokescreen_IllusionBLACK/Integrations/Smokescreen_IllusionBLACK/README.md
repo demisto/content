@@ -2,7 +2,7 @@ Smokescreen IllusionBLACK is a deception-based threat defense platform designed 
 This integration was integrated and tested with version v3.10.7.4 of Smokescreen IllusionBLACK
 ## Permissions
 
-## Configure Smokescreen IllusionBLACK on Demisto
+## Configure Smokescreen IllusionBLACK on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Smokescreen IllusionBLACK.
@@ -19,7 +19,7 @@ This integration was integrated and tested with version v3.10.7.4 of Smokescreen
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### illusionblack-get-ad-decoys
 ***
@@ -505,7 +505,7 @@ Gets a single event by the event ID.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | IllusionBlack.Event | Unknown | IllusionBLACK Single Event. | 
-| IllusionBlack.Event.attacker.id	 | Unknown | IllusionBLACK Event Attacker ID. | 
+| IllusionBlack.Event.attacker.id | Unknown | IllusionBLACK Event Attacker ID. | 
 | IllusionBlack.Event.decoy.id | Unknown | IllusionBLACK Event Decoy ID. | 
 | IllusionBlack.Event.id | Unknown | IllusionBLACK Event ID. | 
 | IllusionBlack.Event.severity | Unknown | IllusionBLACK Event Severity. | 

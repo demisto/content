@@ -1,10 +1,10 @@
 <!-- HTML_DOC -->
-<p>Cybereason is an endpoint detection and response platform used through Demisto to manage and query malops, connections, and processes.</p>
+<p>Cybereason is an endpoint detection and response platform used through Cortex XSOAR to manage and query malops, connections, and processes.</p>
 <p><br> This integration was integrated and tested with Cybereason v17.5.20.</p>
 <h2>Important Notes</h2>
 <ol>
 <li>The integration supports both basic and client-certification authentications.</li>
-<li>Decrypt certificate <code>.pfx</code> file outside of Demisto.</li>
+<li>Decrypt certificate <code>.pfx</code> file outside of Cortex XSOAR.</li>
 <li>If you plan to fetch incidents, read the important notes in the <a href="#h_8696566851031544538706749">Fetched Incidents Data</a> section.</li>
 <li>Insert the decrypted certificate in the <code>Certificate</code> field under the <strong>Credentials</strong> tab, according to the following template.</li>
 </ol>
@@ -17,7 +17,7 @@
 &lt;KEY&gt;
 -----END RSA PRIVATE KEY-----<br>
 </pre>
-<h2>Configure Cybereason on Demisto</h2>
+<h2>Configure Cybereason on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for Cybereason.</li>
@@ -37,14 +37,14 @@
 </ol>
 <p> </p>
 <h2 id="h_8696566851031544538706749">Fetched Incidents Data</h2>
-<p>Demisto fetches the first batch of Cybereason malops from the previous three days.<br> After the first batch of fetched malops, Demisto fetches new Cybereason malops as soon as they are generated in Cybereason.</p>
+<p>Cortex XSOAR fetches the first batch of Cybereason malops from the previous three days.<br> After the first batch of fetched malops, Cortex XSOAR fetches new Cybereason malops as soon as they are generated in Cybereason.</p>
 <p><strong>IMPORTANT</strong>: In order to properly fetch incidents, you need to set the pre-processing script to <em><strong>CybereasonPreProcessing</strong></em> for the incident type you configure in each integration instance. For example, if you select the Malware, you need to configure the pre-processing script for the Malware incident type to <em><strong>CybereasonPreProcessing</strong></em>.</p>
 <p><strong>Integration Instance Configuration</strong></p>
 <p><img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/Cybereason_Cybereason_Fetched_Incidents_2.jpg" alt="Cybereason_Fetched_Incidents_2.jpg"></p>
 <p><strong>Malware Indicator Type Configuration</strong></p>
 <p><img src="https://raw.githubusercontent.com/demisto/content/adbe33e4dbaa55c40ea737851e421729e4858297/docs/images/Integrations/Cybereason_Cybereason_Fetched_Incidents_1.jpg" alt="Cybereason_Fetched_Incidents_1.jpg"></p>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_89560621361536082116536">Search for processes: cybereason-query-processes</a></li>
 <li><a href="#h_289781611081536082165685">Check connection to Cybereason server: cybereason-is-probe-connected</a></li>

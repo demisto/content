@@ -6,7 +6,7 @@ Takes a date or time input and adds or subtracts a determined amount of time. Re
 | --- | --- |
 | Script Type | python3 |
 | Tags | transformer, date |
-| Demisto Version | 0.0.0 |
+| Cortex XSOAR Version | 0.0.0 |
 
 ## Inputs
 ---

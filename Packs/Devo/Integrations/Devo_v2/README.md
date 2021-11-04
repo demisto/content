@@ -9,7 +9,7 @@ of the time that other traditional time series databases can't.
 ## Use Cases
 ---
 
-* Ingest all user defined alerts from Devo into Demisto
+* Ingest all user defined alerts from Devo into Cortex XSOAR
 * Query any data source available on the Devo.
 * Run needle in haystack multi-table queries for threat hunting incidents.
 * Write results back to Devo as searchable records or alerts.
@@ -22,24 +22,24 @@ of the time that other traditional time series databases can't.
 * OAuth token with the `*.**` permissions.
 * Writer TLS Certificate, Key, and Chain if writing back to Devo.
 
-### Get your Demisto OAuth Token
+### Get your Cortex XSOAR OAuth Token
 1. Login to your Devo domain with a user with the ability to create security credentials.
 2. Navigate to __Administration__ > __Credentials__ > __Authentication Tokens__.
-3. If a token for Demisto has not already been  created, Click __CREATE NEW TOKEN__
+3. If a token for Cortex XSOAR has not already been  created, Click __CREATE NEW TOKEN__
   * Create the Token with `*.**` table permissions as an `apiv2` token.
 4. Note the generated `Token`
 
-### Get your Demisto Writer Credentials
+### Get your Cortex XSOAR Writer Credentials
 1. Login to your Devo domain with a user with the ability to create security credentials.
 2. Navigate to __Administration__ > __Credentials__ > __X.509 Certificates__.
-3. Click `NEW CERTIFICATE` if you do not already have a set of keys for Demisto.
+3. Click `NEW CERTIFICATE` if you do not already have a set of keys for Cortex XSOAR.
 4. Download the following files:
   * `Certificate`
   * `Private Key`
   * `CHAIN CA`
 
 
-## Configure Devo_v2 on Demisto
+## Configure Devo_v2 on Cortex XSOAR
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
@@ -47,6 +47,7 @@ of the time that other traditional time series databases can't.
 3. Click __Add instance__ to create and configure a new integration instance.
     * __Name__: a textual name for the integration instance.
     * __Query Server Endpoint (e.g. `https://apiv2-us.devo.com/search/query`)__
+    * __Port (e.g. 443)__
     * __Oauth Token (Preferred method)__
     * __Writer relay to connect to (e.g. us.elb.relay.logtrust.net)__ *Optional*
     * __Writer JSON credentials__ *Optional*
@@ -56,6 +57,10 @@ of the time that other traditional time series databases can't.
         "crt": string,
         "chain": string
     }
+    ```
+    The JSON should be given in one line, and new lines should be replaced with `\n`, for example:
+    ```
+    {"key": "-----BEGIN RSA PRIVATE KEY-----\n\n...\n-----END RSA PRIVATE KEY-----", "crt": "-----BEGIN CERTIFICATE-----\n\n...\n-----END CERTIFICATE-----", "chain": "-----BEGIN CERTIFICATE-----\n\n...\n-----END CERTIFICATE-----"}
     ```
     * __Devo base domain__ *Optional*
     * __Use system proxy settings__ *Optional*
@@ -114,7 +119,7 @@ Currently the only data that is fetchable in Devo are the alerts that users have
 
 ## Commands
 ---
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 1. devo-run-query
 2. devo-get-alerts
@@ -128,18 +133,20 @@ Queries Devo based on linq query.
 Please refer to to the Devo documentation for building a query with LINQ
 [HERE](https://docs.devo.com/confluence/ndt/searching-data/building-a-query/build-a-query-using-linq)
 ##### Required Permissions
-**A Demisto instance configured with the correct OAuth token that has permission to query the target tables**
+**A Cortex XSOAR instance configured with the correct OAuth token that has permission to query the target tables**
 ##### Base Command
 
 `devo-run-query`
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| query | A LINQ Query to run | Required |
-| from | Start datetime for specified query. Unix timestamp in seconds expected (Decimal milliseconds okay) | Required |
-| to | End datetime for specified query. Unix timestamp in seconds expected (Decimal milliseconds okay) | Optional |
-| writeToContext | Whether to write results to context or not | Optional |
+| **Argument Name** | **Description**                                                                                    | **Required** |
+|-------------------|----------------------------------------------------------------------------------------------------|--------------|
+| query             | A LINQ Query to run                                                                                | Required     |
+| from              | Start datetime for specified query. Unix timestamp in seconds expected (Decimal milliseconds okay) | Required     |
+| to                | End datetime for specified query. Unix timestamp in seconds expected (Decimal milliseconds okay)   | Optional     |
+| queryTimeout      | Query timeout in seconds. Defaults to global which defaults to 60 seconds                          | Optional     |
+| writeToContext    | Whether to write results to context or not                                                         | Optional     |
+| linqLinkBase      | Overrides the global link base so is able to be set at run time                                    | Optional     |
 
 #####__from__ and __to__ time note:
 This integration allows for the following formats. Note that when __from__ and __to__ times
@@ -192,12 +199,14 @@ that are allowed.
 `devo-get-alerts`
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| from | Start datetime for alerts to fetch | Required |
-| to | End datetime for alerts to fetch | Optional |
-| filters | key value filter to apply to retrieve specified alerts. refer to docs | Optional |
-| writeToContext | write results to context or not | Optional |
+| **Argument Name** | **Description**                                                           | **Required** |
+|-------------------|---------------------------------------------------------------------------|--------------|
+| from              | Start datetime for alerts to fetch                                        | Required     |
+| to                | End datetime for alerts to fetch                                          | Optional     |
+| filters           | key value filter to apply to retrieve specified alerts. refer to docs     | Optional     |
+| queryTimeout      | Query timeout in seconds. Defaults to global which defaults to 60 seconds | Optional     |
+| writeToContext    | write results to context or not                                           | Optional     |
+| linqLinkBase      | Overrides the global link base so is able to be set at run time           | Optional     |
 
 #####__from__ and __to__ time note:
 This integration allows for the following formats. Note that when __from__ and __to__ times
@@ -239,19 +248,21 @@ Queries multiple tables for a given token and returns relevant results.
 This method is used for when you do not know which columns a specified search token will show up in (Needle in a haystack search)
 Thus querying all columns for the search token and returning a union of the given tables.
 ##### Required Permissions
-**A Demisto instance configured with the correct OAuth token that has permission to query the target tables**
+**A Cortex XSOAR instance configured with the correct OAuth token that has permission to query the target tables**
 ##### Base Command
 
 `devo-multi-table-query`
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| tables | List of table names to check for searchToken | Required |
-| searchToken | String that you wish to search for in given tables in any column | Required |
-| from | Start time in seconds unix timestamp | Required |
-| to | End time in seconds unix timestamp | Optional |
-| writeToContext | write results to context or not | Optional |
+| **Argument Name** | **Description**                                                           | **Required** |
+|-------------------|---------------------------------------------------------------------------|--------------|
+| tables            | List of table names to check for searchToken                              | Required     |
+| searchToken       | String that you wish to search for in given tables in any column          | Required     |
+| from              | Start time in seconds unix timestamp                                      | Required     |
+| to                | End time in seconds unix timestamp                                        | Optional     |
+| limit             | Number of entries to return to context. Default is 50. 0 sets to no limit | Optional     |
+| queryTimeout      | Query timeout in seconds. Defaults to global which defaults to 60 seconds | Optional     |
+| writeToContext    | write results to context or not                                           | Optional     |
 
 #####__from__ and __to__ time note:
 This integration allows for the following formats. Note that when __from__ and __to__ times
@@ -298,16 +309,17 @@ writing to multiple tables in a single operation.
 
 For more information on the way we write to a table please refer to this documentation found [HERE](https://github.com/DevoInc/python-ds-connector#loading-data-into-devo)
 ##### Required Permissions
-**A Demisto instance configured with the correct write JSON credentials**
+**A Cortex XSOAR instance configured with the correct write JSON credentials**
 ##### Base Command
 
 `devo-write-to-table`
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| tableName | Table name to write to | Required |
-| records | Records to write to given tableName | Required |
+| **Argument Name** | **Description**                                                 | **Required** |
+|-------------------|-----------------------------------------------------------------|--------------|
+| tableName         | Table name to write to                                          | Required     |
+| records           | Records to write to given tableName                             | Required     |
+| linqLinkBase      | Overrides the global link base so is able to be set at run time | Optional     |
 
 
 ##### Context Output
@@ -347,7 +359,7 @@ For more information on lookup tables please refer to documentation found [HERE]
 We can add extra records with incremental lookup additions. Please refer to our Python SDK for more information on how we are
 adding in extra lookup information found [HERE](https://github.com/DevoInc/python-sdk/)
 ##### Required Permissions
-**A Demisto instance configured with the correct write JSON credentials**
+**A Cortex XSOAR instance configured with the correct write JSON credentials**
 ##### Base Command
 
 `devo-write-to-lookup-table`
@@ -382,4 +394,4 @@ N/A
 ## Known Limitations
 ---
 * Currently the lookup table functionality is in Alpha. Please use at your own risk as behavior is still not fully stable.
-* It is up to the user to make sure your demisto instance can handle the amount of data returned by a query.
+* It is up to the user to make sure your Cortex XSOAR instance can handle the amount of data returned by a query.

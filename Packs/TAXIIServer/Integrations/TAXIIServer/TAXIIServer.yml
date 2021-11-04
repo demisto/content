@@ -9,8 +9,9 @@ configuration:
   required: false
   type: 8
   hidden: true
-- additionalinfo: Will run the TAXII server on this port from within Demisto.
-    Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances.
+- additionalinfo: Will run the TAXII server on this port from within Demisto. Requires
+    a unique port for each long-running integration instance. Do not use the same
+    port for multiple instances.
   display: Listen Port
   name: longRunningPort
   required: true
@@ -39,12 +40,19 @@ configuration:
   name: collections
   required: true
   type: 12
+- display: TAXII Service URL Address
+  additionalinfo: The URL address to set in the TAXII service response. If not set,
+    the integration will try to auto-detect the URL.
+  hidden: false
+  name: service_address
+  required: false
+  type: 0
 description: This integration provides TAXII Services for system indicators (Outbound
   feed).
 display: TAXII Server
 name: TAXII Server
 script:
-  dockerimage: demisto/taxii-server:1.0.0.7844
+  dockerimage: demisto/taxii-server:1.0.0.23674
   feed: false
   isfetch: false
   longRunning: true
@@ -54,5 +62,5 @@ script:
   subtype: python3
   type: python
 tests:
-- No test
+- TAXII_Feed_Test
 fromversion: 5.5.0

@@ -3,16 +3,19 @@ commonfields:
   id: Proofpoint TAP v2
   version: -1
 configuration:
-- defaultvalue: https://tap-api-v2.proofpoint.com
-  display: Server URL (e.g., https://tap-api-v2.proofpoint.com)
+- additionalinfo: e.g., https://tap-api-v2.proofpoint.com
+  defaultvalue: https://tap-api-v2.proofpoint.com
+  display: Server URL
   name: url
   required: true
   type: 0
-- display: Service Principal (the Password refers to Secret)
+- additionalinfo: The password refers to secret
+  display: Service Principal
   name: credentials
   required: true
   type: 9
-- defaultvalue: v2
+- additionalinfo: v1 is deprecated for new instances. The current API version is v2.
+  defaultvalue: v2
   display: API Version
   name: api_version
   options:
@@ -28,7 +31,9 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: A string specifying which threat type to return. If empty, all threat types are returned. Can be "url", "attachment", or "messageText".
+- additionalinfo: A string specifying which threat type to return. If empty, all threat
+    types are returned. Can be "url", "attachment", or "messageText".
+  display: Threat type
   name: threat_type
   options:
   - url
@@ -36,7 +41,9 @@ configuration:
   - messageText
   required: false
   type: 16
-- display: A string specifying which threat statuses to return. If empty, will return "active" and "cleared" threats.
+- additionalinfo: A string specifying which threat statuses to return. If empty, will
+    return "active" and "cleared" threats. Can be "active", "cleared", or "falsePositive".
+  display: Threat status
   name: threat_status
   options:
   - active
@@ -56,8 +63,9 @@ configuration:
   - Delivered Messages
   required: false
   type: 15
-- defaultvalue: 1 hour
-  display: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes) - Proofpoint supports maximum 1 hour fetch back
+- additionalinfo: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes). Proofpoint supports a maximum 1 week fetch back.
+  defaultvalue: 1 hour
+  display: First fetch time range
   name: fetch_time
   required: false
   type: 0
@@ -69,21 +77,34 @@ configuration:
   name: incidentType
   required: false
   type: 13
-description: Use the Proofpoint Targeted Attack Protection (TAP) integration to protect against and provide additional visibility into phishing and other malicious email attacks.
+description: Use the Proofpoint Targeted Attack Protection (TAP) integration to protect
+  against and provide additional visibility into phishing and other malicious email
+  attacks.
 display: Proofpoint TAP v2
 name: Proofpoint TAP v2
 script:
   commands:
   - arguments:
     - default: false
-      description: 'A string containing an ISO8601-formatted interval. If this interval overlaps with previous requests for data, records from the previous request might be duplicated. The minimum interval is thirty seconds. The maximum interval is one hour. Examples:  2016-05-01T12:00:00Z/2016-05-01T13:00:00Z - an hour interval, beginning at noon UTC on 05-01-2016 PT30M/2016-05-01T12:30:00Z - the thirty minutes beginning at noon UTC on 05-01-2016 and ending at 12:30pm UTC 2016-05-01T05:00:00-0700/PT30M - the same interval as above, but using -0700 as the time zone'
+      description: 'A string containing an ISO8601-formatted interval. If this interval
+        overlaps with previous requests for data, records from the previous request
+        might be duplicated. The minimum interval is thirty seconds. The maximum interval
+        is one hour. Examples:
+        * 2016-05-01T12:00:00Z/2016-05-01T13:00:00Z - an hour
+        interval, beginning at noon UTC on 05-01-2016
+        * PT30M/2016-05-01T12:30:00Z -
+        the thirty minutes beginning at noon UTC on 05-01-2016 and ending at 12:30pm
+        * UTC 2016-05-01T05:00:00-0700/PT30M - the same interval as above, but using
+        -0700 as the time zone'
       isArray: false
       name: interval
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'A string specifying which threat type to return. If empty, all threat types are returned. The following values are accepted: url,attachment, messageText'
+      description: 'A comma-separated list of the threat types to return. If empty, all
+        threat types are returned. The following values are accepted: "url", "attachment", and
+        "messageText".'
       isArray: false
       name: threatType
       predefined:
@@ -94,7 +115,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: A string specifying which threat statuses to return. If empty, active and cleared threats are returned. Can be "active", "cleared", "falsePositive".
+      description: A string specifying which threat statuses to return. If empty,
+        active and cleared threats are returned. Can be "active", "cleared", "falsePositive".
       isArray: false
       name: threatStatus
       predefined:
@@ -104,13 +126,20 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A string containing an ISO8601 date. It represents the start of the data retrieval period. The end of the period is determined by the current API server time rounded to the nearest minute. If JSON output is selected, the end time is included in the returned result. Example: 2016-05-01T12:00:00Z'
+      description: 'A string containing an ISO8601 date. It represents the start of
+        the data retrieval period. The end of the period is determined by the current
+        API server time rounded to the nearest minute. If JSON output is selected,
+        the end time is included in the returned result. Example: 2016-05-01T12:00:00Z.'
       isArray: false
       name: sinceTime
       required: false
       secret: false
     - default: false
-      description: An integer representing a time window (in seconds) from the current API server time. The start of the window is the current API server time, rounded to the nearest minute, less the number of seconds provided. The end of the window is the current API server time rounded to the nearest minute. If JSON output is selected, the end time is included in the returned result.
+      description: An integer representing a time window (in seconds) from the current
+        API server time. The start of the window is the current API server time, rounded
+        to the nearest minute, less the number of seconds provided. The end of the
+        window is the current API server time rounded to the nearest minute. If JSON
+        output is selected, the end time is included in the returned result.
       isArray: false
       name: sinceSeconds
       required: false
@@ -118,7 +147,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: All
-      description: Event types to return.
+      description: 'Event types to return. Possible values: "All", "Issues", "Delivered Messages", "Blocked Messages", "Permitted Clicks", and "Blocked Clicks".'
       isArray: false
       name: eventTypes
       predefined:
@@ -131,24 +160,29 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Fetches events for all clicks and messages relating to known threats within the specified time period. Details as per clicks/blocked.
+    description: Fetches events for all clicks and messages relating to known threats
+      within the specified time period. Details as per clicks/blocked.
     execution: false
     name: proofpoint-get-events
     outputs:
     - contextPath: Proofpoint.MessagesDelivered.GUID
-      description: The ID of the message within PPS. It can be used to identify the message in PPS, which is unique.
+      description: The ID of the message within PPS. It can be used to identify the
+        message in PPS, which is unique.
       type: String
     - contextPath: Proofpoint.MessagesDelivered.QID
-      description: The queue ID of the message within PPS. It can be used to identify the message in PPS, which is not unique.
+      description: The queue ID of the message within PPS. It can be used to identify
+        the message in PPS, which is not unique.
       type: String
     - contextPath: Proofpoint.MessagesDelivered.ccAddresses
-      description: 'A list of email addresses contained within the CC: header, excluding, and friendly names.'
+      description: 'A list of email addresses contained within the CC: header, excluding
+        any friendly names.'
       type: String
     - contextPath: Proofpoint.MessagesDelivered.clusterId
       description: The name of the PPS cluster which processed the message.
       type: String
     - contextPath: Proofpoint.MessagesDelivered.fromAddress
-      description: 'The email address contained in the From: header, excluding friendly, and name.'
+      description: 'The email address contained in the From: header, excluding any friendly
+        name.'
       type: String
     - contextPath: Proofpoint.MessagesDelivered.headerCC
       description: The CC header.
@@ -157,28 +191,35 @@ script:
       description: 'The full content of the From: header, including any friendly name.'
       type: String
     - contextPath: Proofpoint.MessagesDelivered.headerReplyTo
-      description: 'If present, the full content of the Reply-To: header, including any friendly names.'
+      description: 'If present, the full content of the Reply-To: header, including
+        any friendly names.'
       type: String
     - contextPath: Proofpoint.MessagesDelivered.impostorScore
-      description: The impostor score of the message. Higher scores indicate higher certainty.
+      description: The impostor score of the message. Higher scores indicate higher
+        certainty.
       type: Number
     - contextPath: Proofpoint.MessagesDelivered.malwareScore
-      description: The malware score of the message. Higher scores indicate higher certainty.
+      description: The malware score of the message. Higher scores indicate higher
+        certainty.
       type: Number
     - contextPath: Proofpoint.MessagesDelivered.messageId
-      description: Message-ID extracted from the headers of the email message. It can be used to look up the associated message in PPS, which is not unique.
+      description: Message-ID extracted from the headers of the email message. It
+        can be used to look up the associated message in PPS, which is not unique.
       type: String
     - contextPath: Proofpoint.MessagesDelivered.threatsInfoMap.threat
-      description: The artifact which was condemned by Proofpoint. The malicious URL, hash of the attachment threat, or email address of the impostor sender.
+      description: The artifact which was condemned by Proofpoint. The malicious URL,
+        hash of the attachment threat, or email address of the impostor sender.
       type: String
     - contextPath: Proofpoint.MessagesDelivered.threatsInfoMap.threatId
-      description: The unique identifier associated with this threat. It can be used to query the forensics and campaign endpoints.
+      description: The unique identifier associated with this threat. It can be used
+        to query the forensics and campaign endpoints.
       type: String
     - contextPath: Proofpoint.MessagesDelivered.threatsInfoMap.threatStatus
-      description: The current state of the threat (active, expired, false-positive, cleared).
+      description: The current state of the threat (active, expired, false-positive,
+        cleared).
       type: String
     - contextPath: Proofpoint.MessagesDelivered.threatsInfoMap.threatTime
-      description: Proofpoint assigned the threatStatus at this time (ISO8601 format).
+      description: The time Proofpoint assigned the threatStatus (ISO8601 format).
       type: Date
     - contextPath: Proofpoint.MessagesDelivered.threatsInfoMap.threatType
       description: Whether the threat was an attachment, URL, or message type.
@@ -187,34 +228,37 @@ script:
       description: A link to the entry about the threat on the TAP Dashboard.
       type: String
     - contextPath: Proofpoint.MessagesDelivered.messageTime
-      description: When the message was delivered to the user or quarantined by PPS.
+      description: The time the message was delivered to the user or quarantined by PPS.
       type: Date
-    - contextPath: Proofpoint.MessagesDelivered.messageTime
-      description: The list of PPS modules which processed the message.
-      type: String
     - contextPath: Proofpoint.MessagesDelivered.modulesRun
-      description: The list of PPS modules which processed the message.
+      description: The list of PPS modules that processed the message.
       type: String
     - contextPath: Proofpoint.MessagesDelivered.phishScore
-      description: The phishing score of the message. Higher scores indicate higher certainty.
+      description: The phishing score of the message. Higher scores indicate higher
+        certainty.
       type: Number
     - contextPath: Proofpoint.MessagesDelivered.policyRoutes
-      description: The policy routes that the message matched during processing by PPS.
+      description: The policy routes that the message matched during processing by
+        PPS.
       type: String
     - contextPath: Proofpoint.MessagesDelivered.quarantineFolder
-      description: The name of the folder which contains the quarantined message. This appears only for messagesBlocked.
+      description: The name of the folder that contains the quarantined message.
+        This appears only for messagesBlocked.
       type: String
     - contextPath: Proofpoint.MessagesDelivered.quarantineRule
-      description: The name of the rule which quarantined the message. This appears only for messagesBlocked events.
+      description: The name of the rule that quarantined the message. This appears
+        only for messagesBlocked events.
       type: String
     - contextPath: Proofpoint.MessagesDelivered.recipient
       description: A list containing the email addresses of the recipients.
       type: String
     - contextPath: Proofpoint.MessagesDelivered.replyToAddress
-      description: 'The email address contained in the Reply-To: header, excluding friendly name.'
+      description: 'The email address contained in the Reply-To: header, excluding
+        any friendly name.'
       type: String
     - contextPath: Proofpoint.MessagesDelivered.sender
-      description: The email address of the SMTP (envelope) sender. The user-part is hashed. The domain-part is cleartext.
+      description: The email address of the SMTP (envelope) sender. The user-part
+        is hashed. The domain-part is cleartext.
       type: String
     - contextPath: Proofpoint.MessagesDelivered.senderIP
       description: The IP address of the sender.
@@ -226,85 +270,102 @@ script:
       description: The subject line of the message, if available.
       type: String
     - contextPath: Proofpoint.MessagesBlocked.GUID
-      description: The ID of the message within PPS. It can be used to identify the message in PPS, which is unique.
+      description: The ID of the message within PPS. It can be used to identify the
+        message in PPS, which is unique.
       type: String
     - contextPath: Proofpoint.MessagesBlocked.QID
-      description: The queue ID of the message within PPS. It can be used to identify the message in PPS, which is not unique.
+      description: The queue ID of the message within PPS. It can be used to identify
+        the message in PPS, which is not unique.
       type: String
     - contextPath: Proofpoint.MessagesBlocked.ccAddresses
-      description: 'A list of email addresses contained within the CC: header, excluding friendly names.'
+      description: 'A list of email addresses contained within the CC: header, excluding
+        any friendly names.'
       type: String
     - contextPath: Proofpoint.MessagesBlocked.clusterId
-      description: The name of the PPS cluster which processed the message.
+      description: The name of the PPS cluster that processed the message.
       type: String
     - contextPath: Proofpoint.MessagesBlocked.fromAddress
-      description: 'The email address contained in the From: header, excluding friendly name.'
+      description: 'The email address contained in the From: header, excluding any friendly
+        name.'
       type: String
     - contextPath: Proofpoint.MessagesBlocked.headerCC
-      description: The CCheader.
+      description: The CC header.
       type: String
     - contextPath: Proofpoint.MessagesBlocked.headerFrom
       description: 'The full content of the From: header, including any friendly name.'
       type: String
     - contextPath: Proofpoint.MessagesBlocked.headerReplyTo
-      description: 'If present, the full content of the Reply-To: header, including any friendly names.'
+      description: 'If present, the full content of the Reply-To: header, including
+        any friendly names.'
       type: String
     - contextPath: Proofpoint.MessagesBlocked.impostorScore
-      description: The impostor score of the message. Higher scores indicate higher certainty.
+      description: The impostor score of the message. Higher scores indicate higher
+        certainty.
       type: Number
     - contextPath: Proofpoint.MessagesBlocked.malwareScore
-      description: The malware score of the message. Higher scores indicate higher certainty.
+      description: The malware score of the message. Higher scores indicate higher
+        certainty.
       type: Number
     - contextPath: Proofpoint.MessagesBlocked.messageId
-      description: Message-ID extracted from the headers of the email message. It can be used to look up the associated message in PPS, which is not unique.
+      description: Message-ID extracted from the headers of the email message. It
+        can be used to look up the associated message in PPS, which is not unique.
       type: String
     - contextPath: Proofpoint.MessagesBlocked.threatsInfoMap.threat
-      description: The artifact which was condemned by Proofpoint. The malicious URL, hash of the attachment threat, or email address of the impostor sender.
+      description: The artifact which was condemned by Proofpoint. The malicious URL,
+        hash of the attachment threat, or email address of the impostor sender.
       type: String
     - contextPath: Proofpoint.MessagesBlocked.threatsInfoMap.threatId
-      description: The unique identifier associated with this threat. It can be used to query the forensics and campaign endpoints.
+      description: The unique identifier associated with this threat. It can be used
+        to query the forensics and campaign endpoints.
       type: String
     - contextPath: Proofpoint.MessagesBlocked.threatsInfoMap.threatStatus
-      description: The current state of the threat (active, expired, false-positive, cleared).
+      description: The current state of the threat (active, expired, false-positive,
+        cleared).
       type: String
     - contextPath: Proofpoint.MessagesBlocked.threatsInfoMap.threatTime
-      description: Proofpoint assigned the threatStatus at this time (ISO8601 format).
+      description: The time Proofpoint assigned the threatStatus (ISO8601 format).
       type: Date
     - contextPath: Proofpoint.MessagesBlocked.threatsInfoMap.threatType
       description: Whether the threat was an attachment, URL, or message type.
       type: String
     - contextPath: Proofpoint.MessagesBlocked.threatsInfoMap.threatUrl
-      description: A link to the entry about the threat on the TAP Dashboard.
+      description: A link to the entry about the threat on the TAP dashboard.
       type: String
     - contextPath: Proofpoint.MessagesBlocked.messageTime
-      description: When the message was blocked to the user or quarantined by PPS.
+      description: The time the message was blocked to the user or quarantined by PPS.
       type: Date
     - contextPath: Proofpoint.MessagesBlocked.messageTime
-      description: The list of PPS modules which processed the message.
+      description: The list of PPS modules that processed the message.
       type: String
     - contextPath: Proofpoint.MessagesBlocked.modulesRun
-      description: The list of PPS modules which processed the message.
+      description: The list of PPS modules that processed the message.
       type: String
     - contextPath: Proofpoint.MessagesBlocked.phishScore
-      description: The phishing score of the message. Higher scores indicate higher certainty.
+      description: The phishing score of the message. Higher scores indicate higher
+        certainty.
       type: Number
     - contextPath: Proofpoint.MessagesBlocked.policyRoutes
-      description: The policy routes that the message matched during processing by PPS.
+      description: The policy routes that the message matched during processing by
+        PPS.
       type: String
     - contextPath: Proofpoint.MessagesBlocked.quarantineFolder
-      description: The name of the folder which contains the quarantined message. This appears only for messagesBlocked.
+      description: The name of the folder that contains the quarantined message.
+        This appears only for messagesBlocked.
       type: String
     - contextPath: Proofpoint.MessagesBlocked.quarantineRule
-      description: The name of the rule which quarantined the message. This appears only for messagesBlocked events.
+      description: The name of the rule that quarantined the message. This appears
+        only for messagesBlocked events.
       type: String
     - contextPath: Proofpoint.MessagesBlocked.recipient
       description: A list containing the email addresses of the recipients.
       type: String
     - contextPath: Proofpoint.MessagesBlocked.replyToAddress
-      description: 'The email address contained in the Reply-To: header, excluding friendly name.'
+      description: 'The email address contained in the Reply-To: header, excluding any
+        friendly name.'
       type: String
     - contextPath: Proofpoint.MessagesBlocked.sender
-      description: The email address of the SMTP (envelope) sender. The user-part is hashed. The domain-part is cleartext.
+      description: The email address of the SMTP (envelope) sender. The user-part
+        is hashed. The domain-part is cleartext.
       type: String
     - contextPath: Proofpoint.MessagesBlocked.senderIP
       description: The IP address of the sender.
@@ -316,37 +377,45 @@ script:
       description: The subject line of the message, if available.
       type: String
     - contextPath: Proofpoint.ClicksPermitted.GUID
-      description: The ID of the message within PPS. It can be used to identify the message in PPS, which is unique.
+      description: The ID of the message within PPS. It can be used to identify the
+        message in PPS, which is unique.
       type: String
     - contextPath: Proofpoint.ClicksPermitted.campaignId
-      description: An identifier for the campaign of which the threat is a member, if available at the time of the query. Threats can be linked to campaigns even after these events are retrieved.
+      description: An identifier for the campaign of which the threat is a member,
+        if available at the time of the query. Threats can be linked to campaigns
+        even after these events are retrieved.
       type: String
     - contextPath: Proofpoint.ClicksPermitted.classification
       description: The threat category of the malicious URL.
       type: String
     - contextPath: Proofpoint.ClicksPermitted.clickIP
-      description: The external IP address of the user who clicked on the link. If the user is behind a firewall performing network address translation, the IP address of the firewall will be shown.
+      description: The external IP address of the user who clicked the link. If
+        the user is behind a firewall performing network address translation, the
+        IP address of the firewall will be shown.
       type: String
     - contextPath: Proofpoint.ClicksPermitted.clickTime
-      description: The time the user clicked on the URL.
+      description: The time the user clicked the URL.
       type: Date
     - contextPath: Proofpoint.ClicksPermitted.messageID
-      description: The Message-ID extracted from the headers of the email message. It can be used to look up the associated message in PPS and is not unique.
+      description: The Message-ID extracted from the headers of the email message.
+        It can be used to look up the associated message in PPS and is not unique.
       type: String
     - contextPath: Proofpoint.ClicksPermitted.recipient
       description: The email address of the recipient.
       type: String
     - contextPath: Proofpoint.ClicksPermitted.sender
-      description: The email address of the sender. The user-part is hashed. The domain-part is cleartext.
+      description: The email address of the sender. The user-part is hashed. The domain-part
+        is cleartext.
       type: String
     - contextPath: Proofpoint.ClicksPermitted.senderIP
       description: The IP address of the sender.
       type: String
     - contextPath: Proofpoint.ClicksPermitted.threatID
-      description: 'The unique identifier associated with this threat. It can be used to query the forensics and campaign endpoints. '
+      description: 'The unique identifier associated with this threat. It can be used
+        to query the forensics and campaign endpoints.'
       type: String
     - contextPath: Proofpoint.ClicksPermitted.threatTime
-      description: Proofpoint identified the URL as a threat at this time.
+      description: The time Proofpoint identified the URL as a threat.
       type: Date
     - contextPath: Proofpoint.ClicksPermitted.threatURL
       description: A link to the entry on the TAP Dashboard for the particular threat.
@@ -358,43 +427,51 @@ script:
       description: The User-Agent header from the clicker's HTTP request.
       type: String
     - contextPath: Proofpoint.ClicksBlocked.GUID
-      description: The ID of the message within PPS. It can be used to identify the message in PPS and is guaranteed to be unique.
+      description: The ID of the message within PPS. It can be used to identify the
+        message in PPS and is guaranteed to be unique.
       type: String
     - contextPath: Proofpoint.ClicksBlocked.campaignId
-      description: An identifier for the campaign of which the threat is a member, if available at the time of the query. Threats can be linked to campaigns even after these events are retrieved.
+      description: An identifier for the campaign of which the threat is a member,
+        if available at the time of the query. Threats can be linked to campaigns
+        even after these events are retrieved.
       type: String
     - contextPath: Proofpoint.ClicksBlocked.classification
       description: The threat category of the malicious URL.
       type: String
     - contextPath: Proofpoint.ClicksBlocked.clickIP
-      description: The external IP address of the user who clicked on the link. If the user is behind a firewall performing network address translation, the IP address of the firewall will be shown.
+      description: The external IP address of the user who clicked the link. If
+        the user is behind a firewall performing network address translation, the
+        IP address of the firewall will be shown.
       type: String
     - contextPath: Proofpoint.ClicksBlocked.clickTime
-      description: The time the user clicked on the URL
+      description: The time the user clicked the URL.
       type: Date
     - contextPath: Proofpoint.ClicksBlocked.messageID
-      description: Message-ID extracted from the headers of the email message. It can be used to look up the associated message in PPS and is not unique.
+      description: Message-ID extracted from the headers of the email message. It
+        can be used to look up the associated message in PPS and is not unique.
       type: String
     - contextPath: Proofpoint.ClicksBlocked.recipient
       description: The email address of the recipient.
       type: String
     - contextPath: Proofpoint.ClicksBlocked.sender
-      description: The email address of the sender. The user-part is hashed. The domain-part is cleartext.
+      description: The email address of the sender. The user-part is hashed. The domain-part
+        is cleartext.
       type: String
     - contextPath: Proofpoint.ClicksBlocked.senderIP
       description: The IP address of the sender.
       type: String
     - contextPath: Proofpoint.ClicksBlocked.threatID
-      description: 'The unique identifier associated with this threat. It can be used to query the forensics and campaign endpoints. '
+      description: 'The unique identifier associated with this threat. It can be used
+        to query the forensics and campaign endpoints.'
       type: String
     - contextPath: Proofpoint.ClicksBlocked.threatTime
-      description: Proofpoint identified the URL as a threat at this time.
+      description: The time Proofpoint identified the URL as a threat.
       type: Date
     - contextPath: Proofpoint.ClicksBlocked.threatURL
-      description: A link to the entry on the TAP Dashboard for the particular threat.
+      description: A link to the entry on the TAP dashboard for the particular threat.
       type: String
     - contextPath: Proofpoint.ClicksBlocked.url
-      description: The malicious URL which was clicked.
+      description: The malicious URL that was clicked.
       type: String
     - contextPath: Proofpoint.ClicksBlocked.userAgent
       description: The User-Agent header from the clicker's HTTP request.
@@ -414,7 +491,8 @@ script:
       secret: false
     - default: false
       defaultValue: 'false'
-      description: Whether to include forensic evidence for the whole campaign. Can be used with threatId only.
+      description: Whether to include forensic evidence for the whole campaign. Can
+        be used with threatId only.
       isArray: false
       name: includeCampaignForensics
       required: false
@@ -461,7 +539,7 @@ script:
       description: The name of the platform.
       type: String
     - contextPath: Proofpoint.Report.Attachment.Platform.OS
-      description: The OS of the platform.
+      description: The operating system of the platform.
       type: String
     - contextPath: Proofpoint.Report.Attachment.Platform.Version
       description: The version of the platform.
@@ -479,7 +557,7 @@ script:
       description: Whether the cookie was set or deleted.
       type: String
     - contextPath: Proofpoint.Report.Cookie.Domain
-      description: Which domain set the cookie.
+      description: The domain that set the cookie.
       type: String
     - contextPath: Proofpoint.Report.Cookie.Key
       description: The name of the cookie being set or deleted.
@@ -491,7 +569,7 @@ script:
       description: Name of the platform.
       type: String
     - contextPath: Proofpoint.Report.Cookie.Platform.OS
-      description: The OS of the platform.
+      description: The operating system of the platform.
       type: String
     - contextPath: Proofpoint.Report.Cookie.Platform.Version
       description: The version of the platform.
@@ -512,7 +590,7 @@ script:
       description: Optional. An array of CNames, which were associated with the hostname.
       type: String
     - contextPath: Proofpoint.Report.DNS.IP
-      description: Optional. An array of IP addresses which were resolved to the hostname.
+      description: Optional. An array of IP addresses that were resolved to the hostname.
       type: String
     - contextPath: Proofpoint.Report.DNS.NameServers
       description: Optional. The nameservers responsible for the hostname's domain.
@@ -524,7 +602,7 @@ script:
       description: The name of the platform.
       type: String
     - contextPath: Proofpoint.Report.DNS.Platform.OS
-      description: The OS of the platform.
+      description: The operating system of the platform.
       type: String
     - contextPath: Proofpoint.Report.DNS.Platform.Version
       description: The version of the platform.
@@ -542,7 +620,8 @@ script:
       description: The location of the dropper file.
       type: String
     - contextPath: Proofpoint.Report.Dropper.URL
-      description: Optional. The name of the static rule inside the sandbox which identified the dropper.
+      description: Optional. The name of the static rule inside the sandbox that
+        identified the dropper.
       type: String
     - contextPath: Proofpoint.Report.Dropper.Rule
       description: Optional. The URL the dropper contacted.
@@ -551,7 +630,7 @@ script:
       description: The name of the platform.
       type: String
     - contextPath: Proofpoint.Report.Dropper.Platform.OS
-      description: The OS of the platform.
+      description: The operating system of the platform.
       type: String
     - contextPath: Proofpoint.Report.Dropper.Platform.Version
       description: The version of the platform.
@@ -569,16 +648,17 @@ script:
       description: Optional. The location of the file operated on.
       type: String
     - contextPath: Proofpoint.Report.File.Action
-      description: Optional. The filesystem call made create (modify, or delete).
+      description: Optional. The filesystem call made (create, modify, or delete).
       type: String
     - contextPath: Proofpoint.Report.File.Rule
-      description: Optional. The name of the static rule inside the sandbox which identified the suspicious file.
+      description: Optional. The name of the static rule inside the sandbox that
+        identified the suspicious file.
       type: String
     - contextPath: Proofpoint.Report.File.SHA256
-      description: Optional. The SH256 sum of the file's contents.
+      description: Optional. The SH256 hash of the file's contents.
       type: Unknown
     - contextPath: Proofpoint.Report.File.MD5
-      description: Optional. The MD5 sum of the file's contents.
+      description: Optional. The MD5 hash of the file's contents.
       type: String
     - contextPath: Proofpoint.Report.File.Size
       description: Optional. The size in bytes of the file's contents.
@@ -587,7 +667,7 @@ script:
       description: The name of the platform.
       type: String
     - contextPath: Proofpoint.Report.File.Platform.OS
-      description: The OS of the platform.
+      description: The operating system of the platform.
       type: String
     - contextPath: Proofpoint.Report.File.Platform.Version
       description: The version of the platform.
@@ -602,16 +682,17 @@ script:
       description: A friendly display string.
       type: String
     - contextPath: Proofpoint.Report.IDS.Name
-      description: The friendly name of the IDS rule which observed the malicious traffic.
+      description: The friendly name of the IDS rule that observed the malicious
+        traffic.
       type: String
     - contextPath: Proofpoint.Report.IDS.SignatureID
-      description: The identifier of the IDS rule which observed the malicious traffic.
+      description: The identifier of the IDS rule that observed the malicious traffic.
       type: String
     - contextPath: Proofpoint.Report.IDS.Platform.Name
       description: The name of the platform.
       type: String
     - contextPath: Proofpoint.Report.IDS.Platform.OS
-      description: The OS of the platform.
+      description: The operating system of the platform.
       type: String
     - contextPath: Proofpoint.Report.IDS.Platform.Version
       description: The version of the platform.
@@ -635,7 +716,7 @@ script:
       description: The name of the platform.
       type: String
     - contextPath: Proofpoint.Report.Mutex.Platform.OS
-      description: The OS of the platform.
+      description: The operating system of the platform.
       type: String
     - contextPath: Proofpoint.Report.Mutex.Platform.Version
       description: The version of the platform.
@@ -656,7 +737,7 @@ script:
       description: The remote IP address being contacted.
       type: String
     - contextPath: Proofpoint.Report.Network.Port
-      description: The remote IP Port being contacted.
+      description: The remote IP port being contacted.
       type: String
     - contextPath: Proofpoint.Report.Network.Type
       description: The protocol being used (tcp or udp).
@@ -665,7 +746,7 @@ script:
       description: The name of the platform.
       type: String
     - contextPath: Proofpoint.Report.Network.Platform.OS
-      description: The OS of the platform.
+      description: The operating system of the platform.
       type: String
     - contextPath: Proofpoint.Report.Network.Platform.Version
       description: The version of the platform.
@@ -683,13 +764,13 @@ script:
       description: The action performed on the process. Relevant when create is produced.
       type: String
     - contextPath: Proofpoint.Report.Process.Path
-      description: The location of the executable which spawned the process.
+      description: The location of the executable that spawned the process.
       type: String
     - contextPath: Proofpoint.Report.Process.Platform.Name
       description: The name of the platform.
       type: String
     - contextPath: Proofpoint.Report.Process.Platform.OS
-      description: The OS of the platform.
+      description: The operating system of the platform.
       type: String
     - contextPath: Proofpoint.Report.Process.Platform.Version
       description: The version of the platform.
@@ -719,7 +800,7 @@ script:
       description: The name of the platform.
       type: String
     - contextPath: Proofpoint.Report.Registry.Platform.OS
-      description: The OS of the platform.
+      description: The operating system of the platform.
       type: String
     - contextPath: Proofpoint.Report.Registry.Platform.Version
       description: The version of the platform.
@@ -737,33 +818,940 @@ script:
       description: The URL which was observed.
       type: String
     - contextPath: Proofpoint.Report.URL.Blacklisted
-      description: Optional. Whether the URL was listed on a blacklist.
+      description: Optional. Whether the URL appeared on a blacklist.
       type: Boolean
     - contextPath: Proofpoint.Report.URL.SHA256
-      description: Optional. The sha256 value of the file downloaded from the URL.
+      description: Optional. The SHA256 hash of the file downloaded from the URL.
       type: String
     - contextPath: Proofpoint.Report.URL.MD5
-      description: Optional. The md5 value of the file downloaded from the URL.
+      description: Optional. The MD5 hash of the file downloaded from the URL.
       type: String
     - contextPath: Proofpoint.Report.URL.Size
       description: Optional. The size in bytes of the file retrieved from the URL.
       type: Number
     - contextPath: Proofpoint.Report.URL.HTTPStatus
-      description: Optional. The HTTP status code which was produced when our sandbox visited the URL.
+      description: Optional. The HTTP status code that was produced when our sandbox
+        visited the URL.
       type: Number
     - contextPath: Proofpoint.Report.URL.IP
-      description: Optional. The IP address that was resolved to the hostname by the sandbox.
+      description: Optional. The IP address that was resolved to the hostname by the
+        sandbox.
       type: String
     - contextPath: Proofpoint.Report.URL.Platform.Name
       description: The name of the platform.
       type: String
     - contextPath: Proofpoint.Report.URL.Platform.OS
-      description: The OS of the platform.
+      description: The operating system of the platform.
       type: String
     - contextPath: Proofpoint.Report.URL.Platform.Version
       description: The version of the platform.
       type: String
-  dockerimage: demisto/python3:3.8.5.10845
+    - contextPath: Proofpoint.Report.Behavior.Time
+      description: The relative time at which the evidence was observed during sandboxing.
+      type: Date
+    - contextPath: Proofpoint.Report.Behavior.Malicious
+      description: Whether the evidence was used to reach a malicious verdict.
+      type: String
+    - contextPath: Proofpoint.Report.Behavior.Display
+      description: A friendly display string.
+      type: String
+    - contextPath: Proofpoint.Report.Behavior.URL
+      description: The URL that was observed.
+      type: String
+    - contextPath: Proofpoint.Report.Behavior.Path
+      description: The location of the executable which spawned the behavior.
+      type: String
+    - contextPath: Proofpoint.Report.Behavior.Platform.Name
+      description: The name of the platform.
+      type: String
+    - contextPath: Proofpoint.Report.Behavior.Platform.OS
+      description: The operating system of the platform.
+      type: String
+    - contextPath: Proofpoint.Report.Behavior.Platform.Version
+      description: The version of the platform.
+      type: String
+    - contextPath: Proofpoint.Report.Behavior.Time
+      description: The relative time at which the evidence was observed during sandboxing.
+      type: Date
+    - contextPath: Proofpoint.Report.Behavior.Malicious
+      description: Whether the evidence was used to reach a malicious verdict.
+      type: String
+    - contextPath: Proofpoint.Report.Behavior.Display
+      description: A friendly display string.
+      type: String
+    - contextPath: Proofpoint.Report.Behavior.URL
+      description: The URL that was observed.
+      type: String
+    - contextPath: Proofpoint.Report.Behavior.Path
+      description: The location of the executable that spawned the behavior.
+      type: String
+    - contextPath: Proofpoint.Report.Behavior.Platform.Name
+      description: The name of the platform.
+      type: String
+    - contextPath: Proofpoint.Report.Behavior.Platform.OS
+      description: The operating system of the platform.
+      type: String
+    - contextPath: Proofpoint.Report.Behavior.Platform.Version
+      description: The version of the platform.
+      type: String
+    - contextPath: Proofpoint.Report.Screenshot.Time
+      description: The relative time at which the evidence was observed during sandboxing.
+      type: Date
+    - contextPath: Proofpoint.Report.Screenshot.Malicious
+      description: Whether the evidence was used to reach a malicious verdict.
+      type: String
+    - contextPath: Proofpoint.Report.Screenshot.Display
+      description: A friendly display string.
+      type: String
+    - contextPath: Proofpoint.Report.Screenshot.URL
+      description: The URL hosting the screenshot image.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: "Click's threat status to be retrieved. If no value is specified,
+        active and cleared threats will be retrieved. Possible values: 'active', 'cleared', and 'falsePositive'."
+      isArray: false
+      name: threat_status
+      predefined:
+      - active
+      - cleared
+      - falsePositive
+      required: false
+      secret: false
+    - default: false
+      description: 'ISO8601-formatted interval date. The minimum interval is thirty
+        seconds. The maximum interval is one hour. For example: 2021-04-27T09:00:00Z/2021-04-27T10:00:00Z.'
+      isArray: false
+      name: interval
+      required: false
+      secret: false
+    - default: false
+      description: 'Represents the start of the data retrieval period. For example:
+        1 week, 2 days, 3 hours, etc. The maximum is 1 week.'
+      isArray: false
+      name: time_range
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets events for clicks to malicious URLs blocked in the specified
+      time period. Must provide either the interval or time_range arguments.
+    execution: false
+    name: proofpoint-get-events-clicks-blocked
+    outputs:
+    - contextPath: Proofpoint.ClicksBlocked.url
+      description: The malicious URL was clicked.
+      type: String
+    - contextPath: Proofpoint.ClicksBlocked.classification
+      description: The threat category of the malicious URL (Malware, Phish, or Spam)
+      type: String
+    - contextPath: Proofpoint.ClicksBlocked.clickTime
+      description: The time the user clicked the URL.
+      type: Date
+    - contextPath: Proofpoint.ClicksBlocked.threatTime
+      description: The time that Proofpoint identified the URL as a threat.
+      type: Date
+    - contextPath: Proofpoint.ClicksBlocked.userAgent
+      description: The User-Agent header from the clicker's HTTP request.
+      type: String
+    - contextPath: Proofpoint.ClicksBlocked.campaignId
+      description: An identifier for the campaign of which the threat is a member.
+      type: String
+    - contextPath: Proofpoint.ClicksBlocked.id
+      description: The unique ID of the click.
+      type: String
+    - contextPath: Proofpoint.ClicksBlocked.clickIP
+      description: The external IP address of the user who clicked the link.
+      type: String
+    - contextPath: Proofpoint.ClicksBlocked.sender
+      description: The email address of the sender. The user-part is hashed. The domain-part
+        is cleartext.
+      type: String
+    - contextPath: Proofpoint.ClicksBlocked.recipient
+      description: The email address of the recipient.
+      type: String
+    - contextPath: Proofpoint.ClicksBlocked.senderIP
+      description: The IP address of the sender.
+      type: String
+    - contextPath: Proofpoint.ClicksBlocked.threatID
+      description: 'The unique identifier associated with this threat.'
+      type: String
+    - contextPath: Proofpoint.ClicksBlocked.threatURL
+      description: A link to the entry on the TAP dashboard for the particular threat.
+      type: String
+    - contextPath: Proofpoint.ClicksBlocked.threatStatus
+      description: The current state of the threat.
+      type: String
+    - contextPath: Proofpoint.ClicksBlocked.messageID
+      description: The ID of the message that the URL belongs to.
+      type: String
+    - contextPath: Proofpoint.ClicksBlocked.GUID
+      description: The ID of the message within PPS. It can be used to identify the
+        message in PPS.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: "Click's threat status to be retrieved. If no value is specified,
+        active and cleared threats will be retrieved. Possible values: 'active', 'cleared', and 'falsePositive'."
+      isArray: false
+      name: threat_status
+      predefined:
+      - active
+      - cleared
+      - falsePositive
+      required: false
+      secret: false
+    - default: false
+      description: 'ISO8601-formatted interval date. The minimum interval is thirty
+        seconds. The maximum interval is one hour. For example: 2021-04-27T09:00:00Z/2021-04-27T10:00:00Z.'
+      isArray: false
+      name: interval
+      required: false
+      secret: false
+    - default: false
+      description: 'Represents the start of the data retrieval period. For example:
+        1 week, 2 days, 3 hours, etc. The maximum is 1 week.'
+      isArray: false
+      name: time_range
+      required: false
+      secret: false
+    deprecated: false
+    description: Get events for clicks to malicious URLs permitted in the specified
+      time period.  Must provide either the interval or time_range arguments.
+    execution: false
+    name: proofpoint-get-events-clicks-permitted
+    outputs:
+    - contextPath: Proofpoint.ClicksPermitted.url
+      description: The malicious URL that was clicked.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.classification
+      description: The threat category of the malicious URL (Malware, Phish, or Spam).
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.clickTime
+      description: The time the user clicked the URL.
+      type: Date
+    - contextPath: Proofpoint.ClicksPermitted.threatTime
+      description: The time that Proofpoint identified the URL as a threat.
+      type: Date
+    - contextPath: Proofpoint.ClicksPermitted.userAgent
+      description: The User-Agent header from the clicker's HTTP request.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.campaignId
+      description: An identifier for the campaign of which the threat is a member.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.id
+      description: The unique ID of the click.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.clickIP
+      description: The external IP address of the user who clicked the link.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.sender
+      description: The email address of the sender. The user-part is hashed. The domain-part is
+        in cleartext.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.recipient
+      description: The email address of the recipient.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.senderIP
+      description: The IP address of the sender.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.threatID
+      description: The unique identifier associated with this threat.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.threatURL
+      description: A link to the entry on the TAP dashboard for the particular threat.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.threatStatus
+      description: The current state of the threat.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.messageID
+      description: The ID of the message that the URL belongs to.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.GUID
+      description: The ID of the message within PPS. It can be used to identify the
+        message in PPS.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: "Message's threat type to be retrieved. If no value is specified,
+        all threat types will be retrieved. Possible values: 'url', 'attachment', and 'message'."
+      isArray: false
+      name: threat_type
+      predefined:
+      - url
+      - attachment
+      - message
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: "Message's threat status to be retrieved. If no value is specified,
+        active and cleared threats will be retrieved. Possible values: 'active', 'cleared', and 'falsePositive'."
+      isArray: false
+      name: threat_status
+      predefined:
+      - active
+      - cleared
+      - falsePositive
+      required: false
+      secret: false
+    - default: false
+      description: 'ISO8601-formatted interval date. The minimum interval is thirty
+        seconds. The maximum interval is one hour. For example: 2021-04-27T09:00:00Z/2021-04-27T10:00:00Z.'
+      isArray: false
+      name: interval
+      required: false
+      secret: false
+    - default: false
+      description: 'Represents the start of the data retrieval period. For example:
+        1 week, 2 days, 3 hours, etc. The maximum is 1 week.'
+      isArray: false
+      name: time_range
+      required: false
+      secret: false
+    deprecated: false
+    description: Get events for blocked messages in the specified time period. Must provide either the interval or time_range arguments.
+    execution: false
+    name: proofpoint-get-events-messages-blocked
+    outputs:
+    - contextPath: Proofpoint.MessagesBlocked.spamScore
+      description: The spam score of the message. Higher scores indicate higher certainty.
+      type: Number
+    - contextPath: Proofpoint.MessagesBlocked.phishScore
+      description: The phish score of the message. Higher scores indicate higher certainty.
+      type: Number
+    - contextPath: Proofpoint.MessagesBlocked.threatsInfoMap
+      description: 'List that contains details about detected threats within the message.
+        Contains: campaignID, classification, threat, threatID, threatStatus,threatTime,
+        threatType, threatUrl.'
+      type: List
+    - contextPath: Proofpoint.MessagesBlocked.messageTime
+      description: The time the message was delivered to the user or quarantined by PPS.
+      type: Date
+    - contextPath: Proofpoint.MessagesBlocked.impostorScore
+      description: The impostor score of the message. Higher scores indicate higher
+        certainty.
+      type: Number
+    - contextPath: Proofpoint.MessagesBlocked.malwareScore
+      description: The malware score of the message. Higher scores indicate higher
+        certainty.
+      type: Number
+    - contextPath: Proofpoint.MessagesBlocked.cluster
+      description: The name of the PPS cluster that processed the message.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.subject
+      description: The subject line of the message, if available.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.quarantineFolder
+      description: The name of the folder that contains the quarantined message. This appears
+        only for blocked messages. For delivered messages will be 'None'.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.quarantineRule
+      description: The name of the rule that quarantined the message. This appears only
+        for messagesBlocked events.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.policyRoutes
+      description: The policy routes that the message matched during processing by
+        PPS.
+      type: List
+    - contextPath: Proofpoint.MessagesBlocked.modulesRun
+      description: The list of PPS modules that processed the message.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.messageSize
+      description: The size in bytes of the message, including headers and attachments.
+      type: Number
+    - contextPath: Proofpoint.MessagesBlocked.Header.headerFrom
+      description: The full content of the From header, including any friendly name.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.Header.headerReplyTo
+      description: 'If present, the full content of the Reply-To: header, including
+        any friendly names.'
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.Header.fromAddress
+      description: The email address contained in the From header, excluding the friendly
+        name.
+      type: List
+    - contextPath: Proofpoint.MessagesBlocked.Header.ccAddresses
+      description: 'A list of email addresses contained within the CC: header, excluding
+        friendly names.'
+      type: List
+    - contextPath: Proofpoint.MessagesBlocked.Header.replyToAddress
+      description: 'The email address contained in the Reply-To: header, excluding
+        friendly name.'
+      type: List
+    - contextPath: Proofpoint.MessagesBlocked.Header.toAddresses
+      description: 'A list of email addresses contained within the To: header, excluding
+        friendly names.'
+      type: List
+    - contextPath: Proofpoint.MessagesBlocked.Header.xmailer
+      description: 'The content of the X-Mailer: header, if present.'
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.messageParts
+      description: An array of structures that contain details about parts of the
+        message, including both message bodies and attachments.
+      type: List
+    - contextPath: Proofpoint.MessagesBlocked.completelyRewritten
+      description: The rewrite status of the message. If value is true, all instances
+        of URL threats within the message were successfully rewritten. If the value
+        is false, at least one instance of the threat URL was not rewritten. If
+        the value is 'na', the message did not contain any URL-based threats.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.id
+      description: The unique ID of the message.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.sender
+      description: The email address of the SMTP (envelope) sender. The user-part
+        is hashed. The domain-part is cleartext.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.recipient
+      description: A list containing the email addresses of the recipients.
+      type: List
+    - contextPath: Proofpoint.MessagesBlocked.senderIP
+      description: The IP address of the sender.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.messageID
+      description: 'Message-ID extracted from the headers of the email message.'
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.GUID
+      description: The ID of the message within PPS. It can be used to identify the
+        message in PPS.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: "Message's threat type to be retrieved. If no value is specified,
+        all threat types will be retrieved. Possible values: 'url', 'attachment', and 'message'."
+      isArray: false
+      name: threat_type
+      predefined:
+      - url
+      - attachment
+      - message
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: "Message's threat status to be retrieved. If no value is specified,
+        active and cleared threats will be retrieved. Possible values: 'active', 'cleared', and 'falsePositive'."
+      isArray: false
+      name: threat_status
+      predefined:
+      - active
+      - cleared
+      - falsePositive
+      required: false
+      secret: false
+    - default: false
+      description: 'ISO8601-formatted interval date. The minimum interval is thirty
+        seconds. The maximum interval is one hour. For example: 2021-04-27T09:00:00Z/2021-04-27T10:00:00Z.'
+      isArray: false
+      name: interval
+      required: false
+      secret: false
+    - default: false
+      description: 'Represents the start of the data retrieval period. For example:
+        1 week, 2 days, 3 hours, etc. The maximum is 1 week.'
+      isArray: false
+      name: time_range
+      required: false
+      secret: false
+    deprecated: false
+    description: Get events for delivered messages in the specified time period. Must provide either the interval or time_range arguments.
+    execution: false
+    name: proofpoint-get-events-messages-delivered
+    outputs:
+    - contextPath: Proofpoint.MessagesDelivered.spamScore
+      description: The spam score of the message. Higher scores indicate higher certainty.
+      type: Number
+    - contextPath: Proofpoint.MessagesDelivered.phishScore
+      description: The phish score of the message. Higher scores indicate higher certainty.
+      type: Number
+    - contextPath: Proofpoint.MessagesDelivered.threatsInfoMap
+      description: 'List that contains details about detected threats within the message.
+        Contains: campaignID, classification, threat, threatID, threatStatus,threatTime,
+        threatType, threatUrl.'
+      type: List
+    - contextPath: Proofpoint.MessagesDelivered.messageTime
+      description: The time the message was delivered to the user or quarantined by PPS.
+      type: Date
+    - contextPath: Proofpoint.MessagesDelivered.impostorScore
+      description: The impostor score of the message. Higher scores indicate higher
+        certainty.
+      type: Number
+    - contextPath: Proofpoint.MessagesDelivered.malwareScore
+      description: The malware score of the message. Higher scores indicate higher
+        certainty.
+      type: Number
+    - contextPath: Proofpoint.MessagesDelivered.cluster
+      description: The name of the PPS cluster that processed the message.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.subject
+      description: The subject line of the message, if available.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.quarantineFolder
+      description: The name of the folder that contains the quarantined message. This appears
+        only for blocked messages. For delivered messages will be 'None'.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.quarantineRule
+      description: The name of the rule that quarantined the message. This appears only
+        for messagesBlocked events.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.policyRoutes
+      description: The policy routes that the message matched during processing by
+        PPS.
+      type: List
+    - contextPath: Proofpoint.MessagesDelivered.modulesRun
+      description: The list of PPS modules that processed the message.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.messageSize
+      description: The size in bytes of the message, including headers and attachments.
+      type: Number
+    - contextPath: Proofpoint.MessagesDelivered.Header.headerFrom
+      description: The full content of the From header, including any friendly name.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.Header.headerReplyTo
+      description: 'If present, the full content of the Reply-To: header, including
+        any friendly names.'
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.Header.fromAddress
+      description: The email address contained in the From header, excluding the friendly
+        name.
+      type: List
+    - contextPath: Proofpoint.MessagesDelivered.Header.ccAddresses
+      description: 'A list of email addresses contained within the CC: header, excluding
+        friendly names.'
+      type: List
+    - contextPath: Proofpoint.MessagesDelivered.Header.replyToAddress
+      description: 'The email address contained in the Reply-To: header, excluding
+        friendly name.'
+      type: List
+    - contextPath: Proofpoint.MessagesDelivered.Header.toAddresses
+      description: 'A list of email addresses contained within the To: header, excluding
+        friendly names.'
+      type: List
+    - contextPath: Proofpoint.MessagesDelivered.Header.xmailer
+      description: 'The content of the X-Mailer: header, if present.'
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.messageParts
+      description: An array of structures that contains details about parts of the
+        message, including both message bodies and attachments.
+      type: List
+    - contextPath: Proofpoint.MessagesDelivered.completelyRewritten
+      description: The rewrite status of the message. If value is true, all instances
+        of URL threats within the message were successfully rewritten. If the value
+        is false, at least one instance of the threat URL was not rewritten. If
+        the value is 'na', the message did not contain any URL-based threats.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.id
+      description: The unique ID of the message.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.sender
+      description: The email address of the SMTP (envelope) sender. The user-part
+        is hashed. The domain-part is cleartext.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.recipient
+      description: A list containing the email addresses of the recipients.
+      type: List
+    - contextPath: Proofpoint.MessagesDelivered.senderIP
+      description: The IP address of the sender.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.messageID
+      description: 'Message-ID extracted from the headers of the email message.'
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.GUID
+      description: The ID of the message within PPS. It can be used to identify the
+        message in PPS and is guaranteed to be unique.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: "Event's threat type to be retrieved. If no value is specified, all
+        threat types will be retrieved. Possible values: 'url', 'attachment', and 'message'."
+      isArray: false
+      name: threat_type
+      predefined:
+      - url
+      - attachment
+      - message
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: "Event's threat status to be retrieved.If no value is specified,
+        active and cleared threats will be retrieved. Possible values: 'url', 'attachment', and 'message'."
+      isArray: false
+      name: threat_status
+      predefined:
+      - active
+      - cleared
+      - falsePositive
+      required: false
+      secret: false
+    - default: false
+      description: 'ISO8601-formatted interval date. The minimum interval is thirty
+        seconds. The maximum interval is one hour. For example: 2021-04-27T09:00:00Z/2021-04-27T10:00:00Z.'
+      isArray: false
+      name: interval
+      required: false
+      secret: false
+    - default: false
+      description: 'Represents the start of the data retrieval period. For example:
+        1 week, 2 days, 3 hours, etc. The maximum is 1 week.'
+      isArray: false
+      name: time_range
+      required: false
+      secret: false
+    deprecated: false
+    description: Get events for clicks to malicious URLs permitted and messages delivered
+      containing a known attachment threat within the specified time period. Must provide either the interval or time_range arguments.
+    execution: false
+    name: proofpoint-list-issues
+    outputs:
+    - contextPath: Proofpoint.ClicksPermitted.url
+      description: The malicious URL was clicked.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.classification
+      description: The threat category of the malicious URL (Malware, Phish, or Spam).
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.clickTime
+      description: The time the user clicked the URL.
+      type: Date
+    - contextPath: Proofpoint.ClicksPermitted.threatTime
+      description: The time that Proofpoint identified the URL as a threat.
+      type: Date
+    - contextPath: Proofpoint.ClicksPermitted.userAgent
+      description: The User-Agent header from the clicker's HTTP request.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.campaignId
+      description: An identifier for the campaign of which the threat is a member.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.id
+      description: The unique ID of the click.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.clickIP
+      description: The external IP address of the user who clicked the link.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.sender
+      description: The email address of the sender. The user-part is hashed. The domain-part is
+        in cleartext.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.recipient
+      description: The email address of the recipient.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.senderIP
+      description: The IP address of the sender.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.threatID
+      description: The unique identifier associated with this threat.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.threatURL
+      description: A link to the entry on the TAP dashboard for the particular threat.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.threatStatus
+      description: The current state of the threat.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.messageID
+      description: The ID of the message that the URL belongs to.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.GUID
+      description: The ID of the message within PPS. It can be used to identify the
+        message in PPS and is guaranteed to be unique.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.spamScore
+      description: The spam score of the message. Higher scores indicate higher certainty.
+      type: Number
+    - contextPath: Proofpoint.MessagesDelivered.phishScore
+      description: The phish score of the message. Higher scores indicate higher certainty.
+      type: Number
+    - contextPath: Proofpoint.MessagesDelivered.threatsInfoMap
+      description: 'List which contain details about detected threats within the message.
+        Contains: campaignID, classification, threat, threatID, threatStatus,threatTime,
+        threatType, threatUrl.'
+      type: List
+    - contextPath: Proofpoint.MessagesDelivered.messageTime
+      description: THe time the message was delivered to the user or quarantined by PPS.
+      type: Date
+    - contextPath: Proofpoint.MessagesDelivered.impostorScore
+      description: The impostor score of the message. Higher scores indicate higher
+        certainty.
+      type: Number
+    - contextPath: Proofpoint.MessagesDelivered.malwareScore
+      description: The malware score of the message. Higher scores indicate higher
+        certainty.
+      type: Number
+    - contextPath: Proofpoint.MessagesDelivered.cluster
+      description: The name of the PPS cluster that processed the message.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.subject
+      description: The subject line of the message, if available.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.quarantineFolder
+      description: The name of the folder that contains the quarantined message. This appears
+        only for blocked messages. For delivered messages will be 'None'.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.quarantineRule
+      description: The name of the rule that quarantined the message. This appears only
+        for messagesBlocked events.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.policyRoutes
+      description: The policy routes that the message matched during processing by
+        PPS.
+      type: List
+    - contextPath: Proofpoint.MessagesDelivered.modulesRun
+      description: The list of PPS modules that processed the message.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.messageSize
+      description: The size in bytes of the message, including headers and attachments.
+      type: Number
+    - contextPath: Proofpoint.MessagesDelivered.Header.headerFrom
+      description: The full content of the From header, including any friendly name.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.Header.headerReplyTo
+      description: 'If present, the full content of the Reply-To: header, including
+        any friendly names.'
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.Header.fromAddress
+      description: The email address contained in the From header, excluding any friendly
+        name.
+      type: List
+    - contextPath: Proofpoint.MessagesDelivered.Header.ccAddresses
+      description: 'A list of email addresses contained within the CC: header, excluding
+        any friendly names.'
+      type: List
+    - contextPath: Proofpoint.MessagesDelivered.Header.replyToAddress
+      description: 'The email address contained in the Reply-To: header, excluding any
+        friendly name.'
+      type: List
+    - contextPath: Proofpoint.MessagesDelivered.Header.toAddresses
+      description: 'A list of email addresses contained within the To: header, excluding
+        any friendly names.'
+      type: List
+    - contextPath: Proofpoint.MessagesDelivered.Header.xmailer
+      description: 'The content of the X-Mailer: header, if present.'
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.messageParts
+      description: An array of structures that contain details about parts of the
+        message, including both message bodies and attachments.
+      type: List
+    - contextPath: Proofpoint.MessagesDelivered.completelyRewritten
+      description: The rewrite status of the message. If value is true, all instances
+        of URL threats within the message were successfully rewritten. If the value
+        is false, at least one instance of the threat URL was not rewritten. If
+        the value is 'na', the message did not contain any URL-based threats.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.id
+      description: The unique ID of the message.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.sender
+      description: The email address of the SMTP (envelope) sender. The user-part
+        is hashed. The domain-part is cleartext.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.recipient
+      description: A list containing the email addresses of the recipients
+      type: List
+    - contextPath: Proofpoint.MessagesDelivered.senderIP
+      description: The IP address of the sender.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.messageID
+      description: 'Message-ID extracted from the headers of the email message.'
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.GUID
+      description: The ID of the message within PPS. It can be used to identify the
+        message in PPS and is guaranteed to be unique.
+      type: String
+  - arguments:
+    - default: false
+      description: 'ISO8601-formatted interval date. The minimum interval is thirty
+        seconds. The maximum interval is one day. For example: 2021-04-27T09:00:00Z/2021-04-27T10:00:00Z.'
+      isArray: false
+      name: interval
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: The maximum number of campaign IDs to produce in the response.
+        Defaults to 100 and the maximum supported value is 200.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1'
+      description: The page of results to return, in multiples of the specified size.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: 'Represents the start of the data retrieval period. For example:
+        1 week, 2 days, 3 hours, etc. The maximum is 1 week.'
+      isArray: false
+      name: time_range
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets a list of IDs of campaigns active in a specified time period. Must provide either the interval or time_range arguments.
+    execution: false
+    name: proofpoint-list-campaigns
+    outputs:
+    - contextPath: Proofpoint.Campaigns.id
+      description: The campaign ID.
+      type: String
+    - contextPath: Proofpoint.Campaigns.lastUpdatedAt
+      description: Last updated timestamp of the campaign.
+      type: String
+  - arguments:
+    - default: false
+      description: ID of the required campaign.
+      isArray: false
+      name: campaign_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets details for a given campaign.
+    execution: false
+    name: proofpoint-get-campaign
+    outputs:
+    - contextPath: Proofpoint.Campaign.info
+      description: The campaign information - ID,name, description, startDate, and notable.
+      type: List
+    - contextPath: Proofpoint.Campaign.actors
+      description: A list of actor objects.
+      type: List
+    - contextPath: Proofpoint.Campaign.families
+      description: A list of family objects.
+      type: List
+    - contextPath: Proofpoint.Campaign.malware
+      description: A list of malware objects.
+      type: List
+    - contextPath: Proofpoint.Campaign.techniques
+      description: A list of technique objects.
+      type: List
+    - contextPath: Proofpoint.Campaign.brands
+      description: A list of brand objects.
+      type: List
+    - contextPath: Proofpoint.Campaign.campaignMembers
+      description: A list of campaign member objects.
+      type: List
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: 'An integer indicating how many days the data should be retrieved
+        for. Possible values: "14", "30", "90".'
+      isArray: false
+      name: window
+      predefined:
+      - '14'
+      - '30'
+      - '90'
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '1000'
+      description: The maximum number of users to produce in the response.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1'
+      description: The page of results to return.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets a list of the most attacked users in the organization.
+    execution: false
+    name: proofpoint-list-most-attacked-users
+    outputs:
+    - contextPath: Proofpoint.Vap.users
+      description: List of users in the organization.
+      type: List
+    - contextPath: Proofpoint.Vap.totalVapUsers
+      description: The total number of VAP users for the interval.
+      type: Number
+    - contextPath: Proofpoint.Vap.interval
+      description: An ISO8601-formatted interval showing the time the response was
+        calculated for.
+      type: String
+    - contextPath: Proofpoint.Vap.averageAttackIndex
+      description: The average attack index value for users during the interval.
+      type: Number
+    - contextPath: Proofpoint.Vap.vapAttackIndexThreshold
+      description: This interval's attack index threshold, past which a user is considered
+        a VAP.
+      type: Number
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: 'An integer indicating how many days the data should be retrieved
+        for. Possible values: "14", "30", "90".'
+      isArray: false
+      name: window
+      predefined:
+      - '14'
+      - '30'
+      - '90'
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: The maximum number of top clickers to produce in the response.The
+        max supported value is 200.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1'
+      description: The page of results to return.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets a list of the top clickers in the organization for a specified time period.
+    execution: false
+    name: proofpoint-get-top-clickers
+    outputs:
+    - contextPath: Proofpoint.Topclickers.users
+      description: List of users in the organization.
+      type: List
+    - contextPath: Proofpoint.Topclickers.totalTopClickers
+      description: The total number of top clickers in the time interval.
+      type: int
+    - contextPath: Proofpoint.Topclickers.interval
+      description: An ISO8601-formatted interval showing the time the response was
+        calculated for.
+      type: Date
+  - arguments:
+    - default: false
+      description: A comma-separated list of encoded URLs.
+      isArray: false
+      name: urls
+      required: true
+      secret: false
+    deprecated: false
+    description: Decodes URLs that have been rewritten by TAP to their original, target
+      URL.
+    execution: false
+    name: proofpoint-url-decode
+    outputs:
+    - contextPath: Proofpoint.URL.encodedUrl
+      description: The original, rewritten URL supplied to the endpoint.
+      type: String
+    - contextPath: Proofpoint.URL.decodedUrl
+      description: The target URL embedded inside the rewritten link.
+      type: String
+    - contextPath: Proofpoint.URL.success
+      description: Indicates whether the URL could successfully be decoded.
+      type: Boolean
+  dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: true
   longRunning: false

@@ -1,7 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-from typing import Tuple, Dict, List, Any, Optional
+from typing import Tuple, Dict, List, Any, Optional, Union
 import requests
 import dateparser
 
@@ -30,6 +30,7 @@ class Client(BaseClient):
     def __del__(self):
         if self.username != TOKEN_INPUT_IDENTIFIER:
             self._logout()
+        super().__del__()
 
     def _login(self):
         """
@@ -612,6 +613,84 @@ class Client(BaseClient):
 
         return filename, content
 
+    def get_notable_assets_request(self, api_unit: str = None, num: str = None, limit: int = None) -> Dict:
+        """
+        Args:
+            api_unit: The time duration unit.
+            num: The num of time duration.
+            limit: Results number.
+
+        Returns:
+            (dict) The notable assets response.
+        """
+        params = {
+            'unit': api_unit,
+            'num': num,
+            'numberOfResults': limit
+        }
+
+        response = self._http_request('GET', url_suffix='uba/api/assets/notable', params=params)
+        return response
+
+    def get_notable_session_details_request(self, asset_id: str = None, sort_by: str = None,
+                                            sort_order: int = None, limit: int = None) -> Dict:
+        """
+        Args:
+            asset_id: ID of the asset to fetch info for
+            sort_by: The attribute to sort results by
+            sort_order: ascending (1) or descending (-1).
+            limit: return only anomaly
+
+        Returns:
+            (dict) The notable session details response.
+        """
+        params = {
+            'sortBy': sort_by,
+            'sortOrder': sort_order,
+            'numberOfResults': limit
+        }
+
+        url_suffix = f'/uba/api/asset/{asset_id}/notableSessions'
+
+        response = self._http_request('GET', url_suffix=url_suffix, params=params)
+        return response
+
+    def get_notable_sequence_details_request(self, asset_id: str = None, parse_start_time=None,
+                                             parse_end_time=None):
+        """
+        Args:
+            asset_id: ID of the asset to fetch info for
+            parse_start_time: start time
+            parse_end_time: end time
+
+        Returns:
+            notable sequence relevant to the time period
+        """
+        params = {
+            'assetId': asset_id,
+            'startTime': parse_start_time,
+            'endTime': parse_end_time
+        }
+        response = self._http_request('GET', url_suffix=f'/uba/api/asset/{asset_id}/sequences', params=params)
+        return response
+
+    def get_notable_sequence_event_types_request(self, asset_sequence_id: str = None, search_str: str = None):
+        """
+        Args:
+            asset_sequence_id: ID of the asset sequence to fetch info for
+            search_str: string to search for inside display name
+
+        Returns:
+            (dict) The sequence event types response.
+        """
+        params = {
+            'assetSequenceId': asset_sequence_id,
+            'searchStr': search_str
+        }
+        response = self._http_request('GET', url_suffix=f'/uba/api/asset/sequence/{asset_sequence_id}/eventTypes',
+                                      params=params)
+        return response
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -728,6 +807,138 @@ def contents_append_notable_user_info(contents, user, user_, user_info) -> List[
     return contents
 
 
+def contents_append_notable_assets_info(asset, asset_, highest_risk_sequence, latest_asset_comment) -> Dict:
+    """Appends a dictionary of data to the base list
+
+    Args:
+        asset: asset object
+        asset_: asset object
+        highest_risk_sequence: highest risk sequence object
+        latest_asset_comment: latest asset comment object
+
+    Returns:
+        A contents list with the relevant notable user data
+    """
+    asset_info = {
+        'highestRiskScore': asset.get('highestRiskScore'),
+        'incidentIds': asset.get('incidentIds'),
+        'zone': asset.get('zone'),
+
+        'id': highest_risk_sequence.get('id'),
+        'entityName': highest_risk_sequence.get('entityName'),
+        'entityValue': highest_risk_sequence.get('entityValue'),
+        'day': convert_unix_to_date(highest_risk_sequence.get('day')),
+        'triggeredRuleCountOpt': highest_risk_sequence.get('triggeredRuleCountOpt'),
+        'riskScoreOpt': highest_risk_sequence.get('riskScoreOpt'),
+
+        'commentId': latest_asset_comment.get('commentId'),
+        'commentType': latest_asset_comment.get('commentType'),
+        'commentObjectId': latest_asset_comment.get('commentObjectId'),
+        'text': latest_asset_comment.get('text'),
+        'exaUser': latest_asset_comment.get('exaUser'),
+        'exaUserFullname': latest_asset_comment.get('exaUserFullname'),
+        'createTime': convert_unix_to_date(latest_asset_comment.get('createTime')),
+        'updateTime': convert_unix_to_date(latest_asset_comment.get('updateTime')),
+        'edited': latest_asset_comment.get('edited')
+    }
+    asset_info.update(contents_asset_data(asset_))
+    return asset_info
+
+
+def contents_append_notable_session_details(session) -> Dict:
+    """Appends a dictionary of data to the base list
+
+    Args:
+        session: session object
+
+    Returns:
+        A contents list with the relevant notable session details
+    """
+    content = {
+        'SessionID': session.get('sessionId'),
+        'InitialRiskScore': session.get('initialRiskScore'),
+        'LoginHost': session.get('loginHost'),
+        'Accounts': session.get('accounts'),
+    }
+    return content
+
+
+def contents_append_notable_session_user_details(user_details, user_info) -> Dict:
+    """Appends a dictionary of filtered data to the base list for the context
+
+    Args:
+        user_details: user details object
+        user_info: user info object
+
+    Returns:
+        A contents list with the relevant notable session details
+    """
+    content = {
+        'UserName': user_details.get('username'),
+        'RiskScore': round(user_details.get('riskScore')) if 'riskScore' in user_details else None,
+        'AverageRiskScore': user_details.get('averageRiskScore'),
+        'FirstSeen': convert_unix_to_date(user_details.get('firstSeen')) if 'firstSeen' in user_details else None,
+        'LastSeen': convert_unix_to_date(user_details.get('lastSeen')) if 'lastSeen' in user_details else None,
+        'lastActivityType': user_details.get('lastActivityType'),
+        'Labels': user_details.get('labels'),
+        'LastSessionID': user_details.get('lastSessionId'),
+        'EmployeeType': user_info.get('employeeType'),
+        'Department': user_info.get('department'),
+        'Title': user_info.get('title'),
+        'Location': user_info.get('location'),
+        'Email': user_info.get('email'),
+    }
+    return content
+
+
+def contents_append_notable_sequence_details(sequence, sequence_info) -> Dict:
+    """Appends a dictionary of filtered data to the base list for the context
+
+    Args:
+        sequence: sequence object
+        sequence_info: sequence_info object
+
+    Returns:
+        A contents list with the relevant notable sequence details
+    """
+    content = {
+        'sequenceId': sequence.get('sequenceId'),
+        'isWhitelisted': sequence.get('isWhitelisted'),
+        'areAllTriggeredRulesWhiteListed': sequence.get('areAllTriggeredRulesWhiteListed'),
+        'hasBeenPartiallyWhiteListed': sequence.get('hasBeenPartiallyWhiteListed'),
+        'riskScore': round(sequence_info.get('riskScore')) if 'riskScore' in sequence_info else None,
+        'startTime': convert_unix_to_date(sequence_info.get('startTime')) if 'startTime' in sequence_info else None,
+        'endTime': convert_unix_to_date(sequence_info.get('endTime')) if 'endTime' in sequence_info else None,
+        'numOfReasons': sequence_info.get('numOfReasons'),
+        'numOfEvents': sequence_info.get('numOfEvents'),
+        'numOfUsers': sequence_info.get('numOfUsers'),
+        'numOfSecurityEvents': sequence_info.get('numOfSecurityEvents'),
+        'numOfZones': sequence_info.get('numOfZones'),
+        'numOfAssets': sequence_info.get('numOfAssets'),
+        'assetId': sequence_info.get('assetId'),
+    }
+    return content
+
+
+def contents_append_notable_sequence_event_types(sequence, asset_sequence_id) -> Dict:
+    """Appends a dictionary of filtered data to the base list for the context
+
+    Args:
+        sequence: sequence object
+        asset_sequence_id: asset sequence ID
+
+    Returns:
+        A contents list with the relevant notable sequence event types
+    """
+    content = {
+        'eventType': sequence.get('eventType'),
+        'displayName': sequence.get('displayName'),
+        'count': sequence.get('count'),
+        'sequenceId': asset_sequence_id
+    }
+    return content
+
+
 def contents_asset_data(asset_data) -> Dict:
     """create a content obj for the asset
 
@@ -807,7 +1018,7 @@ def aggregated_events_to_xsoar_format(asset_id: str, events: List[Any]) -> Tuple
                     event['dest_zone'] = event.pop("getvalue('zone_info', dest)")
 
             title = f"{activity['count']} {activity['event_type']} event(s) " \
-                f"between {activity['start_time']} and {activity['end_time']}"
+                    f"between {activity['start_time']} and {activity['end_time']}"
             human_readable += tableToMarkdown(title, activity_events, removeNull=True,
                                               headerTransform=underscoreToCamelCase) + '\n'
             outputs.extend(activity_events)
@@ -891,15 +1102,15 @@ def get_notable_users(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     time_period: str = args.get('time_period', '')
     time_ = time_period.split(' ')
     if not len(time_) == 2:
-        raise Exception('Got invalid time period. Enter the time period number and unit.')
+        raise Exception('Got invalid time period. Enter the time period number and unit. For example, 20 d.')
     num: str = time_[0]
     unit: str = time_[1]
     api_unit = unit[0]
     if api_unit == 'm':
         api_unit = api_unit.upper()
 
-    if api_unit not in {'d', 'y', 'M', 'h'}:
-        raise Exception('The time unit is incorrect - can be hours, days, months, years.')
+    if api_unit.lower() not in {'d', 'y', 'm', 'h'}:
+        raise Exception('The time unit is incorrect - can be d, y, m or h.')
 
     contents: list = []
     headers = ['UserName', 'UserFullName', 'Title', 'Department', 'RiskScore', 'Labels', 'NotableSessionIds',
@@ -1411,8 +1622,8 @@ def list_context_table_records(client: Client, args: Dict[str, str]) -> Tuple[An
 
     """
     context_table_name = args.get('context_table_name')
-    page_size = int(args['limit'])
-    page_number = int(args['offset'])
+    page_size = int(args.get('limit', 50))
+    page_number = int(args.get('offset', 1))
 
     records_raw_data = client.list_context_table_records_request(context_table_name, page_size, page_number)
     records = records_raw_data.get('records', [])
@@ -1481,7 +1692,11 @@ def delete_context_table_records(client: Client, args: Dict) -> Tuple[Any, Dict[
     session_id = args.get('session_id')
     records = argToList(args.get('records'))
 
-    record_updates_raw_data = client.delete_context_table_records_request(context_table_name, records, session_id)
+    records_raw_data = client.list_context_table_records_request(context_table_name, 10000, 1)
+    all_records = records_raw_data.get('records', [])
+    ids = [record['id'] for record in all_records if record['key'] in records]
+
+    record_updates_raw_data = client.delete_context_table_records_request(context_table_name, ids, session_id)
     human_readable, entry_context = create_context_table_updates_outputs(context_table_name, record_updates_raw_data)
     return human_readable, entry_context, record_updates_raw_data
 
@@ -1521,6 +1736,161 @@ def get_context_table_csv(client: Client, args: Dict[str, str]) -> Tuple[Any, Di
 
     demisto.results(fileResult(filename, content))
     return f'Successfully downloaded Context Table CSV file {context_table_name}.', {}, None
+
+
+def get_notable_assets(client: Client, args: Dict) -> Tuple[Any, Dict[str, Any], Optional[Any]]:
+    """  Updates records of a context table.
+
+    Args:
+        client: Client
+        args: Dict
+
+    """
+    limit: int = args.get('limit', 10)
+    time_period: str = args.get('time_period', '')
+    time_ = time_period.split(' ')
+    if not len(time_) == 2:
+        raise Exception('Got invalid time period. Enter the time period number and unit.')
+    num: str = time_[0]
+    unit: str = time_[1]
+    api_unit = unit[0]
+    if api_unit == 'm':
+        api_unit = api_unit.upper()
+
+    if api_unit not in {'d', 'y', 'M', 'h'}:
+        raise Exception('The time unit is incorrect - can be hours, days, months, years.')
+
+    notable_assets_raw_data = client.get_notable_assets_request(api_unit, num, limit)
+    notable_assets = notable_assets_raw_data.get('assets')
+
+    if not notable_assets:
+        return 'No users were found in this period of time.', {}, {}
+
+    contents: list = []
+    for asset in notable_assets:
+        asset_ = asset.get('asset', {})
+        highest_risk_sequence = asset.get('highestRiskSequence', {})
+        latest_asset_comment = asset.get('latestAssetComment', {})
+        contents.append(contents_append_notable_assets_info(asset, asset_, highest_risk_sequence, latest_asset_comment))
+
+    entry_context = {'Exabeam.NotableAsset((val.ipAddress && val.ipAddress === obj.ipAddress) '
+                     '|| (val.hostName && val.hostName === obj.hostName))': contents}
+    human_readable = tableToMarkdown('Exabeam Notable Assets:', contents, removeNull=True)
+
+    return human_readable, entry_context, notable_assets
+
+
+def get_notable_session_details(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[str, Any], Optional[Any]]:
+    """  Updates records of a context table.
+
+    Args:
+        client: Client
+        args: Dict
+
+    """
+    asset_id = args.get('asset_id')
+    sort_by = args.get('sort_by')
+    sort_order = 1 if args.get('sort_order') == 'asc' else -1
+    limit = int(args['limit'])
+
+    session_details_raw_data = client.get_notable_session_details_request(asset_id, sort_by, sort_order, limit)
+
+    contents: list = []
+    users: list = []
+    executive_user_flags: list = []
+
+    for session in session_details_raw_data.get('sessions', {}):
+        contents.append(contents_append_notable_session_details(session))
+
+    users_response = session_details_raw_data.get('users', {})
+    for user_name, user_details in users_response.items():
+        user_info = user_details.get('info', {})
+        users.append(contents_append_notable_session_user_details(user_details, user_info))
+
+    executive_user = session_details_raw_data.get('executiveUserFlags', {})
+    for username, status in executive_user.items():
+        executive_user_flags.append({
+            username: status
+        })
+
+    contents_entry = {'sessions': contents, 'users': users, 'executiveUserFlags': executive_user_flags}
+
+    entry_context = {'Exabeam.NotableSession(val.SessionID && val.SessionID === obj.SessionID)': contents_entry}
+
+    human_readable = tableToMarkdown('Notable Session details:', session, removeNull=True)
+
+    return human_readable, entry_context, session_details_raw_data
+
+
+def get_notable_sequence_details(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[str, Any], Optional[Any]]:
+    """  Updates records of a context table.
+
+    Args:
+        client: Client
+        args: Dict
+
+    """
+    asset_id = args.get('asset_id')
+    start_time = args.get('start_time', '30 days ago')
+    end_time = args.get('end_time', '0 minutes ago')
+    parse_start_time = convert_date_to_unix(start_time)
+    parse_end_time = convert_date_to_unix(end_time)
+
+    limit = int(args['limit'])
+    page = int(args['page'])
+    from_idx = page * limit
+    to_idx = (page + 1) * limit
+
+    sequence_details_raw_data = client.get_notable_sequence_details_request(asset_id, parse_start_time, parse_end_time)
+    if not sequence_details_raw_data:
+        return f'The Asset {asset_id} has no sequence details in this time frame.', {}, {}
+
+    contents: list = []
+    for sequence in sequence_details_raw_data:
+        sequence_info = sequence.get('sequenceInfo')
+        contents.append(contents_append_notable_sequence_details(sequence, sequence_info))
+
+    contents = contents[from_idx:to_idx]
+
+    entry_context = {'Exabeam.Sequence(val.sequenceId && val.sequenceId === obj.sequenceId)': contents}
+
+    human_readable = tableToMarkdown('Notable sequence details:', contents, removeNull=True)
+
+    return human_readable, entry_context, sequence_details_raw_data
+
+
+def get_notable_sequence_event_types(client: Client, args: Dict[str, str]) -> Tuple[Any, Dict[str, Any], Optional[Any]]:
+    """  Updates records of a context table.
+
+    Args:
+        client: Client
+        args: Dict
+
+    """
+    asset_sequence_id = args.get('asset_sequence_id')
+    search_str = args.get('search_str')
+
+    limit = int(args['limit'])
+    page = int(args['page'])
+    from_idx = page * limit
+    to_idx = (page + 1) * limit
+
+    sequence_event_types_raw_data = client.get_notable_sequence_event_types_request(asset_sequence_id, search_str)
+
+    if not sequence_event_types_raw_data:
+        return f'The Asset {asset_sequence_id} has no sequence event types.', {}, {}
+
+    contents: list = []
+    for sequence in sequence_event_types_raw_data:
+        contents.append(contents_append_notable_sequence_event_types(sequence, asset_sequence_id))
+
+    contents = contents[from_idx:to_idx]
+
+    entry_context = {'Exabeam.SequenceEventTypes(val.sequenceId && val.sequenceId === obj.sequenceId)': contents}
+
+    human_readable = tableToMarkdown('Sequence event types:', contents, removeNull=True)
+
+    return human_readable, entry_context, sequence_event_types_raw_data
 
 
 def main():
@@ -1570,7 +1940,11 @@ def main():
         'exabeam-get-context-table-in-csv': get_context_table_csv,
         'exabeam-watchlist-add-items': add_watchlist_items,
         'exabeam-watchlist-asset-search': search_asset_in_watchlist,
-        'exabeam-watchlist-remove-items': remove_watchlist_items
+        'exabeam-watchlist-remove-items': remove_watchlist_items,
+        'exabeam-get-notable-assets': get_notable_assets,
+        'exabeam-get-notable-sequence-details': get_notable_sequence_details,
+        'exabeam-get-notable-session-details': get_notable_session_details,
+        'exabeam-get-sequence-eventtypes': get_notable_sequence_event_types
     }
 
     try:

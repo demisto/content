@@ -5,9 +5,17 @@ import pytest
 from VirusTotalV3 import (ScoreCalculator, encode_to_base64,
                           encode_url_to_base64, epoch_to_timestamp,
                           get_working_id, raise_if_hash_not_valid,
-                          raise_if_ip_not_valid)
+                          raise_if_ip_not_valid, create_relationships, get_whois)
 
 from CommonServerPython import DemistoException
+import demistomock as demisto
+
+INTEGRATION_NAME = 'VirusTotal'
+
+
+@pytest.fixture(autouse=True)
+def handle_calling_context(mocker):
+    mocker.patch.object(demisto, 'callingContext', {'context': {'IntegrationBrand': INTEGRATION_NAME}})
 
 
 class TestScoreCalculator:
@@ -33,7 +41,8 @@ class TestScoreCalculator:
         )
 
     def test_there_are_logs(self):
-        self.score_calculator.file_score('given hash', json.load(open('./TestData/file.json')))
+        with open('./TestData/file.json') as f:
+            self.score_calculator.file_score('given hash', json.load(f))
         assert self.score_calculator.logs
         self.score_calculator.logs = []
 
@@ -61,10 +70,10 @@ class TestScoreCalculator:
         assert self.score_calculator.is_malicious_by_threshold(analysis_results, threshold) is result
 
     @pytest.mark.parametrize('ranks, result', [
-        ({'vendor1': {'rank': 10000}}, True),
+        ({'vendor1': {'rank': 10000}}, False),
         ({'vendor1': {'rank': 3000}, 'vendor2': {'rank': 7000}}, True),
-        ({'vendor1': {'rank': 0}}, False),
-        ({'vendor1': {'rank': 300}, 'vendor2': {'rank': 300}}, False),
+        ({'vendor1': {'rank': 0}}, True),
+        ({'vendor1': {'rank': 300}, 'vendor2': {'rank': 300}}, True),
         ({}, None)
     ])
     def test_is_good_by_popularity_ranks(self, ranks: Dict[str, dict], result: bool):
@@ -154,3 +163,40 @@ class TestHelpers:
     def test_get_working_id_no_entry(self):
         with pytest.raises(DemistoException):
             assert get_working_id('1451', '')
+
+
+def test_create_relationships():
+    """
+    Given:
+    - The IP response from the api.
+
+    When:
+    - create relationships function.
+
+    Then:
+    - Validate that the relationships were created as expected.
+    """
+    expected_name = ['communicates-with', 'communicates-with', 'related-to', 'related-to']
+    with open('./TestData/relationships.json') as f:
+        relationships = create_relationships(entity_a='Test', entity_a_type='IP', relationships_response=json.load(f),
+                                             reliability='B - Usually reliable')
+    relation_entry = [relation.to_entry() for relation in relationships]
+
+    for relation, expected_relation_name in zip(relation_entry, expected_name):
+        assert relation.get('name') == expected_relation_name
+        assert relation.get('entityA') == 'Test'
+        assert relation.get('entityBType') == 'File'
+
+
+def test_get_whois_unexpected_value():
+    """
+    Given:
+    - Whois string.
+
+    When:
+    - Whois string returned is a reserved Whois string returned by VirusTotal services.
+
+    Then:
+    - Validate empty dict is returned
+    """
+    assert get_whois('g. [Organization] Reserved Domain Name\nl. [Organization Type] Reserved Domain Name') == dict()

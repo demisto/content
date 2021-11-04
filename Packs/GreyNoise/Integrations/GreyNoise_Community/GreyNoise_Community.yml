@@ -1,0 +1,95 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: GreyNoise Community
+  version: -1
+configuration:
+- display: API Key
+  name: api_key
+  required: true
+  type: 4
+- additionalinfo: Whether to use XSOAR's system proxy settings to connect to the API.
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: GreyNoise is a cybersecurity platform that collects and analyzes Internet-wide
+  scan and attack traffic. With this integration, users can contextualize existing
+  alerts, filter false-positives, identify compromised devices, and track emerging
+  threats. This Integration is design specifically for GreyNoise Community users and
+  only provides the subset of intel available via the GreyNoise Community API.
+display: GreyNoise Community
+name: GreyNoise Community
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: A comma-separated list of IPs.
+      isArray: true
+      name: ip
+      required: true
+      secret: false
+    deprecated: false
+    description: Gathers information on the IP from the GreyNoise Community API.
+    execution: false
+    name: ip
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    - contextPath: IP.address
+      description: IP address.
+      type: string
+    - contextPath: IP.Malicious.Vendor
+      description: The vendor reporting the IP address as malicious.
+      type: string
+    - contextPath: IP.Malicious.Description
+      description: A description explaining why the IP address was reported as malicious.
+      type: string
+    - contextPath: GreyNoise.IP.address
+      description: IP Queried
+      type: string
+    - contextPath: GreyNoise.IP.noise
+      description: Is IP Classified as Internet Background Noise
+      type: boolean
+    - contextPath: GreyNoise.IP.riot
+      description: Does IP belong to a known benign service
+      type: boolean
+    - contextPath: GreyNoise.IP.classification
+      description: GreyNoise IP Classification
+      type: string
+    - contextPath: GreyNoise.IP.name
+      description: Actor or Service Name
+      type: string
+    - contextPath: GreyNoise.IP.link
+      description: Link to GreyNoise Visualizer
+      type: string
+    - contextPath: GreyNoise.IP.last_seen
+      description: Date IP was last observed or updated
+      type: date
+    - contextPath: GreyNoise.IP.message
+      description: Additional Information
+      type: string
+    - contextPath: IP.Address
+      description: IP address.
+      type: String
+  dockerimage: demisto/greynoise:1.0.0.24037
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+fromversion: 5.5.0

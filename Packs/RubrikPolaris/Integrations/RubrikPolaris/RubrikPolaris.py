@@ -5,8 +5,9 @@ import json
 import urllib3
 import traceback
 from typing import Tuple, List, Dict
-from datetime import date
+from datetime import date, datetime
 import dateparser
+import re
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -172,6 +173,7 @@ def fetch_incidents(client: Client, max_fetch: int) -> Tuple[str, List[dict]]:
                                     nodes {
                                         id
                                         message
+                                        severity
                                         time
                                     }
                                 }
@@ -182,6 +184,10 @@ def fetch_incidents(client: Client, max_fetch: int) -> Tuple[str, List[dict]]:
                             hasNextPage
                         }
                     }
+                    featureFlag(entityType: ACCOUNT, flagName: DataClassificationEnabled) {
+                        name
+                        variant
+                    }
                 }""" % operation_name
 
         variables = {
@@ -189,7 +195,7 @@ def fetch_incidents(client: Client, max_fetch: int) -> Tuple[str, List[dict]]:
                 "lastActivityType": [
                     "Anomaly"
                 ],
-                "startTime_gt": last_run
+                "lastUpdated_gt": last_run
             },
         }
 
@@ -224,30 +230,74 @@ def fetch_incidents(client: Client, max_fetch: int) -> Tuple[str, List[dict]]:
             process_incident = {}  # mypy: ignore
             process_incident["incidentClassification"] = "RubrikRadar"
             process_incident["message"] = []  # type: ignore
+            process_incident["severity"] = 0  # type: ignore
 
             for key, value in event["node"].items():
                 # Simplify the message data
                 if key == "activityConnection":
                     for m in value["nodes"]:
+
+                        # Convert time to friendly display format
+                        display_time = datetime.strptime(m["time"], "%Y-%m-%dT%H:%M:%S.%fZ")
+                        display_time = display_time.strftime('%b %d, %Y at %I:%M:%S %p')
+
                         process_incident["message"].append({  # type: ignore
                             "message": m["message"],
                             "id": m["id"],
-                            "time": m["time"]
-
+                            "severity": m["severity"],
+                            "time": display_time
                         })
+
+                        # Check if message includes the File Change attributes
+                        file_changes_match = re.search(
+                            r'File Change: ([0-9]+) Added, ([0-9]+) Modified, ([0-9]+) Removed', m["message"]
+                        )
+                        if file_changes_match is not None:
+                            try:
+                                process_incident["radar_files_added"] = file_changes_match.group(1)
+                                process_incident["radar_files_modified"] = file_changes_match.group(2)
+                                process_incident["radar_files_deleted"] = file_changes_match.group(3)
+
+                            except KeyError:
+                                demisto.info("Error Parsing Radar Anomaly File Change attributes")
 
                 else:
                     process_incident[key] = value
 
-            if process_incident["lastActivityStatus"] == "Success":
-                process_incident["eventCompleted"] = "True"
+            # Map Severity Level
+
+            if event["node"]["severity"] == "Critical":
+
+                if demisto.params().get('radar_critical_severity_mapping') is None:
+                    critical_mapping = 'XSOAR LOW'
+                else:
+                    critical_mapping = demisto.params().get('radar_critical_severity_mapping')
+
+                process_incident["severity"] = convert_to_demisto_severity(critical_mapping)  # type: ignore
+
+            elif event["node"]["severity"] == "Warning":
+
+                if demisto.params().get('radar_warning_severity_mapping') is None:
+                    warning_mapping = 'XSOAR LOW'
+                else:
+                    warning_mapping = demisto.params().get('radar_warning_severity_mapping')
+
+                process_incident["severity"] = convert_to_demisto_severity(warning_mapping)  # type: ignore
             else:
-                process_incident["eventCompleted"] = "False"
+                process_incident["severity"] = IncidentSeverity.LOW  # type: ignore
+
+            # Check to see if Sonar is enabled and assign context label
+
+            if radar_events["data"]["featureFlag"]["variant"] == "true":
+                process_incident["data_classification_enabled"] = True  # type: ignore
+            else:
+                process_incident["data_classification_enabled"] = False  # type: ignore
 
             incidents.append({
                 "name": f'Rubrik Radar Anomaly - {process_incident["objectName"]}',
                 "occurred": process_incident["lastUpdated"],
-                "rawJSON": json.dumps(process_incident)
+                "rawJSON": json.dumps(process_incident),
+                "severity": process_incident["severity"]
             })
 
         if len(incidents) > max_fetch:
@@ -510,7 +560,158 @@ def rubrik_sonar_sensitive_hits_command(client: Client, args: Dict[str, Any]) ->
     )
 
 
-''' MAIN FUNCTION '''
+def rubrik_cdm_cluster_location_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    incident = demisto.incident().get("CustomFields")
+
+    # clusterId is an optional value for the command. When not set,
+    # look up the value in the incident custom fields
+    clusterId = args.get('clusterId', None)
+    if not clusterId:
+        try:
+            clusterId = incident.get("rubrikcdmclusterid")
+        except AttributeError as e:
+            # if still not found return an error message about it being
+            # required
+            return_error(
+                message="The objectName value is required. Either manually provide or run this command"
+                        " in a 'Rubrik Radar Anomaly' incident where it will automatically looked up "
+                        "using the incident context.",
+                error=e)
+
+    if not clusterId:
+        try:
+            clusterId = incident.get("rubrikpolariscdmclusterid")
+        except AttributeError as e:
+            # if still not found return an error message about it being
+            # required
+            return_error(
+                message="The objectName value is required. Either manually provide or run this command"
+                        " in a 'Rubrik Radar Anomaly' incident where it will automatically looked up "
+                        "using the incident context.",
+                error=e)
+
+    operation_name_object_list = f"{OPERATION_NAME_PREFIX}CDMClusterLocationQuery"
+
+    cdm_location_query = """query %s($filter: ClusterFilterInput) {
+                                clusterConnection(filter: $filter) {
+                                    nodes{
+                                        geoLocation{
+                                            address
+                                        }
+                                    }
+                                }
+                            }
+                    """ % operation_name_object_list
+
+    cdm_location_variable = {
+        "filter": {
+            "id": [clusterId]
+        }
+    }
+
+    cdm_location_detail = client.gql_query(operation_name_object_list, cdm_location_query, cdm_location_variable,
+                                           False)
+
+    context = {}
+
+    try:
+        context["location"] = cdm_location_detail["data"]["clusterConnection"]["nodes"][0]["geoLocation"]["address"]
+
+    except KeyError:
+        # Return blank context if key error
+        return CommandResults(
+            outputs_prefix='Rubrik.CDM.Cluster',
+            outputs_key_field='Location',
+            outputs={}
+        )
+
+    return CommandResults(
+        outputs_prefix='Rubrik.CDM.Cluster',
+        outputs_key_field='Location',
+        outputs=context
+    )
+
+
+def rubrik_cdm_cluster_connection_state_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    incident = demisto.incident().get("CustomFields")
+
+    # clusterId is an optional value for the command. When not set,
+    # look up the value in the incident custom fields
+    clusterId = args.get('clusterId', None)
+    if not clusterId:
+        try:
+            clusterId = incident.get("rubrikcdmclusterid")
+        except AttributeError as e:
+            # if still not found return an error message about it being
+            # required
+            return_error(
+                message="The objectName value is required. Either manually provide or run this command"
+                        " in a 'Rubrik Radar Anomaly' incident where it will automatically looked up "
+                        "using the incident context.",
+                error=e)
+
+    if not clusterId:
+        try:
+            clusterId = incident.get("rubrikpolariscdmclusterid")
+        except AttributeError as e:
+            # if still not found return an error message about it being
+            # required
+            return_error(
+                message="The objectName value is required. Either manually provide or run this command"
+                        " in a 'Rubrik Radar Anomaly' incident where it will automatically looked up "
+                        "using the incident context.",
+                error=e)
+
+    operation_name_object_list = f"{OPERATION_NAME_PREFIX}CDMClusterConnectionStateQuery"
+
+    cdm_connection_query = """query %s($filter: ClusterFilterInput) {
+                                clusterConnection(filter: $filter) {
+                                    nodes {
+                                        state {
+                                            connectedState
+                                        }
+                                    }
+                                }
+                            }
+                    """ % operation_name_object_list
+
+    cdm_connection_variable = {
+        "filter": {
+            "id": [clusterId]
+        }
+    }
+
+    cdm_connection_detail = client.gql_query(operation_name_object_list, cdm_connection_query, cdm_connection_variable, False)
+
+    context = {}
+
+    try:
+        context["ConnectionState"] = cdm_connection_detail["data"]["clusterConnection"]["nodes"][0]["state"]["connectedState"]
+
+    except KeyError:
+        # Return blank context if key error
+        return CommandResults(
+            outputs_prefix='Rubrik.CDM.Cluster',
+            outputs_key_field='ConnectionState',
+            outputs={}
+        )
+
+    return CommandResults(
+        outputs_prefix='Rubrik.CDM.Cluster',
+        outputs_key_field='ConnectionState',
+        outputs=context
+    )
+
+
+def convert_to_demisto_severity(severity='XSOAR LOW') -> int:
+    """Maps the severity from the Rubrik Radar event to the user specified XSOAR severity level."""
+    demisto.info("SEVERITY TO CONVERT IS: " + severity)
+    return {
+        'XSOAR LOW': IncidentSeverity.LOW,
+        'XSOAR MEDIUM': IncidentSeverity.MEDIUM,
+        'XSOAR HIGH': IncidentSeverity.HIGH,
+        'XSOAR CRITICAL': IncidentSeverity.CRITICAL
+    }[severity]
 
 
 def main() -> None:
@@ -560,6 +761,10 @@ def main() -> None:
             return_results(rubrik_radar_analysis_status_command(client, demisto.args()))
         elif demisto.command() == 'rubrik-sonar-sensitive-hits':
             return_results(rubrik_sonar_sensitive_hits_command(client, demisto.args()))
+        elif demisto.command() == 'rubrik-cdm-cluster-location':
+            return_results(rubrik_cdm_cluster_location_command(client, demisto.args()))
+        elif demisto.command() == 'rubrik-cdm-cluster-connection-state':
+            return_results(rubrik_cdm_cluster_connection_state_command(client, demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:

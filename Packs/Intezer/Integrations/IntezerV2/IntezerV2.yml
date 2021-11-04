@@ -3,124 +3,266 @@ commonfields:
   id: Intezer v2
   version: -1
 configuration:
-- display: API Key
-  name: APIKey
-  required: true
-  type: 4
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
+  - display: API Key
+    name: APIKey
+    required: true
+    type: 4
+  - display: Intezer Analyze Base URL
+    name: AnalyzeBaseURL
+    defaultvalue: https://analyze.intezer.com/api/
+    type: 0
+    required: false
+    additionalinfo: The API address to intezer Analyze - i.e. http(s)://<address>/api/
+  - display: Use system proxy settings
+    name: proxy
+    required: false
+    type: 8
+  - display: Trust any certificate (not secure)
+    name: insecure
+    required: false
+    type: 8
 description: Malware detection and analysis based on code reuse
 display: Intezer v2
 name: Intezer v2
 script:
   commands:
-  - arguments:
-    - default: false
-      description: Hash of the file to query. Supports SHA256, MD5 and SHA1
-      isArray: false
-      name: file_hash
-      required: true
-      secret: false
-    deprecated: false
-    description: Checks file reputation of the given hash, supports SHA256, SHA1 and MD5
-    execution: false
-    name: intezer-analyze-by-hash
-    outputs:
-    - contextPath: Intezer.Analysis.ID
-      description: Intezer analysis id
-      type: string
-    - contextPath: Intezer.Analysis.Status
-      description: status of the analysis
-      type: string
-    - contextPath: Intezer.Analysis.Type
-      description: type of the analysis
-      type: string
-  - arguments:
-    - default: true
-      description: The file entry id to upload
-      isArray: false
-      name: file_entry_id
-      required: true
-      secret: false
-    deprecated: false
-    description: Checks file reputation for uploaded file (up to 32MB)
-    execution: false
-    name: intezer-analyze-by-file
-    outputs:
-    - contextPath: Intezer.Analysis.ID
-      description: Intezer analysis id
-      type: string
-    - contextPath: Intezer.Analysis.Status
-      description: status of the analysis
-      type: string
-    - contextPath: Intezer.Analysis.Type
-      description: type of the analysis
-      type: string
-  - arguments:
-    - default: false
-      description: The analysis ID we want to get results for
-      isArray: true
-      name: analysis_id
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: File
-      description: The type of the analysis
-      isArray: false
-      name: analysis_type
-      predefined:
-      - File
-      - Endpoint
-      required: false
-      secret: false
-    - default: false
-      description: indicator to classify
-      isArray: false
-      name: indicator_name
-      required: false
-      secret: false
-    deprecated: false
-    description: Check the analysis status and get analysis result, support file and endpoint analysis
-    execution: false
-    name: intezer-get-analysis-result
-    outputs:
-    - contextPath: File.SHA256
-      description: Hash SHA256
-      type: string
-    - contextPath: File.Malicious.Vendor
-      description: For malicious files, the vendor that made the decision
-      type: string
-    - contextPath: DBotScore.Indicator
-      description: The indicator we tested
-      type: string
-    - contextPath: DBotScore.Type
-      description: The type of the indicator
-      type: string
-    - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
-      type: string
-    - contextPath: DBotScore.Score
-      description: The actual score
-      type: number
-    - contextPath: File.Metadata
-      description: Metadata returned from Intezer analysis (analysis id, analysis url, family, family type, sha256, verdict, sub_verdict). Metedata will be retuned only for supported files.
-      type: Unknown
-    - contextPath: Endpoint.Metadata
-      description: Metadata returned from Intezer analysis (endpoint analysis id, endpoint analysis url, families,  verdict, host_name)
-      type: Unknown
-  dockerimage: demisto/python3:3.8.3.8715
+    - name: intezer-analyze-by-hash
+      arguments:
+        - default: false
+          description: Hash of the file to query. Supports SHA256, MD5 and SHA1
+          isArray: false
+          name: file_hash
+          required: true
+          secret: false
+      deprecated: false
+      description: Checks file reputation of the given hash, supports SHA256, SHA1 and MD5
+      execution: false
+      outputs:
+        - contextPath: Intezer.Analysis.ID
+          description: Intezer analysis id
+          type: string
+        - contextPath: Intezer.Analysis.Status
+          description: status of the analysis
+          type: string
+        - contextPath: Intezer.Analysis.Type
+          description: type of the analysis
+          type: string
+    - name: intezer-get-latest-report
+      arguments:
+        - default: false
+          description: Hash of the file to query. Supports SHA256, MD5 and SHA1
+          isArray: false
+          name: file_hash
+          required: true
+          secret: false
+      deprecated: false
+      description: Checks file reputation of the given hash, supports SHA256, SHA1 and MD5 by looking at the latest available report
+      execution: false
+      outputs:
+        - contextPath: File.SHA256
+          description: Hash SHA256
+          type: string
+        - contextPath: File.Malicious.Vendor
+          description: For malicious files, the vendor that made the decision
+          type: string
+        - contextPath: DBotScore.Indicator
+          description: The indicator we tested
+          type: string
+        - contextPath: DBotScore.Type
+          description: The type of the indicator
+          type: string
+        - contextPath: DBotScore.Vendor
+          description: Vendor used to calculate the score
+          type: string
+        - contextPath: DBotScore.Score
+          description: The actual score
+          type: number
+        - contextPath: File.Metadata
+          description: Metadata returned from Intezer analysis (analysis id, analysis url, family, family type, sha256, verdict, sub_verdict). Metedata will be retuned only for supported files.
+          type: Unknown
+        - contextPath: File.ExistsInIntezer
+          description: Does the file exists on intezer genome database
+          type: Boolean
+    - name: intezer-analyze-by-file
+      arguments:
+        - default: true
+          description: The file entry id to upload
+          isArray: false
+          name: file_entry_id
+          required: true
+          secret: false
+      deprecated: false
+      description: Checks file reputation for uploaded file (up to 150MB)
+      execution: false
+      outputs:
+        - contextPath: Intezer.Analysis.ID
+          description: Intezer analysis id
+          type: string
+        - contextPath: Intezer.Analysis.Status
+          description: status of the analysis
+          type: string
+        - contextPath: Intezer.Analysis.Type
+          description: type of the analysis
+          type: string
+    - name: intezer-get-analysis-result
+      arguments:
+        - default: false
+          description: The analysis ID we want to get results for
+          isArray: true
+          name: analysis_id
+          required: false
+          secret: false
+        - auto: PREDEFINED
+          default: false
+          defaultValue: File
+          description: The type of the analysis
+          isArray: false
+          name: analysis_type
+          predefined:
+            - File
+            - Endpoint
+          required: false
+          secret: false
+        - default: false
+          description: indicator to classify
+          isArray: false
+          name: indicator_name
+          required: false
+          secret: false
+      deprecated: false
+      description: Check the analysis status and get analysis result, support file and endpoint analysis
+      execution: false
+      outputs:
+        - contextPath: File.SHA256
+          description: Hash SHA256
+          type: string
+        - contextPath: File.Malicious.Vendor
+          description: For malicious files, the vendor that made the decision
+          type: string
+        - contextPath: DBotScore.Indicator
+          description: The indicator we tested
+          type: string
+        - contextPath: DBotScore.Type
+          description: The type of the indicator
+          type: string
+        - contextPath: DBotScore.Vendor
+          description: Vendor used to calculate the score
+          type: string
+        - contextPath: DBotScore.Score
+          description: The actual score
+          type: number
+        - contextPath: File.Metadata
+          description: Metadata returned from Intezer analysis (analysis id, analysis url, family, family type, sha256, verdict, sub_verdict). Metedata will be retuned only for supported files.
+          type: Unknown
+        - contextPath: Endpoint.Metadata
+          description: Metadata returned from Intezer analysis (endpoint analysis id, endpoint analysis url, families,  verdict, host_name)
+          type: Unknown
+        - contextPath: File.ExistsInIntezer
+          description: Does the file exists on intezer genome database
+          type: Boolean
+    - name: intezer-get-sub-analyses
+      arguments:
+        - default: false
+          description: The analysis ID we want to get the sub analyses for
+          isArray: false
+          name: analysis_id
+          required: true
+          secret: false
+      deprecated: false
+      description: Get a list of the analysis sub analyses
+      execution: false
+      outputs:
+        - contextPath: Intezer.Analysis.ID
+          description: Intezer analysis id
+          type: string
+        - contextPath: Intezer.Analysis.SubAnalysesIDs
+          description: List of all sub analyses of the give analysis
+          type: Unknown
+    - name: intezer-get-family-info
+      arguments:
+        - name: family_id
+          required: true
+          description: The Family ID
+      outputs:
+        - contextPath: Intezer.Family.ID
+          description: Family id in intezer genome database
+          type: string
+        - contextPath: Intezer.Family.Name
+          description: Family name
+          type: string
+        - contextPath: Intezer.Family.Type
+          description: Family Type
+          type: string
+      description: Get family information from Intezer Analyze
+    - name: intezer-get-analysis-code-reuse
+      arguments:
+        - default: false
+          description: The analysis ID we want to get the code reuse for
+          isArray: false
+          name: analysis_id
+          required: true
+          secret: false
+        - default: false
+          description: The Sub Analysis we want to get the code reuse for
+          isArray: false
+          name: sub_analysis_id
+          required: false
+          secret: false
+      deprecated: false
+      description: Get All code reuse report for an analysis. To get a sub analysis code-reuse you need to specify an analysis_id and a sub_analysis id!
+      execution: false
+      outputs:
+        - contextPath: Intezer.Analysis.ID
+          description: The composed analysis ID
+          type: string
+        - contextPath: Intezer.Analysis.CodeReuse
+          description: General Code Reuse of the analysis
+          type: Unknown
+        - contextPath: Intezer.Analysis.CodeReuseFamilies
+          description: List of the families appearing in the code reuse
+          type: Unknown
+        - contextPath: Intezer.Analysis.SubAnalyses.CodeReuse
+          description: General Code Reuse of the analysis
+          type: Unknown
+        - contextPath: Intezer.Analysis.SubAnalyses.CodeReuseFamilies
+          description: List of the families appearing in the code reuse
+          type: Unknown
+        - contextPath: Intezer.Analysis.SubAnalyses.RootAnalysis
+          description: The Composed analysis id
+          type: string
+    - name: intezer-get-analysis-metadata
+      arguments:
+        - default: false
+          description: The analysis ID we want to get the metadata for
+          isArray: false
+          name: analysis_id
+          required: true
+          secret: false
+        - default: false
+          description: The Sub Analysis we want to get the metadata for
+          isArray: false
+          name: sub_analysis_id
+          required: false
+          secret: false
+      deprecated: false
+      description: Get analysis metadata. To get a sub analysis metadata you need to specify an analysis_id and a sub_analysis id!
+      execution: false
+      outputs:
+        - contextPath: Intezer.Analysis.ID
+          description: The composed analysis ID
+          type: string
+        - contextPath: Intezer.Analysis.Metadata
+          description: The Analysis metadata
+          type: Unknown
+        - contextPath: Intezer.Analysis.SubAnalyses.Metadata
+          description: A Sub Analysis metadata
+          type: Unknown
+  dockerimage: demisto/intezer:1.0.0.24078
   isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
 tests:
-- Intezer Testing v2
+  - Intezer Testing v2
 fromversion: 5.0.0

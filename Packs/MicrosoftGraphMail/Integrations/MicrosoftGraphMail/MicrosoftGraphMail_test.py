@@ -1,4 +1,8 @@
+from urllib.parse import quote
+
 import pytest
+import requests_mock
+
 from CommonServerPython import *
 from MicrosoftGraphMail import MsGraphClient, build_mail_object, assert_pages, build_folders_path, \
     add_second_to_str_date, list_mails_command, item_result_creator, create_attachment, reply_email_command
@@ -137,6 +141,32 @@ def test_list_mails_command(mocker, client):
 
 
 @pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
+def test_list_mails_command_encoding(mocker, client):
+    """Unit test
+    Given
+    - an email query
+    When
+    - calling list_mails
+    Then
+    - Validate that the queried value is properly url-encoded
+    """
+    client = MsGraphClient(True, 'tenant', 'auth_token_url', 'enc_key', 'app_name', 'https://example.com',
+                           use_ssl=True, proxy=False, ok_codes=(200,), mailbox_to_fetch='mailbox',
+                           folder_to_fetch='folder', first_fetch_interval=10, emails_fetch_limit=10)
+    mocker.patch.object(client.ms_client, 'get_access_token')
+
+    search = 'Test&$%^'
+    search_encoded = quote(search)
+
+    with requests_mock.Mocker() as request_mocker:
+        mocked = request_mocker.get(
+            f'https://example.com/users/user_id/messages?$top=20&$search=%22{search_encoded}%22', json={}
+        )
+        client.list_mails('user_id', search=search)
+    assert mocked.call_count == 1
+
+
+@pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
 def test_list_mails_with_page_limit(mocker, client):
     """Unit test
     Given
@@ -181,7 +211,8 @@ def last_run_data():
         'LAST_RUN_TIME': '2019-11-12T15:00:00Z',
         'LAST_RUN_IDS': [],
         'LAST_RUN_FOLDER_ID': 'last_run_dummy_folder_id',
-        'LAST_RUN_FOLDER_PATH': "Phishing"
+        'LAST_RUN_FOLDER_PATH': "Phishing",
+        'LAST_RUN_ACCOUNT': 'dummy@mailbox.com',
     }
 
     return last_run
@@ -218,6 +249,19 @@ def test_fetch_incidents_changed_folder(mocker, client, emails_data, last_run_da
     client.fetch_incidents(last_run_data)
 
     mocker_folder_by_path.assert_called_once_with('dummy@mailbox.com', changed_folder)
+
+
+@pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
+def test_fetch_incidents_changed_account(mocker, client, emails_data, last_run_data):
+    changed_account = "Changed_Account"
+    client._mailbox_to_fetch = changed_account
+    mocker_folder_by_path = mocker.patch.object(client, '_get_folder_by_path',
+                                                return_value={'id': 'some_dummy_folder_id'})
+    mocker.patch.object(client.ms_client, 'http_request', return_value=emails_data)
+    mocker.patch.object(demisto, "info")
+    client.fetch_incidents(last_run_data)
+
+    mocker_folder_by_path.assert_called_once_with(changed_account, last_run_data['LAST_RUN_FOLDER_PATH'])
 
 
 @pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
@@ -319,7 +363,7 @@ def test_get_attachment(client):
         - Validate that the message object created successfully
 
     """
-    output_prefix = 'MSGraphMail(val.ID == obj.ID)'
+    output_prefix = 'MSGraphMail(val.ID && val.ID == obj.ID)'
     with open('test_data/mail_with_attachment') as mail_json:
         user_id = 'ex@example.com'
         raw_response = json.load(mail_json)

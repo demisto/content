@@ -1,7 +1,8 @@
 id: Cortex XDR - Check Action Status
 version: -1
 name: Cortex XDR - Check Action Status
-description: Checks the action status of an action ID. \nEnter the action ID of the action whose status you want to know.
+description: Checks the action status of an action ID. \nEnter the action ID of the
+  action whose status you want to know.
 starttaskid: "0"
 tasks:
   "0":
@@ -17,13 +18,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "2"
+      - "7"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 50
+          "y": -130
         }
       }
     note: false
@@ -33,10 +34,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 4b1b699b-2112-4d74-897e-d558dc990050
+    taskid: a3d064d5-11eb-403b-8eff-610618c0688b
     type: playbook
     task:
-      id: 4b1b699b-2112-4d74-897e-d558dc990050
+      id: a3d064d5-11eb-403b-8eff-610618c0688b
       version: -1
       name: GenericPolling
       description: |-
@@ -66,7 +67,8 @@ tasks:
       PollingCommandName:
         simple: xdr-action-status-get
       Timeout:
-        simple: "10"
+        complex:
+          root: inputs.timeout
       dt:
         simple: PaloAltoNetworksXDR.GetActionStatus(val.status != "CANCELLED" && val.status
           != "ABORTED" && val.status != "EXPIRED" && val.status != "COMPLETED_PARTIAL"
@@ -218,15 +220,50 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "7":
+    id: "7"
+    taskid: fa7b2e15-29c3-487b-8141-b7650e5161db
+    type: regular
+    task:
+      id: fa7b2e15-29c3-487b-8141-b7650e5161db
+      version: -1
+      name: Sleep 2 Seconds
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      seconds:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 910,
+        "height": 1090,
         "width": 810,
         "x": 50,
-        "y": 50
+        "y": -130
       }
     }
   }
@@ -235,6 +272,13 @@ inputs:
   value: {}
   required: false
   description: Action ID of the specific request.
+  playbookInputQuery:
+- key: timeout
+  value:
+    simple: "10"
+  required: false
+  description: Amount of time to poll before declaring a timeout and resuming the
+    playbook (in minutes).
   playbookInputQuery:
 outputs:
 - contextPath: PaloAltoNetworksXDR.GetActionStatus
@@ -248,7 +292,6 @@ outputs:
 - contextPath: PaloAltoNetworksXDR.GetActionStatus.action_id
   description: The action ID that was the input.
   type: number
-fromversion: 5.0.0
 tests:
-- Test XDR Playbook
-- Cortex XDR - IOC - Test
+- No tests (auto formatted)
+fromversion: 5.0.0

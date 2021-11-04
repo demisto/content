@@ -16,7 +16,7 @@ comment: Reveal some facts about yourself.
 commonfields:
   id: FactAboutYou
   version: -1
-dockerimage: demisto/python3:3.9.2.17957
+dockerimage: demisto/python3:3.9.7.24076
 enabled: true
 name: FactAboutYou
 runas: DBotWeakRole

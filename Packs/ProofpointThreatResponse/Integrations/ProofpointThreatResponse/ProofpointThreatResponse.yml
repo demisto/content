@@ -28,8 +28,23 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- display: 'First fetch timestamp (YYYY-MM-DDTHH:MM:SSZ). For example: 2020-02-02T19:00:00Z'
-  name: fetch_time
+- additionalinfo: The time range to consider for the initial data fetch. If timeout errors occur consider changing this value.
+  defaultvalue: 12 hours
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  hidden: false
+  name: first_fetch
+  required: false
+  type: 0
+- defaultvalue: '50'
+  display: Fetch limit - maximum number of incidents per fetch
+  name: fetch_limit
+  required: false
+  type: 0
+- defaultvalue: '6 hours'
+  additionalinfo: The time range between create_after and created_before that is sent to the api when fetching
+    older incidents. If timeout errors occur consider changing this value.
+  display: Fetch delta - The delta time in each batch. e.g. 1 hour, 3 minutes.
+  name: fetch_delta
   required: false
   type: 0
 - display: Fetch incidents with specific event sources. Can be a list of comma separated values.
@@ -269,7 +284,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: ' If false, will return an array of event IDs instead of full event objects. This will significantly speed up the response time of the API for incidents with large numbers of alerts.'
+      description: If false, will return an array of event IDs instead of full event objects. This will significantly speed up the response time of the API for incidents with large numbers of alerts.
       isArray: false
       name: expand_events
       predefined:
@@ -850,6 +865,7 @@ script:
   script: '-'
   subtype: python3
   type: python
+  dockerimage: demisto/python3:3.9.7.24076
 tests:
 - No test - beta_integration
 beta: true

@@ -78,6 +78,14 @@ configuration:
   name: issue_type
   required: false
   type: 0
+- display: Fetch Expanse issues with Cloud Management Status
+  name: cloud_management_status
+  options:
+  - NotApplicable
+  - ManagedCloud
+  - UnmanagedCloud
+  required: false
+  type: 16
 - defaultvalue: None
   display: Incident Mirroring Direction
   hidden: false
@@ -573,6 +581,17 @@ script:
       required: false
       secret: false
     - default: false
+      description: Returns only results whose cloud management status is the following:(comma-separated string, options are 'NotApplicable', 'ManagedCloud', 'UnmanagedCloud').
+      isArray: true
+      name: cloud_management_status
+      required: false
+      secret: false
+      auto: PREDEFINED
+      predefined:
+        - NotApplicable
+        - ManagedCloud
+        - UnmanagedCloud
+    - default: false
       description: Sort by specified properties.
       isArray: false
       auto: PREDEFINED
@@ -700,7 +719,7 @@ script:
     - contextPath: Expanse.Service.certificates.certificate.subject
       description: 'The subject in the certificate'
       type: String
-    - contextPath: EExpanse.Service.certificates.certificate.subjectAlternativeNames
+    - contextPath: Expanse.Service.certificates.certificate.subjectAlternativeNames
       description: 'The subject alternative names in the certificate'
       type: String
     - contextPath: Expanse.Service.certificates.certificate.subjectCountry
@@ -1071,8 +1090,20 @@ script:
       required: false
       secret: false
     - default: false
+      description: Returns only results whose cloud management status is the following.
+        (comma separated string, options are 'NotApplicable', 'ManagedCloud', 'UnmanagedCloud').
+      isArray: true
+      name: cloud_management_status
+      required: false
+      secret: false
+      auto: PREDEFINED
+      predefined:
+        - NotApplicable
+        - ManagedCloud
+        - UnmanagedCloud
+    - default: false
       description: Sort by specified properties.
-      isArray: false
+      isArray: true
       auto: PREDEFINED
       name: sort
       required: false
@@ -1229,6 +1260,12 @@ script:
       type: Date
     - contextPath: Expanse.Issue.certificate.version
       description: 'The version in the certificate'
+      type: String
+    - contextPath: Expanse.Issue.cloudManagementStatus.id
+      description: 'The id of the cloud management status'
+      type: String
+    - contextPath: Expanse.Issue.cloudManagementStatus.name
+      description: 'The name of the cloud management status'
       type: String
     - contextPath: Expanse.Issue.created
       description: 'When the issue instance was created'
@@ -1915,6 +1952,12 @@ script:
     - contextPath: Expanse.Issue.certificate.version
       description: 'The version in the certificate'
       type: String
+    - contextPath: Expanse.Issue.cloudManagementStatus.id
+      description: 'The ID of the cloud management status'
+      type: String
+    - contextPath: Expanse.Issue.cloudManagementStatus.name
+      description: 'The name of the cloud management status'
+      type: String
     - contextPath: Expanse.Issue.created
       description: 'When the issue instance was created'
       type: Date
@@ -2452,6 +2495,7 @@ script:
       - 'IpRange'
       - 'Certificate'
       - 'Domain'
+      - 'CloudResource'
     - default: false
       description: ID of the asset to assign the poc to.
       isArray: false
@@ -2491,6 +2535,7 @@ script:
       - 'IpRange'
       - 'Certificate'
       - 'Domain'
+      - 'CloudResource'
     - default: false
       description: ID of the asset to unassign the pocs from.
       isArray: false
@@ -2731,6 +2776,7 @@ script:
       - 'IpRange'
       - 'Certificate'
       - 'Domain'
+      - 'CloudResource'
     - default: false
       description: ID of the asset to assign the tags to.
       isArray: false
@@ -2768,6 +2814,7 @@ script:
       - 'IpRange'
       - 'Certificate'
       - 'Domain'
+      - 'CloudResource'
     - default: false
       description: ID of the asset to unassign the tags from.
       isArray: false
@@ -3020,12 +3067,6 @@ script:
       required: false
       secret: false
     - default: false
-      description: Maximum number of entries to retrieve.
-      isArray: false
-      name: limit
-      required: false
-      secret: false
-    - default: false
       description: Returns only results whose Tag ID falls in the provided list. (comma
         separated string). Cannot be used with the 'tag_names' argument.
       isArray: true
@@ -3046,6 +3087,13 @@ script:
         (comma separated) - annotations, severityCounts, attributionReasons, relatedRegistrationInformation,
         locationInformation
       defaultValue: none
+      auto: PREDEFINED
+      predefined:
+        - "annotations"
+        - "severityCounts"
+        - "attributionReasons"
+        - "relatedRegistrationInformation"
+        - "locationInformation"
       required: false
       secret: false
     - default: false
@@ -4982,6 +5030,276 @@ script:
     - contextPath: DBotScore.Type
       description: The indicator type.
       type: String
+  - name: expanse-get-cloud-resources
+    description: Retrieve cloud resources from Expanse.
+    deprecated: false
+    execution: false
+    arguments:
+    - default: false
+      description: Maximum number of cloud resources to retrieve.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Last date the cloud resource was observed by Expanse (Format is YYYY-MM-DD).
+      isArray: false
+      name: last_observed_date
+      required: false
+      secret: false
+    - default: false
+      description: A domain search string to find related cloud resources.
+      isArray: false
+      name: domain
+      required: false
+      secret: false
+    - default: false
+      description: An IP search string to find related cloud resources.
+      isArray: false
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      description: A search string of provider IDs to find cloud resources hosted by specific providers.
+      isArray: true
+      name: providers
+      required: false
+      secret: false
+    - default: false
+      description: A search string of provider names to find cloud resources hosted by specific providers.
+      isArray: true
+      name: provider_names
+      required: false
+      secret: false
+    - default: false
+      description: A search string of business unit IDs to find cloud resources belonging to a specific business unit.
+      isArray: true
+      name: business_units
+      required: false
+      secret: false
+    - default: false
+      description: A search string of business unit names to find cloud resources belonging to a specific business unit.
+      isArray: true
+      name: business_unit_names
+      required: false
+      secret: false
+    - default: false
+      description: A search string of tag IDs to find cloud resources that have been assigned a specific tag.
+      isArray: true
+      name: tags
+      required: false
+      secret: false
+    - default: false
+      description: A search string of tag names to find cloud resources that have been assigned a specific tag.
+      isArray: true
+      name: tag_names
+      required: false
+      secret: false
+    - default: false
+      description: A search string of asset types to find cloud resources of a specific type.
+      isArray: true
+      name: types
+      required: false
+      secret: false
+    - default: false
+      description: A search string of regions to find cloud resources that are hosted in a specific region.
+      isArray: true
+      name: regions
+      required: false
+      secret: false
+    outputs:
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: Expanse.CloudResource.accountIntegration.id
+      description: The ID of the cloud resource account integration.
+      type: String
+    - contextPath: Expanse.CloudResource.accountIntegration.name
+      description: The name of the cloud resource account integration.
+      type: String
+    - contextPath: Expanse.CloudResource.annotations.note
+      description: Note metadata on the cloud resource.
+      type: String
+    - contextPath: Expanse.CloudResource.businessUnits.id
+      description: The internal ID of the business unit that the cloud resource belongs to.
+      type: String
+    - contextPath: Expanse.CloudResource.businessUnits.name
+      description: The name of the business unit that the cloud resource belongs to.
+      type: String
+    - contextPath: Expanse.CloudResource.businessUnits.tenantId
+      description: The internal tenant ID of the business unit that the cloud resource belongs to.
+      type: String
+    - contextPath: Expanse.CloudResource.dateAdded
+      description: The date that the cloud resource was added.
+      type: Date
+    - contextPath: Expanse.CloudResource.details
+      description: Details about the cloud resource.
+      type: String
+    - contextPath: Expanse.CloudResource.domain
+      description: Domain name associated with the cloud resource.
+      type: String
+    - contextPath: Expanse.CloudResource.firstObserved
+      description: The date that the cloud resource was first observed.
+      type: Date
+    - contextPath: Expanse.CloudResource.id
+      description: The internal ID for the cloud resource.
+      type: String
+    - contextPath: Expanse.CloudResource.instanceId
+      description: The instance ID of the cloud resource.
+      type: String
+    - contextPath: Expanse.CloudResource.ips
+      description: IPs associated with the cloud resource.
+      type: String
+    - contextPath: Expanse.CloudResource.lastObserved
+      description: The date that the cloud resource was most recently observed.
+      type: Date
+    - contextPath: Expanse.CloudResource.name
+      description: The friendly name of the cloud resource.
+      type: String
+    - contextPath: Expanse.CloudResource.provider.id
+      description: The ID of the provider where the cloud resource is hosted.
+      type: String
+    - contextPath: Expanse.CloudResource.provider.name
+      description: The name of the provider where the cloud resource is hosted.
+      type: String
+    - contextPath: Expanse.CloudResource.region
+      description: The region where the cloud resouce is hosted.
+      type: String
+    - contextPath: Expanse.CloudResource.serviceStatus
+      description: Whether the cloud resource has any known associated services.
+      type: String
+    - contextPath: Expanse.CloudResource.sourceDetails
+      description: The integration source of the cloud resource.
+      type: String
+    - contextPath: Expanse.CloudResource.tenant.id
+      description: The internal tenant ID of the cloud resource.
+      type: String
+    - contextPath: Expanse.CloudResource.tenant.name
+      description: The tenant name of the cloud resouce
+      type: String
+    - contextPath: Expanse.CloudResource.tenant.tenantId
+      description: The internal tenant ID of the cloud resource.
+      type: String
+    - contextPath: Expanse.CloudResource.type
+      description: The type of cloud resource.
+      type: String
+    - contextPath: Expanse.CloudResource.vpc.id
+      description: Any associated VPC ID.
+      type: String
+    - contextPath: Expanse.CloudResource.vpc.name
+      description: Any associated VPC names.
+      type: String
+  - name: expanse-get-cloud-resource
+    description: Retrieve a specified cloud resource from Expanse.
+    deprecated: false
+    execution: false
+    arguments:
+      - default: false
+        description: The ID of the cloud resource.
+        isArray: false
+        name: id
+        required: true
+        secret: false
+    outputs:
+      - contextPath: DBotScore.Score
+        description: The actual score.
+        type: Number
+      - contextPath: DBotScore.Vendor
+        description: The vendor used to calculate the score.
+        type: String
+      - contextPath: DBotScore.Indicator
+        description: The indicator that was tested.
+        type: String
+      - contextPath: DBotScore.Type
+        description: The indicator type.
+        type: String
+      - contextPath: Expanse.CloudResource.accountIntegration.id
+        description: The ID of the cloud resource account integration.
+        type: String
+      - contextPath: Expanse.CloudResource.accountIntegration.name
+        description: The name of the cloud resource account integration.
+        type: String
+      - contextPath: Expanse.CloudResource.annotations.note
+        description: Note metadata on the cloud resource.
+        type: String
+      - contextPath: Expanse.CloudResource.businessUnits.id
+        description: The internal ID of the business unit that the cloud resource belongs to.
+        type: String
+      - contextPath: Expanse.CloudResource.businessUnits.name
+        description: The name of the business unit that the cloud resource belongs to.
+        type: String
+      - contextPath: Expanse.CloudResource.businessUnits.tenantId
+        description: The internal tenant ID of the business unit that the cloud resource belongs to.
+        type: String
+      - contextPath: Expanse.CloudResource.dateAdded
+        description: The date that the cloud resource was added.
+        type: Date
+      - contextPath: Expanse.CloudResource.details
+        description: Details about the cloud resource.
+        type: String
+      - contextPath: Expanse.CloudResource.domain
+        description: Domain name associated with the cloud resource.
+        type: String
+      - contextPath: Expanse.CloudResource.firstObserved
+        description: The date that the cloud resource was first observed.
+        type: Date
+      - contextPath: Expanse.CloudResource.id
+        description: The internal ID for the cloud resource.
+        type: String
+      - contextPath: Expanse.CloudResource.instanceId
+        description: The instance ID of the cloud resource.
+        type: String
+      - contextPath: Expanse.CloudResource.ips
+        description: IPs associated with the cloud resource.
+        type: String
+      - contextPath: Expanse.CloudResource.lastObserved
+        description: The date that the cloud resource was most recently observed.
+        type: Date
+      - contextPath: Expanse.CloudResource.name
+        description: The friendly name of the cloud resource.
+        type: String
+      - contextPath: Expanse.CloudResource.provider.id
+        description: The ID of the provider where the cloud resource is hosted.
+        type: String
+      - contextPath: Expanse.CloudResource.provider.name
+        description: The name of the provider where the cloud resource is hosted.
+        type: String
+      - contextPath: Expanse.CloudResource.region
+        description: The region where the cloud resouce is hosted.
+        type: String
+      - contextPath: Expanse.CloudResource.serviceStatus
+        description: Whether the cloud resource has any known associated services.
+        type: String
+      - contextPath: Expanse.CloudResource.sourceDetails
+        description: The integration source of the cloud resource.
+        type: String
+      - contextPath: Expanse.CloudResource.tenant.id
+        description: The internal tenant ID of the cloud resource.
+        type: String
+      - contextPath: Expanse.CloudResource.tenant.name
+        description: The tenant name of the cloud resouce
+        type: String
+      - contextPath: Expanse.CloudResource.tenant.tenantId
+        description: The internal tenant ID of the cloud resource.
+        type: String
+      - contextPath: Expanse.CloudResource.type
+        description: The type of cloud resource.
+        type: String
+      - contextPath: Expanse.CloudResource.vpc.id
+        description: Any associated VPC ID.
+        type: String
+      - contextPath: Expanse.CloudResource.vpc.name
+        description: Any associated VPC names.
+        type: String
   - name: expanse-get-risky-flows
     description: Retrieve risky flows detected by Expanse Behavior.
     deprecated: false
@@ -6063,7 +6381,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.9.4.18682
+  dockerimage: demisto/python3:3.9.7.24076
 defaultclassifier: ExpanseV2
 defaultmapperin: ExpanseV2-mapper
 fromversion: 6.0.0

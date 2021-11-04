@@ -1,7 +1,8 @@
-from typing import Union
+from typing import Union, Optional
 
 from requests_oauthlib import OAuth1
 from dateparser import parse
+from datetime import timedelta
 from CommonServerPython import *
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -522,6 +523,16 @@ def get_issue_fields(issue_creating=False, mirroring=False, **issue_args):
     if issue_args.get('description'):
         issue['fields']['description'] = issue_args['description']
 
+    if issue_args.get('components'):
+        components = [{"name": comp} for comp in argToList(issue_args["components"])]
+        issue['fields']['components'] = components
+
+    if issue_args.get('security'):
+        issue['fields']['security'] = {"name": issue_args['security']}
+
+    if issue_args.get('environment'):
+        issue['fields']['environment'] = issue_args['environment']
+
     if issue_args.get('labels') and isinstance(issue_args.get('labels'), str):
         issue['fields']['labels'] = issue_args['labels'].split(",")
 
@@ -569,6 +580,9 @@ def get_issue(issue_id, headers=None, expand_links=False, is_update=False, get_a
     # handle issues were we allowed incorrect values of true
     if get_attachments == "true" or get_attachments == "\"true\"":
         get_attachments = True
+    else:
+        get_attachments = False
+
     if get_attachments and attachments:
         attachment_urls = [attachment['content'] for attachment in attachments]
         for attachment_url in attachment_urls:
@@ -872,31 +886,42 @@ def get_entries_for_fetched_incident(ticket_id, should_get_comments, should_get_
 def fetch_incidents(query, id_offset, should_get_attachments, should_get_comments, should_mirror_in, should_mirror_out,
                     comment_tag, attachment_tag, fetch_by_created=None):
     last_run = demisto.getLastRun()
-    demisto.debug(f"last_run: {last_run}" if last_run else 'last_run is empty')
-    if last_run and last_run.get("idOffset"):
-        id_offset = last_run.get("idOffset")
+    demisto.debug(f'last_run: {last_run}' if last_run else 'last_run is empty')
+    last_created_time = ''
+    if last_run:
+        id_offset = last_run.get('idOffset') or ''
+        last_created_time = last_run.get('lastCreatedTime') or ''
     if not id_offset:
         id_offset = 0
 
     incidents, max_results = [], 50
-    if id_offset:
-        query = f'{query} AND id >= {id_offset}'
-    if fetch_by_created:
-        query = f'{query} AND created>-1m'
+    if fetch_by_created and last_created_time:
+        last_issue_time = parse(last_created_time)
+        minute_to_fetch = last_issue_time - timedelta(minutes=2)
+        formatted_minute_to_fetch = minute_to_fetch.strftime('%Y-%m-%d %H:%M')
+        query = f'{query} AND created>=\"{formatted_minute_to_fetch}\"'
+    else:
+        if id_offset:
+            query = f'{query} AND id >= {id_offset}'
+        if fetch_by_created:
+            query = f'{query} AND created>-1m'
 
     res = run_query(query, '', max_results)
     if res:
-        curr_id = id_offset
+        curr_id = int(id_offset)
         for ticket in res.get('issues'):
-            ticket_id = int(ticket.get("id"))
-            if ticket_id == curr_id:
+            ticket_id = int(ticket.get('id'))
+            ticket_created = ticket.get('fields', {}).get('created', '')
+            if ticket_id <= curr_id:
                 continue
-            id_offset = max(int(id_offset), ticket_id)
+            if ticket_id > int(id_offset):
+                id_offset = ticket_id
+                last_created_time = ticket_created
             incidents.append(create_incident_from_ticket(ticket, should_get_attachments, should_get_comments,
                                                          should_mirror_in, should_mirror_out, comment_tag,
                                                          attachment_tag))
 
-    demisto.setLastRun({"idOffset": id_offset})
+    demisto.setLastRun({'idOffset': id_offset, 'lastCreatedTime': last_created_time})
     return incidents
 
 

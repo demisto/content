@@ -1,0 +1,51 @@
+commonfields:
+  id: PanoramaCVECoverage
+  version: -1
+name: PanoramaCVECoverage
+comment: Check coverage given a list of CVEs.
+script: ''
+type: python
+tags: []
+enabled: true
+args:
+- name: CVE_List
+  required: true
+  description: A comma-separated list of CVEs to find.
+- name: Result_file
+  required: true
+  description: Entry ID of the output file from the panorama command.
+- name: outputFormat
+  description: Raw output into a file from the panorama command.
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - table
+  - paragraph
+  defaultValue: table
+outputs:
+  - contextPath: Panorama.CVECoverage.CVE
+    description: The CVE value.
+    type: string
+  - contextPath: Panorama.CVECoverage.Coverage.threat_name
+    description: The threat name.
+    type: string
+  - contextPath: Panorama.CVECoverage.Coverage.link
+    description: Link address to the threat in CVE site.
+    type: string
+  - contextPath: Panorama.CVECoverage.Coverage.severity
+    description: The threat severity.
+    type: string
+  - contextPath: Panorama.CVECoverage.Coverage.threat_id
+    description: The threat ID.
+    type: Number
+  - contextPath: Panorama.CVECoverage.Coverage.default_action
+    description: The threat default action.
+    type: string
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.9.7.24076
+runas: DBotWeakRole
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

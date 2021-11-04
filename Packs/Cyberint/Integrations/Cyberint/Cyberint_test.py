@@ -1,6 +1,8 @@
 import json
 from datetime import datetime, timedelta
 
+from CommonServerPython import EntryType
+
 BASE_URL = 'https://test.cyberint.io/alert'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
@@ -29,7 +31,7 @@ def test_cyberint_alerts_fetch_command(requests_mock):
     """
     from Cyberint import Client, cyberint_alerts_fetch_command
     mock_response = load_mock_response('csv_example.csv')
-    requests_mock.get(f'{BASE_URL}/api/v1/alerts/ARG-3/attachments/123', json=mock_response)
+    requests_mock.get(f'{BASE_URL}/api/v1/alerts/ARG-3/attachments/X', json=mock_response)
     mock_response = json.loads(load_mock_response('list_alerts.json'))
     requests_mock.post(f'{BASE_URL}/api/v1/alerts', json=mock_response)
     client = Client(base_url=BASE_URL, verify_ssl=False, access_token='xxx', proxy=False)
@@ -82,7 +84,12 @@ def test_fetch_incidents(requests_mock) -> None:
     """
     from Cyberint import Client, fetch_incidents
     mock_response = load_mock_response('csv_example.csv')
-    requests_mock.get(f'{BASE_URL}/api/v1/alerts/ARG-3/attachments/123', json=mock_response)
+    requests_mock.get(f'{BASE_URL}/api/v1/alerts/ARG-3/attachments/X', json=mock_response)
+    requests_mock.get(f'{BASE_URL}/api/v1/alerts/ARG-4/attachments/X', json=mock_response)
+
+    with open('test_data/expert_analysis_mock.pdf', 'rb') as pdf_content_mock:
+        requests_mock.get(f'{BASE_URL}/api/v1/alerts/ARG-4/analysis_report', content=pdf_content_mock.read())
+
     mock_response = json.loads(load_mock_response('list_alerts.json'))
     requests_mock.post(f'{BASE_URL}/api/v1/alerts', json=mock_response)
     client = Client(base_url=BASE_URL, verify_ssl=False, access_token='xxx', proxy=False)
@@ -109,7 +116,12 @@ def test_fetch_incidents_no_last_fetch(requests_mock):
     """
     from Cyberint import Client, fetch_incidents
     mock_response = load_mock_response('csv_example.csv')
-    requests_mock.get(f'{BASE_URL}/api/v1/alerts/ARG-3/attachments/123', json=mock_response)
+    requests_mock.get(f'{BASE_URL}/api/v1/alerts/ARG-3/attachments/X', json=mock_response)
+
+    with open('test_data/expert_analysis_mock.pdf', 'rb') as pdf_content_mock:
+        requests_mock.get(f'{BASE_URL}/api/v1/alerts/ARG-4/analysis_report', content=pdf_content_mock.read())
+    requests_mock.get(f'{BASE_URL}/api/v1/alerts/ARG-4/attachments/X', json=mock_response)
+
     mock_response = json.loads(load_mock_response('list_alerts.json'))
     requests_mock.post(f'{BASE_URL}/api/v1/alerts', json=mock_response)
     client = Client(base_url=BASE_URL, verify_ssl=False, access_token='xxx', proxy=False)
@@ -194,3 +206,51 @@ def test_extract_data_from_csv_stream(requests_mock):
     assert len(result) == 6
     assert list(result[0].keys()) == [value.lower() for value in CSV_FIELDS_TO_EXTRACT]
     assert result[0]['username'] == 'l1'
+
+
+def test_cyberint_alerts_analysis_report_command(requests_mock):
+    """
+        Scenario: Retrieve expert analysis report.
+        Given:
+         - User has provided valid credentials and arguments.
+        When:
+         - A alerts-analysis-report is called and there analysis report reference in the response.
+        Then:
+         - Ensure that the return ContentsFormat of the file is 'text'.
+         - Ensure that the return Type is file.
+         - Ensure the name of the file.
+    """
+    from Cyberint import Client, cyberint_alerts_get_analysis_report_command
+
+    with open('test_data/expert_analysis_mock.pdf', 'rb') as pdf_content_mock:
+        requests_mock.get(f'{BASE_URL}/api/v1/alerts/ARG-4/analysis_report', content=pdf_content_mock.read())
+
+    client = Client(base_url=BASE_URL, verify_ssl=False, access_token='xxx', proxy=False)
+    result = cyberint_alerts_get_analysis_report_command(client, "ARG-4", "expert_analysis_mock.pdf")
+    assert result['ContentsFormat'] == 'text'
+    assert result['Type'] == EntryType.FILE
+    assert result['File'] == "expert_analysis_mock.pdf"
+
+
+def test_cyberint_alerts_get_attachment_command(requests_mock):
+    """
+         Scenario: Retrieve alert attachment.
+         Given:
+          - User has provided valid credentials and arguments.
+         When:
+          - A alerts-get-attachment called and there attachments reference in the response.
+         Then:
+          - Ensure that the return ContentsFormat of the file is 'text'.
+          - Ensure that the return Type is file.
+          - Ensure the name of the file.
+     """
+    from Cyberint import Client, cyberint_alerts_get_attachment_command
+
+    with open('test_data/attachment_file_mock.png', 'rb') as png_content_mock:
+        requests_mock.get(f'{BASE_URL}/api/v1/alerts/ARG-3/attachments/X', content=png_content_mock.read())
+
+    client = Client(base_url=BASE_URL, verify_ssl=False, access_token='xxx', proxy=False)
+    result = cyberint_alerts_get_attachment_command(client, "ARG-3", "X", "attachment_file_mock.png")
+    assert result['ContentsFormat'] == 'text'
+    assert result['Type'] == EntryType.FILE
+    assert result['File'] == "attachment_file_mock.png"

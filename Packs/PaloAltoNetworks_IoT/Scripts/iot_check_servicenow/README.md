@@ -6,7 +6,7 @@ Close the XSOAR incident if the IoT ServiceNow ticket was closed. This command s
 | --- | --- |
 | Script Type | python3 |
 | Tags | iot |
-| Demisto Version | 5.5.0 |
+| Cortex XSOAR Version | 5.5.0 |
 
 This script is run by a playbook 'iot-check-service-playbook', that is run by a recurring XSOAR job.
 

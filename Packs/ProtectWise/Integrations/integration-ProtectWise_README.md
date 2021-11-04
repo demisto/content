@@ -1,28 +1,28 @@
 <!-- HTML_DOC -->
-<p>When integrating Protectwise with Demisto, event data is received in a continues stream of data which can be handled by Demisto.</p>
-<h3>To set up the integration on Demisto:</h3>
+<p>When integrating Protectwise with Cortex XSOAR, event data is received in a continues stream of data which can be handled by Cortex XSOAR.</p>
+<h3>To set up the integration on Cortex XSOAR:</h3>
 <ol>
 <li>Go to ‘Settings &gt; Integrations &gt; Servers &amp; Services’</li>
 <li>Locate the Protectwise integration by searching for ‘Protectwise’ using the search box on the top of the page.
 <ol>
-<li>Click ‘Add instance’ to create and configure a new integration. You should configure the following Protectwise and Demisto-specific settings:  <br>                             <br><strong>Name</strong>: A textual name for the integration instance.</li>
+<li>Click ‘Add instance’ to create and configure a new integration. You should configure the following Protectwise and Cortex XSOAR-specific settings:  <br>                             <br><strong>Name</strong>: A textual name for the integration instance.</li>
 </ol>
 </li>
 </ol>
 <p class="wysiwyg-indent8"><strong>URL</strong>: The hostname or IP address of the application. Make sure it is reachable with respect to IP address and port.</p>
 <p class="wysiwyg-indent8"><strong>Email &amp; Password:</strong> the credentials for accessing the API.  </p>
-<p class="wysiwyg-indent8"><strong>Do not validate certificate (insecure): </strong>Select to avoid server certification validation. You may want to do this in case Demisto cannot validate the integration server certificate (due to missing CA certificate).</p>
-<p class="wysiwyg-indent8"><strong>Only fetch events with this text in the name:</strong> To only pull events with a specific name, specify it here. Demisto will look for one of the filter values in the Event name (comparison is case insensitive). <br>Separate multiple names with a comma. For example: Progression,Lateral Movement</p>
+<p class="wysiwyg-indent8"><strong>Do not validate certificate (insecure): </strong>Select to avoid server certification validation. You may want to do this in case Cortex XSOAR cannot validate the integration server certificate (due to missing CA certificate).</p>
+<p class="wysiwyg-indent8"><strong>Only fetch events with this text in the name:</strong> To only pull events with a specific name, specify it here. Cortex XSOAR will look for one of the filter values in the Event name (comparison is case insensitive). <br>Separate multiple names with a comma. For example: Progression,Lateral Movement</p>
 <p class="wysiwyg-indent8"><strong>Filter by threat category</strong>: To pull threats according to threat category.</p>
 <p class="wysiwyg-indent8"><strong>Filter by killchain stage</strong>: To pull threats according to threat killchain stage.</p>
 <p class="wysiwyg-indent8"><strong>Filter by LOW , MEDIUM , or HIGH threatLevel</strong>: To pull threats according to Threat Level.</p>
-<p class="wysiwyg-indent8"><strong>Fetch incidents: </strong>Select whether to automatically create Demisto incidents from the integration's events. <br>If this option is checked, the first fetch will search for events 10 minutes back from the moment you turn on Fetching. Subsequently, new offences will be fetched as soon as they are generated. Use the "Query to fetch offences" option to pull older offences as incidents.<br>The next fetch interval depends on the systemwide interval (default 1 min).<strong><br></strong></p>
-<p class="wysiwyg-indent8"><strong>Incident type:</strong> Specify the Demisto incident type that will be set for incidents from this integration.</p>
+<p class="wysiwyg-indent8"><strong>Fetch incidents: </strong>Select whether to automatically create Cortex XSOAR incidents from the integration's events. <br>If this option is checked, the first fetch will search for events 10 minutes back from the moment you turn on Fetching. Subsequently, new offences will be fetched as soon as they are generated. Use the "Query to fetch offences" option to pull older offences as incidents.<br>The next fetch interval depends on the systemwide interval (default 1 min).<strong><br></strong></p>
+<p class="wysiwyg-indent8"><strong>Incident type:</strong> Specify the Cortex XSOAR incident type that will be set for incidents from this integration.</p>
 <p class="wysiwyg-indent8"><strong>Use system proxy settings</strong>: Select whether to communicate via the system proxy server or not.</p>
-<p class="wysiwyg-indent8"><strong>Demisto engine:</strong> If relevant, select the engine that acts as a proxy to the server.  </p>
-<p class="wysiwyg-indent8">Engines are used when you need to access a remote network segments and there are network devices such as proxies, firewalls, etc. that prevent the Demisto server from accessing the remote networks.<br><br>For more information on Demisto engines see:<br><a href="https://support.demisto.com/hc/en-us/articles/226274727-Settings-Integrations-Engines">https://demisto.zendesk.com/hc/en-us/articles/226274727-Settings-Integrations-Engines</a></p>
+<p class="wysiwyg-indent8"><strong>Cortex XSOAR engine:</strong> If relevant, select the engine that acts as a proxy to the server.  </p>
+<p class="wysiwyg-indent8">Engines are used when you need to access a remote network segments and there are network devices such as proxies, firewalls, etc. that prevent the Cortex XSOAR server from accessing the remote networks.<br><br>For more information on Cortex XSOAR engines see:<br><a href="https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/engines">https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/engines</a></p>
 <ol start="4">
-<li>Press the ‘Test’ button to validate connection.<br>If you are experiencing issues with the service configuration, please contact Demisto support at support@demisto.com</li>
+<li>Press the ‘Test’ button to validate connection.</li>
 <li>After completing the test successfully, press the ‘Done’ button.</li>
 </ol>
 <h3>Commands:</h3>

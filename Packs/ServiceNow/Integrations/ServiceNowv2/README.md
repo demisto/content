@@ -1,6 +1,6 @@
-IT service management. Demisto interfaces with ServiceNow to help streamline security-related service management and IT operations. For example, you can use the ‘ServiceNow’ integration in order to:
+IT service management. Cortex XSOAR interfaces with ServiceNow to help streamline security-related service management and IT operations. For example, you can use the ‘ServiceNow’ integration in order to:
 
-- View, create, update or delete a ServiceNow ticket directly from the Demisto CLI and enrich it with Demisto data.
+- View, create, update or delete a ServiceNow ticket directly from the Cortex XSOAR CLI and enrich it with Cortex XSOAR data.
 - View, create, update and delete records from any ServiceNow table.
 - Query ServiceNow data with the ServiceNow query syntax.
 
@@ -12,6 +12,13 @@ This integration was integrated and tested with the Orlando version of ServiceNo
 1. Get, update, create, and delete ServiceNow tickets, as well as add links and comments, or upload files to the tickets.
 2. Fetch newly created incidents.
 3. Get, update, create, delete records from any ServiceNow table.
+
+## Required Permissions
+To use ServiceNow on Cortex XSOAR, ensure your user account has the *rest_api_explorer* and *web_service_admin* roles.
+ These roles are required to make API calls.
+ Also add to your user account the specific tables that you want to have access to.
+ However, these permissions may not suffice for managing records in some tables. Make sure you have the correct role so you have permissions to work with the relevant table.
+ 
 ## Wrapper Scripts
 There are 3 scripts that serve as examples for wrapping the following generic commands:
 servicenow-query-table - ServiceNowQueryIncident
@@ -93,6 +100,8 @@ If MFA is enabled for your user, follow the next steps:
 5. Click **Test** to validate the URLs, token, and connection.
 6. Click **Done.**
 
+Note: Fetch incidents and mirroring is not currently supported for the ServiceNow Security Incident Response (SIR) module.
+
 ## Fetch Incidents
 The integration fetches newly created tickets according to the following parameters,
 which you define in the instance configuration: ticket_type, query, and limit.
@@ -172,7 +181,7 @@ match.
 
 
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### servicenow-login
 ***

@@ -1,0 +1,23 @@
+{
+    "single_host_output":
+        {
+            "annotation": "Test whitelisted outbound",
+            "hostAddress": "1.1.1.1",
+            "updateTime": 1616064249
+        },
+
+    "multiple_hosts_output":{
+        "hosts": [
+            {
+                "annotation": "Test whitelisted outbound",
+                "hostAddress": "2.2.2.2",
+                "updateTime": 1616064318
+            },
+            {
+                "annotation": "Test whitelisted outbound",
+                "hostAddress": "3.3.3.3",
+                "updateTime": 1616064318
+            }
+        ]
+    }
+}

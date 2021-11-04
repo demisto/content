@@ -1,0 +1,25 @@
+{
+    "size": 0,
+    "dataType": "scripts",
+    "params": {
+        "returnWidgetType": "incidents",
+        "tableColumns": [
+        ]
+    },
+    "query": "DBotGroupXDRIncidents",
+    "modified": "2021-05-20T11:37:39.727893798Z",
+    "name": "Cortex XDR Grouping - Incidents",
+    "dateRange": {
+        "period": {
+            "byFrom": "days",
+            "fromValue": null
+        },
+        "fromDateLicense": "0001-01-01T00:00:00Z"
+    },
+    "isPredefined": true,
+    "version": -1,
+    "id": "c89bc765-50a9-479f-88e5-d256e09788c5",
+    "widgetType": "text",
+    "fromVersion": "6.2.0",
+    "description": ""
+}

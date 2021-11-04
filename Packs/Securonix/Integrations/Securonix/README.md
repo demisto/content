@@ -7,7 +7,7 @@ To configure a cloud base instance use the *tenant* parameter only.
 To configure an on-prem instance, use both the *host* and *tenant* parameters.
 For more information, visit: `securonix/etnants/<tenantname>/securonix_home/responses/demisto` 
 
-## Configure Securonix on Demisto
+## Configure Securonix on Cortex XSOAR
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Securonix.
 3. Click **Add instance** to create and configure a new integration instance.
@@ -29,7 +29,7 @@ For more information, visit: `securonix/etnants/<tenantname>/securonix_home/resp
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### securonix-list-workflows
 ***

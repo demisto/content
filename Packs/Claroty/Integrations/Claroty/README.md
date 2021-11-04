@@ -29,7 +29,7 @@ Retrieve and resolve alerts related to OT devices (communicating outside of the 
 Insights: get information about vulnerable assets in the network (retrieve vulnerabilities and CVEs per asset,
 divide according to CVE risk and mitigate accordingly (high will have different mitigation steps)
 
-## Configure Claroty on Demisto
+## Configure Claroty on Cortex XSOAR
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
@@ -52,7 +52,7 @@ divide according to CVE risk and mitigate accordingly (high will have different 
 
 ## Commands
 ---
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 1. claroty-get-assets
 2. claroty-query-alerts

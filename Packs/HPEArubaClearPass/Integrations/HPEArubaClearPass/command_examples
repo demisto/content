@@ -1,0 +1,6 @@
+!aruba-clearpass-endpoints-list
+!aruba-clearpass-endpoint-update endpoint_id=3001 description="test" status=Known
+!aruba-clearpass-attributes-list
+!aruba-clearpass-attribute-create data_type=Boolean entity_name=Device name="new_attribute"
+!aruba-clearpass-attribute-update attribute_id=31 name="Device Type" data_type=String
+!aruba-clearpass-attribute-delete attribute_id=3043

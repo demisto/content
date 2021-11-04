@@ -1,7 +1,7 @@
 {
   "kind": "admin#directory#user",
-  "id": "113088517730792434177",
-  "etag": "\"XVqXMfEoKXKeCEJHh6Z_d9s0pNqKA90jMskGKajpbM8/yoBzzK7UXygooDvmCaFYRntvr6Y\"",
+  "id": "testuser",
+  "etag": "\"SomeTag\"",
   "primaryEmail": "newuser@domain.io",
   "name": {
     "givenName": "new",

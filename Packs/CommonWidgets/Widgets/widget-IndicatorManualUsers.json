@@ -1,7 +1,7 @@
 {
  "id": "indicators-manual-user",
  "version": -1,
- "name": "Manual Reputation Indicators by User",
+ "name": "Manual Verdict Indicators by User",
  "dataType": "indicators",
  "widgetType": "bar",
  "size": 10,

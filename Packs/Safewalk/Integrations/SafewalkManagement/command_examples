@@ -1,0 +1,31 @@
+!safewalk-get-transactionlog search="user"
+!safewalk-get-local-users
+!safewalk-get-ldap-users
+!safewalk-get-ldaps
+!safewalk-get-user-personalinformation username=user
+!safewalk-set-user-personalinformation username=user email=user@altipeak.com mobile_phone=+5491154545454
+!safewalk-get-user-accessattempts username=user
+!safewalk-delete-user-accessattempts username="user"
+!safewalk-update-user-token
+!safewalk-get-user-tokens username="mmercuri"
+!safewalk-delete-user-token username="mmercuri" token_devicetype="Backup" token_serialnumber="0002000180003"
+!safewalk-get-user-settings username="user"
+!safewalk-get-user-group username="user"
+!safewalk-add-user-group username="mmercuri" new_group_name="Test"
+!safewalk-remove-user-group username="mmercuri" old_group_name="Users"
+!safewalk-get-user-registrationcode username="mmercuri"
+!safewalk-set-user-registrationcode username="mmercuri" 
+!safewalk-create-user-token-virtual username=user
+!safewalk-create-user-token-totpmobile username=user
+!safewalk-create-user-token-totpmobile username="user"
+!safewalk-create-user-token-totmobilehybrid username="user" serial-number=""
+!safewalk-create-user-token-physical username="user" serial-number=""  password-required="true"
+!safewalk-create-user-token-backup username=user password-required=false backuptoken-timeout=10 backuptoken_attempts=5
+!safewalk-create-user-token-fastauth username="mmercuri" serial-number=""
+!safewalk-set-user-backuptoken-settings username=user backuptoken-timeout=5 backup-password-required=false backuptoken-attempts=1
+!safewalk-set-user-general-settings username="mmercuri" user-storage="yes"
+!safewalk-set-user-totpauthentication-settings username="mmercuri" totp-password-required=""
+!safewalk-set-user-userauthentication-settings username="mmercuri" allow-password-for-registration="true"
+!safewalk-set-user-virtualauthentication-settings username="mmercuri" virtual-device-accept-tolerance="5"
+!safewalk-create-local-user username="user" password="safewalk" firstname="User" lastname="Lastname" mobilephone="+5491125252525" email="user@altipeak.com"
+!safewalk-delete-local-user username="user"

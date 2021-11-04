@@ -1,7 +1,7 @@
 {
  "id": "count-indicators-manual-user",
  "version": -1,
- "name": "Manual Reputation Indicators",
+ "name": "Manual Verdict Indicators",
  "dataType": "indicators",
  "widgetType": "number",
  "query": "manualScore:T",

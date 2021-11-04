@@ -1,0 +1,20 @@
+{
+    "defaultIncidentType": "Carbon Black EDR",
+    "description": "Classifies Carbon Black EDR's alerts",
+    "feed": false,
+    "id": "Carbon Black EDR Classifier",
+    "keyTypeMap": {
+        "Carbon Black Process Blocking": "Carbon Black EDR"
+    },
+    "name": "Carbon Black EDR Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "complex": null,
+        "simple": "description"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

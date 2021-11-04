@@ -643,6 +643,9 @@ tasks:
                     getField:
                       value:
                         simple: Geo
+                    stringify:
+                      value:
+                        simple: false
                 - operator: getField
                   args:
                     field:
@@ -667,6 +670,9 @@ tasks:
                     getField:
                       value:
                         simple: Geo
+                    stringify:
+                      value:
+                        simple: false
                 - operator: getField
                   args:
                     field:
@@ -757,6 +763,9 @@ tasks:
               getField:
                 value:
                   simple: Geo
+              stringify:
+                value:
+                  simple: false
           - operator: getField
             args:
               field:
@@ -824,6 +833,9 @@ tasks:
               getField:
                 value:
                   simple: Geo
+              stringify:
+                value:
+                  simple: false
           - operator: getField
             args:
               field:
@@ -2558,6 +2570,9 @@ tasks:
                     getField:
                       value:
                         simple: Geo
+                    stringify:
+                      value:
+                        simple: false
                 - operator: getField
                   args:
                     field:
@@ -2628,6 +2643,9 @@ tasks:
                     getField:
                       value:
                         simple: Geo
+                    stringify:
+                      value:
+                        simple: false
                 - operator: getField
                   args:
                     field:
@@ -2724,6 +2742,9 @@ tasks:
               getField:
                 value:
                   simple: Geo
+              stringify:
+                value:
+                  simple: false
           - operator: getField
             args:
               field:
@@ -3068,6 +3089,9 @@ tasks:
               getField:
                 value:
                   simple: Geo
+              stringify:
+                value:
+                  simple: false
           - operator: getField
             args:
               field:

@@ -1,0 +1,31 @@
+args:
+- auto: PREDEFINED
+  default: true
+  description: Is widget or playbook command
+  name: isWidget
+  predefined:
+  - "False"
+  - "True"
+- description: Define the thresholds
+  name: Thresholds
+comment: Number of dropped incidents
+commonfields:
+  id: HealthCheckNumberOfDroppedIncidents
+  version: -1
+dockerimage: demisto/python3:3.9.7.24076
+enabled: true
+name: HealthCheckNumberOfDroppedIncidents
+outputs:
+- contextPath: NumberOfDroppedIncidents
+  description: Number of dropped incidents
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- dynamic-section
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

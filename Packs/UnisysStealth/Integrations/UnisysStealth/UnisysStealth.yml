@@ -1,0 +1,87 @@
+category: Endpoint
+commonfields:
+  id: Unisys Stealth
+  version: -1
+configuration:
+- display: Stealth Eco API IP Address or Hostname
+  name: server_ip
+  required: true
+  type: 0
+- display: Stealth Eco API Port
+  name: port
+  required: true
+  type: 0
+- display: Credentials
+  name: credentials
+  required: true
+  type: 9
+- display: Isolation Role ID
+  name: isolation_id
+  required: false
+  type: 0
+- display: Trust any certificate (unsecure)
+  name: trust
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: 'This integration is intended to aid companies in integrating with the
+  Stealth EcoAPI service.  Using the included commands, security teams can trigger
+  dynamically isolation of users or endpoints from the rest of the Stealth network.  '
+display: Unisys Stealth
+name: Unisys Stealth
+script:
+  commands:
+  - arguments:
+    - description: FQDN of machine to isolate.
+      name: endpoint
+      required: true
+    description: This is the command which will isolate an endpoint from the Stealth
+      Network
+    name: stealth-isolate-machine
+  - arguments:
+    - description: FQDN of machine to isolate.
+      name: endpoint
+      required: true
+    description: This is the command which will un-isolate an endpoint from Stealth
+      Network
+    name: stealth-unisolate-machine
+  - arguments: []
+    description: Retrieve roles from Stealth Network
+    name: stealth-get-stealth-roles
+  - arguments:
+    - description: Hostname of machine to isolate.
+      name: user
+    description: This is the command which will isolate an user from the Stealth Network
+    name: stealth-isolate-user
+  - arguments:
+    - description: Username to un-isolate.
+      name: user
+    description: This is the command which will un-isolate an user from Stealth Network
+    name: stealth-unisolate-user
+  - arguments:
+    - description: FQDN of machine to isolate.
+      name: endpoint
+    - description: Username to isolate.
+      name: user
+    description: This is the command which will isolate an endpoint and user from
+      the Stealth Network
+    name: stealth-isolate-machine-and-user
+  - arguments:
+    - description: FQDN of machine to isolate.
+      name: endpoint
+    - description: Username to un-isolate.
+      name: user
+    description: This is the command which will un-isolate an endpoint and user from
+      Stealth Network
+    name: stealth-unisolate-machine-and-user
+  dockerimage: demisto/python3:3.9.7.24076
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

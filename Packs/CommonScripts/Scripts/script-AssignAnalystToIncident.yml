@@ -18,7 +18,7 @@ script: >
       var res = executeCommand('getUsers',{});
       if (res && res[0] && res[0].Contents) {
           res[0].Contents.forEach(function(user) {
-              if (user.email === args.email) {
+              if (user.email.toLowerCase() === args.email.toLowerCase()) {
                   userToAssign = user.id;
               }
           });
@@ -39,6 +39,10 @@ script: >
       userToAssign = usersList[Math.floor(Math.random() * usersList.length)];
   }
 
+  function pickRandomAvailableUser(usersRes) {
+      var usersList = usersRes[0].Contents.filter(u => !u.isAway).map(function (u) { return u.username });
+      userToAssign = usersList[Math.floor(Math.random() * usersList.length)];
+  }
 
   if (!userToAssign) {
       switch(assignBy) {
@@ -47,7 +51,7 @@ script: >
               if (isError(usersRes[0])) {
                   return usersRes[0];
               }
-              pickRandomUser(usersRes);
+              pickRandomAvailableUser(usersRes);
               break;
           case 'current':
               var usersRes = executeCommand('getUsers', { current: true, onCall: onCallArg });
@@ -61,7 +65,7 @@ script: >
               if (isError(usersRes[0])) {
                   return usersRes[0];
               }
-              pickRandomUser(usersRes);
+              pickRandomAvailableUser(usersRes);
               break;
           default:
               res = executeCommand("getOwnerSuggestion", { roles: args.roles, shiftOnly: onCallArg })[0].Contents;
@@ -83,7 +87,7 @@ script: >
                   if (isError(usersRes[0])) {
                       return usersRes[0];
                   }
-                  pickRandomUser(usersRes);
+                  pickRandomAvailableUser(usersRes);
               }
       }
   }

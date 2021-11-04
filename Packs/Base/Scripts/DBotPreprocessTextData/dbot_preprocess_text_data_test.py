@@ -1,9 +1,9 @@
 import unittest
 
 from CommonServerPython import *
-from DBotPreprocessTextData import clean_html, remove_line_breaks, hash_word, \
+from DBotPreprocessTextData import clean_html_from_text, remove_line_breaks, hash_word, \
     concat_text_fields, whitelist_dict_fields, remove_short_text, remove_duplicate_by_indices, pre_process_batch, main, \
-    read_file, Tokenizer
+    read_file, Tokenizer, clean_text_of_incidents_list, remove_foreign_language, is_text_in_input_language
 import string
 
 from copy import deepcopy
@@ -20,7 +20,7 @@ def test_clean_html(mocker):
         </body>
         </html>
     """
-    assert clean_html(html_string) == "My First Heading"
+    assert clean_html_from_text(html_string) == "My First Heading"
 
 
 def test_remove_line_breaks():
@@ -133,14 +133,15 @@ def test_pre_process():
             'body': 'TestBody1 TestBody2 <h1> html </h1>',
         }
     ]
-    data1 = pre_process_batch(data, "body", "processed", True, "none", None)
+    data = clean_text_of_incidents_list(data, "body", remove_html_tags=True)
+    data1 = pre_process_batch(data, "body", "processed", "none", None)
     assert data1 == [
         {'body': 'TestBody1 TestBody2 TestBody3 TestBody4', 'processed': 'TestBody1 TestBody2 TestBody3 TestBody4'},
-        {'body': 'TestBody1 TestBody2 <h1> html </h1>', 'processed': 'TestBody1 TestBody2 html'}]
-    data2 = pre_process_batch(data, "body", "processed", True, "none", 5381)
+        {'body': 'TestBody1 TestBody2 html', 'processed': 'TestBody1 TestBody2 html'}]
+    data2 = pre_process_batch(data, "body", "processed", "none", 5381)
     assert data2 == [
         {'body': 'TestBody1 TestBody2 TestBody3 TestBody4', 'processed': '148060132 148060133 148060134 148060135'},
-        {'body': 'TestBody1 TestBody2 <h1> html </h1>', 'processed': '148060132 148060133 2090341082'}]
+        {'body': 'TestBody1 TestBody2 html', 'processed': '148060132 148060133 2090341082'}]
 
 
 def test_main(mocker):
@@ -151,7 +152,7 @@ def test_main(mocker):
         'removeShortTextThreshold': 5,
         'dedupThreshold': -1,
         'preProcessType': 'nlp',
-        'tokenizationMethod': '',
+        'tokenizationMethod': 'tokenizer',
         'language': 'English',
         'cleanHTML': 'true',
         'outputFormat': 'json'
@@ -167,7 +168,30 @@ def test_main(mocker):
     assert len(entry['Contents']) > 1
 
 
-neagative_initalization = \
+def test_filter_foreign_languages():
+    lang_to_text = {
+        'English': 'this is a test',
+        'German': 'das ist ein Test',
+        'French': "c'est un test",
+        'Spanish': 'esto es una prueba',
+        'Portuguese': "isto é um teste",
+        'Italian': "questa è una prova",
+        'Dutch': "dit is een test",
+    }
+
+    for lang_argument in lang_to_text:
+        for actual_lang, text in lang_to_text.items():
+            is_correct_lang, actual_language = is_text_in_input_language(text, lang_argument)
+            assert is_correct_lang == (lang_argument == actual_lang)
+            data = [{'text': text}]
+            filtered_data, _ = remove_foreign_language(data, 'text', language=lang_argument)
+            if lang_argument == actual_lang:
+                assert len(filtered_data) == 1
+            else:
+                assert len(filtered_data) == 0
+
+
+negative_initialization = \
     {
         'clean_html': False,
         'remove_new_lines': False,
@@ -184,7 +208,7 @@ neagative_initalization = \
 
 class TestTokenizer(unittest.TestCase):
     def test_clean_html_tokenizer(self):
-        args = deepcopy(neagative_initalization)
+        args = deepcopy(negative_initialization)
         args['clean_html'] = True
         t1 = Tokenizer(**args)
         text = """
@@ -205,7 +229,7 @@ class TestTokenizer(unittest.TestCase):
         assert re.sub(r"\s+", "", res2['tokenizedText']) == re.sub(r"\s+", "", text.lower())
 
     def test_number_pattern(self):
-        args = deepcopy(neagative_initalization)
+        args = deepcopy(negative_initialization)
         args['replace_numbers'] = True
         t1 = Tokenizer(**args)
         text = "I have 3 dogs"
@@ -219,7 +243,7 @@ class TestTokenizer(unittest.TestCase):
         assert res1['tokenizedText'] == text.lower()
 
     def test_remove_new_lines(self):
-        args = deepcopy(neagative_initalization)
+        args = deepcopy(negative_initialization)
         args['remove_new_lines'] = True
         t1 = Tokenizer(**args)
         text = \
@@ -250,7 +274,7 @@ I have 3 dogs
 
             return hash_name & 0xFFFFFFFF
 
-        args = deepcopy(neagative_initalization)
+        args = deepcopy(negative_initialization)
         args['hash_seed'] = 5
         t1 = Tokenizer(**args)
         text = 'hello world'
@@ -264,7 +288,7 @@ I have 3 dogs
         assert 'hashedTokenizedText' not in res1
 
     def test_remove_stop_words(self):
-        args = deepcopy(neagative_initalization)
+        args = deepcopy(negative_initialization)
         args['remove_stop_words'] = False
         t1 = Tokenizer(**args)
         text = 'let it be'
@@ -277,7 +301,7 @@ I have 3 dogs
         assert res1['tokenizedText'] == 'let'
 
     def test_remove_punct(self):
-        args = deepcopy(neagative_initalization)
+        args = deepcopy(negative_initialization)
         args['remove_punct'] = False
         t1 = Tokenizer(**args)
         text = 'let, it. be!'
@@ -294,7 +318,7 @@ I have 3 dogs
 
     def test_remove_non_alpha(self):
         tested_arg = 'remove_non_alpha'
-        args = deepcopy(neagative_initalization)
+        args = deepcopy(negative_initialization)
         args[tested_arg] = False
         t1 = Tokenizer(**args)
         text = 'see you s00n'
@@ -308,7 +332,7 @@ I have 3 dogs
 
     def test_replace_emails(self):
         tested_arg = 'replace_emails'
-        args = deepcopy(neagative_initalization)
+        args = deepcopy(negative_initialization)
         args[tested_arg] = False
         t1 = Tokenizer(**args)
         text = 'my email is a@gmail.com'
@@ -322,7 +346,7 @@ I have 3 dogs
 
     def test_replace_urls(self):
         tested_arg = 'replace_urls'
-        args = deepcopy(neagative_initalization)
+        args = deepcopy(negative_initialization)
         args[tested_arg] = False
         t1 = Tokenizer(**args)
         text = 'my url is www.google.com'
@@ -336,7 +360,7 @@ I have 3 dogs
 
     def test_replace_numbers(self):
         tested_arg = 'replace_numbers'
-        args = deepcopy(neagative_initalization)
+        args = deepcopy(negative_initialization)
         args[tested_arg] = False
         t1 = Tokenizer(**args)
         text = 'i am 3 years old'
@@ -350,7 +374,7 @@ I have 3 dogs
 
     def test_lemma(self):
         tested_arg = 'lemma'
-        args = deepcopy(neagative_initalization)
+        args = deepcopy(negative_initialization)
         args[tested_arg] = False
         t1 = Tokenizer(**args)
         text = 'this tokenization method is exceeding my expectations'
@@ -365,7 +389,7 @@ I have 3 dogs
     def test_max_test_length(self):
         text = 'example sentence'
         list_text = [text] * 2
-        args = deepcopy(neagative_initalization)
+        args = deepcopy(negative_initialization)
         t1 = Tokenizer(**args)
         t1.max_text_length = len(text) + 1
         res1 = t1.word_tokenize(list_text)
@@ -378,7 +402,7 @@ I have 3 dogs
     def test_tokenization_methold(self):
         tokenization_method = 'byWords'
         language = 'fake language'
-        args = deepcopy(neagative_initalization)
+        args = deepcopy(negative_initialization)
         args['tokenization_method'] = tokenization_method
         args['language'] = language
         t1 = Tokenizer(**args)
@@ -394,7 +418,7 @@ I have 3 dogs
         assert res1['tokenizedText'] == ' '.join(c for c in text if c != ' ')
 
     def test_original_words_to_tokens(self):
-        t1 = Tokenizer(**neagative_initalization)
+        t1 = Tokenizer(**negative_initialization)
         text = "I'm 29 years old and I don't live in Petach Tikva"
         res1 = t1.word_tokenize(text)
         expected = {"I'm": ['i', "'m"], '29': ['29'], 'years': ['years'], 'old': ['old'], 'and': ['and'], 'I': ['i'],

@@ -9,6 +9,7 @@ from CommonServerPython import *
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
+
 COMMAND_NOT_IMPLEMENTED_MSG = 'Command not implemented'
 
 TICKET_STATES = {
@@ -209,14 +210,24 @@ def create_ticket_context(data: dict, additional_fields: list = None) -> Any:
     # These fields refer to records in the database, the value is their system ID.
     closed_by = data.get('closed_by')
     if closed_by:
-        context['ResolvedBy'] = closed_by.get('value', '')
+        if isinstance(closed_by, dict):
+            context['ResolvedBy'] = closed_by.get('value', '')
+        else:
+            context['ResolvedBy'] = closed_by
     opened_by = data.get('opened_by')
     if opened_by:
-        context['OpenedBy'] = opened_by.get('value', '')
-        context['Creator'] = opened_by.get('value', '')
+        if isinstance(opened_by, dict):
+            context['OpenedBy'] = opened_by.get('value', '')
+            context['Creator'] = opened_by.get('value', '')
+        else:
+            context['OpenedBy'] = opened_by
+            context['Creator'] = opened_by
     assigned_to = data.get('assigned_to')
     if assigned_to:
-        context['Assignee'] = assigned_to.get('value', '')
+        if isinstance(assigned_to, dict):
+            context['Assignee'] = assigned_to.get('value', '')
+        else:
+            context['Assignee'] = assigned_to
 
     # Try to map fields
     priority = data.get('priority')
@@ -571,6 +582,8 @@ class Client(BaseClient):
             try:
                 json_res = res.json()
             except Exception as err:
+                if res.status_code == 201:
+                    return "The ticket was successfully created."
                 if not res.content:
                     return ''
                 raise Exception(f'Error parsing reply - {str(res.content)} - {str(err)}')
@@ -723,7 +736,7 @@ class Client(BaseClient):
         return self.send_request(f'table/{table_name}/{record_id}', 'PATCH', params=query_params, body=body)
 
     def create(self, table_name: str, fields: dict = {}, custom_fields: dict = {},
-               input_display_value: bool = False) -> dict:
+               input_display_value: bool = False):
         """Creates a ticket or a record by sending a POST request.
 
         Args:
@@ -1019,6 +1032,8 @@ def create_ticket_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, 
     result = client.create(ticket_type, fields, custom_fields, input_display_value)
 
     if not result or 'result' not in result:
+        if 'successfully' in result:
+            return result, {}, {}, True
         raise Exception('Unable to retrieve response.')
     ticket = result['result']
 
@@ -2216,7 +2231,8 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
                     key = 'work_notes'
                 elif params.get('comment_tag') in tags:
                     key = 'comments'
-                user = entry.get('user', 'dbot')
+                # Sometimes user is an empty str, not None, therefore nothing is displayed in ServiceNow
+                user = entry.get('user', 'dbot') or 'dbot'
                 text = f"({user}): {str(entry.get('contents', ''))}\n\n Mirrored from Cortex XSOAR"
                 client.add_comment(ticket_id, ticket_type, key, text)
 
@@ -2270,6 +2286,12 @@ def get_modified_remote_data_command(
         modified_records_ids = [record.get('sys_id') for record in modified_records if 'sys_id' in record]
 
     return GetModifiedRemoteDataResponse(modified_records_ids)
+
+
+def add_custom_fields(params):
+    global SNOW_ARGS
+    custom_fields = argToList(params.get('custom_fields'))
+    SNOW_ARGS += custom_fields
 
 
 def main():
@@ -2329,6 +2351,7 @@ def main():
     get_attachments = params.get('get_attachments', False)
     update_timestamp_field = params.get('update_timestamp_field', 'sys_updated_on') or 'sys_updated_on'
     mirror_limit = params.get('mirror_limit', '100') or '100'
+    add_custom_fields(params)
 
     raise_exception = False
     try:
@@ -2396,7 +2419,6 @@ def main():
 
 
 from ServiceNowApiModule import *  # noqa: E402
-
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

@@ -8,7 +8,7 @@
 <li>Set Entity notes for SOC integration or further automation</li>
 </ul>
 <p> </p>
-<h2>Configure ThreatX on Demisto</h2>
+<h2>Configure ThreatX on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to<span> </span><strong>Settings</strong><span> </span>&gt;<span> </span><strong>Integrations</strong><span> </span>&gt;<span> </span><strong>Servers &amp; Services</strong>.</li>
 <li>Search for ThreatX.</li>
@@ -31,7 +31,7 @@
 </ol>
 <p> </p>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <p> </p>
 <ol>
 <li><a href="#h_59c15eb9-7d02-4619-bf4c-928361850aed" target="_self">Temporarily block an IP address or CIDR: threatx-block-ip</a></li>
@@ -71,7 +71,7 @@
 </tr>
 <tr>
 <td style="width: 146px;">description</td>
-<td style="width: 511px;">The description of the IP record in the block list. The default value is: "Added by ThreatX Demisto Integration".</td>
+<td style="width: 511px;">The description of the IP record in the block list. The default value is: "Added by ThreatX Cortex XSOAR Integration".</td>
 <td style="width: 83px;">Optional</td>
 </tr>
 </tbody>
@@ -214,7 +214,7 @@
 </tr>
 <tr>
 <td style="width: 146px;">description</td>
-<td style="width: 511px;">The description of the IP record in the blacklist. The default value is: "Added by ThreatX Demisto Integration".</td>
+<td style="width: 511px;">The description of the IP record in the blacklist. The default value is: "Added by ThreatX Cortex XSOAR Integration".</td>
 <td style="width: 83px;">Optional</td>
 </tr>
 </tbody>
@@ -356,7 +356,7 @@
 </tr>
 <tr>
 <td style="width: 146px;">description</td>
-<td style="width: 511px;">The description of the IP record in the whitelist. The default value is: "Added by ThreatX Demisto Integration".</td>
+<td style="width: 511px;">The description of the IP record in the whitelist. The default value is: "Added by ThreatX Cortex XSOAR Integration".</td>
 <td style="width: 83px;">Optional</td>
 </tr>
 </tbody>

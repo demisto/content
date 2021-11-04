@@ -19,7 +19,7 @@ This integration was integrated and tested with PagerDuty API v2.
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Fetched Incidents Data
-By default, the integration will import PagerDuty incidents data as Demisto incidents. All incidents created in the minute prior to the configuration of Fetch Incidents and up to current time will be imported.
+By default, the integration will import PagerDuty incidents data as Cortex XSOAR incidents. All incidents created in the minute prior to the configuration of Fetch Incidents and up to current time will be imported.
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
@@ -269,8 +269,10 @@ Shows incidents in PagerDuty. Default status parameters are triggered,acknowledg
 | PagerDuty.Incidents.teams.ID | string | The name of the team assigned for the incident. | 
 | PagerDuty.Incidents.assignment.time | date | The time of the assignment to the incident | 
 | PagerDuty.Incidents.assignment.assignee | string | The name of the assignee to the incident | 
+| PagerDuty.Incidents.assignment.assigneeId | string | The ID of the assignee to the incident | 
 | PagerDuty.Incidents.acknowledgement.time | date | The time of the acknowledgement to the incident | 
 | PagerDuty.Incidents.acknowledgement.acknowledger | string | The name of the acknowledger to the incident | 
+| PagerDuty.Incidents.acknowledgement.acknowledgerId | string | The ID of the acknowledger to the incident | 
 | PagerDuty.Incidents.incident_key | String | The incident's de-duplication key | 
 
 
@@ -290,12 +292,14 @@ Shows incidents in PagerDuty. Default status parameters are triggered,acknowledg
                 "Status": "acknowledged",
                 "Title": "[#264] Ticket 01439490",
                 "acknowledgement": {
-                    "acknowledger": "",
+                    "acknowledger": "someone",
+                    "acknowledgerId": "ABC123",
                     "time": "2021-03-04T08:53:04Z"
                 },
                 "assignee": "someone",
                 "assignment": {
                     "assignee": "someone",
+                    "assigneeId": "ABC123",
                     "time": "2021-03-04T08:53:04Z"
                 },
                 "created_at": "2021-03-04T08:52:56Z",
@@ -322,6 +326,7 @@ Shows incidents in PagerDuty. Default status parameters are triggered,acknowledg
                 "assignee": "someone-else",
                 "assignment": {
                     "assignee": "someone-else",
+                    "assigneeId": "ABC123",
                     "time": "2021-03-10T08:37:17Z"
                 },
                 "created_at": "2021-03-10T07:57:16Z",
@@ -674,8 +679,10 @@ Get data about a incident from PagerDuty
 | PagerDuty.Incidents.teams.ID | string | The name of the team assigned for the incident. | 
 | PagerDuty.Incidents.assignment.time | date | The time of the assignment to the incident | 
 | PagerDuty.Incidents.assignment.assignee | string | The name of the assignee to the incident | 
+| PagerDuty.Incidents.assignment.assigneeId | string | The ID of the assignee to the incident | 
 | PagerDuty.Incidents.acknowledgement.time | date | The time of the acknowledgement to the incident | 
 | PagerDuty.Incidents.acknowledgement.acknowledger | string | The name of the acknowledger to the incident | 
+| PagerDuty.Incidents.acknowledgement.acknowledgerId     | string | The ID of the acknowledger to the incident |
 | PagerDuty.Incidents.incident_key | String | The incident's de-duplication key | 
 
 
@@ -692,12 +699,14 @@ Get data about a incident from PagerDuty
             "Status": "acknowledged",
             "Title": "[#281] my new event",
             "acknowledgement": {
-                "acknowledger": "",
+                "acknowledgerId": "ABC123",
+                "acknowledger": "someone",
                 "time": "2021-03-10T09:31:48Z"
             },
             "assignee": null,
             "assignment": {
                 "assignee": "someone",
+                "assigneeId": "ABC123",
                 "time": "2021-03-10T09:31:48Z"
             },
             "created_at": "2021-03-10T09:31:48Z",

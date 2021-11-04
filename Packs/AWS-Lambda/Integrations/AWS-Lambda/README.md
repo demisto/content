@@ -21,7 +21,7 @@ Required AWS IAM Permissions and Roles for Lambda are documented [here](https://
     | access_key | Access Key | False |
     | secret_key | Secret Key | False |
     | timeout | The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified a default of 10 second will be used. You may also override the value at the aws-lambda-invoke command. | False |
-    | retries | The maximum retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. You may also override the value when executing the aws-lambda-invoke command. More details about the retries strategy is available [here](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/retries.html), | False |
+    | retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. You may also override the value when executing the aws-lambda-invoke command. More details about the retries strategy is available [here](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/retries.html), | False |
     | insecure | Trust any certificate \(not secure\) | False |
     | proxy | Use system proxy settings | False |
 
@@ -62,7 +62,7 @@ Returns the configuration information of the Lambda function and a presigned URL
 | AWS.Lambda.Functions.Configuration.Description | string | The function's description. | 
 | AWS.Lambda.Functions.Configuration.Timeout | number | The amount of time that Lambda allows a function to run before terminating it. | 
 | AWS.Lambda.Functions.Configuration.MemorySize | number | The memory allocated to the function | 
-| AWS.Lambda.Functions.Configuration.LastModified  | date | The date and time that the function was last updated, in ISO-8601 format \(YYYY-MM-DDThh:mm:ss.sTZD\). | 
+| AWS.Lambda.Functions.Configuration.LastModified | date | The date and time that the function was last updated, in ISO-8601 format \(YYYY-MM-DDThh:mm:ss.sTZD\). | 
 | AWS.Lambda.Functions.Configuration.CodeSha256 | string | The SHA256 hash of the function's deployment package. | 
 | AWS.Lambda.Functions.Configuration.Version | string | The version of the Lambda function. | 
 | AWS.Lambda.Functions.Configuration.VpcConfig.SubnetIds | string | A list of VPC subnet IDs. | 

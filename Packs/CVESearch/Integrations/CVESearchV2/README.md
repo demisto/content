@@ -9,7 +9,7 @@ This integration was integrated and tested with CVE Search (Version 2.1).
 2. Getting the latest published cve's 
 ---
 
-## Configure CVE Search on Demisto
+## Configure CVE Search on Cortex XSOAR
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
@@ -21,7 +21,7 @@ This integration was integrated and tested with CVE Search (Version 2.1).
 
 ## Commands
 ---
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 1. cve-latest
 2. cve
@@ -48,6 +48,10 @@ Retruns the latest updated CVEs.
 | CVE.Published | Date | The date the CVE was published. | 
 | CVE.Modified | Date | When CVE was last modified. | 
 | CVE.Description | String | The description of the CVE. | 
+| DBotScore.Indicator | String | The indicator value. | 
+| DBotScore.Score | Number | The indicator score. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor reporting the score of the indicator. | 
 
 
 ##### Command Example
@@ -106,6 +110,10 @@ Search CVE by ID
 | CVE.Published | Date | The date the CVE was published. | 
 | CVE.Modified | Date | The date the CVE was last modified. | 
 | CVE.Description | String | The description of the CVE. | 
+| DBotScore.Indicator | String | The indicator value. | 
+| DBotScore.Score | Number | The indicator score. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor reporting the score of the indicator. | 
 
 
 ##### Command Example

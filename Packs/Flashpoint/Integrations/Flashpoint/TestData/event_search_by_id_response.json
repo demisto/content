@@ -56,6 +56,7 @@
       "observed_at": 1560961813,
       "source": "source1"
     },
-    "href": "http://123-fake-api.com/api/v4/indicators/event/test_scan_id"
+    "href": "http://123-fake-api.com/api/v4/indicators/event/test_scan_id",
+    "malware_description": "<p>\"Ave Maria\" is a remote access trojan.</p>"
   }
 ]

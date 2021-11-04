@@ -3,7 +3,7 @@
 
 Analyst1 is an indicator, countermeasure and sensor management tool that enables analysts to collect and analyze evidence of malicious activity. Analyst1’s web based interface provides a single location to collect and analyze evidence of malicious activity and manage indicators then author, test, task and track rules to detect malicious cyber activity. Maintaing traceability between evidence, indicators, rules and sensors, analysts can identify why a rule was created, the type of activity it detects and what sensors are tasked.
 
-This integration utilizes Analyst1's system to enrich Demisto indicators with data provided by the Analyst1 REST API, such as actor and malware information, activity and reported dates, evidence and hit counts, and more.
+This integration utilizes Analyst1's system to enrich Cortex XSOAR indicators with data provided by the Analyst1 REST API, such as actor and malware information, activity and reported dates, evidence and hit counts, and more.
 
 This integration was integrated and tested with version 1.8.7 of Analyst1
 ## Analyst1 Playbook
@@ -13,9 +13,9 @@ Analyst1 Basic Indicator Enrichment: This is a simple playbook that can apply on
 ## Use Cases
 ---
 * When you wish to have more information on a given indicator
-* When you use both Demisto and Analyst1 and wish to have easy linking between the two
+* When you use both Cortex XSOAR and Analyst1 and wish to have easy linking between the two
 
-## Configure Analyst1 on Demisto
+## Configure Analyst1 on Cortex XSOAR
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
@@ -30,7 +30,7 @@ Analyst1 Basic Indicator Enrichment: This is a simple playbook that can apply on
 
 ## Commands
 ---
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 1. domain
 2. email

@@ -785,6 +785,130 @@
             "timestamp": "2020-01-28T20:42:42.737461183Z",
             "value": "11.11.11.11",
             "version": 1
+        },
+        {
+            "account": "",
+            "aggregatedReliability": "",
+            "calculatedTime": "2020-01-28T20:42:42.737461183Z",
+            "comment": "",
+            "comments": [
+                {
+                    "category": "",
+                    "content": "Created",
+                    "created": "2020-01-28T20:42:42.723913471Z",
+                    "entryId": "",
+                    "id": "60250bb9-033b-4139-8288-dbebb7e5c290",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "Cofense Feed.Cofense Feed_instance_1",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "",
+                    "content": "Removed from feed",
+                    "created": "2020-02-01T17:01:15.889655116Z",
+                    "entryId": "",
+                    "id": "8ad28493-f8b4-427e-852b-157b85baca1c",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "Cofense Feed.Cofense Feed_instance_1",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "Indicator Update",
+                    "content": "Expiration status changed from Active to Expired",
+                    "created": "2020-02-06T22:04:20.184066818Z",
+                    "entryId": "",
+                    "id": "ab415cbb-9e96-4bfc-88e5-5aba344c0f99",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "@DBot",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                }
+            ],
+            "deletedFeedFetchTime": "0001-01-01T00:00:00Z",
+            "expiration": "2020-02-06T20:51:33Z",
+            "expirationSource": {
+                "brand": "Cofense Feed",
+                "expirationInterval": 10080,
+                "expirationPolicy": "interval",
+                "instance": "Cofense Feed_instance_1",
+                "moduleId": "",
+                "setTime": "2020-01-30T20:53:33.399616289Z",
+                "source": "indicatorType",
+                "user": ""
+            },
+            "expirationStatus": "expired",
+            "firstSeen": "0001-01-01T00:00:00Z",
+            "firstSeenEntryID": "API",
+            "id": "62e0a9c69d3b501c7d6f4fc76ab37d31",
+            "indicator_type": "IP",
+            "insightCache": null,
+            "investigationIDs": [],
+            "isShared": false,
+            "lastReputationRun": "0001-01-01T00:00:00Z",
+            "lastSeen": "0001-01-01T00:00:00Z",
+            "lastSeenEntryID": "API",
+            "manualExpirationTime": "0001-01-01T00:00:00Z",
+            "manualScore": false,
+            "manualSetTime": "0001-01-01T00:00:00Z",
+            "manuallyEditedFields": null,
+            "modified": "2020-02-06T22:04:20.18469823Z",
+            "modifiedTime": "2020-01-30T20:51:33Z",
+            "moduleToFeedMap": {
+                "Cofense Feed.Cofense Feed_instance_1": {
+                    "ExpirationSource": {
+                        "brand": "Cofense Feed",
+                        "expirationInterval": 10080,
+                        "expirationPolicy": "interval",
+                        "instance": "Cofense Feed_instance_1",
+                        "moduleId": "",
+                        "setTime": "2020-01-30T20:53:33.399616289Z",
+                        "source": "indicatorType",
+                        "user": ""
+                    },
+                    "bypassExclusionList": false,
+                    "classifierVersion": 0,
+                    "expirationInterval": 0,
+                    "expirationPolicy": "indicatorType",
+                    "fetchTime": "2020-01-30T20:51:33Z",
+                    "fields": null,
+                    "isEnrichment": false,
+                    "mapperVersion": 0,
+                    "modifiedTime": "2020-01-30T20:51:33Z",
+                    "moduleId": "",
+                    "rawJSON": null,
+                    "reliability": "F - Reliability cannot be judged",
+                    "score": 0,
+                    "sourceBrand": "Cofense Feed",
+                    "sourceInstance": "Cofense Feed_instance_1",
+                    "timestamp": "0001-01-01T00:00:00Z",
+                    "type": "IP",
+                    "value": "12.12.12.12"
+                }
+            },
+            "primaryTerm": 1,
+            "relatedIncCount": 0,
+            "score": 0,
+            "sequenceNumber": 127286,
+            "sortValues": null,
+            "sourceBrands": [
+                "Cofense Feed"
+            ],
+            "sourceInstances": [
+                "Cofense Feed_instance_1"
+            ],
+            "CustomFields": {
+                "threattypes": [{"threatcategory": "C2", "threatcategoryconfidence": 85}]},
+            "timestamp": "2020-01-28T20:42:42.737461183Z",
+            "value": "12.12.12.12",
+            "version": 1
         }
     ],
     "total": 5

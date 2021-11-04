@@ -25,6 +25,8 @@ This playbook does not use any scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | search_name | The name of the compliance search. |  | Required |
+| polling_interval | Search action polling interval. | 3 | Optional |
+| polling_timeout | Search action polling timeout. | 45 | Optional |
 
 ## Playbook Outputs
 ---
@@ -77,4 +79,4 @@ This playbook does not use any scripts.
 ## Known Limitations
 ---
 * Each security and compliance command creates a PSSession (PowerShell session). The security and compliance PowerShell limits the number of concurrent sessions to 3. Since this affects the behavior of multiple playbooks running concurrently it we recommend that you retry failed tasks when using the integration commands in playbooks.
-* In order to handle sessions limits, A retry mechanism is applied which will retry for 10 time with 30 sec breaks. (The retry isn't applied on the generic polling as its not supported yet)  
+* In order to handle sessions limits, A retry mechanism is applied which will retry for 10 time with 30 sec breaks. (The retry isn't applied on the generic polling as it's not supported yet)

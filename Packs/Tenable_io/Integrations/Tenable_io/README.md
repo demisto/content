@@ -4,7 +4,7 @@
 <p>Use the Tenable.io integration to manage scans and asset vulnerabilities.</p>
 <p>This integration was integrated and tested with the November 2018 release of Tenable.io.</p>
 <p> </p>
-<h2>Configure Tenable.io on Demisto</h2>
+<h2>Configure Tenable.io on Cortex XSOAR</h2>
 <hr>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
@@ -24,7 +24,7 @@
 </ol>
 <h2>Commands</h2>
 <hr>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.<br>After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.<br>After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_48852000951542101617984">Get a list of scans: tenable-io-list-scans</a></li>
 <li><a href="#h_666906711891542101622823">Launch a scan: tenable-io-launch-scan</a></li>

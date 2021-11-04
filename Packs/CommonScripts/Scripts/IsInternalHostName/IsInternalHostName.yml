@@ -35,6 +35,6 @@ scripttarget: 0
 subtype: python3
 runonce: false
 runas: DBotWeakRole
-
 tests:
 - IsInternalHostName Test
+dockerimage: demisto/python3:3.9.7.24076

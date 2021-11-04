@@ -3,7 +3,7 @@
 <p>Use the Signal Sciences next-gen web application firewall to increase security and maintain reliability.</p>
 </div>
 <div class="cl-preview-section">
-<h2 id="configure-signal-sciences-waf-on-demisto">Configure Signal Sciences WAF on Demisto</h2>
+<h2 id="configure-signal-sciences-waf-on-demisto">Configure Signal Sciences WAF on Cortex XSOAR</h2>
 </div>
 <div class="cl-preview-section">
 <ol>
@@ -29,7 +29,7 @@
 <h2 id="commands">Commands</h2>
 </div>
 <div class="cl-preview-section">
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 </div>
 <div class="cl-preview-section">
 <ol>

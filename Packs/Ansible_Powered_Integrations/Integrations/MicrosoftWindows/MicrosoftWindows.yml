@@ -23,8 +23,8 @@ configuration:
   name: concurrency
   required: true
   type: 0
-description: Agentless Windows host management over WinRM
-display: Microsoft Windows
+description: Agentless Windows host management over WinRM. Deprecated. Use Ansible Microsoft Windows (from the Ansible Microsoft Windows pack) instead.
+display: Ansible Microsoft Windows (Deprecated)
 name: MicrosoftWindows
 script:
   commands:
@@ -5086,12 +5086,6 @@ script:
         connections when `state=drained`.
       isArray: true
       name: exclude_hosts
-    - default: false
-      defaultValue: 127.0.0.1
-      description: |-
-        A resolvable hostname or IP address to wait for.
-        If `state=drained` then it will only check for connections on the IP specified, you can use '0.0.0.0' to use all host IPs.
-      name: host
     - description: |-
         The path to a file on the filesystem to check.
         If `state` is present or started then it will wait until the file exists.
@@ -5312,7 +5306,7 @@ script:
       required: true
     description: Manages XML file content on Windows hosts
     name: win-xml
-  dockerimage: demisto/ansible-runner:1.0.0.16542
+  dockerimage: demisto/ansible-runner:1.0.0.21453
   runonce: false
   script: ''
   subtype: python3
@@ -5320,3 +5314,4 @@ script:
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+deprecated: true

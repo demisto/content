@@ -3,3 +3,6 @@ ignore=BA101
 
 [file:playbook-CrowdStrike_Endpoint_Enrichment.yml]
 ignore=BA101
+
+[file:README.md]
+ignore=RM104

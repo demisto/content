@@ -404,7 +404,7 @@ script:
     description: Update Forescout lists.
     execution: false
     name: forescout-update-lists
-  dockerimage: demisto/python3:3.9.1.14969
+  dockerimage: demisto/python3:3.9.7.24076
   isfetch: false
   runonce: false
   script: '-'

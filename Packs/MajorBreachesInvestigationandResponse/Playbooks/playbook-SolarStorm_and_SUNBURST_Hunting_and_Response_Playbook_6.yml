@@ -240,7 +240,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
   "19":
     id: "19"
@@ -423,7 +423,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
   "31":
     id: "31"
@@ -574,7 +574,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
   "36":
     id: "36"
@@ -627,7 +627,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
   "42":
     id: "42"
@@ -796,7 +796,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
   "47":
     id: "47"
@@ -1060,7 +1060,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
   "52":
     id: "52"
@@ -1902,7 +1902,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
   "70":
     id: "70"
@@ -2083,7 +2083,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
   "77":
     id: "77"
@@ -2114,7 +2114,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
   "78":
     id: "78"
@@ -2206,7 +2206,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
   "81":
     id: "81"
@@ -2435,7 +2435,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
   "89":
     id: "89"
@@ -2476,7 +2476,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
   "90":
     id: "90"
@@ -2844,7 +2844,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
   "100":
     id: "100"
@@ -2914,8 +2914,8 @@ tasks:
     task:
       id: c4833080-27d3-49be-8720-409614f5c265
       version: -1
-      name: Azure Hunting playbook
-      playbookName: Azure Hunting playbook
+      name: Office 365 and Azure Hunting
+      playbookName: Office 365 and Azure Hunting
       type: playbook
       iscommand: false
       brand: ""
@@ -2934,7 +2934,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
   "103":
     id: "103"
@@ -2943,10 +2943,10 @@ tasks:
     task:
       id: 730fc061-b36a-4810-8e3b-c3755849cc79
       version: -1
-      name: Azure Configuration Analysis
+      name: Office 365 and Azure Configuration Analysis
       description: This playbook helps you collect, review, and find misconfigurations
         with the Azure environment.
-      playbookName: Azure Configuration Analysis
+      playbookName: Office 365 and Azure Configuration Analysis
       type: playbook
       iscommand: false
       brand: ""
@@ -2976,7 +2976,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
   "104":
     id: "104"

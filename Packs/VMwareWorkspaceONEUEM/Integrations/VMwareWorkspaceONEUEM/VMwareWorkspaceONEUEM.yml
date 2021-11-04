@@ -1,0 +1,671 @@
+category: IT Services
+commonfields:
+  id: VMware Workspace ONE UEM (AirWatch MDM)
+  version: -1
+configuration:
+- additionalinfo: Server URL to connect to VMware Workspace ONE UEM.
+  defaultvalue: https://host.awmdm.com
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+- additionalinfo: API key required for additional authorization.
+  display: API Key
+  name: aw_tenant_code
+  required: true
+  type: 4
+- additionalinfo: Username of administrative account with read access.
+  display: Username
+  hidden: false
+  name: credentials
+  required: true
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: VMware Workspace ONE UEM integration allows users to search enrolled
+  corporate or employee-owned devices, provides detailed information about each device
+  such as its serial number, installed OS's, pending OS updates, network details,
+  and much more leveraging Workspace ONE UEM's (formerly AirWatch MDM) API.
+display: VMware Workspace ONE UEM (AirWatch MDM)
+name: VMware Workspace ONE UEM (AirWatch MDM)
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Filters devices based on enrolled username.
+      isArray: false
+      name: user
+      required: false
+      secret: false
+    - default: false
+      description: 'Filters devices based on the model. For example: iPhone.'
+      isArray: false
+      name: model
+      required: false
+      secret: false
+    - default: false
+      description: "Filter devices based on device's platform type. For example:
+        Apple, Android, WindowsPC, etc."
+      isArray: false
+      name: platform
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Filters devices based on the date when the devices were last seen.
+
+        Format accepted:
+        (<number> <time unit>, e.g., "12 hours ago", "7 days ago", "1 week", "1 month") or (<date> <time>, e.g. "yyyy-mm-ddTHH-MM-SS") or ( "YYYY-MM-ddTHH:mm:ss.sssZ", e.g. 2020-07-22T07:10:02.782Z) or (<date>, e.g. "2020-07-22").
+      isArray: false
+      name: last_seen
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Filters devices based on ownership type. Possible values are:
+        Corporate owned, Employee owned, Shared, or Undefined.'
+      isArray: false
+      name: ownership
+      predefined:
+      - Corporate owned
+      - Employee owned
+      - Shared
+      - Undefined
+      required: false
+      secret: false
+    - default: false
+      description: Limits the search to a given Organization Group, defaults to the
+        user's Organization Group.
+      isArray: false
+      name: lgid
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Filters search results to return results based on the page number.
+        Starts from 0.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: Maximum records per page.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: deviceid
+      description: 'Sorts results based on the provided field. Possible values are:
+        model, lastseen, ownership, platform, deviceid, etc.'
+      isArray: false
+      name: order_by
+      predefined:
+      - model
+      - lastseen
+      - ownership
+      - platform
+      - deviceid
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: ASC
+      description: 'Sorts results based on the given sorting order. Possible values
+        are: ASC or DESC.'
+      isArray: false
+      name: sort_order
+      predefined:
+      - ASC
+      - DESC
+      required: false
+      secret: false
+    deprecated: false
+    description: Searches device(s) using the query information provided.
+    execution: false
+    name: vmwuem-devices-search
+    outputs:
+    - contextPath: VMwareWorkspaceONEUEM.Device.Uuid
+      description: The UUID of the device.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.Id.Value
+      description: The ID value of the device.
+      type: Number
+    - contextPath: VMwareWorkspaceONEUEM.Device.EasIds.EasId
+      description: The unique identifiers for the device's mail client.
+      type: Unknown
+    - contextPath: VMwareWorkspaceONEUEM.Device.TimeZone
+      description: The time zone of the device.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.Udid
+      description: The unique identifier of the device.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.SerialNumber
+      description: The serial number reported by the device.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.MacAddress
+      description: The MAC address of the device.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.Imei
+      description: The IMEI hardware identifier of the device.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.EasId
+      description: The EAS ID of the device.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.AssetNumber
+      description: The asset number of the device.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.DeviceFriendlyName
+      description: The friendly name of the device.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.DeviceReportedName
+      description: The reported name of the device.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.LocationGroupId.Id.Value
+      description: The unique identifier of the location group the device belongs
+        to.
+      type: Number
+    - contextPath: VMwareWorkspaceONEUEM.Device.LocationGroupId.Name
+      description: The name of the location group the device belongs to.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.LocationGroupId.Uuid
+      description: The UUID of the location group the device belongs to.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.LocationGroupName
+      description: The name of the location group the device belongs to.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.UserId.Id.Value
+      description: The unique identifier of the user the device is assigned to.
+      type: Number
+    - contextPath: VMwareWorkspaceONEUEM.Device.UserId.Name
+      description: The name of the user the device is assigned to.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.UserId.Uuid
+      description: The UUID of the user the device is assigned to.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.UserName
+      description: The username to which the device is assigned to.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.DataProtectionStatus
+      description: The data protection status of the user to which the device belongs
+        to.
+      type: Number
+    - contextPath: VMwareWorkspaceONEUEM.Device.UserEmailAddress
+      description: The email address of the user.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.Ownership
+      description: The device ownership status. I.e. Corporate, Employee, Shared,
+        or Undefined.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.PlatformId.Id.Value
+      description: The platform ID of the device.
+      type: Number
+    - contextPath: VMwareWorkspaceONEUEM.Device.PlatformId.Name
+      description: The platform name of the device.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.PlatformId.Uuid
+      description: The platform UUID of the device.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.Platform
+      description: 'The platform of the device. Example: iOS, BlackBerry, Android,
+        etc.'
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.ModelId.Id.Value
+      description: The model unique identifier of the device.
+      type: Number
+    - contextPath: VMwareWorkspaceONEUEM.Device.ModelId.Name
+      description: The model name of the device.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.ModelId.Uuid
+      description: The model UUID of the device.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.Model
+      description: The model of the device.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.OperatingSystem
+      description: The operating system including version.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.PhoneNumber
+      description: The user's phone number, if available.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.LastSeen
+      description: The time when the device last reported any status with AirWatch.
+      type: Date
+    - contextPath: VMwareWorkspaceONEUEM.Device.EnrollmentStatus
+      description: The enrollment status of the device.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.ComplianceStatus
+      description: The compliance status of the device.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.CompromisedStatus
+      description: Value indicating the compromised status of the device. True if
+        the device is compromised, otherwise false.
+      type: Boolean
+    - contextPath: VMwareWorkspaceONEUEM.Device.LastEnrolledOn
+      description: The date-time of the last enrollment.
+      type: Date
+    - contextPath: VMwareWorkspaceONEUEM.Device.LastComplianceCheckOn
+      description: The date-time of when the last compliance check was performed.
+      type: Date
+    - contextPath: VMwareWorkspaceONEUEM.Device.LastCompromisedCheckOn
+      description: The date-time of when the last compromised data was received.
+      type: Date
+    - contextPath: VMwareWorkspaceONEUEM.Device.ComplianceSummary.DeviceCompliance.CompliantStatus
+      description: The compliant status of the device.
+      type: Boolean
+    - contextPath: VMwareWorkspaceONEUEM.Device.ComplianceSummary.DeviceCompliance.PolicyName
+      description: The policy name of the device.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.ComplianceSummary.DeviceCompliance.PolicyDetail
+      description: Policy details of the device.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.ComplianceSummary.DeviceCompliance.LastComplianceCheck
+      description: The date-time of the last compliance check.
+      type: Date
+    - contextPath: VMwareWorkspaceONEUEM.Device.ComplianceSummary.DeviceCompliance.NextComplianceCheck
+      description: The date-time of the next compliance check.
+      type: Date
+    - contextPath: VMwareWorkspaceONEUEM.Device.ComplianceSummary.DeviceCompliance.ActionTaken.ActionType
+      description: The type of action taken on compliance violations.
+      type: Number
+    - contextPath: VMwareWorkspaceONEUEM.Device.ComplianceSummary.DeviceCompliance.Id.Value
+      description: The compliance policy ID of the device.
+      type: Number
+    - contextPath: VMwareWorkspaceONEUEM.Device.ComplianceSummary.DeviceCompliance.Uuid
+      description: The compliance UUID of the device.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.IsSupervised
+      description: A value indicating whether the device is supervised or not.
+      type: Boolean
+    - contextPath: VMwareWorkspaceONEUEM.Device.DeviceMCC.SIMMCC
+      description: Information about device SIM Mobile Country Code.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.DeviceMCC.CurrentMCC
+      description: Information about device Current Mobile Country Code.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.IsRemoteManagementEnabled
+      description: Flag which indicates whether remote management [MotoRC] is enabled
+        on the device or not.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.DataEncryptionYN
+      description: Whether there is data protection enabled or not.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.AcLineStatus
+      description: The power status of the device. 0 indicates battery. 1 indicates
+        AC Power.
+      type: Number
+    - contextPath: VMwareWorkspaceONEUEM.Device.VirtualMemory
+      description: The size of the virtual memory.
+      type: Number
+    - contextPath: VMwareWorkspaceONEUEM.Device.OEMInfo
+      description: The OEM information of the device.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.DeviceCapacity
+      description: The total capacity of the device.
+      type: Number
+    - contextPath: VMwareWorkspaceONEUEM.Device.AvailableDeviceCapacity
+      description: The available capacity of the device.
+      type: Number
+    - contextPath: VMwareWorkspaceONEUEM.Device.LastSystemSampleTime
+      description: The last system sample time of the device.
+      type: Date
+    - contextPath: VMwareWorkspaceONEUEM.Device.IsDeviceDNDEnabled
+      description: Value indicating whether the device is in do not disturb mode or
+        not.
+      type: Boolean
+    - contextPath: VMwareWorkspaceONEUEM.Device.IsDeviceLocatorEnabled
+      description: Value indicating whether the device's locator is enabled or not.
+      type: Boolean
+    - contextPath: VMwareWorkspaceONEUEM.Device.IsCloudBackupEnabled
+      description: Value indicating whether the device's cloud backup is enabled or
+        not.
+      type: Boolean
+    - contextPath: VMwareWorkspaceONEUEM.Device.IsActivationLockEnabled
+      description: Value indicating whether the device's activation lock is enabled
+        or not.
+      type: Boolean
+    - contextPath: VMwareWorkspaceONEUEM.Device.IsNetworkTethered
+      description: Value indicating whether the iOS device is network tethered or
+        not.
+      type: Boolean
+    - contextPath: VMwareWorkspaceONEUEM.Device.BatteryLevel
+      description: Gives information about the battery level of the iOS device.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.IsRoaming
+      description: Value indicating whether this gives information about the roaming
+        status of the device.
+      type: Boolean
+    - contextPath: VMwareWorkspaceONEUEM.Device.LastNetworkLANSampleTime
+      description: The last network LAN sample time of the device.
+      type: Date
+    - contextPath: VMwareWorkspaceONEUEM.Device.LastBluetoothSampleTime
+      description: The last bluetooth sample time of the device.
+      type: Date
+    - contextPath: VMwareWorkspaceONEUEM.Device.SystemIntegrityProtectionEnabled
+      description: Value indicating whether system integrity protection is enabled
+        on a macOS device.
+      type: Boolean
+    - contextPath: VMwareWorkspaceONEUEM.Device.ProcessorArchitecture
+      description: The processor architecture reported by the device.
+      type: Number
+    - contextPath: VMwareWorkspaceONEUEM.Device.UserApprovedEnrollment
+      description: Flag to check if the user has approved installation of the MDM
+        profile.
+      type: Boolean
+    - contextPath: VMwareWorkspaceONEUEM.Device.EnrolledViaDEP
+      description: Informs if the device is enrolled via DEP.
+      type: Boolean
+    - contextPath: VMwareWorkspaceONEUEM.Device.TotalPhysicalMemory
+      description: The total physical memory of the device.
+      type: Number
+    - contextPath: VMwareWorkspaceONEUEM.Device.AvailablePhysicalMemory
+      description: The available physical memory of the device.
+      type: Number
+    - contextPath: VMwareWorkspaceONEUEM.Device.OSBuildVersion
+      description: The build version of the operating system.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.HostName
+      description: The host name of the macOS device.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.LocalHostName
+      description: The local host name of the macOS device as reported by Bonjour.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.SecurityPatchDate
+      description: The security patch date received from the agent.
+      type: Date
+    - contextPath: VMwareWorkspaceONEUEM.Device.SystemUpdateReceivedTime
+      description: The pending system update received time.
+      type: Date
+    - contextPath: VMwareWorkspaceONEUEM.Device.IsSecurityPatchUpdate
+      description: The value is true when there is a security patch update available.
+      type: Boolean
+    - contextPath: VMwareWorkspaceONEUEM.Device.DeviceManufacturerId
+      description: The manufacturer ID of the device.
+      type: Number
+    - contextPath: VMwareWorkspaceONEUEM.Device.DeviceNetworkInfo.ConnectionType
+      description: The network connection type of the device.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.DeviceNetworkInfo.IPAddress
+      description: The IP address of the device.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.DeviceNetworkInfo.MACAddress
+      description: The MAC address of the device.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.DeviceNetworkInfo.Name
+      description: The network interface name of the device.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.DeviceNetworkInfo.Vendor
+      description: The vendor of the network interface.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.DeviceCellularNetworkInfo.CarrierName
+      description: The carrier provider name of the device.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.DeviceCellularNetworkInfo.CardId
+      description: The SIM card ID of the device.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.DeviceCellularNetworkInfo.PhoneNumber
+      description: The phone number associated with the SIM.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.DeviceCellularNetworkInfo.DeviceMCC.SIMMCC
+      description: Information about device SIM Mobile Country Code.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.DeviceCellularNetworkInfo.DeviceMCC.CurrentMCC
+      description: Information about device Current Mobile Country Code.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.DeviceCellularNetworkInfo.IsRoaming
+      description: Whether roaming is enabled.
+      type: Boolean
+    - contextPath: VMwareWorkspaceONEUEM.Device.EnrollmentUserUuid
+      description: The enrolled user UUID.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.ManagedBy
+      description: The device is managed by. = ['0', '1', '2', '3', '4', '5', '6',
+        '998', '999']
+      type: Number
+    - contextPath: VMwareWorkspaceONEUEM.Device.WifiSsid
+      description: The Wifi SSID, if available.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.DepTokenSource
+      description: The value of the DEP token source.
+      type: Number
+  - arguments:
+    - default: false
+      description: |-
+        The unique identifier of the device. Example: 153B4D9D-24DC-416B-91F9-94253D623611.
+        Note: To get the uuid, use the command 'vmwuem-devices-search'.
+      isArray: false
+      name: uuid
+      required: true
+      secret: false
+    deprecated: false
+    description: Get basic information about the device.
+    execution: false
+    name: vmwuem-device-get
+    outputs:
+    - contextPath: VMwareWorkspaceONEUEM.Device.Uuid
+      description: The UUID of the device.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.Udid
+      description: The UDID of the device.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.SerialNumber
+      description: The serial number of the device.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.MacAddress
+      description: The MAC address of the device.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.Imei
+      description: The IMEI hardware identifier of the device.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.FriendlyName
+      description: The friendly name of the device.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.OrganizationGroupName
+      description: The organization group name of the device.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.TotalStorageBytes
+      description: Total storage capacity in bytes.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.AvailableStorageBytes
+      description: Available storage capacity in bytes.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.BatteryLevelPercentage
+      description: Battery level of the iOS device in percentage.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.ComputerName
+      description: Desktop name of the device.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.Supervised
+      description: Supervised status of the device.
+      type: Boolean
+    - contextPath: VMwareWorkspaceONEUEM.Device.DataEncrypted
+      description: Data encryption status.
+      type: Boolean
+    - contextPath: VMwareWorkspaceONEUEM.Device.PlatformInfo.DeviceType
+      description: Type of the device.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.PlatformInfo.PlatformName
+      description: Name of the platform.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.PlatformInfo.ModelName
+      description: Model of the device.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.PlatformInfo.OsVersion
+      description: Version of the operating system installed on the device.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.CarrierInfo.PhoneNumber
+      description: Phone number of the device.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.CarrierInfo.RoamingEnabled
+      description: Roaming status of the device.
+      type: Boolean
+    - contextPath: VMwareWorkspaceONEUEM.Device.EnrollmentInfo.EnrollmentStatus
+      description: Enrollment status of the device.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.EnrollmentInfo.Compliant
+      description: Compliance status of the device.
+      type: Boolean
+    - contextPath: VMwareWorkspaceONEUEM.Device.EnrollmentInfo.EnrollmentTimestamp
+      description: Date-time of last enrollment date.
+      type: Date
+    - contextPath: VMwareWorkspaceONEUEM.Device.EnrollmentInfo.LastSeenTimestamp
+      description: Time the device last reported any status.
+      type: Date
+    - contextPath: VMwareWorkspaceONEUEM.Device.EnrollmentInfo.Ownership
+      description: Ownership type of the device.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.EnrollmentInfo.OrganizationGroupId
+      description: Id of the organization group.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.EnrollmentInfo.OrganizationGroupName
+      description: Organization group name where the device is enrolled.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.EnrollmentInfo.UserName
+      description: User name of the device.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.EnrollmentInfo.UserEmailAddress
+      description: User's email address of the device.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.EnrollmentInfo.EnrollmentUserUuid
+      description: Enrollment user uuid of device.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.EnrollmentInfo.ManagedBy
+      description: Device managed by = ['0', '1', '2', '3', '4', '5', '6', '998',
+        '999'].
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.OSBuildVersion
+      description: OS build version of the device.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.WifiSsid
+      description: WiFi SSID device is connected to.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.Links.Rel
+      description: Relational links.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.Links.Href
+      description: Hyper text reference.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.Device.Links.Title
+      description: Title of the link.
+      type: String
+  - arguments:
+    - default: false
+      description: |-
+        The unique identifier of the device. Example: 153B4D9D-24DC-416B-91F9-94253D623611.
+        Note: To get the uuid, use the command 'vmwuem-devices-search'.
+      isArray: false
+      name: uuid
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves a list of all available OS and software updates for the
+      specified device.
+    execution: false
+    name: vmwuem-device-os-updates-list
+    outputs:
+    - contextPath: VMwareWorkspaceONEUEM.OSUpdate.Uuid
+      description: The UUID of the device.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.OSUpdate.OSUpdateList.ProductKey
+      description: The unique product key of the update.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.OSUpdate.OSUpdateList.HumanReadableName
+      description: The common name of the update.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.OSUpdate.OSUpdateList.ProductName
+      description: The product name of the update.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.OSUpdate.OSUpdateList.Version
+      description: The version of the update.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.OSUpdate.OSUpdateList.Build
+      description: The build number of the update.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.OSUpdate.OSUpdateList.IsPreview
+      description: Preview or beta version of the update.
+      type: Boolean
+    - contextPath: VMwareWorkspaceONEUEM.OSUpdate.OSUpdateList.DownloadSize
+      description: Storage size needed to download the software update. Floating point
+        number of bytes.
+      type: Number
+    - contextPath: VMwareWorkspaceONEUEM.OSUpdate.OSUpdateList.InstallSize
+      description: Storage size needed to install the software update. Floating point
+        number of bytes.
+      type: Number
+    - contextPath: VMwareWorkspaceONEUEM.OSUpdate.OSUpdateList.IsCritical
+      description: Set to true if the update is considered critical. Defaults to false.
+      type: Boolean
+    - contextPath: VMwareWorkspaceONEUEM.OSUpdate.OSUpdateList.IsConfigurationDataUpdate
+      description: Set to true if it is an update to a configuration file. Defaults
+        to false (macOS only).
+      type: Boolean
+    - contextPath: VMwareWorkspaceONEUEM.OSUpdate.OSUpdateList.IsFirmwareUpdate
+      description: Set to true if it is an update to the firmware. Defaults to false
+        (macOS only).
+      type: Boolean
+    - contextPath: VMwareWorkspaceONEUEM.OSUpdate.OSUpdateList.RestartRequired
+      description: Set to true if the device restarts after the update is installed.
+        Defaults to false.
+      type: Boolean
+    - contextPath: VMwareWorkspaceONEUEM.OSUpdate.OSUpdateList.AllowsInstallLater
+      description: Set to true if the update is eligible for later Install. Defaults
+        to true.
+      type: Boolean
+    - contextPath: VMwareWorkspaceONEUEM.OSUpdate.OSUpdateList.AppIdentifiersToClose
+      description: Each entry represents an app identifier that is closed to install
+        the update (macOS only).
+      type: Unknown
+    - contextPath: VMwareWorkspaceONEUEM.OSUpdate.OSUpdateList.DeviceUpdateName
+      description: The name of the device update.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.OSUpdate.OSUpdateList.ReleaseDate
+      description: Indicates the release date of the corresponding device update.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.OSUpdate.OSUpdateList.ExpiationDate
+      description: Indicates the expiration date of the corresponding device update.
+      type: Date
+    - contextPath: VMwareWorkspaceONEUEM.OSUpdate.OSUpdateList.DownloadPercentComplete
+      description: Indicates the percentage of downloads that is complete. Floating
+        point number (0.0 to 1.0).
+      type: Number
+    - contextPath: VMwareWorkspaceONEUEM.OSUpdate.OSUpdateList.Status
+      description: Indicates the status of the update.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.OSUpdate.OSUpdateList.SampleTime
+      description: Indicates the sampling time of the device update.
+      type: Date
+    - contextPath: VMwareWorkspaceONEUEM.OSUpdate.OSUpdateList.StatusTime
+      description: Indicates the status time of the device update.
+      type: Date
+    - contextPath: VMwareWorkspaceONEUEM.OSUpdate.OSUpdateList.DeviceUpdateVersion
+      description: Indicates the version for iOS device update.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.OSUpdate.OSUpdateList.DeviceUpdateUuid
+      description: Indicates update UUID for the corresponding iOS device update.
+      type: String
+    - contextPath: VMwareWorkspaceONEUEM.OSUpdate.OSUpdateList.Id
+      description: The unique identifier of the OS update.
+      type: Number
+    - contextPath: VMwareWorkspaceONEUEM.OSUpdate.OSUpdateList.Uuid
+      description: The universally unique identifier of the OS update.
+      type: String
+  dockerimage: demisto/python3:3.9.7.24076
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

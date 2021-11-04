@@ -1,0 +1,66 @@
+args:
+- default: false
+  defaultValue: Job
+  description: Comma Separated list of failed tasks to exclude from restart based
+    on playbook string match
+  isArray: false
+  name: playbook_exclusion
+  required: false
+  secret: false
+- default: false
+  defaultValue: '10'
+  description: Sleep between restarting batch task (seconds)
+  isArray: false
+  name: sleep_time
+  required: false
+  secret: false
+- default: false
+  defaultValue: '100'
+  description: Limit of number of incidents to restart tasks on
+  isArray: false
+  name: incident_limit
+  required: false
+  secret: false
+- default: false
+  defaultValue: '10'
+  description: Integer of how many tasks you want to be restarted at a time (grouping)
+    before a sleep period (as to not overwhelm the system)
+  isArray: false
+  name: group_size
+  required: false
+  secret: false
+comment: Use this Script to re-run failed tasks. Run in the same incident after running
+  `GetFailedTasks` for restarting all of the failed tasks or some of them.
+commonfields:
+  id: RestartFailedTasks
+  version: -1
+enabled: true
+name: RestartFailedTasks
+outputs:
+- contextPath: RestartedTasks.Total
+  description: The total amount of tasks that were reopened
+  type: Number
+- contextPath: RestartedTasks.Task.TaskID
+  description: The ID of the task
+  type: String
+- contextPath: RestartedTasks.Task.IncidentID
+  description: The ID of the incident of the task
+  type: String
+- contextPath: RestartedTasks.Task.PlaybookName
+  description: The name of the playbook of the task
+  type: String
+- contextPath: RestartedTasks.Task.TaskName
+  description: The name of the task
+  type: String
+script: '-'
+subtype: python3
+system: false
+timeout: 1.2µs
+type: python
+dockerimage: demisto/python3:3.9.7.24076
+tests:
+- No tests (auto formatted)
+dependson:
+  must:
+  - Demisto REST API|||demisto-api-post
+fromversion: 6.0.0

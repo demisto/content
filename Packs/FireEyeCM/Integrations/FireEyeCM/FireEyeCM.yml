@@ -1,0 +1,746 @@
+category: Analytics & SIEM
+commonfields:
+  id: FireEye Central Management
+  version: -1
+configuration:
+- defaultvalue: https://example.com/
+  display: Your server URL
+  name: url
+  required: true
+  type: 0
+- display: Username
+  name: credentials
+  type: 9
+  required: true
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: '50'
+  display: Max incidents to fetch
+  name: max_fetch
+  required: false
+  type: 0
+- defaultvalue: 7 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
+    months, 1 year)
+  name: first_fetch
+  required: false
+  type: 0
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: 'concise'
+  display: Info level for fetched alerts
+  name: info_level
+  options:
+  - 'concise'
+  - 'normal'
+  - 'extended'
+  required: false
+  type: 15
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: "FireEye Central Management (CM Series) is the FireEye threat intelligence hub. It services the FireEye ecosystem, ensuring that FireEye products share the latest intelligence and correlate across attack vectors to detect and prevent cyber attacks"
+display: FireEye Central Management
+name: FireEye Central Management
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The ID number of the alert to retrieve.
+      isArray: false
+      name: alert_id
+      required: false
+      secret: false
+    - default: false
+      description: "The time interval to search. This filter is used with either the start_time or end_time filter.
+      If duration, start time, and end time are not specified, the system defaults to duration=12_hours, end_time=current_time.
+      If only the duration is specified, the end_time defaults to the current_time."
+      auto: PREDEFINED
+      predefined:
+      - '1_hour'
+      - '2_hours'
+      - '6_hours'
+      - '12_hours'
+      - '24_hours'
+      - '48_hours'
+      isArray: false
+      name: duration
+      required: false
+    - default: false
+      description: "The start time of the search. This filter is optional. Syntax: start_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'. Default is 1 day."
+      isArray: false
+      name: start_time
+      required: false
+      secret: false
+    - default: false
+      description: "The end time of the search. This filter is used with the duration filter. If the end_time is specified but not the duration, the system defaults to duration=12_hours, ending at the specified end_time. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om."
+      isArray: false
+      name: end_time
+      required: false
+      secret: false
+    - default: false
+      description: Searches for alerts that include callbacks to the specified domain.
+      isArray: false
+      name: callback_domain
+      required: false
+    - default: false
+      description: The destination IPv4 address related to the malware alert.
+      isArray: false
+      name: dst_ip
+      required: false
+    - default: false
+      description: The source IPv4 address related to the malware alert.
+      isArray: false
+      name: src_ip
+      required: false
+    - default: false
+      description: The name of the malware file.
+      isArray: false
+      name: file_name
+      required: false
+      secret: false
+    - default: false
+      description: The malware file type.
+      isArray: false
+      name: file_type
+      required: false
+      secret: false
+    - default: false
+      defaultValue: 'concise'
+      description: 'The level of information to be returned. Possible values: "concise", "normal", and "extended".'
+      auto: PREDEFINED
+      predefined:
+        - 'concise'
+        - 'normal'
+        - 'extended'
+      isArray: false
+      name: info_level
+      required: false
+      secret: false
+    - default: false
+      description: The name of the malware object.
+      isArray: false
+      name: malware_name
+      required: false
+      secret: false
+    - default: false
+      description: 'The type of the malware object. Possible values: "domain_match", "malware_callback", "malware_object", "web_infection", "infection_match", "riskware-infection", "riskware-callback", "riskware-object".'
+      predefined:
+        - 'domain_match'
+        - 'malware_callback'
+        - 'malware_object'
+        - 'web_infection'
+        - 'infection_match'
+        - 'riskware-infection'
+        - 'riskware-callback'
+        - 'riskware-object'
+      isArray: false
+      name: malware_type
+      required: false
+      secret: false
+    - default: false
+      description: Searches for alerts that include a specific MD5 hash.
+      isArray: false
+      name: md5
+      required: false
+      secret: false
+    - default: false
+      description: The email address of the malware object receiver.
+      isArray: false
+      name: recipient_email
+      required: false
+      secret: false
+    - default: false
+      description: The email address of the malware object sender.
+      isArray: false
+      name: sender_email
+      required: false
+      secret: false
+    - default: false
+      description: Searches for a specific alert URL.
+      isArray: false
+      name: url
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '20'
+      description: Maximum number of alerts to return. 
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Searches and retrieves FireEye CM alerts based on several filters.
+    execution: false
+    name: fireeye-cm-get-alerts
+    outputs:
+    - contextPath: FireEyeCM.Alerts.id
+      description: The ID of the alert.
+      type: String
+    - contextPath: FireEyeCM.Alerts.uuid
+      description: The UUID of the alert.
+      type: String
+    - contextPath: FireEyeCM.Alerts.occurred
+      description: The time when the alert occurred.
+      type: String
+    - contextPath: FireEyeCM.Alerts.product
+      description: The product name of the alert.
+      type: String
+    - contextPath: FireEyeCM.Alerts.rootInfection
+      description: The ID of the infection associated with the malware alert.
+      type: String
+    - contextPath: FireEyeCM.Alerts.name
+      description: The link to the infection associated with the malware alert.
+      type: String
+    - contextPath: FireEyeCM.Alerts.vlan
+      description: The virtual LAN (VLAN) of the alert.
+      type: String
+    - contextPath: FireEyeCM.Alerts.malicious
+      description: A flag indicating whether the alert is malicious.
+      type: String
+    - contextPath: FireEyeCM.Alerts.severity
+      description: The severity of the alert.
+      type: String
+    - contextPath: FireEyeCM.Alerts.sensor
+      description: The sensor name that the alert is associated with.
+      type: String
+    - contextPath: FireEyeCM.Alerts.applianceId
+      description: The appliance ID of the alert.
+      type: String
+    - contextPath: FireEyeCM.Alerts.sensorIp
+      description: The sensor IP that the alert is associated with.
+      type: String
+    - contextPath: FireEyeCM.Alerts.ack
+      description: A flag indicating whether an acknowledgment is received.
+      type: String
+    - contextPath: FireEyeCM.Alerts.src
+      description: The source of the alert.
+      type: Unknown
+    - contextPath: FireEyeCM.Alerts.dst
+      description: The destination of the alert.
+      type: Unknown
+    - contextPath: FireEyeCM.Alerts.explanation
+      description: The explanation data of the alert.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The ID of the alert for which to retrieve its details.
+      isArray: true
+      name: alert_id
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '30'
+      description: Timeout (in seconds) to retrieve the alert details. 
+      isArray: false
+      name: timeout
+    deprecated: false
+    description: Searches and retrieves the details of a single alert.
+    execution: false
+    name: fireeye-cm-get-alert-details
+    outputs:
+    - contextPath: FireEyeCM.Alerts.id
+      description: The ID of the alert.
+      type: String
+    - contextPath: FireEyeCM.Alerts.uuid
+      description: The UUID of the alert.
+      type: String
+    - contextPath: FireEyeCM.Alerts.occurred
+      description: The time when the alert occurred.
+      type: String
+    - contextPath: FireEyeCM.Alerts.product
+      description: The product name of the alert.
+      type: String
+    - contextPath: FireEyeCM.Alerts.rootInfection
+      description: The ID of the infection associated with the malware alert.
+      type: String
+    - contextPath: FireEyeCM.Alerts.name
+      description: The link to the infection associated with the malware alert.
+      type: String
+    - contextPath: FireEyeCM.Alerts.vlan
+      description: The virtual LAN (VLAN) of the alert.
+      type: String
+    - contextPath: FireEyeCM.Alerts.malicious
+      description: A flag indicating whether the alert is malicious.
+      type: String
+    - contextPath: FireEyeCM.Alerts.severity
+      description: The severity of the alert.
+      type: String
+    - contextPath: FireEyeCM.Alerts.sensor
+      description: The sensor name that the alert is associated with.
+      type: String
+    - contextPath: FireEyeCM.Alerts.applianceId
+      description: The appliance ID of the alert.
+      type: String
+    - contextPath: FireEyeCM.Alerts.sensorIp
+      description: The sensor IP that the alert is associated with.
+      type: String
+    - contextPath: FireEyeCM.Alerts.ack
+      description: A flag indicating whether an acknowledgment is received.
+      type: String
+    - contextPath: FireEyeCM.Alerts.src
+      description: The source of the alert.
+      type: Unknown
+    - contextPath: FireEyeCM.Alerts.dst
+      description: The destination of the alert.
+      type: Unknown
+    - contextPath: FireEyeCM.Alerts.explanation
+      description: The explanation data of the alert.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The universally unique identifier (UUID) for the alert.
+      isArray: true
+      name: uuid
+      required: true
+      secret: false
+    deprecated: false
+    description: Confirms that the alert has been reviewed.
+    execution: false
+    name: fireeye-cm-alert-acknowledge
+  - arguments:
+    - default: false
+      description: The universally unique identifier (UUID) for the alert.
+      isArray: true
+      name: uuid
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '120'
+      description: Timeout (in seconds) to retrieve the artifacts.
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+    deprecated: false
+    description: Downloads malware artifacts data for the specified UUID as a zip file.
+    execution: false
+    name: fireeye-cm-get-artifacts-by-uuid
+    outputs:
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the artifact file.
+      type: string
+    - contextPath: InfoFile.Extension
+      description: The extension of the artifact file.
+      type: string
+    - contextPath: InfoFile.Name
+      description: The name of the artifact file.
+      type: string
+    - contextPath: InfoFile.Info
+      description: The info of the artifact file.
+      type: string
+    - contextPath: InfoFile.Size
+      description: The size of the artifact file.
+      type: number
+    - contextPath: InfoFile.Type
+      description: The type of the artifact file.
+      type: string
+  - arguments:
+    - default: false
+      description: The universally unique identifier (UUID) for the alert.
+      isArray: true
+      name: uuid
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets artifacts metadata for the specified UUID.
+    execution: false
+    name: fireeye-cm-get-artifacts-metadata-by-uuid
+    outputs:
+    - contextPath: FireEyeCM.Alerts.uuid
+      description: Universally unique ID (UUID) of the alert.
+      type: string
+    - contextPath: FireEyeCM.Alerts.artifactsInfoList.artifactType
+      description: The artifact type.
+      type: string
+    - contextPath: FireEyeCM.Alerts.artifactsInfoList.artifactName
+      description: The artifact name.
+      type: string
+    - contextPath: FireEyeCM.Alerts.artifactsInfoList.artifactSize
+      description: The zipped artifact size in bytes.
+      type: string
+  - arguments:
+    - default: false
+      description: The time interval in which to search. This filter is used with the end_time filter. If the duration is not specified, the system defaults to duration=12_hours, end_time=current_time.
+      auto: PREDEFINED
+      predefined:
+      - '1_hour'
+      - '2_hours'
+      - '6_hours'
+      - '12_hours'
+      - '24_hours'
+      - '48_hours'
+      isArray: false
+      name: duration
+      required: false
+      secret: false
+    - default: false
+      description: "The end time of the search. This filter is used with the duration filter. If the end_time is specified but not the duration, the system defaults to duration=12_hours, ending at the specified end_time. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om"
+      isArray: false
+      name: end_time
+      required: false
+      secret: false
+    - default: false
+      defaultValue: 'false'
+      auto: PREDEFINED
+      predefined:
+        - 'false'
+        - 'true'
+      description: 'Specifies whether to include all IPS events or MVX-correlated events only. Possible values: "true" and "false".'
+      isArray: false
+      name: mvx_correlated_only
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '20'
+      description: Maximum number of events to return. 
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves information about existing IPS NX events. An IPS enabled appliance is a prerequisite to be able to retrieve IPS event data.
+    execution: false
+    name: fireeye-cm-get-events
+    outputs:
+    - contextPath: FireEyeCM.Events.eventId
+      description: The ID of the event.
+      type: Number
+    - contextPath: FireEyeCM.Events.occurred
+      description: The date and time when the event occurred.
+      type: string
+    - contextPath: FireEyeCM.Events.srcIp
+      description: The IP address of the victim.
+      type: string
+    - contextPath: FireEyeCM.Events.srcPort
+      description: The port address of the victim.
+      type: Number
+    - contextPath: FireEyeCM.Events.dstIp
+      description: The IP address of the attacker.
+      type: string
+    - contextPath: FireEyeCM.Events.dstPort
+      description: The port address of the attacker.
+      type: Number
+    - contextPath: FireEyeCM.Events.vlan
+      description: The virtual LAN (VLAN) of the event.
+      type: Number
+    - contextPath: FireEyeCM.Events.signatureMatchCnt
+      description: The date and time when the event occurred.
+      type: String
+    - contextPath: FireEyeCM.Events.signatureId
+      description: The ID of the event.
+      type: String
+    - contextPath: FireEyeCM.Events.signatureRev
+      description: The date and time when the event occurred.
+      type: String
+    - contextPath: FireEyeCM.Events.severity
+      description: The ID of the event.
+      type: String
+    - contextPath: FireEyeCM.Events.vmVerified
+      description: The date and time when the event occurred.
+      type: String
+    - contextPath: FireEyeCM.Events.srcMac
+      description: The MAC address of the source machine.
+      type: String
+    - contextPath: FireEyeCM.Events.dstMac
+      description: The MAC address of the destination machine.
+      type: String
+    - contextPath: FireEyeCM.Events.ruleName
+      description: The rule name for the event.
+      type: String
+    - contextPath: FireEyeCM.Events.sensorId
+      description: The sensor ID of the FireEye machine.
+      type: String
+    - contextPath: FireEyeCM.Events.cveId
+      description: The CVE ID found in the event.
+      type: String
+    - contextPath: FireEyeCM.Events.actionTaken
+      description: The IPS blocking action taken on the event.
+      type: String
+    - contextPath: FireEyeCM.Events.attackMode
+      description: The attack mode mentioned in the event.
+      type: String
+    - contextPath: FireEyeCM.Events.interfaceId
+      description: The interface ID of the event.
+      type: Number
+    - contextPath: FireEyeCM.Events.protocol
+      description: The protocol used in the event.
+      type: Number
+    - contextPath: FireEyeCM.Events.incidentId
+      description: The incident ID of the event on FireEye.
+      type: Number
+  - arguments:
+    - default: false
+      defaultValue: '1 day'
+      description: "Specifies the start time of the search. This filter is optional. Default is last day. Syntax: start_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'."
+      isArray: false
+      name: start_time
+      required: false
+      secret: false
+    - default: false
+      description: "Specifies the end time of the search. Default is now. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'."
+      isArray: false
+      name: end_time
+      required: false
+      secret: false
+    - default: false
+      description: The sender email.
+      isArray: false
+      name: from
+      required: false
+      secret: false
+    - default: false
+      description: The email subject. Must be URL encoded.
+      isArray: false
+      name: subject
+      required: false
+      secret: false
+    - default: false
+      description: The appliance ID.
+      isArray: false
+      name: appliance_id
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '20'
+      description: Number of emails to return. 
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Searches and retrieves quarantined emails.
+    execution: false
+    name: fireeye-cm-get-quarantined-emails
+    outputs:
+    - contextPath: FireEyeCM.QuarantinedEmail.appliance_id
+      description: The appliance ID associated with the quarantined email.
+      type: string
+    - contextPath: FireEyeCM.QuarantinedEmail.completed_at
+      description: The time the email has been quarantined.
+      type: string
+    - contextPath: FireEyeCM.QuarantinedEmail.email_uuid
+      description: The quarantined email UUID.
+      type: string
+    - contextPath: FireEyeCM.QuarantinedEmail.from
+      description: The quarantined email sender.
+      type: string
+    - contextPath: FireEyeCM.QuarantinedEmail.message_id
+      description: The quarantined email message ID.
+      type: string
+    - contextPath: FireEyeCM.QuarantinedEmail.quarantine_path
+      description: The quarantined email path.
+      type: string
+    - contextPath: FireEyeCM.QuarantinedEmail.The quarantined email queue id.
+      description: The quarantined email queue ID.
+      type: string
+    - contextPath: FireEyeCM.QuarantinedEmail.subject
+      description: The quarantined email subject.
+      type: string
+  - arguments:
+    - default: false
+      description: A comma-separated list of quarantined email queue IDs. Supports up to 100 IDs.
+      isArray: true
+      name: queue_ids
+      required: true
+      secret: false
+    - default: false
+      description: The sensor display name.
+      isArray: false
+      name: sensor_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Releases and deletes quarantined emails. This is not available when Email Security is in Drop mode.
+    execution: false
+    name: fireeye-cm-release-quarantined-emails
+  - arguments:
+    - default: false
+      description: A comma-separated list of quarantined email queue IDs. Supports up to 100 IDs.
+      isArray: true
+      name: queue_ids
+      required: true
+      secret: false
+    - default: false
+      description: The sensor display name.
+      isArray: false
+      name: sensor_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Deletes quarantined emails. This is not available when Email Security is in Drop mode.
+    execution: false
+    name: fireeye-cm-delete-quarantined-emails
+  - arguments:
+    - default: false
+      description: The quarantined emails queue ID.
+      isArray: false
+      name: queue_id
+      required: true
+      secret: false
+    - default: false
+      description: The sensor display name.
+      isArray: false
+      name: sensor_name
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '120'
+      description: Timeout (in seconds) to retrieve the reports.
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+    deprecated: false
+    description: Download quarantined emails.
+    execution: false
+    name: fireeye-cm-download-quarantined-emails
+    outputs:
+    - contextPath: File.Name
+      description: The name of the email.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the email.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the email.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the email.
+      type: String
+    - contextPath: File.Type
+      description: The file type.
+      type: String
+    - contextPath: File.Size
+      description: The size of the email in bytes.
+      type: Number
+    - contextPath: File.SSDeep
+      description: The SSDeep hash of the email.
+      type: String
+  - arguments:
+    - default: false
+      description: "The report type. Requests for ipsTopNAttack, ipsTopNAttacker, ipsTopNVictim, or ipsTopNMvxVerified reports must be used with the limit parameter set to either 25, 50, 75, or 100. You must have an Intrusion Prevention System (IPS)-enabled appliance to be able to generate the IPS reports."
+      auto: PREDEFINED
+      predefined:
+      - 'empsEmailAVReport'
+      - 'empsEmailActivity'
+      - 'empsEmailExecutiveSummary'
+      - 'empsEmailHourlyStat'
+      - 'mpsCallBackServer'
+      - 'mpsExecutiveSummary'
+      - 'mpsInfectedHostsTrend'
+      - 'mpsMalwareActivity'
+      - 'mpsWebAVReport'
+      - 'ipsExecutiveSummary'
+      - 'ipsTopNAttack'
+      - 'ipsTopNAttacker'
+      - 'ipsTopNVictim'
+      - 'ipsTopNMvxVerified'
+      - 'alertDetailsReport'
+      isArray: false
+      name: report_type
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '1 week'
+      description: "The start time of the search. This filter is optional. Syntax: start_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'"
+      isArray: false
+      name: start_time
+      required: false
+      secret: false
+    - default: false
+      description: "Specifies the end time of the search. Default is now. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'."
+      isArray: false
+      name: end_time
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: The maximum number of items covered by each report. This option is required only for IPS TopN reports. 
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      auto: PREDEFINED
+      predefined:
+      - 'A'
+      - 'B'
+      - 'AB'
+      description: The internet interface to one of the values. This option is required only for IPS reports. 
+      isArray: false
+      name: interface
+      required: false
+      secret: false
+    - default: false
+      description: Alert ID. This argument is only relevant when retrieving a report of type alertDetailsReport.
+      isArray: false
+      name: alert_id
+      required: false
+      secret: false
+    - default: false
+      description: Infection ID. This argument is only relevant when retrieving a report of type alertDetailsReport with conjunction to the infection_type argument.
+      isArray: false
+      name: infection_id
+      required: false
+      secret: false
+    - default: false
+      description: 'Infection type. Possible values: "malware-object", "malware-callback", "infection-match", "domain-match", "web-infection". This argument is only relevant when retrieving a report of type alertDetailsReport with conjunction to the infection_id argument.'
+      auto: PREDEFINED
+      predefined:
+        - 'malware-object'
+        - 'malware-callback'
+        - 'infection-match'
+        - 'domain-match'
+        - 'web-infection'
+      name: infection_type
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '120'
+      description: Timeout (in seconds) to retrieve the reports.
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns reports on selected alerts.
+    execution: false
+    name: fireeye-cm-get-reports
+    outputs:
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the artifact file.
+      type: string
+    - contextPath: InfoFile.Extension
+      description: The extension of the artifact file.
+      type: string
+    - contextPath: InfoFile.Name
+      description: The name of the artifact file.
+      type: string
+    - contextPath: InfoFile.Info
+      description: The info of the artifact file.
+      type: string
+    - contextPath: InfoFile.Size
+      description: The size of the artifact file.
+      type: number
+    - contextPath: InfoFile.Type
+      description: The type of the artifact file.
+      type: string
+  isfetch: true
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.9.7.24076
+fromversion: 5.5.0
+tests:
+- FireEye Central Management - Test

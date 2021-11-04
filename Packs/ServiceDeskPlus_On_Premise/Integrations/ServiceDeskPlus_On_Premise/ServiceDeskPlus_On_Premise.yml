@@ -53,8 +53,8 @@ configuration:
   name: fetch_filter
   required: false
   type: 12
-description: Use this integration to manage your on-premises Service Desk Plus requests. The integration allows you to create, update, and delete requests, assign groups and technicians to requests, and link/unlink requests and modify their resolution.
-display: Service Desk Plus (On-Premise)
+description: Deprecated. Use the Service Desk Plus instead.
+display: Service Desk Plus (On-Premise) (Deprecated)
 name: ServiceDeskPlus (On-Premise)
 script:
   commands:
@@ -93,7 +93,7 @@ script:
       name: filter_by
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: View the details of requests. If no arguments are passed, details of all requests are returned.
     execution: false
     name: service-desk-plus-requests-list
@@ -144,7 +144,7 @@ script:
       name: request_id
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Deletes the request with the specified ID. To delete multiple IDs, pass a comma-separated list (string) of the IDs of the requests.
     execution: false
     name: service-desk-plus-request-delete
@@ -323,7 +323,7 @@ script:
       name: udf_fields
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Creates new requests.
     execution: false
     name: service-desk-plus-request-create
@@ -560,7 +560,7 @@ script:
       name: status_change_comments
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Updates the specified request.
     execution: false
     name: service-desk-plus-request-update
@@ -623,7 +623,7 @@ script:
       name: group
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Assigns the specified request to a technician and/or group.
     execution: false
     name: service-desk-plus-request-assign
@@ -634,7 +634,7 @@ script:
       name: request_id
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Allows a technician to pickup the specified with the given request ID on the technician's name.
     execution: false
     name: service-desk-plus-request-pickup
@@ -645,7 +645,7 @@ script:
       name: request_id
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Gets a list with all the linked requests under the specified request.
     execution: false
     name: service-desk-plus-linked-request-list
@@ -679,7 +679,7 @@ script:
       - 'false'
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Adds a resolution to the specified request.
     execution: false
     name: service-desk-plus-request-resolution-add
@@ -690,7 +690,7 @@ script:
       name: request_id
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Gets the resolution of the specified request.
     execution: false
     name: service-desk-plus-request-resolutions-list
@@ -736,7 +736,7 @@ script:
       name: comment
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Links or unlinks multiple commands.
     execution: false
     name: service-desk-plus-link-request-modify
@@ -783,11 +783,11 @@ script:
       name: request_id
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Closes the specified request.
     execution: false
     name: service-desk-plus-request-close
-  dockerimage: demisto/python3:3.9.1.15759
+  dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: true
   longRunning: false
@@ -797,5 +797,5 @@ script:
   subtype: python3
   type: python
 tests:
-- No tests
+- No tests - Deprected
 fromversion: 5.0.0

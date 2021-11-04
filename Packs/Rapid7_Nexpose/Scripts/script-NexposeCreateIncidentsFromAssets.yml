@@ -2,6 +2,7 @@ commonfields:
   id: NexposeCreateIncidentsFromAssets
   version: -1
 name: NexposeCreateIncidentsFromAssets
+deprecated: true
 script: >-
   SEVERITIES = ['Moderate','Severe','Critical']
 
@@ -83,6 +84,7 @@ subtype: python2
 tags:
 - nexpose
 comment: |-
+  Deprecated. No available replacement.
   Create incidents based on the Nexpose asset ID and vulnerability ID.
   Duplicate incidents are not created for the same asset ID and vulnerability ID.
 system: true
@@ -110,3 +112,4 @@ dependson:
 tests:
 - No test
 fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

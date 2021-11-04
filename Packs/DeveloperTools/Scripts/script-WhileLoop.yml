@@ -57,7 +57,7 @@ script: >
 type: javascript
 tags:
 - Utility
-comment: Deprecated. While loop is utility script, to do while loops on specific commands or scripts, it will allow you to loop over until some condition is fulfilled (${keyToWatch} == value). Please make sure timeout of the script also sufficient for the loop.
+comment: Deprecated. No available replacement. While loop is utility script, to do while loops on specific commands or scripts, it will allow you to loop over until some condition is fulfilled (${keyToWatch} == value). Please make sure timeout of the script also sufficient for the loop.
 enabled: true
 deprecated: true
 args:

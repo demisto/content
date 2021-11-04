@@ -37,7 +37,9 @@ configuration:
   name: query
   required: false
   type: 0
-- display: Issue index to start fetching incidents from
+- additionalinfo: This parameter is dismissed while "Use created field to fetch incidents"
+    is checked.
+  display: Issue index to start fetching incidents from
   name: idOffset
   required: false
   type: 0
@@ -73,8 +75,8 @@ configuration:
   name: outgoing_mirror
   required: false
   type: 8
-- additionalinfo: Choose the tag to add to an entry to mirror it as an attachment in
-    Jira.
+- additionalinfo: Choose the tag to add to an entry to mirror it as an attachment
+    in Jira.
   defaultvalue: attachment
   display: File entry tag
   hidden: false
@@ -101,8 +103,8 @@ configuration:
   required: false
   type: 8
 description: Use the Jira integration to manage issues and create Cortex XSOAR incidents
-  from the Jira projects. From Cortex XSOAR version 6.0 and above mirror issues to existing issue
-  incidents in Cortex XSOAR.
+  from the Jira projects. From Cortex XSOAR version 6.0 and above mirror issues to
+  existing issue incidents in Cortex XSOAR.
 display: Atlassian Jira v2
 name: jira-v2
 script:
@@ -160,7 +162,8 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: The user's attribute value. Can be Username or Email address. When using OAuth 1.0 only Username works.
+      description: The user's attribute value. Can be Username or Email address. When
+        using OAuth 1.0 only Username works.
       isArray: false
       name: attribute
       required: true
@@ -245,16 +248,20 @@ script:
       description: The status of the ticket.
       type: Unknown
     - contextPath: File.Size
-      description: The size of the file (Jira attachments are saved as files in Cortex XSOAR).
+      description: The size of the file (Jira attachments are saved as files in Cortex
+        XSOAR).
       type: Unknown
     - contextPath: File.SHA256
-      description: The SHA256 hash of the file (Jira attachments are saved as files in Cortex XSOAR).
+      description: The SHA256 hash of the file (Jira attachments are saved as files
+        in Cortex XSOAR).
       type: Unknown
     - contextPath: File.Name
-      description: The name of the file (Jira attachments are saved as files in Cortex XSOAR).
+      description: The name of the file (Jira attachments are saved as files in Cortex
+        XSOAR).
       type: Unknown
     - contextPath: File.SHA1
-      description: The SHA1 hash of the file (Jira attachments are saved as files in Cortex XSOAR).
+      description: The SHA1 hash of the file (Jira attachments are saved as files
+        in Cortex XSOAR).
       type: Unknown
   - arguments:
     - default: false
@@ -354,6 +361,24 @@ script:
       description: The parent issue ID (if you're creating a sub-task).
       isArray: false
       name: parentIssueId
+      required: false
+      secret: false
+    - default: false
+      description: A text field for describing the environment in which the issue occurred (for example - environment="IE9 on Windows 7").
+      isArray: false
+      name: environment
+      required: false
+      secret: false
+    - default: false
+      description: The security level name of the issue, (for example - security="Anyone")
+      isArray: false
+      name: security
+      required: false
+      secret: false
+    - default: false
+      description: The components names of the issue, (for example - components="component1,component2").
+      isArray: true
+      name: components
       required: false
       secret: false
     deprecated: false
@@ -539,6 +564,24 @@ script:
       name: transition
       required: false
       secret: false
+    - default: false
+      description: A text field for describing the environment in which the issue occurred (for example - environment="IE9 on Windows 7").
+      isArray: false
+      name: environment
+      required: false
+      secret: false
+    - default: false
+      description: The security level name of the issue, (for example - security="Anyone")
+      isArray: false
+      name: security
+      required: false
+      secret: false
+    - default: false
+      description: The components names of the issue, (for example - components="component1,component2").
+      isArray: true
+      name: components
+      required: false
+      secret: false
     deprecated: false
     description: Modifies an issue in Jira.
     execution: false
@@ -618,17 +661,18 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets remote data from a remote incident. This method is only used for debugging purposes and
-      will not update the current incident.
+    description: Gets remote data from a remote incident. This method is only used
+      for debugging purposes and will not update the current incident.
     execution: false
     name: get-remote-data
   - deprecated: false
-    description: Returns the fields to map. This method is only used for debugging purposes.
+    description: Returns the fields to map. This method is only used for debugging
+      purposes.
     execution: false
     name: get-mapping-fields
   - deprecated: false
-    description: Gets incident changes. This method is only used for debugging purposes and will not update
-      the current incident.
+    description: Gets incident changes. This method is only used for debugging purposes
+      and will not update the current incident.
     execution: false
     name: update-remote-system
   - arguments:
@@ -651,10 +695,11 @@ script:
       type: Unknown
   - deprecated: false
     description: Available from Cortex XSOAR version 6.1.0. This command queries for
-      incidents that were modified since the last update. This method is only used for debugging purposes.
+      incidents that were modified since the last update. This method is only used
+      for debugging purposes.
     execution: false
     name: get-modified-remote-data
-  dockerimage: demisto/oauthlib:1.0.0.17529
+  dockerimage: demisto/oauthlib:1.0.0.23674
   feed: false
   isfetch: true
   ismappable: true

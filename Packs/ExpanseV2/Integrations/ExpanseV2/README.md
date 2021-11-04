@@ -117,7 +117,9 @@ Retrieve issues
 | Expanse.Issue.certificate.subjectState | String | The subject state in the certificate | 
 | Expanse.Issue.certificate.validNotAfter | Date | The valid not after date in the certificate | 
 | Expanse.Issue.certificate.validNotBefore | Date | The valid not before date in the certificate | 
-| Expanse.Issue.certificate.version | String | The version in the certificate | 
+| Expanse.Issue.certificate.version | String | The version in the certificate |
+| Expanse.Issue.cloudManagementStatus.id | String | The ID of the cloud management status |
+| Expanse.Issue.cloudManagementStatus.name | String | The friendly name of the cloud management status |
 | Expanse.Issue.created | Date | When the issue instance was created | 
 | Expanse.Issue.domain | String | Domain name of the issue | 
 | Expanse.Issue.headline | String | A brief summary of the issue | 
@@ -945,6 +947,8 @@ Retrieve Expanse issue by issue ID.
 | Expanse.Issue.certificate.validNotAfter | Date | The valid not after date in the certificate | 
 | Expanse.Issue.certificate.validNotBefore | Date | The valid not before date in the certificate | 
 | Expanse.Issue.certificate.version | String | The version in the certificate | 
+| Expanse.Issue.cloudManagementStatus.id | String | The ID of the cloud management status |
+| Expanse.Issue.cloudManagementStatus.name | String | The friendly name of the cloud management status |
 | Expanse.Issue.created | Date | When the issue instance was created | 
 | Expanse.Issue.domain | String | Domain name of the issue | 
 | Expanse.Issue.headline | String | A brief summary of the issue | 
@@ -1685,6 +1689,8 @@ Retrieve services
 | country_code | Returns only results whose country code matches one of the given ISO-3166 two character country codes (comma separated list). | Optional | 
 | activity_status | Returns only results whose activity status matches one of the given values. Possible values are: Active, Inactive. | Optional | 
 | tag | Returns only results that are associated with the provided tag names (comma separated string). | Optional | 
+| cloud_management_status | Returns only results whose cloud management status is the following.
+        (comma separated string, options are 'NotApplicable', 'ManagedCloud', 'UnmanagedCloud'). | Optional |
 | sort | Sort by specified properties. Possible values are: firstObserved, -firstObserved, lastObserved, -lastObserved, name, -name. Default is firstObserved. | Optional | 
 
 
@@ -1729,7 +1735,7 @@ Retrieve services
 | Expanse.Service.certificates.certificate.serialNumber | String | The serial number in the certificate | 
 | Expanse.Service.certificates.certificate.signatureAlgorithm | String | The signature algorithm in the certificate | 
 | Expanse.Service.certificates.certificate.subject | String | The subject in the certificate | 
-| EExpanse.Service.certificates.certificate.subjectAlternativeNames | String | The subject alternative names in the certificate | 
+| Expanse.Service.certificates.certificate.subjectAlternativeNames | String | The subject alternative names in the certificate | 
 | Expanse.Service.certificates.certificate.subjectCountry | String | The subject country in the certificate | 
 | Expanse.Service.certificates.certificate.subjectEmail | String | The subject email in the certificate | 
 | Expanse.Service.certificates.certificate.subjectLocality | String | The subject locality in the certificate | 
@@ -4038,6 +4044,259 @@ This field includes the Common Name of the certificate.
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| contacts: <br/>tags: {'id': 'e00bc79d-d367-36f4-824c-042836fef5fc', 'name': 'xsoar-test-pb-tag'}<br/>note:  | {'id': 'c94c50ca-124f-4983-8da5-1756138e2252', 'name': 'PANW Acme Latex Supply Dev', 'tenantId': 'f738ace6-f451-4f31-898d-a12afa204b2a'} | md5Hash: 1MZVcFeLBLab3jC-_z9t5Q==<br/>id: d4c65570-578b-34b6-9bde-30beff3f6de5<br/>issuer: C=CN,ST=GZ,L=GD,O=CHINA-ISI,OU=CHINA-ISI,CN=10.254.254.254<br/>issuerAlternativeNames: <br/>issuerCountry: CN<br/>issuerEmail: null<br/>issuerLocality: GD<br/>issuerName: 10.254.254.254<br/>issuerOrg: CHINA-ISI<br/>formattedIssuerOrg: null<br/>issuerOrgUnit: CHINA-ISI<br/>issuerState: GZ<br/>publicKey: MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCgHPWslRc21vG0EqmNyHPiI3Mger5AEXJE1YUS2V4nnSEngE9f5GhjXsbmlytoKPQt7tyf3lm0+SVO8z7/wiuYiqhsDQr4Iwmb0t9pIjF+Fn/H6Du9MfIgYeodk4k+JBUzp38Qi1A84QGnUZDjxgQ35UtVNxX444NMvr17gf2hkQIDAQAB<br/>publicKeyAlgorithm: RSA<br/>publicKeyRsaExponent: 65537<br/>signatureAlgorithm: SHA256withRSA<br/>subject: C=CN,ST=GZ,L=GD,O=CHINA-ISI,OU=CHINA-ISI,CN=10.254.254.254<br/>subjectAlternativeNames: <br/>subjectCountry: CN<br/>subjectEmail: null<br/>subjectLocality: GD<br/>subjectName: 10.254.254.254<br/>subjectOrg: CHINA-ISI<br/>subjectOrgUnit: CHINA-ISI<br/>subjectState: GZ<br/>serialNumber: 12064359<br/>validNotBefore: 2013-11-18T00:39:31Z<br/>validNotAfter: 2112-06-12T00:39:31Z<br/>version: 3<br/>publicKeyBits: 1024<br/>pemSha256: y7D-d2yoCGlN_ZnPWfTPknjaSvT6tJtXtqqDBnIj_Zs=<br/>pemSha1: mGe0fWnNVjKzlkKugxEe1MzeoFo=<br/>publicKeyModulus: a01cf5ac951736d6f1b412a98dc873e22373207abe40117244d58512d95e279d2127804f5fe468635ec6e6972b6828f42deedc9fde59b4f9254ef33effc22b988aa86c0d0af823099bd2df6922317e167fc7e83bbd31f22061ea1d93893e241533a77f108b503ce101a75190e3c60437e54b553715f8e3834cbebd7b81fda191<br/>publicKeySpki: Yx3GXaDr00CS1YiWnaceyvTYNIsmYOGOT3G4I3SxCa0= | NO_CERTIFICATE_ADVERTISEMENT | 10.254.254.254 | 2020-09-22T21:23:06.866Z | recentIps: <br/>cloudResources: <br/>base64Encoded:  |  | false | 30a111ae-39e2-3b82-b459-249bac0c6065 |  | LONG_EXPIRATION,<br/>SELF_SIGNED,<br/>SHORT_KEY | {'id': 'Unknown', 'name': 'None'} | NO_ACTIVE_SERVICE,<br/>NO_ACTIVE_ON_PREM_SERVICE,<br/>NO_ACTIVE_CLOUD_SERVICE | id: f738ace6-f451-4f31-898d-a12afa204b2a<br/>name: PANW VanDelay Dev<br/>tenantId: f738ace6-f451-4f31-898d-a12afa204b2a |
 
+### expanse-get-cloud-resources
+***
+Retrieve Cloud Resource assets from Expanse.
+
+
+#### Base Command
+
+`expanse-get-cloud-resources`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | Maximum number of cloud resources to retrieve. | Optional | 
+| last_observed_date | Last date the cloud resource was observed by Expanse. (Format is YYYY-MM-DD). | Optional | 
+| domain | A domain search string to find related cloud resources. | Optional | 
+| ip | An IP search string to find related cloud resources. | Optional | 
+| providers | A search string of provider IDs to find cloud resources hosted by specific providers. | Optional | 
+| provider_names | A search string of provider names to find cloud resources hosted by specific providers. | Optional | 
+| business_units | A search string of business unit ids to find cloud resources belonging to a specific business unit. | Optional | 
+| business_unit_names | A search string of business unit names to find cloud resources belonging to a specific business unit. | Optional | 
+| tags | A search string of tag IDs to find cloud resources that have been assigned a specific tag. | Optional | 
+| tag_names | A search string of tag names to find cloud resources that have been assigned a specific tag. | Optional | 
+| types | A search string of asset types to find cloud resources of a specific type. | Optional | 
+| regions | A search string of regions to find cloud resources that are hosted in a specific region. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Expanse.CloudResource.accountIntegration.id | String | The ID of the cloud resource account integration. |
+| Expanse.CloudResource.accountIntegration.name | String | The name of the cloud resource account integration. |
+| Expanse.CloudResource.annotations.note | String | Note metadata on the cloud resource. |
+| Expanse.CloudResource.businessUnits.id | String | The internal ID of the business unit that the cloud resource belongs to. |
+| Expanse.CloudResource.businessUnits.name | String | The name of the business unit that the cloud resource belongs to. |
+| Expanse.CloudResource.businessUnits.tenantId | String | The internal tenant ID of the business unit that the cloud resource belongs to. |
+| Expanse.CloudResource.dateAdded | Date | The date that the cloud resource was added. |
+| Expanse.CloudResource.details | String | Details about the cloud resource. |
+| Expanse.CloudResource.domain | String | Domain name associated with the cloud resource. |
+| Expanse.CloudResource.firstObserved | Date | The date that the cloud resource was first observed. |
+| Expanse.CloudResource.id | String | The internal ID for the cloud resource. |
+| Expanse.CloudResource.instanceId | String | The instance ID of the cloud resource. |
+| Expanse.CloudResource.ips | String | IPs associated with the cloud resource. |
+| Expanse.CloudResource.lastObserved | Date | The date that the cloud resource was most recently observed. |
+| Expanse.CloudResource.name | String | The friendly name of the cloud resource. |
+| Expanse.CloudResource.provider.id | String | The ID of the provider where the cloud resource is hosted. |
+| Expanse.CloudResource.provider.name | String | The name of the provider where the cloud resource is hosted. |
+| Expanse.CloudResource.region | String | The region where the cloud resouce is hosted. |
+| Expanse.CloudResource.serviceStatus | String | Whether the cloud resource has any known associated services. |
+| Expanse.CloudResource.sourceDetails | String | The integration source of the cloud resource. |
+| Expanse.CloudResource.tenant.id | String | The internal tenant ID of the cloud resource. |
+| Expanse.CloudResource.tenant.name | String | The tenant name of the cloud resouce |
+| Expanse.CloudResource.tenant.tenantId | String | The internal tenant ID of the cloud resource. |
+| Expanse.CloudResource.type | String | The type of cloud resource. |
+| Expanse.CloudResource.vpc.id | String | Any associated VPC IDs. |
+| Expanse.CloudResource.vpc.name | String | Any associated VPC names. |
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Score | Number | The actual score. | 
+
+#### Command Example
+```!expanse-get-cloud-resources limit=1```
+
+#### Context Example
+```json
+{
+    "DBotScore": {
+        "Vendor": "ExpanseV2", 
+        "Indicator": "1.179.133.116", 
+        "Score": 0, 
+        "Type": "ip"
+    }, 
+    "Expanse": {
+        "CloudResource": {
+            "domain": null, 
+            "dateAdded": "2021-05-17T04:02:24.351Z", 
+            "name": "gke-prisma-cloud-demo-2-default-pool-e7eb62e3-vkc5", 
+            "instanceId": "2656988220364570480", 
+            "sourceDetails": [
+                "Prisma Cloud: Prisma Demo"
+            ], 
+            "region": "us-central1", 
+            "firstObserved": "2021-05-16T08:28:27.035Z", 
+            "provider": {
+                "id": "Google", 
+                "name": "Google"
+            }, 
+            "id": "0194af18-4d32-36d9-8dba-527509ae8e1c", 
+            "ips": [
+                "1.179.133.116"
+            ], 
+            "businessUnits": [
+                {
+                    "tenantId": "04b5140e-bbe2-3e9c-9318-a39a3b547ed5", 
+                    "id": "04b5140e-bbe2-3e9c-9318-a39a3b547ed5", 
+                    "name": "VanDelay Industries"
+                }
+            ], 
+            "lastObserved": "2021-05-17T08:28:26.711Z", 
+            "details": null, 
+            "vpc": {
+                "id": "https://www.googleapis.com/compute/v1/projects/demo/global/networks/default", 
+                "name": "default"
+            }, 
+            "accountIntegration": {
+                "id": "e2154dbf-1e7e-4e25-9b88-0c43c98c9551", 
+                "name": "Prisma Demo"
+            }, 
+            "serviceStatus": [
+                "NO_ACTIVE_SERVICE"
+            ], 
+            "type": "GCE", 
+            "annotations": {
+                "note": "", 
+                "tags": [], 
+                "contacts": []
+            }, 
+            "tenant": {
+                "tenantId": "04b5140e-bbe2-3e9c-9318-a39a3b547ed5", 
+                "id": "04b5140e-bbe2-3e9c-9318-a39a3b547ed5", 
+                "name": "VanDelay Industries"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Expanse Cloud Resource List
+>|Asset Type|Cloud Provider|Domain|ID|IP|Instance ID|Region|Source|
+>|---|---|---|---|---|---|---|---|
+>| NETWORK_LB | Google |  | 0220f936-3fd3-33e4-9e00-fd6a54e9bb7a | 1.179.133.116 | 2656988220364570480 | us-central1 | Prisma Cloud: Prisma Demo |
+
+### expanse-get-cloud-resource
+***
+Retrieve a specified cloud resource from Expanse.
+
+
+#### Base Command
+
+`expanse-get-cloud-resource`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The ID of the cloud resource. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| DBotScore.Score | Number | The actual score. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Type | String | The indicator type. | 
+| Expanse.CloudResource.accountIntegration.id | String | The ID of the cloud resource account integration. | 
+| Expanse.CloudResource.accountIntegration.name | String | The name of the cloud resource account integration. | 
+| Expanse.CloudResource.annotations.note | String | Note metadata on the cloud resource. | 
+| Expanse.CloudResource.businessUnits.id | String | The internal ID of the business unit that the cloud resource belongs to. | 
+| Expanse.CloudResource.businessUnits.name | String | The name of the business unit that the cloud resource belongs to. | 
+| Expanse.CloudResource.businessUnits.tenantId | String | The internal tenant ID of the business unit that the cloud resource belongs to. | 
+| Expanse.CloudResource.dateAdded | Date | The date that the cloud resource was added. | 
+| Expanse.CloudResource.details | String | Details about the cloud resource. | 
+| Expanse.CloudResource.domain | String | Domain name associated with the cloud resource. | 
+| Expanse.CloudResource.firstObserved | Date | The date that the cloud resource was first observed. | 
+| Expanse.CloudResource.id | String | The internal ID for the cloud resource. | 
+| Expanse.CloudResource.instanceId | String | The instance ID of the cloud resource. | 
+| Expanse.CloudResource.ips | String | IPs associated with the cloud resource. | 
+| Expanse.CloudResource.lastObserved | Date | The date that the cloud resource was most recently observed. | 
+| Expanse.CloudResource.name | String | The friendly name of the cloud resource. | 
+| Expanse.CloudResource.provider.id | String | The ID of the provider where the cloud resource is hosted. | 
+| Expanse.CloudResource.provider.name | String | The name of the provider where the cloud resource is hosted. | 
+| Expanse.CloudResource.region | String | The region where the cloud resouce is hosted. | 
+| Expanse.CloudResource.serviceStatus | String | Whether the cloud resource has any known associated services. | 
+| Expanse.CloudResource.sourceDetails | String | The integration source of the cloud resource. | 
+| Expanse.CloudResource.tenant.id | String | The internal tenant ID of the cloud resource. | 
+| Expanse.CloudResource.tenant.name | String | The tenant name of the cloud resouce | 
+| Expanse.CloudResource.tenant.tenantId | String | The internal tenant ID of the cloud resource. | 
+| Expanse.CloudResource.type | String | The type of cloud resource. | 
+| Expanse.CloudResource.vpc.id | String | Any associated VPC ID. | 
+| Expanse.CloudResource.vpc.name | String | Any associated VPC names. | 
+
+
+#### Command Example
+``` 
+{
+    "DBotScore": {
+        "Vendor": "ExpanseV2", 
+        "Indicator": "1.179.133.116", 
+        "Score": 0, 
+        "Type": "ip"
+    }, 
+    "Expanse": {
+        "CloudResource": {
+            "domain": null, 
+            "dateAdded": "2021-05-17T04:02:24.351Z", 
+            "name": "gke-prisma-cloud-demo-2-default-pool-e7eb62e3-vkc5", 
+            "instanceId": "2656988220364570480", 
+            "sourceDetails": [
+                "Prisma Cloud: Prisma Demo"
+            ], 
+            "region": "us-central1", 
+            "firstObserved": "2021-05-16T08:28:27.035Z", 
+            "provider": {
+                "id": "Google", 
+                "name": "Google"
+            }, 
+            "id": "0194af18-4d32-36d9-8dba-527509ae8e1c", 
+            "ips": [
+                "1.179.133.116"
+            ], 
+            "businessUnits": [
+                {
+                    "tenantId": "04b5140e-bbe2-3e9c-9318-a39a3b547ed5", 
+                    "id": "04b5140e-bbe2-3e9c-9318-a39a3b547ed5", 
+                    "name": "VanDelay Industries"
+                }
+            ], 
+            "lastObserved": "2021-05-17T08:28:26.711Z", 
+            "details": null, 
+            "vpc": {
+                "id": "https://www.googleapis.com/compute/v1/projects/demo/global/networks/default", 
+                "name": "default"
+            }, 
+            "accountIntegration": {
+                "id": "e2154dbf-1e7e-4e25-9b88-0c43c98c9551", 
+                "name": "Prisma Demo"
+            }, 
+            "serviceStatus": [
+                "NO_ACTIVE_SERVICE"
+            ], 
+            "type": "GCE", 
+            "annotations": {
+                "note": "", 
+                "tags": [], 
+                "contacts": []
+            }, 
+            "tenant": {
+                "tenantId": "04b5140e-bbe2-3e9c-9318-a39a3b547ed5", 
+                "id": "04b5140e-bbe2-3e9c-9318-a39a3b547ed5", 
+                "name": "VanDelay Industries"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+>|Asset Type|Cloud Provider|Domain|ID|IP|Instance ID|Region|Source|
+>|---|---|---|---|---|---|---|---|
+>| NETWORK_LB | Google |  | 0220f936-3fd3-33e4-9e00-fd6a54e9bb7a | 1.179.133.116 | 2656988220364570480 | us-central1 | Prisma Cloud: Prisma Demo |
 
 ### expanse-get-risky-flows
 ***

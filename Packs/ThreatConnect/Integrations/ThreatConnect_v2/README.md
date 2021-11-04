@@ -20,7 +20,7 @@ Deprecated. Use the ThreatConnect v2 integration instead.
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### ip
 ***
@@ -60,6 +60,7 @@ Searches for an indicator of type IP address.
 | IP.Address | string | The IP address of the indicator. | 
 | IP.Malicious.Vendor | string | For malicious IP addresses, the vendor that made the decision. | 
 | IP.Malicious.Description | string | For malicious IP addresses, the full description. | 
+| TC.Indicator.WebLink | string | The web link of the indicator. |
 
 
 #### Command Example
@@ -132,6 +133,7 @@ Searches for an indicator of type URL.
 | URL.Data | string | The data of the URL indicator. | 
 | URL.Malicious.Vendor | string | For malicious URLs, the vendor that made the decision. | 
 | URL.Malicious.Description | string | For malicious URLs, the full description. | 
+| TC.Indicator.WebLink | string | The web link of the indicator. |
 
 
 #### Command Example
@@ -219,6 +221,7 @@ Searches for an indicator of type file.
 | File.SHA256 | string | The SHA256 hash of the indicator. | 
 | File.Malicious.Vendor | string | For malicious files, the vendor that made the decision. | 
 | File.Malicious.Description | string | For malicious files, the full description. | 
+| TC.Indicator.WebLink | string | The web link of the indicator. |
 
 
 #### Command Example
@@ -365,6 +368,7 @@ Retrieves a list of all indicators.
 | File.SHA256 | string | The SHA256 hash of the file. | 
 | File.Malicious.Vendor | string | For malicious files, the vendor that made the decision. | 
 | File.Malicious.Description | string | For malicious files, the full description. | 
+| TC.Indicator.WebLink | string | The web link of the indicator. |
 
 
 #### Command Example
@@ -583,6 +587,7 @@ Retrieves information about an indicator.
 | File.SHA256 | string | The SHA256 hash of the file. | 
 | File.Malicious.Vendor | string | For malicious files, the vendor that made the decision. | 
 | File.Malicious.Description | string | For malicious files, the full description. | 
+| TC.Indicator.WebLink | string | The web link of the indicator. |
 
 
 #### Command Example
@@ -673,6 +678,7 @@ Fetches all indicators that have a tag.
 | File.SHA256 | string | The SHA256 hash of the file. | 
 | File.Malicious.Vendor | string | For malicious files, the vendor that made the decision. | 
 | File.Malicious.Description | string | For malicious files, the full description. | 
+| TC.Indicator.WebLink | string | The web link of the indicator. |
 
 
 #### Command Example
@@ -798,6 +804,7 @@ Adds a new indicator to ThreatConnect.
 | File.SHA256 | string | The SHA256 hash of the file. | 
 | File.Malicious.Vendor | string | For malicious files, the vendor that made the decision. | 
 | File.Malicious.Description | string | For malicious files, the full description. | 
+| TC.Indicator.WebLink | string | The web link of the indicator. |
 
 
 #### Command Example
@@ -997,6 +1004,7 @@ Associates an indicator with an existing incident. The indicator must exist befo
 | File.SHA256 | string | The SHA256 hash of the file. | 
 | File.Malicious.Vendor | string | For malicious files, the vendor that made the decision. | 
 | File.Malicious.Description | string | For malicious files, the full description. | 
+| TC.Indicator.WebLink | string | The web link of the indicator. |
 
 
 #### Command Example
@@ -1061,6 +1069,7 @@ Searches for an indicator of type domain.
 | Domain.Name | string | The name of the domain. | 
 | Domain.Malicious.Vendor | string | For malicious domains, the vendor that made the decision. | 
 | Domain.Malicious.Description | string | For malicious domains, the full description. | 
+| TC.Indicator.WebLink | string | The web link of the indicator. |
 
 
 #### Command Example
@@ -1237,6 +1246,7 @@ Updates the indicator in ThreatConnect.
 | File.SHA256 | string | The SHA256 hash of the file. | 
 | File.Malicious.Vendor | string | For malicious files, the vendor that made the decision. | 
 | File.Malicious.Description | string | For malicious files, the full description. | 
+| TC.Indicator.WebLink | string | The web link of the indicator. |
 
 
 #### Command Example
@@ -1311,6 +1321,7 @@ Removes a tag from a specified indicator.
 | File.SHA256 | string | The SHA256 hash of the file. | 
 | File.Malicious.Vendor | string | For malicious files, the vendor that made the decision. | 
 | File.Malicious.Description | string | For malicious files, the full description. | 
+| TC.Indicator.WebLink | string | The web link of the indicator. |
 
 
 #### Command Example

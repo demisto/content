@@ -1,4 +1,5 @@
 Use the AutoFocus v2 integration to contextualize threat intelligence and bring speed, consistency, and precision to threat investigation.
+TIM customers that upgraded to version 6.2 or above, can have the API Key pre-configured in their main account so no additional input is needed. To use this feature, upgrade your license so it includes the license key.
 
 ## Use Cases
 * Query samples / sessions
@@ -39,6 +40,7 @@ For more information on activating the license see [Activating AutoFocus License
    | Override default credentials | Whether to override the default AutoFocus API key given by the Cortex XSOAR platform. | False |   
    | Trust any certificate (not secure) | When selected, certificates are not checked. | N/A |
    | Use System Proxy Settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. |  N/A | 
+   | handle_error | Suppress errors for non found indicators. | N/A |
 
 
 4. Click **Test** to validate the URLs, token, and connection.
@@ -46,11 +48,11 @@ For more information on activating the license see [Activating AutoFocus License
 
 ## Commands
 ---
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### Search for samples
 ---
-Searches for samples. To view results run the `autofocus-samples-search-results` command with the returned Af Cookie. The AF Cookie expires 120 seconds after the search completes. Use the query that was created in AutoFocus within playbooks "as-is". To run the command with the query in Demisto, wrap the query in backticks ``. For example:
+Searches for samples. To view the results provide polling=true, or run the `autofocus-samples-search-results` command with the returned Af Cookie. The AF Cookie expires 120 seconds after the search completes. Use the query that was created in AutoFocus within playbooks "as-is". To run the command with the query in Cortex XSOAR, wrap the query in backticks ``. For example:
 ```
 !autofocus-search-samples query=`{"operator":"all","children":[{"field":"sample.malware","operator":"is","value":1}]}` scope=Global sort="First Seen (Create Date)" order=Ascending
 ```
@@ -76,6 +78,13 @@ Searches for samples. To view results run the `autofocus-samples-search-results`
 | wildfire_verdict | The WildFire verdict. Can be "Malware", "Grayware", "Benign", or "Phishing". | Optional | 
 | first_seen | The date range of the creation date. Format: YYY Y-MM-DDTHH:MM:SS,YYYY-MM-DDTHH:MM:SS where the first date is the beginning and the second is the end. Example: 2019-09-09T00:00:00,2019-09-09T23:01:59 | Optional | 
 | last_updated | The date range of the last updated date. Format: YYY Y-MM-DDTHH:MM:SS,YYYY-MM-DDTHH:MM:SS where the first date is the beginning and the second is the end. Example: 2019-09-09T00:00:00,2019-09-09T23:01:59 | Optional | 
+| af_cookie | The AF Cookie for retrieving results of previous searches. The AF Cookie expires 120 seconds after the search completes. | Optional |
+| polling | Use XSOAR built-in polling to retrieve the result when it's ready. | Optional | 
+
+##### Using polling
+The `polling` argument was added in XSOAR 6.2.0. It enables to handle the search in a single command, foregoing the need to run `autofocus-samples-search-results`.
+
+For more info see [Scheduled Commands](https://xsoar.pan.dev/docs/integrations/scheduled-commands).
 
 ### How to Build a Query
 1. Go to the [AutoFocus platform](https://autofocus.paloaltonetworks.com/#/samples/global) search screen.
@@ -93,7 +102,28 @@ Copy the query value from the opening curly bracket `{` until the `,"scope"` par
 | --- | --- | --- |
 | AutoFocus.SamplesSearch.AFCookie | String | The ID of the search. Use this ID to get search results. The AF Cookie expires 120 seconds after the search completes. | 
 | AutoFocus.SamplesSearch.Status | String | The search status. Can be "in progress" or "complete". | 
-
+| AutoFocus.SamplesResults.Size | String | The file size in bytes. | 
+| AutoFocus.SamplesResults.SHA1 | String | The SHA1 hash of the file. | 
+| AutoFocus.SamplesResults.SHA256 | String | The SHA256 hash of the file. | 
+| AutoFocus.SamplesResults.Created | Date | The date that the file was created. | 
+| AutoFocus.SamplesResults.Finished | Date | The date the file was finished. | 
+| AutoFocus.SamplesResults.Region | String | The region of the sample. | 
+| AutoFocus.SamplesResults.FileType | String | The file type. | 
+| AutoFocus.SamplesResults.Tags | String | The tags attached to the sample. | 
+| AutoFocus.SamplesResults.Verdict | Number | The verdict of the sample. | 
+| AutoFocus.SamplesResults.TagGroups | String | The groups of relevant tags. | 
+| AutoFocus.SamplesSearch.Status | String | The search status. Can be "in progress" or "complete". | 
+| AutoFocus.SamplesSearch.Artifact.b | Number | How many set the artifact as benign. | 
+| AutoFocus.SamplesSearch.Artifact.g | Number | How many set the artifact as grayware. | 
+| AutoFocus.SamplesSearch.Artifact.m | Number | How many set the artifact as malicious. | 
+| AutoFocus.SamplesSearch.Artifact.confidence | String | How confident the decision. | 
+| AutoFocus.SamplesSearch.Artifact.indicator | String | The indicator that was tested. | 
+| AutoFocus.SamplesSearch.Artifact.indicator_type | String | The indicator type, for example: Mutex, User agent, IPv4, Domain. | 
+| File.Size | Number | The size of the file in bytes. | 
+| File.SHA1 | String | The SHA1 hash of the file. | 
+| File.SHA256 | String | The SHA256 hash of the file. | 
+| File.Type | String | The file type, as determined by libmagic (same as displayed in file entries). | 
+| File.Tags | String | The tags of the file. | 
 
 ##### Command Example
 ```
@@ -119,7 +149,7 @@ Copy the query value from the opening curly bracket `{` until the `,"scope"` par
 
 ### Search for sessions
 ---
-Searches for sessions. To view the results, run the `autofocus-sessions-search-results` command with the returned AF Cookie. The AF Cookie expires 120 seconds after the search completes.
+Searches for sessions. To view the results provide polling=true, or run the `autofocus-sessions-search-results` command with the returned AF Cookie. The AF Cookie expires 120 seconds after the search completes.
 
 ##### Base Command
 
@@ -139,7 +169,13 @@ Searches for sessions. To view the results, run the `autofocus-sessions-search-r
 | url | The URL to search. | Optional | 
 | time_range | The date range in which to search for sessions. Format: YYY Y-MM-DDTHH:MM:SS,YYYY-MM-DDTHH:MM:SS where the first date is the beginning and the second is the end. Example: 2019-09-09T00:00:00,2019-09-09T23:01:59 | Optional | 
 | time_after | The date after which to search for sessions. Format: YYYY-MM-DDTHH:MM:SS Example: 2019-09-09T23:01:59 | Optional | 
-| time_before | The date before which to search for sessions. Format: YYYY-MM-DDTHH:MM:SS Example: 2019-09-09T23:01:59 | Optional | 
+| time_before | The date before which to search for sessions. Format: YYYY-MM-DDTHH:MM:SS Example: 2019-09-09T23:01:59 | Optional |
+| polling | Use XSOAR built-in polling to retrieve the result when it's ready. | Optional | 
+
+##### Using polling
+The `polling` argument was added in XSOAR 6.2.0. It enables to handle the search in a single command, foregoing the need for `autofocus-sessions-search-results`.
+
+For more info see [Scheduled Commands](https://xsoar.pan.dev/docs/integrations/scheduled-commands).
 
 ### How to Build a Query
 1. Go to the [AutoFocus platform](https://autofocus.paloaltonetworks.com/#/samples/global) search screen.
@@ -157,6 +193,19 @@ Searches for sessions. To view the results, run the `autofocus-sessions-search-r
 | --- | --- | --- |
 | AutoFocus.SessionsSearch.AFCookie | String | The ID of the search. Use the ID to get search results. The AF Cookie expires 120 seconds after the search completes. | 
 | AutoFocus.SessionsSearch.Status | String | The status of the search. Can be "in progress" or "complete". | 
+| AutoFocus.SessionsResults.FileName | String | The name of the file.. | 
+| AutoFocus.SessionsResults.ID | String | The ID of the session. Used to get session details. | 
+| AutoFocus.SessionsResults.Industry | String | The related industry. | 
+| AutoFocus.SessionsResults.Region | String | The regions of the sessions. | 
+| AutoFocus.SessionsResults.SHA256 | String | The SHA256 hash of the file. | 
+| AutoFocus.SessionsResults.Seen | Date | The seen date. | 
+| AutoFocus.SessionsResults.UploadSource | String | The source of the uploaded sample. | 
+| AutoFocus.SessionsResults.FileURL | String | The URL of the file. | 
+| AutoFocus.SessionsResults.Tags | String | The relevant tags. | 
+| AutoFocus.SessionsSearch.Status | String | The search status. Can be "in progress" or "complete". | 
+| File.Name | String | The full file name (including file extension). | 
+| File.SHA256 | String | The SHA256 hash of the file. | 
+| File.Tags | String | The tags of the file. | 
 
 
 ##### Command Example
@@ -940,6 +989,13 @@ Performs a search to identify the most popular tags.
 | public | Whether the tag scope is "public". If "True", the tag scope is public. The default is "False". | Optional | 
 | commodity | Whether the tag scope is "commodity". If "True", the tag scope is commodity. The default is "False". | Optional | 
 | unit42 | Whether the tag scope is "Unit42". If "True", the tag scope is unit42. The default is "False". | Optional | 
+| af_cookie | The AF Cookie for retrieving results of previous searches. The AF Cookie expires 120 seconds after the search completes. | Optional |
+| polling | Use XSOAR built-in polling to retrieve the result when it's ready. | Optional | 
+
+##### Using polling
+The `polling` argument was added in XSOAR 6.2.0. It enables to handle the search in a single command, foregoing the need to run `autofocus-samples-search-results`.
+
+For more info see [Scheduled Commands](https://xsoar.pan.dev/docs/integrations/scheduled-commands).
 
 ##### Tag Classes
 - Malware Family: group of malware that have shared properties or common functions. 
@@ -954,6 +1010,11 @@ Performs a search to identify the most popular tags.
 | --- | --- | --- |
 | AutoFocus.TopTagsSearch.AFCookie | String | The ID of the search. Use this ID to get search results. The AF Cookie expires 120 seconds after the search completes. | 
 | AutoFocus.TopTagsSearch.Status | String | The status of the search. Can be "in progress" or "complete". | 
+| AutoFocus.TopTagsResults.Count | Number | The number of samples that matched this tag. | 
+| AutoFocus.TopTagsResults.PublicTagName | String | The public name of the tag. This is used as an ID of the tag. | 
+| AutoFocus.TopTagsResults.TagName | String | The simple name of the tag. | 
+| AutoFocus.TopTagsResults.Lasthit | Date | The last encounter date of the tag. | 
+| AutoFocus.TopTagsSearch.Status | String | The search status. Can be "in progress" or "complete". |
 
 
 ##### Command Example
@@ -1191,6 +1252,11 @@ Returns the reputation of an IP address.
 | IP.Address | String | The IP address. | 
 | IP.Tags | String | Tags that are associated with the IP. | 
 | IP.MalwareFamily | String | The malware family associated with the IP. |
+| IP.Relationships.EntityA | String | The source of the relationship. |
+| IP.Relationships.EntityAType | String | The type of the source of the relationship. |
+| IP.Relationships.EntityB | String | The destination of the relationship. |
+| IP.Relationships.EntityBType | String | The type of the destination of the relationship. |
+| IP.Relationships.Relationship | String |  The name of the relationship. |
 | AutoFocus.IP.IndicatorValue | String | The IP address value. | 
 | AutoFocus.IP.IndicatorType | String | The indicator type. | 
 | AutoFocus.IP.LatestPanVerdicts | Unknown | The latest verdicts from Palo Alto Networks products. Can be either "PAN_DB" or "WF_SAMPLE"(WildFire). | 
@@ -1274,6 +1340,11 @@ Returns the reputation of a URL.
 | URL.Data | String | The URL address. | 
 | URL.Tags | String | Tags that are associated with the URL. | 
 | URL.MalwareFamily | String | The malware family associated with the URL. |
+| URL.Relationships.EntityA | String | The source of the relationship. |
+| URL.Relationships.EntityAType | String | The type of the source of the relationship. |
+| URL.Relationships.EntityB | String | The destination of the relationship. |
+| URL.Relationships.EntityBType | String | The type of the destination of the relationship. |
+| URL.Relationships.Relationship | String |  The name of the relationship. |
 | AutoFocus.URL.IndicatorValue | String | The URL value. | 
 | AutoFocus.URL.IndicatorType | String | The indicator type. | 
 | AutoFocus.URL.LatestPanVerdicts | Unknown |The latest verdicts from Palo Alto Networks products. Can be either "PAN_DB" or "WF_SAMPLE"(WildFire). | 
@@ -1360,6 +1431,11 @@ Returns the reputation of a file.
 | File.SHA256 | String | The SHA256 hash of the file. | 
 | File.Tags | String | Tags that are associated with the file. | 
 | File.MalwareFamily | String | The malware family associated with the file. |
+| File.Relationships.EntityA | String | The source of the relationship. |
+| File.Relationships.EntityAType | String | The type of the source of the relationship. |
+| File.Relationships.EntityB | String | The destination of the relationship. |
+| File.Relationships.EntityBType | String | The type of the destination of the relationship. |
+| File.Relationships.Relationship | String |  The name of the relationship. |
 | AutoFocus.File.IndicatorValue | String | The SHA256 hash value of the file. | 
 | AutoFocus.File.IndicatorType | String | The indicator type. | 
 | AutoFocus.File.LatestPanVerdicts | Unknown | The latest verdicts from Palo Alto Networks products. Can be either "PAN_DB" or "WF_SAMPLE"(WildFire). | 
@@ -1452,6 +1528,11 @@ Returns the reputation of a domain.
 | Domain.Name | String | The name of the domain. | 
 | Domain.Tags | String | Tags that are associated with the domain. | 
 | Domain.MalwareFamily | String | The malware family associated with the domain. |
+| Domain.Relationships.EntityA | String | The source of the relationship. |
+| Domain.Relationships.EntityAType | String | The type of the source of the relationship. |
+| Domain.Relationships.EntityB | String | The destination of the relationship. |
+| Domain.Relationships.EntityBType | String | The type of the destination of the relationship. |
+| Domain.Relationships.Relationship | String |  The name of the relationship. |
 | AutoFocus.Domain.IndicatorValue | String | The value of the domain. | 
 | AutoFocus.Domain.IndicatorType | String | The indicator type. | 
 | AutoFocus.Domain.LatestPanVerdicts | Unknown | The latest verdicts from Palo Alto Networks products. Can be either "PAN_DB" or "WF_SAMPLE"(WildFire). | 

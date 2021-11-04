@@ -15,20 +15,31 @@ from bs4 import BeautifulSoup
 from collections import Counter
 import pandas as pd
 import signal
-import numpy as np
 import zlib
 from base64 import b64encode
 from nltk import ngrams
 from datetime import datetime
 import tldextract
 from email.utils import parseaddr
+import onnx
+import onnxruntime
+import numpy as np
+import os
+import io
+
+f = io.StringIO()
+stderr = sys.stderr
+sys.stderr = f
+from transformers import DistilBertTokenizer  # noqa: E402
+
+sys.stderr = sys.__stderr__
 
 EXECUTION_JSON_FIELD = 'last_execution'
 VERSION_JSON_FIELD = 'script_version'
 
 MAX_ALLOWED_EXCEPTIONS = 20
 
-NO_FETCH_EXTRACT = tldextract.TLDExtract(suffix_list_urls=None)
+NO_FETCH_EXTRACT = tldextract.TLDExtract(suffix_list_urls=None, cache_dir=False)
 NON_POSITIVE_VALIDATION_VALUES = set(['none', 'fail', 'softfail'])
 
 VALIDATION_OTHER = 'other'
@@ -60,9 +71,9 @@ DOMAIN_TO_RANK = None
 WORD_TO_REGEX = None
 WORD_TO_NGRAMS = None
 
-FETCH_DATA_VERSION = '3.1'
+FETCH_DATA_VERSION = '4.0'
 LAST_EXECUTION_LIST_NAME = 'FETCH_DATA_ML_LAST_EXECUTION'
-MAX_INCIDENTS_TO_FETCH_PERIODIC_EXECUTION = 500
+MAX_INCIDENTS_TO_FETCH_PERIODIC_EXECUTION = 400
 MAX_INCIDENTS_TO_FETCH_FIRST_EXECUTION = 3000
 FROM_DATA_FIRST_EXECUTION = FROM_DATA_PERIODIC_EXECUTION = '30 days ago'
 DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
@@ -114,7 +125,8 @@ LABEL_FIELDS_BLACKLIST = {EMAIL_BODY_FIELD, EMAIL_SUBJECT_FIELD, EMAIL_HTML_FIEL
                           'reminder', 'roles', 'runStatus', 'severity', 'sla', 'sortValues', 'sourceBrand',
                           'sourceInstance', 'status', 'timetoassignment', 'type', 'urlsslverification', 'version',
                           "index", 'allRead', 'allReadWrite', 'dbotCurrentDirtyFields', 'dbotDirtyFields',
-                          'dbotMirrorTags', 'feedBased', 'previousAllRead', 'previousAllReadWrite'}
+                          'dbotMirrorTags', 'feedBased', 'previousAllRead', 'previousAllReadWrite',
+                          'dbottextsuggestionhighlighted'}
 LABEL_VALUES_KEYWORDS = ['spam', 'malicious', 'legit', 'false', 'positive', 'phishing', 'fraud', 'internal', 'test',
                          'fp', 'tp', 'resolve', 'credentials', 'spear', 'malware', 'whaling', 'catphishing',
                          'catfishing', 'social', 'sextortion', 'blackmail', 'spyware', 'adware']
@@ -154,6 +166,12 @@ SHORTENED_DOMAINS = {"adf.ly", "t.co", "goo.gl", "adbooth.net", "adfoc.us", "bc.
                      "ozn.st", "scriptzon.com", "short2.in", "shortxlink.com", "shr.tn", "shrt.in", "sitereview.me",
                      "sk.gy", "snpurl.biz", "socialcampaign.com", "swyze.com", "theminiurl.com", "tinylord.com",
                      "tinyurl.ms", "tip.pe", "ty.by"}
+
+# ONNX BERT
+os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
+ONNX_MODEL = None
+ORT_SESSION = None
+TOKENIZER = None
 
 
 def hash_value(simple_value):
@@ -300,7 +318,7 @@ def get_html_features(soup):
 
 def load_external_resources():
     global EMBEDDING_DICT_GLOVE_50, EMBEDDING_DICT_GLOVE_50, EMBEDDING_DICT_GLOVE_100, EMBEDDING_DICT_FASTTEXT, \
-        DOMAIN_TO_RANK, DOMAIN_TO_RANK_PATH, WORD_TO_NGRAMS, WORD_TO_REGEX
+        DOMAIN_TO_RANK, DOMAIN_TO_RANK_PATH, WORD_TO_NGRAMS, WORD_TO_REGEX, ONNX_MODEL, ORT_SESSION, TOKENIZER
     with open(GLOVE_50_PATH, 'rb') as file:
         EMBEDDING_DICT_GLOVE_50 = pickle.load(file)
     with open(GLOVE_100_PATH, 'rb') as file:
@@ -313,6 +331,10 @@ def load_external_resources():
         WORD_TO_NGRAMS = pickle.load(file)
     with open(WORD_TO_REGEX_PATH, 'rb') as file:
         WORD_TO_REGEX = pickle.load(file)
+    ONNX_MODEL = onnx.load("/ml/distilbert-base-uncased.onnx")
+    onnx.checker.check_model(ONNX_MODEL)
+    ORT_SESSION = onnxruntime.InferenceSession("/ml/distilbert-base-uncased.onnx")
+    TOKENIZER = DistilBertTokenizer.from_pretrained('/ml/distilbert-base-uncased_tokenizer')
 
 
 def get_avg_embedding_vector_for_text(tokenized_text, embedding_dict, size, prefix):
@@ -590,6 +612,23 @@ def clean_email_subject(email_subject):
     return re.sub(r"\[[^\]]*?\]", '', email_subject).strip()
 
 
+def get_bert_features_for_text(text):
+    global TOKENIZER, BERT_MODEL
+    encoded_input = TOKENIZER(text, padding='max_length', max_length=512,  # type: ignore
+                              return_tensors='np', truncation=True)
+    ort_inputs = {
+        'input_ids': encoded_input['input_ids'],
+        "attention_mask": encoded_input['attention_mask'],
+    }
+    ort_outs = ORT_SESSION.run(None, ort_inputs)  # type: ignore
+    first_hidden_state = ort_outs[0][0][0].tolist()
+    return first_hidden_state
+
+
+def get_bert_features_for_incident(email_subject, email_body):
+    return {'first_vec_subject_body': get_bert_features_for_text(email_subject + '\n' + email_body)}
+
+
 def extract_features_from_incident(row, label_fields):
     global EMAIL_BODY_FIELD, EMAIL_SUBJECT_FIELD, EMAIL_HTML_FIELD, EMAIL_ATTACHMENT_FIELD, EMAIL_HEADERS_FIELD
     email_body = row[EMAIL_BODY_FIELD] if EMAIL_BODY_FIELD in row else ''
@@ -623,6 +662,7 @@ def extract_features_from_incident(row, label_fields):
     ml_features = get_embedding_features(email_body_word_tokenized + email_subject_word_tokenized)
     ml_features_subject = get_embedding_features(email_subject_word_tokenized)
     ml_features_body = get_embedding_features(email_body_word_tokenized)
+    bert_features = get_bert_features_for_incident(email_subject, email_body)
     headers_features = get_headers_features(email_headers)
     url_feautres = get_url_features(email_body=email_body, email_html=email_html, soup=soup)
     attachments_features = get_attachments_features(email_attachments=email_attachments)
@@ -637,10 +677,10 @@ def extract_features_from_incident(row, label_fields):
         'headers_features': headers_features,
         'url_features': url_feautres,
         'attachments_features': attachments_features,
+        'bert_features': bert_features,
         'created': str(row['created']) if 'created' in row else None,
         'id': str(row['id']) if 'id' in row else None,
         'type': str(row['type']) if 'type' in row else None,
-
     }
     for label in label_fields:
         if label in row:

@@ -1,0 +1,26 @@
+args:
+- default: true
+  description: War room entryID of the file to read.
+  name: entryID
+  required: true
+- defaultValue: 10G
+  description: Minimal file size to alert about. Default is 10G.
+  name: minFileSize
+comment: read and parse filesystem.log
+commonfields:
+  id: HealthCheckFileSystem
+  version: -1
+dockerimage: demisto/python3:3.9.7.24076
+enabled: true
+name: HealthCheckFileSystem
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+timeout: 600ns
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

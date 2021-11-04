@@ -3,7 +3,7 @@
 <p>Use the Snowflake integration to query and update your Snowflake database.</p>
 </div>
 <div class="cl-preview-section">
-<h2 id="configure-snowflake-on-demisto">Configure Snowflake on Demisto</h2>
+<h2 id="configure-snowflake-on-demisto">Configure Snowflake on Cortex XSOAR</h2>
 <p>Several parameters are explained in greater detail in the <a href="#detailed-description" target="_self">Detailed Instructions</a> section.</p>
 </div>
 <div class="cl-preview-section">
@@ -28,7 +28,7 @@
 <li><strong>Fetch query to retrieve new incidents. This field is mandatory when ‘Fetches incidents’ is set to true.</strong></li>
 <li><strong>First fetch timestamp ( <time>, e.g., 12 hours, 7 days)</time></strong></li>
 <li><strong>The name of the field/column that contains the datetime object or timestamp for the data being fetched (case sensitive). This field is mandatory when ‘Fetches incidents’ is set to true.</strong></li>
-<li><strong>The name of the field/column in the fetched data from which the name for the demisto incident will be assigned (case sensitive)</strong></li>
+<li><strong>The name of the field/column in the fetched data from which the name for the Cortex XSOAR incident will be assigned (case sensitive)</strong></li>
 <li><strong>The maximum number of rows to be returned by a fetch</strong></li>
 <li><strong>Incident type</strong></li>
 </ul>
@@ -57,7 +57,7 @@
 <p><strong>Credentials</strong><br> To use Key Pair authentication, follow these instructions:</p>
 <ol>
 <li>Follow steps 1-4 in the instructions detailed in the <a href="https://docs.snowflake.net/manuals/user-guide/python-connector-example.html#using-key-pair-authentication">Snowflake Computing documentation</a>.</li>
-<li>Follow the instructions under the section titled <strong>Configure Demisto Credentials</strong> at this <a href="https://support.demisto.com/hc/en-us/articles/115002567894">link</a>.</li>
+<li>Follow the instructions under the section titled <strong>Configure Cortex XSOAR Credentials</strong> at this <a href="https://xsoar.pan.dev/docs/reference/articles/managing-credentials">link</a>.</li>
 <li>Use the credentials you configured. Refer to the two images at the bottom of the section titled <strong>Configure an External Credentials Vault</strong>.</li>
 </ol>
 </li>
@@ -67,7 +67,7 @@
 <h2 id="commands">Commands</h2>
 </div>
 <div class="cl-preview-section">
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 </div>
 <div class="cl-preview-section">
 <ol>

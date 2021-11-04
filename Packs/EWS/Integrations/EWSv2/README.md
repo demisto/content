@@ -32,7 +32,7 @@
 <p>Delete email items from a mailbox.<br> First, make sure you obtain the email item ID. The item ID can be obtained with one of the integration’s search commands.<br> Use the<span> </span><code>ews-delete-items</code><span> command </span>to delete one or more items from the target mailbox in a single action.<br> A less common use case is to remove emails that were marked as malicious from a user’s mailbox.<br> You can delete the items permanently (hard delete), or delete the items (soft delete), so they can be recovered by running the<span> </span><code>ews-recover-messages</code> command.</p>
 </li>
 </ul>
-<h2>Configure EWS v2 on Demisto</h2>
+<h2>Configure EWS v2 on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to<span> </span><strong>Settings</strong><span> </span>&gt;<span> </span><strong>Integrations</strong><span> </span>&gt;<span> </span><strong>Servers &amp; Services</strong>.</li>
 <li>Search for EWS v2.</li>
@@ -51,6 +51,7 @@
 <li><strong>Has impersonation rights</strong></li>
 <li><strong>Use system proxy settings</strong></li>
 <li><strong>Fetch incidents</strong></li>
+<li><strong>First fetch timestamp</strong></li>
 <li><strong>Mark fetched emails as read</strong></li>
 <li>
 <strong>Incident type</strong><br> ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉<br> ‎ Manual Mode<br> <code>In case the auto-discovery process failed, you will need to configure manually the exchange server endpoint, domain\username for exchange on-premise and enter exchange server version</code>
@@ -58,7 +59,7 @@
 <li>
 <strong>Exchange Server Hostname or IP address</strong><span> </span>For office 365 use<span> </span><code>https://outlook.office365.com/EWS/Exchange.asmx/</code><span> </span>and for exchange on-premise<span> </span><code>https://&lt;ip&gt;/EWS/Exchange.asmx/</code>
 </li>
-<li><strong>DOMAIN\USERNAME (e.g. DEMISTO.INT\admin)</strong></li>
+<li><strong>DOMAIN\USERNAME (e.g. XSOAR.INT\admin)</strong></li>
 <li><strong>Exchange Server Version (On-Premise only. Supported versions: 2007, 2010, 2010_SP2, 2013, and 2016)</strong></li>
 <li>
 <strong>Trust any certificate (not secure)</strong><br> ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉<br> ‎ Advanced Mode<br> Override Authentication Type (NTLM, Basic, or Digest)._</li>
@@ -68,13 +69,15 @@
 <li>Click<span> </span><strong>Test</strong><span> </span>to validate the URLs, token, and connection.</li>
 </ol>
 <h2>Fetched Incidents Data</h2>
-<p>The integration imports email messages from the destination folder in the target mailbox as incidents. If the message contains any attachments, they are uploaded to the War Room as files. If the attachment is an email, Demisto fetches information about the attached email and downloads all of its attachments (if there are any) as files.</p>
+<p>The integration imports email messages from the destination folder in the target mailbox as incidents. If the message contains any attachments, they are uploaded to the War Room as files. If the attachment is an email, Cortex XSOAR fetches information about the attached email and downloads all of its attachments (if there are any) as files.</p>
 <p>To use Fetch incidents, configure a new instance and select the<span> </span><code>Fetches incidents</code><span> </span>option in the instance settings.</p>
 <p>IMPORTANT: The initial fetch interval is the previous 10 minutes. If no emails were fetched before from the destination folder- all emails from 10 minutes prior to the instance configuration and up to the current time will be fetched. Additionally moving messages manually to the destination folder will not trigger fetch incident. Define rules on phishing/target mailbox instead of moving messages manually.</p>
+<p>You can configure the ``First fetch timestamp`` field to determine how much time back you want to fetch incidents.
+<p>Notice that it might required to set the ``Timeout`` field to a higher value.</p>
 <p>Pay special attention to the following fields in the instance settings:</p>
 <p><code>Email address from which to fetch incidents</code><span> </span>– mailbox to fetch incidents from.<br> <code>Name of the folder from which to fetch incidents</code><span> </span>– use this field to configure the destination folder from where emails should be fetched. The default is Inbox folder. Please note, if Exchange is configured with an international flavor `Inbox` will be named according to the configured language.<br> <code>Has impersonation rights</code><span> </span>– mark this option if you set the target mailbox to an account different than your personal account. Otherwise Delegation access will be used instead of Impersonation.<br> Find more information on impersonation or delegation rights at ‘Additional Info’ section below.</p>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_22ec0bbb-12b3-4f1c-9159-b1a4daa114c7" target="_self">Get the attachments of an item: ews-get-attachment</a></li>
 <li><a href="#h_cae18768-1dd5-4cd1-b2c9-abfd0e7787f3" target="_self">Delete the attachments of an item: ews-delete-attachment</a></li>
@@ -2799,3 +2802,5 @@
 <p> </p>
 <h4>New-Compliance Search</h4>
 <p>The EWS v2 integration uses remote ps-session to run commands of compliance search as part of Office 365. To check if your account can connect to Office 365 Security &amp; Compliance Center via powershell, check the following<span> </span><a href="https://docs.microsoft.com/en-us/powershell/exchange/office-365-scc/connect-to-scc-powershell/connect-to-scc-powershell?view=exchange-ps" rel="nofollow">steps</a>. New-Compliance search is a long-running task which has no limitation of searched mailboxes and therefore the suggestion is to use<span> </span><code>Office 365 Search and Delete</code>playbook. New-Compliance search returns statistics of matched content search query and doesn't return preview of found emails in contrast to<span> </span><code>ews-search-mailboxes</code><span> </span>command.</p>
+<h2>Troubleshooting</h2>
+For troubleshooting information, see the <a href="https://xsoar.pan.dev/docs/reference/articles/EWS_V2_Troubleshooting" target="_blank" rel="noopener">EWS V2 Troubleshooting</a>.

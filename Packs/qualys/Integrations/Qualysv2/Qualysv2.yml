@@ -1,0 +1,2368 @@
+category: Utilities
+commonfields:
+  id: QualysV2
+  version: -1
+configuration:
+- defaultvalue: https://qualysguard.qg2.apps.qualys.com
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+- display: Username
+  hidden: false
+  name: credentials
+  required: true
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Qualys Vulnerability Management let's you create, run, fetch and manage
+  reports. Launch and manage vulnerability and compliance scans. Manage the host assets
+  you want to scan for vulnerabilities and compliance
+display: Qualys v2
+name: QualysV2
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Show only certain IP addresses/ranges.
+      isArray: false
+      name: ips
+      required: false
+      secret: false
+    - default: false
+      description: Restrict the request to a certain custom network ID.
+      isArray: false
+      name: network_id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      description: Show only IP addresses/ranges which have a certain tracking method.
+      isArray: false
+      name: tracking_method
+      predefined:
+      - IP
+      - DNS
+      - NETBIOS
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Specify 1 to list compliance IP addresses in the user’s account.
+        These hosts are assigned to the policy compliance module. or 0 to get host
+        that are not
+      isArray: false
+      name: compliance_enabled
+      predefined:
+      - "0"
+      - "1"
+      required: false
+      secret: false
+    - name: certview_enabled
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      description: (Optional) Set to 1 to list IP addresses in the user’s account
+        assigned to the Certificate View module. Specify 0 to list IPs that are not
+        assigned to the Certificate View module. Note - This option will be supported
+        when Certificate View GA is released and is enabled for your account.
+    - name: limit
+      description: Specify a positive numeric value to limit the amount of results
+        in the requested list
+    deprecated: false
+    description: View a list of IP addresses in the user account.
+    execution: false
+    name: qualys-ip-list
+    outputs:
+    - contextPath: Qualys.IP.Address
+      description: IP Addresses.
+    - contextPath: Qualys.IP.Range
+      description: IP Range.
+  - arguments:
+    - default: false
+      description: Specify a report ID of a report that is saved in the Report Share
+        storage space
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Specify reports with a certain state
+      isArray: false
+      name: state
+      predefined:
+      - Running
+      - Finished
+      - Canceled
+      - Errors
+      required: false
+      secret: false
+    - default: false
+      description: Specify a user login ID to get reports launched by the specified
+        user login ID
+      isArray: false
+      name: user_login
+      required: false
+      secret: false
+    - default: false
+      description: 'Specify the date and time to get only reports that expire before
+        it. use YYYY-MM-DD[THH:MM:SSZ] like “2007-07-01” or “2007-01-25T23:12:00Z”
+        or today, yesterday, 24hr ago, 3 days ago, last week.'
+      isArray: false
+      name: expires_before_datetime
+      required: false
+      secret: false
+    - name: client_id
+      description: (Optional) Id assigned to the client (Consultant type subscriptions).
+    - name: client_name
+      description: (Optional) Name of the client (Consultant type subscriptions).
+        Note, The client_id and client_name parameters are mutually exclusive and
+        cannot be specified together in the same request.
+    - name: limit
+      description: Specify a positive numeric value to limit the amount of results
+        in the requested list
+    outputs:
+    - contextPath: Qualys.Report.ID
+      description: Report ID.
+    - contextPath: Qualys.Report.TITLE
+      description: Report title.
+    - contextPath: Qualys.Report.TYPE
+      description: Report type.
+    - contextPath: Qualys.Report.LAUNCH_DATETIME
+      description: Date and time the report launched.
+    - contextPath: Qualys.Report.OUTPUT_FORMAT
+      description: Report output format.
+    - contextPath: Qualys.Report.SIZE
+      description: Report size.
+    - contextPath: Qualys.Report.STATUS.STATE
+      description: Report state status.
+    - contextPath: Qualys.Report.STATUS.MESSAGE
+      description: Report status message.
+    - contextPath: Qualys.Report.STATUS.PERCENT
+      description: Report status percent.
+    - contextPath: Qualys.Report.EXPIRATION_DATETIME
+      description: Report expiration datetime.
+    deprecated: false
+    execution: false
+    description: Get a list of generated reports in the system
+    name: qualys-report-list
+  - arguments:
+    - name: scan_ref
+      description: Show only a scan with a certain scan referenc ecode.
+    - name: state
+      description: Show only one or more scan states.
+    - name: processed
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      description: Specify 0 to show only scans that are not processed. Specify 1
+        to show only scans that have been processed.
+    - name: type
+      auto: PREDEFINED
+      predefined:
+      - On-Demand
+      - Scheduled
+      - API
+      description: Show only a certain scan type.
+    - name: target
+      description: Show only one or more target IP addresses.
+    - name: user_login
+      description: Show only a certain user login.
+    - name: launched_after_datetime
+      description: Show only scans launched after a certain date and time. use YYYY-MM-DD[THH:MM:SSZ]
+        like “2007-07-01” or “2007-01-25T23:12:00Z” or today, yesterday, 24hr ago,
+        3 days ago, last week.'
+    - name: launched_before_datetime
+      description: Show only scans launched before a certain date and time. use YYYY-MM-DD[THH:MM:SSZ]
+        like “2007-07-01” or “2007-01-25T23:12:00Z” or today, yesterday, 24hr ago,
+        3 days ago, last week.'
+    - name: show_ags
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      description: Specify 1 to show asset group information for each scan in the
+        output.
+    - name: show_op
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      description: Specify 1 to show option profile information for each scan in the
+        output.
+    - name: show_status
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      description: Specify 0 to not show scan status for each scan in the output.
+    - name: show_last
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      description: Specify 1 to show only the most recent scan (which meets all other
+        search filters in the request) in the output.
+    - name: scan_id
+      description: (Optional) Show only a scan with a certain compliance scan ID.
+    - name: client_id
+      description: (Optional) Id assigned to the client (Consultant type subscription
+        only). Parameter client_id or client_name may be specified for the same request.
+    - name: client_name
+      description: (Optional) Name of the client (Consultant type subscription only).
+        Parameter client_id or client_name may be specified for the same request.
+    - name: pci_only
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      description: (Optional) Specify 1 to show only external PCI scans in the XML
+        output. External PCI scans are vulnerability scans run with the option profile
+        "Payment Card Industry (PCI) Options". When pci_only=1 is specified, the XML
+        output will not include other types of scans run with other option profiles.
+    - name: ignore_target
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      - "0"
+      description: (Optional) Specify 1 to hide target information from the scan list.
+        Specify 0 to display the target information.
+    - name: limit
+      description: Specify a positive numeric value to limit the amount of results
+        in the requested list
+    deprecated: false
+    execution: false
+    description: Lists vulnerability scans in the user’s account
+    name: qualys-vm-scan-list
+    outputs:
+    - contextPath: Qualys.Scan.REF
+      description: Scan REF.
+    - contextPath: Qualys.Scan.TYPE
+      description: Scan type.
+    - contextPath: Qualys.Scan.TITLE
+      description: Scan title.
+    - contextPath: Qualys.Scan.LAUNCH_DATETIME
+      description: Date and time the scan launched.
+    - contextPath: Qualys.Scan.DURATION
+      description: Scan Duration.
+    - contextPath: Qualys.Scan.PROCESSING_PRIORITY
+      description: Scan Processing Priority.
+    - contextPath: Qualys.Scan.PROCESSED
+      description: Scan Processed.
+    - contextPath: Qualys.Scan.STATUS.STATE
+      description: Scan status state.
+    - contextPath: Qualys.Scan.STATUS.SUB_STATE
+      description: Scan status sub state.
+    - contextPath: Qualys.Scan.SCHEDULE
+      description: Scan Schedule.
+    - contextPath: Qualys.Scan.TARGET
+      description: Scan Target.
+    - contextPath: Qualys.Scan.ASSET_GROUP_TITLE
+      description: Target Asset Group Title.
+    - contextPath: Qualys.Scan.DEFAULT_FLAG
+      description: Scan Deafualt Flag.
+    - contextPath: Qualys.Scan.USER_LOGIN
+      description: The user that created the scan.
+  - name: qualys-scap-scan-list
+    arguments:
+    - name: scan_ref
+      description: Show only a scan with a certain scan reference code.
+    - name: state
+      description: Show only one or more scan states.
+    - name: processed
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      description: Specify 0 to show only scans that are not processed. Specify 1
+        to show only scans that have been processed.
+    - name: type
+      auto: PREDEFINED
+      predefined:
+      - On-Demand
+      - Scheduled
+      - API
+      description: Show only a certain scan type.
+    - name: target
+      description: Show only one or more target IP addresses.
+    - name: user_login
+      description: Show only a certain user login.
+    - name: launched_after_datetime
+      description: Show only scans launched after a certain date and time. use YYYY-MM-DD[THH:MM:SSZ]
+        like “2007-07-01” or “2007-01-25T23:12:00Z” or today, yesterday, 24hr ago,
+        3 days ago, last week.'
+    - name: launched_before_datetime
+      description: Show only scans launched before a certain date and time. use YYYY-MM-DD[THH:MM:SSZ]
+        like “2007-07-01” or “2007-01-25T23:12:00Z” or today, yesterday, 24hr ago,
+        3 days ago, last week.'
+    - name: show_ags
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      description: Specify 1 to show asset group information for each scan in the
+        output.
+    - name: show_op
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      description: Specify 1 to show option profile information for each scan in the
+        output.
+    - name: show_status
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      description: Specify 0 to not show scan status for each scan in the output.
+    - name: show_last
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      description: Specify 1 to show only the most recent scan (which meets all other
+        search filters in the request) in the output.
+    - name: scan_id
+      description: (Optional) Show only a scan with a certain compliance scan ID.
+    - name: client_id
+      description: (Optional) Id assigned to the client (Consultant type subscription
+        only). Parameter client_id or client_name may be specified for the same request.
+    - name: client_name
+      description: (Optional) Name of the client (Consultant type subscription only).
+        Parameter client_id or client_name may be specified for the same request.
+    - name: pci_only
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      description: (Optional) Specify 1 to show only external PCI scans in the XML
+        output. External PCI scans are vulnerability scans run with the option profile
+        "Payment Card Industry (PCI) Options". When pci_only=1 is specified, the XML
+        output will not include other types of scans run with other option profiles.
+    - name: ignore_target
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      - "0"
+      description: (Optional) Specify 1 to hide target information from the scan list.
+        Specify 0 to display the target information.
+    - name: limit
+      description: Specify a positive numeric value to limit the amount of results
+        in the requested list
+    outputs:
+    - contextPath: Qualys.SCAP.Scan.ID
+      description: Scan ID.
+    - contextPath: Qualys.SCAP.Scan.Reference
+      description: Scan ref.
+    - contextPath: Qualys.SCAP.Scan.REF
+      description: Scan REF.
+    - contextPath: Qualys.SCAP.Scan.Type
+      description: Scan type.
+    - contextPath: Qualys.SCAP.Scan.Title
+      description: Scan title.
+    - contextPath: Qualys.SCAP.Scan.LaunchDatetime
+      description: Date and time the scan launched.
+    - contextPath: Qualys.SCAP.Scan.Duration
+      description: Scan Duration.
+    - contextPath: Qualys.SCAP.Scan.ProcessingPriority
+      description: Scan Processing Priority.
+    - contextPath: Qualys.SCAP.Scan.Processed
+      description: Scan Processed.
+    - contextPath: Qualys.SCAP.Scan.Status.State
+      description: Scan status state.
+    - contextPath: Qualys.SCAP.Scan.Status.SubState
+      description: Scan status sub state.
+    - contextPath: Qualys.SCAP.Scan.Schedule
+      description: Scan Schedule.
+    - contextPath: Qualys.SCAP.Scan.Target
+      description: Scan Target.
+    - contextPath: Qualys.SCAP.Scan.AssetGroupTitle
+      description: Target Asset Group Title.
+    - contextPath: Qualys.SCAP.Scan.DeafualtFlag
+      description: Scan Deafualt Flag.
+    - contextPath: Qualys.SCAP.Scan.UserLogin
+      description: The user that created the scan.
+    description: Gives you a list of SCAP scans in your account
+  - name: qualys-pc-scan-list
+    arguments:
+    - name: scan_id
+      description: Scan id
+    - name: scan_ref
+      description: Scan reference
+    - name: state
+      description: Show only one or more scan states.
+    - name: processed
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      description: Specify 0 to show only scans that are not processed. Specify 1
+        to show only scans that have been processed.
+    - name: type
+      description: Show only a certain scan type.
+    - name: target
+      description: Show only one or more target IP addresses.
+    - name: user_login
+      description: Show only a certain user login.
+    - name: launched_after_datetime
+      description: Show only scans launched after a certain date and time. use YYYY-MM-DD[THH:MM:SSZ]
+        like “2007-07-01” or “2007-01-25T23:12:00Z” or today, yesterday, 24hr ago,
+        3 days ago, last week.'
+    - name: launched_before_datetime
+      description: Show only scans launched before a certain date and time. use YYYY-MM-DD[THH:MM:SSZ]
+        like “2007-07-01” or “2007-01-25T23:12:00Z” or today, yesterday, 24hr ago,
+        3 days ago, last week.'
+    - name: show_ags
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      description: Specify 1 to show asset group information for each scan in the
+        output.
+    - name: show_op
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      description: Specify 1 to show option profile information for each scan in the
+        output.
+    - name: show_status
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      description: Specify 0 to not show scan status for each scan in the output.
+    - name: show_last
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      description: Specify 1 to show only the most recent scan (which meets all other
+        search filters in the request) in the output.
+    - name: pci_only
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      - "0"
+      description: Specify 1 to show only external PCI scans in the XML output. External
+        PCI scans are vulnerability scans run with the option profile "Payment Card
+        Industry (PCI) Options". When pci_only=1 is specified, the XML output will
+        not include other types of scans run with other option profiles.
+    - name: ignore_target
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      - "0"
+      description: Specify 1 to hide target information from the scan list. Specify
+        0 to display the target information.
+    - name: client_id
+      description: (Optional) Id assigned to the client (Consultant type subscriptions).
+    - name: client_name
+      description: (Optional) Name of the client (Consultant type subscriptions).
+        Note, The client_id and client_name parameters are mutually exclusive and
+        cannot be specified together in the same request.
+    - name: limit
+      description: Specify a positive numeric value to limit the amount of results
+        in the requested list
+    outputs:
+    - contextPath: Qualys.Scan.REF
+      description: Scan REF.
+    - contextPath: Qualys.Scan.TYPE
+      description: Scan type.
+    - contextPath: Qualys.Scan.TITLE
+      description: Scan title.
+    - contextPath: Qualys.Scan.LAUNCH_DATETIME
+      description: Date and time the scan launched.
+    - contextPath: Qualys.Scan.DURATION
+      description: Scan Duration.
+    - contextPath: Qualys.Scan.PROCESSING_PRIORITY
+      description: Scan Processing Priority.
+    - contextPath: Qualys.Scan.PROCESSED
+      description: Scan Processed.
+    - contextPath: Qualys.Scan.STATUS.STATE
+      description: Scan status state.
+    - contextPath: Qualys.Scan.STATUS.SUB_STATE
+      description: Scan status sub state.
+    - contextPath: Qualys.Scan.SCHEDULE
+      description: Scan Schedule.
+    - contextPath: Qualys.Scan.TARGET
+      description: Scan Target.
+    - contextPath: Qualys.Scan.ASSET_GROUP_TITLE
+      description: Target Asset Group Title.
+    - contextPath: Qualys.Scan.DEFAULT_FLAG
+      description: Scan Deafualt Flag.
+    - contextPath: Qualys.Scan.USER_LOGIN
+      description: The user that created the scan.
+    description: Get a list of compliance scans in your account.
+  - name: qualys-schedule-scan-list
+    arguments:
+    - name: id
+      description: The ID of the scan schedule you want to display.
+    - name: active
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      description: Specify 1 for active schedules only, or 0 for deactivated schedules
+        only.
+    - name: show_notifications
+      description: (Optional) Specify 1 to include the notification settings for each
+        schedule in the XML output.
+    - name: scan_type
+      auto: PREDEFINED
+      predefined:
+      - certview
+      - perimeter
+      description: (Optional) Launch a scan with a certain type
+    - name: fqdn
+      description: (Optional) The target FQDN for a vulnerability scan. You must specify
+        at least one target i.e. IPs, asset groups or FQDNs. Multiple values are comma
+        separated.
+    - name: show_cloud_details
+      description: (Optional) Set to 1 to display the cloud details (Provider, Connector,
+        Scan Type and Cloud Target) in the XML output. Otherwise the details are not
+        displayed in the output. The cloud details will show scan type "Cloud Perimeter"
+        for cloud perimeter scans.
+    - name: client_id
+      description: (Optional) Id assigned to the client (Consultant type subscription
+        only). Parameter client_id or client_name may be specified for the same request.
+    - name: client_name
+      description: (Optional) Name of the client (Consultant type subscription only).
+        Parameter client_id or client_name may be specified for the same request.
+    - name: limit
+      description: Specify a positive numeric value to limit the amount of results
+        in the requested list
+    outputs:
+    - contextPath: Qualys.Scan.ID
+      description: Scan ID.
+    - contextPath: Qualys.Scan.REF
+      description: Scan REF.
+    - contextPath: Qualys.Scan.TYPE
+      description: Scan type.
+    - contextPath: Qualys.Scan.TITLE
+      description: Scan title.
+    - contextPath: Qualys.Scan.LAUNCH_DATETIME
+      description: Date and time the scan launched.
+    - contextPath: Qualys.Scan.DURATION
+      description: Scan Duration.
+    - contextPath: Qualys.Scan.PROCESSING_PRIORITY
+      description: Scan Processing Priority.
+    - contextPath: Qualys.Scan.PROCESSED
+      description: Scan Processed.
+    - contextPath: Qualys.Scan.STATUS.STATE
+      description: Scan status state.
+    - contextPath: Qualys.Scan.STATUS.SUB_STATE
+      description: Scan status sub state.
+    - contextPath: Qualys.Scan.TARGET
+      description: Scan Target.
+    - contextPath: Qualys.Scan.ASSET_GROUP_TITLE
+      description: Target Asset Group Title.
+    - contextPath: Qualys.Scan.DEFAULT_FLAG
+      description: Scan Deafualt Flag.
+    - contextPath: Qualys.Scan.USER_LOGIN
+      description: The user that created the scan.
+    - contextPath: Qualys.Scan.ACTIVE
+      description: Scheduled scan active.
+    - contextPath: Qualys.Scan.USER_ENTERED_IPS.RANGE.START
+      description: IP range requested start.
+    - contextPath: Qualys.Scan.USER_ENTERED_IPS.RANGE.END
+      description: IP range requested end.
+    - contextPath: Qualys.Scan.ISCANNER_NAME
+      description: Iscanner name used in the scan.
+    - contextPath: Qualys.Scan.SCHEDULE.DAILY.@frequency_days
+      description: Frequency of usage of the scan.
+    - contextPath: Qualys.Scan.SCHEDULE.START_DATE_UTC
+      description: Start date of the scheduled scan in UTC format.
+    - contextPath: Qualys.Scan.SCHEDULE.START_HOUR
+      description: Start hour of the scheduled scan.
+    - contextPath: Qualys.Scan.SCHEDULE.START_MINUTE
+      description: Start minute of the scheduled scan.
+    - contextPath: Qualys.Scan.SCHEDULE.TIME_ZONE.TIME_ZONE_CODE
+      description: Time zone code of the time for the scheduled scan.
+    - contextPath: Qualys.Scan.SCHEDULE.TIME_ZONE.TIME_ZONE_DETAILS
+      description: Time zone details of the time for the scheduled scan.
+    - contextPath: Qualys.Scan.OPTION_PROFILE.DEFAULT_FLAG
+      description: Default flag of the option profile.
+    - contextPath: Qualys.Scan.OPTION_PROFILE.TITLE
+      description: Title of the option profile.
+    - contextPath: Qualys.Scan.EC2_INSTANCE.CONNECTOR_UUID
+      description: Connector UUID of EC2 instance.
+    - contextPath: Qualys.Scan.EC2_INSTANCE.EC2_ENDPOINT
+      description: Endpoint of EC2 instance.
+    - contextPath: Qualys.Scan.EC2_INSTANCE.EC2_ONLY_CLASSIC
+      description: EC2 only classic.
+    description: Shows schedule scans
+  - name: qualys-host-list
+    arguments:
+    - name: os_pattern
+      description: Show only hosts which have an operating system matching a certain
+        regular expression. An empty value cannot be specified. Use “%5E%24” to match
+        empty string.
+    - name: truncation_limit
+      description: Specify the maximum number of host records processed per request.
+        When not specified, the truncation limit is set to 1000 host records. You
+        may specify a value less than the default (1-999) or greater than the default
+        (1001-1000000).
+    - name: ips
+      description: Show only certain IP addresses/ranges. One or more IPs/ranges may
+        be specified. Multiple entries are comma separated. An IP range is specified
+        with a hyphen (for example, 10.10.10.1-10.10.10.100).
+    - name: ag_titles
+      description: Show only hosts belonging to asset groups with certain strings
+        in the asset group title. One or more asset group titles may be specified.
+        Multiple entries are comma separated (for example, My+First+Asset+Group,Another+Asset+Group).
+    - name: ids
+      description: Show only certain host IDs/ranges. One or more host IDs/ranges
+        may be specified. Multiple entries are comma separated. A host ID range is
+        specified with a hyphen (for example, 190-400).Valid host IDs are required.
+    - name: network_ids
+      description: (Optional, and valid only when the Network Support feature is enabled
+        for the user’s account) Restrict the request to certain custom network IDs.
+        Multiple network IDs are comma separated.
+    - name: no_vm_scan_since
+      description: 'Show hosts not scanned since a certain date and time (optional).
+        use YYYY-MM-DD[THH:MM:SSZ] like “2007-07-01” or “2007-01-25T23:12:00Z” or
+        today, yesterday, 24hr ago, 3 days ago, last week. Permissions: An Auditor
+        cannot specify this parameter.'
+    - name: vm_scan_since
+      description: 'Show hosts that were last scanned for vulnerabilities since a
+        certain date and time (optional). Hosts that were the target of a vulnerability
+        scan since the date/time will be shown. use YYYY-MM-DD[THH:MM:SSZ] like “2007-07-01”
+        or “2007-01-25T23:12:00Z” or today, yesterday, 24hr ago, 3 days ago, last
+        week. Permissions: An Auditor cannot specify this parameter.'
+    - name: no_compliance_scan_since
+      description: '(Optional) Show compliance hosts not scanned since a certain date
+        and time (optional). This parameter is invalid for an Express Lite user. use
+        YYYY-MM-DD[THH:MM:SSZ] like “2007-07-01” or “2007-01-25T23:12:00Z” or today,
+        yesterday, 24hr ago, 3 days ago, last week.'
+    - name: use_tags
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      description: Specify 0 (the default) if you want to select hosts based on IP
+        addresses/ranges and/or asset groups. Specify 1 if you want to select hosts
+        based on asset tags.
+    - name: tag_set_by
+      auto: PREDEFINED
+      predefined:
+      - id
+      - name
+      description: (Optional when use_tags=1) Specify “id” (the default) to select
+        a tag set by providing tag IDs. Specify “name” to select a tag set by providing
+        tag names.
+    - name: tag_include_selector
+      auto: PREDEFINED
+      predefined:
+      - any
+      - all
+      description: (Optional when use_tags=1) Select “any” (the default) to include
+        hosts that match at least one of the selected tags. Select “all” to include
+        hosts that match all of the selected tags.
+    - name: tag_exclude_selector
+      auto: PREDEFINED
+      predefined:
+      - any
+      - all
+      description: (Optional when use_tags=1) Select “any” (the default) to exclude
+        hosts that match at least one of the selected tags. Select “all” to exclude
+        hosts that match all of the selected tags.
+    - name: tag_set_include
+      description: (Optional when use_tags=1) Specify a tag set to include. Hosts
+        that match these tags will be included. You identify the tag set by providing
+        tag name or IDs. Multiple entries are comma separated.
+    - name: tag_set_exclude
+      description: (Optional when use_tags=1) Specify a tag set to exclude. Hosts
+        that match these tags will be excluded. You identify the tag set by providing
+        tag name or IDs. Multiple entries are comma separated.
+    - name: show_tags
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      description: (Optional) Specify 1 to display asset tags associated with each
+        host in the XML output.
+    - name: host_metadata
+      description: "Specify the name of the cloud provider to show the assets managed\
+        \ by the cloud provider. Valid values: ec2, google, azure"
+    - name: host_metadata_fields
+      description: (Optional when host_metadata is specified) Specify metadata fields
+        to only return data for certain attributes.
+    - name: show_cloud_tags
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      description: (Optional) Specify 1 to display cloud provider tags for each scanned
+        host asset in the output. The default value of the parameter is set to 0.
+        When set to 0, we will not show the cloud provider tags for the scanned assets.
+    - name: cloud_tag_fields
+      description: (Optional when show_cloud_tags is specified) Specify cloud tags
+        or cloud tag and name combinations to only return information for specified
+        cloud tags. A cloud tag name and value combination is specified with a colon
+        (for example:SomeTag6:AY_ec2). For each cloud tag, we show the cloud tag’s
+        name, its value, and last success date (the tag last success date/time, fetched
+        from instance). If this parameter is not specified and "show_cloud_tags" is
+        set to 1, we will show all the cloud provider tags for the assets.
+    - name: limit
+      description: Specify a positive numeric value to limit the amount of results
+        in the requested list
+    outputs:
+    - contextPath: Qualys.Endpoint.ID
+      description: Endpoint ID.
+    - contextPath: Qualys.Endpoint.IP
+      description: IP.
+    - contextPath: Qualys.Endpoint.CLOUD_PROVIDER
+      description: Host's cloud provider.
+    - contextPath: Qualys.Endpoint.DNS
+      description: DNS.
+    - contextPath: Qualys.Endpoint.EC2_INSTANCE_ID
+      description: EC2 instance ID.
+    - contextPath: Qualys.Endpoint.QG_HOSTID
+      description: QG host ID.
+    - contextPath: Qualys.Endpoint.CLOUD_SERVICE
+      description: Cloud service of the endpoint.
+    - contextPath: Qualys.Endpoint.TRACKING_METHOD
+      description: Tracking method of the endpoint.
+    - contextPath: Qualys.Endpoint.CLOUD_RESOURCE_ID
+      description: Cloud resource ID of the endpoint.
+    - contextPath: Qualys.Endpoint.DNS_DATA.DOMAIN
+      description: Domain of the endpoint.
+    - contextPath: Qualys.Endpoint.DNS_DATA.HOSTNAME
+      description: Host name of the endpoint.
+    - contextPath: Qualys.Endpoint.NETBIOS
+      description: NETBIOS.
+    - contextPath: Qualys.Endpoint.OS
+      description: Endpoint operating system.
+    description: View a list of scanned hosts in the user account.
+  - name: qualys-virtual-host-list
+    arguments:
+    - name: ip
+      description: Show only virtual hosts that have a certain IP address.
+    - name: port
+      description: Show only virtual hosts that have a certain port.
+    - name: limit
+      description: Specify a positive numeric value to limit the amount of results
+        in the requested list
+    outputs:
+    - contextPath: Qualys.VirtualEndpoint.IP
+      description: IP.
+    - contextPath: Qualys.VirtualEndpoint.PORT
+      description: Port.
+    - contextPath: Qualys.VirtualEndpoint.FQDN
+      description: Fully qualified domain name.
+    description: View a list of virtual hosts in the user account.
+  - name: qualys-virtual-host-manage
+    arguments:
+    - name: action
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - create
+      - update
+      - delete
+      - add_fqdn
+      - delete_fqdn
+      description: Virtual host action to perform
+    - name: ip
+      required: true
+      description: An IP address for the virtual host configuration.
+    - name: port
+      required: true
+      description: A port number for the virtual host configuration.
+    - name: network_id
+      description: Network support must be enabled to specify the network_id. If network
+        support is enabled and you do not provide a network_id, then the Default Global
+        Network is considered. You can specify only one network_id.
+    - name: fqdn
+      description: (Required for all actions except “delete”. Invalid for “delete”.)
+        One or more fully-qualified domain names (FQDNs) for the virtual host configuration.
+        Multiple entries are comma separated.
+    outputs:
+    - contextPath: Qualys.VirtualEndpoint.DATETIME
+      description: Date and time of the executed manage action.
+    - contextPath: Qualys.VirtualEndpoint.TEXT
+      description: Result message of the executed action.
+    description: View a list of virtual hosts in the user account.
+  - name: qualys-host-excluded-list
+    arguments:
+    - name: ips
+      description: Get list of excluded hosts or addresses range
+    - name: network_id
+      description: (Optional, and valid only when the Network Support feature is enabled
+        for the user’s account) Restrict the request to a certain custom network ID.
+    - name: ag_ids
+      description: (Optional) Show excluded hosts belonging to asset groups with certain
+        IDs. One or more asset group IDs and/or ranges may be specified. Multiple
+        entries are comma separated. A range is specified with a dash (for example,
+        386941-386945). Valid asset group IDs are required.
+    - name: ag_titles
+      description: (Optional) Show excluded hosts belonging to asset groups with certain
+        strings in the asset group title. One or more asset group titles may be specified.
+        Multiple entries are comma separated (for example, My+First+Asset+Group,Another+Asset+Group).
+    - name: use_tags
+      description: (Optional) Specify 0 (the default) if you want to select hosts
+        based on IP addresses/ranges and/or asset groups. Specify 1 if you want to
+        select hosts based on asset tags.
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+    - name: tag_include_selector
+      description: (Optional when use_tags=1) Specify "any" (the default) to include
+        excluded hosts that match at least one of the selected tags. Specify "all"
+        to include excluded hosts that match all of the selected tags.
+      auto: PREDEFINED
+      predefined:
+      - any
+      - all
+    - name: tag_exclude_selector
+      description: (Optional when use_tags=1) Specify "any" (the default) to ignore
+        excluded hosts that match at least one of the selected tags. Specify "all"
+        to ignore excluded hosts that match all of the selected tags.
+      auto: PREDEFINED
+      predefined:
+      - any
+      - all
+    - name: tag_set_by
+      description: (Optional when use_tags=1) Specify "id" (the default) to select
+        a tag set by providing tag IDs. Specify "name" to select a tag set by providing
+        tag names.
+      auto: PREDEFINED
+      predefined:
+      - id
+      - name
+    - name: tag_set_include
+      description: (Optional when use_tags=1) Specify a tag set to include. Excluded
+        hosts that match these tags will be included. You identify the tag set by
+        providing tag name or IDs. Multiple entries are comma separated.
+    - name: tag_set_exclude
+      description: (Optional when use_tags=1) Specify a tag set to exclude. Excluded
+        hosts that match these tags will be ignored. You identify the tag set by providing
+        tag name or IDs. Multiple entries are comma separated.
+    - name: limit
+      description: Specify a positive numeric value to limit the amount of results
+        in the requested list
+    outputs:
+    - contextPath: Qualys.Excluded.Host.Address
+      description: IP Address.
+    - contextPath: Qualys.Excluded.Host.Address.#text
+      description: IP of excluded host with expiration date.
+    - contextPath: Qualys.Excluded.Host.Address.@expiration_date
+      description: Expiration date of excluded host address.
+    - contextPath: Qualys.Excluded.Host.Range.#text
+      description: Range of excluded hosts with expiration date.
+    - contextPath: Qualys.Excluded.Host.Range.@expiration_date
+      description: Expiration date of excluded hosts ranges.
+    - contextPath: Qualys.Excluded.Host.Range
+      description: Range of IP addresses.
+    description: Show the excluded host list for the user's account. Hosts in your
+      excluded host list will not be scanned.
+  - name: qualys-scheduled-report-list
+    arguments:
+    - name: id
+      description: Scheduled report ID
+    - name: is_active
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      - "0"
+      description: Select is_active=1 for active or is_active=0 for inactive scheduled
+        reports to view
+    - name: limit
+      description: Specify a positive numeric value to limit the amount of results
+        in the requested list
+    outputs:
+    - contextPath: Qualys.Report.ID
+      description: Report ID.
+    - contextPath: Qualys.Report.TITLE
+      description: Report title.
+    - contextPath: Qualys.Report.TYPE
+      description: Report type.
+    - contextPath: Qualys.Report.LAUNCH_DATETIME
+      description: Date and time the report launched.
+    - contextPath: Qualys.Report.OUTPUT_FORMAT
+      description: Report output format.
+    - contextPath: Qualys.Report.SIZE
+      description: Report size.
+    - contextPath: Qualys.Report.STATUS.STATE
+      description: Report state status.
+    - contextPath: Qualys.Report.STATUS.MESSAGE
+      description: Report status message.
+    - contextPath: Qualys.Report.STATUS.PERCENT
+      description: Report status percent.
+    - contextPath: Qualys.Report.EXPIRATION_DATETIME
+      description: Report expiration datetime.
+    - contextPath: Qualys.Report.ACTIVE
+      description: Report active.
+    - contextPath: Qualys.Report.TEMPLATE_TITLE
+      description: Title of the template.
+    - contextPath: Qualys.Report.SCHEDULE.START_DATE_UTC
+      description: Start date of the scheduled report in UTC format.
+    - contextPath: Qualys.Report.SCHEDULE.START_HOUR
+      description: Start hour of the scheduled report.
+    - contextPath: Qualys.Report.SCHEDULE.START_MINUTE
+      description: Start minute of the scheduled report.
+    - contextPath: Qualys.Report.SCHEDULE.DAILY.@frequency_days
+      description: Frequency of the schduled report.
+    - contextPath: Qualys.Report.SCHEDULE.TIME_ZONE.TIME_ZONE_CODE
+      description: Timezone of the scheduled report.
+    - contextPath: Qualys.Report.SCHEDULE.TIME_ZONE.TIME_ZONE_DETAILS
+      description: Timezone details of the scheduled report.
+    description: Get list of scheduled reports
+  - name: qualys-report-template-list
+    arguments:
+    - name: limit
+      description: Specify a positive numeric value to limit the amount of results
+        in the requested list
+    outputs:
+    - contextPath: Qualys.ReportTemplate.ID
+      description: Report template ID.
+    - contextPath: Qualys.ReportTemplate.TYPE
+      description: Report type.
+    - contextPath: Qualys.ReportTemplate.TITLE
+      description: Report template title.
+    - contextPath: Qualys.ReportTemplate.LAST_UPDATE
+      description: Last update time.
+    - contextPath: Qualys.ReportTemplate.GLOBAL
+      description: Report template global.
+    - contextPath: Qualys.ReportTemplate.DEFAULT
+      description: Report template default.
+    - contextPath: Qualys.ReportTemplate.USER.LOGIN
+      description: Last updated user login.
+    - contextPath: Qualys.ReportTemplate.USER.FIRSTNAME
+      description: Last updated user login first name.
+    - contextPath: Qualys.ReportTemplate.USER.LASTNAME
+      description: Last updated user login last name.
+    - contextPath: Qualys.ReportTemplate.TEMPLATE_TYPE
+      description: Type of report template.
+    description: get list of report template for user
+  - name: qualys-vulnerability-list
+    arguments:
+    - name: details
+      auto: PREDEFINED
+      predefined:
+      - Basic
+      - All
+      - None
+      description: 'Show the requested amount of information for each vulnerability
+        in the XML output. A valid value is: Basic (default), All, or None. Basic
+        includes basic elements plus CVSS Base and Temporal scores. All includes all
+        vulnerability details, including the Basic details.'
+    - name: ids
+      description: Used to filter the XML output to include only vulnerabilities that
+        have QID numbers matching the QID numbers you specify.
+    - name: id_min
+      description: Used to filter the XML output to show only vulnerabilities that
+        have a QID number greater than or equal to a QID number you specify.
+    - name: id_max
+      description: Used to filter the XML output to show only vulnerabilities that
+        have a QID number less than or equal to a QID number you specify.
+    - name: is_patchable
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      description: Used to filter the XML output to show only vulnerabilities that
+        are patchable or not patchable. A vulnerability is considered patchable when
+        a patch exists for it. When 1 is specified, only vulnerabilities that are
+        patchable will be included in the output. When 0 is specified, only vulnerabilities
+        that are not patchable will be included in the output. When unspecified, patchable
+        and unpatchable vulnerabilities will be included in the output.
+    - name: last_modified_after
+      description: Used to filter the XML output to show only vulnerabilities last
+        modified after a certain date and time. When specified vulnerabilities last
+        modified by a user or by the service will be shown. use YYYY-MM-DD[THH:MM:SSZ]
+        like “2007-07-01” or “2007-01-25T23:12:00Z” or today, yesterday, 24hr ago,
+        3 days ago, last week.
+    - name: last_modified_before
+      description: Used to filter the XML output to show only vulnerabilities last
+        modified before a certain date and time. When specified vulnerabilities last
+        modified by a user or by the service will be shown. use YYYY-MM-DD[THH:MM:SSZ]
+        like “2007-07-01” or “2007-01-25T23:12:00Z” or today, yesterday, 24hr ago,
+        3 days ago, last week.
+    - name: last_modified_by_user_after
+      description: 'Used to filter the XML output to show only vulnerabilities last
+        modified by a user after a certain date and time. use YYYY-MM-DD[THH:MM:SSZ]
+        like “2007-07-01” or “2007-01-25T23:12:00Z” or today, yesterday, 24hr ago,
+        3 days ago, last week.'
+    - name: last_modified_by_user_before
+      description: Used to filter the XML output to show only vulnerabilities last
+        modified by a user before a certain date and time. use YYYY-MM-DD[THH:MM:SSZ]
+        like “2007-07-01” or “2007-01-25T23:12:00Z” or today, yesterday, 24hr ago,
+        3 days ago, last week.
+    - name: last_modified_by_service_after
+      description: Used to filter the XML output to show only vulnerabilities last
+        modified by the service after a certain date and time. use YYYY-MM-DD[THH:MM:SSZ]
+        like “2007-07-01” or “2007-01-25T23:12:00Z” or today, yesterday, 24hr ago,
+        3 days ago, last week.
+    - name: last_modified_by_service_before
+      description: Used to filter the XML output to show only vulnerabilities last
+        modified by the service before a certain date and time. use YYYY-MM-DD[THH:MM:SSZ]
+        like “2007-07-01” or “2007-01-25T23:12:00Z” or today, yesterday, 24hr ago,
+        3 days ago, last week.
+    - name: published_after
+      description: Used to filter the XML output to show only vulnerabilities published
+        after a certain date and time. use YYYY-MM-DD[THH:MM:SSZ] like “2007-07-01”
+        or “2007-01-25T23:12:00Z” or today, yesterday, 24hr ago, 3 days ago, last
+        week.
+    - name: published_before
+      description: Used to filter the XML output to show only vulnerabilities published
+        before a certain date and time. use YYYY-MM-DD[THH:MM:SSZ] like “2007-07-01”
+        or “2007-01-25T23:12:00Z” or today, yesterday, 24hr ago, 3 days ago, last
+        week.
+    - name: discovery_method
+      auto: PREDEFINED
+      predefined:
+      - Remote
+      - Authenticated
+      - RemoteOnly
+      - AuthenticatedOnly
+      - RemoteAndAuthenticated
+      description: ' (Optional) Used to filter the XML output to show only vulnerabilities
+        assigned a certain discovery method. A valid value is: Remote, Authenticated,
+        RemoteOnly, AuthenticatedOnly, or RemoteAndAuthenticated.'
+    - name: discovery_auth_types
+      description: 'Used to filter the XML output to show only vulnerabilities having
+        one or more authentication types. A valid value is: Windows, Oracle, Unix
+        or SNMP. Multiple values are entered as a comma-separated list.'
+    - name: show_pci_reasons
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      description: Used to filter the XML output to show reasons for passing or failing
+        PCI compliance (when the CVSS Scoring feature is turned on in the user’s subscription).
+        Specify 1 to view the reasons in the XML output. When unspecified, the reasons
+        are not included in the XML output.
+    - name: show_supported_modules_info
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      description: Used to filter the XML output to show Qualys modules that can be
+        used to detect each vulnerability. Specify 1 to view supported modules in
+        the XML output. When unspecified, supported modules are not included in the
+        XML output.
+    - name: show_disabled_flag
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      description: Specify 1 to include the disabled flag for each vulnerability in
+        the XML output.
+    - name: show_qid_change_log
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      description: Specify 1 to include QID changes for each vulnerability in the
+        XML output.
+    - name: limit
+      description: Specify a positive numeric value to limit the amount of results
+        in the requested list
+    outputs:
+    - contextPath: Qualys.Vulnerability.List.QID
+      description: Vulnerability QID.
+    - contextPath: Qualys.Vulnerability.List.PATCHABLE
+      description: Is Vulnerability patchable.
+    - contextPath: Qualys.Vulnerability.List.SEVERITY_LEVEL
+      description: Severity level of the Vulnerability.
+    - contextPath: Qualys.Vulnerability.List.CONSEQUENCE
+      description: Consequence of the Vulnerability.
+    - contextPath: Qualys.Vulnerability.List.VENDOR_REFERENCE_LIST.VENDOR_REFERENCE.ID
+      description: ID of the vendor.
+    - contextPath: Qualys.Vulnerability.List.VENDOR_REFERENCE_LIST.VENDOR_REFERENCE.URL
+      description: URL of the vendor.
+    - contextPath: Qualys.Vulnerability.List.LAST_SERVICE_MODIFICATION_DATETIME
+      description: Date of the last service modification.
+    - contextPath: Qualys.Vulnerability.List.CVE_LIST.CVE.ID
+      description: CVE ID.
+    - contextPath: Qualys.Vulnerability.List.CVE_LIST.CVE.URL
+      description: CVE URL.
+    - contextPath: Qualys.Vulnerability.List.PUBLISHED_DATETIME
+      description: Published date.
+    - contextPath: Qualys.Vulnerability.List.DISCOVERY.ADDITIONAL_INFO
+      description: Additional info.
+    - contextPath: Qualys.Vulnerability.List.DISCOVERY.AUTH_TYPE_LIST.AUTH_TYPE
+      description: Discovery Authentication type.
+    - contextPath: Qualys.Vulnerability.List.DISCOVERY.REMOTE
+      description: Is discovery remote.
+    - contextPath: Qualys.Vulnerability.List.DIAGNOSIS
+      description: Diagnosis of vulnerability.
+    - contextPath: Qualys.Vulnerability.List.PCI_FLAG
+      description: PCI flag.
+    - contextPath: Qualys.Vulnerability.List.SOFTWARE_LIST.SOFTWARE.PRODUCT
+      description: Product name.
+    - contextPath: Qualys.Vulnerability.List.SOFTWARE_LIST.SOFTWARE.VENDOR
+      description: Vendor of the product.
+    - contextPath: Qualys.Vulnerability.List.VULN_TYPE
+      description: Type of the vulnerability.
+    - contextPath: Qualys.Vulnerability.List.TITLE
+      description: Title of the vulnerability.
+    - contextPath: Qualys.Vulnerability.List.SOLUTION
+      description: Solution for the vulnerability.
+    - contextPath: Qualys.Vulnerability.List.CATEGORY
+      description: Category of the vulnerability.
+    description: download a list of vulnerabilities from Qualys’ KnowledgeBase
+  - name: qualys-group-list
+    arguments:
+    - name: ids
+      description: 'Show only asset groups with certain IDs. Multiple IDs are comma
+        separated.'
+    - name: id_min
+      description: Show only asset groups with certain IDs. Multiple IDs are comma
+        separated.
+    - name: id_max
+      description: Show only asset groups that have an ID less than or equal to the
+        specified ID.
+    - name: truncation_limit
+      description: Specify the maximum number of asset group records to output. By
+        default this is set to 1000 records. If you specify truncation_limit=0, the
+        output is not paginated and all records are returned in a single output
+    - name: network_ids
+      description: Optional and valid only when the Networks feature is enabled in
+        your account) Restrict the request to certain network IDs. Multiple IDs are
+        comma separated.
+    - name: unit_id
+      description: Show only asset groups that have a business unit ID equal to the
+        specified ID.
+    - name: user_id
+      description: Show only asset groups that have a user ID equal to the specified
+        ID.
+    - name: title
+      description: ' Show only the asset group that has a title equal to the specified
+        string - this must be an exact match.'
+    - name: show_attributes
+      description: 'Show attributes for each asset group along with the ID. Your options
+        are: None, All or a comma-separated list of attribute names: ID, TITLE, OWNER_USER_NAME,
+        OWNER_USER_ID, OWNER_UNIT_ID, NETWORK_IDS, LAST_UPDATE, IP_SET, APPLIANCE_LIST,
+        DOMAIN_LIST, DNS_LIST, NETBIOS_LIST, EC2_ID_LIST, HOST_IDS, ASSIGNED_USER_IDS,
+        ASSIGNED_UNIT_IDS, BUSINESS_IMPACT, CVSS, COMMENTS.'
+    - name: limit
+      description: Specify a positive numeric value to limit the amount of results
+        in the requested list
+    outputs:
+    - contextPath: Qualys.AssetGroup.ID
+      description: Asset Group ID.
+    - contextPath: Qualys.AssetGroup.TITLE
+      description: Asset Group title.
+    - contextPath: Qualys.AssetGroup.OWNER_ID
+      description: Asset Group owner ID.
+    - contextPath: Qualys.AssetGroup.UNIT_ID
+      description: Asset Group unit ID.
+    - contextPath: Qualys.AssetGroup.NETWORK_ID
+      description: Asset Group network ID.
+    - contextPath: Qualys.AssetGroup.IP_SET.IP
+      description: IP in the asset group.
+    - contextPath: Qualys.AssetGroup.IP_SET.IP_RANGE
+      description: Asset Group IP range.
+    - contextPath: Qualys.AssetGroup.APPLIANCE_IDS
+      description: Appliance IDs of the asset group.
+    - contextPath: Qualys.AssetGroup.DEFAULT_APPLIANCE_ID
+      description: Default appliance IDs of the asset group.
+    description: Get account asset groups
+  - name: qualys-report-fetch
+    arguments:
+    - name: id
+      required: true
+      description: Report ID of a saved report that you want to download.
+    - name: file_format
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - pdf
+      - html
+      - mht
+      - xml
+      - csv
+      - docx
+      - online
+      description: Type of the file of the report. Can be checked by calling the qualys-report-list
+        command
+    outputs:
+    - contextPath: InfoFile.Name
+      description: The file name.
+    - contextPath: InfoFile.EntryID
+      description: The ID for locating the file in the War Room.
+    - contextPath: InfoFile.Size
+      description: The size of the file (in bytes).
+    - contextPath: InfoFile.Type
+      description: The file type, as determined by libmagic (same as displayed in
+        file entries).
+    - contextPath: InfoFile.Extension
+      description: The file extension.
+    - contextPath: InfoFile.Info
+      description: Basic information about the file.
+    description: Download report
+  - name: qualys-vm-scan-fetch
+    arguments:
+    - name: scan_ref
+      required: true
+      description: 'The scan reference for a vulnerability scan. This will have the
+        format: scan/nnnnnnnnnn.nnnnn'
+    - name: ips
+      description: 'Show only certain IP addresses/ranges in the scan results. One
+        or more IPs/ranges may be specified. A range entry is specified using a hyphen
+        (for example, 10.10.10.1-10.10.10.20). Multiple entries are comma separated.    '
+    - name: mode
+      auto: PREDEFINED
+      predefined:
+      - brief
+      - extended
+      description: 'The verbosity of the scan results details. One verbosity mode
+        may be specified: brief (the default) or extended. The brief output includes
+        this information: IP address, DNS hostname, NetBIOS hostname, QID and scan
+        test results if applicable. The extended output includes the brief output
+        plus this extended information: protocol, port, an SSL flag (“yes” is returned
+        when SSL was used for the detection, “no” is returned when SSL was not used),
+        and FQDN if applicable.'
+    - name: client_id
+      description: Id assigned to the client (Consultant type subscription only).
+        Parameter client_id or client_name may be specified for the same request.
+    - name: client_name
+      description: Name of the client (Consultant type subscription only). Parameter
+        client_id or client_name may be specified for the same request.
+    outputs:
+    - contextPath: Qualys.VM.Dns
+      description: Scanned device DNS.
+    - contextPath: Qualys.VM.Instance
+      description: Scanned device instance.
+    - contextPath: Qualys.VM.IP
+      description: Scanned device IP address.
+    - contextPath: Qualys.VM.Netbios
+      description: Scanned device Netbios.
+    - contextPath: Qualys.VM.QID
+      description: Qualys ID for vulnerabilities.
+    - contextPath: Qualys.VM.Result
+      description: Scan result.
+    description: Download scan results when scan has status Finished, Canceled, Paused
+      or Error
+  - name: qualys-pc-scan-fetch
+    arguments:
+    - name: scan_ref
+      required: true
+      description: 'The scan reference for a compliance scan. This will have the format:
+        compliance/nnnnnnnnnn.nnnnn'
+    outputs:
+    - contextPath: Qualys.PC.USERNAME
+      description: The user who executed the scan.
+    - contextPath: Qualys.PC.COMPANY
+      description: The company of the user who executed the scan.
+    - contextPath: Qualys.PC.USERNAME
+      description: The user who executed the scan.
+    - contextPath: Qualys.PC.DATE
+      description: The date of the scan.
+    - contextPath: Qualys.PC.TITLE
+      description: The scan title.
+    - contextPath: Qualys.PC.TARGET
+      description: IP’s which were scanned.
+    - contextPath: Qualys.PC.EXCLUDED_TARGET
+      description: IP’s which were excluded from the scan.
+    - contextPath: Qualys.PC.DURATION
+      description: The duration of the scan.
+    - contextPath: Qualys.PC.NBHOST_ALIVE
+      description: Number of hosts that are available during the scan.
+    - contextPath: Qualys.PC.NBHOST_TOTAL
+      description: Total number of hosts that were submitted to scan.
+    - contextPath: Qualys.PC.REPORT_TYPE
+      description: Type of the report.
+    - contextPath: Qualys.PC.OPTIONS
+      description: Scan option profile.
+    - contextPath: Qualys.PC.STATUS
+      description: Status of the scan.
+    description: fetch scan results for a scan
+  - name: qualys-report-cancel
+    arguments:
+    - name: id
+      required: true
+      description: Report ID
+    outputs:
+    - contextPath: Qualys.Report.ID
+      description: ID of the canceled report
+    description: Cancel running report
+    execution: true
+  - name: qualys-report-delete
+    arguments:
+    - name: id
+      required: true
+      description: (Required) The report ID you want to take action on.
+    outputs:
+    - contextPath: Qualys.Report.ID
+      description: Deleted Report ID
+    description: Delete a saved report in the user’s Report Share
+    execution: true
+  - name: qualys-scorecard-launch
+    arguments:
+    - name: name
+      required: true
+      description: Scorecard name for the vulnerability scorecard report
+    - name: report_title
+      description: User-defined report title
+    - name: output_format
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - pdf
+      - html
+      - mht
+      - xml
+      - csv
+      description: Output format of the report. One output format may be specified.
+      defaultValue: xml
+    - name: source
+      required: true
+      description: The source asset groups for the report
+    - name: hide_header
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      - "0"
+      description: (Valid for CSV format report only). Specify hide_header=1 to omit
+        the header information from the report.
+    - name: pdf_password
+      description: The password to be used for encryption.
+    - name: recipient_group
+      description: The report recipients in the form of one or more distribution groups
+    - name: recipient_group_id
+      description: Specify users who will receive the email notification when the
+        report is complete
+    - name: asset_groups
+      description: The titles of asset groups to be used as source asset groups for
+        the scorecard report.
+    - name: all_asset_groups
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      description: et to 1 to select all asset groups available in your account as
+        the source asset groups for the scorecard report.
+    - name: business_unit
+      description: The title of a business unit containing the source asset groups.
+    - name: division
+      description: A business info tag identifying a division that asset group(s)
+        belong to.
+    - name: function
+      description: A business info tag identifying a business function for asset group(s).
+    - name: location
+      description: A business info tag identifying a location where asset group(s)
+        are located.
+    - name: patch_qids
+      description: Up to 10 QIDs for vulnerabilities or potential vulnerabilities
+        with available patches. Multiple QIDs are comma separated.
+    - name: missing_qids
+      description: One or two QIDs for missing software. Two QIDs are comma separated.
+    outputs:
+    - contextPath: Qualys.Report.ID
+      description: Report ID.
+    description: Launch a vulnerability scorecard report
+    execution: true
+  - name: qualys-vm-scan-launch
+    arguments:
+    - name: scan_title
+      description: The scan title. This can be a maximum of 2000 characters (ascii).
+    - name: target_from
+      auto: PREDEFINED
+      predefined:
+      - assets
+      - tags
+      description: Specify “assets” (the default) when your scan target will include
+        IP addresses/ranges and/or asset groups. Specify “tags” when your scan target
+        will include asset tags.
+    - name: ip
+      description: 'The IP addresses to be scanned. You may enter individual IP addresses
+        and/or ranges. Multiple entries are comma separated. One of these parameters
+        is required: ip, asset_groups or asset_group_ids.'
+    - name: asset_groups
+      description: 'The titles of asset groups containing the hosts to be scanned.
+        Multiple titles are comma separated. One of these parameters is required:
+        ip, asset_groups or asset_group_ids.'
+    - name: asset_group_ids
+      description: 'The IDs of asset groups containing the hosts to be scanned. Multiple
+        IDs are comma separated. One of these parameters is required: ip, asset_groups
+        or asset_group_ids.'
+    - name: exclude_ip_per_scan
+      description: The IP addresses to be excluded from the scan when the scan target
+        is specified as IP addresses (not asset tags). You may enter individual IP
+        addresses and/or ranges. Multiple entries are comma separated.
+    - name: tag_include_selector
+      auto: PREDEFINED
+      predefined:
+      - all
+      - any
+      description: ' Select “any” (the default) to include hosts that match at least
+        one of the selected tags. Select “all” to include hosts that match all of
+        the selected tags.'
+    - name: tag_exclude_selector
+      auto: PREDEFINED
+      predefined:
+      - all
+      - any
+      description: Select “any” (the default) to exclude hosts that match at least
+        one of the selected tags. Select “all” to exclude hosts that match all of
+        the selected tags.
+    - name: tag_set_by
+      auto: PREDEFINED
+      predefined:
+      - id
+      - name
+      description: Specify “id” (the default) to select a tag set by providing tag
+        IDs. Specify “name” to select a tag set by providing tag names.
+    - name: tag_set_include
+      description: Specify a tag set to include. Hosts that match these tags will
+        be included. You identify the tag set by providing tag name or IDs. Multiple
+        entries are comma separated.
+    - name: tag_set_exclude
+      description: Specify a tag set to exclude. Hosts that match these tags will
+        be excluded. You identify the tag set by providing tag name or IDs. Multiple
+        entries are comma separated.
+    - name: use_ip_nt_range_tags_include
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      description: Specify “0” (the default) to select from all tags (tags with any
+        tag rule). Specify “1” to scan all IP addresses defined in tag selection.
+        When this is specified, only tags with the dynamic IP address rule called
+        “IP address in Network Range(s)” can be selected. valid only when target_from=tags
+        is specified.
+    - name: use_ip_nt_range_tags_exclude
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      description: Specify “0” (the default) to select from all tags (tags with any
+        tag rule). Specify “1” to exclude all IP addresses defined in tag selection.
+        When this is specified, only tags with the dynamic IP address rule called
+        “IP address in Network Range(s)” can be selected.  valid only when target_from=tags
+        is specified.
+    - name: use_ip_nt_range_tags
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      description: Specify “0” (the default) to select from all tags (tags with any
+        tag rule). Specify “1” to scan all IP addresses defined in tags. When this
+        is specified, only tags with the dynamic IP address rule called “IP address
+        in Network Range(s)” can be selected.
+    - name: iscanner_id
+      description: "The IDs of the scanner appliances to be used. Multiple entries\
+        \ are comma separated. For an Express Lite user, Internal Scanning must be\
+        \ enabled in the user's account. One of these parameters must also be specified\
+        \ in a request: iscanner_name, iscanner_id, default_scanner, scanners_in_ag,\
+        \ scanners_in_tagset. When none of these are specified, External scanners\
+        \ are used. These parameters are mutually exclusive and cannot be specified\
+        \ in the same request: iscanner_id and iscanner_name."
+    - name: iscanner_name
+      description: Specifies the name of the Scanner Appliance for the map, when the
+        map target has private use internal IPs. Using Express Lite, Internal Scanning
+        must be enabled in your account.
+    - name: default_scanner
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      description: Specify 1 to use the default scanner in each target asset group.
+        For an Express Lite user, Internal Scanning must be enabled in the user’s
+        account.
+    - name: scanners_in_ag
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      description: Specify 1 to distribute the scan to the target asset groups’ scanner
+        appliances. Appliances in each asset group are tasked with scanning the IPs
+        in the group. By default up to 5 appliances per group will be used and this
+        can be configured for your account (please contact your Account Manager or
+        Support). For an Express Lite user, Internal Scanning must be enabled in the
+        user’s account.
+    - name: scanners_in_tagset
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      description: "Specify 1 to distribute the scan to scanner appliances that match\
+        \ the asset tags specified for the scan target. One of these parameters must\
+        \ be specified in a request for an internal scan: iscanner_name, iscanner_id,\
+        \ default_scanner, scanners_in_ag, scanners_in_tagset. When none of these\
+        \ are specified, External scanners are used. valid when the target_from=tags\
+        \ is specified."
+    - name: scanners_in_network
+      description: Specify 1 to distribute the scan to all scanner appliances in the
+        network.
+    - name: option_title
+      description: 'The title of the compliance option profile to be used. One of
+        these parameters must be specified in a request: option_title or option_id.
+        These are mutually exclusive and cannot be specified in the same request.'
+    - name: option_id
+      description: 'The ID of the compliance option profile to be used. One of these
+        parameters must be specified in a request: option_title or option_id. These
+        are mutually exclusive and cannot be specified in the same request.'
+    - name: priority
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      - "2"
+      - "3"
+      - "4"
+      - "5"
+      - "6"
+      - "7"
+      - "8"
+      - "9"
+      description: Specify a value of 0 - 9 to set a processing priority level for
+        the scan. When not specified, a value of 0 (no priority) is used. 0 = No Priority
+        (the default), 1 = Emergency, 2 = Ultimate, 3 = Critical, 4 = Major, 5 = High,
+        6 = Standard, 7 = Medium, 8 = Minor, 9 = Low
+    - name: connector_name
+      description: (Required for EC2 scan) The name of the EC2 connector for the AWS
+        integration you want to run the scan on.
+    - name: ec2_endpoint
+      description: (Required for EC2 scan) The EC2 region code or the ID of the Virtual
+        Private Cloud (VPC) zone.
+    - name: ec2_instance_ids
+      description: The ID of the EC2 instance on which you want to launch the VM or
+        compliance scan. Multiple ec2 instance ids are comma separated. You can add
+        up to maximum 10 instance Ids.
+    - name: ip_network_id
+      description: The ID of a network used to filter the IPs/ranges specified in
+        the“ip” parameter. Set to a custom network ID (note this does not filter IPs/ranges
+        specified in “asset_groups” or “asset_group_ids”). Or set to “0” (the default)
+        for the Global Default Network - this is used to scan hosts outside of your
+        custom networks.
+    - name: runtime_http_header
+      description: Set a custom value in order to drop defenses (such as logging,
+        IPs, etc) when an authorized scan is being run. The value you enter will be
+        used in the “Qualys-Scan:” header that will be set for many CGI and web application
+        fingerprinting checks. Some discovery and web server fingerprinting checks
+        will not use this header.
+    - name: scan_type
+      auto: PREDEFINED
+      predefined:
+      - certview
+      description: Launch a CertView type scan. This option will be supported when
+        CertView GA is released and enabled for your account.
+    - name: fqdn
+      description: The target FQDN for a vulnerability scan. You must specify at least
+        one target i.e. IPs, asset groups or FQDNs. Multiple values are comma separated.
+    - name: client_id
+      description: Id assigned to the client (Consultant type subscription only).
+        Parameter client_id or client_name may be specified for the same request.
+    - name: client_name
+      description: Name of the client (Consultant type subscriptions  only). Parameter
+        client_id or client_name may be specified for the same request.
+    - name: include_agent_targets
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      description: Specify 1 when your scan target includes agent hosts. This lets
+        you scan private IPs where agents are installed when these IPs are not in
+        your VM/PC license.
+    outputs:
+    - contextPath: Qualys.Report.VM.Launched.KEY
+      description: Key name of launched VM scan, either ID or a REFERENCE.
+    - contextPath: Qualys.Report.VM.Launched.VALUE
+      description: Value of the key.
+    description: ' launch vulnerability scans in the user’s account.'
+  - name: qualys-vm-scan-action
+    arguments:
+    - name: action
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - cancel
+      - pause
+      - resume
+      - delete
+      description: One action required for the request
+    - name: scan_ref
+      required: true
+      description: 'The scan reference for a vulnerability scan. This will have the
+        format: scan/nnnnnnnnnn.nnnnn'
+    description: allows users to take actions on vulnerability scans in their account,
+      like cancel, pause, resume, delete and fetch completed scan results
+    execution: true
+  - name: qualys-pc-scan-manage
+    arguments:
+    - name: action
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - cancel
+      - pause
+      - resume
+      - delete
+      description: One action required for the request
+    - name: scan_ref
+      required: true
+      description: ' The scan reference for a compliance scan. This will have the
+        format: compliance/nnnnnnnnnn.nnnnn'
+    outputs:
+    - contextPath: Qualys.Scan.KEY
+      description: Key name, either ID or REFERENCE.
+    - contextPath: Qualys.Scan.VALUE
+      description: Value of either ID or REFERENCE.
+    description: Allows users to take actions on compliance scans in their account,
+      like cancel, pause, resume, delete and fetch completed scan results.
+  - name: qualys-pc-scan-launch
+    arguments:
+    - name: scan_title
+      description: The scan title. This can be a maximum of 2000 characters (ascii).
+    - name: option_id
+      description: ' The ID of the compliance option profile to be used. One of these
+        parameters must be specified in a request: option_title or option_id. These
+        are mutually exclusive and cannot be specified in the same request.'
+    - name: option_title
+      description: 'The title of the compliance option profile to be used. One of
+        these parameters must be specified in a request: option_title or option_id.
+        These are mutually exclusive and cannot be specified in the same request.'
+    - name: ip
+      description: ' The IP addresses to be scanned. You may enter individual IP addresses
+        and/or ranges. Multiple entries are comma separated. One of these parameters
+        is required: ip, asset_groups or asset_group_ids.'
+    - name: asset_group_ids
+      description: 'The IDs of asset groups containing the hosts to be scanned. Multiple
+        IDs are comma separated. One of these parameters is required: ip, asset_groups
+        or asset_group_ids.'
+    - name: asset_groups
+      description: 'The titles of asset groups containing the hosts to be scanned.
+        Multiple titles are comma separated. One of these parameters is required:
+        ip, asset_groups or asset_group_ids.'
+    - name: exclude_ip_per_scan
+      description: The IP addresses to be excluded from the scan when the scan target
+        is specified as IP addresses (not asset tags). You may enter individual IP
+        addresses and/or ranges. Multiple entries are comma separated.
+    - name: default_scanner
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      description: Specify 1 to use the default scanner in each target asset group.
+        For an Express Lite user, Internal Scanning must be enabled in the user’s
+        account.
+    - name: scanners_in_ag
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      description: Specify 1 to distribute the scan to the target asset groups’ scanner
+        appliances. Appliances in each asset group are tasked with scanning the IPs
+        in the group. By default up to 5 appliances per group will be used and this
+        can be configured for your account (please contact your Account Manager or
+        Support). For an Express Lite user, Internal Scanning must be enabled in the
+        user’s account.
+    - name: target_from
+      auto: PREDEFINED
+      predefined:
+      - assets
+      - tags
+      description: Specify “assets” (the default) when your scan target will include
+        IP addresses/ranges and/or asset groups. Specify “tags” when your scan target
+        will include asset tags.
+    - name: tag_include_selector
+      auto: PREDEFINED
+      predefined:
+      - all
+      - any
+      description: ' Select “any” (the default) to include hosts that match at least
+        one of the selected tags. Select “all” to include hosts that match all of
+        the selected tags.'
+    - name: tag_exclude_selector
+      auto: PREDEFINED
+      predefined:
+      - all
+      - any
+      description: Select “any” (the default) to exclude hosts that match at least
+        one of the selected tags. Select “all” to exclude hosts that match all of
+        the selected tags.
+    - name: tag_set_by
+      auto: PREDEFINED
+      predefined:
+      - id
+      - name
+      description: Specify “id” (the default) to select a tag set by providing tag
+        IDs. Specify “name” to select a tag set by providing tag names.
+    - name: tag_set_include
+      description: Specify a tag set to include. Hosts that match these tags will
+        be included. You identify the tag set by providing tag name or IDs. Multiple
+        entries are comma separated.
+    - name: tag_set_exclude
+      description: Specify a tag set to exclude. Hosts that match these tags will
+        be excluded. You identify the tag set by providing tag name or IDs. Multiple
+        entries are comma separated.
+    - name: use_ip_nt_range_tags
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      description: Specify “0” (the default) to select from all tags (tags with any
+        tag rule). Specify “1” to scan all IP addresses defined in tags. When this
+        is specified, only tags with the dynamic IP address rule called “IP address
+        in Network Range(s)” can be selected.
+    - name: ip_network_id
+      description: The ID of a network used to filter the IPs/ranges specified in
+        the“ip” parameter. Set to a custom network ID (note this does not filter IPs/ranges
+        specified in “asset_groups” or “asset_group_ids”). Or set to “0” (the default)
+        for the Global Default Network - this is used to scan hosts outside of your
+        custom networks.
+    - name: runtime_http_header
+      description: Set a custom value in order to drop defenses (such as logging,
+        IPs, etc) when an authorized scan is being run. The value you enter will be
+        used in the “Qualys-Scan:” header that will be set for many CGI and web application
+        fingerprinting checks. Some discovery and web server fingerprinting checks
+        will not use this header.
+    - name: iscanner_name
+      description: Specifies the name of the Scanner Appliance for the map, when the
+        map target has private use internal IPs. Using Express Lite, Internal Scanning
+        must be enabled in your account.
+    outputs:
+    - contextPath: Qualys.Scan.KEY
+      description: Scan key, either ID or Reference
+    - contextPath: Qualys.Scan.VALUE
+      description: Scan value, either value of ID or Reference
+    description: launch compliance scans.
+    execution: true
+  - name: qualys-ip-add
+    arguments:
+    - name: ips
+      required: true
+      description: 'The hosts you want to add to the subscription. '
+    - name: tracking_method
+      auto: PREDEFINED
+      predefined:
+      - IP
+      - DNS
+      - NETBIOS
+      description: The tracking method is set to IP for IP address by default. To
+        use another tracking method specify DNS or NETBIOS.
+    - name: enable_vm
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      description: You must enable the hosts for the VM application (enable_vm=1)
+        or the PC application (enable_pc=1) or both VM and PC.
+      defaultValue: "0"
+    - name: enable_pc
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      description: You must enable the hosts for the VM application (enable_vm=1)
+        or the PC application (enable_pc=1) or both VM and PC.
+      defaultValue: "0"
+    - name: owner
+      description: The owner of the host asset(s). The owner must be a Manager or
+        a Unit Manager.
+    - name: ud1
+      description: Values for user-defined fields 1, 2 and 3. You can specify a maximum
+        of 128 characters
+    - name: ud2
+      description: Values for user-defined fields 1, 2 and 3. You can specify a maximum
+        of 128 characters
+    - name: ud3
+      description: Values for user-defined fields 1, 2 and 3. You can specify a maximum
+        of 128 characters
+    - name: comment
+      description: User-defined comments.
+    - name: ag_title
+      description: (Required if the request is being made by a Unit Manager; otherwise
+        invalid) The title of an asset group in the Unit Manager’s business unit that
+        the host(s) will be added to.
+    - name: enable_certview
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      description: Set to 1 to add IPs to your CertView license. By default IPs are
+        not added to your CertView license. This option will be supported when CertView
+        GA is released and is enabled for your account.
+    outputs:
+    - contextPath: Qualys.IP.Add.TEXT
+      description: Action result message.
+    - contextPath: Qualys.IP.Add.DATETIME
+      description: Date & time of the action.
+    description: Add IP addresses to the subscription.
+    execution: true
+  - name: qualys-ip-update
+    arguments:
+    - name: ips
+      required: true
+      description: ' The hosts within the subscription that you want to update.'
+    - name: network_id
+      description: (valid only when the Network Support feature is enabled for the
+        user's account) Restrict the request to a certain custom network by specifying
+        the network ID. When unspecified, we default to "0" for Global Default Network.
+    - name: host_dns
+      description: (Optional) The DNS hostname for the IP you want to update. A single
+        IP must be specified in the same request and the IP will only be updated if
+        it matches the hostname specified.
+    - name: host_netbios
+      description: (Optional) The NetBIOS hostname for the IP you want to update.
+        A single IP must be specified in the same request and the IP will only be
+        updated if it matches the hostname specified.
+    - name: tracking_method
+      auto: PREDEFINED
+      predefined:
+      - IP
+      - DNS
+      - NETBIOS
+      description: The tracking method is set to IP for IP address by default. To
+        use another tracking method specify DNS or NETBIOS.
+    - name: owner
+      description: The owner of the host asset(s). The owner must be a Manager or
+        a Unit Manager.
+    - name: ud1
+      description: Values for user-defined fields 1, 2 and 3. You can specify a maximum
+        of 128 characters
+    - name: ud2
+      description: Values for user-defined fields 1, 2 and 3. You can specify a maximum
+        of 128 characters
+    - name: ud3
+      description: Values for user-defined fields 1, 2 and 3. You can specify a maximum
+        of 128 characters
+    - name: comment
+      description: User-defined comments.
+    outputs:
+    - contextPath: Qualys.IP.Update.TEXT
+      description: Action result message.
+    - contextPath: Qualys.IP.Update.DATETIME
+      description: Date & time of the action.
+    description: gives you the ability to update IP addresses within the subscription.
+    execution: true
+  - name: qualys-host-excluded-manage
+    arguments:
+    - name: action
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - add
+      - remove
+      - remove_all
+      description: Select add/remove/remove_all ips
+    - name: comment
+      required: true
+      description: User-defined notes (up to 1024 characters).
+    - name: ips
+      description: 'The IP addresses to be added to the excluded IPs list. Enter a
+        comma separated list of IPv4 singletons or ranges. For example: 10.10.10.13,10.10.10.25-10.10.10.29'
+    - name: expiry_days
+      description: (Optional when action=add) The number of days the IPs being added
+        to the excluded IPs list will be considered valid for exclusion. When the
+        expiration is reached, the IPs are removed from the list and made available
+        again for scanning. When unspecified, the IPs being added have no expiration
+        and will remain on the list until removed by a user.
+    - name: dg_names
+      description: (Optional when action=add) Specify users who will be notified 7
+        days before hosts are removed from the excluded hosts list (i.e. supply distribution
+        group names as defined in the Qualys UI).
+    - name: network_id
+      description: Assign a network ID to the IPs being added to the excluded IPs
+        list. By default, the user’s default network ID is assigned.
+    outputs:
+    - contextPath: Qualys.Endpoint.KEY
+      description: Result of action requested.
+    - contextPath: Qualys.Endpoint
+      description: IPs action was made on.
+    description: Manage your excluded IPs list using the Excluded IP. The IPs in your
+      excluded IPs list will not be scanned.
+    execution: true
+  - name: qualys-scheduled-report-launch
+    arguments:
+    - name: id
+      required: true
+      description: Scheduled report ID. Can be found by running the command qualys-scheduled-report-list.
+    outputs:
+    - contextPath: Qualys.Report.ID
+      description: Launched Report ID
+    description: Launch a scheduled report now
+    execution: true
+  - name: qualys-report-launch-map
+    arguments:
+    - name: template_id
+      required: true
+      description: The template ID of the report you want to launch. Can be found
+        by running the command qualys-report-template-list.
+    - name: report_refs
+      required: true
+      description: Specifies the map references (1 or 2) to include. A map reference
+        starts with the string "map/" followed by a reference ID number. When two
+        map references are given, the report compares map results. Two map references
+        are comma separated.
+    - name: output_format
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - pdf
+      - html
+      - mht
+      - xml
+      - csv
+      description: One output format may be specified
+    - name: domain
+      required: true
+      description: Specifies the target domain for the map report. Include the domain
+        name only; do not enter "www." at the start of the domain name. When the special
+        “none” domain is specified as a parameter value, the ip_restriction parameter
+        is required.
+    - name: report_title
+      description: A user-defined report title. The title may have a maximum of 128
+        characters. For a PCI compliance report, the report title is provided by Qualys
+        and cannot be changed.
+    - name: hide_header
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      description: (Valid for CSV format report only). Specify hide_header=1 to omit
+        the header information from the report. By default this information is included.
+    - name: pdf_password
+      description: (Required for secure PDF distribution, Manager or Unit Manager
+        only) Used for secure PDF report distribution when this feature is enabled
+        in the user's account (under Reports > Setup > Report Share). The password
+        to be used for encryption. - the password must have a minimum of 8 characters
+        (ascii), and a maximum of 32 characters - the password must contain alpha
+        and numeric characters - the password cannot match the password for the user’s
+        Qualys account. - the password must follow the password security guidelines
+        defined for your subscription (under Users > Setup > Security)
+    - name: recipient_group
+      description: Used for secure PDF distribution. The report recipients in the
+        form of one or more distribution group names, as defined using the Qualys
+        UI. Multiple distribution groups are comma separated. A maximum of 50 distribution
+        groups may be entered.
+    - name: recipient_group_id
+      description: The report recipients in the form of one or more distribution group
+        IDs. Multiple distribution group IDs are comma separated. Where do I find
+        this ID? Log in to your Qualys account, go to Users > Distribution Groups
+        and select Info for a group in the list.
+    - name: ip_restriction
+      description: For a map report, specifies certain IPs/ranges to include in the
+        report. Multiple IPs and/or ranges are comma separated.
+    outputs:
+    - contextPath: Qualys.Report.ID
+      description: Launched Map Report ID
+    description: Launches a map report
+    execution: true
+  - name: qualys-report-launch-host-based-findings
+    description: Run host based findings report
+    arguments:
+    - name: template_id
+      required: true
+      description: The template ID of the report you want to launch. Can be found
+        by running the command qualys-report-template-list.
+    - name: output_format
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - pdf
+      - html
+      - mht
+      - xml
+      - csv
+      description: output format may be specified. When output_format=pdf is specified,
+        the Secure PDF Distribution may be used.
+    - name: report_title
+      description: A user-defined report title. The title may have a maximum of 128
+        characters. For a PCI compliance report, the report title is provided by Qualys
+        and cannot be changed.
+    - name: hide_header
+      description: (Valid for CSV format report only). Specify hide_header=1 to omit
+        the header information from the report. By default this information is included.
+    - name: recipient_group_id
+      description: Specify users who will receive the email notification when the
+        report is complete (i.e. supply a distribution group ID). Where do I find
+        this ID? Log in to your Qualys account, go to Users > Distribution Groups
+        and select Info for a group in the list.
+    - name: pdf_password
+      description: '(Optional; Required for secure PDF distribution) The password
+        to be used for encryption. Requirements: - the password must have a minimum
+        of 8 characters (ascii), and a maximum of 32 characters - the password must
+        contain alpha and numeric characters - the password cannot match the password
+        for the user’s Qualys account. - the password must follow the password security
+        guidelines defined for your subscription (log in and go to Subscription Setup—>Security
+        Options).'
+    - name: recipient_group
+      description: Optional; Optional for secure PDF distribution) The report recipients
+        in the form of one or more distribution groups, as defined using the Qualys
+        UI. Multiple distribution groups are comma separated. A maximum of 50 distribution
+        groups may be entered. Chapter 4 — Report API Launch Report  recipient_group={value}
+    - name: ips
+      description: Specify IPs/ranges to change (override) the report target, as defined
+        in the scan report template. Multiple IPs/ranges are comma separated. When
+        specified, hosts defined in the report template are not included in the report.
+        See also “Using Asset Tags.”
+    - name: asset_group_ids
+      description: Specify asset group IDs to change (override) the report target,
+        as defined in the scan report template. When specified, hosts defined in the
+        report template are not included in the report. Looking for asset group IDs?
+        Use the asset_group_list.php function (see the API v1 User Guide).
+    - name: ips_network_id
+      description: Optional, and valid only when the Network Support feature is enabled
+        for the user’s account) The ID of a network that is used to restrict the report’s
+        target to the IPs/ranges specified in the“ips” parameter. Set to a custom
+        network ID (note this does not filter IPs/ranges specified in “asset_group_ids”).
+        Or set to “0” (the default) for the Global Default Network - this is used
+        to report on hosts outside of your custom networks.
+    outputs:
+    - contextPath: Qualys.Report.ID
+      description: Report ID.
+    execution: true
+  - name: qualys-report-launch-scan-based-findings
+    arguments:
+    - name: template_id
+      required: true
+      description: The template ID of the report you want to launch. Can be found
+        by running qualys-report-template-list.
+    - name: output_format
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - pdf
+      - html
+      - mht
+      - xml
+      - csv
+      - docx
+      description: One output format may be specified. When output_format=pdf is specified,
+        the Secure PDF Distribution may be used.
+    - name: report_refs
+      required: true
+      description: (Required) This parameter specifies the scan references to include.
+        A scan reference starts with the string "scan/" followed by a reference ID
+        number. Multiple scan references are comma separated. Reference can be found
+        by running the command qualys-vm-scan-list.
+    - name: report_title
+      description: A user-defined report title. The title may have a maximum of 128
+        characters. For a PCI compliance report, the report title is provided by Qualys
+        and cannot be changed.
+    - name: hide_header
+      description: (Valid for CSV format report only). Specify hide_header=1 to omit
+        the header information from the report. By default this information is included.
+    - name: recipient_group_id
+      description: Specify users who will receive the email notification when the
+        report is complete (i.e. supply a distribution group ID). Where do I find
+        this ID? Log in to your Qualys account, go to Users > Distribution Groups
+        and select Info for a group in the list.
+    - name: pdf_password
+      description: '(Optional; Required for secure PDF distribution) The password
+        to be used for encryption. Requirements: - the password must have a minimum
+        of 8 characters (ascii), and a maximum of 32 characters - the password must
+        contain alpha and numeric characters - the password cannot match the password
+        for the user’s Qualys account. - the password must follow the password security
+        guidelines defined for your subscription (log in and go to Subscription Setup—>Security
+        Options).'
+    - name: recipient_group
+      description: Optional; Optional for secure PDF distribution) The report recipients
+        in the form of one or more distribution groups, as defined using the Qualys
+        UI. Multiple distribution groups are comma separated. A maximum of 50 distribution
+        groups may be entered. Chapter 4 — Report API Launch Report  recipient_group={value}
+    - name: ip_restriction
+      description: (Optional)  For a scan report, the report content will be restricted
+        to the specified IPs/ranges. Multiple IPs and/or ranges are comma separated.
+    outputs:
+    - contextPath: Qualys.Report.ID
+      description: Report ID.
+    description: launches a scan report including scan based findings
+  - name: qualys-report-launch-patch
+    description: Run patch report
+    arguments:
+    - name: template_id
+      required: true
+      description: The template ID of the report you want to launch. Can be found
+        by running the command qualys-report-template-list.
+    - name: output_format
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - pdf
+      - online
+      - xml
+      - csv
+      description: One output format may be specified. When output_format=pdf is specified,
+        the Secure PDF Distribution may be used.
+    - name: report_title
+      description: A user-defined report title. The title may have a maximum of 128
+        characters. For a PCI compliance report, the report title is provided by Qualys
+        and cannot be changed.
+    - name: hide_header
+      description: (Valid for CSV format report only). Specify hide_header=1 to omit
+        the header information from the report. By default this information is included.
+    - name: recipient_group_id
+      description: pecify users who will receive the email notification when the report
+        is complete (i.e. supply a distribution group ID). Where do I find this ID?
+        Log in to your Qualys account, go to Users > Distribution Groups and select
+        Info for a group in the list.
+    - name: pdf_password
+      description: '(Optional; Required for secure PDF distribution) The password
+        to be used for encryption. Requirements: - the password must have a minimum
+        of 8 characters (ascii), and a maximum of 32 characters - the password must
+        contain alpha and numeric characters - the password cannot match the password
+        for the user’s Qualys account. - the password must follow the password security
+        guidelines defined for your subscription (log in and go to Subscription Setup—>Security
+        Options).'
+    - name: recipient_group
+      description: Optional; Optional for secure PDF distribution) The report recipients
+        in the form of one or more distribution groups, as defined using the Qualys
+        UI. Multiple distribution groups are comma separated. A maximum of 50 distribution
+        groups may be entered. Chapter 4 — Report API Launch Report  recipient_group={value}
+    - name: ips
+      description: Specify IPs/ranges to change (override) the report target, as defined
+        in the patch report template. Multiple IPs/ranges are comma separated. When
+        specified, hosts defined in the report template are not included in the report.
+        See also “Using Asset Tags.”
+    - name: asset_group_ids
+      description: Specify IPs/ranges to change (override) the report target, as defined
+        in the patch report template. Multiple asset group IDs are comma separated.
+        When specified, hosts defined in the report template are not included in the
+        report. Looking for asset group IDs? Use the asset_group_list.php function
+        (see the API v1 User Guide).
+    outputs:
+    - contextPath: Qualys.Report.ID
+      description: Report ID.
+    execution: true
+  - name: qualys-report-launch-remediation
+    description: Run remediation report
+    arguments:
+    - name: template_id
+      required: true
+      description: The template ID of the report you want to launch. Can be found
+        by running qualys-report-template-list.
+    - name: output_format
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - pdf
+      - html
+      - mht
+      - csv
+      description: One output format may be specified. When output_format=pdf is specified,
+        the Secure PDF Distribution may be used.
+    - name: report_title
+      description: A user-defined report title. The title may have a maximum of 128
+        characters. For a PCI compliance report, the report title is provided by Qualys
+        and cannot be changed.
+    - name: hide_header
+      description: (Valid for CSV format report only). Specify hide_header=1 to omit
+        the header information from the report. By default this information is included.
+    - name: recipient_group_id
+      description: pecify users who will receive the email notification when the report
+        is complete (i.e. supply a distribution group ID). Where do I find this ID?
+        Log in to your Qualys account, go to Users > Distribution Groups and select
+        Info for a group in the list.
+    - name: pdf_password
+      description: '(Optional; Required for secure PDF distribution) The password
+        to be used for encryption. Requirements: - the password must have a minimum
+        of 8 characters (ascii), and a maximum of 32 characters - the password must
+        contain alpha and numeric characters - the password cannot match the password
+        for the user’s Qualys account. - the password must follow the password security
+        guidelines defined for your subscription (log in and go to Subscription Setup—>Security
+        Options).'
+    - name: recipient_group
+      description: Optional; Optional for secure PDF distribution) The report recipients
+        in the form of one or more distribution groups, as defined using the Qualys
+        UI. Multiple distribution groups are comma separated. A maximum of 50 distribution
+        groups may be entered. Chapter 4 — Report API Launch Report  recipient_group={value}
+    - name: ips
+      description: (Optional for remediation report) Specify IPs/ranges you want to
+        include in the report. Multiple IPs and/or ranges are comma separated.
+    - name: asset_group_ids
+      description: Specify asset group IDs that identify hosts you want to include
+        in the report. Multiple asset group IDs are comma separated. Looking for asset
+        group IDs? Use the asset_group_list.php function (in the API v1 User Guide).
+    - name: assignee_type
+      auto: PREDEFINED
+      predefined:
+      - User
+      - All
+      description: ' Specifies whether the report will include tickets assigned to
+        the current user, or all tickets in the user account. By default tickets assigned
+        to the current user are included. Valid values are: User (default) or All.'
+    outputs:
+    - contextPath: Qualys.Report.ID
+      description: Remediation Report ID
+    execution: true
+  - name: qualys-report-launch-compliance
+    description: Run compliance report
+    arguments:
+    - name: template_id
+      required: true
+      description: The template ID of the report you want to launch. Can be found
+        by running the command qualys-report-template-list
+    - name: report_title
+      description: A user-defined report title. The title may have a maximum of 128
+        characters. For a PCI compliance report, the report title is provided by Qualys
+        and cannot be changed.
+    - name: hide_header
+      description: (Valid for CSV format report only). Specify hide_header=1 to omit
+        the header information from the report. By default this information is included.
+    - name: recipient_group_id
+      description: Specify users who will receive the email notification when the
+        report is complete (i.e. supply a distribution group ID). Where do I find
+        this ID? Log in to your Qualys account, go to Users > Distribution Groups
+        and select Info for a group in the list.
+    - name: pdf_password
+      description: '(Optional; Required for secure PDF distribution) The password
+        to be used for encryption. Requirements: - the password must have a minimum
+        of 8 characters (ascii), and a maximum of 32 characters - the password must
+        contain alpha and numeric characters - the password cannot match the password
+        for the user’s Qualys account. - the password must follow the password security
+        guidelines defined for your subscription (log in and go to Subscription Setup—>Security
+        Options).'
+    - name: recipient_group
+      description: Optional; Optional for secure PDF distribution) The report recipients
+        in the form of one or more distribution groups, as defined using the Qualys
+        UI. Multiple distribution groups are comma separated. A maximum of 50 distribution
+        groups may be entered. Chapter 4 — Report API Launch Report  recipient_group={value}
+    - name: output_format
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - pdf
+      - html
+      - mht
+      description: 'One output format may be specified. When output_format=pdf is
+        specified, the Secure PDF Distribution may be used. '
+    - name: ips
+      description: (Optional for compliance report) For a compliance report (except
+        a PCI report), specify the IPs/ranges you want to include in the report. Multiple
+        IPs and/or ranges are comma separated.
+    - name: asset_group_ids
+      description: (Optional for compliance report) For a compliance report (except
+        a PCI report), specify asset groups IDs which identify hosts to include in
+        the report. Multiple asset group IDs are comma separated. Looking for asset
+        group IDs? Use the asset_group_list.php function (in the API v1 User Guide).
+    - name: report_refs
+      description: For a PCI compliance report, either the technical or executive
+        report, this parameter specifies the scan reference to include. A scan reference
+        starts with the string “scan/” followed by a reference ID number. The scan
+        reference must be for a scan that was run using the PCI Options profile. Only
+        one scan reference may be specified. Reference can be found by running the
+        command qualys-pc-scan-list.
+    outputs:
+    - contextPath: Qualys.Report.ID
+      description: Compliance Report ID
+    execution: true
+  - name: qualys-report-launch-compliance-policy
+    description: Run compliance policy report
+    arguments:
+    - name: template_id
+      required: true
+      description: The template ID of the report you want to launch. Can be found
+        by running the command qualys-report-template-list.
+    - name: report_title
+      description: A user-defined report title. The title may have a maximum of 128
+        characters. For a PCI compliance report, the report title is provided by Qualys
+        and cannot be changed.
+    - name: hide_header
+      description: (Valid for CSV format report only). Specify hide_header=1 to omit
+        the header information from the report. By default this information is included.
+    - name: recipient_group_id
+      description: Specify users who will receive the email notification when the
+        report is complete (i.e. supply a distribution group ID). Where do I find
+        this ID? Log in to your Qualys account, go to Users > Distribution Groups
+        and select Info for a group in the list.
+    - name: pdf_password
+      description: '(Optional; Required for secure PDF distribution) The password
+        to be used for encryption. Requirements: - the password must have a minimum
+        of 8 characters (ascii), and a maximum of 32 characters - the password must
+        contain alpha and numeric characters - the password cannot match the password
+        for the user’s Qualys account. - the password must follow the password security
+        guidelines defined for your subscription (log in and go to Subscription Setup—>Security
+        Options).'
+    - name: recipient_group
+      description: Optional; Optional for secure PDF distribution) The report recipients
+        in the form of one or more distribution groups, as defined using the Qualys
+        UI. Multiple distribution groups are comma separated. A maximum of 50 distribution
+        groups may be entered. Chapter 4 — Report API Launch Report  recipient_group={value}
+    - name: output_format
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - pdf
+      - html
+      - mht
+      - xml
+      - csv
+      description: 'One output format may be specified. When output_format=pdf is
+        specified, the Secure PDF Distribution may be used. '
+    - name: policy_id
+      required: true
+      description: Specifies the policy to run the report on. A valid policy ID must
+        be entered.
+    - name: asset_group_ids
+      description: Specify asset group IDS if you want to include only certain asset
+        groups in your report. These asset groups must be assigned to the policy you
+        are reporting on. Multiple asset group IDs are comma separated. Looking for
+        asset group IDs? Use the asset_group_list.php function (in the API v1 User
+        Guide).
+    - name: ips
+      description: Specify IPs/ranges if you want to include only certain IP addresses
+        in your report. These IPs must be assigned to the policy you’re reporting
+        on. Multiple entries are comma separated.
+    - name: host_id
+      description: ' In the policy report output, show only results for a single host
+        instance. Specify the ID for the host to include in the report. A valid host
+        ID must be entered.'
+    - name: instance_string
+      description: Specifies a single instance on the selected host. The instance
+        string may be “os” or a string like “oracle10:1:1521:ora10204u”.
+    outputs:
+    - contextPath: Qualys.Report.ID
+      description: Policy Report ID
+    execution: true
+  - name: qualys-ip-restricted-list
+    arguments:
+    - name: limit
+      description: Specify a positive numeric value to limit the amount of results
+        in the requested list
+    outputs:
+    - contextPath: Qualys.Restricted.Address
+      description: List of the restricted IPs.
+    - contextPath: Qualys.Restricted.Range
+      description: List of the restricted IPs.
+    description: Get the list of restricted IPs within the user's subscription.
+    execution: true
+  - name: qualys-ip-restricted-manage
+    arguments:
+    - name: action
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - activate
+      - clear
+      - add
+      - delete
+      - replace
+      description: activate - enable or disable the restricted IPs feature. clear
+        - clear all restricted IPs and de-active this feature. add - add restricted
+        IPs. delete - delete restricted IPs. replace - replace restricted IPs
+    - name: enable
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      description: Enable or disable the restricted IPs list. set enable=1 to enable
+        the list; set enable=0 to clear any IPs in the list and disable the feature.
+    - name: ips
+      description: The hosts you want to add to, remove from or replace in the restricted
+        IPs list. How to specify IP addresses. One or more IPs/ranges may be specified.
+        Multiple IPs/ranges are comma separated. An IP range is specified with a hyphen
+        (for example, 10.10.30.1-10.10.30.50).
+    outputs:
+    - contextPath: Qualys.Restricted.Manage.TEXT
+      description: Action result message.
+    - contextPath: Qualys.Restricted.Manage.DATETIME
+      description: Date & time of the action.
+    - contextPath: Qualys.Restricted.Manage.ITEM_LIST.ITEM.VALUE
+      description: Status of the restricted ips feature.
+    description: Get the list of restricted IPs within the user's subscription.
+    execution: true
+  dockerimage: demisto/python3:3.9.7.24076
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- QualysVulnerabilityManagement-Test
+fromversion: 5.5.0

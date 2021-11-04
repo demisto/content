@@ -1,8 +1,8 @@
 <!-- HTML_DOC -->
 <p>Unified password and session management for seamless accountability and control over privileged accounts. </p>
 <p>Each command is assigned a role. Users will not be able to run commands for which they are not assigned to the specific role for a command.</p>
-<h2>Fetch Incidents</h2>
-<p>For the fetch incidents function to work properly, you need to create a new asset, managed system, and managed account in BeyondTrust.</p>
+<h2>Fetch Credentials</h2>
+<p>For the fetch credentials function to work properly, you need to create a new asset, managed system, and managed account in BeyondTrust.</p>
 <ol>
 <li>In the BeyondTrust platform, create a new asset.</li>
 <li>Create a managed system.<br>The name of the system should be the name of the integration (service/platform) you want to use, which will make it easier to filter credentials.</li>
@@ -10,7 +10,7 @@
 </ol>
 <h2>Create a BeyondTrust API Key</h2>
 <p><span>To configure an integration instance, you need your BeyondTrust API key. The API key is generated after you configure an API Registration. For detailed instructions, see the </span><a href="https://www.beyondtrust.com/docs/archive/password-safe-beyondinsight/6-9/ps-admin-6-9-0.pdf" rel="nofollow">BeyondTrust Password Safe Admin Guide</a><span>.</span></p>
-<h2>Configure BeyondTrust Password Safe on Demisto</h2>
+<h2>Configure BeyondTrust Password Safe on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to<span> </span><strong>Settings</strong><span> </span>&gt;<span> </span><strong>Integrations</strong><span> </span>&gt;<span> </span><strong>Servers &amp; Services</strong>.</li>
 <li>Search for BeyondTrust Password Safe.</li>
@@ -30,7 +30,7 @@
 <li>Click<span> </span><strong>Test</strong><span> </span>to validate the URLs, token, and connection.</li>
 </ol>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <p>Each command is assigned a role. Users will not be able to run commands for which they are not assigned to the specific role for a command.</p>
 <ol>
 <li><a href="#h_87ed0533-b4aa-4acb-9b40-3f31ac7ff37c" target="_self">Get a list of managed accounts for the current user: beyondtrust-get-managed-accounts</a></li>

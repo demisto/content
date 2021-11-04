@@ -1298,10 +1298,8 @@ def get_ports_hr(ports: List[Dict[str, Any]]) -> str:
     """
     port_hr = [{
         'Port': port.get('port', ''),
-        'First Seen (GMT)': epochToTimestamp(port.get('firstSeen', '')) if port.get('firstSeen', '') else None
-        if port.get('firstSeen') else None,
-        'Last Seen (GMT)': epochToTimestamp(port.get('lastSeen', '')) if port.get('lastSeen', '') else None
-        if port.get('lastSeen') else None,
+        'First Seen (GMT)': epochToTimestamp(port.get('firstSeen', '')) if port.get('firstSeen') else None,
+        'Last Seen (GMT)': epochToTimestamp(port.get('lastSeen', '')) if port.get('lastSeen') else None,
         'Last Scanned': epochToTimestamp(port.get('lastSeen', '')) if port.get('lastSeen') else None,
         'Scan Type': port.get('banners', [])[0].get('scanType', '') if port.get('banners', []) else '',
         'Recent': port.get('recent'),

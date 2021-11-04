@@ -1,0 +1,86 @@
+[
+  {
+    "ID": "715718962991148224",
+    "MitigationStatus": [
+      {
+        "action": "kill",
+        "actionsCounters": null,
+        "groupNotFound": false,
+        "lastUpdate": "2019-09-15T12:05:49.228950Z",
+        "latestReport": null,
+        "status": "success"
+      },
+      {
+        "action": "quarantine",
+        "actionsCounters": null,
+        "groupNotFound": false,
+        "lastUpdate": "2019-09-15T12:05:49.339327Z",
+        "latestReport": null,
+        "status": "success"
+      }
+    ]
+  },
+  {
+    "ID": "715723437013282014",
+    "MitigationStatus": [
+      {
+        "action": "kill",
+        "actionsCounters": null,
+        "groupNotFound": false,
+        "lastUpdate": "2019-09-15T12:14:42.631216Z",
+        "latestReport": null,
+        "status": "success"
+      },
+      {
+        "action": "quarantine",
+        "actionsCounters": null,
+        "groupNotFound": false,
+        "lastUpdate": "2019-09-15T12:14:42.977017Z",
+        "latestReport": null,
+        "status": "success"
+      }
+    ]
+  },
+  {
+    "ID": "715723444638526700",
+    "MitigationStatus": [
+      {
+        "action": "kill",
+        "actionsCounters": null,
+        "groupNotFound": false,
+        "lastUpdate": "2019-09-15T12:14:43.507091Z",
+        "latestReport": null,
+        "status": "success"
+      },
+      {
+        "action": "quarantine",
+        "actionsCounters": null,
+        "groupNotFound": false,
+        "lastUpdate": "2019-09-15T12:14:43.787095Z",
+        "latestReport": null,
+        "status": "success"
+      }
+    ]
+  },
+  {
+    "ID": "715723450678324472",
+    "MitigationStatus": [
+      {
+        "action": "kill",
+        "actionsCounters": null,
+        "groupNotFound": false,
+        "lastUpdate": "2019-09-15T12:14:44.336124Z",
+        "latestReport": null,
+        "status": "success"
+      },
+      {
+        "action": "quarantine",
+        "actionsCounters": null,
+        "groupNotFound": false,
+        "lastUpdate": "2019-09-15T12:14:44.469734Z",
+        "latestReport": null,
+        "status": "success"
+      }
+    ]
+  }
+]
