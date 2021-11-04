@@ -7,20 +7,20 @@ Lastly, it adds comments/logs as Evidence.
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+* Entity Enrichment - Generic v3
 * Calculate Severity - Generic v2
-* Entity Enrichment - Generic v2
 
 ### Integrations
 * ZeroTrustAnalyticsPlatform
 
 ### Scripts
-* ZTAPBuildTimeline
 * AssignAnalystToIncident
+* IsIntegrationAvailable
+* ZTAPBuildTimeline
 
 ### Commands
-* ztap-get-alert-entries
-* closeInvestigation
 * extractIndicators
+* ztap-get-alert-entries
 
 ## Playbook Inputs
 ---
