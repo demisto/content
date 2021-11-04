@@ -11,7 +11,7 @@ def main():
                          "from context but returned None")
     custom_fields = incident.get('CustomFields', {})
     asset_results_str = custom_fields.get('assettable', {})
-    is_successful = custom_fields.get('successfulidentityenrichment', '')
+    is_successful = custom_fields.get('successfulassetenrichment', '')
     if is_successful == 'false':
         return {'ContentsFormat': formats['markdown'], 'Contents': 'Asset enrichment failed.'}
 
