@@ -33,24 +33,27 @@ def indicator_to_clickable(indicator):
 
 def get_additonal_info() -> CommandResults:
     alerts = demisto.get(demisto.context(), 'PaloAltoNetworksXDR.OriginalAlert')
+    if not alerts:
+        raise DemistoException('Original Alert is not configured in context')
     if not isinstance(alerts, list):
         alerts = [alerts]
 
     results = []
     for alert in alerts:
+        alert_event = alert.get('event')
         res = {'Alert Full Description': alert.get('alert_full_description'),
                'Detection Module': alert.get('detection_modules'),
-               'Vendor': alert.get('event').get('vendor'),
-               'Provider': alert.get('event').get('cloud_provider'),
-               'Log Name': alert.get('event').get('log_name'),
-               'Event Type': alert.get('event').get('event_type'),
-               'Caller IP': indicator_to_clickable(alert.get('event').get('caller_ip')),
-               'Caller IP Geo Location': alert.get('event').get('caller_ip_geolocation'),
-               'Resource Type': alert.get('event').get('resource_type'),
-               'Identity Name': alert.get('event').get('identity_name'),
-               'Operation Name': alert.get('event').get('operation_name'),
-               'Operation Status': alert.get('event').get('operation_status'),
-               'User Agent': alert.get('event').get('user_agent')}
+               'Vendor': alert_event.get('vendor'),
+               'Provider': alert_event.get('cloud_provider'),
+               'Log Name': alert_event.get('log_name'),
+               'Event Type': alert_event.get('raw_log').get('eventType'),
+               'Caller IP': indicator_to_clickable(alert_event.get('caller_ip')),
+               'Caller IP Geo Location': alert_event.get('caller_ip_geolocation'),
+               'Resource Type': alert_event.get('resource_type'),
+               'Identity Name': alert_event.get('identity_name'),
+               'Operation Name': alert_event.get('operation_name'),
+               'Operation Status': alert_event.get('operation_status'),
+               'User Agent': alert_event.get('user_agent')}
         results.append(res)
 
     return CommandResults(readable_output=tableToMarkdown('Original Alert Additional Information', results,

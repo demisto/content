@@ -27,9 +27,13 @@ HTML = """<span style="color: #{color};"><strong>{provider}&nbsp; &nbsp; &nbsp; 
 ''' COMMAND FUNCTION '''
 
 
-def get_image_from_alerts():
+def get_cloudprovider_html_result():
     incident = demisto.incident()
-    xdr_alerts = incident.get('CustomFields').get('xdralerts')
+    xdr_alerts = demisto.get(incident, 'CustomFields.xdralerts')
+    if not xdr_alerts:
+        raise DemistoException('xdralerts is not configured in the incident')
+    if not isinstance(xdr_alerts, list):
+        xdr_alerts = [xdr_alerts]
     cloud_providers = list(set([alert.get('cloudprovider') for alert in xdr_alerts]))
     results = [HTML_START]
     results.extend([HTML.format(provider=provider, color=COLORS.get(provider)) for provider in cloud_providers])
@@ -45,7 +49,7 @@ def get_image_from_alerts():
 
 def main():
     try:
-        return_results(get_image_from_alerts())
+        return_results(get_cloudprovider_html_result())
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute CloudProviderWidget. Error: {str(ex)}')

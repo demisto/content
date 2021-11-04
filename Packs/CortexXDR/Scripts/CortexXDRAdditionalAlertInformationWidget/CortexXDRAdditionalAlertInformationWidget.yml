@@ -1,5 +1,4 @@
-comment: '[Enter a description of the script, including what function it performs
-  and any important information users need to know, for example required permissions.]'
+comment: 'This script give additional original alert information from the context'
 commonfields:
   id: CortexXDRAdditionalAlertInformationWidget
   version: -1

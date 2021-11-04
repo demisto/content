@@ -14,9 +14,7 @@ Linting: https://xsoar.pan.dev/docs/integrations/linting
 import demistomock as demisto
 from CommonServerPython import *
 
-from typing import Dict, Any
 import traceback
-from itertools import chain
 
 ''' COMMAND FUNCTION '''
 
@@ -34,8 +32,8 @@ def get_identity_info() -> CommandResults:
     for alert in alerts:
         alert_event = alert.get('event')
         username = alert_event.get('identity_orig').get('userName')
-        access_keys_ids = [access_key.get('AccessKeyId') for access_key in access_keys
-                           if access_key and access_key.get('UserName') == username]
+        access_keys_ids = list({access_key.get('AccessKeyId') for access_key in access_keys
+                                if access_key and access_key.get('UserName') == username})
         res = {'Name': alert_event.get('identity_name'),
                'Type': alert_event.get('identity_type'),
                'Sub Type': alert_event.get('identity_sub_type'),
