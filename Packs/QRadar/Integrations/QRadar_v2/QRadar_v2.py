@@ -33,6 +33,7 @@ DOMAIN_ENRCH_FLG = "True"           # when set to true, will try to enrich offen
 RULES_ENRCH_FLG = "True"            # when set to true, will try to enrich offense with rule names
 MAX_FETCH_EVENT_RETIRES = 3         # max iteration to try search the events of an offense
 SLEEP_FETCH_EVENT_RETIRES = 10      # sleep between iteration to try search the events of an offense
+DEFAULT_EVENTS_TIMEOUT = 30         # default timeout for the events in minutes
 
 ADVANCED_PARAMETER_NAMES = [
     "EVENTS_INTERVAL_SECS",
@@ -46,7 +47,8 @@ ADVANCED_PARAMETER_NAMES = [
     "RULES_ENRCH_FLG",
     "MAX_FETCH_EVENT_RETIRES",
     "SLEEP_FETCH_EVENT_RETIRES",
-    "REQUEST_TIMEOUT"
+    "REQUEST_TIMEOUT",
+    "DEFAULT_EVENTS_TIMEOUT"
 ]
 
 """ GLOBAL VARS """
@@ -1041,7 +1043,7 @@ def fetch_incidents_long_running_events(
                 events_limit=events_limit,
             )
         )
-    for future in concurrent.futures.as_completed(futures):
+    for future in concurrent.futures.as_completed(futures, timeout=DEFAULT_EVENTS_TIMEOUT * 60):
         enriched_offenses.append(future.result())
 
     if is_reset_triggered(client.lock, handle_reset=True):
