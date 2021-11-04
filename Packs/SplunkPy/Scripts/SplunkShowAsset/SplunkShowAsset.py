@@ -18,7 +18,7 @@ def main():
     asset_results = json.loads(asset_results_str)
 
     if not asset_results:
-        return {'ContentsFormat': formats['markdown'], 'Contents': 'No assets were found in notable'}
+        return {'ContentsFormat': formats['markdown'], 'Contents': 'No assets were found in the notable'}
 
     if isinstance(asset_results, list):
         events_arr = []
@@ -36,4 +36,4 @@ if __name__ in ('__main__', '__builtin__', 'builtins'):
     try:
         return_results(main())
     except Exception as e:
-        return_error(f'Got an error while parsing Splunk events {e}', error=e)
+        return_error(f'Got an error while parsing Splunk events: {e}', error=e)
