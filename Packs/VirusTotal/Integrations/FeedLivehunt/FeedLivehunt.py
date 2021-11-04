@@ -8,19 +8,22 @@ from CommonServerPython import *  # noqa: F401
 urllib3.disable_warnings()
 
 
+class DetectionRatio:
+    malicious = 0
+    total = 0
+
+    def __init__(self, last_analysis_stats: dict):
+        self.malicious = last_analysis_stats['malicious']
+        self.total = last_analysis_stats['harmless'] + \
+                     last_analysis_stats['suspicious'] + \
+                     last_analysis_stats['undetected'] + \
+                     last_analysis_stats['malicious']
+
+    def __repr__(self):
+        return f'{self.malicious}/{self.total}'
+
+
 class Client(BaseClient):
-    def get_detections_str(self, last_analysis_stats: dict):
-        if not last_analysis_stats: return '0/0'
-
-        malicious = last_analysis_stats['malicious']
-        total = last_analysis_stats['harmless'] + \
-                last_analysis_stats['suspicious'] + \
-                last_analysis_stats['undetected'] + \
-                last_analysis_stats['malicious']
-
-        return f'{malicious}/{total}'
-
-
     def build_iterator(self, limit: int = 10,
                              filter_: Optional[str] = None) -> List:
         """Retrieves all entries from the feed.
@@ -95,6 +98,8 @@ def fetch_indicators_command(client: Client,
             'type': type_,
         }
 
+        detection_ratio = DetectionRatio(attributes.get('last_analysis_stats'))
+
         # Create indicator object for each value.
         # The object consists of a dictionary with required and optional keys
         # and values, as described blow.
@@ -118,15 +123,23 @@ def fetch_indicators_command(client: Client,
                 'sha256': attributes.get('sha256'),
                 'ssdeep': attributes.get('ssdeep'),
                 'fileextension': attributes.get('type_extension'),
+                'filetype': attributes.get('type_tag'),
                 'imphash': attributes.get('imphash'),
                 'firstseenbysource': attributes.get('first_submission_date'),
-
+                'lastseenbysource': attributes.get('last_submission_date'),
+                'creationdate': attributes.get('creation_date'),
+                'updateddate': attributes.get('last_modification_date'),
+                'detectionengines': detection_ratio.total,
+                'positivedetections': detection_ratio.malicious,
+                'displayname': attributes.get('meaningful_name'),
+                'name': attributes.get('meaningful_name'),
+                'size': attributes.get('size'),
             },
             # A dictionary of the raw data returned from the feed source about
             # the indicator.
             'rawJSON': raw_data,
             'sha256': attributes['sha256'],
-            'detections': client.get_detections_str(attributes.get('last_analysis_stats')),
+            'detections': str(detection_ratio),
             'fileType': attributes.get('type_description'),
             'rulesetName': context_attributes.get('ruleset_name'),
             'ruleName': context_attributes.get('rule_name'),
