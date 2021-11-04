@@ -1043,8 +1043,11 @@ def fetch_incidents_long_running_events(
                 events_limit=events_limit,
             )
         )
-    for future in concurrent.futures.as_completed(futures, timeout=DEFAULT_EVENTS_TIMEOUT * 60):
-        enriched_offenses.append(future.result())
+    try:
+        for future in concurrent.futures.as_completed(futures, timeout=DEFAULT_EVENTS_TIMEOUT * 60):
+            enriched_offenses.append(future.result())
+    except concurrent.futures.TimeoutError:
+        print_debug_msg("Timed out while waiting for events", lock=client.lock)
 
     if is_reset_triggered(client.lock, handle_reset=True):
         return
