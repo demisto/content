@@ -115,6 +115,7 @@ def get_auth():
         return generate_oauth1()
 
     elif is_bearer:
+        #Personal Access Token Authentication
         HEADERS.update({'Authorization': f'Bearer {access_token}'})
         return
 
