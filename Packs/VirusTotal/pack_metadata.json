@@ -1,8 +1,8 @@
 {
-    "name": "VirusTotal",
+    "name": "VirusTotal - vaca",
     "description": "Analyze suspicious hashes, URLs, domains and IP addresses",
     "support": "partner",
-    "currentVersion": "2.1.9",
+    "currentVersion": "2.3.0",
     "author": "VirusTotal",
     "url": "https://www.virustotal.com",
     "email": "contact@virustotal.com",
