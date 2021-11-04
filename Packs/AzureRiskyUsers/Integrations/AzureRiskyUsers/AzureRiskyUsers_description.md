@@ -14,18 +14,17 @@
 
 To connect to the Azure Risky Users platform using either the Cortex XSOAR Azure application or the Self-Deployed Azure application:
 1. Fill in the required parameters.
-2. Make sure to provide the following permissions for the app to work with Azure Risky Users:
+   Make sure to provide the following permissions for the app to work with Azure Risky Users:
    - IdentityRiskyUser.Read.All - https://docs.microsoft.com/en-us/graph/api/riskyuser-list?view=graph-rest-1.0
    - IdentityRiskEvent.Read.All - https://docs.microsoft.com/en-us/graph/api/riskdetection-get?view=graph-rest-1.0
-3. Run the !azure-risky-users-auth-start command.
-4. Follow the instructions that appear.
-5. Run the !azure-risky-users-auth-complete command.
+2. Run the !azure-risky-users-auth-start command. Follow the instructions that appear.
+3. Run the !azure-risky-users-auth-complete command.
 
 At the end of the process, a confirmation message appears.
 
 
 ## Retrieve Client ID (Application ID)
 
-1. In **Azure Portal** navigate to **App Registrations** and find relevant application.
-2. In **Overview** tab, copy the value **Application (client) ID**.
-3. Insert value to **Client ID** in Azure Risky Users instance configuraton.
+1. In **Azure Portal** navigate to **App Registrations** and find the relevant application.
+2. In the **Overview** tab, copy the value **Application (client) ID**.
+3. Insert the value to **Client ID** in the Azure Risky Users instance configuraton.
