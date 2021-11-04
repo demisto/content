@@ -1,10 +1,10 @@
 {
-    "id": "AzureDevOps",
+    "id": "AzureDevOps Incident",
     "version": -1,
     "vcShouldIgnore": false,
     "locked": false,
-    "name": "AzureDevOps",
-    "prevName": "AzureDevOps",
+    "name": "AzureDevOps Incident",
+    "prevName": "AzureDevOps Incident",
     "color": "#0097A7",
     "hours": 0,
     "days": 0,

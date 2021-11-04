@@ -37,7 +37,7 @@ def test_azure_devops_pipeline_run_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from AzureDevops import Client, pipeline_run_command
+    from AzureDevOps import Client, pipeline_run_command
 
     authorization_url = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
     requests_mock.post(authorization_url, json=get_azure_access_token_mock())
@@ -78,7 +78,7 @@ def test_azure_devops_user_add_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from AzureDevops import Client, user_add_command
+    from AzureDevOps import Client, user_add_command
 
     authorization_url = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
     requests_mock.post(authorization_url, json=get_azure_access_token_mock())
@@ -122,7 +122,7 @@ def test_azure_devops_user_remove_command(requests_mock):
      - Ensure that the output is empty (None).
      - Ensure readable output message content.
      """
-    from AzureDevops import Client, user_remove_command
+    from AzureDevOps import Client, user_remove_command
 
     authorization_url = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
     requests_mock.post(authorization_url, json=get_azure_access_token_mock())
@@ -158,7 +158,7 @@ def test_azure_devops_pull_request_create_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from AzureDevops import Client, pull_request_create_command
+    from AzureDevOps import Client, pull_request_create_command
 
     authorization_url = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
     requests_mock.post(authorization_url, json=get_azure_access_token_mock())
@@ -202,7 +202,7 @@ def test_azure_devops_pull_request_get_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from AzureDevops import Client, pull_request_get_command
+    from AzureDevOps import Client, pull_request_get_command
 
     authorization_url = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
     requests_mock.post(authorization_url, json=get_azure_access_token_mock())
@@ -244,7 +244,7 @@ def test_azure_devops_pull_request_update_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from AzureDevops import Client, pull_request_update_command
+    from AzureDevOps import Client, pull_request_update_command
 
     authorization_url = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
     requests_mock.post(authorization_url, json=get_azure_access_token_mock())
@@ -287,7 +287,7 @@ def test_azure_devops_pull_request_list_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from AzureDevops import Client, pull_requests_list_command
+    from AzureDevOps import Client, pull_requests_list_command
 
     authorization_url = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
     requests_mock.post(authorization_url, json=get_azure_access_token_mock())
@@ -328,7 +328,7 @@ def test_azure_devops_project_list_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from AzureDevops import Client, project_list_command
+    from AzureDevOps import Client, project_list_command
 
     authorization_url = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
     requests_mock.post(authorization_url, json=get_azure_access_token_mock())
@@ -364,7 +364,7 @@ def test_azure_devops_repository_list_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from AzureDevops import Client, repository_list_command
+    from AzureDevOps import Client, repository_list_command
 
     authorization_url = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
     requests_mock.post(authorization_url, json=get_azure_access_token_mock())
@@ -401,7 +401,7 @@ def test_azure_devops_users_query_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from AzureDevops import Client, users_query_command
+    from AzureDevOps import Client, users_query_command
 
     authorization_url = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
     requests_mock.post(authorization_url, json=get_azure_access_token_mock())
@@ -437,7 +437,7 @@ def test_azure_devops_pipeline_run_get_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from AzureDevops import Client, pipeline_run_get_command
+    from AzureDevOps import Client, pipeline_run_get_command
 
     authorization_url = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
     requests_mock.post(authorization_url, json=get_azure_access_token_mock())
@@ -477,7 +477,7 @@ def test_azure_devops_pipeline_run_list_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from AzureDevops import Client, pipeline_run_list_command
+    from AzureDevOps import Client, pipeline_run_list_command
 
     authorization_url = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
     requests_mock.post(authorization_url, json=get_azure_access_token_mock())
@@ -517,7 +517,7 @@ def test_azure_devops_pipeline_list_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from AzureDevops import Client, pipeline_list_command
+    from AzureDevOps import Client, pipeline_list_command
 
     authorization_url = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
     requests_mock.post(authorization_url, json=get_azure_access_token_mock())
@@ -554,7 +554,7 @@ def test_azure_devops_branch_list_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from AzureDevops import Client, branch_list_command
+    from AzureDevOps import Client, branch_list_command
 
     authorization_url = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
     requests_mock.post(authorization_url, json=get_azure_access_token_mock())
