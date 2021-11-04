@@ -355,35 +355,6 @@ script:
       required: true
       secret: false
     deprecated: true
-    description: Schedules a single attack on requested vector.
-    execution: false
-    name: Picus_runAttacks
-  - arguments:
-    - default: false
-      description: Threat ID list ("111,222,333,...") or single threat ID can be given.
-      isArray: false
-      name: threat_ids
-      required: true
-      secret: false
-    - default: false
-      description: Untrusted peer name.
-      isArray: false
-      name: attacker_peer
-      required: true
-      secret: false
-    - default: false
-      description: Trusted peer name.
-      isArray: false
-      name: victim_peer
-      required: true
-      secret: false
-    - default: false
-      description: Example variant=HTTP
-      isArray: false
-      name: variant
-      required: true
-      secret: false
-    deprecated: true
     description: Returns the list of the attack results of a single threat have optional
       parameters for filtration.
     execution: false
