@@ -534,9 +534,6 @@ def main() -> None:
         elif demisto.command()=='Picus_setParamPB':
             result = setParamPB()
             return_results(result)
-        elif demisto.command() == 'Picus_getVectorCompare':
-            result = getVectorCompare()
-            return_results(result)
 
     # Log exceptions and return errors
     except Exception as e:

@@ -330,30 +330,6 @@ script:
     description: Set parameter on playbook. (This command is only used on playbook)
     execution: false
     name: Picus_setParamPB
-  - arguments:
-    - default: false
-      description: Untrusted peer name.
-      isArray: false
-      name: attacker_peer
-      required: true
-      secret: false
-    - default: false
-      description: Trusted peer name.
-      isArray: false
-      name: victim_peer
-      required: true
-      secret: false
-    - default: false
-      defaultValue: '3'
-      description: Set days parameter.
-      isArray: false
-      name: days
-      required: false
-      secret: false
-    deprecated: true
-    description: Makes a comparison of the given vector's results.
-    execution: false
-    name: Picus_getVectorCompare
   - deprecated: true
     description: Returns the peer list with current statuses.
     execution: false
