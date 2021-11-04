@@ -1,6 +1,6 @@
 from CommonServerPython import DemistoException
 
-from Kafka_v3 import KafkaCommunicator, test_module, KConsumer, KProducer, print_topics, fetch_partitions
+from Kafka_v3 import KafkaCommunicator, command_test_module, KConsumer, KProducer, print_topics, fetch_partitions
 from confluent_kafka.admin import ClusterMetadata, TopicMetadata, PartitionMetadata
 from confluent_kafka import KafkaError
 
@@ -12,7 +12,7 @@ KAFKA = KafkaCommunicator(brokers=['some_broker_ip'])
 def test_passing_simple_test_module(mocker):
     mocker.patch.object(KConsumer, 'list_topics', return_value=ClusterMetadata())
     mocker.patch.object(KProducer, 'list_topics', return_value=ClusterMetadata())
-    assert test_module(KAFKA, {'isFetch': False}) == 'ok'
+    assert command_test_module(KAFKA, {'isFetch': False}) == 'ok'
 
 
 def test_failing_simple_test_module(mocker):
@@ -21,7 +21,7 @@ def test_failing_simple_test_module(mocker):
     mocker.patch.object(KConsumer, 'list_topics', return_value=ClusterMetadata(), side_effect=raise_kafka_error)
     mocker.patch.object(KProducer, 'list_topics', return_value=ClusterMetadata(), side_effect=raise_kafka_error)
     with pytest.raises(DemistoException) as exception_info:
-        test_module(KAFKA, {'isFetch': False})
+        command_test_module(KAFKA, {'isFetch': False})
     assert 'Error connecting to kafka' in str(exception_info.value)
 
 
@@ -55,7 +55,7 @@ def test_passing_test_module_with_fetch(mocker, demisto_params, cluster_tree):
     cluster_metadata = create_cluster_metadata(cluster_tree)
     mocker.patch.object(KConsumer, 'list_topics', return_value=cluster_metadata)
     mocker.patch.object(KProducer, 'list_topics', return_value=cluster_metadata)
-    assert test_module(KAFKA, demisto_params) == 'ok'
+    assert command_test_module(KAFKA, demisto_params) == 'ok'
 
 
 @pytest.mark.parametrize('demisto_params, cluster_tree, first_offset, last_offset', [
@@ -67,7 +67,7 @@ def test_passing_test_module_with_fetch_and_offset_as_num(mocker, demisto_params
     mocker.patch.object(KConsumer, 'list_topics', return_value=cluster_metadata)
     mocker.patch.object(KProducer, 'list_topics', return_value=cluster_metadata)
     mocker.patch.object(KConsumer, 'get_watermark_offsets', return_value=(first_offset, last_offset))
-    assert test_module(KAFKA, demisto_params) == 'ok'
+    assert command_test_module(KAFKA, demisto_params) == 'ok'
 
 
 @pytest.mark.parametrize('demisto_params, cluster_tree, expected_failure', [
@@ -83,7 +83,7 @@ def test_failing_test_module_with_fetch(mocker, demisto_params, cluster_tree, ex
     mocker.patch.object(KConsumer, 'list_topics', return_value=cluster_metadata)
     mocker.patch.object(KProducer, 'list_topics', return_value=cluster_metadata)
     with pytest.raises(DemistoException) as exception_info:
-        test_module(KAFKA, demisto_params)
+        command_test_module(KAFKA, demisto_params)
     assert expected_failure in str(exception_info.value)
 
 
@@ -102,7 +102,7 @@ def test_failing_test_module_with_fetch_and_offset_as_num(mocker, demisto_params
     mocker.patch.object(KProducer, 'list_topics', return_value=cluster_metadata)
     mocker.patch.object(KConsumer, 'get_watermark_offsets', return_value=(first_offset, last_offset))
     with pytest.raises(DemistoException) as exception_info:
-        test_module(KAFKA, demisto_params)
+        command_test_module(KAFKA, demisto_params)
     assert expected_failure in str(exception_info.value)
 
 

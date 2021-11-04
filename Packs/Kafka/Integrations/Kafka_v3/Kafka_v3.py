@@ -202,7 +202,7 @@ def create_incident(message, topic):
 ''' COMMANDS '''
 
 
-def test_module(kafka, demisto_params):
+def command_test_module(kafka, demisto_params):
     """Test getting available topics using AdminClient
     """
     valid_fetch = True
@@ -475,7 +475,7 @@ def main():
 
     try:
         if demisto_command == 'test-module':
-            return_results(test_module(kafka, demisto_params))
+            return_results(command_test_module(kafka, demisto_params))
         elif demisto_command == 'kafka-print-topics':
             demisto.results(print_topics(kafka, demisto_args))
         elif demisto_command == 'kafka-publish-msg':
