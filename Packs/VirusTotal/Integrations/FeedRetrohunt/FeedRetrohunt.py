@@ -147,10 +147,10 @@ def get_indicators_command(client: Client,
         Outputs.
     """
     limit = int(args.get('limit', 10))
-    tag = args.get('tag')
+    job_id = args.get('job-id')
     tlp_color = params.get('tlp_color')
     feed_tags = argToList(params.get('feedTags', ''))
-    indicators = fetch_indicators(client, tlp_color, feed_tags, limit, tag)
+    indicators = fetch_indicators(client, tlp_color, feed_tags, limit, job_id)
 
     human_readable = tableToMarkdown('Indicators from VirusTotal Retrohunt Feed:',
                                      indicators,
