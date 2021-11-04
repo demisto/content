@@ -15,6 +15,14 @@ SUPPORTED_GENERAL_OFFSETS = ['smallest', 'earliest', 'beginning', 'largest', 'la
 ''' CLIENT CLASS '''
 
 
+class KConsumer(Consumer):
+    pass
+
+
+class KProducer(Producer):
+    pass
+
+
 class KafkaCommunicator:
     """Client class to interact with Kafka."""
     conf_producer = None
@@ -26,7 +34,9 @@ class KafkaCommunicator:
         self.conf_producer = {'bootstrap.servers': brokers}
 
         if offset not in SUPPORTED_GENERAL_OFFSETS:
-            return_error(f'General offset {offset} not found in supported offsets: {SUPPORTED_GENERAL_OFFSETS}')
+            demisto.debug(f'General offset {offset} not found in supported offsets. '
+                          f'Setting general offset to \'earliest\'')
+            offset = 'earliest'
 
         self.conf_consumer = {'bootstrap.servers': brokers,
                               'session.timeout.ms': 2000,
@@ -64,11 +74,11 @@ class KafkaCommunicator:
     def test_connection(self):
         try:
             # AdminClient(self.conf_producer)  # doesn't work!
-            Consumer(self.conf_consumer)
-            Producer(self.conf_producer)
+            KConsumer(self.conf_consumer)
+            KProducer(self.conf_producer)
             # self.get_topics(AdminClient(self.conf_producer))
-            self.get_topics(Consumer(self.conf_consumer))
-            self.get_topics(Producer(self.conf_producer))
+            self.get_topics(KConsumer(self.conf_consumer))
+            self.get_topics(KProducer(self.conf_producer))
 
         except Exception as e:
             raise DemistoException(f'Error connecting to kafka: {str(e)}\n{traceback.format_exc()}')
@@ -82,21 +92,21 @@ class KafkaCommunicator:
             raise DemistoException(f'Message delivery failed: {err}')
         else:
             return_results(f'Message was successfully produced to '
-                            f'topic \'{msg.topic()}\', partition {msg.partition()}')
+                           f'topic \'{msg.topic()}\', partition {msg.partition()}')
 
     def get_topics(self, client=None):
         if not client:
-            client = Producer(self.conf_producer)
-        cluster_metadata = client.list_topics()
+            client = KProducer(self.conf_producer)
+        cluster_metadata = client.list_topics(timeout=3.0)
         return cluster_metadata.topics
 
     def get_partition_offsets(self, topic, partition):
-        kafka_consumer = Consumer(self.conf_consumer)
+        kafka_consumer = KConsumer(self.conf_consumer)
         partition = TopicPartition(topic=topic, partition=partition)
         return kafka_consumer.get_watermark_offsets(partition=partition)
 
     def produce(self, topic, value, partition):
-        kafka_producer = Producer(self.conf_producer)
+        kafka_producer = KProducer(self.conf_producer)
         if partition:
             kafka_producer.produce(topic=topic, value=value, partition=partition,
                                    on_delivery=self.delivery_report)
@@ -106,7 +116,7 @@ class KafkaCommunicator:
         kafka_producer.flush()
 
     def consume(self, topic: str, partition: int = -1, offset='0'):
-        kafka_consumer = Consumer(self.conf_consumer)
+        kafka_consumer = KConsumer(self.conf_consumer)
         kafka_consumer.assign(self.get_topic_partitions(kafka_consumer, topic, partition, offset))
         polled_msg = kafka_consumer.poll(1.0)
         demisto.debug(f"polled {polled_msg}")
@@ -123,8 +133,8 @@ class KafkaCommunicator:
         else:
             offset = int(offset)
             if offset < int(earliest_offset) or offset >= int(oldest_offset):
-                return_error(f'Offset {offset} for topic {topic} and partition {partition} is out of bounds '
-                             f'[{earliest_offset}, {oldest_offset})')
+                raise DemistoException(f'Offset {offset} for topic {topic} and partition {partition} is out of bounds '
+                                       f'[{earliest_offset}, {oldest_offset})')
         return offset
 
     def get_topic_partitions(self, client, topic, partition, offset):
@@ -192,11 +202,22 @@ def create_incident(message, topic):
 ''' COMMANDS '''
 
 
-def test_module(kafka):
+def test_module(kafka, demisto_params):
     """Test getting available topics using AdminClient
     """
+    valid_fetch = True
     connection_test = kafka.test_connection()
-    demisto.results(connection_test)
+    if demisto_params.get('isFetch', False):
+        valid_fetch = check_params(kafka=kafka,
+                                   topic=demisto_params.get('topic', None),
+                                   partitions=handle_empty(argToList(demisto_params.get('partition', None)), None),
+                                   offset=handle_empty(demisto_params.get('offset', 'earliest'), 'earliest'))
+    if connection_test != 'ok':
+        return connection_test
+    elif not valid_fetch:
+        return 'Failed'
+    else:
+        return 'ok'
 
 
 def print_topics(kafka, demisto_args):
@@ -225,22 +246,22 @@ def print_topics(kafka, demisto_args):
                 'Partitions': partitions
             })
 
-        ec = {
+        entry_context = {
             'Kafka.Topic(val.Name === obj.Name)': topics
         }
 
         md = tableToMarkdown('Kafka Topics', topics)
 
-        demisto.results({
+        return {
             'Type': entryTypes['note'],
             'Contents': topics,
             'ContentsFormat': formats['json'],
             'HumanReadable': md,
             'ReadableContentsFormat': formats['markdown'],
-            'EntryContext': ec
-        })
+            'EntryContext': entry_context
+        }
     else:
-        demisto.results('No topics found.')
+        return 'No topics found.'
 
 
 def produce_message(kafka, demisto_args):
@@ -309,7 +330,6 @@ def fetch_partitions(kafka, demisto_args):
     """
     Fetching available partitions in given topic
     """
-    # TODO: check params
     topic = demisto_args.get('topic')
     kafka_topics = kafka.get_topics()
     if topic in kafka_topics:
@@ -331,22 +351,51 @@ def fetch_partitions(kafka, demisto_args):
         contents = {
             topic: partitions
         }
-        demisto.results({
+        return {
             'Type': entryTypes['note'],
             'Contents': contents,
             'ContentsFormat': formats['json'],
             'HumanReadable': md,
             'ReadableContentsFormat': formats['markdown'],
             'EntryContext': ec
-        })
+        }
     else:
-        return_error('Topic {} was not found in Kafka'.format(topic))
+        raise DemistoException(f'Topic {topic} was not found in Kafka')
 
 
 def handle_empty(value, default_value):
     if not value:
         return default_value
     return value
+
+
+def check_params(kafka, topic, partitions=None, offset=None):
+    check_offset = False
+    topics = kafka.get_topics()
+    if topic not in topics.keys():
+        raise DemistoException(f"Did not find topic {topic} in kafka topics.")
+
+    if offset and str(offset).lower() not in SUPPORTED_GENERAL_OFFSETS:
+        if offset.isdigit():
+            offset = int(offset)
+            check_offset = True
+        else:
+            raise DemistoException(f'Offset {offset} is not in supported format.')
+
+    if partitions:
+        topic_metadata = topics[topic]
+        available_partitions = topic_metadata.partitions.values()
+        available_partitions_ids = [available_partition.id for available_partition in available_partitions]
+        for partition in partitions:
+            if int(partition) not in available_partitions_ids:
+                raise DemistoException(f"Partition {partition} is not assigned to kafka topic {topic} available {available_partitions_ids}.")
+            if check_offset:
+                earliest_offset, oldest_offset = kafka.get_partition_offsets(topic=topic, partition=int(partition))
+                if offset < int(earliest_offset) or offset >= int(oldest_offset):
+                    raise DemistoException(f'Offset {offset} for topic {topic} and partition {partition} is out of bounds '
+                                 f'[{earliest_offset}, {oldest_offset})')
+
+    return True
 
 
 def fetch_incidents(demisto_params):
@@ -366,7 +415,9 @@ def fetch_incidents(demisto_params):
     kafka = KafkaCommunicator(brokers=brokers, offset=offset, enable_auto_commit=True,
                               message_max_bytes=message_max_bytes)
 
-    kafka_consumer = Consumer(kafka.conf_consumer)
+    kafka_consumer = KConsumer(kafka.conf_consumer)
+    check_params(kafka, topic, partitions, offset)
+
     for partition in partitions:
         specific_offset = handle_empty(last_fetched_offsets.get(partition), offset)
         demisto.debug(f'Getting last offset for partition {partition}, specific offset is {specific_offset}\n')
@@ -393,33 +444,6 @@ def fetch_incidents(demisto_params):
     demisto.setLastRun(last_run)
 
     demisto.incidents(incidents)
-
-
-def create_certificate(ca_cert=None, client_cert=None, client_cert_key=None, password=None):
-    """Create certificate"""
-    ca_path = None
-    client_path = None
-    client_key_path = None
-    if ca_cert:
-        ca_path = 'ca.cert'  # type: ignore
-        with open(ca_path, 'wb') as file:
-            file.write(ca_cert)
-            ca_path = os.path.abspath(ca_path)
-    if client_cert:
-        client_path = 'client.cert'
-        with open(client_path, 'wb') as file:
-            file.write(client_cert)
-            client_path = os.path.abspath(client_path)
-    if client_cert_key:
-        client_key_path = 'client_key.key'
-        with open(client_key_path, 'wb') as file:
-            file.write(client_cert_key)
-    return {
-        'ssl.ca.location': ca_path,
-        'ssl.certificate.location': client_path,
-        'ssl.key.location': client_key_path,
-        'ssl.key.password': password
-    }
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -451,25 +475,24 @@ def main():
 
     try:
         if demisto_command == 'test-module':
-            test_module(kafka)
+            return_results(test_module(kafka, demisto_params))
         elif demisto_command == 'kafka-print-topics':
-            print_topics(kafka, demisto_args)
+            demisto.results(print_topics(kafka, demisto_args))
         elif demisto_command == 'kafka-publish-msg':
             produce_message(kafka, demisto_args)
         elif demisto_command == 'kafka-consume-msg':
             consume_message(kafka, demisto_args)
         elif demisto_command == 'kafka-fetch-partitions':
-            fetch_partitions(kafka, demisto_args)
+            demisto.results(fetch_partitions(kafka, demisto_args))
         elif demisto_command == 'fetch-incidents':
             fetch_incidents(demisto_params)
 
     except Exception as e:
         debug_log = 'Debug logs:'
         error_message = str(e)
-        if demisto_command != 'test-module':
-            stacktrace = traceback.format_exc()
-            if stacktrace:
-                debug_log += f'\nFull stacktrace:\n\n{stacktrace}'
+        stacktrace = traceback.format_exc()
+        if stacktrace:
+            debug_log += f'\nFull stacktrace:\n\n{stacktrace}'
         return_error(f'{error_message}\n\n{debug_log}')
 
     finally:
