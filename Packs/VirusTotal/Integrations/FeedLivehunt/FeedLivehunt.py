@@ -113,10 +113,14 @@ def fetch_indicators_command(client: Client,
             # previously defined
             # in Cortex XSOAR to their values.
             'fields': {
-                'md5': attributes['md5'],
-                'sha1': attributes['sha1'],
-                'sha256': attributes['sha256'],
-                'ssdeep': attributes['ssdeep'],
+                'md5': attributes.get('md5'),
+                'sha1': attributes.get('sha1'),
+                'sha256': attributes.get('sha256'),
+                'ssdeep': attributes.get('ssdeep'),
+                'fileextension': attributes.get('type_extension'),
+                'imphash': attributes.get('imphash'),
+                'firstseenbysource': attributes.get('first_submission_date'),
+
             },
             # A dictionary of the raw data returned from the feed source about
             # the indicator.
