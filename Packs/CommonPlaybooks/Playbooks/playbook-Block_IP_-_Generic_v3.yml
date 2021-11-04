@@ -3,14 +3,14 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Block IP - Generic v3
-description: "This playbook blocks malicious IPs using all integrations that are enabled.\
+description: "This playbook blocks malicious IP addresses using all integrations that are enabled.\
   \ The direction of the traffic that will be blocked is determined by the XSOAR user\
-  \ ( and set by default to outgoing)\nPlease note the following:\n-  some of those\
+  \ (and set by default to outgoing)\nNote the following:\n-  some of those\
   \ integrations require specific parameters to run, which are based on the playbook\
-  \ inputs. Also, Certain integrations use FW rules or Appanded network objects\n\
-  - Note that the Appended Network objects should be specified in blocking rules inside\
+  \ inputs. Also, certain integrations use FW rules or appended network objects.\n\
+  - Note that the appended network objects should be specified in blocking rules inside\
   \ the system later on. \n\n\nSupported integrations for this playbook [Network security\
-  \ products such as FW/WAF/IPS/Etc]: \n\n* Check Point Firewall\n* Palo Alto Networks\
+  \ products such as FW/WAF/IPs/etc.]: \n\n* Check Point Firewall\n* Palo Alto Networks\
   \ PAN-OS\n* Zscaler\n* FortiGate\n* Aria Packet Intelligence\n* Cisco Firepower\
   \ \n* Cisco Secure Cloud Analytics\n* Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n\
   * ThreatX\n* Signal Sciences WAF\n* Sophos Firewall\n\n"
@@ -161,7 +161,7 @@ tasks:
       id: ac1f402d-62e1-4e70-8d06-d0c4f74b1015
       version: -1
       name: Is there an IP to block?
-      description: Verify that is at least one IP to block.
+      description: Verify that there is at least one IP to block.
       type: condition
       iscommand: false
       brand: ""
@@ -342,7 +342,7 @@ tasks:
       name: PAN-OS - Block IP - Static Address Group
       description: |-
         This playbook blocks IP addresses using Static Address Groups in Palo Alto Networks Panorama or Firewall.
-        The playbook receives malicious IP addresses and an address group name as inputs, verifies that the addresses are not already a part of the address group, adds them and commits the configuration.
+        The playbook receives malicious IP addresses and an address group name as inputs, verifies that the addresses are not already part of the address group, adds them and commits the configuration.
 
         ***Note - The playbook does not block the address group communication using a policy block rule. This step will be taken once outside of the playbook.
       playbookName: PAN-OS - Block IP - Static Address Group
@@ -548,7 +548,7 @@ tasks:
       id: 23cb5266-464f-41cb-8364-e3bf6b991624
       version: -1
       name: Use Custom Block Rules?
-      description: Verify if custom block rule playbook input is set to true or not.
+      description: Verify if custom block rule playbook input is set to true.
       type: condition
       iscommand: false
       brand: ""
@@ -839,7 +839,7 @@ tasks:
       name: Checkpoint - Block IP - Custom Block Rule
       description: |-
         This playbook blocks IP addresses using Custom Block Rules in Checkpoint Firewall.
-        The playbook receives malicious IP addresses as inputs, creates a custom bi-directional rule to block them, and publish the configuration.
+        The playbook receives malicious IP addresses as inputs, creates a custom bi-directional rule to block them, and publishes the configuration.
       playbookName: Checkpoint - Block IP - Custom Block Rule
       type: playbook
       iscommand: false
@@ -1077,10 +1077,10 @@ tasks:
       description: |-
         Enrich IP addresses using one or more integrations.
 
-        - Resolve IP addresses to hostnames (DNS)
-        - Provide threat information
-        - Separate internal and external IP addresses
-        - For internal IP addresses, get host information
+        - Resolve IP addresses to host names (DNS).
+        - Provide threat information.
+        - Separate internal and external IP addresses.
+        - For internal IP addresses, get host information.
       playbookName: IP Enrichment - Generic v2
       type: playbook
       iscommand: false
@@ -1130,7 +1130,7 @@ tasks:
       id: b226596d-f29e-483e-82c3-820deef8cf72
       version: -1
       name: Are there any Malicious IPs?
-      description: Check if there are any malicious IPs from the input IPs
+      description: Check if there are any malicious IPs from the input IPs.
       type: condition
       iscommand: false
       brand: ""
@@ -1181,7 +1181,7 @@ tasks:
       version: -1
       name: Append Context List with IPs
       description: Set a value in context under the key you entered. If no value is
-        entered, the script doesn't do anything.
+        entered, the script does nothing.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1315,7 +1315,7 @@ tasks:
       name: 'Analyst Verification Prompt '
       description: |-
         Ask the user what IPs should be blocked.
-        Note that in this Task the following IPs are in your Internal Range:
+        Note that in this task the following IPs are in your internal range:
         ${BlockList.PIIP}
 
         Remember that the direction you have decided is - ${inputs.RuleDirection}
@@ -1346,10 +1346,10 @@ tasks:
           <p>Dear XSOAR user,</p>
           <p>This notification informs you that the following list of IPs will be blocked on your XSOAR's integrated network devices.</p>
           <p><br />(<strong>Note</strong>: the IPs will be added to your company BlockList or be blocked in individual rules based on the XSOAR integrated devices).</p>
-          <p>Also, <strong>please note</strong> that the following IPs are part of the <strong>Internal Range</strong> mentioned in the playbook:</p>
+          <p>Also, <strong>please note</strong> that the following IPs are part of the <strong>internal range</strong> mentioned in the playbook:</p>
           <p>${BlockList.PIIP}</p>
           <p>&nbsp;</p>
-          <p>For more information, please click on the link below.</p>
+          <p>For more information, click the link below.</p>
       methods:
       - email
       format: html
@@ -1382,7 +1382,7 @@ tasks:
       - id: "1"
         label: ""
         labelarg:
-          simple: Do you approve the blocking request for "Suspiocus IPs"?
+          simple: Do you approve the blocking request for "Suspicious IPs"?
         required: false
         gridcolumns: []
         defaultrows: []
@@ -1562,7 +1562,7 @@ tasks:
       version: -1
       name: Append Context List with IPs
       description: Set a value in context under the key you entered. If no value is
-        entered, the script doesn't do anything.
+        entered, the script does nothing.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1970,7 +1970,7 @@ tasks:
       id: c6ae8d8c-33ec-4c12-8f5e-e52d86dea65c
       version: -1
       name: Cisco Secure Cloud Analytics - Add IP to BlockList
-      description: Add a domain or IP to the blacklist
+      description: Add a domain or IP to the blacklist.
       script: '|||sw-block-domain-or-ip'
       type: regular
       iscommand: true
@@ -2403,7 +2403,7 @@ tasks:
       id: 0b3a1b93-d922-47f5-8ef2-a4cc45f297a7
       version: -1
       name: Is Signal Sciences WAF   - Blacklist IPs
-      description: Adding  IPs to the Signal Sciences WAF integration
+      description: Adding IPs to the Signal Sciences WAF integration.
       script: '|||sigsci-blacklist-add-ip'
       type: regular
       iscommand: true
@@ -2632,8 +2632,8 @@ tasks:
       id: d63fbaaa-9006-47b5-805c-11c0559d77da
       version: -1
       name: Check if there are internal IP addresses
-      description: Returns yes if the IP is in one of the ranges provided, returns
-        no otherwise.
+      description: Returns 'yes' if the IP is in one of the ranges provided. Otherwise 
+        returns 'no'
       scriptName: IsIPInRanges
       type: regular
       iscommand: false
@@ -2677,7 +2677,7 @@ tasks:
       id: 397baf68-6e31-4063-88d2-6454c5a1659d
       version: -1
       name: Append Context List with Input IPs
-      description: Add the IPs from the input
+      description: Add the IPs from the input.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2725,7 +2725,7 @@ tasks:
       version: -1
       name: Re-set the blocklist [Inputs]
       description: Set a value in context under the key you entered. If no value is
-        entered, the script doesn't do anything.
+        entered, the script does nothing.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2817,7 +2817,7 @@ tasks:
       version: -1
       name: Re-set the blocklist [Inputs]
       description: Set a value in context under the key you entered. If no value is
-        entered, the script doesn't do anything.
+        entered, the script does nothing.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2856,7 +2856,7 @@ tasks:
       version: -1
       name: Re-set the blocklist [Malicious]
       description: Set a value in context under the key you entered. If no value is
-        entered, the script doesn't do anything.
+        entered, the script does nothing.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2895,7 +2895,7 @@ tasks:
       version: -1
       name: Re-set the blocklist [Suspicious]
       description: Set a value in context under the key you entered. If no value is
-        entered, the script doesn't do anything.
+        entered, the script does nothing.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -3126,7 +3126,7 @@ tasks:
           <p>This notification informs you that the following list of IPs will be blocked on your XSOAR's integrated network devices.</p>
           <p><br />(<strong>Note</strong>: the IPs will be added to your company BlockList or be blocked in individual rules based on the XSOAR integrated devices).</p>
           <p>&nbsp;</p>
-          <p>For more information, please click on the link below.</p>
+          <p>For more information, click the link below.</p>
       methods:
       - email
       format: html
@@ -3270,7 +3270,7 @@ tasks:
       version: -1
       name: Append Internal IPs to a possible blocklist
       description: Set a value in context under the key you entered. If no value is
-        entered, the script doesn't do anything.
+        entered, the script does nothing.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -3406,7 +3406,7 @@ tasks:
       version: -1
       name: Re-set the blocklist [Internal Address]
       description: Set a value in context under the key you entered. If no value is
-        entered, the script doesn't do anything.
+        entered, the script does nothing.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -3478,8 +3478,7 @@ inputs:
 - key: IP
   value: {}
   required: false
-  description: 'An array of malicious IPs to block. Enter a list of IPs separated
-    by comma delimiter (i.e: 1.1.1.1,2.2.2.2).'
+  description: 'An array of malicious IPs to block. Enter a comma-separated list of IPs (i.e.: 1.1.1.1,2.2.2.2).'
   playbookInputQuery:
 - key: CustomBlockRule
   value:
@@ -3487,12 +3486,12 @@ inputs:
   required: false
   description: "This input determines whether Palo Alto Networks Panorama or Firewall\
     \ Custom Block Rules are used.\nSpecify True to use Custom Block Rules. \nFor\
-    \ true statement - This option will create 2 FW rules inside the PAN-OS device."
+    \ a true statement, this option will create 2 FW rules inside the PAN-OS device."
   playbookInputQuery:
 - key: LogForwarding
   value: {}
   required: false
-  description: Panorama log forwarding object name. This will indicate what type of
+  description: Panorama log forwarding object name. Indicate what type of
     Log Forwarding setting will be specified in the PAN-OS custom rules.
   playbookInputQuery:
 - key: AutoCommit
@@ -3513,7 +3512,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    This input determines whether Palo Alto Networks Panorama or Firewall External Dynamic Lists are used for blocking IPs.
+    This input determines whether Palo Alto Networks Panorama or Firewall External Dynamic Lists is used for blocking IPs.
     Specify the EDL name for IPs list handling.
   playbookInputQuery:
 - key: EDLServerIP
@@ -3536,14 +3535,14 @@ inputs:
     simple: "False"
   required: true
   description: |-
-    This input is required for the IP Enrichment - Generic v2. Will be used for resolving IP's hostname. Default: False.
+    This input is required for the IP Enrichment - Generic v2. Will be used for resolving the IP hostname. Default: False.
     (Input value: True/False)
   playbookInputQuery:
 - key: UserVerification
   value:
     simple: "True"
   required: false
-  description: "Possible values: True/False.  Default: True.\nAsking for user verification\
+  description: "Possible values: True/False.  Default: True.\nWhether to provide user verification\
     \ for blocking those IPs. \n\nFalse - No prompt will be displayed to the user.\n\
     True - The server will ask the user for blocking verification and will display\
     \ the blocking list."
@@ -3554,13 +3553,13 @@ inputs:
   description: 'A list of internal IP ranges to check IP addresses against. The list
     should be provided in CIDR notation, separated by commas. An example of a list
     of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes).
-    If a list is not provided, will use default list provided in the IsIPInRanges
+    If a list is not provided, will use the default list provided in the IsIPInRanges
     script (the known IPv4 private address ranges).'
   playbookInputQuery:
 - key: SiteName
   value: {}
   required: false
-  description: Signal Sciences WAF - Enter the Site Name for the integration to be
+  description: Signal Sciences WAF - Enter the site name for the integration to be
     applied. The site name can be found in your instance console.
   playbookInputQuery:
 - key: CiscoFPName
@@ -3572,19 +3571,19 @@ inputs:
 - key: CiscoFPID
   value: {}
   required: false
-  description: Cisco FirePower - Enter the Object Group ID  to be appended with the
+  description: Cisco FirePower - Enter the Object Group ID to be appended with the
     blocklisted IPs.
   playbookInputQuery:
 - key: AkamaiNetworkListID
   value: {}
   required: false
   description: Akamai's WAF network list ID, which is mandatory to be mentioned for
-    the integration. To this ID, the chosen IPs will be added.
+    the integration. The chosen IPs will be added to this ID.
   playbookInputQuery:
 - key: CiscoFWSource
   value: {}
   required: false
-  description: Cisco ASA (firewall) value for Rule's source object in the created
+  description: Cisco ASA (firewall) value for the rule's source object in the created
     blocking rule. Can be the value of an IPv4, an address block, or the name of a
     network object.
   playbookInputQuery:
@@ -3594,17 +3593,17 @@ inputs:
   required: false
   description: |-
     Possible values: True/False . Default: True
-    Enrich Input IP address/es with reputation commands.
+    Enrich the input IP address/es with reputation commands.
   playbookInputQuery:
 - key: RuleName
   value:
     simple: XSOAR - Block IP playbook - ${incident.id}
   required: false
   description: |-
-    The Rule name/description that will be presented on the created rule in certain integrations (if there is a need).
+    The rule name/description that will be presented on the created rule in certain integrations (if there is a need).
     The supported integrations: PAN-OS, CheckPoint.
 
-    Default Input- "XSOAR - Block IP playbook - ${incident.id}"
+    Default input- "XSOAR - Block IP playbook - ${incident.id}"
   playbookInputQuery:
 - key: RuleDirection
   value:
@@ -3612,7 +3611,7 @@ inputs:
   required: false
   description: |-
     Determine if a newly created rule should be with the network direction of outbound or inbound blocked traffic.
-    Possible values: inbound/outbound
+    Possible values: inbound or outbound
     Default: outbound
   playbookInputQuery:
 outputs:
@@ -3620,7 +3619,7 @@ outputs:
   description: The rule name/ID which was created in the system for this playbook.
   type: unknown
 - contextPath: Aria.BlockDestSubnet.Status
-  description: 'The status of the command that created the rule above. '
+  description: 'The status of the command that created the rule above.'
   type: unknown
 - contextPath: Stealthwatch.IP.id
   description: The ID of the object created in Cisco Secure Cloud Analytics.
@@ -3629,16 +3628,16 @@ outputs:
   description: The value of the object created in Cisco Secure Cloud Analytics.
   type: unknown
 - contextPath: CiscoASA.Rules.ID
-  description: The rule ID that was created on Cisco ASA for this playbook.
+  description: The rule ID that was created in Cisco ASA for this playbook.
   type: unknown
 - contextPath: CiscoASA.Rules.Source
-  description: Rule's source object that was set in the associated rule.
+  description: The rule's source object that was set in the associated rule.
   type: unknown
 - contextPath: CiscoASA.Rules.Dest
-  description: Rule's destination object that was set in the associated rule.
+  description: The rule's destination object that was set in the associated rule.
   type: unknown
 - contextPath: CiscoASA.Rules.IsActive
-  description: Rule's state that was set in the  associated rule.
+  description: The rule's state that was set in the associated rule.
   type: unknown
 - contextPath: SigSciences.Corp.Site.Blacklist.ID
   description: Signal Sciences created rule ID.
