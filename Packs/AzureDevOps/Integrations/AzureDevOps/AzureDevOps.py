@@ -69,8 +69,12 @@ class Client:
 
         """
         params = {'api-version': '6.1-preview.3'}
-        data = {"accessLevel": {"accountLicenseType": account_license_type},
-                "projectEntitlements": [
+        data = {
+            "accessLevel": {
+                "accountLicenseType": account_license_type
+            },
+            "projectEntitlements":
+                [
                     {
                         "group": {
                             "groupType": group_type
@@ -79,11 +83,11 @@ class Client:
                             "id": project_id}
                     }
                 ],
-                "user": {
-                    "principalName": user_email,
-                    "subjectKind": "user"
-                }
-                }
+            "user": {
+                "principalName": user_email,
+                "subjectKind": "user"
+            }
+        }
 
         full_url = f"https://vsaex.dev.azure.com/{self.organization}/_apis/UserEntitlements"
 

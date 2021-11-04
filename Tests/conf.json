@@ -237,7 +237,7 @@
             "timeout": 1000
         },
         {
-            "integrations": "AzureDevops",
+            "integrations": "AzureDevOps",
             "playbookID": "playbook-AzureDevOps-Test",
             "fromversion": "6.0.0"
         },
