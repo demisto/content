@@ -198,14 +198,17 @@ def main():
             base_url='https://www.virustotal.com/api/v3/',
             verify=insecure,
             proxy=proxy,
-            headers={'x-apikey': params['credentials']['password']}
+            headers={
+                'x-apikey': params['credentials']['password'],
+                'x-tool': 'CortexVirusTotalRetrohuntFeed',
+            }
         )
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
             return_results(test_module(client, {}))
 
-        elif command == 'vt-retrohunt-fetch-last-job-matches':
+        elif command == 'vt-retrohunt-get-indicators':
             # This is the command that fetches a limited number of indicators
             # from the feed source and displays them in the war room.
             return_results(get_indicators_command(client, params, args))

@@ -100,7 +100,7 @@ script:
     deprecated: false
     description: Gets the matches from latest Virustotal's retrohunt job.
     execution: false
-    name: vt-retrohunt-fetch-last-job-matches
+    name: vt-retrohunt-get-indicators
   dockerimage: demisto/python3:3.9.7.24076
   feed: true
   isfetch: false
