@@ -1,10 +1,13 @@
 args:
 - name: DocFileName
   required: true
+  description: Name of the output docx file. Please include extension as well. For example, test-doc.docx  
 - name: PlaybookName
   required: true
+  description: Name of the playbook to be used for the document creation.
 - auto: PREDEFINED
   name: Output_Format
+  description: 2 possible values, Table or Paragraph. Paragraph is default value.
   predefined:
   - Table
   - Paragraph
@@ -23,8 +26,8 @@ commonfields:
   version: -1
 contentitemexportablefields:
   contentitemfields:
-    fromServerVersion: ""
-    itemVersion: ""
+    fromServerVersion: "6.0.0"
+    itemVersion: "1.0.0"
     packID: f33b17c9-b22e-490b-8778-51203ee7ea32
     propagationLabels:
     - all
