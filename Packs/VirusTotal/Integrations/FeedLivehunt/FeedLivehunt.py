@@ -1,5 +1,4 @@
 import urllib3
-import logging
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -15,17 +14,17 @@ class DetectionRatio:
     def __init__(self, last_analysis_stats: dict):
         self.malicious = last_analysis_stats['malicious']
         self.total = last_analysis_stats['harmless'] + \
-                     last_analysis_stats['suspicious'] + \
-                     last_analysis_stats['undetected'] + \
-                     last_analysis_stats['malicious']
+            last_analysis_stats['suspicious'] + \
+            last_analysis_stats['undetected'] + \
+            last_analysis_stats['malicious']
 
     def __repr__(self):
         return f'{self.malicious}/{self.total}'
 
 
 class Client(BaseClient):
-    def build_iterator(self, limit: int = 10,
-                             filter_: Optional[str] = None) -> List:
+    def build_iterator(self, limit: Optional[int] = 10,
+                       filter_: Optional[str] = None) -> List:
         """Retrieves all entries from the feed.
         Returns:
             A list of objects, containing the indicators.
@@ -36,7 +35,7 @@ class Client(BaseClient):
         response = self.list_notifications_files(limit, filter_)
 
         try:
-            for indicator in response.get('data'):
+            for indicator in response.get('data', []):
                 result.append({
                     'data': indicator,
                     'type': 'file',
@@ -63,9 +62,11 @@ class Client(BaseClient):
             )
         )
 
+
 def test_module(client: Client, args: dict) -> str:
     client.list_notifications_files()
     return 'ok'
+
 
 def fetch_indicators_command(client: Client,
                              tlp_color: Optional[str] = None,
@@ -84,7 +85,7 @@ def fetch_indicators_command(client: Client,
     """
     iterator = client.build_iterator(limit, filter_)
     indicators = []
-    if limit > 0:
+    if limit and limit > 0:
         iterator = iterator[:limit]
 
     # extract values from iterator
@@ -124,7 +125,7 @@ def fetch_indicators_command(client: Client,
                 'ssdeep': attributes.get('ssdeep'),
                 'fileextension': attributes.get('type_extension'),
                 'filetype': attributes.get('type_tag'),
-                'imphash': attributes.get('imphash'),
+                'imphash': attributes.get('pe_info', {}).get('imphash'),
                 'firstseenbysource': attributes.get('first_submission_date'),
                 'lastseenbysource': attributes.get('last_submission_date'),
                 'creationdate': attributes.get('creation_date'),
@@ -143,7 +144,6 @@ def fetch_indicators_command(client: Client,
             'fileType': attributes.get('type_description'),
             'rulesetName': context_attributes.get('ruleset_name'),
             'ruleName': context_attributes.get('rule_name'),
-
         }
 
         if feed_tags:
@@ -178,12 +178,11 @@ def get_indicators_command(client: Client,
 
     human_readable = tableToMarkdown('Indicators from VirusTotal Livehunt Feed:',
                                      indicators,
-                                     headers=[
-                                        'sha256',
-                                        'detections',
-                                        'fileType',
-                                        'rulesetName',
-                                        'ruleName'],
+                                     headers=['sha256',
+                                              'detections',
+                                              'fileType',
+                                              'rulesetName',
+                                              'ruleName'],
                                      headerTransform=string_to_table_header,
                                      removeNull=True)
 
@@ -194,6 +193,7 @@ def get_indicators_command(client: Client,
         raw_response=indicators,
         outputs={},
     )
+
 
 def main():
     """

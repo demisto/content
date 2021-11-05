@@ -48,7 +48,7 @@ Gets the indicators from VirusTotal Livehunt.
 There is no context output for this command.
 
 ##### Command Example
-```!vt-livehunt-get-indicators limit=15 filter=WannaCry_Ransomware```
+```!vt-livehunt-get-indicators limit=1 filter=WannaCry_Ransomware```
 
 
 ##### Human Readable Output
