@@ -34,7 +34,7 @@ For more information about JQL syntax, go to https://www.atlassian.com/software/
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Jira URL, for example: https://demisto.atlassian.net/ |  | True |
-    | Username (Basic Authentication) |  | False |
+    | Username (API or Basic Authentication) |  | False |
     | Password (Deprecated - Use API token) |  | False |
     | API token |  | False |
     | Consumer key (OAuth 1.0) |  | False |
