@@ -579,3 +579,105 @@ def test_azure_devops_branch_list_command(requests_mock):
     assert result.outputs_prefix == 'AzureDevOps.Project'
     assert result.outputs.get('Repository').get('name') == repository
     assert result.outputs.get('Repository').get('Branch')[0].get('name') == 'main'
+
+
+def test_get_last_fetch_incident_index(requests_mock):
+    """
+    Scenario: Retrieve the index of the last fetched pull-request.
+    Given:
+     - User has provided valid credentials.
+    When:
+     - fetch-incidents called.
+    Then:
+     - Ensure the return value is correct.
+    """
+    from AzureDevOps import Client, get_last_fetch_incident_index
+
+    authorization_url = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
+    requests_mock.post(authorization_url, json=get_azure_access_token_mock())
+
+    project = 'test'
+    repository = 'xsoar'
+
+    url = f'{BASE_URL}/{project}/_apis/git/repositories/{repository}/pullrequests/'
+
+    mock_response = json.loads(load_mock_response('list_pull_request.json'))
+    requests_mock.get(url, json=mock_response)
+
+    client = Client(
+        client_id=CLIENT_ID,
+        organization=ORGANIZATION,
+        verify=False,
+        proxy=False)
+
+    assert get_last_fetch_incident_index(project, repository, client, 24) == 0
+    assert get_last_fetch_incident_index(project, repository, client, 22) == 1
+    assert get_last_fetch_incident_index(project, repository, client, 25) == -1
+    assert get_last_fetch_incident_index(project, repository, client, 21) == -1
+
+
+def test_get_closest_index(requests_mock):
+    """
+    Scenario: Retrieve the closest index to the last fetched pull-request ID.
+    Given:
+     - User has provided valid credentials.
+    When:
+     - fetch-incidents called.
+    Then:
+     - Ensure the return value is correct.
+    """
+    from AzureDevOps import Client, get_closest_index
+
+    authorization_url = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
+    requests_mock.post(authorization_url, json=get_azure_access_token_mock())
+
+    project = 'test'
+    repository = 'xsoar'
+
+    url = f'{BASE_URL}/{project}/_apis/git/repositories/{repository}/pullrequests/'
+
+    mock_response = json.loads(load_mock_response('list_pull_request.json'))
+    requests_mock.get(url, json=mock_response)
+
+    client = Client(
+        client_id=CLIENT_ID,
+        organization=ORGANIZATION,
+        verify=False,
+        proxy=False)
+
+    assert get_closest_index(project, repository, client, 23) == 0
+
+
+def test_is_new_pr(requests_mock):
+    """
+    Validate if there is new pull-request in the repository.
+    Given:
+     - User has provided valid credentials.
+    When:
+     - fetch-incidents called.
+    Then:
+     - Ensure the return value is correct.
+    """
+    from AzureDevOps import Client, is_new_pr
+
+    authorization_url = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
+    requests_mock.post(authorization_url, json=get_azure_access_token_mock())
+
+    project = 'test'
+    repository = 'xsoar'
+
+    url = f'{BASE_URL}/{project}/_apis/git/repositories/{repository}/pullrequests/'
+
+    mock_response = json.loads(load_mock_response('list_pull_request.json'))
+    requests_mock.get(url, json=mock_response)
+
+    client = Client(
+        client_id=CLIENT_ID,
+        organization=ORGANIZATION,
+        verify=False,
+        proxy=False)
+
+    assert is_new_pr(project, repository, client, 23) == True
+    assert is_new_pr(project, repository, client, 22) == True
+    assert is_new_pr(project, repository, client, 24) == False
+    assert is_new_pr(project, repository, client, 25) == False
