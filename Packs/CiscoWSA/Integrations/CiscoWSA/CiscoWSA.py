@@ -112,11 +112,8 @@ class Client(BaseClient):
     def get_access_policies(self) -> CommandResults:
 
         data = self._httpp_request(
-
             method='GET',
-            url_suffix='/wsa/api/v3.0/web_security/access_policies'
-
-        )
+            url_suffix='/wsa/api/v3.0/web_security/access_policies')
 
         return data
 
