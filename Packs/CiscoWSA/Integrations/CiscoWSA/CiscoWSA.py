@@ -187,7 +187,8 @@ class Client(BaseClient):
                     outputs=outputs)
 
         except DemistoException as a:
-            return a
+            outputs = {'response': a}
+            return CommandResults(outputs=outputs)
 
     def delete_access_policies(self, a_data) -> CommandResults:
         policy_namess = a_data.get('policy_name')
@@ -216,7 +217,8 @@ class Client(BaseClient):
                     outputs=outputs)
 
         except DemistoException as a:
-            return a
+            outputs = {'response': a}
+            return CommandResults(outputs=outputs)
 
 
 ''' HELPER FUNCTIONS '''
