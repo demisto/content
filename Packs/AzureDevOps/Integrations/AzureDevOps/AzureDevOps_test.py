@@ -677,7 +677,7 @@ def test_is_new_pr(requests_mock):
         verify=False,
         proxy=False)
 
-    assert is_new_pr(project, repository, client, 23) == True
-    assert is_new_pr(project, repository, client, 22) == True
-    assert is_new_pr(project, repository, client, 24) == False
-    assert is_new_pr(project, repository, client, 25) == False
+    assert is_new_pr(project, repository, client, 23)
+    assert is_new_pr(project, repository, client, 22)
+    assert not is_new_pr(project, repository, client, 24)
+    assert not is_new_pr(project, repository, client, 25)
