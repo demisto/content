@@ -2,7 +2,7 @@
     "id": "incident_azuredevopsrepositoryname",
     "version": -1,
     "modified": "2021-10-21T15:15:10.269397229+03:00",
-    "name": "AzureDevOps Repository Name",
+    "name": "Azure DevOps Repository Name",
     "ownerOnly": false,
     "cliName": "azuredevopsrepositoryname",
     "type": "shortText",
@@ -18,7 +18,7 @@
     "group": 0,
     "hidden": false,
     "associatedTypes": [
-        "AzureDevOps"
+        "Azure DevOps"
     ],
     "associatedToAll": false,
     "unmapped": false,

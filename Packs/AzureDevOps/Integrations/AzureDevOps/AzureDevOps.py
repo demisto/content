@@ -73,16 +73,15 @@ class Client:
             "accessLevel": {
                 "accountLicenseType": account_license_type
             },
-            "projectEntitlements":
-                [
-                    {
-                        "group": {
-                            "groupType": group_type
-                        },
-                        "projectRef": {
-                            "id": project_id}
-                    }
-                ],
+            "projectEntitlements": [
+                {
+                    "group": {
+                        "groupType": group_type
+                    },
+                    "projectRef": {
+                        "id": project_id}
+                }
+            ],
             "user": {
                 "principalName": user_email,
                 "subjectKind": "user"
