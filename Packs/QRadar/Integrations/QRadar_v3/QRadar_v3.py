@@ -1229,7 +1229,7 @@ def is_reset_triggered():
     context.
 
     Returns:
-        (bool):create_search_with_retry
+        (bool):
         - True if reset flag was set. If 'handle_reset' is true, also resets integration context.
         - False if reset flag was not found in integration context.
     """
