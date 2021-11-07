@@ -4597,6 +4597,7 @@
         },
         {
             "integrations": "Anomali ThreatStream v3",
+            "fromversion": "6.0.0",
             "playbookID": "ThreatStream-Test"
         },
         {
