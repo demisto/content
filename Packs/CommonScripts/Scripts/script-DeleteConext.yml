@@ -161,7 +161,6 @@ args:
 - name: index
   description: index to delete in case 'key' argument was specified
 scripttarget: 0
-runas: DBotRole
 runonce: false
 sensitive: true
 fromversion: 5.0.0
