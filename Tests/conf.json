@@ -4588,7 +4588,7 @@
             "playbookID": "TestAzureSentinelPlaybookV2"
         },
         {
-            "integrations": "AutoFocusTagsFeed",
+            "integrations": ["AutoFocusTagsFeed", "Demisto REST API"],
             "playbookID": "AutoFocusTagsFeed-test"
         },
         {
