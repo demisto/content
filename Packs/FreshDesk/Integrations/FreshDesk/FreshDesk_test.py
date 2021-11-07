@@ -112,3 +112,24 @@ def test_second_fetch_incidents(mocker, requests_mock):
     assert len(demisto.incidents.call_args_list[0][0][0]) == 5
     assert demisto.setLastRun.call_args_list[0][0][0] == {'last_created_incident_timestamp': 1620826221000,
                                                           'last_incident_id': 48}
+
+
+def test_ticket_to_incident(mocker):
+    """
+    Given:
+        - Ticket with unicode object in its subject
+
+    When:
+        - Parsing ticket into incident
+
+    Then:
+        - Ensure incident is returned as expected
+    """
+    mocker.patch.object(demisto, 'params', return_value=MOCK_PARAMS)
+    import FreshDesk
+    incident = FreshDesk.ticket_to_incident({'subject': u'\u2013'})
+    assert incident == {
+        'name': 'Freshdesk Ticket: "?"',
+        'occurred': None,
+        'rawJSON': '{"subject": "\\u2013"}',
+    }

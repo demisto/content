@@ -3,11 +3,18 @@ commonfields:
   id: Sophos Central
   version: -1
 configuration:
-- additionalinfo: The Sophos account secret should be in the password field.
-  display: Sophos account ID
+- display: Client ID
+  displaypassword: Client Secret
   name: credentials
-  required: true
   type: 9
+  required: true
+  additionalinfo: The Sophos account secret should be in the password field.
+- display: Tenant ID
+  name: tenant_id
+  additionalinfo: Tenant ID on which the commands would be executed by default. Keep
+    it empty if using tenant level credentials.
+  type: 0
+  required: false
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -22,8 +29,8 @@ configuration:
   - high
   required: false
   type: 16
-- additionalinfo: Choose one or more categories to fetch. If none is chosen,
-    all categories will be returned.
+- additionalinfo: Choose one or more categories to fetch. If none is chosen, all categories
+    will be returned.
   display: Fetch Category
   name: fetch_category
   options:
@@ -73,10 +80,6 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
 - display: Use system proxy settings
   name: proxy
   required: false
@@ -93,7 +96,8 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximum number of items to return. Default is "50". Maximum is "100".
+      description: The maximum number of items to return. Default is "50". Maximum
+        is "100".
       isArray: false
       name: limit
       required: false
@@ -121,11 +125,17 @@ script:
     - contextPath: SophosCentral.Alert.managedAgentId
       description: The alert source ID.
       type: String
+    - contextPath: SophosCentral.Alert.managedAgentName
+      description: The alert source name.
+      type: String
     - contextPath: SophosCentral.Alert.managedAgentType
       description: The source that triggered the alert.
       type: String
     - contextPath: SophosCentral.Alert.person
       description: The ID of the referenced person object.
+      type: String
+    - contextPath: SophosCentral.Alert.personName
+      description: The name of the referenced person object.
       type: String
     - contextPath: SophosCentral.Alert.product
       description: Product type.
@@ -175,11 +185,17 @@ script:
     - contextPath: SophosCentral.Alert.managedAgentId
       description: The alert source ID.
       type: String
+    - contextPath: SophosCentral.Alert.managedAgentName
+      description: The alert source name.
+      type: String
     - contextPath: SophosCentral.Alert.managedAgentType
       description: The source that triggered the alert.
       type: String
     - contextPath: SophosCentral.Alert.person
       description: The ID of the referenced person object.
+      type: String
+    - contextPath: SophosCentral.Alert.personName
+      description: The name of the referenced person object.
       type: String
     - contextPath: SophosCentral.Alert.product
       description: Product type.
@@ -208,7 +224,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Actions to perform on the alerts. Possible values are: "acknowledge", "cleanPua", "cleanVirus", "authPua", "clearThreat", "clearHmpa", "sendMsgPua", and "sendMsgThreat".'
+      description: 'Actions to perform on the alerts. Possible values are: "acknowledge",
+        "cleanPua", "cleanVirus", "authPua", "clearThreat", "clearHmpa", "sendMsgPua",
+        and "sendMsgThreat".'
       isArray: false
       name: action
       predefined:
@@ -265,7 +283,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Time on which or after the alerts were raised. Use ISO time format (YYYY-MM-DDTHH:MM:SSZ).
+      description: Time on which or after the alerts were raised. Use ISO time format
+        (YYYY-MM-DDTHH:MM:SSZ).
       isArray: false
       name: start
       required: false
@@ -277,14 +296,18 @@ script:
       required: false
       secret: false
     - default: false
-      description: The date range in which to search from the current time instead of a start/end time in the format (<number> <time unit>, e.g., 12 hours, 7 days). date_range will overwrite the start and end arguments if defined.
+      description: The date range in which to search from the current time instead
+        of a start/end time in the format (<number> <time unit>, e.g., 12 hours, 7
+        days). date_range will overwrite the start and end arguments if defined.
       isArray: false
       name: date_range
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Alerts for a product(s). Possible values are: "other", "endpoint", "server", "mobile", "encryption", "emailGateway", "webGateway", "phishThreat", "wireless", "iaas", and "firewall".'
+      description: 'Alerts for a product(s). Possible values are: "other", "endpoint",
+        "server", "mobile", "encryption", "emailGateway", "webGateway", "phishThreat",
+        "wireless", "iaas", and "firewall".'
       isArray: true
       name: product
       predefined:
@@ -344,7 +367,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Alerts for a specific severity level(s). Possible values are: "high", "medium", and "low".'
+      description: 'Alerts for a specific severity level(s). Possible values are:
+        "high", "medium", and "low".'
       isArray: true
       name: severity
       predefined:
@@ -361,7 +385,8 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum number of items to return. Default is "50". Maximum is "100".
+      description: The maximum number of items to return. Default is "50". Maximum
+        is "100".
       isArray: false
       name: limit
       required: false
@@ -389,11 +414,17 @@ script:
     - contextPath: SophosCentral.Alert.managedAgentId
       description: The alert source ID.
       type: String
+    - contextPath: SophosCentral.Alert.managedAgentName
+      description: The alert source name.
+      type: String
     - contextPath: SophosCentral.Alert.managedAgentType
       description: The source that triggered the alert.
       type: String
     - contextPath: SophosCentral.Alert.person
       description: The ID of the referenced person object.
+      type: String
+    - contextPath: SophosCentral.Alert.personName
+      description: The name of the referenced person object.
       type: String
     - contextPath: SophosCentral.Alert.product
       description: Product type.
@@ -416,7 +447,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'Match endpoints that have any of the specified health statuses. Possible values are: "bad", "good", "suspicious", and "unknown".'
+      description: 'Match endpoints that have any of the specified health statuses.
+        Possible values are: "bad", "good", "suspicious", and "unknown".'
       isArray: true
       name: health_status
       predefined:
@@ -428,7 +460,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Match endpoints that have any of the specified endpoint types. Possible values are: "computer", "server", and "securityVm".'
+      description: 'Match endpoints that have any of the specified endpoint types.
+        Possible values are: "computer", "server", and "securityVm".'
       isArray: true
       name: endpoint_type
       predefined:
@@ -439,7 +472,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether tamper protection is enabled. Possible values are: "true" and "false".'
+      description: 'Whether tamper protection is enabled. Possible values are: "true"
+        and "false".'
       isArray: false
       name: tamper_protection_enabled
       predefined:
@@ -449,7 +483,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Match endpoints that have any of the specified lockdown statuses. Possible values are: "creatingWhitelist", "installing", "locked", "notInstalled", "registering", "starting", "stopping", "unavailable", "uninstalled", and "unlocked".'
+      description: 'Match endpoints that have any of the specified lockdown statuses.
+        Possible values are: "creatingWhitelist", "installing", "locked", "notInstalled",
+        "registering", "starting", "stopping", "unavailable", "uninstalled", and "unlocked".'
       isArray: true
       name: lockdown_status
       predefined:
@@ -485,7 +521,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Type of view to be returned in the response. Possible values are: "basic", "summary", and "full".'
+      description: 'Type of view to be returned in the response. Possible values are:
+        "basic", "summary", and "full".'
       isArray: false
       name: view
       predefined:
@@ -496,7 +533,8 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum number of items to return. Default is "50". Maximum is "100".
+      description: The maximum number of items to return. Default is "50". Maximum
+        is "100".
       isArray: false
       name: limit
       required: false
@@ -594,7 +632,8 @@ script:
     - auto: PREDEFINED
       default: true
       defaultValue: false
-      description: 'Whether to return the tamper protection password. Possible values are: "true" and "false".'
+      description: 'Whether to return the tamper protection password. Possible values
+        are: "true" and "false".'
       isArray: false
       name: get_password
       predefined:
@@ -603,7 +642,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get tamper protection information for one or more endpoints. Potentially harmful because of the password.
+    description: Get tamper protection information for one or more endpoints. Potentially
+      harmful because of the password.
     execution: true
     name: sophos-central-endpoint-tamper-get
     outputs:
@@ -625,7 +665,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether tamper protection should be turned on for the endpoint. Possible values are: "true" and "false".'
+      description: 'Whether tamper protection should be turned on for the endpoint.
+        Possible values are: "true" and "false".'
       isArray: false
       name: enabled
       predefined:
@@ -636,7 +677,8 @@ script:
     - auto: PREDEFINED
       default: true
       defaultValue: false
-      description: 'Whether to return the tamper protection password. Possible values are: "true" and "false".'
+      description: 'Whether to return the tamper protection password. Possible values
+        are: "true" and "false".'
       isArray: false
       name: get_password
       predefined:
@@ -645,7 +687,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Update tamper protection information for one or more endpoints. Potentially harmful because of the password.
+    description: Update tamper protection information for one or more endpoints. Potentially
+      harmful because of the password.
     execution: true
     name: sophos-central-endpoint-tamper-update
     outputs:
@@ -661,7 +704,8 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximum size of the page requested. Default is "50". Maximum is "100".
+      description: The maximum size of the page requested. Default is "50". Maximum
+        is "100".
       isArray: false
       name: page_size
       required: false
@@ -807,7 +851,10 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The property by which an item is allowed. Note that the specified item type requires the matching argument filled. For example, the item type "path" requires the path argument. Possible values are: "path", "sha256", and "certificateSigner".'
+      description: 'The property by which an item is allowed. Note that the specified
+        item type requires the matching argument filled. For example, the item type
+        "path" requires the path argument. Possible values are: "path", "sha256",
+        and "certificateSigner".'
       isArray: false
       name: item_type
       predefined:
@@ -947,7 +994,8 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximum size of the page requested. Default is "50". Maximum is "100".
+      description: The maximum size of the page requested. Default is "50". Maximum
+        is "100".
       isArray: false
       name: page_size
       required: false
@@ -1165,7 +1213,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'Scan exclusion type. Possible values are: "path", "posixPath", "virtualPath", "process", "web", "pua", "exploitMitigation", "amsi", "behavioral".'
+      description: 'Scan exclusion type. Possible values are: "path", "posixPath",
+        "virtualPath", "process", "web", "pua", "exploitMitigation", "amsi", "behavioral".'
       isArray: false
       name: exclusion_type
       predefined:
@@ -1182,7 +1231,8 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum size of the page requested. Default is "50". Maximum is "100".
+      description: The maximum size of the page requested. Default is "50". Maximum
+        is "100".
       isArray: false
       name: page_size
       required: false
@@ -1209,7 +1259,10 @@ script:
       description: The unique ID for the scanning exclusion setting.
       type: String
     - contextPath: SophosCentral.ScanExclusion.scanMode
-      description: The scan mode. Default is "onDemandAndOnAccess" for exclusions of type path, posixPath, and virtualPath and "onAccess" for process, web, pua, amsi. Behavioral and Detected Exploits (exploitMitigation) type exclusions do not support a scan mode.
+      description: The scan mode. Default is "onDemandAndOnAccess" for exclusions
+        of type path, posixPath, and virtualPath and "onAccess" for process, web,
+        pua, amsi. Behavioral and Detected Exploits (exploitMitigation) type exclusions
+        do not support a scan mode.
       type: String
     - contextPath: SophosCentral.ScanExclusion.type
       description: The scanning exclusion type.
@@ -1239,7 +1292,10 @@ script:
       description: The unique ID for the scanning exclusion setting.
       type: String
     - contextPath: SophosCentral.ScanExclusion.scanMode
-      description: The scan mode. Default is "onDemandAndOnAccess" for exclusions of type path, posixPath, and virtualPath and "onAccess" for process, web, pua, amsi. Behavioral and Detected Exploits (exploitMitigation) type exclusions do not support a scan mode.
+      description: The scan mode. Default is "onDemandAndOnAccess" for exclusions
+        of type path, posixPath, and virtualPath and "onAccess" for process, web,
+        pua, amsi. Behavioral and Detected Exploits (exploitMitigation) type exclusions
+        do not support a scan mode.
       type: String
     - contextPath: SophosCentral.ScanExclusion.type
       description: The scanning exclusion type.
@@ -1256,7 +1312,11 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The scan mode. Possible values are: "onDemand", "onAccess", and "onDemandAndOnAccess". Default is "onDemandAndOnAccess" for exclusions of type path, posixPath and virtualPath, "onAccess" for process, web, pua, amsi. Behavioral and Detected Exploits (exploitMitigation) type exclusions do not support a scan mode.'
+      description: 'The scan mode. Possible values are: "onDemand", "onAccess", and
+        "onDemandAndOnAccess". Default is "onDemandAndOnAccess" for exclusions of
+        type path, posixPath and virtualPath, "onAccess" for process, web, pua, amsi.
+        Behavioral and Detected Exploits (exploitMitigation) type exclusions do not
+        support a scan mode.'
       isArray: false
       name: scan_mode
       predefined:
@@ -1267,7 +1327,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The scanning exclusion type. Possible values are: "path", "posixPath", "virtualPath", "process", "web", "pua", "exploitMitigation", "amsi", "behavioral".'
+      description: 'The scanning exclusion type. Possible values are: "path", "posixPath",
+        "virtualPath", "process", "web", "pua", "exploitMitigation", "amsi", "behavioral".'
       isArray: false
       name: exclusion_type
       predefined:
@@ -1303,7 +1364,10 @@ script:
       description: The unique ID for the scanning exclusion setting.
       type: String
     - contextPath: SophosCentral.ScanExclusion.scanMode
-      description: The scan mode. Default is "onDemandAndOnAccess" for exclusions of type path, posixPath, and virtualPath and "onAccess" for process, web, pua, amsi. Behavioral and Detected Exploits (exploitMitigation) type exclusions do not support a scan mode.
+      description: The scan mode. Default is "onDemandAndOnAccess" for exclusions
+        of type path, posixPath, and virtualPath and "onAccess" for process, web,
+        pua, amsi. Behavioral and Detected Exploits (exploitMitigation) type exclusions
+        do not support a scan mode.
       type: String
     - contextPath: SophosCentral.ScanExclusion.type
       description: The scanning exclusion type.
@@ -1320,7 +1384,11 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The scan mode. Possible values are: "onDemand", "onAccess", and "onDemandAndOnAccess". Default is "onDemandAndOnAccess" for exclusions of type path, posixPath and virtualPath, "onAccess" for process, web, pua, amsi. Behavioral and Detected Exploits (exploitMitigation) type exclusions do not support a scan mode.'
+      description: 'The scan mode. Possible values are: "onDemand", "onAccess", and
+        "onDemandAndOnAccess". Default is "onDemandAndOnAccess" for exclusions of
+        type path, posixPath and virtualPath, "onAccess" for process, web, pua, amsi.
+        Behavioral and Detected Exploits (exploitMitigation) type exclusions do not
+        support a scan mode.'
       isArray: false
       name: scan_mode
       predefined:
@@ -1356,7 +1424,10 @@ script:
       description: The unique ID for the scanning exclusion setting.
       type: String
     - contextPath: SophosCentral.ScanExclusion.scanMode
-      description: The scan mode. Default is "onDemandAndOnAccess" for exclusions of type path, posixPath, and virtualPath and "onAccess" for process, web, pua, amsi. Behavioral and Detected Exploits (exploitMitigation) type exclusions do not support a scan mode.
+      description: The scan mode. Default is "onDemandAndOnAccess" for exclusions
+        of type path, posixPath, and virtualPath and "onAccess" for process, web,
+        pua, amsi. Behavioral and Detected Exploits (exploitMitigation) type exclusions
+        do not support a scan mode.
       type: String
     - contextPath: SophosCentral.ScanExclusion.type
       description: The scanning exclusion type.
@@ -1392,7 +1463,8 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum size of the page requested. Default is "50". Maximum is "100".
+      description: The maximum size of the page requested. Default is "50". Maximum
+        is "100".
       isArray: false
       name: page_size
       required: false
@@ -1406,7 +1478,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether the Exploit Mitigation application has been customized. Possible values are: "true" and "false".'
+      description: 'Whether the Exploit Mitigation application has been customized.
+        Possible values are: "true" and "false".'
       isArray: false
       name: modified
       predefined:
@@ -1432,7 +1505,8 @@ script:
       description: Paths included in this Exploit Mitigation application.
       type: String
     - contextPath: SophosCentral.ExploitMitigation.type
-      description: Whether the application was detected by the system or created by the user.
+      description: Whether the application was detected by the system or created by
+        the user.
       type: String
   - arguments:
     - default: false
@@ -1464,7 +1538,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: An absolute path to an application file to exclude. You may use HitmanPro.Alert expansion variables (e.g., $desktop, $programfiles).
+      description: An absolute path to an application file to exclude. You may use
+        HitmanPro.Alert expansion variables (e.g., $desktop, $programfiles).
       isArray: false
       name: path
       required: true
@@ -1498,7 +1573,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: An absolute path to an application file to exclude. You may use HitmanPro.Alert expansion variables (e.g., $desktop, $programfiles).
+      description: An absolute path to an application file to exclude. You may use
+        HitmanPro.Alert expansion variables (e.g., $desktop, $programfiles).
       isArray: false
       name: path
       required: true
@@ -1543,7 +1619,8 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximum size of the page requested. Default is "50". Maximum is "100".
+      description: The maximum size of the page requested. Default is "50". Maximum
+        is "100".
       isArray: false
       name: page_size
       required: false
@@ -1567,7 +1644,8 @@ script:
     name: sophos-central-detected-exploit-list
     outputs:
     - contextPath: SophosCentral.DetectedExploit.count
-      description: The number of times the same exploit has been detected, potentially across multiple endpoints.
+      description: The number of times the same exploit has been detected, potentially
+        across multiple endpoints.
       type: Number
     - contextPath: SophosCentral.DetectedExploit.description
       description: The English description of the exploit detected event.
@@ -1609,7 +1687,8 @@ script:
     name: sophos-central-detected-exploit-get
     outputs:
     - contextPath: SophosCentral.DetectedExploit.count
-      description: The number of times the same exploit has been detected, potentially across multiple endpoints.
+      description: The number of times the same exploit has been detected, potentially
+        across multiple endpoints.
       type: Number
     - contextPath: SophosCentral.DetectedExploit.description
       description: The English description of the exploit detected event.
@@ -1638,7 +1717,85 @@ script:
     - contextPath: SophosCentral.DetectedExploit.thumbprint
       description: Matches [0-9a-zA-Z]{64}.
       type: String
-  dockerimage: demisto/python3:3.9.5.21272
+  - arguments:
+    - default: false
+      description: The endpoint ID(s).
+      isArray: true
+      name: endpoint_id
+      required: true
+      secret: false
+    - default: false
+      description: Comment indicating why the endpoint(s) should be isolated.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    deprecated: false
+    description: Initiate isolation request on the endpoint(s).
+    execution: false
+    name: sophos-central-isolate-endpoint
+    outputs:
+    - contextPath: SophosCentral.EndpointIsolation.items.id
+      description: 'The unique endpoint ID.'
+      type: String
+    - contextPath: SophosCentral.EndpointIsolation.items.isolation.enabled
+      description: 'Isolation status.'
+      type: Boolean
+    - contextPath: SophosCentral.EndpointIsolation.items.isolation.lastEnabledAt
+      description: 'When isolation was last enabled for the endpoint.'
+      type: String
+    - contextPath: SophosCentral.EndpointIsolation.items.isolation.lastEnabledBy.id
+      description: 'Principal Email or clientId by whom isolation was enabled.'
+      type: String
+    - contextPath: SophosCentral.EndpointIsolation.items.isolation.lastDisabledAt
+      description: 'When isolation was last disabled for the endpoint.'
+      type: String
+    - contextPath: SophosCentral.EndpointIsolation.items.isolation.lastDisabledBy.id
+      description: 'Principal Email or clientId by whom isolation was disabled.'
+      type: String
+    - contextPath: SophosCentral.EndpointIsolation.items.isolation.comment
+      description: 'Reason endpoint should be isolated or not.'
+      type: String
+  - arguments:
+    - default: false
+      description: The endpoint ID(s).
+      isArray: true
+      name: endpoint_id
+      required: true
+      secret: false
+    - default: false
+      description: Comment indicating why the endpoint(s) should be de-isolated.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    deprecated: false
+    description: Initiate de-isolation request on the endpoint(s).
+    execution: false
+    name: sophos-central-deisolate-endpoint
+    outputs:
+    - contextPath: SophosCentral.EndpointIsolation.items.id
+      description: 'The unique endpoint ID.'
+      type: String
+    - contextPath: SophosCentral.EndpointIsolation.items.isolation.enabled
+      description: 'Isolation status.'
+      type: Boolean
+    - contextPath: SophosCentral.EndpointIsolation.items.isolation.lastEnabledAt
+      description: 'When isolation was last enabled for the endpoint.'
+      type: String
+    - contextPath: SophosCentral.EndpointIsolation.items.isolation.lastEnabledBy.id
+      description: 'Principal Email or clientId by whom isolation was enabled.'
+      type: String
+    - contextPath: SophosCentral.EndpointIsolation.items.isolation.lastDisabledAt
+      description: 'When isolation was last disabled for the endpoint.'
+      type: String
+    - contextPath: SophosCentral.EndpointIsolation.items.isolation.lastDisabledBy.id
+      description: 'Principal Email or clientId by whom isolation was disabled.'
+      type: String
+    - contextPath: SophosCentral.EndpointIsolation.items.isolation.comment
+      description: 'Reason endpoint should be isolated or not.'
+      type: String
+  dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: true
   longRunning: false

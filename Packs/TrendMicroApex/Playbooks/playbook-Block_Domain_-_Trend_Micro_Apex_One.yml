@@ -1,0 +1,222 @@
+id: Block Domain - Trend Micro Apex One
+version: -1
+name: Block Domain - Trend Micro Apex One
+description: |-
+  This playbook blocks domains using Trend Micro Apex One.
+  The playbook checks whether the Trend Micro Apex One integration is enabled, whether the Domain input has been provided and if so, blocks the domain.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d333e30b-b0ba-4578-820f-116443c2fa50
+    type: start
+    task:
+      id: d333e30b-b0ba-4578-820f-116443c2fa50
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: b414b6be-6e40-48a4-8612-d7cc449eb0cf
+    type: condition
+    task:
+      id: b414b6be-6e40-48a4-8612-d7cc449eb0cf
+      version: -1
+      name: Is Trend Micro Apex One enabled?
+      description: Verify that there is a valid instance of Check Point Firewall enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Trend Micro Apex
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 1ba41c15-db4f-4493-82f4-61beb7dbac33
+    type: regular
+    task:
+      id: 1ba41c15-db4f-4493-82f4-61beb7dbac33
+      version: -1
+      name: Block Domain
+      description: Add suspicious file SHA-1, IP address, domain, or URL objects to
+        the User-Defined Suspicious Object list.
+      script: '|||trendmicro-apex-udso-add'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      content:
+        complex:
+          root: inputs.Domain
+      scan_action:
+        simple: block
+      type:
+        simple: domain
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 410a42e0-2997-42fb-8b86-99085fe3168b
+    type: title
+    task:
+      id: 410a42e0-2997-42fb-8b86-99085fe3168b
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 36454014-dd62-4832-8cfe-f60877860910
+    type: condition
+    task:
+      id: 36454014-dd62-4832-8cfe-f60877860910
+      version: -1
+      name: Check if Domain input was provided
+      description: Check whether the necessary inputs were provided
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Domain
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_2_yes": 0.63
+    },
+    "paper": {
+      "dimensions": {
+        "height": 785,
+        "width": 380,
+        "x": 450,
+        "y": -110
+      }
+    }
+  }
+inputs:
+- key: Domain
+  value:
+    simple: www.test.com
+  required: false
+  description: The Domain to block.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 5.5.0

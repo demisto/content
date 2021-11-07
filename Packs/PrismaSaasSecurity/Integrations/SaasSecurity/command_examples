@@ -1,0 +1,6 @@
+saas-security-incidents-get limit=11 app_ids=acf49b2389c09f26ad0ccd2b1a603328 from=2021-08-23T20:25:17.495Z state=Open severity=All
+saas-security-incident-get-by-id id=4
+saas-security-incident-state-update category="Business Justified" id=4
+saas-security-get-apps
+saas-security-asset-remediate asset_id=61099dc46b544e38fa3ce89a remediation_type=Quarantine
+saas-security-remediation-status-get asset_id=61099dc46b544e38fa3ce89a remediation_type=Quarantine

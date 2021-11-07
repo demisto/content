@@ -1,0 +1,130 @@
+id: Cloud IDS-IP Blacklist-GCP Firewall_Extract
+version: -1
+name: Cloud IDS-IP Blacklist-GCP Firewall_Extract
+description: Get Source IP
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ead23198-fccb-45bb-8220-5ef5ee7dd8be
+    type: start
+    task:
+      id: ead23198-fccb-45bb-8220-5ef5ee7dd8be
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "36"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: 7a1e8bf0-88a2-4633-8273-d3722a190768
+    type: title
+    task:
+      id: 7a1e8bf0-88a2-4633-8273-d3722a190768
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: 2cd3490c-4a7f-488b-8f8f-04acf3bab28c
+    type: regular
+    task:
+      id: 2cd3490c-4a7f-488b-8f8f-04acf3bab28c
+      version: -1
+      name: Extract
+      description: Loads a json from string input, and returns a json object result
+      scriptName: LoadJSON
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      input:
+        simple: ${incident.labels.data}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 425,
+        "width": 380,
+        "x": 377.5,
+        "y": 90
+      }
+    }
+  }
+inputs:
+- key: ""
+  value: {}
+  required: false
+  description: Indicators to trigger the playbook
+  playbookInputQuery:
+    query: ""
+    queryEntity: indicators
+    results:
+    daterange:
+      fromdate: 0001-01-01T00:00:00Z
+      todate: 0001-01-01T00:00:00Z
+      period:
+        by: ""
+        byto: ""
+        byfrom: ""
+        tovalue:
+        fromvalue:
+        field: ""
+      fromdatelicenseval: 0001-01-01T00:00:00Z
+    runFromLastJobTime: false
+outputs:
+- contextPath: JsonObject
+  description: The JSON object loaded from input
+quiet: true
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

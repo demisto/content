@@ -48,6 +48,12 @@ configuration:
   defaultvalue: 1 day
   type: 0
   required: false
+- display: Override Record Summary Fields
+  name: record_summary_fields
+  defaultvalue: "action,description,device_hostname,device_ip,dstDevice_hostname,dstDevice_ip,email_sender,file_basename,file_hash_md5,file_hash_sha1,file_hash_sha256,srcDevice_hostname,srcDevice_ip,threat_name,threat_category,threat_identifier,user_username,threat_url,listMatches"
+  type: 0
+  required: false
+  additionalinfo: Record Summary Fields included when fetching Insights
 script:
   script: ''
   type: python
@@ -58,6 +64,9 @@ script:
       required: true
       default: true
       description: The insight to retrieve details for.
+    - name: record_summary_fields
+      description: Record Summary Fields included with the Insight.
+      defaultValue: "action,description,device_hostname,device_ip,dstDevice_hostname,dstDevice_ip,email_sender,file_basename,file_hash_md5,file_hash_sha1,file_hash_sha256,srcDevice_hostname,srcDevice_ip,threat_name,threat_category,threat_identifier,user_username,threat_url,listMatches"
     outputs:
     - contextPath: SumoLogicSec.Insight.Assignee
       description: User or team assigned to the Insight.
@@ -92,6 +101,9 @@ script:
     - contextPath: SumoLogicSec.Insight.ReadableId
       description: The ID of the Insight in readable form.
       type: String
+    - contextPath: SumoLogicSec.InsightList.RecordSummaryFields
+      description: Record Summary Fields associated with the Insight.
+      type: Unknown
     - contextPath: SumoLogicSec.Insight.Resolution
       description: Resolution for closed Insight.
       type: String
@@ -270,6 +282,9 @@ script:
     - name: limit
       description: The maximum number of items to return.
       defaultValue: "10"
+    - name: record_summary_fields
+      description: Record Summary Fields included with the Insight.
+      defaultValue: "action,description,device_hostname,device_ip,dstDevice_hostname,dstDevice_ip,email_sender,file_basename,file_hash_md5,file_hash_sha1,file_hash_sha256,srcDevice_hostname,srcDevice_ip,threat_name,threat_category,threat_identifier,user_username,threat_url,listMatches"
     outputs:
     - contextPath: SumoLogicSec.InsightList.Assignee
       description: User or team assigned to the Insight.
@@ -304,6 +319,9 @@ script:
     - contextPath: SumoLogicSec.InsightList.ReadableId
       description: The ID of the Insight in readable form.
       type: String
+    - contextPath: SumoLogicSec.InsightList.RecordSummaryFields
+      description: Record Summary Fields associated with the Insight.
+      type: Unknown
     - contextPath: SumoLogicSec.InsightList.Resolution
       description: Resolution for closed Insight.
       type: String
@@ -793,7 +811,7 @@ script:
       description: Server response (True or False).
       type: Boolean
     description: Add a Threat Intel Indicator to an Threat Intel Source.
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.9.7.24076
   isfetch: true
   runonce: false
   subtype: python3

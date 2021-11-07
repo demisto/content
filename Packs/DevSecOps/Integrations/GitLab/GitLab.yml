@@ -20,145 +20,150 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: An Integration with GitLab
+description: An integration with GitLab.
 display: GitLab
 name: GitLab
 script:
   commands:
   - arguments:
     - default: false
-      description: Limit results to projects stored on repository_storage. Available
-        for admins only.
+      description: Limits the results to projects stored on repository_storage. Available
+        for administrators only.
       isArray: false
       name: repository_storage
       required: false
       secret: false
     - default: false
-      description: Limit results to projects with last_activity before specified time.
+      description: Limits the results to projects with last_activity before a specified
+        time.
       isArray: false
       name: last_activity_before
       required: false
       secret: false
     - default: false
-      description: Limit by current user minimal access level.
+      description: Limits by the minimal access level of the current user.
       isArray: false
       name: min_access_level
       required: false
       secret: false
     - default: false
-      description: Return only limited fields for each project. This is a no-op without
-        authentication as then only simple fields are returned.
+      description: Returns only limited fields for each project. This is a no operation
+        without authentication as only simple fields are returned.
       isArray: false
       name: simple
       required: false
       secret: false
     - default: false
-      description: Return projects sorted in asc or desc order.
+      description: Returns the projects sorted in ascending or descending order.
       isArray: false
       name: sort
       required: false
       secret: false
     - default: false
-      description: Limit by projects that the current user is a member of.
+      description: Limits by the projects that the current user is a member of.
       isArray: false
       name: membership
       required: false
       secret: false
     - default: false
-      description: Include ancestor namespaces when matching search criteria.
+      description: Includes the ancestor namespaces when matching search criteria.
       isArray: false
       name: search_namespaces
       required: false
       secret: false
     - default: false
-      description: Limit by archived status.
+      description: Limits by archived status.
       isArray: false
       name: archived
       required: false
       secret: false
     - default: false
-      description: Return list of projects matching the search criteria.
+      description: Returns a list of projects that match the search criteria.
       isArray: false
       name: search
       required: false
       secret: false
     - default: false
-      description: Limit results to projects with IDs less than the specified ID.
+      description: Limits the results to projects with IDs that are less than the
+        specified ID.
       isArray: false
       name: id_before
       required: false
       secret: false
     - default: false
-      description: Limit results to projects with last_activity after specified time
+      description: Limits the results to projects with last_activity after a specified
+        time.
       isArray: false
       name: last_activity_after
       required: false
       secret: false
     - default: false
-      description: Limit by projects starred by the current user .
+      description: Limits by the projects starred by the current user.
       isArray: false
       name: starred
       required: false
       secret: false
     - default: false
-      description: Limit results to projects with IDs greater than the specified ID.
+      description: Limits the results to projects with IDs greater than the specified
+        ID.
       isArray: false
       name: id_after
       required: false
       secret: false
     - default: false
-      description: Limit by projects explicitly owned by the current user.
+      description: Limits by the projects explicitly owned by the current user.
       isArray: false
       name: owned
       required: false
       secret: false
     - default: false
-      description: Return projects ordered by id, name, path, created_at, updated_at,
-        or last_activity_at fields. repository_size, storage_size, or wiki_size fields
-        are only allowed for admins. Default is created_at.
+      description: Returns the projects ordered by id, name, path, created_at, updated_at,
+        or last_activity_at fields. Repository_size, storage_size, and wiki_size fields
+        are only allowed for administrators. The default is created_at.
       isArray: false
       name: order_by
       required: false
       secret: false
     - default: false
-      description: Include project statistics.
+      description: Includes the project statistics.
       isArray: false
       name: statistics
       required: false
       secret: false
     - default: false
-      description: Limit by visibility public, internal, or private.
+      description: Limits by visibility; public, internal, or private.
       isArray: false
       name: visibility
       required: false
       secret: false
     - default: false
-      description: Include custom attributes in response (admins only).
+      description: Includes the custom attributes in the response (administrators
+        only).
       isArray: false
       name: with_custom_attributes
       required: false
       secret: false
     - default: false
-      description: Limit by enabled issues feature.
+      description: Limits by the enabled issues feature.
       isArray: false
       name: with_issues_enabled
       required: false
       secret: false
     - default: false
-      description: Limit by enabled merge requests feature.
+      description: Limits by the enabled merge requests feature.
       isArray: false
       name: with_merge_requests_enabled
       required: false
       secret: false
     - default: false
-      description: Limit by projects which use the given programming language.
+      description: Limits by the projects that use the given programming language.
       isArray: false
       name: with_programming_language
       required: false
       secret: false
     deprecated: false
-    description: Get a list of all visible projects across GitLab for the authenticated
-      user. When accessed without authentication, only public projects with “simple”
+    description: Gets a list of all visible projects across GitLab for the authenticated
+      user. When accessed without authentication, only public projects with simple
       fields are returned.
     execution: false
     name: gitlab-get-projects
@@ -183,14 +188,15 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: The ID or URL-encoded path of the project owned by the authenticated
-        user.
+      description: The ID or URL encoded path of the project that is owned by the
+        authenticated user.
       isArray: false
       name: id
       required: true
       secret: false
     deprecated: false
-    description: Gets a list of access requests viewable by the authenticated user.
+    description: Gets a list of the access requests viewable by the authenticated
+      user.
     execution: false
     name: gitlab-projects-get-access-requests
     outputs:
@@ -208,14 +214,14 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: The ID or URL-encoded path of the project owned by the authenticated
-        user.
+      description: The ID or URL encoded path of the project that is owned by the
+        authenticated user.
       isArray: false
       name: id
       required: true
       secret: false
     deprecated: false
-    description: Requests access for the authenticated user to a group or project.
+    description: Requests the authenticated user access to a group or project.
     execution: false
     name: gitlab-projects-request-access
     outputs:
@@ -233,7 +239,7 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: The ID or URL-encoded path of the project owned by the authenticated
+      description: The ID or URL encoded path of the project owned by the authenticated
         user.
       isArray: false
       name: id
@@ -246,7 +252,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'A valid access level (defaults: 30, developer access level)'
+      description: 'A valid access level (defaults: 30, developer access level).'
       isArray: false
       name: access_level
       required: false
@@ -257,21 +263,21 @@ script:
     name: gitlab-projects-approve-access
     outputs:
     - contextPath: GitLab.AccessRequests.id
-      description: Access Request ID
+      description: Access Request ID.
       type: Unknown
     - contextPath: GitLab.AccessRequests.username
-      description: Access Request User
+      description: Access Request User.
       type: Unknown
     - contextPath: GitLab.AccessRequests.requested_at
-      description: Access Request Create Time
+      description: Access Request Create Time.
       type: Unknown
     - contextPath: GitLab.AccessRequests.state
-      description: Access Request State
+      description: Access Request State.
       type: Unknown
   - arguments:
     - default: false
-      description: The ID or URL-encoded path of the project owned by the authenticated
-        user.
+      description: The ID or URL encoded path of the project that is owned by the
+        authenticated user.
       isArray: false
       name: id
       required: true
@@ -288,45 +294,45 @@ script:
     name: gitlab-projects-deny-access
     outputs:
     - contextPath: GitLab.AccessRequests.id
-      description: Access Request ID
+      description: Access Request ID.
       type: Unknown
     - contextPath: GitLab.AccessRequests.state
-      description: Access Request State
+      description: Access Request State.
       type: Unknown
   - arguments:
     - default: false
-      description: The ID or URL-encoded path of the project owned by the authenticated
-        user.
+      description: The ID or URL encoded path of the project that is owned by the
+        authenticated user.
       isArray: false
       name: id
       required: true
       secret: false
     - default: false
-      description: Return list of branches containing the search string. You can use
-        ^term and term$ to find  branches that begin and end with term respectively.
+      description: Returns a list of branches containing the search string. You can
+        use ^term and term$ to find branches that begin and end with term, respectively.
       isArray: false
       name: search
       required: false
       secret: false
     deprecated: false
-    description: Get a list of repository  branches from a project, sorted by name
+    description: Gets a list of repository branches from a project, sorted by name
       alphabetically.
     execution: false
     name: gitlab-projects-get-repository-branches
     outputs:
     - contextPath: GitLab.Branches.name
-      description: Branch Name
+      description: Branch Name.
       type: Unknown
     - contextPath: GitLab.Branches.web_url
-      description: Branch Web URL
+      description: Branch Web URL.
       type: Unknown
     - contextPath: GitLab.Branches.commit.id
-      description: Branch Head Commit ID
+      description: Branch Head Commit ID.
       type: Unknown
   - arguments:
     - default: false
-      description: The ID or URL-encoded path of the project owned by the authenticated
-        user.
+      description: The ID or URL encoded path of the project that is owned by the
+        authenticated user.
       isArray: false
       name: id
       required: true
@@ -338,29 +344,29 @@ script:
       required: true
       secret: false
     - default: false
-      description: Branch name or commit SHA to create branch from.
+      description: Branch name, or commit SHA to create a branch from.
       isArray: false
       name: ref
       required: true
       secret: false
     deprecated: false
-    description: Create a new Branch in the repository.
+    description: Creates a new branch in the repository.
     execution: false
     name: gitlab-projects-create-repository-branch
     outputs:
     - contextPath: GitLab.Branches.name
-      description: Branch Name
+      description: Branch Name.
       type: Unknown
     - contextPath: GitLab.Branches.web_url
-      description: Branch Web URL
+      description: Branch Web URL.
       type: Unknown
     - contextPath: GitLab.Branches.commit.id
-      description: Branch Head Commit ID
+      description: Branch Head Commit ID.
       type: Unknown
   - arguments:
     - default: false
-      description: The ID or URL-encoded path of the project owned by the authenticated
-        user.
+      description: The ID or URL encoded path of the project that is owned by the
+        authenticated user.
       isArray: false
       name: id
       required: true
@@ -372,24 +378,24 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Delete a Branch from the repository.
+    description: Deletes a branch from the repository.
     execution: false
     name: gitlab-projects-delete-repository-branch
   - arguments:
     - default: false
-      description: The ID or URL-encoded path of the project owned by the authenticated
-        user.
+      description: The ID or URL encoded path of the project that is owned by the
+        authenticated user.
       isArray: false
       name: id
       required: true
       secret: false
     deprecated: false
-    description: Will delete all branches that are merged into the project’s default branch.
+    description: Deletes all branches that are merged into the project’s default branch.
     execution: false
     name: gitlab-projects-delete-repository-merged-branches
   - deprecated: false
-    description: Retrieve version information for this GitLab instance. Responds 200
-      OK for authenticated users.
+    description: Retrieves the version information for the GitLab instance, and responds
+      200 OK for authenticated users.
     execution: false
     name: gitlab-get-version
     outputs:
@@ -399,7 +405,649 @@ script:
     - contextPath: GitLab.revision
       description: GitLab Revision
       type: String
-  dockerimage: demisto/python3:3.9.5.20070
+  - arguments:
+    - default: false
+      description: Project ID from which to retrieve pipeline schedules.
+      isArray: false
+      name: project_id
+      required: true
+      secret: false
+    - default: false
+      description: ID of the specific pipeline schedule from which to retrieve its
+        details.
+      isArray: false
+      name: pipeline_schedule_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets the details of the pipeline schedules.
+    execution: false
+    name: gitlab-pipelines-schedules-list
+    outputs:
+    - contextPath: GitLab.PipelineSchedule.id
+      description: Pipeline schedule ID.
+      type: Number
+    - contextPath: GitLab.PipelineSchedule.description
+      description: Pipeline schedule description.
+      type: String
+    - contextPath: GitLab.PipelineSchedule.ref
+      description: Pipeline schedule reference.
+      type: String
+    - contextPath: GitLab.PipelineSchedule.next_run_at
+      description: Pipeline schedule next run scheduled time.
+      type: Date
+    - contextPath: GitLab.PipelineSchedule.active
+      description: Whether pipeline schedule is active.
+      type: Boolean
+    - contextPath: GitLab.PipelineSchedule.created_at
+      description: When pipeline schedule was created.
+      type: Date
+    - contextPath: GitLab.PipelineSchedule.updated_at
+      description: When the pipeline schedule was last updated.
+      type: Date
+    - contextPath: GitLab.PipelineSchedule.last_pipeline.id
+      description: ID of the last pipeline that was run by the scheduled pipeline.
+        Relevant only when the pipeline schedule ID is given.
+      type: Number
+    - contextPath: GitLab.PipelineSchedule.last_pipeline.sha
+      description: SHA of the last pipeline that was run by the scheduled pipeline.
+        Relevant only when the pipeline schedule ID is given.
+      type: String
+    - contextPath: GitLab.PipelineSchedule.last_pipeline.ref
+      description: Reference of the last pipeline that was run by the scheduled pipeline.
+        Relevant only when the pipeline schedule ID is given.
+      type: String
+    - contextPath: GitLab.PipelineSchedule.last_pipeline.status
+      description: Status of the last pipeline that was run by the scheduled pipeline.
+        Relevant only when the pipeline schedule ID is given.
+      type: String
+  - arguments:
+    - default: false
+      description: Project ID from which to retrieve pipelines.
+      isArray: false
+      name: project_id
+      required: true
+      secret: false
+    - default: false
+      description: ID of specific pipeline from which to retrieve its details.
+      isArray: false
+      name: pipeline_id
+      required: false
+      secret: false
+    - default: false
+      description: Reference name of the pipelines, e.g., 'master'.
+      isArray: false
+      name: ref
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Retrieves pipelines of which status matches the given status.
+      isArray: false
+      name: status
+      predefined:
+      - 'created'
+      - 'waiting_for_resource'
+      - 'preparing'
+      - 'pending'
+      - 'running'
+      - 'success'
+      - 'failed'
+      - 'canceled'
+      - 'skipped'
+      - 'manual'
+      - 'scheduled'
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets the details of the pipelines.
+    execution: false
+    name: gitlab-pipelines-list
+    outputs:
+    - contextPath: GitLab.Pipeline.id
+      description: Pipeline ID.
+      type: Number
+    - contextPath: GitLab.Pipeline.project_id
+      description: Project ID that the pipeline belongs to.
+      type: Number
+    - contextPath: GitLab.Pipeline.status
+      description: Status of the pipeline.
+      type: String
+    - contextPath: GitLab.Pipeline.ref
+      description: Reference of the pipeline.
+      type: String
+    - contextPath: GitLab.Pipeline.sha
+      description: SHA of the pipeline.
+      type: String
+    - contextPath: GitLab.Pipeline.created_at
+      description: Time when the pipeline was created.
+      type: Date
+    - contextPath: GitLab.Pipeline.updated_at
+      description: Time when the pipeline was last updated.
+      type: Date
+    - contextPath: GitLab.Pipeline.started_at
+      description: Time when the pipeline was started.
+      type: Date
+    - contextPath: GitLab.Pipeline.finished_at
+      description: Time when the pipeline was finished.
+      type: Date
+    - contextPath: GitLab.Pipeline.duration
+      description: Duration of the pipeline in seconds.
+      type: Number
+    - contextPath: GitLab.Pipeline.web_url
+      description: Web URL of the pipeline.
+      type: String
+    - contextPath: GitLab.Pipeline.user.name
+      description: Name of the user who triggered the pipeline.
+      type: String
+    - contextPath: GitLab.Pipeline.user.username
+      description: Username that triggered the pipeline.
+      type: String
+    - contextPath: GitLab.Pipeline.user.id
+      description: ID of the user who triggered the pipeline.
+      type: Number
+    - contextPath: GitLab.Pipeline.user.state
+      description: State of the user who triggered the pipeline.
+      type: String
+    - contextPath: GitLab.Pipeline.user.avatar_url
+      description: Avatar URL of the user who trigerred the pipeline.
+      type: String
+    - contextPath: GitLab.Pipeline.user.web_url
+      description: Web URL of the user who triggered the pipeline.
+      type: String
+
+  - arguments:
+    - default: false
+      description: Project ID from which to retrieve jobs details.
+      isArray: false
+      name: project_id
+      required: true
+      secret: false
+    - default: false
+      description: ID of the pipeline from which to retrieve its jobs.
+      isArray: false
+      name: pipeline_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets job details.
+    execution: false
+    name: gitlab-jobs-list
+    outputs:
+    - contextPath: GitLab.Job.status
+      description: The status of the job.
+      type: String
+    - contextPath: GitLab.Job.created_at
+      description: Time the job was created.
+      type: Date
+    - contextPath: GitLab.Job.started_at
+      description: Time the job was started.
+      type: Date
+    - contextPath: GitLab.Job.finished_at
+      description: Time the job was finished.
+      type: Date
+    - contextPath: GitLab.Job.duration
+      description: Duration of the job in seconds.
+      type: Number
+    - contextPath: GitLab.Job.id
+      description: ID of the job.
+      type: Number
+    - contextPath: GitLab.Job.name
+      description: Name of the job.
+      type: String
+    - contextPath: GitLab.Job.pipeline.id
+      description: Pipeline the job belongs to.
+      type: Number
+    - contextPath: GitLab.Job.pipeline.project_id
+      description: Project ID the job belongs to.
+      type: Number
+    - contextPath: GitLab.Job.pipeline.ref
+      description: Reference of the pipeline the job belongs to.
+      type: String
+    - contextPath: GitLab.Job.pipeline.sha
+      description: SHA of the pipeline the job belongs to.
+      type: String
+    - contextPath: GitLab.Job.pipeline.status
+      description: Status of the pipeline the job belongs to.
+      type: String
+    - contextPath: GitLab.Job.ref
+      description: Reference name of the job.
+      type: String
+    - contextPath: GitLab.Job.stage
+      description: Stage of the job.
+      type: String
+    - contextPath: GitLab.Job.web_url
+      description: Web URL of the job.
+      type: String
+  - arguments:
+    - default: false
+      description: Project ID from which to retrieve an artifact.
+      isArray: false
+      name: project_id
+      required: true
+      secret: false
+    - default: false
+      description: ID of a specific job from which to retrieve its artifact.
+      isArray: false
+      name: job_id
+      required: true
+      secret: false
+    - default: false
+      description: Suffix to the path of an artifact from which to retrieve its data.
+      isArray: false
+      name: artifact_path_suffix
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets an artifact from a given artifact path, corresponding to a given
+      job ID.
+    execution: false
+    name: gitlab-artifact-get
+    outputs:
+    - contextPath: GitLab.Artifact.job_id
+      description: Job ID from which the artifact was taken.
+      type: String
+    - contextPath: GitLab.Artifact.artifact_path_suffix
+      description: Suffix of the given artifact path.
+      type: String
+    - contextPath: GitLab.Artifact.artifact_data
+      description: Data of the artifact requested.
+      type: String
+  - arguments:
+    - defaultValue: master
+      name: target_branch
+      description: The target branch of the Merge Request.
+    - auto: PREDEFINED
+      defaultValue: opened
+      name: state
+      description: The state of the Merge Request.
+      predefined:
+      - opened
+      - closed
+      - locked
+      - merged
+    - default: false
+      description: Project ID from which to retrieve the Merge Requests.
+      isArray: false
+      name: project_id
+      required: true
+      secret: false
+    description: List all merge requests
+    name: gitlab-merge-requests-list
+    outputs:
+    - contextPath: GitLab.MergeRequest.id
+      description: The merge request ID.
+      type: Number
+    - contextPath: GitLab.MergeRequest.iid
+      description: The merge request IID.
+      type: Number
+    - contextPath: GitLab.MergeRequest.project_id
+      description: The project ID of the merge request.
+      type: Number
+    - contextPath: GitLab.MergeRequest.title
+      description: The merge request title.
+      type: String
+    - contextPath: GitLab.MergeRequest.description
+      description: The merge request description
+      type: String
+    - contextPath: GitLab.MergeRequest.state
+      description: The merge request state.
+      type: String
+    - contextPath: GitLab.MergeRequest.created_at
+      description: The time the merge request was created.
+      type: Date
+    - contextPath: GitLab.MergeRequest.updated_at
+      description: The time the merge request was updated.
+      type: Date
+    - contextPath: GitLab.MergeRequest.merged_at
+      description: The time the merge request was merged.
+      type: Date
+    - contextPath: GitLab.MergeRequest.closed_by
+      description: The user who closed the merge request.
+      type: String
+    - contextPath: GitLab.MergeRequest.closed_at
+      description: The time the merge request was closed.
+      type: Date
+    - contextPath: GitLab.MergeRequest.target_branch
+      description: The merge request target branch.
+      type: String
+    - contextPath: GitLab.MergeRequest.source_branch
+      description: The merge request source branch.
+      type: String
+    - contextPath: GitLab.MergeRequest.assignee
+      description: The merge request assignee.
+      type: String
+    - contextPath: GitLab.MergeRequest.sha
+      description: The merge request commit SHA.
+      type: String
+    - contextPath: GitLab.MergeRequest.merge_commit_sha
+      description: The merge request merge commit SHA.
+      type: String
+    - contextPath: GitLab.MergeRequest.squash_commit_sha
+      description: The merge request squash commit SHA.
+      type: String
+  - arguments:
+      - default: false
+        description: Project ID from which to retrieve the Merge Requests.
+        isArray: false
+        name: project_id
+        required: true
+        secret: false
+      - default: false
+        description: Merge Request IID.
+        isArray: false
+        name: merge_request_iid
+        required: true
+        secret: false
+    description: Get a Merge Request
+    name: gitlab-merge-request-get
+    outputs:
+      - contextPath: GitLab.MergeRequest.id
+        description: The merge request ID.
+        type: Number
+      - contextPath: GitLab.MergeRequest.iid
+        description: The merge request IID.
+        type: Number
+      - contextPath: GitLab.MergeRequest.project_id
+        description: The project ID of the merge request.
+        type: Number
+      - contextPath: GitLab.MergeRequest.title
+        description: The merge request title.
+        type: String
+      - contextPath: GitLab.MergeRequest.description
+        description: The merge request description
+        type: String
+      - contextPath: GitLab.MergeRequest.state
+        description: The merge request state.
+        type: String
+      - contextPath: GitLab.MergeRequest.created_at
+        description: The time the merge request was created.
+        type: Date
+      - contextPath: GitLab.MergeRequest.updated_at
+        description: The time the merge request was updated.
+        type: Date
+      - contextPath: GitLab.MergeRequest.merged_at
+        description: The time the merge request was merged.
+        type: Date
+      - contextPath: GitLab.MergeRequest.closed_by
+        description: The user who closed the merge request.
+        type: String
+      - contextPath: GitLab.MergeRequest.closed_at
+        description: The time the merge request was closed.
+        type: Date
+      - contextPath: GitLab.MergeRequest.target_branch
+        description: The merge request target branch.
+        type: String
+      - contextPath: GitLab.MergeRequest.source_branch
+        description: The merge request source branch.
+        type: String
+      - contextPath: GitLab.MergeRequest.assignee
+        description: The merge request assignee.
+        type: String
+      - contextPath: GitLab.MergeRequest.sha
+        description: The merge request commit SHA.
+        type: String
+      - contextPath: GitLab.MergeRequest.merge_commit_sha
+        description: The merge request merge commit SHA.
+        type: String
+      - contextPath: GitLab.MergeRequest.squash_commit_sha
+        description: The merge request squash commit SHA.
+        type: String
+  - arguments:
+    - name: labels
+      description: Comma seperated values of labels to search issues by.
+    - name: scope
+      defaultValue: title,description
+      description: On what scope to perform the search on.
+      predefined:
+      - title
+      - description
+      - title,description
+      auto: PREDEFINED
+    - name: search
+      description: The search clause.
+    - auto: PREDEFINED
+      defaultValue: all
+      name: state
+      description: The state of the issue.
+      predefined:
+      - opened
+      - closed
+      - all
+    - default: false
+      description: Project ID from which to retrieve the Merge Requests.
+      isArray: false
+      name: project_id
+      required: true
+      secret: false
+    - name: assignee_username
+      description: filter by assignee username
+    description: List all issues
+    name: gitlab-issues-list
+    outputs:
+    - contextPath: GitLab.Issue.id
+      description: The issue ID.
+      type: Number
+    - contextPath: GitLab.Issue.iid
+      description: The issue IID.
+      type: Number
+    - contextPath: GitLab.Issue.project_id
+      description: The project ID of the issue.
+      type: Number
+    - contextPath: GitLab.Issue.title
+      description: The issue title.
+      type: String
+    - contextPath: GitLab.Issue.description
+      description: The issue description.
+      type: String
+    - contextPath: GitLab.Issue.state
+      description: The issue state.
+      type: String
+    - contextPath: GitLab.Issue.created_at
+      description: The time the issue was created.
+      type: Date
+    - contextPath: GitLab.Issue.updated_at
+      description: The time the issue was updated.
+      type: Date
+    - contextPath: GitLab.Issue.closed_at
+      description: The time the issue was closed.
+      type: Date
+    - contextPath: GitLab.Issue.closed_by
+      description: The user who closed the issue.
+      type: String
+    - contextPath: GitLab.Issue.labels
+      description: Comma seperated values of the issue's labels.
+      type: String
+    - contextPath: GitLab.Issue.merge_requests_count
+      description: merge requests count
+      type: Number
+    - contextPath: GitLab.Issue.has_tasks
+      description: Whether the issue has tasks or not.
+      type: Boolean
+    - contextPath: GitLab.Issue.task_status
+      description: The status of the issue's tasks.
+      type: String
+  - arguments:
+      - name: labels
+        description: Comma separated values of labels to add to the issue.
+      - name: title
+        description: The issue title.
+        isArray: false
+        required: true
+        secret: false
+        default: false
+      - name: description
+        description: The issue description.
+        isArray: false
+        required: true
+        secret: false
+        default: false
+      - default: false
+        description: Project ID of the created issue.
+        isArray: false
+        name: project_id
+        required: true
+        secret: false
+    description: Create an issue
+    name: gitlab-issue-create
+    outputs:
+      - contextPath: GitLab.Issue.id
+        description: The issue ID.
+        type: Number
+      - contextPath: GitLab.Issue.iid
+        description: The issue IID.
+        type: Number
+      - contextPath: GitLab.Issue.project_id
+        description: The project ID of the issue.
+        type: Number
+      - contextPath: GitLab.Issue.title
+        description: The issue title.
+        type: String
+      - contextPath: GitLab.Issue.description
+        description: The issue description.
+        type: String
+      - contextPath: GitLab.Issue.state
+        description: The issue state.
+        type: String
+      - contextPath: GitLab.Issue.created_at
+        description: The time the issue was created.
+        type: Date
+      - contextPath: GitLab.Issue.updated_at
+        description: The time the issue was updated.
+        type: Date
+      - contextPath: GitLab.Issue.closed_at
+        description: The time the issue was closed.
+        type: Date
+      - contextPath: GitLab.Issue.closed_by
+        description: The user who closed the issue.
+        type: String
+      - contextPath: GitLab.Issue.labels
+        description: Comma seperated values of the issue's labels.
+        type: String
+      - contextPath: GitLab.Issue.merge_requests_count
+        description: merge requests count
+        type: Number
+      - contextPath: GitLab.Issue.has_tasks
+        description: Whether the issue has tasks or not.
+        type: Boolean
+      - contextPath: GitLab.Issue.task_status
+        description: The status of the issue's tasks.
+        type: String
+  - arguments:
+    - name: add_labels
+      description: The labels to add to the issue.
+    - name: remove_labels
+      description: The labels to remove from the issue.
+    - name: description
+      description: The description of the issue.
+    - default: false
+      description: Project ID from which to retrieve the issue.
+      isArray: false
+      name: project_id
+      required: true
+      secret: false
+    - default: false
+      description: Issue ID.
+      isArray: false
+      name: issue_id
+      required: true
+      secret: false
+    description: Edit an issue
+    name: gitlab-issue-edit
+    outputs:
+    - contextPath: GitLab.Issue.id
+      description: The issue ID.
+      type: Number
+    - contextPath: GitLab.Issue.iid
+      description: The issue IID.
+      type: Number
+    - contextPath: GitLab.Issue.project_id
+      description: The project ID of the issue.
+      type: Number
+    - contextPath: GitLab.Issue.title
+      description: The issue title.
+      type: String
+    - contextPath: GitLab.Issue.description
+      description: The issue description.
+      type: String
+    - contextPath: GitLab.Issue.state
+      description: The issue state.
+      type: String
+    - contextPath: GitLab.Issue.created_at
+      description: The time the issue was created.
+      type: Date
+    - contextPath: GitLab.Issue.updated_at
+      description: The time the issue was updated.
+      type: Date
+    - contextPath: GitLab.Issue.closed_at
+      description: The time the issue was closed.
+      type: Date
+    - contextPath: GitLab.Issue.closed_by
+      description: The user who closed the issue.
+      type: String
+    - contextPath: GitLab.Issue.labels
+      description: Comma seperated values of the issue's labels.
+      type: String
+    - contextPath: GitLab.Issue.merge_requests_count
+      description: Merge requests count
+      type: Number
+    - contextPath: GitLab.Issue.has_tasks
+      description: Whether the issue has tasks or not.
+      type: Boolean
+    - contextPath: GitLab.Issue.task_status
+      description: The status of the issue's tasks.
+      type: String
+  - arguments:
+    - default: false
+      description: Group ID from which to retrieve the projects.
+      isArray: false
+      name: group_id
+      required: true
+      secret: false
+    description: Get the list of projects of a given group.
+    name: gitlab-group-projects-list
+    outputs:
+      - contextPath: GitLab.Project.id
+        description: The project ID.
+        type: Number
+      - contextPath: GitLab.Project.name
+        description: The project name.
+        type: String
+      - contextPath: GitLab.Project.path_with_namespace
+        description: The project path with namespace.
+        type: String
+  - arguments:
+      - default: false
+        description: Project ID to get the file from.
+        isArray: false
+        name: project_id
+        required: true
+        secret: false
+      - default: false
+        description: The file path.
+        isArray: false
+        name: file_path
+        required: true
+        secret: false
+      - default: false
+        description: The branch to retrieve the file from.
+        isArray: false
+        name: ref
+        required: true
+        secret: false
+    description: Get raw file
+    name: gitlab-raw-file-get
+    outputs:
+      - contextPath: GitLab.File.ref
+        description: The branch the file's content was taken from.
+        type: String
+      - contextPath: GitLab.File.path
+        description: The file path.
+        type: String
+      - contextPath: GitLab.File.content
+        description: The file content.
+        type: String
+  dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: false
   longRunning: false

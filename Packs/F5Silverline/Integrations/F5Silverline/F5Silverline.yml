@@ -215,7 +215,7 @@ script:
       object ID or by its IP address. If both id and ip are given, delete operation will be done by the given object_id.
     execution: false
     name: f5-silverline-ip-object-delete
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.9.7.24076
   isfetch: false
   runonce: false
   script: '-'

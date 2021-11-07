@@ -7,6 +7,7 @@ configuration:
   name: url
   required: true
   type: 0
+  additionalinfo: The Elasticsearch server to which the integration connects. Ensure that the URL includes the correct Elasticsearch port. By default this is 9200.
 - additionalinfo: Provide Username + Passoword instead of API key + API ID
   display: Username for server login
   name: credentials
@@ -305,7 +306,7 @@ script:
     name: get-mapping-fields
     description: Returns the schema of the index to fetch from. This commmand should
       be used for debugging purposes.
-  dockerimage: demisto/elasticsearch:1.0.0.20431
+  dockerimage: demisto/elasticsearch:1.0.0.24037
   feed: false
   isfetch: true
   longRunning: false

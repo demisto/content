@@ -20,7 +20,11 @@ The Generic Webhook integration is used to create incidents on event triggers. T
 5. Navigate to  **Settings > About > Troubleshooting**.
 6. In the **Server Configuration** section, verify that the value for the ***instance.execute.external.\<INTEGRATION-INSTANCE-NAME\>*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add *instance.execute.external.\<INTEGRATION-INSTANCE-NAME\>* and set the value to *true*. See the following [reference article](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for further information.
 
-You can now trigger the webhook URL: `<CORTEX-XSOAR-URL>/instance/execute/<INTEGRATION-INSTANCE-NAME>`. For example, `https://my.demisto.live/instance/execute/webhook`
+You can now trigger the webhook URL: `<CORTEX-XSOAR-URL>/instance/execute/<INTEGRATION-INSTANCE-NAME>`. For example, `https://my.demisto.live/instance/execute/webhook`. Please note that the string `instance` does not refer to the name of your XSOAR instance, but rather is part of the URL.
+
+If you're not invoking the integration via the server HTTPS endpoint, then you should trigger the webhook URL as follows: `<CORTEX-XSOAR-URL>:<LISTEN_PORT>/`. For example, `https://my.demisto.live:8000/`.
+
+The examples below assume you invoke the integration via the server HTTPS endpoint. In case you don't, replace the URL in the examples as suggested above.
 
 **Note**: The ***Listen Port*** needs to be available, which means it has to be unique for each integration instance. It cannot be used by other long-running integrations.
 

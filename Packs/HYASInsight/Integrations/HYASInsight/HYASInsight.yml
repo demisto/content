@@ -1,0 +1,393 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: HYAS Insight
+  version: -1
+fromversion: 6.0.0
+configuration:
+- display: HYAS Insight Api Key
+  name: X-API-Key
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Use the HYAS Insight integration to interactively lookup PassiveDNS,
+  DynamicDNS, WHOIS, Malware Information – either as playbook tasks or through API
+  calls in the War Room.
+display: HYAS Insight
+name: HYAS Insight
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Indicator Type.
+      isArray: false
+      name: indicator_type
+      predefined:
+      - ipv4
+      - domain
+      required: true
+      secret: false
+    - default: false
+      description: Indicator value to query
+      isArray: false
+      name: indicator_value
+      required: true
+      secret: false
+    - default: false
+      description: The maximum number of results to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns PassiveDNS records for the provided indicator value.
+    execution: false
+    name: hyas-get-passive-dns-records-by-indicator
+    outputs:
+    - contextPath: HYAS.PassiveDNS.count
+      description: The passive dns count
+      type: Number
+    - contextPath: HYAS.PassiveDNS.domain
+      description: The domain of the passive dns information requested
+      type: String
+    - contextPath: HYAS.PassiveDNS.first_seen
+      description: The first time this domain was seen
+      type: Date
+    - contextPath: HYAS.PassiveDNS.ip.geo.city_name
+      description: City of the ip organization
+      type: String
+    - contextPath: HYAS.PassiveDNS.ip.geo.country_iso_code
+      description: Country ISO code of the ip organization
+      type: String
+    - contextPath: HYAS.PassiveDNS.ip.geo.country_name
+      description: Country name of the ip organization
+      type: String
+    - contextPath: HYAS.PassiveDNS.ip.geo.location_latitude
+      description: The latitude of the ip organization
+      type: Number
+    - contextPath: HYAS.PassiveDNS.ip.geo.location_longitude
+      description: The longitude of the ip organization
+      type: Number
+    - contextPath: HYAS.PassiveDNS.ip.geo.postal_code
+      description: The longitude of the ip organization
+      type: String
+    - contextPath: HYAS.PassiveDNS.ip.ip
+      description: IP of the organization
+      type: String
+    - contextPath: HYAS.PassiveDNS.ip.isp.autonomous_system_number
+      description: The ASN of the ip
+      type: String
+    - contextPath: HYAS.PassiveDNS.ip.isp.autonomous_system_organization
+      description: The ASO of the ip
+      type: String
+    - contextPath: HYAS.PassiveDNS.ip.isp.ip_address
+      description: The IP
+      type: String
+    - contextPath: HYAS.PassiveDNS.ip.isp.isp
+      description: The Internet Service Provider
+      type: String
+    - contextPath: HYAS.PassiveDNS.ip.isp.organization
+      description: The ISP organization
+      type: String
+    - contextPath: HYAS.PassiveDNS.ipv4
+      description: The ipv4 address of the passive dns record
+      type: String
+    - contextPath: HYAS.PassiveDNS.last_seen
+      description: The last time this domain was seen
+      type: Date
+    - contextPath: HYAS.PassiveDNS.sources
+      description: A list of pDNS providers which the data came from
+      type: Unknown
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Indicator Type.
+      isArray: false
+      name: indicator_type
+      predefined:
+      - ip
+      - domain
+      - email
+      required: true
+      secret: false
+    - default: false
+      description: Indicator value to query
+      isArray: false
+      name: indicator_value
+      required: true
+      secret: false
+    - default: false
+      description: The maximum number of results to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns DynamicDNS records for the provided indicator value.
+    execution: false
+    name: hyas-get-dynamic-dns-records-by-indicator
+    outputs:
+    - contextPath: HYAS.DynamicDNS.a_record
+      description: The A record for the domain
+      type: String
+    - contextPath: HYAS.DynamicDNS.account
+      description: The account holder name
+      type: String
+    - contextPath: HYAS.DynamicDNS.created
+      description: The date which the domain was created
+      type: Date
+    - contextPath: HYAS.DynamicDNS.created_ip
+      description: The ip address of the account holder
+      type: String
+    - contextPath: HYAS.DynamicDNS.domain
+      description: The domain associated with the dynamic dns information
+      type: String
+    - contextPath: HYAS.DynamicDNS.domain_creator_ip
+      description: The ip address of the domain creator
+      type: String
+    - contextPath: HYAS.DynamicDNS.email
+      description: The email address connected to the domain
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Indicator Type.
+      isArray: false
+      name: indicator_type
+      predefined:
+      - domain
+      - email
+      - phone
+      required: true
+      secret: false
+    - default: false
+      description: Indicator value to query
+      isArray: false
+      name: indicator_value
+      required: true
+      secret: false
+    - default: false
+      description: The maximum number of results to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns WHOIS records for the provided indicator value.
+    execution: false
+    name: hyas-get-whois-records-by-indicator
+    outputs:
+    - contextPath: HYAS.WHOIS.address
+      description: address
+      type: Unknown
+    - contextPath: HYAS.WHOIS.city
+      description: city
+      type: Unknown
+    - contextPath: HYAS.WHOIS.country
+      description: country
+      type: Unknown
+    - contextPath: HYAS.WHOIS.domain
+      description: The domain of the registrant
+      type: String
+    - contextPath: HYAS.WHOIS.domain_2tld
+      description: The second-level domain of the registrant
+      type: String
+    - contextPath: HYAS.WHOIS.domain_created_datetime
+      description: The date and time when the whois record was created
+      type: Date
+    - contextPath: HYAS.WHOIS.domain_expires_datetime
+      description: The date and time when the whois record expires
+      type: Date
+    - contextPath: HYAS.WHOIS.domain_updated_datetime
+      description: The date and time when the whois record was last updated
+      type: Date
+    - contextPath: HYAS.WHOIS.email
+      description: email
+      type: Unknown
+    - contextPath: HYAS.WHOIS.idn_name
+      description: The international domain name
+      type: String
+    - contextPath: HYAS.WHOIS.nameserver
+      description: nameserver
+      type: Unknown
+    - contextPath: HYAS.WHOIS.phone.phone
+      description: The phone number registrant contact in e164 format
+      type: String
+    - contextPath: HYAS.WHOIS.phone.phone_info.carrier
+      description: Phone number carrier
+      type: String
+    - contextPath: HYAS.WHOIS.phone.phone_info.country
+      description: Phone number country
+      type: String
+    - contextPath: HYAS.WHOIS.phone.phone_info.geo
+      description: Phone number geo. Can be city, province, region or country
+      type: String
+    - contextPath: HYAS.WHOIS.privacy_punch
+      description: True if this record has additional information bypassing privacy
+        protect
+      type: Boolean
+    - contextPath: HYAS.WHOIS.registrar
+      description: The domain registrar
+      type: String
+  - arguments:
+    - default: false
+      description: Domain value to query
+      isArray: false
+      name: domain
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns WHOIS Current records for the provided indicator value.
+    execution: false
+    name: hyas-get-whois-current-records-by-domain
+    outputs:
+    - contextPath: HYAS.WHOISCurrent.abuse_emails
+      description: abuse emails
+      type: Unknown
+    - contextPath: HYAS.WHOISCurrent.address
+      description: address
+      type: Unknown
+    - contextPath: HYAS.WHOISCurrent.city
+      description: city
+      type: Unknown
+    - contextPath: HYAS.WHOISCurrent.country
+      description: country
+      type: Unknown
+    - contextPath: HYAS.WHOISCurrent.domain
+      description: The domain of the registrant
+      type: String
+    - contextPath: HYAS.WHOISCurrent.domain_2tld
+      description: The second-level domain of the registrant
+      type: String
+    - contextPath: HYAS.WHOISCurrent.domain_created_datetime
+      description: The date and time when the whois record was created
+      type: Date
+    - contextPath: HYAS.WHOISCurrent.domain_expires_datetime
+      description: The date and time when the whois record expires
+      type: Date
+    - contextPath: HYAS.WHOISCurrent.domain_updated_datetime
+      description: The date and time when the whois record was last updated
+      type: Date
+    - contextPath: HYAS.WHOISCurrent.email
+      description: email
+      type: Unknown
+    - contextPath: HYAS.WHOISCurrent.idn_name
+      description: The international domain name
+      type: String
+    - contextPath: HYAS.WHOISCurrent.nameserver
+      description: nameserver
+      type: Unknown
+    - contextPath: HYAS.WHOISCurrent.organization
+      description: organization
+      type: Unknown
+    - contextPath: HYAS.WHOISCurrent.phone
+      description: The phone number
+      type: Unknown
+    - contextPath: HYAS.WHOISCurrent.registrar
+      description: The domain registrar
+      type: String
+    - contextPath: HYAS.WHOISCurrent.state
+      description: The state
+      type: Unknown
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Indicator Type.
+      isArray: false
+      name: indicator_type
+      predefined:
+      - domain
+      - ipv4
+      - md5
+      required: true
+      secret: false
+    - default: false
+      description: Indicator value to query.
+      isArray: false
+      name: indicator_value
+      required: true
+      secret: false
+    - default: false
+      description: The maximum number of results to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns Malware Sample records for the provided indicator value.
+    execution: false
+    name: hyas-get-malware-samples-records-by-indicator
+    outputs:
+    - contextPath: HYAS.MalwareSamples.datetime
+      description: The date which the sample was processed
+      type: Date
+    - contextPath: HYAS.MalwareSamples.domain
+      description: The domain of the sample
+      type: String
+    - contextPath: HYAS.MalwareSamples.ipv4
+      description: The ipv4 of the sample
+      type: String
+    - contextPath: HYAS.MalwareSamples.ipv6
+      description: The ipv6 of the sample
+      type: String
+    - contextPath: HYAS.MalwareSamples.md5
+      description: The md5 of the sample
+      type: String
+    - contextPath: HYAS.MalwareSamples.sha1
+      description: The sha1  of the sample
+      type: String
+    - contextPath: HYAS.MalwareSamples.sha256
+      description: The sha256 of the sample
+      type: String
+  - arguments:
+    - default: false
+      description: The md5 value to query
+      isArray: false
+      name: md5
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns associated IP's for the provided hash value.
+    execution: false
+    name: hyas-get-associated-ips-by-hash
+    outputs:
+    - contextPath: HYAS.HASH-IP.md5
+      description: The provided MD5 value
+      type: String
+    - contextPath: HYAS.HASH-IP.ips
+      description: Associated IPS  for the provided MD5 value
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The md5 value to query
+      isArray: false
+      name: md5
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns associated Domain's for the provided hash value.
+    execution: false
+    name: hyas-get-associated-domains-by-hash
+    outputs:
+    - contextPath: HYAS.HASH-DOMAIN.domains
+      description: Associated Domains for the provided MD5 value
+      type: Unknown
+    - contextPath: HYAS.HASH-DOMAIN.md5
+      description: The provided MD5 value
+      type: String
+  dockerimage: demisto/python3:3.9.7.24076
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python

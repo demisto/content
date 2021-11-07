@@ -284,7 +284,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: ' If false, will return an array of event IDs instead of full event objects. This will significantly speed up the response time of the API for incidents with large numbers of alerts.'
+      description: If false, will return an array of event IDs instead of full event objects. This will significantly speed up the response time of the API for incidents with large numbers of alerts.
       isArray: false
       name: expand_events
       predefined:
@@ -865,6 +865,7 @@ script:
   script: '-'
   subtype: python3
   type: python
+  dockerimage: demisto/python3:3.9.7.24076
 tests:
 - No test - beta_integration
 beta: true

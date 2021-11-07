@@ -1,35 +1,10 @@
 import io
-import json
 
 import pytest
 
-from CommonServerPython import DemistoException
-from FireEyeCM import Client, get_alerts, get_alert_details, alert_acknowledge, get_quarantined_emails, \
-    get_artifacts_metadata_by_uuid, get_events, get_reports, release_quarantined_emails, delete_quarantined_emails, \
-    alert_severity_to_dbot_score, fetch_incidents, to_fe_datetime_converter
+from FireEyeCM import *
 from test_data.result_constants import QUARANTINED_EMAILS_CONTEXT, GET_ALERTS_CONTEXT, GET_ALERTS_DETAILS_CONTEXT, \
     GET_ARTIFACTS_METADATA_CONTEXT, GET_EVENTS_CONTEXT
-
-
-def test_to_fe_datetime_converter():
-    """Unit test
-    Given
-    - to_fe_datetime_converter command
-    - time in a string
-    When
-    - running to_fe_datetime_converter
-    Then
-    - Validate that the FE time is as expected
-    """
-    # fe time will not change
-    assert to_fe_datetime_converter('2021-05-14T01:08:04.000-02:00') == '2021-05-14T01:08:04.000-02:00'
-
-    # "now"/ "1 day" / "3 months:" time will be without any timezone
-    assert to_fe_datetime_converter('now')[23:] == '+00:00'
-    assert to_fe_datetime_converter('3 months')[23:] == '+00:00'
-
-    # now > 1 day
-    assert to_fe_datetime_converter('now') > to_fe_datetime_converter('1 day')
 
 
 def util_load_json(path):
@@ -49,9 +24,9 @@ def test_get_alerts(mocker):
     Then
     - Validate The entry context
     """
-    mocker.patch.object(Client, '_generate_token', return_value='token')
+    mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
-    mocker.patch.object(Client, 'get_alerts_request',
+    mocker.patch.object(FireEyeClient, 'get_alerts_request',
                         return_value=util_load_json('test_data/get_alerts.json'))
     command_results = get_alerts(client=client,
                                  args={'limit': '2', 'start_time': '8 days', 'src_ip': '2.2.2.2'})
@@ -70,9 +45,9 @@ def test_get_alert_details(mocker):
     Then
     - Validate The entry context
     """
-    mocker.patch.object(Client, '_generate_token', return_value='token')
+    mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
-    mocker.patch.object(Client, 'get_alert_details_request',
+    mocker.patch.object(FireEyeClient, 'get_alert_details_request',
                         return_value=util_load_json('test_data/get_alert_details.json'))
     command_results = get_alert_details(client=client, args={'alert_id': '563'})
     assert command_results[0].outputs == GET_ALERTS_DETAILS_CONTEXT
@@ -90,9 +65,9 @@ def test_alert_acknowledge(mocker):
     Then
     - Validate the human readable
     """
-    mocker.patch.object(Client, '_generate_token', return_value='token')
+    mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
-    mocker.patch.object(Client, 'alert_acknowledge_request', return_value=None)
+    mocker.patch.object(FireEyeClient, 'alert_acknowledge_request', return_value=None)
     command_results = alert_acknowledge(client=client, args={'uuid': 'uuid'})
     assert command_results[0].readable_output == 'Alert uuid was acknowledged successfully.'
 
@@ -116,10 +91,10 @@ def test_alert_acknowledge_already_acknowledged(mocker):
     def error_404_mock(*kwargs):
         raise Exception(error_msg)
 
-    mocker.patch.object(Client, '_generate_token', return_value='token')
+    mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
 
-    mocker.patch('FireEyeCM.Client.alert_acknowledge_request', side_effect=error_404_mock)
+    mocker.patch('FireEyeCM.FireEyeClient.alert_acknowledge_request', side_effect=error_404_mock)
 
     command_results = alert_acknowledge(client=client, args={'uuid': 'uuid'})
     assert command_results[0].readable_output == \
@@ -138,9 +113,9 @@ def test_get_artifacts_metadata(mocker):
     Then
     - Validate The entry context
     """
-    mocker.patch.object(Client, '_generate_token', return_value='token')
+    mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
-    mocker.patch.object(Client, 'get_artifacts_metadata_by_uuid_request',
+    mocker.patch.object(FireEyeClient, 'get_artifacts_metadata_by_uuid_request',
                         return_value=util_load_json('test_data/get_artifact_metadata.json'))
     command_results = get_artifacts_metadata_by_uuid(client=client, args={'uuid': 'uuid'})
     assert command_results[0].outputs == GET_ARTIFACTS_METADATA_CONTEXT
@@ -158,9 +133,9 @@ def test_get_quarantined_emails(mocker):
     Then
     - Validate The entry context
     """
-    mocker.patch.object(Client, '_generate_token', return_value='token')
+    mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
-    mocker.patch.object(Client, 'get_quarantined_emails_request',
+    mocker.patch.object(FireEyeClient, 'get_quarantined_emails_request',
                         return_value=util_load_json('test_data/quarantined_emails.json'))
     command_results = get_quarantined_emails(client=client, args={})
     assert command_results.outputs == QUARANTINED_EMAILS_CONTEXT
@@ -186,10 +161,10 @@ def test_get_report_not_found(mocker):
     def error_400_mock(*kwargs):
         raise Exception(error_msg)
 
-    mocker.patch.object(Client, '_generate_token', return_value='token')
+    mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
 
-    mocker.patch('FireEyeCM.Client.get_reports_request', side_effect=error_400_mock)
+    mocker.patch('FireEyeCM.FireEyeClient.get_reports_request', side_effect=error_400_mock)
 
     command_results = get_reports(client=client, args={'report_type': 'alertDetailsReport', 'infection_id': '34013',
                                                        'infection_type': 'mallware-callback'})
@@ -208,9 +183,9 @@ def test_get_events_no_events(mocker):
     Then
     - Validate the human readable
     """
-    mocker.patch.object(Client, '_generate_token', return_value='token')
+    mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
-    mocker.patch.object(Client, 'get_events_request',
+    mocker.patch.object(FireEyeClient, 'get_events_request',
                         return_value=util_load_json('test_data/get_events_none.json'))
     command_results = get_events(client=client, args={'end_time': '2020-05-19T23:00:00.000-00:00',
                                                       'duration': '48_hours', 'limit': '3'})
@@ -229,9 +204,9 @@ def test_get_events(mocker):
     Then
     - Validate The entry context
     """
-    mocker.patch.object(Client, '_generate_token', return_value='token')
+    mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
-    mocker.patch.object(Client, 'get_events_request',
+    mocker.patch.object(FireEyeClient, 'get_events_request',
                         return_value=util_load_json('test_data/get_events.json'))
     command_results = get_events(client=client, args={'end_time': '2021-05-19T23:00:00.000-00:00',
                                                       'duration': '48_hours', 'limit': '3'})
@@ -250,6 +225,7 @@ def test_release_quarantined_emails(mocker):
     Then
     - Validate that an error is raised from the command
     """
+
     def mocked_release_quarantined_emails_requests(*args):
         class MockResponse:
             def __init__(self, json_data, status_code):
@@ -264,9 +240,9 @@ def test_release_quarantined_emails(mocker):
 
         return MockResponse({"1234": "Unable to release the email:quarantined email does not exist\\n"}, 200)
 
-    mocker.patch.object(Client, '_generate_token', return_value='token')
+    mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
-    mocker.patch.object(Client, 'release_quarantined_emails_request',
+    mocker.patch.object(FireEyeClient, 'release_quarantined_emails_request',
                         side_effect=mocked_release_quarantined_emails_requests)
     with pytest.raises(DemistoException):
         release_quarantined_emails(client=client, args={'sensor_name': 'FireEyeEX', 'queue_ids': '1234'})
@@ -284,6 +260,7 @@ def test_delete_quarantined_emails(mocker):
     Then
     - Validate that an error is raised from the command
     """
+
     def mocked_delete_quarantined_emails_requests(*args):
         class MockResponse:
             def __init__(self, json_data, status_code):
@@ -298,9 +275,9 @@ def test_delete_quarantined_emails(mocker):
 
         return MockResponse({"1234": "Unable to delete the email:quarantined email does not exist\\n"}, 200)
 
-    mocker.patch.object(Client, '_generate_token', return_value='token')
+    mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
-    mocker.patch.object(Client, 'delete_quarantined_emails_request',
+    mocker.patch.object(FireEyeClient, 'delete_quarantined_emails_request',
                         side_effect=mocked_delete_quarantined_emails_requests)
     with pytest.raises(DemistoException):
         delete_quarantined_emails(client=client, args={'sensor_name': 'FireEyeEX', 'queue_ids': '1234'})
@@ -319,9 +296,9 @@ def test_fetch_incidents(mocker):
     - run the fetch incidents command using the Client
     Validate The length of the results and the last_run.
     """
-    mocker.patch.object(Client, '_generate_token', return_value='token')
+    mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
-    mocker.patch.object(Client, 'get_alerts_request', return_value=util_load_json('test_data/alerts.json'))
+    mocker.patch.object(FireEyeClient, 'get_alerts_request', return_value=util_load_json('test_data/alerts.json'))
     last_run, incidents = fetch_incidents(client=client,
                                           last_run={},
                                           first_fetch='1 year',
@@ -344,9 +321,9 @@ def test_fetch_incidents_with_limit(mocker):
     - run the fetch incidents command using the Client
     Validate The length of the results and the last_run of the limited incident.
     """
-    mocker.patch.object(Client, '_generate_token', return_value='token')
+    mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
-    mocker.patch.object(Client, 'get_alerts_request', return_value=util_load_json('test_data/alerts.json'))
+    mocker.patch.object(FireEyeClient, 'get_alerts_request', return_value=util_load_json('test_data/alerts.json'))
     last_run, incidents = fetch_incidents(client=client,
                                           last_run={},
                                           first_fetch='1 year',
@@ -368,17 +345,17 @@ def test_fetch_incidents_last_alert_ids(mocker):
     - mock the Client's get_alerts_request.
     Then
     - Validate that no incidents will be returned.
-    - Validate that the last_run is "now"
+    - Validate that the last_run is at the latest incident fetched
     """
-    mocker.patch.object(Client, '_generate_token', return_value='token')
+    mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
-    mocker.patch.object(Client, 'get_alerts_request', return_value=util_load_json('test_data/alerts.json'))
+    mocker.patch.object(FireEyeClient, 'get_alerts_request', return_value=util_load_json('test_data/alerts.json'))
     last_run = {
-        'time': "whatever",
+        'time': "2021-05-18 12:02:54 +0000",
         'last_alert_ids': '["35267", "35268", "35269", "35272", "35273", "35274",'
                           ' "35275", "35276", "35277", "35278", "35279"]'
     }
-    last_run, incidents = fetch_incidents(client=client,
+    next_run, incidents = fetch_incidents(client=client,
                                           last_run=last_run,
                                           first_fetch='1 year',
                                           max_fetch=50,
@@ -386,23 +363,4 @@ def test_fetch_incidents_last_alert_ids(mocker):
 
     assert len(incidents) == 0
     # trim miliseconds to avoid glitches such as 2021-05-19T10:21:52.121+00:00 != 2021-05-19T10:21:52.123+00:00
-    assert last_run.get('time')[:-9] == to_fe_datetime_converter('now')[:-9]
-
-
-@pytest.mark.parametrize('severity_str, dbot_score', [
-    ('minr', 1),
-    ('majr', 2),
-    ('crit', 3),
-    ('kookoo', 0)
-])
-def test_alert_severity_to_dbot_score(severity_str: str, dbot_score: int):
-    """Unit test
-    Given
-    - alert_severity_to_dbot_score command
-    - severity string
-    When
-    - running alert_severity_to_dbot_score
-    Then
-    - Validate that the dbot score is as expected
-    """
-    assert alert_severity_to_dbot_score(severity_str) == dbot_score
+    assert next_run.get('time')[:-9] == last_run.get('time')[:-9]

@@ -2,6 +2,13 @@ import demistomock as demisto
 import urllib3
 from CommonServerPython import *
 
+JOB_FIELDS_TO_EXTRACT = {'created_at', 'started_at', 'finished_at', 'duration', 'id', 'name', 'pipeline', 'ref',
+                         'stage', 'web_url', 'status'}
+PIPELINE_SCHEDULE_FIELDS_TO_EXTRACT = {'id', 'description', 'ref', 'next_run_at', 'active', 'created_at', 'updated_at',
+                                       'last_pipeline'}
+PIPELINE_FIELDS_TO_EXTRACT = {'id', 'project_id', 'status', 'ref', 'sha', 'created_at', 'updated_at', 'started_at',
+                              'finished_at', 'duration', 'web_url', 'user'}
+
 
 class Client(BaseClient):
     def __init__(self, server_url, verify, proxy, headers):
@@ -37,7 +44,8 @@ class Client(BaseClient):
     def projects_approve_access_request(self, id_, user_id, access_level):
         params = assign_params(access_level=access_level)
         headers = self._headers
-        response = self._http_request('put', f'projects/{id_}/access_requests/{user_id}/approve', params=params, headers=headers)
+        response = self._http_request('put', f'projects/{id_}/access_requests/{user_id}/approve', params=params,
+                                      headers=headers)
         return response
 
     def projects_deny_access_request(self, id_, user_id):
@@ -77,6 +85,103 @@ class Client(BaseClient):
     def get_version_request(self):
         headers = self._headers
         response = self._http_request('get', 'version', headers=headers)
+        return response
+
+    def get_pipeline_schedules_request(self, project_id: str, pipeline_schedule_id: Optional[str]):
+        headers = self._headers
+        base_suffix = f'projects/{project_id}/pipeline_schedules'
+        final_suffix = f'{base_suffix}/{pipeline_schedule_id}' if pipeline_schedule_id else base_suffix
+        response = self._http_request('get', final_suffix, headers=headers)
+        return response
+
+    def get_pipeline_request(self, project_id: str, pipeline_id: Optional[str], ref: Optional[str],
+                             status: Optional[str]):
+        headers = self._headers
+        base_suffix = f'projects/{project_id}/pipelines'
+        final_suffix = f'{base_suffix}/{pipeline_id}' if pipeline_id else base_suffix
+        response = self._http_request('get', final_suffix, headers=headers,
+                                      params=assign_params(ref=ref, status=status))
+        return response
+
+    def get_pipeline_job_request(self, project_id: str, pipeline_id: str):
+        headers = self._headers
+        suffix = f'projects/{project_id}/pipelines/{pipeline_id}/jobs'
+        response = self._http_request('get', suffix, headers=headers)
+        return response
+
+    def get_job_artifact_request(self, project_id: str, job_id: str, artifact_path_suffix: str):
+        headers = self._headers
+        suffix = f'projects/{project_id}/jobs/{job_id}/artifacts/{artifact_path_suffix}'
+        response = self._http_request('get', suffix, headers=headers, resp_type='text')
+        return response
+
+    def get_merge_requests_list_request(self, project_id: str, state: str, target_branch: str):
+        headers = self._headers
+        suffix = f'projects/{project_id}/merge_requests'
+        params = assign_params(
+            state=state,
+            target_branch=target_branch,
+            per_page=100
+        )
+        response = self._http_request('get', suffix, headers=headers, params=params)
+        return response
+
+    def get_merge_request_request(self, project_id: str, merge_request_iid: str):
+        headers = self._headers
+        suffix = f'projects/{project_id}/merge_requests/{merge_request_iid}'
+        response = self._http_request('get', suffix, headers=headers)
+        return response
+
+    def get_issues_list_request(self, project_id: str, labels: str, state: str, search: str, scope: str,
+                                assignee_username: str):
+        headers = self._headers
+        suffix = f'projects/{project_id}/issues'
+        params = assign_params(
+            assignee_username=assignee_username,
+            state=state,
+            labels=labels,
+            search=search,
+            per_page=100
+        )
+        params['in'] = scope
+        response = self._http_request('get', suffix, headers=headers, params=params)
+        return response
+
+    def create_issue_request(self, project_id: str, labels: str, title: str, description: str):
+        headers = self._headers
+        suffix = f'projects/{project_id}/issues'
+        params = assign_params(
+            labels=labels,
+            title=title,
+            description=description
+        )
+        response = self._http_request('post', suffix, headers=headers, params=params)
+        return response
+
+    def edit_issue_request(self, project_id: str, issue_id: str, add_labels: str, description: str, remove_labels: str):
+        headers = self._headers
+        suffix = f'projects/{project_id}/issues/{issue_id}'
+        params = assign_params(
+            description=description,
+            add_labels=add_labels,
+            remove_labels=remove_labels
+        )
+        response = self._http_request('put', suffix, headers=headers, params=params)
+        return response
+
+    def group_projects_list_request(self, group_id: str):
+        headers = self._headers
+        suffix = f'groups/{group_id}/projects'
+        params = {'per_page': 100}
+        response = self._http_request('get', suffix, headers=headers, params=params)
+        return response
+
+    def get_raw_file_request(self, project_id: str, file_path: str, ref: str):
+        headers = self._headers
+        suffix = f'projects/{project_id}/repository/files/{file_path}/raw'
+        params = {'ref': ref}
+        response = self._http_request('get', suffix, headers=headers, params=params, resp_type='text')
+        response = response.strip("'").strip('"')
         return response
 
 
@@ -241,6 +346,319 @@ def get_version_command(client, args):
     return command_results
 
 
+def gitlab_pipelines_schedules_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Returns pipeline schedules corresponding to given arguments.
+    Args:
+        client (Client): Client to perform calls to GitLab services.
+        args (Dict[str, Any]): XSOAR arguments:
+            - 'project_id' (Required): Project ID to retrieve pipeline schedules from.
+            - 'pipeline_schedule_id': ID of specific pipeline schedule to retrieve its details.
+
+    Returns:
+        (CommandResults).
+    """
+    project_id = args.get('project_id', '')
+    pipeline_schedule_id = args.get('pipeline_schedule_id')
+    response = client.get_pipeline_schedules_request(project_id, pipeline_schedule_id)
+    response = response if isinstance(response, list) else [response]
+    outputs = [{k: v for k, v in output.items() if k in PIPELINE_SCHEDULE_FIELDS_TO_EXTRACT} for output in response]
+
+    return CommandResults(
+        outputs_prefix='GitLab.PipelineSchedule',
+        outputs_key_field='id',
+        outputs=outputs,
+        raw_response=response,
+        readable_output=tableToMarkdown('GitLab Pipeline Schedules', outputs, removeNull=True)
+    )
+
+
+def gitlab_pipelines_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Returns pipelines corresponding to given arguments.
+    Args:
+        client (Client): Client to perform calls to GitLab services.
+        args (Dict[str, Any]): XSOAR arguments:
+            - 'project_id' (Required): Project ID to retrieve pipeline schedules from.
+            - 'pipeline_id': ID of specific pipeline to retrieve its details.
+
+    Returns:
+        (CommandResults).
+    """
+    project_id = args.get('project_id', '')
+    pipeline_id = args.get('pipeline_id')
+    ref = args.get('ref')
+    status = args.get('status')
+    response = client.get_pipeline_request(project_id, pipeline_id, ref, status)
+    response = response if isinstance(response, list) else [response]
+    outputs = [{k: v for k, v in output.items() if k in PIPELINE_FIELDS_TO_EXTRACT} for output in response]
+
+    return CommandResults(
+        outputs_prefix='GitLab.Pipeline',
+        outputs_key_field='id',
+        outputs=outputs,
+        raw_response=response,
+        readable_output=tableToMarkdown('GitLab Pipelines', outputs, removeNull=True)
+    )
+
+
+def gitlab_jobs_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Returns pipeline jobs corresponding to given arguments.
+    Args:
+        client (Client): Client to perform calls to GitLab services.
+        args (Dict[str, Any]): XSOAR arguments:
+            - 'project_id' (Required): Project ID to retrieve pipeline schedules from.
+            - 'pipeline_id': ID of specific pipeline to retrieve its jobs.
+
+    Returns:
+        (CommandResults).
+    """
+    project_id = args.get('project_id', '')
+    pipeline_id = args.get('pipeline_id', '')
+    response = client.get_pipeline_job_request(project_id, pipeline_id)
+    response = response if isinstance(response, list) else [response]
+    outputs = [{k: v for k, v in output.items() if k in JOB_FIELDS_TO_EXTRACT} for output in response]
+
+    return CommandResults(
+        outputs_prefix='GitLab.Job',
+        outputs_key_field='id',
+        outputs=outputs,
+        raw_response=response,
+        readable_output=tableToMarkdown('GitLab Jobs', outputs, removeNull=True)
+    )
+
+
+def gitlab_artifact_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Returns artifact corresponding to given artifact path suffix of the given job ID.
+    Args:
+        client (Client): Client to perform calls to GitLab services.
+        args (Dict[str, Any]): XSOAR arguments:
+            - 'project_id' (Required): Project ID to retrieve pipeline schedules from.
+            - 'job_id': ID of specific job to retrieve artifact from.
+            - 'artifact_path_suffix': Suffix to artifact in the artifacts directory of the job.
+
+    Returns:
+        (CommandResults).
+    """
+    project_id = args.get('project_id', '')
+    job_id = args.get('job_id', '')
+    artifact_path_suffix = args.get('artifact_path_suffix', '')
+    response = client.get_job_artifact_request(project_id, job_id, artifact_path_suffix)
+    outputs = {
+        'job_id': job_id,
+        'artifact_path_suffix': artifact_path_suffix,
+        'artifact_data': response
+    }
+    if len(response) <= 100:
+        human_readable = tableToMarkdown(f'Artifact {artifact_path_suffix} From Job {job_id}', outputs, removeNull=True)
+    else:
+        human_readable = f'## Data for artifact {artifact_path_suffix} From Job {job_id} Has Been Retrieved.'
+
+    return CommandResults(
+        outputs_prefix='GitLab.Artifact',
+        outputs_key_field=['job_id', 'artifact_path_suffix'],
+        readable_output=human_readable,
+        outputs=outputs,
+        raw_response=response
+    )
+
+
+def gitlab_merge_requests_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Returns a list of merge requests.
+    Args:
+        client (Client): Client to perform calls to GitLab services.
+        args (Dict[str, Any]): XSOAR arguments:
+            - 'project_id' (Required): Project ID to retrieve merge requests from.
+            - 'state': The state of the merge request.
+            - 'target_branch': The target branch of the merge request.
+
+    Returns:
+        (CommandResults).
+    """
+    project_id = args.get('project_id', '')
+    state = args.get('state', '')
+    target_branch = args.get('target_branch', '')
+    response = client.get_merge_requests_list_request(project_id, state, target_branch)
+    human_readable = tableToMarkdown(f'Merge Request Lists to branch {target_branch} in state {state}', response)
+    return CommandResults(
+        outputs_prefix='GitLab.MergeRequest',
+        outputs_key_field=['iid', 'project_id'],
+        readable_output=human_readable,
+        outputs=response,
+        raw_response=response
+    )
+
+
+def gitlab_get_merge_request_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Returns a merge request.
+    Args:
+        client (Client): Client to perform calls to GitLab services.
+        args (Dict[str, Any]): XSOAR arguments:
+            - 'project_id' (Required): Project ID to retrieve merge requests from.
+            - 'merge_request_iid': The merge request IID.
+
+    Returns:
+        (CommandResults).
+    """
+    project_id = args.get('project_id', '')
+    merge_request_iid = args.get('merge_request_iid', '')
+    response = client.get_merge_request_request(project_id, merge_request_iid)
+    human_readable = tableToMarkdown(f'Merge Request {merge_request_iid}', response)
+    return CommandResults(
+        outputs_prefix='GitLab.MergeRequest',
+        outputs_key_field=['iid', 'project_id'],
+        readable_output=human_readable,
+        outputs=response,
+        raw_response=response
+    )
+
+
+def gitlab_issues_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Returns a list of issues.
+    Args:
+        client (Client): Client to perform calls to GitLab services.
+        args (Dict[str, Any]): XSOAR arguments:
+            - 'project_id' (Required): Project ID to retrieve issues from.
+            - 'state': The state of the issue.
+            - 'labels': Retrieve only issues with the given labels.
+            - 'assignee_username': Retrieve issues by assignee username.
+
+    Returns:
+        (CommandResults).
+    """
+    project_id = args.get('project_id', '')
+    labels = args.get('labels', '')
+    state = args.get('state', '')
+    assignee_username = args.get('assignee_username', '')
+    search = args.get('search', '')
+    scope = args.get('scope', '')
+    response = client.get_issues_list_request(project_id, labels, state, search, scope, assignee_username)
+    human_readable = tableToMarkdown('Issues Lists', response)
+    return CommandResults(
+        outputs_prefix='GitLab.Issue',
+        outputs_key_field=['iid', 'project_id'],
+        readable_output=human_readable,
+        outputs=response,
+        raw_response=response
+    )
+
+
+def gitlab_create_issue_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Creates an issue.
+    Args:
+        client (Client): Client to perform calls to GitLab services.
+        args (Dict[str, Any]): XSOAR arguments:
+            - 'project_id' (Required): Project ID to retrieve issues from.
+            - 'state': The state of the issue.
+            - 'labels': Retrieve only issues with the given labels.
+            - 'assignee_username': Retrieve issues by assignee username.
+
+    Returns:
+        (CommandResults).
+    """
+    project_id = args.get('project_id', '')
+    labels = args.get('labels', '')
+    title = args.get('title', '')
+    description = args.get('description', '')
+    response = client.create_issue_request(project_id, labels, title, description)
+    human_readable = tableToMarkdown('Create Issue', response)
+    return CommandResults(
+        outputs_prefix='GitLab.Issue',
+        outputs_key_field=['iid', 'project_id'],
+        readable_output=human_readable,
+        outputs=response,
+        raw_response=response
+    )
+
+
+def gitlab_edit_issue_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Returns a list of merge requests.
+    Args:
+        client (Client): Client to perform calls to GitLab services.
+        args (Dict[str, Any]): XSOAR arguments:
+            - 'project_id' (Required): Project ID to retrieve the issue from.
+            - 'issue_id' (Required): The issue ID.
+            - 'add_labels': The labels to add to the issue.
+            - 'remove_labels': The labels to remove from the issue.
+            - 'description': The description of the issue.
+
+    Returns:
+        (CommandResults).
+    """
+    project_id = args.get('project_id', '')
+    issue_id = args.get('issue_id', '')
+    add_labels = args.get('add_labels', '')
+    remove_labels = args.get('remove_labels', '')
+    description = args.get('description', '')
+    response = client.edit_issue_request(project_id, issue_id, add_labels, description, remove_labels)
+    human_readable = tableToMarkdown(f'Edit Issue {issue_id}', response)
+    return CommandResults(
+        outputs_prefix='GitLab.Issue',
+        outputs_key_field=['iid', 'project_id'],
+        readable_output=human_readable,
+        outputs=response,
+        raw_response=response
+    )
+
+
+def gitlab_group_projects_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Returns a list of projects within a group.
+    Args:
+        client (Client): Client to perform calls to GitLab services.
+        args (Dict[str, Any]): XSOAR arguments:
+            - 'group_id' (Required): group ID to retrieve the projects from.
+
+    Returns:
+        (CommandResults).
+    """
+    group_id = args.get('group_id', '')
+    response = client.group_projects_list_request(group_id)
+    human_readable = tableToMarkdown('List Group Projects', response)
+    return CommandResults(
+        outputs_prefix='GitLab.Project',
+        outputs_key_field=['path_with_namespace', 'id'],
+        readable_output=human_readable,
+        outputs=response,
+        raw_response=response
+    )
+
+
+def gitlab_get_raw_file_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Returns the content of a given file.
+    Args:
+        client (Client): Client to perform calls to GitLab services.
+        args (Dict[str, Any]): XSOAR arguments:
+            - 'project_id' (Required): Project ID to get the file from.
+            - 'file_path' (Required): The file path.
+            - 'ref' (Required): The branch to retrieve the file from.
+
+    Returns:
+        (CommandResults).
+    """
+    project_id = args.get('project_id', '')
+    ref = args.get('ref', '')
+    file_path = args.get('file_path', '')
+    response = client.get_raw_file_request(project_id, file_path, ref)
+    outputs = {'path': file_path, 'content': response, 'ref': ref}
+    human_readable = tableToMarkdown(f'Raw file {file_path} on branch {ref}', outputs)
+    return CommandResults(
+        outputs_prefix='GitLab.File',
+        outputs_key_field=['path', 'ref'],
+        readable_output=human_readable,
+        outputs=outputs,
+        raw_response=response
+    )
+
+
 def test_module(client):
     # Test functions here
     response = client.get_version_request()
@@ -251,7 +669,6 @@ def test_module(client):
 
 
 def main():
-
     params = demisto.params()
     args = demisto.args()
     url = params.get('url')
@@ -277,6 +694,17 @@ def main():
             'gitlab-projects-delete-repository-branch': projects_delete_repository_branch_command,
             'gitlab-projects-delete-repository-merged-branches': projects_delete_repository_merged_branches_command,
             'gitlab-get-version': get_version_command,
+            'gitlab-pipelines-schedules-list': gitlab_pipelines_schedules_list_command,
+            'gitlab-pipelines-list': gitlab_pipelines_list_command,
+            'gitlab-jobs-list': gitlab_jobs_list_command,
+            'gitlab-artifact-get': gitlab_artifact_get_command,
+            'gitlab-merge-requests-list': gitlab_merge_requests_list_command,
+            'gitlab-merge-request-get': gitlab_get_merge_request_command,
+            'gitlab-issues-list': gitlab_issues_list_command,
+            'gitlab-issue-create': gitlab_create_issue_command,
+            'gitlab-issue-edit': gitlab_edit_issue_command,
+            'gitlab-group-projects-list': gitlab_group_projects_list_command,
+            'gitlab-raw-file-get': gitlab_get_raw_file_command
         }
 
         if command == 'test-module':

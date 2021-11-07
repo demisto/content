@@ -4,7 +4,7 @@ Asks a user a question via email and process the reply directly into the investi
 
 Cortex XSOAR can use email responses within the system, e.g. when an external user's approval is required. To do this, you will create an email template with multiple choice options (e.g. Reply "Yes" if you approve and "No" if you do not).
 
-**Before starting you will need to configure an integration capable for sending and receiving emails. Such as: Mail Listener v2 and Mail Sender (New), GMail, EWS O365, Microsoft Graph Mail Single User.**
+**Before starting you will need to configure an integration capable for sending and receiving emails. Such as: Mail Listener v2 and Mail Sender (New), GMail, EWS O365, O365 Outlook Mail Single User.**
 
 The user who receives the mail will respond accordingly and when an answer is received, it will trigger a task to handle the response.
 This is a two step task. The first, is to send an email asking the user for information. The second step, is to receive the answer and trigger a process of handling it in Cortex XSOAR.
@@ -90,3 +90,7 @@ There are no outputs for this script.
 ---
 Requires an instance of one of the available email integrations.
 
+
+## Troubleshooting
+---
+In case that the incident in which the automation script is running, has limited permissions to (e.g. has a certain role assigned to it), then the responder to the email need to have the relevant permissions assigned to its user in Cortex XSOAR.

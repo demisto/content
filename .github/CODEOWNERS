@@ -4,20 +4,20 @@
 /Tests/Marketplace/landingPage_sections.json @demisto/content-leaders @michalgold
 
 # Marketplace & Upload-Flow
-/Tests/Marketplace/upload_git_snapshot.py @guyfreund
-/Tests/Marketplace/install_packs.sh @guyfreund
-/Tests/Marketplace/configure_and_install_packs.py @guyfreund
-/Tests/Marketplace/copy_and_upload_packs.py @guyfreund
-/Tests/Marketplace/marketplace_services.py @guyfreund
-/Tests/Marketplace/marketplace_statistics.py @guyfreund
-/Tests/Marketplace/marketplace_constants.py @guyfreund
-/Tests/Marketplace/zip_packs.py @guyfreund
-/Tests/Marketplace/upload_packs.py @guyfreund
-/Tests/Marketplace/packs_dependencies.py @guyfreund
-/Tests/Marketplace/search_and_install_packs.py @guyfreund
-/Tests/scripts/prepare_content_packs_for_testing.sh @guyfreund
-/Utils/trigger_test_upload_flow.sh @guyfreund
-/Utils/trigger_upload_packs_to_production.sh @guyfreund
+/Tests/Marketplace/upload_git_snapshot.py @Noy-Maimon
+/Tests/Marketplace/install_packs.sh @Noy-Maimon
+/Tests/Marketplace/configure_and_install_packs.py @Noy-Maimon
+/Tests/Marketplace/copy_and_upload_packs.py @Noy-Maimon
+/Tests/Marketplace/marketplace_services.py @Noy-Maimon
+/Tests/Marketplace/marketplace_statistics.py @Noy-Maimon
+/Tests/Marketplace/marketplace_constants.py @Noy-Maimon
+/Tests/Marketplace/zip_packs.py @Noy-Maimon
+/Tests/Marketplace/upload_packs.py @Noy-Maimon
+/Tests/Marketplace/packs_dependencies.py @Noy-Maimon
+/Tests/Marketplace/search_and_install_packs.py @Noy-Maimon
+/Tests/scripts/prepare_content_packs_for_testing.sh @Noy-Maimon
+/Utils/trigger_test_upload_flow.sh @Noy-Maimon
+/Utils/trigger_upload_packs_to_production.sh @Noy-Maimon
 
 # Important Integrations
 /Packs/Jira/Integrations/JiraV2/* @demisto/content-leaders
@@ -32,7 +32,7 @@
 /Packs/VirusTotal/* @jochman
 
 # Important Scripts
-/Packs/CommonScripts/Scripts/SetGridField/* @yaakovi
+/Packs/CommonScripts/Scripts/SetGridField/* @yaakovi @David-BMS
 /Packs/CommonScripts/Scripts/SearchIncidentsV2/* @demisto/content-leaders
 
 # Build related

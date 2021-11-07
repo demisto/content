@@ -19,7 +19,7 @@
 </ul>
 <p>If you do not have these credentials, register at <a href="http://ui.threatstream.com/" rel="nofollow">http://ui.threatstream.com</a>. </p>
 <hr>
-<h2>Configure Cortex XSOAR to Integrate with Anamoli ThreatStream</h2>
+<h2>Configure Cortex XSOAR to Integrate with Anomali ThreatStream</h2>
 <ol>
 <li>Navigate to to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services.</strong>
 </li>
@@ -36,7 +36,7 @@
 <strong>API Key |</strong> The API key you copied in the previous procedure. (Required)</li>
 </ul>
 </li>
-<li>Click the <strong>Test</strong> button to verify the the URL and token.<br>A green light means the test was successful. If you experience any issues, contact <a href="mailto:support@demisto.com">Cortex XSOAR Support</a>.</li>
+<li>Click the <strong>Test</strong> button to verify the the URL and token.<br>A green light means the test was successful.</li>
 </ol>
 <hr>
 <h2>Use Cases</h2>

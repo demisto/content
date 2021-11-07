@@ -6,19 +6,20 @@ Integration to GitHub API.
 2. Search for GitHub.
 3. Click **Add instance** to create and configure a new integration instance.
 
-   | **Parameter** | **Required** |
-   | --- | --- |
-   | Fetch incidents | False |
-   | API Token | False |
-   | Credentials | False |
-   | Username of the repository owner, for example: github.com/repos/{_owner_}/{repo}/issues | False |
-   | The name of the requested repository | False |
-   | First fetch interval (in days) | False |
-   | Use system proxy settings | False |
-   | Trust any certificate (not secure) | False |
-   | Incident type | False |
-   | GitHub app integration ID | False |
-   | GitHub app installation ID | False |
+    | **Parameter** | **Required** |
+    | --- | --- |
+    | Fetch incidents | False |
+    | Select an Issue or Pull requests to Fetch | False |
+    | API Token | False |
+    | Credentials | False |
+    | Username of the repository owner, for example: github.com/repos/{_owner_}/{repo}/issues | False |
+    | The name of the requested repository | False |
+    | First fetch interval (in days) | False |
+    | Use system proxy settings | False |
+    | Trust any certificate (not secure) | False |
+    | Incident type | False |
+    | GitHub app integration ID | False |
+    | GitHub app installation ID | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -1601,6 +1602,8 @@ Gets the content of a file from GitHub.
 | branch_name | The branch name from which to get the file. | Optional | 
 | media_type | The media type in which the file contents will be fetched. Possible values are: "raw" and "html". Default value is "raw". Possible values are: raw, html. Default is raw. | Optional | 
 | create_file_from_content | Whether to create a file entry in the War Room with the file contents. Possible values are: "true" and "false". Default value is "false". | Optional | 
+| organization | The name of the organization. | Optional | 
+| repository | The name of the repository. | Optional | 
 
 #### Context Output
 
@@ -2119,4 +2122,571 @@ Create a release.
 ```
 
 #### Human Readable Output
-Release 1.0.0 created successfully for repo sdk: https://github.com/demisto/sdk/releases/tag/1.0.0
+> Release 1.0.0 created successfully for repo sdk: https:<span>//github</span>.com/demisto/sdk/releases/tag/1.0.0
+
+
+### Github-list-issue-events
+***
+Returns events corresponding to the given issue.
+
+
+#### Base Command
+
+`Github-list-issue-events`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issue_number | The issue number for which to retrieve events. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.IssueEvent.id | Number | Event ID. | 
+| GitHub.IssueEvent.node_id | String | Event node ID. | 
+| GitHub.IssueEvent.url | String | Event URL. | 
+| GitHub.IssueEvent.actor.login | String | Event actor login username. | 
+| GitHub.IssueEvent.actor.id | Number | Event actor ID. | 
+| GitHub.IssueEvent.actor.node_id | String | Event actor node ID. | 
+| GitHub.IssueEvent.actor.avatar_url | String | Event actor avatar URL. | 
+| GitHub.IssueEvent.actor.gravatar_id | String | Event actor gravatar ID. | 
+| GitHub.IssueEvent.actor.url | String | Event actor URL. | 
+| GitHub.IssueEvent.actor.html_url | String | Event actor HTML URL. | 
+| GitHub.IssueEvent.actor.followers_url | String | Event actor followers URL. | 
+| GitHub.IssueEvent.actor.following_url | String | Event actor following URL. | 
+| GitHub.IssueEvent.actor.gists_url | String | Event actor gists URL. | 
+| GitHub.IssueEvent.actor.starred_url | String | Event actor starred URL. | 
+| GitHub.IssueEvent.actor.subscriptions_url | String | Event actor subscriptions URL. | 
+| GitHub.IssueEvent.actor.organizations_url | String | Event actor organizations URL. | 
+| GitHub.IssueEvent.actor.repos_url | String | Event actor repos URL. | 
+| GitHub.IssueEvent.actor.events_url | String | Event actor events URL. | 
+| GitHub.IssueEvent.actor.received_events_url | String | Event actor received events URL. | 
+| GitHub.IssueEvent.actor.type | String | Event actor type. | 
+| GitHub.IssueEvent.actor.site_admin | Boolean | Indicates whether the event actor is site admin. | 
+| GitHub.IssueEvent.event | String | Issue event type, e.g labeled, closed. | 
+| GitHub.IssueEvent.commit_id | Unknown | Event commit ID. | 
+| GitHub.IssueEvent.commit_url | Unknown | Event commit URL. | 
+| GitHub.IssueEvent.created_at | Date | Event created time. | 
+| GitHub.IssueEvent.label.name | String | Event label name. | 
+| GitHub.IssueEvent.label.color | String | Event label color | 
+| GitHub.IssueEvent.performed_via_github_app | Unknown | Indicates whether event was performed via GitHub application. | 
+| GitHub.IssueEvent.assignee.login | String | Assignee login username. | 
+| GitHub.IssueEvent.assignee.id | Number | Assignee ID. | 
+| GitHub.IssueEvent.assignee.node_id | String | Assignee node ID. | 
+| GitHub.IssueEvent.assignee.avatar_url | String | Assignee avatar URL. | 
+| GitHub.IssueEvent.assignee.gravatar_id | String | Assignee gravatar ID. | 
+| GitHub.IssueEvent.assignee.url | String | Assignee URL. | 
+| GitHub.IssueEvent.assignee.html_url | String | Assignee HTML URL. | 
+| GitHub.IssueEvent.assignee.followers_url | String | Assignee followers URL. | 
+| GitHub.IssueEvent.assignee.following_url | String | Assignee following URL. | 
+| GitHub.IssueEvent.assignee.gists_url | String | Assignee gists URL. | 
+| GitHub.IssueEvent.assignee.starred_url | String | Assignee starred URL. | 
+| GitHub.IssueEvent.assignee.subscriptions_url | String | Assignee subscriptions URL. | 
+| GitHub.IssueEvent.assignee.organizations_url | String | Assignee organizations URL. | 
+| GitHub.IssueEvent.assignee.repos_url | String | Assignee repos URL. | 
+| GitHub.IssueEvent.assignee.events_url | String | Assignee events URL. | 
+| GitHub.IssueEvent.assignee.received_events_url | String | Assignee received events URL. | 
+| GitHub.IssueEvent.assignee.type | String | Assignee type. | 
+| GitHub.IssueEvent.assignee.site_admin | Boolean | Indicates whether the assignee is site admin. | 
+| GitHub.IssueEvent.assigner.login | String | Assigner login username. | 
+| GitHub.IssueEvent.assigner.id | Number | Assigner ID. | 
+| GitHub.IssueEvent.assigner.node_id | String | Assigner node ID. | 
+| GitHub.IssueEvent.assigner.avatar_url | String | Assigner avatar URL. | 
+| GitHub.IssueEvent.assigner.gravatar_id | String | Assigner gravatar ID. | 
+| GitHub.IssueEvent.assigner.url | String | Assigner URL. | 
+| GitHub.IssueEvent.assigner.html_url | String | Assigner HTML URL. | 
+| GitHub.IssueEvent.assigner.followers_url | String | Assigner followers URL. | 
+| GitHub.IssueEvent.assigner.following_url | String | Assigner following URL. | 
+| GitHub.IssueEvent.assigner.gists_url | String | Assigner gists URL. | 
+| GitHub.IssueEvent.assigner.starred_url | String | Assigner starred URL. | 
+| GitHub.IssueEvent.assigner.subscriptions_url | String | Assigner subscriptions URL. | 
+| GitHub.IssueEvent.assigner.organizations_url | String | Assigner organizations URL. | 
+| GitHub.IssueEvent.assigner.repos_url | String | Assigner repos URL. | 
+| GitHub.IssueEvent.assigner.events_url | String | Assigner events URL. | 
+| GitHub.IssueEvent.assigner.received_events_url | String | Assigner received events URL. | 
+| GitHub.IssueEvent.assigner.type | String | Assigner type. | 
+| GitHub.IssueEvent.assigner.site_admin | Boolean | Indicates whether the assignee is site admin. | 
+
+
+#### Command Example
+```!Github-list-issue-events issue_number=1079```
+
+#### Context Example
+```json
+{
+    "GitHub": {
+        "IssueEvent": [
+            {
+                "actor": {
+                    "avatar_url": "https://avatars.githubusercontent.com/u/70005542?v=4",
+                    "events_url": "https://api.github.com/users/tomneeman151293/events{/privacy}",
+                    "followers_url": "https://api.github.com/users/tomneeman151293/followers",
+                    "following_url": "https://api.github.com/users/tomneeman151293/following{/other_user}",
+                    "gists_url": "https://api.github.com/users/tomneeman151293/gists{/gist_id}",
+                    "gravatar_id": "",
+                    "html_url": "https://github.com/tomneeman151293",
+                    "id": 70005542,
+                    "login": "tomneeman151293",
+                    "node_id": "MDQ6VXNlcjcwMDA1NTQy",
+                    "organizations_url": "https://api.github.com/users/tomneeman151293/orgs",
+                    "received_events_url": "https://api.github.com/users/tomneeman151293/received_events",
+                    "repos_url": "https://api.github.com/users/tomneeman151293/repos",
+                    "site_admin": false,
+                    "starred_url": "https://api.github.com/users/tomneeman151293/starred{/owner}{/repo}",
+                    "subscriptions_url": "https://api.github.com/users/tomneeman151293/subscriptions",
+                    "type": "User",
+                    "url": "https://api.github.com/users/tomneeman151293"
+                },
+                "commit_id": null,
+                "commit_url": null,
+                "created_at": "2021-01-28T13:00:26Z",
+                "event": "labeled",
+                "id": 4260960414,
+                "label": {
+                    "color": "d73a4a",
+                    "name": "bug"
+                },
+                "node_id": "MDEyOkxhYmVsZWRFdmVudDQyNjA5NjA0MTQ=",
+                "performed_via_github_app": null,
+                "url": "https://api.github.com/repos/demisto/demisto-sdk/issues/events/4260960414"
+            },
+            {
+                "actor": {
+                    "avatar_url": "https://avatars.githubusercontent.com/u/70005542?v=4",
+                    "events_url": "https://api.github.com/users/tomneeman151293/events{/privacy}",
+                    "followers_url": "https://api.github.com/users/tomneeman151293/followers",
+                    "following_url": "https://api.github.com/users/tomneeman151293/following{/other_user}",
+                    "gists_url": "https://api.github.com/users/tomneeman151293/gists{/gist_id}",
+                    "gravatar_id": "",
+                    "html_url": "https://github.com/tomneeman151293",
+                    "id": 70005542,
+                    "login": "tomneeman151293",
+                    "node_id": "MDQ6VXNlcjcwMDA1NTQy",
+                    "organizations_url": "https://api.github.com/users/tomneeman151293/orgs",
+                    "received_events_url": "https://api.github.com/users/tomneeman151293/received_events",
+                    "repos_url": "https://api.github.com/users/tomneeman151293/repos",
+                    "site_admin": false,
+                    "starred_url": "https://api.github.com/users/tomneeman151293/starred{/owner}{/repo}",
+                    "subscriptions_url": "https://api.github.com/users/tomneeman151293/subscriptions",
+                    "type": "User",
+                    "url": "https://api.github.com/users/tomneeman151293"
+                },
+                "commit_id": null,
+                "commit_url": null,
+                "created_at": "2021-01-28T15:20:27Z",
+                "event": "closed",
+                "id": 4261648354,
+                "node_id": "MDExOkNsb3NlZEV2ZW50NDI2MTY0ODM1NA==",
+                "performed_via_github_app": null,
+                "url": "https://api.github.com/repos/demisto/demisto-sdk/issues/events/4261648354"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### GitHub Issue Events For Issue 1079
+>|actor|commit_id|commit_url|created_at|event|id|label|node_id|performed_via_github_app|url|
+>|---|---|---|---|---|---|---|---|---|---|
+>| login: tomneeman151293<br/>id: 70005542<br/>node_id: MDQ6VXNlcjcwMDA1NTQy<br/>avatar_url: https://avatars.githubusercontent.com/u/70005542?v=4<br/>gravatar_id: <br/>url: https://api.github.com/users/tomneeman151293<br/>html_url: https://github.com/tomneeman151293<br/>followers_url: https://api.github.com/users/tomneeman151293/followers<br/>following_url: https://api.github.com/users/tomneeman151293/following{/other_user}<br/>gists_url: https://api.github.com/users/tomneeman151293/gists{/gist_id}<br/>starred_url: https://api.github.com/users/tomneeman151293/starred{/owner}{/repo}<br/>subscriptions_url: https://api.github.com/users/tomneeman151293/subscriptions<br/>organizations_url: https://api.github.com/users/tomneeman151293/orgs<br/>repos_url: https://api.github.com/users/tomneeman151293/repos<br/>events_url: https://api.github.com/users/tomneeman151293/events{/privacy}<br/>received_events_url: https://api.github.com/users/tomneeman151293/received_events<br/>type: User<br/>site_admin: false |  |  | 2021-01-28T13:00:26Z | labeled | 4260960414 | name: bug<br/>color: d73a4a | MDEyOkxhYmVsZWRFdmVudDQyNjA5NjA0MTQ= |  | https://api.github.com/repos/demisto/demisto-sdk/issues/events/4260960414 |
+>| login: tomneeman151293<br/>id: 70005542<br/>node_id: MDQ6VXNlcjcwMDA1NTQy<br/>avatar_url: https://avatars.githubusercontent.com/u/70005542?v=4<br/>gravatar_id: <br/>url: https://api.github.com/users/tomneeman151293<br/>html_url: https://github.com/tomneeman151293<br/>followers_url: https://api.github.com/users/tomneeman151293/followers<br/>following_url: https://api.github.com/users/tomneeman151293/following{/other_user}<br/>gists_url: https://api.github.com/users/tomneeman151293/gists{/gist_id}<br/>starred_url: https://api.github.com/users/tomneeman151293/starred{/owner}{/repo}<br/>subscriptions_url: https://api.github.com/users/tomneeman151293/subscriptions<br/>organizations_url: https://api.github.com/users/tomneeman151293/orgs<br/>repos_url: https://api.github.com/users/tomneeman151293/repos<br/>events_url: https://api.github.com/users/tomneeman151293/events{/privacy}<br/>received_events_url: https://api.github.com/users/tomneeman151293/received_events<br/>type: User<br/>site_admin: false |  |  | 2021-01-28T15:20:27Z | closed | 4261648354 |  | MDExOkNsb3NlZEV2ZW50NDI2MTY0ODM1NA== |  | https://api.github.com/repos/demisto/demisto-sdk/issues/events/4261648354 |
+
+### GitHub-list-all-projects
+
+***
+List all project boards a user can see.
+
+#### Base Command
+
+`GitHub-list-all-projects`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_filter | Only list projects with the following numbers (Ids) | Optional | 
+| limit | The number of projects to return. Default is 20. Maximum is 100. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.Project.Name | String | The name of the project board. | 
+| GitHub.Project.ID | Number | The ID of the  project board. | 
+| GitHub.Project.Number | Number | Project board number. | 
+| GitHub.Project.Columns.Name | String | Column Name. | 
+| GitHub.Project.Columns.ColumnID | Number | The ID of the column. | 
+| GitHub.Project.Columns.Cards.CardID | Number | The ID of the card. | 
+| GitHub.Project.Columns.Cards.ContentNumber | Number | The content number of this card, usually this is the issue number. | 
+| GitHub.Project.Issues | List | List of all issue numbers that are in this project board. | 
+            
+#### Command Example
+
+```!GitHub-list-all-projects project_filter="1,2"```
+
+#### Context Example
+```json
+{
+  "GitHub": {
+    "Project": {
+       "XSOAR Data": {
+        "Number": 23,
+        "ID": 2,
+        "Columns": {
+          "In progress": {
+            "Cards": [
+              {
+                "CardID": 55555,
+                "ContentNumber": 33883
+              },
+              {
+                "CardID": 66666,
+                "ContentNumber": 34852
+              },
+            ],
+            "Name": "In progress",
+            "ColumnID": 13241511
+          },
+          "Done": {
+            "Cards": [
+              {
+                "CardID": 61858005,
+                "ContentNumber": 37480
+              },
+              {
+                "CardID": 60428728,
+                "ContentNumber": 36608
+              },
+            ],
+            "Name": "Done",
+            "ColumnID": 13437971
+          }
+        },
+        "Issues": [
+          33883,
+          34852,
+          37480,
+          36608
+        ],
+        "Name": "XSOAR Data"
+      }
+  }
+}
+```
+
+
+### GitHub-move-issue-to-project-board
+
+***
+Move an issue in the project board to a different column.
+
+#### Base Command
+
+`GitHub-move-issue-to-project-board`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| column_id | Destination column ID | Required | 
+| card_id | Card ID to move | Required | 
+| position | The position of the card in the new column | Optional | 
+
+           
+#### Command Example
+
+```!GitHub-move-issue-to-project-board card_id=1111 column_id=1234 position="top"```
+
+### GitHub-get-path-data
+***
+Gets the data of the a given path.
+
+
+#### Base Command
+
+`GitHub-get-path-data`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| relative_path | Relative path to retrieve its data. | Required | 
+| branch_name | The branch name from which to get the file data. Default is master. | Optional | 
+| organization | The name of the organization containing the file. | Optional | 
+| repository | The repository of the file. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.PathData.name | String | Path name. | 
+| GitHub.PathData.path | String | Relative path for the given repository. | 
+| GitHub.PathData.sha | String | Path SHA. | 
+| GitHub.PathData.size | Number | Path size in bytes. Will be 0 if path to a dir was given. | 
+| GitHub.PathData.url | String | Path URL. | 
+| GitHub.PathData.html_url | String | Path HTML URL. | 
+| GitHub.PathData.git_url | String | Path Git URL. | 
+| GitHub.PathData.download_url | String | Path download URL. If a directory path was given will be empty. | 
+| GitHub.PathData.type | String | Path data, e.g file, dir. | 
+| GitHub.PathData.content | String | Content of the path if a file path was given. | 
+| GitHub.PathData.encoding | String | Encoding method if path to a file was given. | 
+| GitHub.PathData.entries.name | String | If dir was given in file_path, name of the dir entry. | 
+| GitHub.PathData.entries.path | String | If dir was given in file_path, path of the dir entry. | 
+| GitHub.PathData.entries.sha | String | If dir was given in file_path, SHA of the dir entry. | 
+| GitHub.PathData.entries.size | Number | If dir was given in file_path, size of the dir entry. Will be 0 if entry is also a dir. | 
+| GitHub.PathData.entries.url | String | If dir was given in file_path, URL of the dir entry. | 
+| GitHub.PathData.entries.html_url | String | If dir was given in file_path, HTML URL of the dir entry. | 
+| GitHub.PathData.entries.git_url | String | If dir was given in file_path, Git URL of the dir entry. | 
+| GitHub.PathData.entries.download_url | String | If dir was given in file_path, download URL of the dir entry. Will be empty if entry is also a dir. | 
+| GitHub.PathData.entries.type | String | If dir was given in file_path, type of the dir entry. | 
+
+
+#### Command Example
+```!GitHub-get-path-data organization=demisto repository=content relative_path=Packs/BitcoinAbuse/Integrations/BitcoinAbuse```
+
+#### Context Example
+```json
+{
+    "GitHub": {
+        "PathData": {
+            "download_url": null,
+            "entries": [
+                {
+                    "download_url": "https://raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.py",
+                    "git_url": "https://api.github.com/repos/demisto/content/git/blobs/23b55cb33aadaa6753e3df1e1d90d3cdc951c745",
+                    "html_url": "https://github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.py",
+                    "name": "BitcoinAbuse.py",
+                    "path": "Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.py",
+                    "sha": "23b55cb33aadaa6753e3df1e1d90d3cdc951c745",
+                    "size": 14395,
+                    "type": "file",
+                    "url": "https://api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.py?ref=master"
+                },
+                {
+                    "download_url": "https://raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.yml",
+                    "git_url": "https://api.github.com/repos/demisto/content/git/blobs/17bbcfd9270570727c2e0f48591fcb9a98a0711e",
+                    "html_url": "https://github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.yml",
+                    "name": "BitcoinAbuse.yml",
+                    "path": "Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.yml",
+                    "sha": "17bbcfd9270570727c2e0f48591fcb9a98a0711e",
+                    "size": 3929,
+                    "type": "file",
+                    "url": "https://api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.yml?ref=master"
+                },
+                {
+                    "download_url": "https://raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_description.md",
+                    "git_url": "https://api.github.com/repos/demisto/content/git/blobs/7d969d68833e2424ba8411c93fb8110face60414",
+                    "html_url": "https://github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_description.md",
+                    "name": "BitcoinAbuse_description.md",
+                    "path": "Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_description.md",
+                    "sha": "7d969d68833e2424ba8411c93fb8110face60414",
+                    "size": 1305,
+                    "type": "file",
+                    "url": "https://api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_description.md?ref=master"
+                },
+                {
+                    "download_url": "https://raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_image.png",
+                    "git_url": "https://api.github.com/repos/demisto/content/git/blobs/52bef504f8dc4b58ddc6f200cdd135bcdfe9719a",
+                    "html_url": "https://github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_image.png",
+                    "name": "BitcoinAbuse_image.png",
+                    "path": "Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_image.png",
+                    "sha": "52bef504f8dc4b58ddc6f200cdd135bcdfe9719a",
+                    "size": 3212,
+                    "type": "file",
+                    "url": "https://api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_image.png?ref=master"
+                },
+                {
+                    "download_url": "https://raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_test.py",
+                    "git_url": "https://api.github.com/repos/demisto/content/git/blobs/dc2c4106cc3589461c7470a5c26e6e8927192d7f",
+                    "html_url": "https://github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_test.py",
+                    "name": "BitcoinAbuse_test.py",
+                    "path": "Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_test.py",
+                    "sha": "dc2c4106cc3589461c7470a5c26e6e8927192d7f",
+                    "size": 7150,
+                    "type": "file",
+                    "url": "https://api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_test.py?ref=master"
+                },
+                {
+                    "download_url": "https://raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile",
+                    "git_url": "https://api.github.com/repos/demisto/content/git/blobs/3523d3b6b93bd611859c23e1f63a774d78a0363a",
+                    "html_url": "https://github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile",
+                    "name": "Pipfile",
+                    "path": "Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile",
+                    "sha": "3523d3b6b93bd611859c23e1f63a774d78a0363a",
+                    "size": 257,
+                    "type": "file",
+                    "url": "https://api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile?ref=master"
+                },
+                {
+                    "download_url": "https://raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile.lock",
+                    "git_url": "https://api.github.com/repos/demisto/content/git/blobs/6bdb9313414e337e128df3715f17d372f5691608",
+                    "html_url": "https://github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile.lock",
+                    "name": "Pipfile.lock",
+                    "path": "Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile.lock",
+                    "sha": "6bdb9313414e337e128df3715f17d372f5691608",
+                    "size": 15993,
+                    "type": "file",
+                    "url": "https://api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile.lock?ref=master"
+                },
+                {
+                    "download_url": "https://raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/README.md",
+                    "git_url": "https://api.github.com/repos/demisto/content/git/blobs/fba823cddcc3637b2989598b7ae08731002f8feb",
+                    "html_url": "https://github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/README.md",
+                    "name": "README.md",
+                    "path": "Packs/BitcoinAbuse/Integrations/BitcoinAbuse/README.md",
+                    "sha": "fba823cddcc3637b2989598b7ae08731002f8feb",
+                    "size": 7188,
+                    "type": "file",
+                    "url": "https://api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/README.md?ref=master"
+                },
+                {
+                    "download_url": null,
+                    "git_url": "https://api.github.com/repos/demisto/content/git/trees/ed2025b734667dfde3b405f8a131b785e9d8fc9d",
+                    "html_url": "https://github.com/demisto/content/tree/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/test_data",
+                    "name": "test_data",
+                    "path": "Packs/BitcoinAbuse/Integrations/BitcoinAbuse/test_data",
+                    "sha": "ed2025b734667dfde3b405f8a131b785e9d8fc9d",
+                    "size": 0,
+                    "type": "dir",
+                    "url": "https://api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/test_data?ref=master"
+                }
+            ],
+            "git_url": "https://api.github.com/repos/demisto/content/git/trees/1a0c49c84e7bcd02af5587082b6ed48634a20402",
+            "html_url": "https://github.com/demisto/content/tree/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse",
+            "name": "BitcoinAbuse",
+            "path": "Packs/BitcoinAbuse/Integrations/BitcoinAbuse",
+            "sha": "1a0c49c84e7bcd02af5587082b6ed48634a20402",
+            "size": 0,
+            "type": "dir",
+            "url": "https://api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse?ref=master"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### File Data For File Packs/BitcoinAbuse/Integrations/BitcoinAbuse
+>|entries|git_url|html_url|name|path|sha|size|type|url|
+>|---|---|---|---|---|---|---|---|---|
+>| {'name': 'BitcoinAbuse.py', 'path': 'Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.py', 'sha': '23b55cb33aadaa6753e3df1e1d90d3cdc951c745', 'size': 14395, 'url': 'https:<span>//</span>api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.py?ref=master', 'html_url': 'https:<span>//</span>github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.py', 'git_url': 'https:<span>//</span>api.github.com/repos/demisto/content/git/blobs/23b55cb33aadaa6753e3df1e1d90d3cdc951c745', 'download_url': 'https:<span>//</span>raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.py', 'type': 'file'},<br/>{'name': 'BitcoinAbuse.yml', 'path': 'Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.yml', 'sha': '17bbcfd9270570727c2e0f48591fcb9a98a0711e', 'size': 3929, 'url': 'https:<span>//</span>api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.yml?ref=master', 'html_url': 'https:<span>//</span>github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.yml', 'git_url': 'https:<span>//</span>api.github.com/repos/demisto/content/git/blobs/17bbcfd9270570727c2e0f48591fcb9a98a0711e', 'download_url': 'https:<span>//</span>raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse.yml', 'type': 'file'},<br/>{'name': 'BitcoinAbuse_description.md', 'path': 'Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_description.md', 'sha': '7d969d68833e2424ba8411c93fb8110face60414', 'size': 1305, 'url': 'https:<span>//</span>api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_description.md?ref=master', 'html_url': 'https:<span>//</span>github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_description.md', 'git_url': 'https:<span>//</span>api.github.com/repos/demisto/content/git/blobs/7d969d68833e2424ba8411c93fb8110face60414', 'download_url': 'https:<span>//</span>raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_description.md', 'type': 'file'},<br/>{'name': 'BitcoinAbuse_image.png', 'path': 'Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_image.png', 'sha': '52bef504f8dc4b58ddc6f200cdd135bcdfe9719a', 'size': 3212, 'url': 'https:<span>//</span>api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_image.png?ref=master', 'html_url': 'https:<span>//</span>github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_image.png', 'git_url': 'https:<span>//</span>api.github.com/repos/demisto/content/git/blobs/52bef504f8dc4b58ddc6f200cdd135bcdfe9719a', 'download_url': 'https:<span>//</span>raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_image.png', 'type': 'file'},<br/>{'name': 'BitcoinAbuse_test.py', 'path': 'Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_test.py', 'sha': 'dc2c4106cc3589461c7470a5c26e6e8927192d7f', 'size': 7150, 'url': 'https:<span>//</span>api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_test.py?ref=master', 'html_url': 'https:<span>//</span>github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_test.py', 'git_url': 'https:<span>//</span>api.github.com/repos/demisto/content/git/blobs/dc2c4106cc3589461c7470a5c26e6e8927192d7f', 'download_url': 'https:<span>//</span>raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/BitcoinAbuse_test.py', 'type': 'file'},<br/>{'name': 'Pipfile', 'path': 'Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile', 'sha': '3523d3b6b93bd611859c23e1f63a774d78a0363a', 'size': 257, 'url': 'https:<span>//</span>api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile?ref=master', 'html_url': 'https:<span>//</span>github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile', 'git_url': 'https:<span>//</span>api.github.com/repos/demisto/content/git/blobs/3523d3b6b93bd611859c23e1f63a774d78a0363a', 'download_url': 'https:<span>//</span>raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile', 'type': 'file'},<br/>{'name': 'Pipfile.lock', 'path': 'Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile.lock', 'sha': '6bdb9313414e337e128df3715f17d372f5691608', 'size': 15993, 'url': 'https:<span>//</span>api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile.lock?ref=master', 'html_url': 'https:<span>//</span>github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile.lock', 'git_url': 'https:<span>//</span>api.github.com/repos/demisto/content/git/blobs/6bdb9313414e337e128df3715f17d372f5691608', 'download_url': 'https:<span>//</span>raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/Pipfile.lock', 'type': 'file'},<br/>{'name': 'README.md', 'path': 'Packs/BitcoinAbuse/Integrations/BitcoinAbuse/README.md', 'sha': 'fba823cddcc3637b2989598b7ae08731002f8feb', 'size': 7188, 'url': 'https:<span>//</span>api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/README.md?ref=master', 'html_url': 'https:<span>//</span>github.com/demisto/content/blob/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/README.md', 'git_url': 'https:<span>//</span>api.github.com/repos/demisto/content/git/blobs/fba823cddcc3637b2989598b7ae08731002f8feb', 'download_url': 'https:<span>//</span>raw.githubusercontent.com/demisto/content/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/README.md', 'type': 'file'},<br/>{'name': 'test_data', 'path': 'Packs/BitcoinAbuse/Integrations/BitcoinAbuse/test_data', 'sha': 'ed2025b734667dfde3b405f8a131b785e9d8fc9d', 'size': 0, 'url': 'https:<span>//</span>api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/test_data?ref=master', 'html_url': 'https:<span>//</span>github.com/demisto/content/tree/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse/test_data', 'git_url': 'https:<span>//</span>api.github.com/repos/demisto/content/git/trees/ed2025b734667dfde3b405f8a131b785e9d8fc9d', 'download_url': None, 'type': 'dir'} | https:<span>//</span>api.github.com/repos/demisto/content/git/trees/1a0c49c84e7bcd02af5587082b6ed48634a20402 | https:<span>//</span>github.com/demisto/content/tree/master/Packs/BitcoinAbuse/Integrations/BitcoinAbuse | BitcoinAbuse | Packs/BitcoinAbuse/Integrations/BitcoinAbuse | 1a0c49c84e7bcd02af5587082b6ed48634a20402 | 0 | dir | https:<span>//</span>api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/Integrations/BitcoinAbuse?ref=master |
+
+### GitHub-releases-list
+***
+Get releases data from given repository and organization.
+
+
+#### Base Command
+
+`GitHub-releases-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| page | Page number to retrieve releases from. If limit argument is not given, defaults to 1. | Optional | 
+| page_size | Size of the page. If limit argument is not given, defaults to 50. | Optional |
+| limit | Maximum number of releases data to retrieve. Will get results of the first pages. Cannot be given with page_size or page arguments. | Optional |
+| organization | The name of the organization containing the repository. Defaults to organization instance parameter if not given. | Optional | 
+| repository | The repository containing the releases. Defaults to repository instance parameter if not given. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.Release.url | String | Release URL. | 
+| GitHub.Release.assets_url | String | Release assets URL. | 
+| GitHub.Release.upload_url | String | Upload URL. | 
+| GitHub.Release.html_url | String | HTML URL. | 
+| GitHub.Release.id | Number | Release ID. | 
+| GitHub.Release.author.login | String | The release author login username. | 
+| GitHub.Release.author.id | Number | The release author user ID. | 
+| GitHub.Release.author.node_id | String | The release author node ID. | 
+| GitHub.Release.author.avatar_url | String | The release author avatar URL. | 
+| GitHub.Release.author.gravatar_id | String | The release author gravatar ID. | 
+| GitHub.Release.author.url | String | The release author URL. | 
+| GitHub.Release.author.html_url | String | The release author HTML URL. | 
+| GitHub.Release.author.followers_url | String | The release author followers URL. | 
+| GitHub.Release.author.following_url | String | The release author following URL. | 
+| GitHub.Release.author.gists_url | String | The release author gists URL. | 
+| GitHub.Release.author.starred_url | String | The release author starred URL. | 
+| GitHub.Release.author.subscriptions_url | String | The release author subscriptions URL. | 
+| GitHub.Release.author.organizations_url | String | The release author organizations URL. | 
+| GitHub.Release.author.repos_url | String | The release author repos URL. | 
+| GitHub.Release.author.events_url | String | The release author events URL. | 
+| GitHub.Release.author.received_events_url | String | The release author received events URL. | 
+| GitHub.Release.author.type | String | The release author type. \(E.g, "User"\). | 
+| GitHub.Release.author.site_admin | Boolean | Whether the release author is site admin. | 
+| GitHub.Release.node_id | String | Release Node ID. | 
+| GitHub.Release.tag_name | String | Release tag name. | 
+| GitHub.Release.target_commitish | String | Release target commit. | 
+| GitHub.Release.name | String | Release name. | 
+| GitHub.Release.draft | Boolean | Whether release is draft. | 
+| GitHub.Release.prerelease | Boolean | Whether release is pre release. | 
+| GitHub.Release.created_at | Date | Date when release was created. | 
+| GitHub.Release.published_at | Date | Date when release was published. | 
+| GitHub.Release.tarball_url | String | Release tar URL download. | 
+| GitHub.Release.zipball_url | String | Release zip URL download. | 
+| GitHub.Release.body | String | Release body. | 
+
+
+#### Command Example
+```!GitHub-releases-list limit=1```
+
+#### Context Example
+```json
+{
+    "GitHub": {
+        "Release": {
+            "assets": [],
+            "assets_url": "https://api.github.com/repos/content-bot/hello-world/releases/48262112/assets",
+            "author": {
+                "avatar_url": "https://avatars.githubusercontent.com/u/55035720?v=4",
+                "events_url": "https://api.github.com/users/content-bot/events{/privacy}",
+                "followers_url": "https://api.github.com/users/content-bot/followers",
+                "following_url": "https://api.github.com/users/content-bot/following{/other_user}",
+                "gists_url": "https://api.github.com/users/content-bot/gists{/gist_id}",
+                "gravatar_id": "",
+                "html_url": "https://github.com/content-bot",
+                "id": 55035720,
+                "login": "content-bot",
+                "node_id": "MDQ6VXNlcjU1MDM1NzIw",
+                "organizations_url": "https://api.github.com/users/content-bot/orgs",
+                "received_events_url": "https://api.github.com/users/content-bot/received_events",
+                "repos_url": "https://api.github.com/users/content-bot/repos",
+                "site_admin": false,
+                "starred_url": "https://api.github.com/users/content-bot/starred{/owner}{/repo}",
+                "subscriptions_url": "https://api.github.com/users/content-bot/subscriptions",
+                "type": "User",
+                "url": "https://api.github.com/users/content-bot"
+            },
+            "body": "test",
+            "created_at": "2021-08-23T07:54:37Z",
+            "draft": true,
+            "html_url": "https://github.com/content-bot/hello-world/releases/tag/untagged-e106615f0216817665d8",
+            "id": 48262112,
+            "name": "1.0.0",
+            "node_id": "MDc6UmVsZWFzZTQ4MjYyMTEy",
+            "prerelease": false,
+            "published_at": null,
+            "tag_name": "1.0.0",
+            "tarball_url": null,
+            "target_commitish": "master",
+            "upload_url": "https://uploads.github.com/repos/content-bot/hello-world/releases/48262112/assets{?name,label}",
+            "url": "https://api.github.com/repos/content-bot/hello-world/releases/48262112",
+            "zipball_url": null
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Releases Data Of hello-world
+>|assets_url|author|body|created_at|draft|html_url|id|name|node_id|prerelease|tag_name|target_commitish|upload_url|url|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| https:<span>//</span>api.github.com/repos/content-bot/hello-world/releases/48262112/assets | login: content-bot<br/>id: 55035720<br/>node_id: MDQ6VXNlcjU1MDM1NzIw<br/>avatar_url: https:<span>//</span>avatars.githubusercontent.com/u/55035720?v=4<br/>gravatar_id: <br/>url: https:<span>//</span>api.github.com/users/content-bot<br/>html_url: https:<span>//</span>github.com/content-bot<br/>followers_url: https:<span>//</span>api.github.com/users/content-bot/followers<br/>following_url: https:<span>//</span>api.github.com/users/content-bot/following{/other_user}<br/>gists_url: https:<span>//</span>api.github.com/users/content-bot/gists{/gist_id}<br/>starred_url: https:<span>//</span>api.github.com/users/content-bot/starred{/owner}{/repo}<br/>subscriptions_url: https:<span>//</span>api.github.com/users/content-bot/subscriptions<br/>organizations_url: https:<span>//</span>api.github.com/users/content-bot/orgs<br/>repos_url: https:<span>//</span>api.github.com/users/content-bot/repos<br/>events_url: https:<span>//</span>api.github.com/users/content-bot/events{/privacy}<br/>received_events_url: https:<span>//</span>api.github.com/users/content-bot/received_events<br/>type: User<br/>site_admin: false | test | 2021-08-23T07:54:37Z | true | https:<span>//</span>github.com/content-bot/hello-world/releases/tag/untagged-e106615f0216817665d8 | 48262112 | 1.0.0 | MDc6UmVsZWFzZTQ4MjYyMTEy | false | 1.0.0 | master | https:<span>//</span>uploads.github.com/repos/content-bot/hello-world/releases/48262112/assets{?name,label} | https:<span>//</span>api.github.com/repos/content-bot/hello-world/releases/48262112 |

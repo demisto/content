@@ -5,13 +5,15 @@ if [ "$#" -lt "1" ]; then
   echo "Usage:
   $0 -ct <token>
   -ct, --ci-token             The ci token.
-  [-b, --branch]              The branch name. Default is the current branch.
+  [-b, --branch]              The content repo branch name. Default is the current branch.
   [-g, --gitlab]              Flag to pass if triggering a build in GitLab
   [-ch, --slack-channel]      A slack channel to send notifications to. Default is dmst-bucket-upload.
+  [-sr, --sdk-ref]            The demisto-sdk repo branch to run this build with.
   "
   exit 1
 fi
 _branch="$(git branch  --show-current)"
+_sdk_ref="master"
 
 while [[ "$#" -gt 0 ]]; do
   case $1 in
@@ -25,6 +27,10 @@ while [[ "$#" -gt 0 ]]; do
     shift;;
 
   -ch|--slack-channel) _slack_channel="$2"
+    shift
+    shift;;
+
+  -sr|--sdk-ref) _sdk_ref="$2"
     shift
     shift;;
 
@@ -53,6 +59,7 @@ if [ -n "$_gitlab" ]; then
     --form ref="${_branch}" \
     --form "${_variables}" \
     --form "variables[SLACK_CHANNEL]=${_slack_channel}" \
+    --form "variables[SDK_REF]=${_sdk_ref}" \
     "$BUILD_TRIGGER_URL"
 
 else
@@ -62,11 +69,12 @@ else
   {
     "branch": "${_branch}",
     "parameters": {
-      "demisto_sdk_nightly": "true"
+      "demisto_sdk_nightly": "true",
+      "sdk_ref": "${_sdk_ref}"
     }
   }
-  EOF
-  )
+EOF
+)
 
   curl \
   --header "Accept: application/json" \

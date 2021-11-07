@@ -27,6 +27,10 @@ configuration:
   name: self_deployed
   required: false
   type: 8
+- display: Application redirect URI (for self-deployed mode)
+  name: redirect_uri
+  required: false
+  type: 0
 - display: The authentication code you got for the service. For instructions on how
     to receive it, see the detailed description ('?') section.
   name: auth_code
@@ -235,7 +239,7 @@ script:
     - contextPath: MicrosoftManagement.ContentRecord.UserID
       description: The ID of the record's user.
       type: string
-  dockerimage: demisto/pyjwt3:1.0.0.16907
+  dockerimage: demisto/pyjwt3:1.0.0.23674
   feed: false
   isfetch: true
   longRunning: false

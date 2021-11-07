@@ -1,8 +1,8 @@
 {
     "name": "Cofense Triage",
-    "description": "Use the Cofense Triage integration to manage reports and attachments.",
+    "description": "Cofense Triage allows users to fetch reports by using the fetch incidents capability. It also provides commands to get entities like reporters, rules, categories, and more.",
     "support": "partner",
-    "currentVersion": "1.1.7",
+    "currentVersion": "2.0.5",
     "author": "Cofense",
     "url": "https://cofense.com/contact-support/",
     "email": "support@cofense.com",
@@ -10,11 +10,22 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
-    "githubUser": [
-        "elebow"
+    "tags": [
+        "Email",
+        "Threat Intelligence"
     ],
-    "certification": "certified"
+    "useCases": [
+        "Phishing",
+        "Threat Intelligence Management"
+    ],
+    "keywords": [
+        "email",
+        "phishing",
+        "cofense",
+        "triage"
+    ],
+    "githubUser": [
+        "elebow",
+        "crestdatasystems"
+    ]
 }

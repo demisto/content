@@ -1,0 +1,25 @@
+commonfields:
+  id: RegPathReputationBasicLists
+  version: -1
+name: RegPathReputationBasicLists
+script: ''
+type: python
+subtype: python2
+tags:
+- registry
+- reputation
+comment: Check the given registry path against a small blacklist (score 3), whitelist
+  (score 1), and suspicious list (score 2). If the key matches neither, returns an
+  answer of 0.
+enabled: true
+args:
+- name: input
+  required: true
+  description: Registry path to be checked
+scripttarget: 0
+runonce: false
+runas: DBotWeakRole
+tests:
+- RegPathReputationBasicLists_test
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.24066

@@ -61,7 +61,7 @@ script:
       description: The country or region where the provided location is, according
         to Google Maps.
       type: String
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: false
   longRunning: false

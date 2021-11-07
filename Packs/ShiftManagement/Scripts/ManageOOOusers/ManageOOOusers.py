@@ -1,6 +1,15 @@
 from CommonServerPython import *  # noqa: F401
 
 
+def _get_current_user():
+    current_username = demisto.executeCommand("getUsers", {"current": True})
+    if isError(current_username):
+        demisto.debug(f"failed to get current username - {get_error(current_username)}")
+        return
+    else:
+        return current_username[0]["Contents"][0]['username']
+
+
 def main():
     # get current time
     now = datetime.now()
@@ -17,14 +26,13 @@ def main():
     if not list_name.startswith("OOO"):
         list_name = f"OOO {list_name}"
 
-    # get current user and the current values in the list
-    current_username = demisto.executeCommand("getUsers", {"current": True})
-    if isError(current_username):
-        return_error(f'Failed to get current user: {str(get_error(current_username))}')
-    current_username = current_username[0]["Contents"][0]['username']
+    current_user = _get_current_user()
+    if not current_user and not username:
+        return_error('Failed to get current user. Please set the username argument in the script.')
 
     if not username:
-        username = current_username
+        # Current user was found, running script on it.
+        username = current_user
     else:
         # check if provided username is a valid xsoar user
         users = demisto.executeCommand("getUsers", {})
@@ -53,7 +61,9 @@ def main():
     if option == "add":
         # check if user is already in the list, and remove, to allow updating
         list_data = [i for i in list_data if not (i['user'] == username)]
-        list_data.append({"user": username, "offuntil": off_until, "addedby": current_username})
+        list_data.append({"user": username,
+                          "offuntil": off_until,
+                          "addedby": current_user if current_user else 'DBot'})
     else:
         # remove the user from the list.
         list_data = [i for i in list_data if not (i['user'] == username)]

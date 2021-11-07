@@ -9,7 +9,7 @@ configuration:
   required: false
   type: 8
 - additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+    reputation.
   display: Indicator Reputation
   name: feedReputation
   options:
@@ -19,7 +19,7 @@ configuration:
   - Bad
   required: false
   type: 18
-- additionalinfo: Reliability of the source providing the intelligence data
+- additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: A - Completely reliable
   display: Source Reliability
   name: feedReliability
@@ -33,7 +33,7 @@ configuration:
   required: true
   type: 15
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
-    fetched from the feed
+    fetched from the feed.
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -91,7 +91,7 @@ configuration:
   required: false
   type: 8
 description: Use the MITRE ATT&CK® feed to fetch MITRE’s Adversarial Tactics, Techniques,
-  and Common Knowledge (ATT&CK®) content. MITRE ATT&CK® is a globally-accessible knowledge
+  and Common Knowledge (ATT&CK®) content. MITRE ATT&CK is a globally-accessible knowledge
   base of adversary tactics and techniques based on real-world observations. The ATT&CK
   knowledge base is used as a foundation for the development of specific threat models
   and methodologies in the private sector, in government, and in the cybersecurity
@@ -103,7 +103,7 @@ script:
   - arguments:
     - default: false
       defaultValue: '10'
-      description: The maximum number of indicators to return. The default is 10.
+      description: The maximum number of indicators to return.
       isArray: false
       name: limit
       required: true
@@ -111,8 +111,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: Output in raw JSON format. Can be "True" or "False". The default
-        is "False".
+      description: Output in raw JSON format. Can be "True" or "False".
       isArray: false
       name: raw
       predefined:
@@ -121,14 +120,80 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Retreives a limited number of the indicators.
+    description: Retrieves a limited number of indicators.
     execution: false
     name: mitre-get-indicators
   - deprecated: false
     description: Shows the feed names and IDs from TAXII.
     execution: false
     name: mitre-show-feeds
-  dockerimage: demisto/taxii2:1.0.0.19258
+  - arguments:
+    - default: true
+      description: Indicator to look up.
+      isArray: true
+      name: attack_pattern
+      required: true
+      secret: false
+    deprecated: false
+    description: Looks up the reputation of the indicator.
+    execution: false
+    name: attack-pattern
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    - contextPath: AttackPattern.STIXID
+      description: The STIX ID of the Attack Pattern.
+      type: string
+    - contextPath: AttackPattern.KillChainPhases
+      description: The kill chain phases of the Attack Pattern.
+      type: string
+    - contextPath: AttackPattern.FirstSeenBySource
+      description: The first seen by source of the Attack Pattern.
+      type: string
+    - contextPath: AttackPattern.Description
+      description: The description of the Attack Pattern.
+      type: string
+    - contextPath: AttackPattern.OperatingSystemRefs
+      description: The operating system references of the Attack Pattern.
+      type: string
+    - contextPath: AttackPattern.Publications
+      description: The publications of the Attack Pattern.
+      type: string
+    - contextPath: AttackPattern.MITREID
+      description: The MITRE ID of the Attack Pattern.
+      type: string
+    - contextPath: AttackPattern.Tags
+      description: The tags of the Attack Pattern.
+      type: string
+  - arguments:
+    - default: false
+      description: The Attack Pattern IDs list
+      isArray: true
+      name: attack_ids
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets the Attack Pattern value from the Attack Pattern ID.
+    execution: false
+    name: mitre-get-indicator-name
+    outputs:
+    - contextPath: MITREATTACK.id
+      description: MITRE ATTACK Attack Pattern ID.
+      type: String
+    - contextPath: MITREATTACK.value
+      description: MITRE ATTACK Attack Pattern value.
+      type: String
+  dockerimage: demisto/taxii2:1.0.0.21842
   feed: true
   isfetch: false
   longRunning: false
@@ -138,5 +203,6 @@ script:
   subtype: python3
   type: python
 tests:
-- No tests
+- FeedMitreAttackv2_test
 fromversion: 5.5.0
+autoUpdateDockerImage: false

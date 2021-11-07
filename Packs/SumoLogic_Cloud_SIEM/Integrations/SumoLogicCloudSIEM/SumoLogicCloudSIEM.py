@@ -16,7 +16,6 @@ DEFAULT_HEADERS = {
 }
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
-
 ''' CLIENT CLASS '''
 
 
@@ -168,6 +167,14 @@ def get_update_result(resp_json):
     return {'Result': 'Success' if resp_json is True else 'Failed', 'Server Response': resp_json}
 
 
+def insight_timestamp_to_created_format(timestamp_int):
+    '''
+    Querying Insights using 'created' as opposed to 'timestamp' requires this conversion
+    '''
+    created_time = datetime.utcfromtimestamp(timestamp_int)
+    return datetime.strftime(created_time, '%Y-%m-%dT%H:%M:%S.%f')
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -192,7 +199,7 @@ def test_module(client: Client) -> str:
 
         # test fetch_incidents command
         first_fetch_time = arg_to_datetime(
-            arg=demisto.params().get('first_fetch', '1 day'),
+            arg='1 day',  # using '1 day' here since we're just testing connectivity and auth
             arg_name='First fetch time'
         )
         first_fetch_timestamp = int(first_fetch_time.timestamp()) if first_fetch_time else None
@@ -203,7 +210,8 @@ def test_module(client: Client) -> str:
             max_results=20,
             last_run={},  # getLastRun() gets the last run dict
             first_fetch_time=first_fetch_timestamp,
-            fetch_query=''  # defaults to status:in("new", "inprogress")
+            fetch_query='',  # defaults to status:in("new", "inprogress")
+            record_summary_fields=''
         )
         message = 'ok'
     except DemistoException as e:
@@ -222,7 +230,14 @@ def insight_get_details(client: Client, args: Dict[str, Any]) -> CommandResults:
     if not insight_id:
         raise ValueError('insight_id not specified')
 
-    resp_json = client.req('GET', 'sec/v1/insights/{}'.format(insight_id), {'exclude': 'signals.allRecords'})
+    record_summary_fields = args.get('record_summary_fields')
+
+    query = {}
+    query['exclude'] = 'signals.allRecords'
+    if record_summary_fields:
+        query['recordSummaryFields'] = record_summary_fields
+
+    resp_json = client.req('GET', 'sec/v1/insights/{}'.format(insight_id), query)
     insight = insight_signal_to_readable(resp_json)
     readable_output = tableToMarkdown(
         'Insight Details:', [insight],
@@ -345,6 +360,8 @@ def insight_search(client: Client, args: Dict[str, Any]) -> CommandResults:
     For example, the query `timestamp:>2021-03-18T12:00:00+00:00 severity:"HIGH` will return insights of high severity
     created after 12 PM UTC time on March 18th, 2021.
     '''
+    record_summary_fields = args.get('record_summary_fields')
+
     query = {}
     q = args.get('query', '')
     q = arg_time_query_to_q(q, args.get('created'), 'created')
@@ -353,6 +370,8 @@ def insight_search(client: Client, args: Dict[str, Any]) -> CommandResults:
     query['offset'] = args.get('offset')
     query['limit'] = args.get('limit')
     query['exclude'] = 'signals.allRecords'
+    if record_summary_fields:
+        query['recordSummaryFields'] = record_summary_fields
 
     resp_json = client.req('GET', 'sec/v1/insights', query)
     insights = []
@@ -621,7 +640,7 @@ def threat_intel_update_source(client: Client, args: Dict[str, Any]) -> CommandR
 
 
 def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], first_fetch_time: Optional[int],
-                    fetch_query: Optional[str]) -> Tuple[Dict[str, int], List[dict]]:
+                    fetch_query: Optional[str], record_summary_fields: Optional[str]) -> Tuple[Dict[str, int], List[dict]]:
     '''
     Retrieve new incidents periodically based on pre-defined instance parameters
     '''
@@ -649,49 +668,65 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], 
     # Each incident is a dict with a string as a key
     incidents: List[Dict[str, Any]] = []
 
-    q = 'timestamp:>={}'.format(latest_created_time)
+    # set query values that do not change with pagination
+    q = 'created:>={}'.format(insight_timestamp_to_created_format(latest_created_time))
     if fetch_query:
         q += ' ' + fetch_query
     else:
         q = q + ' status:in("new", "inprogress")'
+
+    offset = 0
     query = {}
     query['q'] = q
-    query['offset'] = '0'
     query['limit'] = str(max_results)
-    resp_json = client.req('GET', 'sec/v1/insights', query)
+    if record_summary_fields:
+        query['recordSummaryFields'] = record_summary_fields
     incidents = []
-    for a in resp_json.get('objects'):
+    hasNextPage = True
+    while hasNextPage:
 
-        # If no created_time set is as epoch (0). We use time in ms so we must
-        # convert it from the API response
-        insight_timestamp = a.get('timestamp')
-        insight_id = a.get('id')
-        if insight_id and insight_timestamp and insight_id not in last_fetch_ids:
-            try:
-                incident_datetime = datetime.strptime(insight_timestamp, '%Y-%m-%dT%H:%M:%S')
-            except ValueError:
-                incident_datetime = datetime.strptime(insight_timestamp, '%Y-%m-%dT%H:%M:%S.%f')
+        # only query parameter that changes loop to loop is the offset
+        query['offset'] = str(offset)
+        resp_json = client.req('GET', 'sec/v1/insights', query)
+        for a in resp_json.get('objects'):
 
-            incident_created_time = int((incident_datetime - datetime.utcfromtimestamp(0)).total_seconds())
-            incident_created_time_ms = incident_created_time * 1000
+            # If no created_time set is as epoch (0). We use time in ms so we must
+            # convert it from the API response
+            insight_timestamp = a.get('created')
+            insight_id = a.get('id')
+            if insight_id and insight_timestamp and insight_id not in last_fetch_ids:
+                try:
+                    incident_datetime = datetime.strptime(insight_timestamp, '%Y-%m-%dT%H:%M:%S.%f')
+                except ValueError:
+                    incident_datetime = datetime.strptime(insight_timestamp, '%Y-%m-%dT%H:%M:%S')
 
-            # to prevent duplicates, we are only adding incidents with creation_time >= last fetched incident
-            if last_fetch:
-                if incident_created_time < last_fetch:
-                    continue
+                incident_created_time = int((incident_datetime - datetime.utcfromtimestamp(0)).total_seconds())
+                incident_created_time_ms = incident_created_time * 1000
 
-            incidents.append({
-                'name': a.get('name', 'No name') + ' - ' + insight_id,
-                'occurred': timestamp_to_datestring(incident_created_time_ms),
-                'details': a.get('description'),
-                'severity': translate_severity(a.get('severity')),
-                'rawJSON': json.dumps(a)
-            })
-            current_fetch_ids.append(insight_id)
+                # to prevent duplicates, we are only adding incidents with creation_time >= last fetched incident
+                if last_fetch:
+                    if incident_created_time < last_fetch:
+                        continue
 
-            # Update last run and add incident if the incident is newer than last fetch
-            if incident_created_time > latest_created_time:
-                latest_created_time = incident_created_time
+                incidents.append({
+                    'name': a.get('name', 'No name') + ' - ' + insight_id,
+                    'occurred': timestamp_to_datestring(incident_created_time_ms),
+                    'details': a.get('description'),
+                    'severity': translate_severity(a.get('severity')),
+                    'rawJSON': json.dumps(a)
+                })
+                current_fetch_ids.append(insight_id)
+
+                # Update last run and add incident if the incident is newer than last fetch
+                if incident_created_time > latest_created_time:
+                    latest_created_time = incident_created_time
+
+        total = resp_json.get('total')
+
+        if not resp_json.get('hasNextPage') or (total and isinstance(total, int) and len(incidents) >= total):
+            hasNextPage = False
+        else:
+            offset = len(incidents)
 
     # Save the next_run as a dict with the last_fetch and last_fetch_ids keys to be stored
     next_run = cast(
@@ -731,6 +766,7 @@ def main() -> None:
     assert isinstance(first_fetch_timestamp, int)
 
     fetch_query = demisto.params().get('fetch_query')
+    record_summary_fields = demisto.params().get('record_summary_fields')
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
@@ -789,7 +825,8 @@ def main() -> None:
                 max_results=max_results,
                 last_run=demisto.getLastRun(),  # getLastRun() gets the last run dict
                 first_fetch_time=first_fetch_timestamp,
-                fetch_query=fetch_query
+                fetch_query=fetch_query,
+                record_summary_fields=record_summary_fields
             )
 
             # saves next_run for the time fetch-incidents is invoked

@@ -66,53 +66,113 @@ def update_private_index(private_index_path: str, unified_index_path: str):
         shutil.copy(path_to_pack_on_unified_index, path_to_pack_on_private_index)
 
 
+def add_private_pack(private_packs, private_pack_metadata, changed_pack_id):
+    """Add a new or existing private pack to the list of private packs,
+    that will later be added to index.json.
+
+    Args:
+        private_packs (list): The current list of private packs, not including the one to be added.
+        private_pack_metadata (dict): The metadata of the private pack.
+        changed_pack_id (str): The ID of the pack that was added / modified in the current private build.
+
+    Returns:
+        private_packs (list): The modified list of private packs, including the added pack.
+    """
+    if private_pack_metadata:
+        private_packs.append({
+            'id': changed_pack_id,
+            'price': int(private_pack_metadata.get('price')),
+            'vendorId': private_pack_metadata.get('vendorId', ""),
+            'partnerId': private_pack_metadata.get('partnerId', ""),
+            'partnerName': private_pack_metadata.get('partnerName', ""),
+            'contentCommitHash': private_pack_metadata.get('contentCommitHash', "")
+        })
+    return private_packs
+
+
+def add_changed_private_pack(private_packs, extract_destination_path, changed_pack_id):
+    """Add the changed private pack (new or modified) to the list of private packs.
+    The modified pack's data needs to be taken from the artifacts, as it may not exist in the index or be out of date.
+
+    Args:
+        private_packs (list): The current list of private packs, not including the one to be added.
+        extract_destination_path (str): The path to which the artifacts' zip was extracted.
+        changed_pack_id (str): The ID of the pack that was added / modified in the current private build.
+
+    Returns:
+        private_packs (list): The modified list of private packs, including the added pack.
+    """
+
+    changed_pack_metadata_path = os.path.join(extract_destination_path, changed_pack_id, "pack_metadata.json")
+    logging.info(f'Getting changed pack metadata from the artifacts, in path: {changed_pack_metadata_path}')
+    try:
+        with open(changed_pack_metadata_path, 'r') as metadata_file:
+            changed_pack_metadata = json.load(metadata_file)
+        private_packs = add_private_pack(private_packs, changed_pack_metadata, changed_pack_id)
+    except FileNotFoundError:
+        logging.info(f'Metadata of changed pack {changed_pack_id} not found.')
+
+    return private_packs
+
+
+def add_existing_private_packs_from_index(metadata_files, changed_pack_id):
+    """
+
+    Args:
+        metadata_files (list): The metadata files of private packs that exist in the private index.
+        changed_pack_id (str): The ID of the pack that was added / modified in the current private build.
+
+    Returns:
+        private_packs (list): The modified list of private packs, including the added pack.
+    """
+    private_packs = []
+    for metadata_file_path in metadata_files:
+        # Adding all the existing private packs, already found in the index
+        logging.info(f'Getting existing metadata files from the index, in path: {metadata_file_path}')
+        try:
+            with open(metadata_file_path, 'r') as metadata_file:
+                metadata = json.load(metadata_file)
+
+            pack_id = metadata.get('id')
+            if pack_id != changed_pack_id:
+                # The new / modified pack will be added later
+                private_packs = add_private_pack(private_packs, metadata, pack_id)
+
+        except ValueError:
+            logging.exception(f'Invalid JSON in the metadata file [{metadata_file_path}].')
+
+    return private_packs
+
+
+def get_existing_private_packs_metadata_paths(private_index_path):
+    try:
+        logging.info(f'searching metadata files in: {private_index_path}')
+        metadata_files = glob.glob(f"{private_index_path}/**/metadata.json")
+    except Exception:
+        logging.exception(f'Could not find metadata files in {private_index_path}.')
+        metadata_files = []
+
+    if not metadata_files:
+        logging.warning(f'No metadata files found in [{private_index_path}]')
+
+    return metadata_files
+
+
 def get_private_packs(private_index_path: str, pack_names: set = set(),
                       extract_destination_path: str = '') -> list:
-    """
-    Gets a list of private packs.
+    """Gets a list of private packs, that will later be added to index.json.
 
     :param private_index_path: Path to where the private index is located.
     :param pack_names: Collection of pack names.
     :param extract_destination_path: Path to where the files should be extracted to.
     :return: List of dicts containing pack metadata information.
     """
-    try:
-        logging.info(f'searching metadata files in: {private_index_path}')
-        metadata_files = glob.glob(f"{private_index_path}/**/metadata.json")
-    except Exception:
-        logging.exception(f'Could not find metadata files in {private_index_path}.')
-        return []
 
-    if not metadata_files:
-        logging.warning(f'No metadata files found in [{private_index_path}]')
-
-    private_packs = []
-    for metadata_file_path in metadata_files:
-        logging.info(f'scanning metadata file: {metadata_file_path}')
-        try:
-            with open(metadata_file_path, 'r') as metadata_file:
-                metadata = json.load(metadata_file)
-
-            pack_id = metadata.get('id')
-            is_changed_private_pack = pack_id in pack_names
-
-            if is_changed_private_pack:  # Should take metadata from artifacts.
-                new_metadata_file_path = os.path.join(extract_destination_path, pack_id, "pack_metadata.json")
-                logging.info(f'reloading metadata using {new_metadata_file_path}')
-                with open(new_metadata_file_path, 'r') as metadata_file:
-                    metadata = json.load(metadata_file)
-
-            if metadata:
-                private_packs.append({
-                    'id': pack_id,
-                    'price': metadata.get('price'),
-                    'vendorId': metadata.get('vendorId', ""),
-                    'partnerId': metadata.get('partnerId', ""),
-                    'partnerName': metadata.get('partnerName', ""),
-                    'contentCommitHash': metadata.get('contentCommitHash', "")
-                })
-        except ValueError:
-            logging.exception(f'Invalid JSON in the metadata file [{metadata_file_path}].')
+    private_metadata_paths = get_existing_private_packs_metadata_paths(private_index_path)
+    # In the private build, there is always exactly one modified pack
+    changed_pack_id = list(pack_names)[0] if len(pack_names) > 0 else ''
+    private_packs = add_existing_private_packs_from_index(private_metadata_paths, changed_pack_id)
+    private_packs = add_changed_private_pack(private_packs, extract_destination_path, changed_pack_id)
 
     return private_packs
 
@@ -131,8 +191,8 @@ def add_private_packs_to_index(index_folder_path: str, private_index_path: str):
 
 
 def update_index_with_priced_packs(private_storage_bucket: Any, extract_destination_path: str,
-                                   index_folder_path: str, pack_names: set, is_private_build: bool) \
-        -> Tuple[Union[list, list], str, Any]:
+                                   index_folder_path: str, pack_names: set, is_private_build: bool,
+                                   storage_base_path: str) -> Tuple[Union[list, list], str, Any]:
     """ Updates index with priced packs and returns list of priced packs data.
 
     Args:
@@ -141,6 +201,7 @@ def update_index_with_priced_packs(private_storage_bucket: Any, extract_destinat
         index_folder_path (str): downloaded index folder directory path.
         pack_names (set): Collection of pack names.
         is_private_build (bool): Indicates if the build is private.
+        storage_base_path (str): the path of the target bucket to retrieve the index from.
 
     Returns:
         list: priced packs from private bucket.
@@ -153,7 +214,7 @@ def update_index_with_priced_packs(private_storage_bucket: Any, extract_destinat
         (private_index_path, private_index_blob, _) = \
             download_and_extract_index(private_storage_bucket,
                                        os.path.join(extract_destination_path,
-                                                    'private'))
+                                                    'private'), storage_base_path)
         logging.info("get_private_packs")
         private_packs = get_private_packs(private_index_path, pack_names,
                                           extract_destination_path)
@@ -180,7 +241,7 @@ def should_upload_core_packs(storage_bucket_name: str) -> bool:
 
 
 def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bucket: Any, index_folder_path: str,
-                                       packs_dependencies_mapping: dict, private_bucket_name: str,
+                                       packs_dependencies_mapping: dict, private_bucket_name: str, storage_base_path,
                                        private_storage_bucket: bool = None,
                                        content_repo: bool = None, current_commit_hash: str = '',
                                        remote_previous_commit_hash: str = '') \
@@ -213,7 +274,7 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
 
     pack_was_modified = not is_infra_run
 
-    task_status, user_metadata = pack.load_user_metadata()
+    task_status = pack.load_user_metadata()
     if not task_status:
         pack.status = PackStatus.FAILED_LOADING_USER_METADATA.name
         pack.cleanup()
@@ -225,23 +286,22 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
         pack.cleanup()
         return
 
-    task_status = pack.upload_integration_images(storage_bucket)
+    task_status = pack.upload_integration_images(storage_bucket, storage_base_path)
     if not task_status:
         pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name
         pack.cleanup()
         return
 
-    task_status = pack.upload_author_image(storage_bucket)
+    task_status = pack.upload_author_image(storage_bucket, storage_base_path)
     if not task_status:
         pack.status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
         pack.cleanup()
         return
 
-    task_status = pack.format_metadata(user_metadata=user_metadata,
-                                       index_folder_path=index_folder_path,
-                                       packs_dependencies_mapping=packs_dependencies_mapping,
-                                       build_number=build_number, commit_hash=current_commit_hash,
-                                       pack_was_modified=pack_was_modified, statistics_handler=None)
+    task_status, _ = pack.format_metadata(index_folder_path=index_folder_path,
+                                          packs_dependencies_mapping=packs_dependencies_mapping,
+                                          build_number=build_number, commit_hash=current_commit_hash,
+                                          pack_was_modified=pack_was_modified, statistics_handler=None)
 
     if not task_status:
         pack.status = PackStatus.FAILED_METADATA_PARSING.name
@@ -288,7 +348,7 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
     bucket_for_uploading = private_storage_bucket if private_storage_bucket else storage_bucket
     (task_status, skipped_pack_uploading, full_pack_path) = \
         pack.upload_to_storage(zip_pack_path, pack.latest_version,
-                               bucket_for_uploading, override_all_packs
+                               bucket_for_uploading, override_all_packs, storage_base_path
                                or pack_was_modified, pack_artifacts_path=packs_artifacts_dir,
                                private_content=True)
     if full_pack_path is not None:
@@ -429,7 +489,8 @@ def main():
 
     # download and extract index from public bucket
     index_folder_path, index_blob, index_generation = download_and_extract_index(storage_bucket,
-                                                                                 extract_destination_path)
+                                                                                 extract_destination_path,
+                                                                                 storage_base_path)
 
     # content repo client initialized
     if not is_private_build:
@@ -440,9 +501,6 @@ def main():
     else:
         current_commit_hash, remote_previous_commit_hash = "", ""
         content_repo = None
-
-    if storage_base_path:
-        GCPConfig.STORAGE_BASE_PATH = storage_base_path
 
     # detect packs to upload
     pack_names = get_packs_names(target_packs)
@@ -459,17 +517,18 @@ def main():
                                                                                                extract_destination_path,
                                                                                                index_folder_path,
                                                                                                pack_names,
-                                                                                               is_private_build)
+                                                                                               is_private_build,
+                                                                                               storage_base_path)
     else:  # skipping private packs
         logging.info("Skipping index update of priced packs")
         private_packs = []
 
     # clean index and gcs from non existing or invalid packs
-    clean_non_existing_packs(index_folder_path, private_packs, default_storage_bucket)
+    clean_non_existing_packs(index_folder_path, private_packs, default_storage_bucket, storage_base_path)
     # starting iteration over packs
     for pack in packs_list:
         create_and_upload_marketplace_pack(upload_config, pack, storage_bucket, index_folder_path,
-                                           packs_dependencies_mapping, private_bucket_name,
+                                           packs_dependencies_mapping, private_bucket_name, storage_base_path,
                                            private_storage_bucket=private_storage_bucket, content_repo=content_repo,
                                            current_commit_hash=current_commit_hash,
                                            remote_previous_commit_hash=remote_previous_commit_hash)
@@ -477,7 +536,7 @@ def main():
 
     if should_upload_core_packs(storage_bucket_name):
         create_corepacks_config(default_storage_bucket, build_number, index_folder_path,
-                                artifacts_dir=os.path.dirname(packs_artifacts_path))
+                                os.path.dirname(packs_artifacts_path), storage_base_path)
     # finished iteration over content packs
     if is_private_build:
         delete_public_packs_from_index(index_folder_path)

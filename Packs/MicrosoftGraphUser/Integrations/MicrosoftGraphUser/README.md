@@ -1,6 +1,6 @@
 <!-- HTML_DOC -->
 <div class="cl-preview-section">
-<p>Use the Microsoft Graph integration to connect to and interact with user objects on Microsoft Platforms. This integration was integrated and tested with Microsoft Graph v1.0.</p>
+<p>Use the Azure Active Directory Users integration to connect to and interact with user objects on Microsoft Platforms. This integration was integrated and tested with Microsoft Graph v1.0.</p>
 </div>
 
 <h2>Authentication</h2>
@@ -12,12 +12,12 @@ For more details about the authentication used in this integration, see <a href=
 <li>User.Read - Delegated</li>
 
 <div class="cl-preview-section">
-<h2 id="configure-microsoft-graph-user-on-demisto">Configure Microsoft Graph User on Cortex XSOAR</h2>
+<h2 id="configure-microsoft-graph-user-on-demisto">Configure Azure Active Directory Users on Cortex XSOAR</h2>
 </div>
 <div class="cl-preview-section">
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
-<li>Search for Microsoft Graph User.</li>
+<li>Search for Azure Active Directory Users.</li>
 <li>Click <strong>Add instance</strong> to create and configure a new integration instance.
 <ul>
 <li>
@@ -61,7 +61,7 @@ For more details about the authentication used in this integration, see <a href=
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
-<p>Terminates a user’s session from all Office 365 applications, and prevents sign in. Can only work with a self-deployed application and the permission: Directory.AccessAsUser.All(Delegated)</p>
+<p>Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables user, but does not terminate an existing session. Supported only in a self deployed app flow with the Permission: Directory.AccessAsUser.All(Delegated)</p>
 </div>
 <div class="cl-preview-section">
 <h5 id="base-command">Base Command</h5>
@@ -294,16 +294,16 @@ For more details about the authentication used in this integration, see <a href=
 <div class="cl-preview-section">
 <pre>{
     "MSGraphUser": {
-        "Surname": null, 
-        "DisplayName": "Graph Test - DELETE", 
-        "MobilePhone": "050505050", 
-        "PreferredLanguage": null, 
-        "JobTitle": "Test", 
-        "UserPrincipalName": "graph@demistodev.onmicrosoft.com", 
-        "OfficeLocation": null, 
-        "BusinessPhones": [], 
-        "Mail": null, 
-        "GivenName": null, 
+        "Surname": null,
+        "DisplayName": "Graph Test - DELETE",
+        "MobilePhone": "050505050",
+        "PreferredLanguage": null,
+        "JobTitle": "Test",
+        "UserPrincipalName": "graph@demistodev.onmicrosoft.com",
+        "OfficeLocation": null,
+        "BusinessPhones": [],
+        "Mail": null,
+        "GivenName": null,
         "ID": "57a820e9-90bc-4692-a22e-27bd170699cb"
     }
 }
@@ -548,16 +548,16 @@ For more details about the authentication used in this integration, see <a href=
 <div class="cl-preview-section">
 <pre>{
     "MSGraphUser": {
-        "Surname": null, 
-        "DisplayName": "Graph Test - DELETE", 
-        "MobilePhone": null, 
-        "PreferredLanguage": null, 
-        "JobTitle": "Test", 
-        "UserPrincipalName": "graph@demistodev.onmicrosoft.com", 
-        "OfficeLocation": null, 
-        "BusinessPhones": [], 
-        "Mail": null, 
-        "GivenName": null, 
+        "Surname": null,
+        "DisplayName": "Graph Test - DELETE",
+        "MobilePhone": null,
+        "PreferredLanguage": null,
+        "JobTitle": "Test",
+        "UserPrincipalName": "graph@demistodev.onmicrosoft.com",
+        "OfficeLocation": null,
+        "BusinessPhones": [],
+        "Mail": null,
+        "GivenName": null,
         "ID": "57a820e9-90bc-4692-a22e-27bd170699cb"
     }
 }
@@ -716,22 +716,22 @@ For more details about the authentication used in this integration, see <a href=
 <pre>{
     "MSGraphUser": [
         {
-            "ID": "2827c1e7-edb6-4529-b50d-25984e968637", 
+            "ID": "2827c1e7-edb6-4529-b50d-25984e968637",
             "UserPrincipalName": "dev@demisto.works"
-        }, 
+        },
         {
-            "ID": "c788ab51-6b4f-42cc-8b50-0759a8701c0b", 
+            "ID": "c788ab51-6b4f-42cc-8b50-0759a8701c0b",
             "UserPrincipalName": "donaldt@demistodev.onmicrosoft.com"
-        }, 
+        },
         {
-            "UserPrincipalName": "test@demistodev.onmicrosoft.com", 
-            "ID": "00df702c-cdae-460d-a442-46db6cecca29", 
+            "UserPrincipalName": "test@demistodev.onmicrosoft.com",
+            "ID": "00df702c-cdae-460d-a442-46db6cecca29",
             "MobilePhone": "*********"
-        }, 
+        },
         {
-            "Status": "deleted", 
+            "Status": "deleted",
             "ID": "28a1b242-4737-4bb8-a855-a9519d8e6a28"
-        }, 
+        },
     ]
 }
 </pre>
@@ -773,7 +773,7 @@ For more details about the authentication used in this integration, see <a href=
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
-<p>Retrieves the properties and relationships of user objects. For more information, see the <a href="https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0" target="_blank" rel="noopener">Microsoft Graph User documentation</a>.</p>
+<p>Retrieves the properties and relationships of user objects. For more information, see the <a href="https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0" target="_blank" rel="noopener">Azure Active Directory Users documentation</a>.</p>
 </div>
 <div class="cl-preview-section">
 <h5 id="base-command-6">Base Command</h5>
@@ -896,16 +896,16 @@ For more details about the authentication used in this integration, see <a href=
 <div class="cl-preview-section">
 <pre>{
     "MSGraphUser": {
-        "Surname": null, 
-        "DisplayName": "Graph Test - DELETE", 
-        "MobilePhone": null, 
-        "PreferredLanguage": null, 
-        "JobTitle": "Test", 
-        "UserPrincipalName": "graph@demistodev.onmicrosoft.com", 
-        "OfficeLocation": null, 
-        "BusinessPhones": [], 
-        "Mail": null, 
-        "GivenName": null, 
+        "Surname": null,
+        "DisplayName": "Graph Test - DELETE",
+        "MobilePhone": null,
+        "PreferredLanguage": null,
+        "JobTitle": "Test",
+        "UserPrincipalName": "graph@demistodev.onmicrosoft.com",
+        "OfficeLocation": null,
+        "BusinessPhones": [],
+        "Mail": null,
+        "GivenName": null,
         "ID": "57a820e9-90bc-4692-a22e-27bd170699cb"
     }
 }
@@ -1074,15 +1074,15 @@ For more details about the authentication used in this integration, see <a href=
 <pre>{
     "MSGraphUser": [
         {
-            "ID": "2827c1e7-edb6-4529-b50d-25984e968637", 
+            "ID": "2827c1e7-edb6-4529-b50d-25984e968637",
             "UserPrincipalName": "dev@demisto.works"
-        }, 
+        },
         {
-            "ID": "c788ab51-6b4f-42cc-8b50-0759a8701c0b", 
+            "ID": "c788ab51-6b4f-42cc-8b50-0759a8701c0b",
             "UserPrincipalName": "donaldt@demistodev.onmicrosoft.com"
-        }, 
+        },
         {
-            "ID": "57a820e9-90bc-4692-a22e-27bd170699cb", 
+            "ID": "57a820e9-90bc-4692-a22e-27bd170699cb",
             "UserPrincipalName": "graph@demistodev.onmicrosoft.com"
         }
     ]

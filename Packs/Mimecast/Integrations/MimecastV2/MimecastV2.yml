@@ -699,7 +699,8 @@ script:
     name: mimecast-get-attachment-logs
     outputs:
     - contextPath: Mimecast.AttachmentLog.Result
-      description: 'The result of the attachment analysis: clean, malicious, unknown, or timeout'
+      description: 'The result of the attachment analysis: clean, malicious, unknown,
+        or timeout'
       type: string
     - contextPath: Mimecast.AttachmentLog.Date
       description: The time at which the attachment was released from the sandbox
@@ -790,7 +791,8 @@ script:
       description: The action that was taken for the click
       type: string
     - contextPath: Mimecast.UrlLog.Route
-      description: 'The route of the original email containing the attachment, either: inbound, outbound, internal, or external'
+      description: 'The route of the original email containing the attachment, either:
+        inbound, outbound, internal, or external'
       type: string
     - contextPath: Mimecast.UrlLog. userOverride
       description: The action requested by the user.
@@ -805,7 +807,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: ' Filters for messages tagged malicious (true) or not tagged malicious (false). Omit for no tag filtering. default is true'
+      description: ' Filters for messages tagged malicious (true) or not tagged malicious
+        (false). Omit for no tag filtering. default is true'
       isArray: false
       name: taggedMalicious
       predefined:
@@ -827,7 +830,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Required if searchField exists. A character string to search for in the logs.
+      description: Required if searchField exists. A character string to search for
+        in the logs.
       isArray: false
       name: query
       required: false
@@ -1284,7 +1288,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The Mimecast ID of the new group's parent. Default will be root level.
+      description: The Mimecast ID of the new group's parent. Default will be root
+        level.
       isArray: false
       name: parent_id
       required: false
@@ -1369,7 +1374,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The startt date of messages to remediate. Default value is the previous month. (Format: yyyy-mm-ddThh:mm:ss+0000)'
+      description: 'The startt date of messages to remediate. Default value is the
+        previous month. (Format: yyyy-mm-ddThh:mm:ss+0000)'
       isArray: false
       name: start_date
       required: false
@@ -1520,7 +1526,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The sender type by which to block senders in the policy. This argument must match the fromValue argument. For example, if you specify email_domain, the fromValue must be an email domain.
+      description: The sender type by which to block senders in the policy. This argument
+        must match the fromValue argument. For example, if you specify email_domain,
+        the fromValue must be an email domain.
       isArray: false
       name: fromType
       predefined:
@@ -1551,7 +1559,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The block action. Can be "no_action" or "block_sender".'
+      description: The block action. Can be "no_action" or "block_sender".
       isArray: false
       name: option
       predefined:
@@ -1631,6 +1639,7 @@ script:
   script: '-'
   subtype: python2
   type: python
+  dockerimage: demisto/python:2.7.18.24066
 tests:
 - Mimecast test
 fromversion: 5.0.0

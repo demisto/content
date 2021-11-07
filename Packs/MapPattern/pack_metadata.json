@@ -1,8 +1,8 @@
 {
     "name": "MapPattern",
-    "description": "This transformer will take in a value and transform it based on multiple condition expressions (wildcard, regex, etc) defined in a JSON dictionary structure. The key:value pair of the JSON dictionary should be:\n\n\"condition expression\": \"desired outcome\"\n\nFor example:\n\n    {\n        \".*match 1.*\": \"Dest Val1\",\n        \".*match 2.*\": \"Dest Val2\",\n        \".*match 3(.*)\": \"\\\\1\",\n        \"*match 4*\": {\n            \"algorithm\": \"wildcard\",\n            \"output\": \"Dest Val4\"\n        }\n    }\n\nThe transformer will return the value matched to a pattern following to the priority.",
+    "description": "This transformer will take in a value and transform it based on multiple condition expressions (wildcard, regex, etc) defined in a JSON dictionary structure.",
     "support": "community",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Masahiko Inoue",
     "url": "",
     "email": "",

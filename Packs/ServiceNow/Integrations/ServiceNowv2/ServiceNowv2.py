@@ -9,6 +9,7 @@ from CommonServerPython import *
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
+
 COMMAND_NOT_IMPLEMENTED_MSG = 'Command not implemented'
 
 TICKET_STATES = {
@@ -2230,7 +2231,8 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
                     key = 'work_notes'
                 elif params.get('comment_tag') in tags:
                     key = 'comments'
-                user = entry.get('user', 'dbot')
+                # Sometimes user is an empty str, not None, therefore nothing is displayed in ServiceNow
+                user = entry.get('user', 'dbot') or 'dbot'
                 text = f"({user}): {str(entry.get('contents', ''))}\n\n Mirrored from Cortex XSOAR"
                 client.add_comment(ticket_id, ticket_type, key, text)
 
@@ -2284,6 +2286,12 @@ def get_modified_remote_data_command(
         modified_records_ids = [record.get('sys_id') for record in modified_records if 'sys_id' in record]
 
     return GetModifiedRemoteDataResponse(modified_records_ids)
+
+
+def add_custom_fields(params):
+    global SNOW_ARGS
+    custom_fields = argToList(params.get('custom_fields'))
+    SNOW_ARGS += custom_fields
 
 
 def main():
@@ -2343,6 +2351,7 @@ def main():
     get_attachments = params.get('get_attachments', False)
     update_timestamp_field = params.get('update_timestamp_field', 'sys_updated_on') or 'sys_updated_on'
     mirror_limit = params.get('mirror_limit', '100') or '100'
+    add_custom_fields(params)
 
     raise_exception = False
     try:
@@ -2410,7 +2419,6 @@ def main():
 
 
 from ServiceNowApiModule import *  # noqa: E402
-
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

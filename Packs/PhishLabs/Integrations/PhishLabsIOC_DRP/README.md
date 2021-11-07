@@ -583,12 +583,6 @@ This integration was integrated and tested with <a href="https://caseapi.phishla
     </tr>
     </tbody>
 </table>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="phishlabs-ioc-drp-get-case-by-id">2. phishlabs-ioc-drp-get-case-by-id</h3>
@@ -994,12 +988,6 @@ This integration was integrated and tested with <a href="https://caseapi.phishla
     </tr>
     </tbody>
 </table>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 
 <h3 id="phishlabs-ioc-drp-get-open-cases">3. phishlabs-ioc-drp-get-open-cases</h3>
 <hr>
@@ -1433,12 +1421,6 @@ This integration was integrated and tested with <a href="https://caseapi.phishla
     </tr>
     </tbody>
 </table>
-
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="phishlabs-ioc-drp-get-closed-cases">4. phishlabs-ioc-drp-get-closed-cases</h3>
@@ -1913,8 +1895,3 @@ This integration was integrated and tested with <a href="https://caseapi.phishla
     </tbody>
 </table>
 
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->

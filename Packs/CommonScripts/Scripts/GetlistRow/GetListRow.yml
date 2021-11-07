@@ -1,12 +1,14 @@
 args:
 - default: false
-  description: Value to search for. If you supply a value, you need to supply the "header" argument also.
+  description: Value to search for. If you supply a value, you need to supply the
+    "header" argument also.
   isArray: false
   name: value
   required: false
   secret: false
 - default: false
-  description: Header to filter lines by. If you supply a header, you need to supply the "value" argument.
+  description: Header to filter lines by. If you supply a header, you need to supply
+    the "value" argument.
   isArray: false
   name: header
   required: false
@@ -20,12 +22,20 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'False'
-  description: If "True", parses the entire list into the context. Can be "True" or "False". Default is "False".
+  description: If "True", parses the entire list into the context. Can be "True" or
+    "False". Default is "False".
   isArray: false
   name: parse_all
   predefined:
   - 'True'
   - 'False'
+  required: false
+  secret: false
+- default: false
+  defaultValue: ','
+  description: Separator to split the list by.
+  isArray: false
+  name: list_separator
   required: false
   secret: false
 comment: Parses a list by header and value.
@@ -55,7 +65,7 @@ subtype: python3
 system: false
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.8.3.9324
+dockerimage: demisto/python3:3.9.7.24076
 runas: DBotWeakRole
 runonce: false
 tests:

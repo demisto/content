@@ -16,7 +16,7 @@ configuration:
   - Samples Feed
   required: true
   type: 16
-- additionalinfo: TIM customers that upgraded to version 6.2 or above have this value pre-configured in their main account, so no additional input is needed.
+- additionalinfo: TIM customers that upgraded to version 6.2 or above, can have this value pre-configured in their main account so no additional input is needed. To use this feature, upgrade your license so it includes the license key.
   display: API Key
   name: api_key
   required: false
@@ -140,7 +140,7 @@ script:
     description: Gets the indicators from AutoFocus.
     execution: false
     name: autofocus-get-indicators
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.9.7.24076
   feed: true
   isfetch: false
   longRunning: false

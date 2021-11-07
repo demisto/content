@@ -209,6 +209,7 @@ def test_mcafee_severity_to_demisto(test_input, output):
     assert temp == output, f'mcafee_severity_to_demisto({test_input}) returns: {temp} instead: {output}.'
 
 
+@pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
 def test_edit_case(mocker):
     params = {
         "url": "https://example.com",

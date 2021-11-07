@@ -331,7 +331,7 @@ def fetch_indicators_command(client, indicator_type, limit: Optional[int] = None
     Returns:
         list. List of indicators from the feed
     """
-
+    indicators_value_set: Set[str] = set()
     for service in client.services:
         client.build_iterator(service, indicator_type)
         feed_batches = client.get_batches_from_file(limit)
@@ -340,6 +340,9 @@ def fetch_indicators_command(client, indicator_type, limit: Optional[int] = None
             for item in feed_dicts:
                 raw_json = dict(item)
                 raw_json['value'] = value = item.get('Name')
+                if value in indicators_value_set:
+                    continue
+                indicators_value_set.add(value)
                 raw_json['type'] = get_indicator_type(indicator_type, item)
                 score = 0
                 risk = item.get('Risk')
@@ -440,18 +443,8 @@ def main():
     try:
         if demisto.command() == 'fetch-indicators':
             indicators_batch = fetch_indicators_command(client, client.indicator_type)
-            non_duplicates_dict: Dict[str, Dict] = dict()
             for indicators in indicators_batch:
-                for indicator in indicators:
-                    # remove duplicates due to performance issue -
-                    # https://github.com/demisto/etc/issues/25033
-                    indicator_value = indicator.get("value")
-                    if indicator_value:
-                        # each value is added to the dict only ones
-                        if not non_duplicates_dict.get(str(indicator_value).lower()):
-                            non_duplicates_dict[str(indicator_value.lower())] = indicator
-                unique_indicators_list = list(non_duplicates_dict.values())
-                demisto.createIndicators(unique_indicators_list)
+                demisto.createIndicators(indicators)
         else:
             readable_output, outputs, raw_response = commands[command](client, demisto.args())  # type:ignore
             return_outputs(readable_output, outputs, raw_response)

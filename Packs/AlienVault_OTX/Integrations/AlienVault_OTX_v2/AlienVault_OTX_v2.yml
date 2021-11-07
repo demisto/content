@@ -54,7 +54,7 @@ script:
   - arguments:
     - default: true
       description: The IP address to query.
-      isArray: false
+      isArray: true
       name: ip
       required: true
       secret: false
@@ -612,7 +612,7 @@ script:
     - contextPath: URL.Relationships.EntityBType
       description: The type of the destination of the relationship.
       type: string
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.9.7.24076
   isfetch: false
   longRunning: false
   longRunningPort: false

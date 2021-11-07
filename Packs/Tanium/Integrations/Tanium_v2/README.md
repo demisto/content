@@ -128,12 +128,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <code>tn-get-package</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-  <li>permission 1</li>
-  <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -554,12 +548,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
       </tr>
     </tbody>
   </table>
-
-  <!-- remove the following comments to manually add an image: -->
-  <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="tn-ask-question">2. tn-ask-question</h3>
@@ -570,12 +558,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <code>tn-ask-question</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-  <li>permission 1</li>
-  <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -648,11 +630,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <p>
     New question created. ID = 50500
   </p>
-  <!-- remove the following comments to manually add an image: -->
-  <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="tn-get-question-result">3. tn-get-question-result</h3>
@@ -663,12 +640,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <code>tn-get-question-result</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-  <li>permission 1</li>
-  <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -747,11 +718,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <p>
     Question is still executing, Question id: 50477
   </p>
-  <!-- remove the following comments to manually add an image: -->
-  <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="tn-list-sensors">4. tn-list-sensors</h3>
@@ -762,12 +728,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <code>tn-list-sensors</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-  <li>permission 1</li>
-  <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -977,12 +937,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
       </tr>
     </tbody>
   </table>
-
-  <!-- remove the following comments to manually add an image: -->
-  <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="tn-get-sensor">5. tn-get-sensor</h3>
@@ -993,12 +947,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <code>tn-get-sensor</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-  <li>permission 1</li>
-  <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -1259,12 +1207,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
       </tr>
     </tbody>
   </table>
-
-  <!-- remove the following comments to manually add an image: -->
-  <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="tn-create-saved-question">6. tn-create-saved-question</h3>
@@ -1275,12 +1217,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <code>tn-create-saved-question</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-  <li>permission 1</li>
-  <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -1359,11 +1295,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <p>
     Question saved. ID = 450
   </p>
-  <!-- remove the following comments to manually add an image: -->
-  <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="tn-list-saved-questions">7. tn-list-saved-questions</h3>
@@ -1374,12 +1305,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <code>tn-list-saved-questions</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-  <li>permission 1</li>
-  <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -1594,12 +1519,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
       </tr>
     </tbody>
   </table>
-
-  <!-- remove the following comments to manually add an image: -->
-  <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="tn-get-saved-question-result">8. tn-get-saved-question-result</h3>
@@ -1610,12 +1529,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <code>tn-get-saved-question-result</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-  <li>permission 1</li>
-  <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -1695,11 +1608,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <p>
     **No entries.**
   </p>
-  <!-- remove the following comments to manually add an image: -->
-  <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="tn-get-system-status">9. tn-get-system-status</h3>
@@ -1710,12 +1618,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <code>tn-get-system-status</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-  <li>permission 1</li>
-  <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -1857,12 +1759,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
       </tr>
     </tbody>
   </table>
-
-  <!-- remove the following comments to manually add an image: -->
-  <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="tn-create-package">10. tn-create-package</h3>
@@ -1873,12 +1769,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <code>tn-create-package</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-  <li>permission 1</li>
-  <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -2096,11 +1986,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <p>
     **No entries.**
   </p>
-  <!-- remove the following comments to manually add an image: -->
-  <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="tn-list-packages">11. tn-list-packages</h3>
@@ -2111,12 +1996,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <code>tn-list-packages</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-  <li>permission 1</li>
-  <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -2318,12 +2197,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
       </tr>
     </tbody>
   </table>
-
-  <!-- remove the following comments to manually add an image: -->
-  <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="tn-get-question-metadata">12. tn-get-question-metadata</h3>
@@ -2334,12 +2207,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <code>tn-get-question-metadata</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-  <li>permission 1</li>
-  <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -2483,12 +2350,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
       </tr>
     </tbody>
   </table>
-
-  <!-- remove the following comments to manually add an image: -->
-  <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="tn-list-saved-actions">13. tn-list-saved-actions</h3>
@@ -2499,12 +2360,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <code>tn-list-saved-actions</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-  <li>permission 1</li>
-  <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -2748,12 +2603,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
       </tr>
     </tbody>
   </table>
-
-  <!-- remove the following comments to manually add an image: -->
-  <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="tn-get-saved-action">14. tn-get-saved-action</h3>
@@ -2764,12 +2613,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <code>tn-get-saved-action</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-  <li>permission 1</li>
-  <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -3017,12 +2860,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
       </tr>
     </tbody>
   </table>
-
-  <!-- remove the following comments to manually add an image: -->
-  <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="tn-get-saved-question-metadata">15. tn-get-saved-question-metadata</h3>
@@ -3033,12 +2870,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <code>tn-get-saved-question-metadata</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-  <li>permission 1</li>
-  <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -3255,12 +3086,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
       </tr>
     </tbody>
   </table>
-
-  <!-- remove the following comments to manually add an image: -->
-  <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="tn-create-saved-action">16. tn-create-saved-action</h3>
@@ -3271,12 +3096,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <code>tn-create-saved-action</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-  <li>permission 1</li>
-  <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -3523,12 +3342,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
       </tr>
     </tbody>
   </table>
-
-  <!-- remove the following comments to manually add an image: -->
-  <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="tn-create-action">17. tn-create-action</h3>
@@ -3539,12 +3352,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <code>tn-create-action</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-  <li>permission 1</li>
-  <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -3813,12 +3620,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
       </tr>
     </tbody>
   </table>
-
-  <!-- remove the following comments to manually add an image: -->
-  <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="tn-list-actions">18. tn-list-actions</h3>
@@ -3829,12 +3630,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <code>tn-list-actions</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-  <li>permission 1</li>
-  <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -4075,12 +3870,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
       </tr>
     </tbody>
   </table>
-
-  <!-- remove the following comments to manually add an image: -->
-  <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="tn-get-action">19. tn-get-action</h3>
@@ -4091,12 +3880,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <code>tn-get-action</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-  <li>permission 1</li>
-  <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -4335,12 +4118,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
       </tr>
     </tbody>
   </table>
-
-  <!-- remove the following comments to manually add an image: -->
-  <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="tn-list-saved-actions-pending-approval">20. tn-list-saved-actions-pending-approval</h3>
@@ -4351,12 +4128,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <code>tn-list-saved-actions-pending-approval</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-  <li>permission 1</li>
-  <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -4460,12 +4231,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
       </tr>
     </tbody>
   </table>
-
-  <!-- remove the following comments to manually add an image: -->
-  <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="tn-get-group">21. tn-get-group</h3>
@@ -4476,12 +4241,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <code>tn-get-group</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-  <li>permission 1</li>
-  <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -4596,12 +4355,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
       </tr>
     </tbody>
   </table>
-
-  <!-- remove the following comments to manually add an image: -->
-  <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="tn-create-manual-group">22. tn-create-manual-group</h3>
@@ -4612,12 +4365,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <code>tn-create-manual-group</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-  <li>permission 1</li>
-  <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -4714,12 +4461,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
       </tr>
     </tbody>
   </table>
-
-  <!-- remove the following comments to manually add an image: -->
-  <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="tn-create-filter-based-group">23. tn-create-filter-based-group</h3>
@@ -4730,12 +4471,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <code>tn-create-filter-based-group</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-  <li>permission 1</li>
-  <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -4821,12 +4556,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
       </tr>
     </tbody>
   </table>
-
-  <!-- remove the following comments to manually add an image: -->
-  <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="tn-list-groups">24. tn-list-groups</h3>
@@ -4837,12 +4566,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <code>tn-list-groups</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-  <li>permission 1</li>
-  <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -4953,12 +4676,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
       </tr>
     </tbody>
   </table>
-
-  <!-- remove the following comments to manually add an image: -->
-  <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="tn-delete-group">25. tn-delete-group</h3>
@@ -4969,12 +4686,6 @@ Integration with Tanium REST API. Available from Tanium version 7.3.0. You can m
   <code>tn-delete-group</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-  <li>permission 1</li>
-  <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -5021,11 +4732,6 @@ There are no context output for this command.
   <p>
     Group has been deleted. ID = 31822
   </p>
-  <!-- remove the following comments to manually add an image: -->
-  <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 
 <h3 id="tn-create-action-by-host">26. tn-create-action-by-host</h3>
@@ -5036,12 +4742,6 @@ There are no context output for this command.
   <code>tn-create-action-by-host</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-  <li>permission 1</li>
-  <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -5310,12 +5010,6 @@ There are no context output for this command.
       </tr>
     </tbody>
   </table>
-
-  <!-- remove the following comments to manually add an image: -->
-  <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
 </p>
 <h2>Additional Information</h2>
 <h2>Known Limitations</h2>

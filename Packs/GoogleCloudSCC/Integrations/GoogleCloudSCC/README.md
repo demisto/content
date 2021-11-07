@@ -216,7 +216,7 @@ Lists an organization's assets.
         ],
         "Token": {
             "name": "google-cloud-scc-asset-list",
-            "nextPageToken": "CugB3cy7qgAx8QqfeYDI-euaqohhc0C4DIrRMAEGfAmMCR27cfv1xzE1JtzInEO5j7S-cXxVkULYewQwSL-n-rwP50CfX1GmmjXb8-TxYbD8XfivDJw6AR7yzVz4f4_VqViVSkoYFzeRiW4-WabEQjued3j9IN0gGt_4v8MS0pFrbKGFSRdgOfv9CfrhFecQQruiLBD135jve-sSgrezxexc0YbzXfJuvsn7TPMG0p0sGa_ujb9HzxPhapIO4OVat2mTINzt2RU5ejxxLypD9SJ-S29q9Jdr3OkjEEVZ8MyTuFzHEBIgaygfFQ=="
+            "nextPageToken": "next-page-token"
         }
     }
 }
@@ -230,8 +230,7 @@ Lists an organization's assets.
 >| [organizations/595779152576/assets/7180457033309348544](https://console.cloud.google.com/security/command-center/assets?organizationId=595779152576&resourceId=organizations/595779152576/assets/7180457033309348544) | organizations/595779152576 | //cloudresourcemanager.googleapis.com/organizations/595779152576 | google.cloud.resourcemanager.Organization |  | compressed: SSH<br/>LastSeen: Yesterday |
 >| [organizations/595779152576/assets/2994068353411300094](https://console.cloud.google.com/security/command-center/assets?organizationId=595779152576&resourceId=organizations/595779152576/assets/2994068353411300094) | Calender | //cloudresourcemanager.googleapis.com/projects/455757558851 | google.cloud.resourcemanager.Project | user:milankumar.thummar@test.com | compressed: SSH<br/>LastSeen: Yesterday |
 >| [organizations/595779152576/assets/14656821127596596302](https://console.cloud.google.com/security/command-center/assets?organizationId=595779152576&resourceId=organizations/595779152576/assets/14656821127596596302) | Test Proj | //cloudresourcemanager.googleapis.com/projects/265894444436 | google.cloud.resourcemanager.Project | user:heena.vaghela@test.com |  |
->
->**Next Page Token:** CugB3cy7qgAx8QqfeYDI-euaqohhc0C4DIrRMAEGfAmMCR27cfv1xzE1JtzInEO5j7S-cXxVkULYewQwSL-n-rwP50CfX1GmmjXb8-TxYbD8XfivDJw6AR7yzVz4f4_VqViVSkoYFzeRiW4-WabEQjued3j9IN0gGt_4v8MS0pFrbKGFSRdgOfv9CfrhFecQQruiLBD135jve-sSgrezxexc0YbzXfJuvsn7TPMG0p0sGa_ujb9HzxPhapIO4OVat2mTINzt2RU5ejxxLypD9SJ-S29q9Jdr3OkjEEVZ8MyTuFzHEBIgaygfFQ==
+
 
 
 ### google-cloud-scc-finding-list
@@ -300,7 +299,7 @@ Lists an organization or source's findings.
                 "category": "page",
                 "createTime": "2020-05-15T05:57:46.641Z",
                 "eventTime": "2021-02-11T09:33:30.716Z",
-                "externalUri": "http://www.example.com",
+                "externalUri": "http://www.fake-url.com",
                 "name": "organizations/595779152576/sources/10134421585261057824/findings/00002906967111ea87141217baf6db4d",
                 "parent": "organizations/595779152576/sources/10134421585261057824",
                 "readTime": "2021-02-11T13:52:10.594Z",
@@ -322,7 +321,7 @@ Lists an organization or source's findings.
                     "category": "Technology",
                     "ccl": "unknown",
                     "count": "1",
-                    "domain": "www.apple.com",
+                    "domain": "www.fake-url.com",
                     "dst_country": "US",
                     "dst_geoip_src": "2",
                     "dst_latitude": 35.7319,
@@ -330,11 +329,11 @@ Lists an organization or source's findings.
                     "dst_longitude": -81.7091,
                     "dst_region": "North Carolina",
                     "dst_zipcode": "28655",
-                    "dstip": "1.2.3.4",
+                    "dstip": "127.0.0.1",
                     "id": "fda1f2cb566f247dac4c4c77",
                     "insertion_epoch_timestamp": "1584069016",
                     "organization_unit": "None",
-                    "page": "www.apple.com",
+                    "page": "www.fake-url.com",
                     "page_id": "0",
                     "policy": "Domains",
                     "site": "apple",
@@ -345,18 +344,18 @@ Lists an organization or source's findings.
                     "src_longitude": -121.939,
                     "src_region": "California",
                     "src_zipcode": "95134",
-                    "srcip": "1.2.3.5",
+                    "srcip": "127.0.0.1",
                     "ssl_decrypt_policy": "no",
                     "tenant_name": "partners",
                     "timestamp": "1584069012",
                     "traffic_type": "Web",
                     "transaction_id": "0",
                     "type": "page",
-                    "ur_normalized": "10.0.0.1",
-                    "url": "www.apple.com",
-                    "user": "10.0.0.1",
+                    "ur_normalized": "127.0.0.1",
+                    "url": "www.fake-url.com",
+                    "user": "127.0.0.1",
                     "user_generated": "yes",
-                    "userip": "10.0.0.1"
+                    "userip": "127.0.0.1"
                 },
                 "state": "ACTIVE"
             },
@@ -384,7 +383,7 @@ Lists an organization or source's findings.
                 "category": "page",
                 "createTime": "2020-05-30T02:41:01.848Z",
                 "eventTime": "2020-03-16T01:38:52Z",
-                "externalUri": "http://www.example.com",
+                "externalUri": "http://www.fake-url.com",
                 "name": "organizations/595779152576/sources/10134421585261057824/findings/000031c6a21f11ea9d221217baf6db4d",
                 "parent": "organizations/595779152576/sources/10134421585261057824",
                 "readTime": "2021-02-11T13:52:10.594Z",
@@ -408,7 +407,7 @@ Lists an organization or source's findings.
                     "cci": "65",
                     "ccl": "medium",
                     "count": "1",
-                    "domain": "www.linkedin.com",
+                    "domain": "www.fake-url.com",
                     "dst_country": "US",
                     "dst_geoip_src": "1",
                     "dst_latitude": 37.368889,
@@ -417,11 +416,11 @@ Lists an organization or source's findings.
                     "dst_region": "California",
                     "dst_timezone": "N/A",
                     "dst_zipcode": "N/A",
-                    "dstip": "1.2.3.4",
+                    "dstip": "127.0.0.1",
                     "id": "567a33f799d411dab82da23e",
                     "insertion_epoch_timestamp": "1584322739",
                     "organization_unit": "None",
-                    "page": "www.linkedin.com",
+                    "page": "www.fake-url.com",
                     "page_id": "0",
                     "policy": "No_Decrypt",
                     "site": "Linkedin",
@@ -432,25 +431,25 @@ Lists an organization or source's findings.
                     "src_longitude": -121.939,
                     "src_region": "California",
                     "src_zipcode": "95134",
-                    "srcip": "1.2.3.5",
+                    "srcip": "127.0.0.1",
                     "ssl_decrypt_policy": "yes",
                     "tenant_name": "partners",
                     "timestamp": "1584322732",
                     "traffic_type": "CloudApp",
                     "transaction_id": "0",
                     "type": "page",
-                    "ur_normalized": "10.0.0.1",
-                    "url": "www.linkedin.com",
-                    "user": "10.0.0.1",
+                    "ur_normalized": "127.0.0.1",
+                    "url": "www.fake-url.com",
+                    "user": "127.0.0.1",
                     "user_generated": "yes",
-                    "userip": "10.0.0.1"
+                    "userip": "127.0.0.1"
                 },
                 "state": "ACTIVE"
             }
         ],
         "Token": {
             "name": "google-cloud-scc-finding-list",
-            "nextPageToken": "CtwC3cy7qgAx8QqfNsgeRyxSDIxQ030KVfO_vWWGMks_91Ml1zNZzxlu76feNaXEfPJHjkcEQBsREtj-pzNtwP4ee4NoAuyhSY2lGiWOURBCkqXFDuwrWACHT0vGytG9wM_MikvTNrxt3W8j6ZAmzKEMuh_hG1Hmeoxv4sAo3xEPUQq7_T4n3kQD1I19MMrdCVnO6LyoOHBz44MQALRoTewtTn1O1qL8lybXS1Mqz1E1FEDb6Ug9czburnT8IkMiBWYaOIYzh2JPE2250L8zoGUcorUu7iLxZ5mMullbY5tES0R78ofrSWRddikkZ-8KYSD6dR3ozj38IcLkdfiH9TusqbgExN81-MkJCLCTwpSrhRQyVkycbCH0nMw70bD8rSheoXI-Lg3WubbgXzCwo6iLZTK4TVuHtlTr4W3u_dLpY7lHRjXyf5H8LVmIkg-6OAb_mP-Z6Gw0hm5fMS8v"
+            "nextPageToken": "next-page-token"
         }
     }
 }
@@ -464,8 +463,7 @@ Lists an organization or source's findings.
 >| [organizations/595779152576/sources/10134421585261057824/findings/00002906967111ea87141217baf6db4d](https://console.cloud.google.com/security/command-center/findings?organizationId=595779152576&resourceId=organizations/595779152576/sources/10134421585261057824/findings/00002906967111ea87141217baf6db4d) | page | //cloudresourcemanager.googleapis.com/projects/339295427573 | February 11, 2021 at 09:33:30 AM | May 15, 2020 at 05:57:46 AM |
 >| [organizations/595779152576/sources/10134421585261057824/findings/00002ccaa28911ea9d221217baf6db4d](https://console.cloud.google.com/security/command-center/findings?organizationId=595779152576&resourceId=organizations/595779152576/sources/10134421585261057824/findings/00002ccaa28911ea9d221217baf6db4d) | page | //cloudresourcemanager.googleapis.com/projects/339295427573 | February 11, 2021 at 07:21:45 AM | May 30, 2020 at 03:19:49 PM |
 >| [organizations/595779152576/sources/10134421585261057824/findings/000031c6a21f11ea9d221217baf6db4d](https://console.cloud.google.com/security/command-center/findings?organizationId=595779152576&resourceId=organizations/595779152576/sources/10134421585261057824/findings/000031c6a21f11ea9d221217baf6db4d) | page | //cloudresourcemanager.googleapis.com/projects/339295427573 | March 16, 2020 at 01:38:52 AM | May 30, 2020 at 02:41:01 AM |
->
->**Next Page Token:** CtwC3cy7qgAx8QqfNsgeRyxSDIxQ030KVfO_vWWGMks_91Ml1zNZzxlu76feNaXEfPJHjkcEQBsREtj-pzNtwP4ee4NoAuyhSY2lGiWOURBCkqXFDuwrWACHT0vGytG9wM_MikvTNrxt3W8j6ZAmzKEMuh_hG1Hmeoxv4sAo3xEPUQq7_T4n3kQD1I19MMrdCVnO6LyoOHBz44MQALRoTewtTn1O1qL8lybXS1Mqz1E1FEDb6Ug9czburnT8IkMiBWYaOIYzh2JPE2250L8zoGUcorUu7iLxZ5mMullbY5tES0R78ofrSWRddikkZ-8KYSD6dR3ozj38IcLkdfiH9TusqbgExN81-MkJCLCTwpSrhRQyVkycbCH0nMw70bD8rSheoXI-Lg3WubbgXzCwo6iLZTK4TVuHtlTr4W3u_dLpY7lHRjXyf5H8LVmIkg-6OAb_mP-Z6Gw0hm5fMS8v
+
 
 
 ### google-cloud-scc-finding-update
@@ -517,7 +515,7 @@ Update an organization's or source's finding.
             "category": "page",
             "createTime": "2020-05-15T05:57:46.641Z",
             "eventTime": "2021-02-11T13:52:25.986162Z",
-            "externalUri": "http://www.example.com",
+            "externalUri": "http://www.fake-url.com",
             "name": "organizations/595779152576/sources/10134421585261057824/findings/00002906967111ea87141217baf6db4d",
             "parent": "organizations/595779152576/sources/10134421585261057824",
             "resourceName": "//cloudresourcemanager.googleapis.com/projects/339295427573",
@@ -531,7 +529,7 @@ Update an organization's or source's finding.
                 "category": "Technology",
                 "ccl": "unknown",
                 "count": "1",
-                "domain": "www.apple.com",
+                "domain": "www.fake-url.com",
                 "dst_country": "US",
                 "dst_geoip_src": "2",
                 "dst_latitude": 35.7319,
@@ -539,11 +537,11 @@ Update an organization's or source's finding.
                 "dst_longitude": -81.7091,
                 "dst_region": "North Carolina",
                 "dst_zipcode": "28655",
-                "dstip": "1.2.3.4",
+                "dstip": "127.0.0.1",
                 "id": "fda1f2cb566f247dac4c4c77",
                 "insertion_epoch_timestamp": "1584069016",
                 "organization_unit": "None",
-                "page": "www.apple.com",
+                "page": "www.fake-url.com",
                 "page_id": "0",
                 "policy": "Domains",
                 "site": "apple",
@@ -554,18 +552,18 @@ Update an organization's or source's finding.
                 "src_longitude": -121.939,
                 "src_region": "California",
                 "src_zipcode": "95134",
-                "srcip": "1.2.3.5",
+                "srcip": "127.0.0.1",
                 "ssl_decrypt_policy": "no",
                 "tenant_name": "partners",
                 "timestamp": "1584069012",
                 "traffic_type": "Web",
                 "transaction_id": "0",
                 "type": "page",
-                "ur_normalized": "10.0.0.1",
-                "url": "www.apple.com",
-                "user": "10.0.0.1",
+                "ur_normalized": "127.0.0.1",
+                "url": "www.fake-url.com",
+                "user": "127.0.0.1",
                 "user_generated": "yes",
-                "userip": "10.0.0.1"
+                "userip": "127.0.0.1"
             },
             "state": "ACTIVE"
         }
@@ -578,7 +576,194 @@ Update an organization's or source's finding.
 >### The finding has been updated successfully.
 >|Name|State|Category|Event Time|Create Time|External Uri|Resource Name|
 >|---|---|---|---|---|---|---|
->| [organizations/595779152576/sources/10134421585261057824/findings/00002906967111ea87141217baf6db4d](https://console.cloud.google.com/security/command-center/findings?organizationId=595779152576&resourceId=organizations/595779152576/sources/10134421585261057824/findings/00002906967111ea87141217baf6db4d) | ACTIVE | page | February 11, 2021 at 01:52:25 PM | May 15, 2020 at 05:57:46 AM | [http://www.example.com](http://www.example.com) | //cloudresourcemanager.googleapis.com/projects/339295427573 |
+>| [organizations/595779152576/sources/10134421585261057824/findings/00002906967111ea87141217baf6db4d](https://console.cloud.google.com/security/command-center/findings?organizationId=595779152576&resourceId=organizations/595779152576/sources/10134421585261057824/findings/00002906967111ea87141217baf6db4d) | ACTIVE | page | February 11, 2021 at 01:52:25 PM | May 15, 2020 at 05:57:46 AM | [http://www.fake-url.com](http://www.fake-url.com) | //cloudresourcemanager.googleapis.com/projects/339295427573 |
+
+
+### google-cloud-scc-asset-resource-list
+***
+Lists cloud asset's resources.
+
+
+#### Base Command
+
+`google-cloud-scc-asset-resource-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| parent | Name of the organization or project the assets belong to. Organization Id provided in the Integration Configuration will be taken by default, if no value is provided to the parent.<br/><br/>Format: "organizations/[organization-number]" (such as "organizations/123"), "projects/[project-id]" (such as "projects/my-project-id"), or "projects/[project-number]" (such as "projects/12345"). | Optional | 
+| assetTypes | This parameter is used to filter assets by asset types by providing a single value or a comma-separated value of asset types.<br/>For example: "compute.googleapis.com/Disk".<br/><br/>Regular expression is also supported. <br/>For example:<br/>1) "compute.googleapis.com.*" resources whose asset type starts with "compute.googleapis.com".<br/>2) ".*Instance" resources whose asset type ends with "Instance".<br/>3) ".*Instance.*" resources whose asset type contains "Instance". | Optional | 
+| pageSize | The maximum number of results to return in a single response. The minimum value is 1 and maximum value is 1000. Default is 10. | Optional | 
+| pageToken | The nextPageToken returned from the previous scc-asset-resource-list command response, or unspecified for the first  scc-asset-resource-list command. It is a continuation of a prior scc-asset-resource-list call, and the API should return the next page of assets. | Optional | 
+| readTime | Time used as a reference point when filtering assets. This can only be set to a timestamp between the current time and the current time minus 35 days (inclusive). If not provided, it will take current time. <br/><br/>Format:<br/>(&lt;number&gt; &lt;time unit&gt;, e.g., "12 hours ago", "7 days ago", "1 week", "1 month") or (&lt;date&gt; &lt;time&gt;, e.g. "yyyy-mm-ddTHH-MM-SS") or ( "YYYY-MM-ddTHH:mm:ss.sssZ", e.g. 2020-07-22T07:10:02.782Z) or (&lt;date&gt;, e.g. "2020-07-22"). | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GoogleCloudSCC.CloudAsset.Resource.name | String | The full name of the asset. | 
+| GoogleCloudSCC.CloudAsset.Resource.assetType | String | The type of the asset. | 
+| GoogleCloudSCC.CloudAsset.Resource.updateTime | String | The last update timestamp of an asset. The updateTime is updated when create/update/delete operation is performed. | 
+| GoogleCloudSCC.CloudAsset.Resource.readTime | String | Time used for executing the list request. | 
+| GoogleCloudSCC.CloudAsset.Resource.ancestors | Unknown | The ancestry path of an asset in Google Cloud resource hierarchy, represented as a list of relative resource names. An ancestry path starts with the closest ancestor in the hierarchy and ends at root. If the asset is a project, folder, or organization, the ancestry path starts from the asset itself. | 
+| GoogleCloudSCC.CloudAsset.Resource.resource.version | String | The API version. | 
+| GoogleCloudSCC.CloudAsset.Resource.resource.discoveryDocumentUri | String | The URL of the discovery document containing the resource's JSON schema. This value is unspecified for resources that do not have an API based on a discovery document, such as Cloud Bigtable. | 
+| GoogleCloudSCC.CloudAsset.Resource.resource.discoveryName | String | The JSON schema name listed in the discovery document. This value is unspecified for resources that do not have an API based on a discovery document, such as Cloud Bigtable. | 
+| GoogleCloudSCC.CloudAsset.Resource.resource.resourceUrl | String | The REST URL for accessing the resource. An HTTP GET request using this URL returns the resource itself. | 
+| GoogleCloudSCC.CloudAsset.Resource.resource.parent | String | The full name of the immediate parent of this resource. For third-party assets, this field may be set differently. | 
+| GoogleCloudSCC.CloudAsset.Resource.resource.data | String | The content of the resource, in which some sensitive fields are removed and may not be present. | 
+| GoogleCloudSCC.CloudAsset.Resource.resource.location | String | The location of the resource in Google Cloud, such as its zone and region. | 
+| GoogleCloudSCC.Token.name | String | Name of the command. | 
+| GoogleCloudSCC.Token.nextPageToken | String | Token to retrieve the next page of results, or empty if there are no more results. | 
+
+
+#### Command Example
+```!google-cloud-scc-asset-resource-list pageSize=2```
+
+#### Context Example
+```json
+{
+    "GoogleCloudSCC": {
+        "CloudAsset": {
+            "Resource": [
+                {
+                    "ancestors": [
+                        "organizations/123456789"
+                    ],
+                    "assetType": "cloudbilling.googleapis.com/BillingAccount",
+                    "name": "//cloudbilling.googleapis.com/billingAccounts/12345-6789",
+                    "readTime": "2021-06-17T10:19:59.557941456Z",
+                    "resource": {
+                        "data": {
+                            "displayName": "My Billing Account",
+                            "name": "billingAccounts/12345-6789"
+                        },
+                        "discoveryDocumentUri": "https://cloudbilling.googleapis.com/$discovery/rest",
+                        "discoveryName": "BillingAccount",
+                        "location": "global",
+                        "version": "v1"
+                    },
+                    "updateTime": "2020-08-21T09:05:39.425Z"
+                },
+                {
+                    "ancestors": [
+                        "organizations/123456789"
+                    ],
+                    "assetType": "cloudbilling.googleapis.com/BillingAccount",
+                    "name": "//cloudbilling.googleapis.com/billingAccounts/23456-7890",
+                    "readTime": "2021-06-17T10:19:59.557941456Z",
+                    "resource": {
+                        "data": {
+                            "displayName": "Our-Account",
+                            "name": "billingAccounts/23456-7890"
+                        },
+                        "discoveryDocumentUri": "https://cloudbilling.googleapis.com/$discovery/rest",
+                        "discoveryName": "BillingAccount",
+                        "location": "global",
+                        "version": "v1"
+                    },
+                    "updateTime": "2021-04-01T19:38:12.836197Z"
+                }
+            ]
+        },
+        "Token": {
+            "name": "google-cloud-scc-asset-resource-list",
+            "nextPageToken": "dummy"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>|Asset Name|Asset Type|Discovery Name|Ancestors|Update Time (In UTC)|
+>|---|---|---|---|---|
+>| //cloudbilling.googleapis.com/billingAccounts/12345-6789 | cloudbilling.googleapis.com/BillingAccount | BillingAccount | organizations/123456789 | August 21, 2020 at 09:05:39 AM |
+>| //cloudbilling.googleapis.com/billingAccounts/23456-7890 | cloudbilling.googleapis.com/BillingAccount | BillingAccount | organizations/123456789 | April 01, 2021 at 07:38:12 PM |
+
+
+### google-cloud-scc-asset-owner-get
+***
+Gets the owner information for the provided projects.
+
+
+#### Base Command
+
+`google-cloud-scc-asset-owner-get`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| projectName | Name of the project. Supports comma separated values.<br/><br/>Format: "projects/[project-number]" or for multiple projects "projects/[first-project-number], projects/[second-project-number]". | Required | 
+| maxIteration | Number of iterations to search the owner information. Each iteration retrieves 1000 records. The minimum value is 1 and maximum value is 10. Default is 2. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GoogleCloudSCC.CloudAsset.IamPolicy.name | String | The full name of the asset. | 
+| GoogleCloudSCC.CloudAsset.IamPolicy.owners | Unknown | List of owners of the asset. | 
+| GoogleCloudSCC.CloudAsset.IamPolicy.assetType | String | The type of the asset. | 
+| GoogleCloudSCC.CloudAsset.IamPolicy.updateTime | String | The last update timestamp of an asset. The updateTime is updated when create/update/delete operation is performed. | 
+| GoogleCloudSCC.CloudAsset.IamPolicy.readTime | String | Time used for executing the list request. | 
+| GoogleCloudSCC.CloudAsset.IamPolicy.ancestors | Unknown | The ancestry path of an asset in Google Cloud resource hierarchy, represented as a list of relative resource names. An ancestry path starts with the closest ancestor in the hierarchy and ends at root. If the asset is a project, folder, or organization, the ancestry path starts from the asset itself. | 
+| GoogleCloudSCC.CloudAsset.IamPolicy.version | String | Specifies the format of the policy. | 
+| GoogleCloudSCC.CloudAsset.IamPolicy.etag | String | The etag is used for optimistic concurrency control as a way to help prevent simultaneous updates of a policy from overwriting each other. It is strongly suggested that systems make use of the etag in the read-modify-write cycle to perform policy updates in order to avoid race conditions: An etag is returned in the response to getIamPolicy, and systems are expected to put that etag in the request to setIamPolicy to ensure that their change will be applied to the same version of the policy. | 
+| GoogleCloudSCC.CloudAsset.IamPolicy.bindings.role | String | A role is a named collection of permissions that provide the ability to perform actions on Google Cloud resources. | 
+| GoogleCloudSCC.CloudAsset.IamPolicy.bindings.members | Unknown | A member, also known as an identity or principal, which can be a user account, service account, Google group, or domain. | 
+| GoogleCloudSCC.CloudAsset.IamPolicy.bindings.condition | String | A condition, which is an optional logic expression that further constrains the role binding based on attributes about the request, such as its origin, the target resource, and so on. Conditions are typically used to control whether access is granted based on the context for a request. | 
+| GoogleCloudSCC.CloudAsset.IamPolicy.auditConfigs.service | String | Specifies a service that will be enabled for audit logging. | 
+| GoogleCloudSCC.CloudAsset.IamPolicy.auditConfigs.auditLogConfigs.logType | String | The log type that this config enables. | 
+| GoogleCloudSCC.CloudAsset.IamPolicy.auditConfigs.auditLogConfigs.exemptedMembers | String | Specifies the identities that do not cause logging for this type of permission. | 
+
+
+#### Command Example
+```!google-cloud-scc-asset-owner-get projectName="projects/123456789"```
+
+#### Context Example
+```json
+{
+    "GoogleCloudSCC": {
+        "CloudAsset": {
+            "IamPolicy": {
+                "ancestors": [
+                    "projects/123456789",
+                    "organizations/123456789"
+                ],
+                "assetType": "cloudresourcemanager.googleapis.com/Project",
+                "iamPolicy": {
+                    "bindings": [
+                        {
+                            "members": [
+                                "serviceAccount:dummmyaccount@dummycom",
+                                "user:dummmyuser1@dummycom"
+                            ],
+                            "role": "roles/owner"
+                        }
+                    ],
+                    "etag": "BwV9ONRnkz4=",
+                    "version": 1
+                },
+                "name": "//cloudresourcemanager.googleapis.com/projects/123456789",
+                "owners": [
+                    "serviceAccount:dummmyaccount@dummycom",
+                    "user:dummmyuser1@dummycom"
+                ],
+                "readTime": "2021-06-17T10:20:43.762746137Z",
+                "updateTime": "2018-12-24T10:00:00Z"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>|Project Name|Project Owner|Ancestors|Update Time (In UTC)|
+>|---|---|---|---|
+>| //cloudresourcemanager.googleapis.com/projects/123456789 | serviceAccount:dummmyaccount@dummycom,<br/>user:dummmyuser1@dummycom | projects/123456789,<br/>organizations/123456789 | December 24, 2018 at 10:00:00 AM |
 
 
 ## Known Limitations

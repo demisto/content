@@ -1,4 +1,5 @@
 Use the AutoFocus v2 integration to contextualize threat intelligence and bring speed, consistency, and precision to threat investigation.
+TIM customers that upgraded to version 6.2 or above, can have the API Key pre-configured in their main account so no additional input is needed. To use this feature, upgrade your license so it includes the license key.
 
 ## Use Cases
 * Query samples / sessions
@@ -39,6 +40,7 @@ For more information on activating the license see [Activating AutoFocus License
    | Override default credentials | Whether to override the default AutoFocus API key given by the Cortex XSOAR platform. | False |   
    | Trust any certificate (not secure) | When selected, certificates are not checked. | N/A |
    | Use System Proxy Settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. |  N/A | 
+   | handle_error | Suppress errors for non found indicators. | N/A |
 
 
 4. Click **Test** to validate the URLs, token, and connection.

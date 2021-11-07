@@ -1,4 +1,4 @@
-Tanium Threat Response
+Tanium Threat Response - This Integration works with Tanium Threat Response version below 3.0.159. In order to use Tanium Threat Response version 3.0.159 and above, use Tanium Threat Response V2 Integration.
 
 ## Configure Tanium Threat Response on Cortex XSOAR
 
@@ -2234,4 +2234,121 @@ Gets the status of the download file request.
 |ID|Connection Name|Status|Path|Downloaded|
 |---|---|---|---|---|
 | 3 | HOST_NAME | Completed | C:\Program Files (x86)\Tanium\Tanium Client\Logs\log1.txt | 2020-01-02 15:40:18.052 |
+
+
+### tanium-tr-intel-doc-create
+***
+Add a new intel document to the system by providing its document contents.
+
+
+##### Base Command
+
+`tanium-tr-intel-doc-create`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| entry-id | The file entry ID. | Required |
+| file_extension | The suffix at the end of a filename. (Available file types - yara, stix, ioc) | Required |
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Tanium.IntelDoc.AlertCount | Number | The number of alerts that currently exist for this intel. |
+| Tanium.IntelDoc.CreatedAt | Date | The date at which this intel was first added to the system. |
+| Tanium.IntelDoc.Description | String | The description of the intel, as declared in the document or as updated by a user. |
+| Tanium.IntelDoc.ID | Number | The unique identifier for this intel in this instance of the system. |
+| Tanium.IntelDoc.LabelIds | Number | The IDs of all labels applied to this intel. |
+| Tanium.IntelDoc.Name | String | The name of the intel, as declared in the document or as updated by a user. |
+| Tanium.IntelDoc.Type | String | The shortened type name of the intel. For example, "openioc", "stix", "yara". |
+| Tanium.IntelDoc.UnresolvedAlertCount | Number | The number of unresolved alerts that currently exist for this intel. |
+| Tanium.IntelDoc.UpdatedAt | Date | The date when this intel was last updated. |
+
+
+##### Command Example
+```!tanium-tr-intel-doc-create entry-id=7173@e99f97d1-7225-4c75-896c-3c960febbe8c file_extension=ioc```
+##### Context Example
+```
+{
+    "Tanium": {
+        "IntelDoc": {
+            "AlertCount": 0,
+            "CreatedAt": "2019-07-31T18:46:28.814Z",
+            "Description": "Detects usage of the NET.EXE utility to enumerate members of the local Administrators or Domain Administrators groups. Often used during post-compromise reconnaissance.",
+            "ID": 2,
+            "LabelIds": [
+                2,
+                3,
+                9,
+                16
+            ],
+            "Name": "Administrator Account Enumeration",
+            "Type": "openioc",
+            "UnresolvedAlertCount": 0,
+            "UpdatedAt": "2020-01-14T21:37:30.934Z"
+        }
+    }
+}
+```
+##### Human Readable Output
+### Intel Doc uploaded
+|ID|Name|Description|Type|Alert Count|Unresolved Alert Count|Created At|Updated At|Label Ids|
+|---|---|---|---|---|---|---|---|---|
+| 2 | Administrator Account Enumeration | Detects usage of the NET.EXE utility to enumerate members of the local Administrators or Domain Administrators groups. Often used during post-compromise reconnaissance. | openioc | 0 | 0 | 2019-07-31T18:46:28.814Z | 2020-01-14T21:37:30.934Z | 2, 3, 9, 16 |
+
+
+### tanium-tr-start-quick-scan
+***
+Scan a computer group for hashes in intel document. Computer groups can be viewed by navigating to `Administration -> Computer Groups` in the UI. Computer group names and IDs can also be retrieved by using the ***tn-list-groups*** command in the `Tanium` integration.
+
+
+##### Base Command
+
+`tanium-tr-start-quick-scan`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| intel-doc-id | The intel document ID. | Required |
+| computer-group-name | The name of a Tanium computer group. See command description for possible ways to retrieve this value. | Required |
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Tanium.QuickScan.AlertCount | Number | The number of alerts returned from the quick scan. |
+| Tanium.QuickScan.ComputerGroupId | Number | The ID of a Tanium computer group. |
+| Tanium.QuickScan.CreatedAt | Date | The date the quick scan was created. |
+| Tanium.QuickScan.ID | Number | The ID of the quick scan. |
+| Tanium.QuickScan.IntelDocId | Number | The unique identifier for this intel in the instance of the system. |
+| Tanium.QuickScan.QuestionID | Number | The ID of the quick scan question. |
+| Tanium.QuickScan.UserID | Number | The user ID which initiated the quick scan. |
+
+
+##### Command Example
+```!tanium-tr-start-quick-scan intel-doc-id=2 computer-group-name="All Computers"```
+##### Context Example
+```
+{
+    "Tanium": {
+        "QuickScan": {
+            "AlertCount": 0,
+            "ComputerGroupId": 1
+            "CreatedAt": "2019-07-31T18:46:28.814Z",
+            "ID": 5,
+            "IntelDocId": 2
+            "QuestionID": 4,
+            "UserID": 3
+        }
+    }
+}
+```
+##### Human Readable Output
+### Quick Scan started
+Alert Count|ComputerGroupId|CreatedAt|ID|IntelDocId|QuestionID|UserID|
+|---|---|---|---|---|---|---|
+| 0 | 1 | 2019-07-31T18:46:28.814Z | 5 | 2 | 4 | 3 |
 
