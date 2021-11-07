@@ -1,6 +1,8 @@
 import io
 import json
+import time
 
+from freezegun import freeze_time
 import dateparser
 from datetime import datetime
 
@@ -166,10 +168,10 @@ def test_fetch_all_incidents(mocker):
         Then
             validate fetch incidents command using the Client gets all 3 relevant incidents
     """
-    from AzureADIdentityProtection import create_incidents_from_input
+    from AzureADIdentityProtection import detections_to_incidents
     test_incidents = util_load_json('test_data/incidents.json')
     last_fetch_datetime: datetime = dateparser.parse('2021-07-10T11:02:54Z')
-    incidents, last_item_time = create_incidents_from_input(
+    incidents, last_item_time = detections_to_incidents(
         test_incidents.get('value', []), last_fetch_datetime=last_fetch_datetime)
     assert len(incidents) == 3
     assert incidents[0].get(
@@ -186,12 +188,60 @@ def test_fetch_new_incidents(mocker):
         Then
             validate fetch incidents command using the Client gets all 3 relevant incidents
     """
-    from AzureADIdentityProtection import create_incidents_from_input
+    from AzureADIdentityProtection import detections_to_incidents
     test_incidents = util_load_json('test_data/incidents.json')
     last_fetch_datetime: datetime = dateparser.parse('2021-07-20T11:02:54Z')
-    incidents, last_item_time = create_incidents_from_input(
+    incidents, last_item_time = detections_to_incidents(
         test_incidents.get('value', []), last_fetch_datetime=last_fetch_datetime)
     assert len(incidents) == 1
     assert incidents[0].get(
         'name') == 'Azure AD: 37 newCountry adminDismissedAllRiskForUser'
     assert last_item_time == dateparser.parse('2021-07-25T11:02:54Z').replace(tzinfo=None)
+
+
+# set time to 2021-07-29 11:10:00
+@freeze_time(time.ctime(1627600200))
+def test_first_fetch_start_time():
+    from AzureADIdentityProtection import get_last_fetch_time
+    last_run = {}
+    params = {
+        "first_fetch": "2 days"
+    }
+    assert get_last_fetch_time(last_run, params) == '2021-07-27T11:10:00.000Z'
+
+
+@freeze_time(time.ctime(1627600200))
+def test_non_first_fetch_start_time():
+    from AzureADIdentityProtection import get_last_fetch_time
+    last_run = {
+        "latest_detection_found": '2021-07-28T00:10:00.000Z'
+    }
+    params = {
+        "first_fetch": "2 days"
+    }
+    assert get_last_fetch_time(last_run, params) == '2021-07-28T00:10:00.000Z'
+
+
+def mock_list_detections(limit, filter_expression):
+    from AzureADIdentityProtection import DATE_FORMAT_WITH_MS, DATE_FORMAT_WITHOUT_MS
+    test_incidents = util_load_json('test_data/incidents.json')
+    all_possible_results = test_incidents.get('value')
+
+    start_time = filter_expression.split('gt ')[-1]
+    start_time_datetime = datetime.strptime(start_time, DATE_FORMAT_WITH_MS)
+
+    incidents_complient_with_filter = []
+    for detection in test_incidents:
+        detection_time = detection['detectedDateTime']
+        detection_datetime = datetime.strptime(detection_time, DATE_FORMAT_WITHOUT_MS)
+        if detection_datetime > start_time_datetime:
+            incidents_complient_with_filter.append(detection)
+
+    incidents_complient_with_limit = incidents_complient_with_filter[:limit]
+
+    res = {
+        'value': incidents_complient_with_limit
+    }
+
+    return res
+
