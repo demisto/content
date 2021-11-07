@@ -3602,6 +3602,14 @@
             "timeout": 2400
         },
         {
+            "integrations": ["MalwareBazaar Feed", "Demisto REST API"],
+            "playbookID": "Fetch Indicators Test",
+            "fromversion": "6.0.0",
+            "is_mockable": false,
+            "instance_names": "malwarebazzar_auto",
+            "timeout": 2400
+        },
+        {
             "playbookID": "SolarWinds-Test",
             "fromversion": "5.5.0",
             "integrations": [
