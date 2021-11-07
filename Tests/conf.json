@@ -1078,8 +1078,10 @@
         },
         {
             "playbookID": "Block IP - Generic V3_Test",
-            "integrations": "ThreatX",
-            "fromversion": "6.0.0"
+            "integrations": "Panorama",
+            "instance_names": "panorama_instance_security_team",
+            "fromversion": "6.0.0",
+            "timeout": 2400
         },
         {
             "playbookID": "PAN-OS - Block URL - Custom URL Category Test",
