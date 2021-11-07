@@ -79,9 +79,6 @@ def return_subnet_last_address_command(args: Dict[str, Any]) -> CommandResults:
 
     subnet = args.get('subnet', None)
 
-    if not subnet:
-        raise ValueError('subnet not specified')
-
     last_address = str(ipcalc.Network(subnet).host_last())
 
     readable_output = tableToMarkdown(headers='Address:', t=last_address, name='Last Address')

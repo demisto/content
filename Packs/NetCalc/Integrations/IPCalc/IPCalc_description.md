@@ -1,2 +1,2 @@
 ## IPCalc Help
-This integration helps automate ip data calculations
+This integration helps automate ip data calculations.
