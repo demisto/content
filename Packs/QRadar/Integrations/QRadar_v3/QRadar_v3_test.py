@@ -14,7 +14,7 @@ import QRadar_v3  # import module separately for mocker
 from CommonServerPython import DemistoException, set_integration_context, CommandResults, \
     GetModifiedRemoteDataResponse, GetRemoteDataResponse
 from QRadar_v3 import USECS_ENTRIES, OFFENSE_OLD_NEW_NAMES_MAP, MINIMUM_API_VERSION, REFERENCE_SETS_OLD_NEW_MAP, \
-    Client, RESET_KEY, ASSET_PROPERTIES_NAME_MAP, FetchMode, \
+    Client, ASSET_PROPERTIES_NAME_MAP, FetchMode, \
     FULL_ASSET_PROPERTIES_NAMES_MAP, EntryType, EntryFormat, MIRROR_OFFENSE_AND_EVENTS, LAST_FETCH_KEY, \
     MIRRORED_OFFENSES_CTX_KEY, UPDATED_MIRRORED_OFFENSES_CTX_KEY, RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY
 from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_outputs, build_headers, \
@@ -33,6 +33,10 @@ from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_o
     flatten_nested_geolocation_values, get_modified_remote_data_command, get_remote_data_command, is_valid_ip, \
     qradar_ips_source_get_command, qradar_ips_local_destination_get_command, update_mirrored_events, \
     encode_context_data, extract_context_data, change_ctx_to_be_compatible_with_retry, clear_integration_ctx
+
+QRadar_v3.FAILURE_SLEEP = 0
+QRadar_v3.SLEEP_FETCH_EVENT_RETIRES = 0
+
 
 client = Client(
     server='https://192.168.0.1',
@@ -523,33 +527,6 @@ def test_enrich_offense_with_events(mocker, offense: Dict, fetch_mode, mock_sear
     if mock_search_response:
         assert poll_events_mock.call_args[0][1] == mock_search_response['search_id']
     assert enriched_offense == expected_offense
-
-
-@pytest.mark.parametrize('func, args, expected',
-                         [(create_search_with_retry,
-                           {'client': client, 'offense': command_test_data['offenses_list']['response'][0],
-                            'fetch_mode': '', 'event_columns': '', 'events_limit': 0}, None),
-                          (poll_offense_events_with_retry, {'client': client, 'search_id': '', 'offense_id': 0},
-                           ([], 'Reset was triggered for integration.')),
-                          (enrich_offense_with_events,
-                           {'client': client, 'offense': command_test_data['offenses_list']['response'][0],
-                            'fetch_mode': '', 'events_columns': '', 'events_limit': 0},
-                           command_test_data['offenses_list']['response'][0])
-                          ])
-def test_reset_triggered_stops_enrichment_test(func, args, expected):
-    """
-    Given:
-     - Reset last run command was triggered.
-
-    When:
-     - Function given is executed.
-
-    Then:
-     - Ensure that function notices reset flag and stops its run.
-    """
-    set_integration_context({RESET_KEY: True})
-    assert func(**args) == expected
-    set_integration_context({})
 
 
 def test_create_incidents_from_offenses():
@@ -1110,7 +1087,7 @@ class MockResults:
     def __init__(self, value):
         self.value = value
 
-    def result(self):
+    def result(self, timeout=None):
         return self.value
 
 

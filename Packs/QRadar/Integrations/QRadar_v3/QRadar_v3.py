@@ -2,7 +2,6 @@ import concurrent.futures
 import secrets
 from enum import Enum
 from ipaddress import ip_address
-from threading import Lock
 from typing import Tuple, Set, Dict, Callable
 
 import pytz
@@ -22,13 +21,13 @@ FAILURE_SLEEP = 15  # sleep between consecutive failures events fetch
 FETCH_SLEEP = 60  # sleep between fetches
 BATCH_SIZE = 100  # batch size used for offense ip enrichment
 OFF_ENRCH_LIMIT = BATCH_SIZE * 10  # max amount of IPs to enrich per offense
-LOCK_WAIT_TIME = 0.5  # time to wait for lock.acquire
 MAX_WORKERS = 8  # max concurrent workers used for events enriching
 DOMAIN_ENRCH_FLG = 'true'  # when set to true, will try to enrich offense and assets with domain names
 RULES_ENRCH_FLG = 'true'  # when set to true, will try to enrich offense with rule names
 MAX_FETCH_EVENT_RETIRES = 3  # max iteration to try search the events of an offense
 SLEEP_FETCH_EVENT_RETIRES = 10  # sleep between iteration to try search the events of an offense
 MAX_NUMBER_OF_OFFENSES_TO_CHECK_SEARCH = 5  # Number of offenses to check during mirroring if search was completed.
+DEFAULT_EVENTS_TIMEOUT = 30  # default timeout for the events enrichment in minutes
 
 ADVANCED_PARAMETERS_STRING_NAMES = [
     'DOMAIN_ENRCH_FLG',
@@ -41,10 +40,10 @@ ADVANCED_PARAMETER_INT_NAMES = [
     'FETCH_SLEEP',
     'BATCH_SIZE',
     'OFF_ENRCH_LIMIT',
-    'LOCK_WAIT_TIME',
     'MAX_WORKERS',
     'MAX_FETCH_EVENT_RETIRES',
-    'SLEEP_FETCH_EVENT_RETIRES'
+    'SLEEP_FETCH_EVENT_RETIRES',
+    'DEFAULT_EVENTS_TIMEOUT'
 ]
 
 ''' CONSTANTS '''
@@ -74,7 +73,6 @@ UTC_TIMEZONE = pytz.timezone('utc')
 ID_QUERY_REGEX = re.compile(r'(?:\s+|^)id((\s)*)>(=?)((\s)*)((\d)+)(?:\s+|$)')
 ASCENDING_ID_ORDER = '+id'
 EXECUTOR = concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS)
-lock = Lock()
 
 ''' OUTPUT FIELDS REPLACEMENT MAPS '''
 OFFENSE_OLD_NEW_NAMES_MAP = {
@@ -1190,18 +1188,11 @@ def get_offense_enrichment(enrichment: str) -> Tuple[bool, bool]:
 def print_debug_msg(msg: str):
     """
     Prints a message to debug with QRadarMsg prefix.
-    Uses lock because calls can be concurrent.
-    If lock cannot be acquired until timeout, will skip writing message to log.
     Args:
         msg (str): Message to be logged.
 
     """
-    debug_msg = f'QRadarMsg - {msg}'
-    if lock.acquire(timeout=LOCK_WAIT_TIME):
-        try:
-            demisto.debug(debug_msg)
-        finally:
-            lock.release()
+    demisto.debug(f'QRadarMsg - {msg}')
 
 
 def reset_mirroring_events_variables(mirror_options: str):
@@ -1230,32 +1221,23 @@ def reset_mirroring_events_variables(mirror_options: str):
     set_to_integration_context_with_retries(encode_context_data(ctx))
 
 
-def is_reset_triggered(handle_reset: bool = False):
+def is_reset_triggered():
     """
     Checks if reset of integration context have been made by the user.
     Because fetch is long running execution, user communicates with us
     by calling 'qradar-reset-last-run' command which sets reset flag in
     context.
-    Using lock because calls to this function concurrent
-    Args:
-        handle_reset (bool): Whether the reset should be handled by the caller.
 
     Returns:
-        (bool):
+        (bool):create_search_with_retry
         - True if reset flag was set. If 'handle_reset' is true, also resets integration context.
-        - False if lock could not be acquired until timeout.
-        - False if lock was acquired, and reset flag was not found in integration context.
+        - False if reset flag was not found in integration context.
     """
-    if lock.acquire(timeout=LOCK_WAIT_TIME):
-        try:
-            ctx = get_integration_context()
-            if ctx and RESET_KEY in ctx:
-                if handle_reset:
-                    print_debug_msg('Reset fetch-incidents.')
-                    set_integration_context({'samples': '[]'})
-                return True
-        finally:
-            lock.release()
+    ctx = get_integration_context()
+    if ctx and RESET_KEY in ctx:
+        print_debug_msg('Reset fetch-incidents.')
+        set_integration_context({'samples': '[]'})
+        return True
     return False
 
 
@@ -1368,8 +1350,6 @@ def create_search_with_retry(client: Client, fetch_mode: str, offense: Dict, eve
     )
     num_of_failures = 0
     while num_of_failures <= max_retries:
-        if is_reset_triggered():
-            return None
         try:
             return client.search_create(query_expression=query_expression)
         except Exception:
@@ -1408,8 +1388,6 @@ def poll_offense_events_with_retry(client: Client, search_id: str, offense_id: i
     failure_message = ''
     while num_of_failures <= max_retries:
         try:
-            if is_reset_triggered():
-                return [], 'Reset was triggered for integration.'
             search_status_response = client.search_status_get(search_id)
             query_status = search_status_response.get('status')
             # failures are relevant only when consecutive
@@ -1460,9 +1438,6 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
     Returns:
         (Dict): Enriched offense with events.
     """
-    if is_reset_triggered():
-        return offense
-
     failure_message = ''
     events: List[dict] = []
     min_events_size = min(offense.get('event_count', 0), events_limit)
@@ -1547,7 +1522,7 @@ def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int
             ))
         offenses = [future.result() for future in futures]
 
-    if is_reset_triggered(handle_reset=True):
+    if is_reset_triggered():
         return None, None
     offenses_with_mirror = [
         dict(offense, mirror_direction=mirror_direction, mirror_instance=demisto.integrationInstance())
@@ -1608,7 +1583,7 @@ def update_mirrored_events(client: Client,
                     events_limit=events_limit,
                 ))
 
-            updated_offenses += [future.result() for future in futures]
+            updated_offenses += [future.result(timeout=DEFAULT_EVENTS_TIMEOUT * 60) for future in futures]
         return updated_offenses
 
     except Exception as e:
@@ -1741,7 +1716,7 @@ def long_running_execution_command(client: Client, params: Dict):
 
     while True:
         try:
-            is_reset_triggered(handle_reset=True)
+            is_reset_triggered()
             ctx, ctx_version = get_integration_context_with_version()
             print_debug_msg(f'Starting fetch loop. Fetch mode: {fetch_mode}, Mirror option: {mirror_options}.')
             incidents, new_highest_id = get_incidents_long_running_execution(
@@ -3468,6 +3443,7 @@ def main() -> None:
 
         elif command == 'long-running-execution':
             change_ctx_to_be_compatible_with_retry()
+            support_multithreading()
             long_running_execution_command(client, params)
 
         elif command == 'qradar-offenses-list' or command == 'qradar-offenses' or command == 'qradar-offense-by-id':

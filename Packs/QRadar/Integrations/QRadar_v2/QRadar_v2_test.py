@@ -30,6 +30,8 @@ with open("TestData/commands_outputs.json", "r") as f:
 with open("TestData/raw_responses.json", "r") as f:
     RAW_RESPONSES = json.load(f)
 
+QRadar_v2.FAILURE_SLEEP = 0
+
 command_tests = [
     ("qradar-searches", search_command, {"query_expression": "SELECT sourceip AS 'MY Source IPs' FROM events"},),
     ("qradar-get-search", get_search_command, {"search_id": "6212b614-074e-41c1-8fcf-1492834576b8"},),
@@ -253,31 +255,6 @@ class TestQRadarv2:
 
         actual = try_poll_offense_events_with_retry(client, offense_id, query_status, search_id, max_retries)
         assert actual == expected
-
-    def test_try_poll_offense_events_with_retry__reset(self, mocker):
-        """
-        Poll event with when reset is set
-
-        Given:
-            - Event fetch is to be polled via the qradar client
-        When:
-            - Reset trigger is waiting
-        Then:
-            - Stop fetch and return empty list
-        """
-        client = QRadarClient("", {}, {"identifier": "*", "password": "*"})
-        offense_id = 450
-        query_status = "EXECUTE"
-        search_id = "1"
-        max_retries = 3
-
-        mocker.patch.object(QRadar_v2, "is_reset_triggered", return_value=True)
-        mocker.patch.object(client, "get_search", side_effect=[ConnectionError, RAW_RESPONSES["qradar-get-search"]])
-        mocker.patch.object(client, "get_search_results", return_value=RAW_RESPONSES["qradar-get-search-results"])
-        mocker.patch.object(demisto, "debug")
-
-        actual = try_poll_offense_events_with_retry(client, offense_id, query_status, search_id, max_retries)
-        assert actual == []
 
     def test_try_poll_offense_events_with_retry__sad(self, mocker):
         """
