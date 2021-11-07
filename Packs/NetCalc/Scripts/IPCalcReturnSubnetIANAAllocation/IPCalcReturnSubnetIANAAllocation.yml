@@ -1,0 +1,31 @@
+args:
+- default: false
+  description: Subnet to use
+  isArray: false
+  name: subnet
+  required: true
+  secret: false
+comment: An Automation Script to return subnet IANA information
+commonfields:
+  id: IPCalcReturnSubnetIANAAllocation
+  version: -1
+enabled: false
+name: IPCalcReturnSubnetIANAAllocation
+outputs:
+- contextPath: IPCalc.IP.Allocation.allocation
+  description: IANA IP allocation type
+  type: String
+- contextPath: IPCalc.IP.Allocation.subnet
+  description: Subnet
+  type: String
+script: '-'
+subtype: python3
+system: false
+tags:
+- ''
+timeout: '0'
+type: python
+dockerimage: aymanam/ipcalc:latest
+fromversion: '6.0.0'
+tests:
+- No tests

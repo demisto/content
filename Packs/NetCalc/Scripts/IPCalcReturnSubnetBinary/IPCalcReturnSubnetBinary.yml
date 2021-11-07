@@ -1,0 +1,31 @@
+args:
+- default: false
+  description: Subnet to use
+  isArray: false
+  name: subnet
+  required: true
+  secret: false
+comment: An Automation Script to return subnet in binary format
+commonfields:
+  id: IPCalcReturnSubnetBinary
+  version: -1
+enabled: false
+name: IPCalcReturnSubnetBinary
+outputs:
+- contextPath: IPCalc.IP.Binary.binary
+  description: Subnet binary
+  type: String
+- contextPath: IPCalc.IP.Binary.subnet
+  description: Subnet address
+  type: String
+script: '-'
+subtype: python3
+system: false
+tags:
+- ''
+timeout: '0'
+type: python
+dockerimage: aymanam/ipcalc:latest
+fromversion: '6.0.0'
+tests:
+- No tests

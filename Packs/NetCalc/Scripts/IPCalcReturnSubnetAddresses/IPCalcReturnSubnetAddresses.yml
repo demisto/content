@@ -1,0 +1,28 @@
+args:
+- default: false
+  description: Subnet to use
+  isArray: false
+  name: subnet
+  required: true
+  secret: false
+comment: An Automation Script to return Subnet Addresses
+commonfields:
+  id: IPCalcReturnSubnetAddresses
+  version: -1
+enabled: false
+name: IPCalcReturnSubnetAddresses
+outputs:
+- contextPath: IPCalc.IP.Address
+  description: Subnet addresses
+  type: String
+script: '-'
+subtype: python3
+system: false
+tags:
+- ''
+timeout: '0'
+type: python
+dockerimage: aymanam/ipcalc:latest
+fromversion: '6.0.0'
+tests:
+- No tests

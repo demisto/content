@@ -1,0 +1,28 @@
+args:
+- default: false
+  description: Subnet to use
+  isArray: false
+  name: subnet
+  required: true
+  secret: false
+comment: An Automation Script to return subnet last address
+commonfields:
+  id: IPCalcReturnSubnetLastAddress
+  version: -1
+enabled: false
+name: IPCalcReturnSubnetLastAddress
+outputs:
+- contextPath: IPCalc.IP.Address
+  description: Last ip address
+  type: String
+script: '-'
+subtype: python3
+system: false
+tags:
+- ''
+timeout: '0'
+type: python
+dockerimage: aymanam/ipcalc:latest
+fromversion: '6.0.0'
+tests:
+- No tests
