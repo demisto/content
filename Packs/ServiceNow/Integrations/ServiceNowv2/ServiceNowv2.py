@@ -455,6 +455,14 @@ def build_query_for_request_params(query):
     else:
         return query
 
+def escape_build_query(sys_param_query, escape_amp = True):
+    """
+      Used to escape or build the query parameters
+    """
+    if sys_param_query:
+        if escape_amp:
+            return build_query_for_request_params(sys_param_query)
+    return sys_param_query
 
 class Client(BaseClient):
     """
@@ -848,10 +856,7 @@ class Client(BaseClient):
 
         query_params = {'sysparm_limit': sys_param_limit, 'sysparm_offset': sys_param_offset}
         if sys_param_query:
-            if escape_amp:
-              query_params['sysparm_query'] = build_query_for_request_params(sys_param_query)
-            else:
-              query_params['sysparm_query'] = sys_param_query
+          query_params['sysparm_query'] = escape_build_query(sys_param_query, escape_amp)
         if system_params:
             query_params.update(system_params)
         if sysparm_fields:
