@@ -19,7 +19,7 @@ import traceback
 ''' COMMAND FUNCTION '''
 
 
-def get_identity_info() -> CommandResults:
+def get_identity_info() -> List[Dict]:
     context = demisto.context()
     alerts = demisto.get(context, 'PaloAltoNetworksXDR.OriginalAlert')
     users = demisto.get(context, 'AWS.IAM.Users')
@@ -42,9 +42,7 @@ def get_identity_info() -> CommandResults:
                'Access Keys': access_keys_ids}
         if res not in results:
             results.append(res)
-    return CommandResults(
-        readable_output=tableToMarkdown('Identity Information', results,
-                                        headers=list(results[0].keys()) if results else None))
+    return results
 
 
 ''' MAIN FUNCTION '''
@@ -52,7 +50,11 @@ def get_identity_info() -> CommandResults:
 
 def main():
     try:
-        return_results(get_identity_info())
+        results = get_identity_info()
+        command_results = CommandResults(
+            readable_output=tableToMarkdown('Identity Information', results,
+                                            headers=list(results[0].keys()) if results else None))
+        return_results(command_results)
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute IdentityInformationWidget. Error: {str(ex)}')

@@ -31,7 +31,7 @@ def indicator_to_clickable(indicator):
     return f'[{indicator}]({incident_url})'
 
 
-def get_additonal_info() -> CommandResults:
+def get_additonal_info() -> List[Dict]:
     alerts = demisto.get(demisto.context(), 'PaloAltoNetworksXDR.OriginalAlert')
     if not alerts:
         raise DemistoException('Original Alert is not configured in context')
@@ -55,9 +55,7 @@ def get_additonal_info() -> CommandResults:
                'Operation Status': alert_event.get('operation_status'),
                'User Agent': alert_event.get('user_agent')}
         results.append(res)
-
-    return CommandResults(readable_output=tableToMarkdown('Original Alert Additional Information', results,
-                                                          headers=list(results[0].keys()) if results else None))
+    return results
 
 
 ''' MAIN FUNCTION '''
@@ -65,7 +63,11 @@ def get_additonal_info() -> CommandResults:
 
 def main():
     try:
-        return_results(get_additonal_info())
+        results = get_additonal_info()
+        command_results = CommandResults(
+            readable_output=tableToMarkdown('Original Alert Additional Information', results,
+                                            headers=list(results[0].keys()) if results else None))
+        return_results(command_results)
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute AdditionalAlertInformationWidget. Error: {str(ex)}')

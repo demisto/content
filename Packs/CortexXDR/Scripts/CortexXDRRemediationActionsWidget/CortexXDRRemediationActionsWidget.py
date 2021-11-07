@@ -32,7 +32,7 @@ def indicator_to_clickable(indicator):
     return f'[{indicator}]({incident_url})'
 
 
-def get_remediation_info() -> CommandResults:
+def get_remediation_info() -> Dict:
     remediation_actions = demisto.get(demisto.context(), 'RemediationActions')
     blocked_ip_addresses = demisto.get(remediation_actions, 'BlockedIP.Addresses')
     if blocked_ip_addresses is not None and not isinstance(blocked_ip_addresses, list):
@@ -51,8 +51,7 @@ def get_remediation_info() -> CommandResults:
         res['Inactive Access keys'] = inactive_access_keys
     if deleted_login_profiles:
         res['Deleted Login Profiles'] = deleted_login_profiles
-    return CommandResults(
-        readable_output=tableToMarkdown('Remediation Actions Information', res, headers=list(res.keys())))
+    return res
 
 
 ''' MAIN FUNCTION '''
@@ -60,7 +59,10 @@ def get_remediation_info() -> CommandResults:
 
 def main():
     try:
-        return_results(get_remediation_info())
+        result = get_remediation_info()
+        command_result = CommandResults(
+            readable_output=tableToMarkdown('Remediation Actions Information', result, headers=list(res.keys())))
+        return_results(command_result)
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute RemediationActionsWidget. Error: {str(ex)}')
