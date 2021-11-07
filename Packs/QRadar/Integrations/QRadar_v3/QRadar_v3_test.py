@@ -1,18 +1,15 @@
 """
     QRadar v3 integration for Cortex XSOAR - Unit Tests file
 """
+import concurrent.futures
 import io
 import json
-import concurrent.futures
 from datetime import datetime
 from typing import Dict, Callable
-
+from unittest.mock import Mock
+import QRadar_v3  # import module separately for mocker
 import pytest
 import pytz
-import demistomock as demisto
-import QRadar_v3  # import module separately for mocker
-from CommonServerPython import DemistoException, set_integration_context, CommandResults, \
-    GetModifiedRemoteDataResponse, GetRemoteDataResponse, get_integration_context
 from QRadar_v3 import USECS_ENTRIES, OFFENSE_OLD_NEW_NAMES_MAP, MINIMUM_API_VERSION, REFERENCE_SETS_OLD_NEW_MAP, \
     Client, RESET_KEY, ASSET_PROPERTIES_NAME_MAP, FetchMode, \
     FULL_ASSET_PROPERTIES_NAMES_MAP, EntryType, EntryFormat, MIRROR_OFFENSE_AND_EVENTS, LAST_FETCH_KEY, \
@@ -34,6 +31,9 @@ from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_o
     qradar_ips_source_get_command, qradar_ips_local_destination_get_command, update_mirrored_events, \
     encode_context_data, extract_context_data, change_ctx_to_be_compatible_with_retry, clear_integration_ctx, \
     reset_mirroring_events_variables, perform_long_running_loop
+
+from CommonServerPython import DemistoException, set_integration_context, CommandResults, \
+    GetModifiedRemoteDataResponse, GetRemoteDataResponse, get_integration_context
 
 client = Client(
     server='https://192.168.0.1',
@@ -1818,7 +1818,44 @@ def test_cleared_ctx_is_compatible_with_retries():
     QRadar_v3.set_to_integration_context_with_retries({'id': 7})
 
 
-@pytest.mark.parametrize('test_case_data', [(ctx_test_data['ctx_compatible']['case_one'])])
+@pytest.mark.parametrize('test_case_data', [(ctx_test_data['ctx_compatible']['case_one']),
+                                            (ctx_test_data['ctx_compatible']['case_two']),
+                                            (ctx_test_data['ctx_compatible']['case_three']),
+                                            (ctx_test_data['ctx_compatible']['case_four']),
+                                            (ctx_test_data['ctx_compatible']['case_five']),
+                                            (ctx_test_data['ctx_compatible']['case_six']),
+                                            (ctx_test_data['ctx_compatible']['case_seven']),
+                                            (ctx_test_data['ctx_compatible']['case_eight']),
+                                            (ctx_test_data['ctx_compatible']['case_nine']),
+                                            (ctx_test_data['ctx_compatible']['case_ten']),
+                                            (ctx_test_data['ctx_compatible']['case_eleven']),
+                                            (ctx_test_data['ctx_compatible']['case_twelve']),
+                                            (ctx_test_data['ctx_compatible']['case_thirteen']),
+                                            (ctx_test_data['ctx_compatible']['case_fourteen']),
+                                            (ctx_test_data['ctx_compatible']['case_fifteen']),
+                                            (ctx_test_data['ctx_compatible']['case_sixteen']),
+                                            (ctx_test_data['ctx_compatible']['case_seventeen']),
+                                            (ctx_test_data['ctx_compatible']['case_eighteen']),
+                                            (ctx_test_data['ctx_compatible']['case_nineteen']),
+                                            (ctx_test_data['ctx_compatible']['case_twenty']),
+                                            (ctx_test_data['ctx_compatible']['case_twenty_one']),
+                                            (ctx_test_data['ctx_compatible']['case_twenty_two']),
+                                            (ctx_test_data['ctx_compatible']['case_twenty_three']),
+                                            (ctx_test_data['ctx_compatible']['case_twenty_four']),
+
+                                            (ctx_test_data['ctx_not_compatible']['case_one']),
+                                            (ctx_test_data['ctx_not_compatible']['case_two']),
+                                            (ctx_test_data['ctx_not_compatible']['case_three']),
+                                            (ctx_test_data['ctx_not_compatible']['case_four']),
+                                            (ctx_test_data['ctx_not_compatible']['case_five']),
+                                            (ctx_test_data['ctx_not_compatible']['case_six']),
+                                            (ctx_test_data['ctx_not_compatible']['case_seven']),
+                                            (ctx_test_data['ctx_not_compatible']['case_eight']),
+                                            (ctx_test_data['ctx_not_compatible']['case_nine']),
+                                            (ctx_test_data['ctx_not_compatible']['case_ten']),
+                                            (ctx_test_data['ctx_not_compatible']['case_eleven']),
+                                            (ctx_test_data['ctx_not_compatible']['case_twelve']),
+                                            ])
 def test_integration_context_during_run(test_case_data, mocker):
     """
     Given:
@@ -1840,6 +1877,8 @@ def test_integration_context_during_run(test_case_data, mocker):
     a) Integration ctx is empty (first instance run), no mirroring.
     b) Integration ctx is empty (first instance run), mirroring of offense only.
     c) Integration ctx is empty (first instance run), mirroring offense with events.
+    a, b, c are only relevant for cases where the integration context is compatible with retries, as empty integration
+    context is always compatible with retries.
     d) Integration context is not empty, no mirroring.
     e) Integration context is not empty, mirroring of offense only.
     f) Integration context is not empty, mirroring offense with events.
@@ -1853,39 +1892,36 @@ def test_integration_context_during_run(test_case_data, mocker):
         3) Only in second loop run offenses were fetched.
         4) In both loop runs no offenses were fetched.
     """
-    import demistomock as demisto
-    user_query = test_case_data['user_query']
     mirror_options = test_case_data['mirror_options']
     mirror_direction = test_case_data['mirror_direction']
 
     init_context = test_case_data['init_context']
     set_integration_context(init_context)
-
-    mock_event_response = test_case_data['mock_event_response']
-
     if test_case_data['offenses_first_loop']:
         first_loop_offenses = ctx_test_data['offenses_first_loop']
         first_loop_offenses_with_events = [dict(offense, events=ctx_test_data['events']) for offense in
                                            first_loop_offenses]
         mocker.patch.object(client, 'offenses_list', return_value=first_loop_offenses)
         mocker.patch.object(QRadar_v3, 'enrich_offenses_result', return_value=first_loop_offenses)
-        mocker.patch.object(QRadar_v3, 'enrich_offense_with_events', return_value=first_loop_offenses_with_events)
-        expected_ctx_first_loop = ctx_test_data['context_data_first_loop_no_mirroring']
+        enrich_mock = mocker.patch.object(QRadar_v3, 'enrich_offense_with_events')
+        enrich_mock.side_effect = first_loop_offenses_with_events
+        expected_ctx_first_loop = ctx_test_data['context_data_first_loop_default'].copy()
     else:
         mocker.patch.object(client, 'offenses_list', return_value=[])
-        mocker.patch.object(QRadar_v3, 'enrich_offenses_result', return_value=[])
-        mocker.patch.object(QRadar_v3, 'enrich_offense_with_events', return_value=[])
-        expected_ctx_first_loop = {}
+        expected_ctx_first_loop = ctx_test_data['context_data_after_retry_compatible'].copy()
+
+    first_loop_ctx_not_default_values = test_case_data.get('first_loop_ctx_not_default_values', {})
+    for k, v in first_loop_ctx_not_default_values.items():
+        expected_ctx_first_loop[k] = v
 
     change_ctx_to_be_compatible_with_retry()
     reset_mirroring_events_variables(mirror_options)
-    # mocker.patch.object(demisto, 'createIncidents')
     perform_long_running_loop(
         client=client,
         offenses_per_fetch=2,
         fetch_mode='Fetch With All Events',
         mirror_options=mirror_options,
-        user_query=user_query,
+        user_query='id > 5',
         events_columns='QIDNAME(qid), LOGSOURCENAME(logsourceid)',
         events_limit=3,
         ip_enrich=False,
@@ -1901,20 +1937,18 @@ def test_integration_context_during_run(test_case_data, mocker):
                                             second_loop_offenses]
         mocker.patch.object(client, 'offenses_list', return_value=second_loop_offenses)
         mocker.patch.object(QRadar_v3, 'enrich_offenses_result', return_value=second_loop_offenses)
-        mocker.patch.object(QRadar_v3, 'enrich_offense_with_events', return_value=second_loop_offenses_with_events)
-        expected_ctx_second_loop = ctx_test_data['context_data_second_loop_no_mirroring']
+        enrich_mock = mocker.patch.object(QRadar_v3, 'enrich_offense_with_events')
+        enrich_mock.side_effect = second_loop_offenses_with_events
+        expected_ctx_second_loop = ctx_test_data['context_data_second_loop_default'].copy()
     else:
         mocker.patch.object(client, 'offenses_list', return_value=[])
-        mocker.patch.object(QRadar_v3, 'enrich_offenses_result', return_value=[])
-        mocker.patch.object(QRadar_v3, 'enrich_offense_with_events', return_value=[])
-        expected_ctx_second_loop = {}
-    # mocker.patch.object(demisto, 'createIncidents')
+        expected_ctx_second_loop = expected_ctx_first_loop
     perform_long_running_loop(
         client=client,
         offenses_per_fetch=2,
         fetch_mode='Fetch With All Events',
         mirror_options=mirror_options,
-        user_query=user_query,
+        user_query='id > 15',
         events_columns='QIDNAME(qid), LOGSOURCENAME(logsourceid)',
         events_limit=3,
         ip_enrich=False,
@@ -1922,4 +1956,8 @@ def test_integration_context_during_run(test_case_data, mocker):
         incident_type=None,
         mirror_direction=mirror_direction
     )
+    second_loop_ctx_not_default_values = test_case_data.get('second_loop_ctx_not_default_values', {})
+    for k, v in second_loop_ctx_not_default_values.items():
+        expected_ctx_second_loop[k] = v
     assert get_integration_context() == expected_ctx_second_loop
+    set_integration_context({})
