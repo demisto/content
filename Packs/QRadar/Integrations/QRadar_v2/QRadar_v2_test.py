@@ -96,7 +96,7 @@ class TestQRadarv2:
         mocker.patch.object(QRadar_v2, "fetch_raw_offenses", return_value=[RAW_RESPONSES["fetch-incidents"]])
         mocker.patch.object(demisto, "createIncidents")
         mocker.patch.object(demisto, "debug")
-        sic_mock = mocker.patch.object(QRadar_v2, "set_integration_context")
+        sic_mock = mocker.patch.object(QRadar_v2, "set_to_integration_context_with_retries")
 
         fetch_incidents_long_running_no_events(client, '', user_query="", ip_enrich=False, asset_enrich=False)
 
@@ -130,7 +130,7 @@ class TestQRadarv2:
         QRadar_v2.enrich_offense_with_events = mock_enrich_offense_with_events
         mocker.patch.object(demisto, "createIncidents")
         mocker.patch.object(demisto, "debug")
-        sic_mock = mocker.patch.object(QRadar_v2, "set_integration_context")
+        sic_mock = mocker.patch.object(QRadar_v2, "set_to_integration_context_with_retries")
 
         fetch_incidents_long_running_events(client, "", "", False, False, fetch_mode, "", "")
 

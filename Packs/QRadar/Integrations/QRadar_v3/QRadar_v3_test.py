@@ -11,7 +11,7 @@ import pytest
 import pytz
 
 import QRadar_v3  # import module separately for mocker
-from CommonServerPython import DemistoException, set_integration_context, CommandResults, \
+from CommonServerPython import DemistoException, set_to_integration_context_with_retries, CommandResults, \
     GetModifiedRemoteDataResponse, GetRemoteDataResponse
 from QRadar_v3 import USECS_ENTRIES, OFFENSE_OLD_NEW_NAMES_MAP, MINIMUM_API_VERSION, REFERENCE_SETS_OLD_NEW_MAP, \
     Client, ASSET_PROPERTIES_NAME_MAP, FetchMode, \
@@ -407,7 +407,7 @@ def test_create_search_with_retry(mocker, search_exception, fetch_mode, query_ex
      - Case c: Ensure that QRadar service response is returned.
      - Case d: Ensure that None is returned.
     """
-    set_integration_context(dict())
+    set_to_integration_context_with_retries(dict())
     if search_exception:
         mocker.patch.object(client, "search_create", side_effect=[search_exception])
     else:
@@ -870,7 +870,7 @@ def test_get_modified_remote_data_command(mocker):
     Then:
      - Ensure that command outputs the IDs of the offenses to update.
     """
-    set_integration_context(dict())
+    set_to_integration_context_with_retries(dict())
     expected = GetModifiedRemoteDataResponse(list(map(str, command_test_data['get_modified_remote_data']['outputs'])))
     mocker.patch.object(client, 'offenses_list', return_value=command_test_data['get_modified_remote_data']['response'])
     result = get_modified_remote_data_command(client, dict(), command_test_data['get_modified_remote_data']['args'])
@@ -903,7 +903,7 @@ def test_get_remote_data_command_pre_6_1(mocker, params, args, expected: GetRemo
     Then:
      - Ensure that command outputs the IDs of the offenses to update.
     """
-    set_integration_context(dict())
+    set_to_integration_context_with_retries(dict())
     enriched_response = command_test_data['get_remote_data']['enrich_offenses_result']
     mocker.patch.object(client, 'offenses_list', return_value=command_test_data['get_remote_data']['response'])
     mocker.patch.object(QRadar_v3, 'enrich_offenses_result', return_value=enriched_response)
@@ -998,7 +998,7 @@ def test_get_remote_data_command_6_1_and_higher(mocker, params, offense: Dict, e
      - Case d: Ensure that offense is returned, along with expected entries.
      - Case e: Ensure that offense is returned, along with expected entries.
     """
-    set_integration_context({'last_update': 1})
+    set_to_integration_context_with_retries({'last_update': 1})
     mocker.patch.object(client, 'offenses_list', return_value=offense)
     mocker.patch.object(QRadar_v3, 'enrich_offenses_result', return_value=enriched_offense)
     if 'close_incident' in params:
@@ -1716,16 +1716,16 @@ def test_change_ctx_to_be_compatible(mocker, context_data, retry_compatible):
         Ensure the context_data is transformed to the new format if needed.
     """
     mocker.patch.object(QRadar_v3, 'get_integration_context', return_value=context_data)
-    mocker.patch.object(QRadar_v3, 'set_integration_context')
+    mocker.patch.object(QRadar_v3, 'set_to_integration_context_with_retries')
 
     change_ctx_to_be_compatible_with_retry()
 
     extracted_ctx = {'last_mirror_update': '10', LAST_FETCH_KEY: 5}
 
     if not retry_compatible:
-        QRadar_v3.set_integration_context.assert_called_once_with(clear_integration_ctx(extracted_ctx))
+        QRadar_v3.set_to_integration_context_with_retries.assert_called_once_with(clear_integration_ctx(extracted_ctx))
     else:
-        assert not QRadar_v3.set_integration_context.called
+        assert not QRadar_v3.set_to_integration_context_with_retries.called
 
 
 @pytest.mark.parametrize('context_data', [
@@ -1777,7 +1777,7 @@ def test_cleared_ctx_is_compatible_with_retries():
     context_data format.
 
     Given:
-        Cleared context data in the set_integration_context.
+        Cleared context data in the set_to_integration_context_with_retries.
 
     When:
         Running set_to_integration_context_with_retries.
@@ -1786,5 +1786,5 @@ def test_cleared_ctx_is_compatible_with_retries():
         Ensure no error is raised.
     """
     cleared_ctx = clear_integration_ctx({'id': 5, 'last_mirror_update': '1000'})
-    QRadar_v3.set_integration_context(cleared_ctx)
+    QRadar_v3.set_to_integration_context_with_retries(cleared_ctx)
     QRadar_v3.set_to_integration_context_with_retries({'id': 7})
