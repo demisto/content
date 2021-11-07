@@ -13,11 +13,8 @@ This pack includes the following playbooks:
 - **LogRhythmRestV2 - Search query** playbook that retrieves query results.
 
 
-
-
-
 LogRhythm security intelligence.
-This integration was integrated and tested with version xx of LogRhythmRest V2
+This integration was integrated and tested with version 7.7 of LogRhythm Rest API
 
 Some changes have been made that might affect your existing content. 
 If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-logrhythmrest-v2).

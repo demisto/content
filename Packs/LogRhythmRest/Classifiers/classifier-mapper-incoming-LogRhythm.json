@@ -10,7 +10,7 @@
                     "complex": null,
                     "simple": "owner.name"
                 },
-                "Collaborators": {
+                "LogRhythm Case Collaborators": {
                     "complex": {
                         "accessor": "name",
                         "filters": [],
@@ -43,7 +43,7 @@
                     "complex": null,
                     "simple": "tags"
                 },
-                "Ticket Due Date": {
+                "LogRhythm Ticket Due Date": {
                     "complex": null,
                     "simple": "dueDate"
                 },
@@ -60,7 +60,7 @@
         "Logrhythm Alarm": {
             "dontMapEventToLabels": true,
             "internalMapping": {
-                "Associated Cases": {
+                "LogRhythm Associated Cases": {
                     "complex": null,
                     "simple": "associatedCases"
                 },
