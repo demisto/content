@@ -734,7 +734,6 @@ def test_module(client: Client, params: dict) -> str:
                 client, {}, params['applicationId'], params['applicationDateField']
             )}
         fetch_incidents_command(client, params, last_run)
-
         return 'ok'
 
     return 'ok' if client.do_request('GET', f'{API_ENDPOINT}/core/system/application') else 'Connection failed.'
