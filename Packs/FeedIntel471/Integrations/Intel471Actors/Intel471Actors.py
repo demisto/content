@@ -112,8 +112,8 @@ def custom_build_iterator(client: Client, feed: Dict, limit: int = 0, **kwargs) 
 def custom_handle_indicator(client: Client, item: Dict, feed_config: Dict, service_name: str,
                             indicator_type: str, indicator_field: str, use_prefix_flat: bool,
                             feedTags: list, auto_detect: bool,
-                            mapping_function: Callable, create_relationships: bool,
-                            relationships_func: Callable) -> List[dict]:
+                            mapping_function: Callable, create_relationships: bool,  # noqa: F841
+                            relationships_func: Callable) -> List[dict]:  # noqa: F841
     """
     This function adds indicators to indicator lists after specific manipulation.
     :param client: Client (from JsonFeedApiModule
