@@ -2319,8 +2319,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Starting item of the next page to view. Can be retrieved from context
-        (AttachedPoliciesMarker).
+      description: Starting item of the next page to view. Retrieved from a previous run of the command
+        (InlinePoliciesMarker).
       isArray: false
       name: marker
       required: false
@@ -2446,7 +2446,7 @@ script:
       type: String
     - contextPath: AWS.IAM.Groups.AttachedPoliciesMarker
       description: First element of next page of items.
-      type: Unknown
+      type: String
   - arguments:
     - default: false
       description: The name (friendly name, not ARN) of the user to list attached

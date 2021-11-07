@@ -1042,14 +1042,12 @@ def list_user_policies(args, aws_client):
     marker = response.get('Marker', None)
 
     if is_manual and page_size and len(data) > page_size:
-        data = data[-1 * args.get('page_size'):]
+        data = data[-1 * page_size:]
 
-    policy_data = []
-    for policy in data:
-        policy_data.append({
-            'UserName': user_name,
-            'PolicyName': policy,
-        })
+    policy_data = [{
+        'UserName': user_name,
+        'PolicyName': policy,
+    } for policy in data]
 
     ec = {'AWS.IAM.UserPolicies(val.PolicyName && val.UserName && val.PolicyName === obj.PolicyName && '
           'val.UserName === obj.UserName)': policy_data,
@@ -1059,7 +1057,7 @@ def list_user_policies(args, aws_client):
                                      headers=["PolicyNames"],
                                      headerTransform=pascalToSpace,
                                      t=data)
-    return_outputs(human_readable, ec)
+    return_outputs(human_readable, ec, response)
 
 
 def list_attached_user_policies(args, aws_client):
@@ -1070,8 +1068,8 @@ def list_attached_user_policies(args, aws_client):
         role_session_duration=args.get('roleSessionDuration'),
     )
 
-    user_name = args.get('userName', "")
-    marker = args.get('marker', None)
+    user_name = args.get('userName')
+    marker = args.get('marker')
     limit, is_manual, page_size = get_limit(args)
 
     kwargs = {
@@ -1088,13 +1086,11 @@ def list_attached_user_policies(args, aws_client):
     if is_manual and page_size is not None and len(data) > page_size:
         data = data[-1 * page_size:]
 
-    policy_data = []
-    for policy in data:
-        policy_data.append({
-            'UserName': user_name,
-            'PolicyArn': policy.get('PolicyArn', ''),
-            'PolicyName': policy.get('PolicyName', '')
-        })
+    policy_data = [{
+        'UserName': user_name,
+        'PolicyArn': policy.get('PolicyArn'),
+        'PolicyName': policy.get('PolicyName')
+    } for policy in data]
 
     ec = {'AWS.IAM.AttachedUserPolicies(val.PolicyArn && val.UserName && val.PolicyArn === obj.PolicyArn && '
           'val.UserName === obj.UserName)': policy_data,
@@ -1105,7 +1101,7 @@ def list_attached_user_policies(args, aws_client):
                                      headerTransform=pascalToSpace,
                                      t=data)
 
-    return_outputs(human_readable, ec)
+    return_outputs(human_readable, ec, response)
 
 
 def list_attached_group_policies(args, aws_client):
@@ -1116,8 +1112,8 @@ def list_attached_group_policies(args, aws_client):
         role_session_duration=args.get('roleSessionDuration'),
     )
 
-    group_name = args.get('groupName', "")
-    marker = args.get('marker', None)
+    group_name = args.get('groupName')
+    marker = args.get('marker')
     limit, is_manual, page_size = get_limit(args)
 
     kwargs = {
@@ -1129,18 +1125,16 @@ def list_attached_group_policies(args, aws_client):
 
     response = client.list_attached_group_policies(**kwargs)
     data = response.get('AttachedPolicies', [])
-    marker = response.get('Marker', None)
+    marker = response.get('Marker')
 
     if is_manual and page_size and len(data) > page_size:
         data = data[-1 * args.get('page_size'):]
 
-    policy_data = []
-    for policy in data:
-        policy_data.append({
-            'GroupName': group_name,
-            'PolicyArn': policy.get('PolicyArn', ''),
-            'PolicyName': policy.get('PolicyName', '')
-        })
+    policy_data = [{
+        'GroupName': group_name,
+        'PolicyArn': policy.get('PolicyArn'),
+        'PolicyName': policy.get('PolicyName')
+    }) for policy in data]
 
     ec = {'AWS.IAM.AttachedGroupPolicies(val.PolicyArn && val.GroupName && val.PolicyArn === obj.PolicyArn && '
           'val.GroupName === obj.GroupName)': policy_data,
@@ -1151,7 +1145,7 @@ def list_attached_group_policies(args, aws_client):
                                      headerTransform=pascalToSpace,
                                      t=data)
 
-    return_outputs(human_readable, ec)
+    return_outputs(human_readable, ec, response)
 
 
 def get_user_login_profile(args, aws_client):
@@ -1168,13 +1162,13 @@ def get_user_login_profile(args, aws_client):
 
     response = client.get_login_profile(**kwargs)
     user_profile = response['LoginProfile']
-    data = ({
-        'UserName': user_profile.get('UserName', None),
+    data = {
+        'UserName': user_profile.get('UserName'),
         'LoginProfile': {
-            'CreateDate': user_profile.get('CreateDate', None),
-            'PasswordResetRequired': user_profile.get('PasswordResetRequired', None)
+            'CreateDate': user_profile.get('CreateDate'),
+            'PasswordResetRequired': user_profile.get('PasswordResetRequired')
         }
-    })
+    }
 
     ec = {'AWS.IAM.Users(val.UserName && val.UserName === obj.UserName)': data}
 
@@ -1184,7 +1178,7 @@ def get_user_login_profile(args, aws_client):
                                      removeNull=True,
                                      headerTransform=pascalToSpace)
 
-    return_outputs(human_readable, ec)
+    return_outputs(human_readable, ec, response)
 
 
 def test_function(aws_client):
