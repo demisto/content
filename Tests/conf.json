@@ -4592,6 +4592,10 @@
             "playbookID": "ThreatStream-Test"
         },
         {
+            "integrations": "LogRhythmRest V2",
+            "playbookID": "LogRhythmRestV2-test"
+        },
+        {
             "integrations": ["AutoFocusTagsFeed", "Demisto REST API"],
             "playbookID": "AutoFocusTagsFeed-test"
         },
@@ -4629,10 +4633,6 @@
             ],
             "playbookID": "GetTasksWithSections SetIRProcedures end to end test",
             "fromversion": "6.0.0"
-        },
-        {
-            "integrations": "LogRhythmRest V2",
-            "playbookID": "LogRhythmRestV2-test"
         },
         {
             "scripts": [
