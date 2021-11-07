@@ -32,6 +32,7 @@ with open("TestData/raw_responses.json", "r") as f:
     RAW_RESPONSES = json.load(f)
 
 QRadar_v2.FAILURE_SLEEP = 0
+QRadar_v2.DEFAULT_EVENTS_TIMEOUT = 0
 
 command_tests = [
     ("qradar-searches", search_command, {"query_expression": "SELECT sourceip AS 'MY Source IPs' FROM events"},),
@@ -159,11 +160,12 @@ class TestQRadarv2:
             time.sleep(0.001)
             return offense
 
-        QRadar_v2.DEFAULT_EVENTS_TIMEOUT = 0
+        offense_with_no_events = RAW_RESPONSES["fetch-incidents"]
+        del offense_with_no_events['events']
         client = QRadarClient("", {}, {"identifier": "*", "password": "*"})
         fetch_mode = FetchMode.all_events
         mocker.patch.object(QRadar_v2, "get_integration_context", return_value={})
-        mocker.patch.object(QRadar_v2, "fetch_raw_offenses", return_value=[RAW_RESPONSES["fetch-incidents"]])
+        mocker.patch.object(QRadar_v2, "fetch_raw_offenses", return_value=[offense_with_no_events])
         print_debug_msg_mock = mocker.patch.object(QRadar_v2, "print_debug_msg")
         QRadar_v2.enrich_offense_with_events = mock_enrich_offense_with_events
         mocker.patch.object(demisto, "createIncidents")
