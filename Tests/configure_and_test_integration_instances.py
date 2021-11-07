@@ -493,6 +493,7 @@ def set_integration_params(build,
             if len(integration_params) != 1:
                 found_matching_instance = False
                 for item in integration_params:
+                    logging.info(f"Instance names in conf are: {instance_names}")
                     if item.get('instance_name', 'Not Found') in instance_names:
                         matched_integration_params = item
                         found_matching_instance = True
@@ -513,12 +514,13 @@ def set_integration_params(build,
             integration['validate_test'] = matched_integration_params.get('validate_test', True)
             if integration['name'] not in build.unmockable_integrations:
                 integration['params'].update({'proxy': True})
-                logging.debug(
+                logging.info(
                     f'Configuring integration "{integration["name"]}" with proxy=True')
             else:
                 integration['params'].update({'proxy': False})
-                logging.debug(
+                logging.info(
                     f'Configuring integration "{integration["name"]}" with proxy=False')
+            logging.info(f"Integration params are {integration}")
 
     return True
 
