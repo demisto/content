@@ -56,6 +56,7 @@ asset_enrich_data = util_load_json("./test_data/asset_enrich_test.json")
 
 command_test_data = util_load_json('./test_data/command_test_data.json')
 ip_command_test_data = util_load_json('./test_data/ips_commands_data.json')
+ctx_test_data = util_load_json('./test_data/integration_context_tests.json')
 
 event_columns_default_value = \
     'QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), ' \
@@ -1817,8 +1818,8 @@ def test_cleared_ctx_is_compatible_with_retries():
     QRadar_v3.set_to_integration_context_with_retries({'id': 7})
 
 
-def test_integration_context_during_run(init_context, user_query, mirror_options, mirror_direction,
-                                        expected_context_after_first_loop, expected_context_after_second_loop, mocker):
+@pytest.mark.parametrize('test_case_data', [(ctx_test_data['ctx_compatible']['case_one'])])
+def test_integration_context_during_run(test_case_data, mocker):
     """
     Given:
     - Cortex XSOAR parameters.
@@ -1829,7 +1830,7 @@ def test_integration_context_during_run(init_context, user_query, mirror_options
     Then:
     - Assure the whole flow of managing the context is as expected.
     1) Call to change_ctx_to_be_compatible_with_retry is performed.
-    2) Reseting the mirroring events variables.
+    2) Resetting the mirroring events variables.
     3) Performing long-running loop.
     4) Assuring context is as expected after first loop.
     5) Performing another long-running loop.
@@ -1844,16 +1845,41 @@ def test_integration_context_during_run(init_context, user_query, mirror_options
     f) Integration context is not empty, mirroring offense with events.
 
     All those cases will be tested where:
-    1) In both loop runs, offenses were fetched.
-    2) Only in first loop run offenses were fetched.
-    3) Only in second loop run offenses were fetched.
-    4) In both loop runs no offenses were fetched.
+    A) With init integration context not compatible with retry.
+    B) With init integration context compatible with retry.
+    And for one of A, B, checks the following:
+        1) In both loop runs, offenses were fetched.
+        2) Only in first loop run offenses were fetched.
+        3) Only in second loop run offenses were fetched.
+        4) In both loop runs no offenses were fetched.
     """
     import demistomock as demisto
+    user_query = test_case_data['user_query']
+    mirror_options = test_case_data['mirror_options']
+    mirror_direction = test_case_data['mirror_direction']
+
+    init_context = test_case_data['init_context']
     set_integration_context(init_context)
+
+    mock_event_response = test_case_data['mock_event_response']
+
+    if test_case_data['offenses_first_loop']:
+        first_loop_offenses = ctx_test_data['offenses_first_loop']
+        first_loop_offenses_with_events = [dict(offense, events=ctx_test_data['events']) for offense in
+                                           first_loop_offenses]
+        mocker.patch.object(client, 'offenses_list', return_value=first_loop_offenses)
+        mocker.patch.object(QRadar_v3, 'enrich_offenses_result', return_value=first_loop_offenses)
+        mocker.patch.object(QRadar_v3, 'enrich_offense_with_events', return_value=first_loop_offenses_with_events)
+        expected_ctx_first_loop = ctx_test_data['context_data_first_loop_no_mirroring']
+    else:
+        mocker.patch.object(client, 'offenses_list', return_value=[])
+        mocker.patch.object(QRadar_v3, 'enrich_offenses_result', return_value=[])
+        mocker.patch.object(QRadar_v3, 'enrich_offense_with_events', return_value=[])
+        expected_ctx_first_loop = {}
+
     change_ctx_to_be_compatible_with_retry()
-    reset_mirroring_events_variables()
-    mocker.patch.object(demisto, 'createIncidents')
+    reset_mirroring_events_variables(mirror_options)
+    # mocker.patch.object(demisto, 'createIncidents')
     perform_long_running_loop(
         client=client,
         offenses_per_fetch=2,
@@ -1867,8 +1893,22 @@ def test_integration_context_during_run(init_context, user_query, mirror_options
         incident_type=None,
         mirror_direction=mirror_direction
     )
-    assert get_integration_context() == expected_context_after_first_loop
-    mocker.patch.object(demisto, 'createIncidents')
+    assert get_integration_context() == expected_ctx_first_loop
+
+    if test_case_data['offenses_second_loop']:
+        second_loop_offenses = ctx_test_data['offenses_second_loop']
+        second_loop_offenses_with_events = [dict(offense, events=ctx_test_data['events']) for offense in
+                                            second_loop_offenses]
+        mocker.patch.object(client, 'offenses_list', return_value=second_loop_offenses)
+        mocker.patch.object(QRadar_v3, 'enrich_offenses_result', return_value=second_loop_offenses)
+        mocker.patch.object(QRadar_v3, 'enrich_offense_with_events', return_value=second_loop_offenses_with_events)
+        expected_ctx_second_loop = ctx_test_data['context_data_second_loop_no_mirroring']
+    else:
+        mocker.patch.object(client, 'offenses_list', return_value=[])
+        mocker.patch.object(QRadar_v3, 'enrich_offenses_result', return_value=[])
+        mocker.patch.object(QRadar_v3, 'enrich_offense_with_events', return_value=[])
+        expected_ctx_second_loop = {}
+    # mocker.patch.object(demisto, 'createIncidents')
     perform_long_running_loop(
         client=client,
         offenses_per_fetch=2,
@@ -1882,4 +1922,4 @@ def test_integration_context_during_run(init_context, user_query, mirror_options
         incident_type=None,
         mirror_direction=mirror_direction
     )
-    assert get_integration_context() == expected_context_after_second_loop
+    assert get_integration_context() == expected_ctx_second_loop
