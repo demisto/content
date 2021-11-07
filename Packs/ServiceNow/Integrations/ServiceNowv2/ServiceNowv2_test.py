@@ -138,6 +138,7 @@ def test_escape_build_query(query, escaped, result):
     """
     assert escape_build_query(query, escape_amp=escaped) == result
 
+
 @pytest.mark.parametrize('command, args, response, expected_result, expected_auto_extract', [
     (update_ticket_command, {'id': '1234', 'impact': '2'}, RESPONSE_UPDATE_TICKET, EXPECTED_UPDATE_TICKET, True),
     (update_ticket_command, {'id': '1234', 'ticket_type': 'sc_req_item', 'approval': 'requested'},

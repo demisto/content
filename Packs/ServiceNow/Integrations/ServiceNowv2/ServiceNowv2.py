@@ -455,14 +455,17 @@ def build_query_for_request_params(query):
     else:
         return query
 
-def escape_build_query(sys_param_query, escape_amp = True):
+
+def escape_build_query(sys_param_query, escape_amp=True):
     """
       Used to escape or build the query parameters
     """
+    
     if sys_param_query:
         if escape_amp:
             return build_query_for_request_params(sys_param_query)
     return sys_param_query
+
 
 class Client(BaseClient):
     """
