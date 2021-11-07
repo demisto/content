@@ -39,7 +39,6 @@ args:
   required: false
 scripttarget: 0
 timeout: 300ns
-runas: DBotRole
 runonce: false
 fromversion: 5.0.0
 tests:

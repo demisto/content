@@ -123,37 +123,25 @@ def options_handler():
                               "Default value is code-coverage."),
                         required=False)
 
-    parser.add_argument('-cov', '--cov_bin_dir',
-                        default='code-coverage/coverage_data.json',
-                        required=False)
-
     return parser.parse_args()
 
 
-def coverage_json(cov_file, json_file):
-    # this method will be removed when merge to sdk
-    from coverage import Coverage
-    cov = Coverage(data_file=cov_file, auto_data=False)
-    cov.load()
-    cov.json_report(outfile=json_file)
+def get_last_updated_from_file(min_filename: str) -> str:
+    with open(min_filename, 'r') as min_file:
+        return json.load(min_file)['last_updated']
 
 
 def main():
     options = options_handler()
-    coverage_json(options.cov_bin_dir, options.source_file_name)
+    last_updated = get_last_updated_from_file(options.minimal_file_name)
 
-    success, last_updated = create_minimal_report(source_file=options.source_file_name,
-                                                  destination_file=options.minimal_file_name,
-                                                  )
-
-    if success:
-        upload_files_to_google_cloud_storage(service_account=options.service_account,
-                                             bucket_name=options.bucket_name,
-                                             source_file_name=options.source_file_name,
-                                             minimal_file_name=options.minimal_file_name,
-                                             destination_blob_dir=options.destination_blob_dir,
-                                             last_updated=last_updated
-                                             )
+    upload_files_to_google_cloud_storage(service_account=options.service_account,
+                                         bucket_name=options.bucket_name,
+                                         source_file_name=options.source_file_name,
+                                         minimal_file_name=options.minimal_file_name,
+                                         destination_blob_dir=options.destination_blob_dir,
+                                         last_updated=last_updated
+                                         )
 
 
 if __name__ == '__main__':
