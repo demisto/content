@@ -1705,6 +1705,54 @@ def move_updated_offenses(context_data: dict, version: Any, include_context_data
     return encode_context_data(new_context_data, include_id=True), version, new_context_data
 
 
+def perform_long_running_loop(client: Client, offenses_per_fetch: int, fetch_mode: str, mirror_options: str,
+                              user_query: str, events_columns: str, events_limit: int, ip_enrich: bool,
+                              asset_enrich: bool, incident_type: Optional[str], mirror_direction: Optional[str]):
+    is_reset_triggered(handle_reset=True)
+    ctx, ctx_version = get_integration_context_with_version()
+    print_debug_msg(f'Starting fetch loop. Fetch mode: {fetch_mode}, Mirror option: {mirror_options}.')
+    incidents, new_highest_id = get_incidents_long_running_execution(
+        client=client,
+        offenses_per_fetch=offenses_per_fetch,
+        user_query=user_query,
+        fetch_mode=fetch_mode,
+        events_columns=events_columns,
+        events_limit=events_limit,
+        ip_enrich=ip_enrich,
+        asset_enrich=asset_enrich,
+        last_highest_id=int(json.loads(ctx.get(LAST_FETCH_KEY, '0'))),
+        incident_type=incident_type,
+        mirror_direction=mirror_direction
+    )
+
+    orig_context_data = extract_context_data(ctx.copy(), include_id=True)
+    context_data = {LAST_FETCH_KEY: orig_context_data.get(LAST_FETCH_KEY, 0)}
+
+    updated_mirrored_offenses = None
+    ctx = extract_context_data(ctx)
+    if mirror_options == MIRROR_OFFENSE_AND_EVENTS:
+        print_mirror_events_stats(ctx, "Long Running Command - Before Update")
+        updated_mirrored_offenses = update_mirrored_events(client=client,
+                                                           fetch_mode=fetch_mode,
+                                                           events_columns=events_columns,
+                                                           events_limit=events_limit,
+                                                           context_data=ctx,
+                                                           offenses_per_fetch=offenses_per_fetch)
+
+    if incidents and new_highest_id:
+        incident_batch_for_sample = incidents[:SAMPLE_SIZE] if incidents else ctx.get('samples', [])
+        if incident_batch_for_sample:
+            print_debug_msg(f'Saving New Highest ID: {new_highest_id}')
+            context_data.update({'samples': incident_batch_for_sample, LAST_FETCH_KEY: int(new_highest_id)})
+
+        demisto.createIncidents(incidents)
+
+    new_context_data = move_updated_offenses(context_data=ctx, version=ctx_version,
+                                             include_context_data=context_data,
+                                             updated_list=updated_mirrored_offenses)
+
+    print_mirror_events_stats(new_context_data, "Long Running Command - After Update")
+
 def long_running_execution_command(client: Client, params: Dict):
     """
     Long running execution of fetching incidents from QRadar service.
@@ -1741,50 +1789,19 @@ def long_running_execution_command(client: Client, params: Dict):
 
     while True:
         try:
-            is_reset_triggered(handle_reset=True)
-            ctx, ctx_version = get_integration_context_with_version()
-            print_debug_msg(f'Starting fetch loop. Fetch mode: {fetch_mode}, Mirror option: {mirror_options}.')
-            incidents, new_highest_id = get_incidents_long_running_execution(
+            perform_long_running_loop(
                 client=client,
                 offenses_per_fetch=offenses_per_fetch,
-                user_query=user_query,
                 fetch_mode=fetch_mode,
+                mirror_options=mirror_options,
+                user_query=user_query,
                 events_columns=events_columns,
                 events_limit=events_limit,
                 ip_enrich=ip_enrich,
                 asset_enrich=asset_enrich,
-                last_highest_id=int(json.loads(ctx.get(LAST_FETCH_KEY, '0'))),
                 incident_type=incident_type,
                 mirror_direction=mirror_direction
             )
-
-            orig_context_data = extract_context_data(ctx.copy(), include_id=True)
-            context_data = {LAST_FETCH_KEY: orig_context_data.get(LAST_FETCH_KEY, 0)}
-
-            updated_mirrored_offenses = None
-            ctx = extract_context_data(ctx)
-            if mirror_options == MIRROR_OFFENSE_AND_EVENTS:
-                print_mirror_events_stats(ctx, "Long Running Command - Before Update")
-                updated_mirrored_offenses = update_mirrored_events(client=client,
-                                                                   fetch_mode=fetch_mode,
-                                                                   events_columns=events_columns,
-                                                                   events_limit=events_limit,
-                                                                   context_data=ctx,
-                                                                   offenses_per_fetch=offenses_per_fetch)
-
-            if incidents and new_highest_id:
-                incident_batch_for_sample = incidents[:SAMPLE_SIZE] if incidents else ctx.get('samples', [])
-                if incident_batch_for_sample:
-                    print_debug_msg(f'Saving New Highest ID: {new_highest_id}')
-                    context_data.update({'samples': incident_batch_for_sample, LAST_FETCH_KEY: int(new_highest_id)})
-
-                demisto.createIncidents(incidents)
-
-            new_context_data = move_updated_offenses(context_data=ctx, version=ctx_version,
-                                                     include_context_data=context_data,
-                                                     updated_list=updated_mirrored_offenses)
-
-            print_mirror_events_stats(new_context_data, "Long Running Command - After Update")
 
         except Exception:
             demisto.error('Error occurred during long running loop')
