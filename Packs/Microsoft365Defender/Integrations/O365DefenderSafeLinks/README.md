@@ -1,15 +1,14 @@
 Provides URL scanning and rewriting of inbound email messages in mail flow, and time-of-click verification of URLs and links in email messages and other locations.
 This integration was integrated and tested with [Defender for Office 365](https://docs.microsoft.com/en-us/powershell/module/exchange/?view=exchange-ps#defender-for-office-365). 
 
-[The Safe Links product overview](https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/safe-links?view=o365-worldwide)
+[The Safe Links Product overview](https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/safe-links?view=o365-worldwide)
 
 ### Required Permissions
 ___
 * In the Azure Application, give the following application permission:
-
-    Office 365 Exchange Online -> Exchange.ManageAsApp - Application
+    * Office 365 Exchange Online -> Exchange.ManageAsApp - Application
 * To create, modify, and delete Safe Links policies, you need to be a member of the `Organization Management` or `Security Administrator` role groups.
-* To manage permissions in the Microsoft 365 Defender portal, go to `Permissions & roles` or https://security.microsoft.com/securitypermissions. You need to be a global administrator or a member of the Organization Management role group in the Microsoft 365 Defender portal. Specifically, the Role Management role allows users to view, create, and modify role groups in the Microsoft 365 Defender portal, and by default, that role is assigned only to the Organization Management role group. See [Permissions in the Microsoft 365 Defender portal](https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/permissions-microsoft-365-security-center?view=o365-worldwide).
+* To manage permissions in the Microsoft 365 Defender portal, go to `Permissions & roles` or https://security.microsoft.com/securitypermissions. You need to be a global administrator or a member of the Organization Management role group in the Microsoft 365 Defender portal. Specifically, the Role Management role allows users to view, create, and modify role groups in the Microsoft 365 Defender portal, and by default, that role is assigned only to the Organization Management role group. See [Permissions in the Microsoft 365 Defender portal](https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/permissions-microsoft-365-security-center?view=o365-worldwide)
 
 
 ## Configure O365 Defender SafeLinks on Cortex XSOAR
@@ -31,19 +30,14 @@ ___
 ___
 The basic elements of a Safe Links policy are:
 
-- **The Safe Links policy**: Turn on Safe Links protection, turn on real-time URL scanning, specify whether to wait for real-time scanning to complete before delivering the message, turn on scanning for internal messages, specify whether to track user clicks on URLs, and specify whether to allow users to click trough to the original URL.
-
-- **The safe links rule**: Specifies the priority and recipient filters (who the policy applies to).
-
+**The safe links policy**: Turn on Safe Links protection, turn on real-time URL scanning, specify whether to wait for real-time scanning to complete before delivering the message, turn on scanning for internal messages, specify whether to track user clicks on URLs, and specify whether to allow users to click trough to the original URL.
+**The safe links rule**: Specifies the priority and recipient filters (who the policy applies to).
 The difference between these two elements isn't obvious when you manage Safe Links policies in the Microsoft 365 Defender portal:
 
-- When you create a Safe Links policy, you're actually creating a safe links rule and the associated safe links policy at the same time using the same name for both.
-
-- When you modify a Safe Links policy, settings related to the name, priority, enabled or disabled, and recipient filters modify the safe links rule. All other settings modify the associated Safe Links policy.
-
-- When you remove a Safe Links policy, the Safe Links rule and the associated Safe Links policy are removed.
-
-- In Exchange Online PowerShell or standalone EOP PowerShell, you manage the policy and the rule separately.
+When you create a Safe Links policy, you're actually creating a safe links rule and the associated safe links policy at the same time using the same name for both.
+When you modify a Safe Links policy, settings related to the name, priority, enabled or disabled, and recipient filters modify the safe links rule. All other settings modify the associated safe links policy.
+When you remove a Safe Links policy, the safe links rule and the associated safe links policy are removed.
+In Exchange Online PowerShell or standalone EOP PowerShell, you manage the policy and the rule separately.
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
@@ -51,7 +45,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 ### o365-defender-safelinks-policy-list
 ***
-List Safe Links policies in your cloud-based organization.
+List the Safe Links policies in your cloud-based organization.
 
 
 #### Base Command
@@ -90,13 +84,12 @@ List Safe Links policies in your cloud-based organization.
 | O365Defender.SafeLinks.Policy.IsValid | Boolean | Whether the Safe Links policy is valid. | 
 | O365Defender.SafeLinks.Policy.Name | String | Policy name. | 
 | O365Defender.SafeLinks.Policy.ObjectState | String | The Safe Links policy state. | 
-| O365Defender.SafeLinks.Policy.OrganizationId | String | The ID of the organization. | 
+| O365Defender.SafeLinks.Policy.OrganizationId | String | The organization ID. | 
 | O365Defender.SafeLinks.Policy.ScanUrls | Boolean | Whether real-time scanning of clicked links in email messages is enabled. | 
 | O365Defender.SafeLinks.Policy.WhenChanged | Date | The date and time the Safe Links policy was modified. Time format: YYYY-MM-DDThh:mm:ss\+00:00. | 
-| O365Defender.SafeLinks.Policy.WhenChangedUTC | Date | The date and time \(in UTC\) the Safe Links policy was modified. Time format: YYYY-MM-DDTHH:MM:SSZ. | 
+| O365Defender.SafeLinks.Policy.WhenChangedUTC | Date | The date and time \(in UTC\) the  Safe Links policy was modified. Time format: YYYY-MM-DDTHH:MM:SSZ. | 
 | O365Defender.SafeLinks.Policy.WhenCreated | Date | The date and time the Safe Links policy was created. Time format: YYYY-MM-DDThh:mm:ss\+00:00. | 
 | O365Defender.SafeLinks.Policy.WhenCreatedUTC | Date | The date and time \(in UTC\) the Safe Links policy was created. Time format: YYYY-MM-DDTHH:MM:SSZ. | 
-
 
 
 #### Command Example
@@ -257,17 +250,16 @@ Create a new Safe Links policy.
 | name | A unique name for the Safe Links policy. | Required | 
 | admin_display_name | The description for the policy. | Optional | 
 | custom_notification_text | The custom notification text to show to users. | Optional | 
-| deliver_message_after_scan | Whether to deliver email messages only after Safe Links scanning was completed. When true, messages that contain malicious links are not delivered. Possible values are: true, false. Default is false.  | Optional | 
-| do_not_allow_click_through | Whether to allow users to click through to the original URL on warning pages. Possible values are: true, false. Default is false.  | Optional | 
+| deliver_message_after_scan | Whether to deliver email messages only after Safe Links scanning was completed. When true, messages that contain malicious links are not delivered. Default is false. Possible values are: true, false. | Optional | 
+| do_not_allow_click_through | Whether to allow users to click through to the original URL on warning pages. Default is false. Possible values are: true, false. | Optional | 
 | do_not_rewrite_urls | Comma-separated list of URLs that are not rewritten by Safe Links scanning. | Optional | 
-| do_not_track_user_clicks | Whether to track user clicks related to Safe Links protection of links in email messages. Possible values are: true, false. Default is false.  | Optional | 
-| enable_for_internal_senders | Whether the Safe Links policy is applied to messages sent between internal senders and internal recipients within the same Exchange Online organization. Possible values are: true, false. Default is false. | Optional | 
-| enable_organization_branding | Whether to display the organization's logo on Safe Links warning and notification pages. Possible values are: true, false. Default is false. | Optional | 
-| enable_safe_links_for_teams | Whether to enable the Safe Links for Microsoft Teams. Possible values are: true, false. Default is false. | Optional | 
-| is_enabled | Whether to enable Safe Links protection for email messages. Possible values are: true, false. Default is false. | Optional | 
-| scan_urls | Whether to enable or disable real-time scanning of clicked links in email messages. Possible values are: true, false. Default is false. | Optional | 
-| use_translated_notification_text | Whether to use Microsoft Translator to automatically localize the custom notification text that you specified with the CustomNotificationText parameter. Possible values are: true, false.
-Default is false. | Optional | 
+| do_not_track_user_clicks | Whether to track user clicks related to Safe Links protection of links in email messages. Default is false. Possible values are: true, false. | Optional | 
+| enable_for_internal_senders | Whether the Safe Links policy is applied to messages sent between internal senders and internal recipients within the same Exchange Online organization. Default is false. Possible values are: true, false. | Optional | 
+| enable_organization_branding | Whether to display the organization's logo on Safe Links warning and notification pages. Default is false. Possible values are: true, false. | Optional | 
+| enable_safe_links_for_teams | Whether to enable Safe Links for Microsoft Teams. Default is false. Possible values are: true, false. | Optional | 
+| is_enabled | Whether to enable Safe Links protection for email messages. Default is false. Possible values are: true, false. | Optional | 
+| scan_urls | Whether to enable or disable real-time scanning of clicked links in email messages. Default is false. Possible values are: true, false. | Optional | 
+| use_translated_notification_text | Whether to use Microsoft Translator to automatically localize the custom notification text that you specified with the CustomNotificationText parameter. Default is false. Possible values are: true, false. | Optional | 
 
 
 #### Context Output
@@ -285,7 +277,7 @@ Default is false. | Optional |
 | O365Defender.SafeLinks.Policy.DoNotRewriteUrls | Unknown | List of URLs that are not rewritten by Safe Links scanning. | 
 | O365Defender.SafeLinks.Policy.EnableForInternalSenders | Boolean | Whether the Safe Links policy is applied to messages sent between internal senders and internal recipients within the same Exchange Online organization. | 
 | O365Defender.SafeLinks.Policy.EnableOrganizationBranding | Boolean | Whether the organization's logo is displayed on Safe Links warning and notification pages. | 
-| O365Defender.SafeLinks.Policy.EnableSafeLinksForTeams | Boolean | Whether the policy is enabled for Microsoft Teams. | 
+| O365Defender.SafeLinks.Policy.EnableSafeLinksForTeams | Boolean | Whether the Safe Links policy is enabled for Microsoft Teams. | 
 | O365Defender.SafeLinks.Policy.ExchangeObjectId | String | Exchange object ID. | 
 | O365Defender.SafeLinks.Policy.ExchangeVersion | String | The version of the Exchange server. | 
 | O365Defender.SafeLinks.Policy.Guid | String | The GUID of the Safe Links policy. | 
@@ -296,13 +288,12 @@ Default is false. | Optional |
 | O365Defender.SafeLinks.Policy.IsValid | Boolean | Whether the Safe Links policy is valid. | 
 | O365Defender.SafeLinks.Policy.Name | String | Policy name. | 
 | O365Defender.SafeLinks.Policy.ObjectState | String | The Safe Links policy state. | 
-| O365Defender.SafeLinks.Policy.OrganizationId | String | The ID of the organization.| 
+| O365Defender.SafeLinks.Policy.OrganizationId | String | The organization ID. | 
 | O365Defender.SafeLinks.Policy.ScanUrls | Boolean | Whether real-time scanning of clicked links in email messages is enabled. | 
 | O365Defender.SafeLinks.Policy.WhenChanged | Date | The date and time the Safe Links policy was modified. Time format: YYYY-MM-DDThh:mm:ss\+00:00. | 
-| O365Defender.SafeLinks.Policy.WhenChangedUTC | Date | The date and time \(in UTC\) the Safe Links policy was modified. Time format: YYYY-MM-DDTHH:MM:SSZ. | 
+| O365Defender.SafeLinks.Policy.WhenChangedUTC | Date | The date and time \(in UTC\) the Safe Links policy was modified. Time format: YYYY-MM-DDTHH:MM:SSZ | 
 | O365Defender.SafeLinks.Policy.WhenCreated | Date | The date and time the Safe Links policy was created. Time format: YYYY-MM-DDThh:mm:ss\+00:00. | 
-| O365Defender.SafeLinks.Policy.WhenCreatedUTC | Date | The date and time \(in UTC\) the Safe Links policy was created. Time format: YYYY-MM-DDTHH:MM:SSZ. | 
-
+| O365Defender.SafeLinks.Policy.WhenCreatedUTC | Date | The date and time \(in UTC\) the Safe Links policy was created. Time format: YYYY-MM-DDTHH:MM:SSZ | 
 
 
 #### Command Example
@@ -391,16 +382,16 @@ Update a Safe Links policy.
 | name | A unique name for the Safe Links policy. | Required | 
 | admin_display_name | The description for the policy. | Optional | 
 | custom_notification_text | The custom notification text to show to users. | Optional | 
-| deliver_message_after_scan | Whether to deliver email messages only after Safe Links scanning was completed. When true, messages that contain malicious links are not delivered. Possible values are: true, false. Default is false. | Optional | 
-| do_not_allow_click_through | Whether to allow users to click through to the original URL on warning pages. Possible values are: true, false. Default is false. | Optional | 
+| deliver_message_after_scan | Whether to deliver email messages only after Safe Links scanning is complete. When true, messages that contain malicious links are not delivered. Default is false. Possible values are: true, false. | Optional | 
+| do_not_allow_click_through | Whether to allow users to click through to the original URL on warning pages. Default is false. Possible values are: true, false. | Optional | 
 | do_not_rewrite_urls | Comma-separated list of URLs that are not rewritten by Safe Links scanning. | Optional | 
-| do_not_track_user_clicks | Whether to track user clicks related to Safe Links protection of links in email messages. Possible values are: true, false. Default is false. | Optional | 
-| enable_for_internal_senders | Whether the Safe Links policy is applied to messages sent between internal senders and internal recipients within the same Exchange Online organization. Possible values are: true, false. Default is false. | Optional | 
-| enable_organization_branding | Whether to display the organization's logo on Safe Links warning and notification pages. Possible values are: true, false. Default is false. | Optional | 
-| enable_safe_links_for_teams | Whether to enable the Safe Links for Microsoft Teams. Possible values are: true, false. Default is false. | Optional | 
-| is_enabled | Whether to enable Safe Links protection for email messages. Possible values are: true, false. Default is false. | Optional | 
-| scan_urls | Whether to enable or disable real-time scanning of clicked links in email messages. Possible values are: true, false. Default is false. | Optional | 
-| use_translated_notification_text | Whether to use Microsoft Translator to automatically localize the custom notification text that you specified with the CustomNotificationText parameter. Possible values are: true, false. Default is false. | Optional | 
+| do_not_track_user_clicks | Whether to track user clicks related to Safe Links protection of links in email messages. Default is false. Possible values are: true, false. | Optional | 
+| enable_for_internal_senders | Whether the Safe Links policy is applied to messages sent between internal senders and internal recipients within the same Exchange Online organization. Default is false. Possible values are: true, false. | Optional | 
+| enable_organization_branding | Whether to display the organization's logo on Safe Links warning and notification pages. Default is false. Possible values are: true, false. | Optional | 
+| enable_safe_links_for_teams | Whether to enable the Safe Links for Microsoft Teams. Default is false. Possible values are: true, false. | Optional | 
+| is_enabled | Whether to enable Safe Links protection for email messages. Default is false. Possible values are: true, false. | Optional | 
+| scan_urls | Whether to enable or disable real-time scanning of clicked links in email messages. Default is false. Possible values are: true, false. | Optional | 
+| use_translated_notification_text | Whether to use Microsoft Translator to automatically localize the custom notification text that you specified with the CustomNotificationText parameter. Default is false. Possible values are: true, false. | Optional | 
 
 
 #### Context Output
@@ -417,7 +408,7 @@ Update a Safe Links policy.
 | O365Defender.SafeLinks.Policy.DoNotTrackUserClicks | Boolean | Whether user clicks are tracked. | 
 | O365Defender.SafeLinks.Policy.DoNotRewriteUrls | Unknown | List of URLs that are not rewritten by Safe Links scanning. | 
 | O365Defender.SafeLinks.Policy.EnableForInternalSenders | Boolean | Whether the Safe Links policy is applied to messages sent between internal senders and internal recipients within the same Exchange Online organization. | 
-| O365Defender.SafeLinks.Policy.EnableOrganizationBranding | Boolean | Whether the organization's logo is displayed on Safe Links warning and notification pages. | 
+| O365Defender.SafeLinks.Policy.EnableOrganizationBranding | Boolean | whether the organization's logo is displayed on Safe Links warning and notification pages. | 
 | O365Defender.SafeLinks.Policy.EnableSafeLinksForTeams | Boolean | Whether the Safe Links policy is enabled for Microsoft Teams. | 
 | O365Defender.SafeLinks.Policy.ExchangeObjectId | String | Exchange object ID. | 
 | O365Defender.SafeLinks.Policy.ExchangeVersion | String | The version of the Exchange server. | 
@@ -429,13 +420,12 @@ Update a Safe Links policy.
 | O365Defender.SafeLinks.Policy.IsValid | Boolean | Whether the Safe Links policy is valid. | 
 | O365Defender.SafeLinks.Policy.Name | String | Policy name. | 
 | O365Defender.SafeLinks.Policy.ObjectState | String | The Safe Links policy state. | 
-| O365Defender.SafeLinks.Policy.OrganizationId | String | The ID of the organization. | 
+| O365Defender.SafeLinks.Policy.OrganizationId | String | The organization ID. | 
 | O365Defender.SafeLinks.Policy.ScanUrls | Boolean | Whether real-time scanning of clicked links in email messages is enabled. | 
 | O365Defender.SafeLinks.Policy.WhenChanged | Date | The date and time the Safe Links policy was modified. Time format: YYYY-MM-DDThh:mm:ss\+00:00. | 
 | O365Defender.SafeLinks.Policy.WhenChangedUTC | Date | The date and time \(in UTC\) the Safe Links policy was modified. Time format: YYYY-MM-DDTHH:MM:SSZ. | 
 | O365Defender.SafeLinks.Policy.WhenCreated | Date | The date and time the Safe Links policy was created. Time format: YYYY-MM-DDThh:mm:ss\+00:00. | 
 | O365Defender.SafeLinks.Policy.WhenCreatedUTC | Date | The date and time \(in UTC\) the Safe Links policy was created. Time format: YYYY-MM-DDTHH:MM:SSZ. | 
-
 
 
 #### Command Example
@@ -549,14 +539,14 @@ List Safe Links rules in your cloud-based organization.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | identity | The identity of the Safe Links rule that you want to view. Available identity fields are: Name, Distinguished name (DN), and GUID. | Optional | 
-| state | The state of the rules. Possible values are Enabled and Disabled. | Optional | 
+| state | The state of the rules. Possible values are: Enabled, Disabled. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| O365Defender.SafeLinks.Rule.Comments | Unknown | Informative comments for the rule, such as what the rule is used for or how it has changed over time. The length of the comment can't exceed 1024 characters. | 
+| O365Defender.SafeLinks.Rule.Comments | Unknown | Informative comments for the rule, such as what the rule is used for or how it has changed over time. The length of the comment cannot exceed 1024 characters. | 
 | O365Defender.SafeLinks.Rule.Conditions | String | The rule condition. | 
 | O365Defender.SafeLinks.Rule.Description | String | The description of the rule. | 
 | O365Defender.SafeLinks.Rule.DistinguishedName | String | Rule distinguished name \(DN\). | 
@@ -578,7 +568,6 @@ List Safe Links rules in your cloud-based organization.
 | O365Defender.SafeLinks.Rule.SentToMemberOf | Unknown | List of distribution groups, dynamic distribution groups, or mail-enabled security groups included in the rule. | 
 | O365Defender.SafeLinks.Rule.State | String | The state of the rule. | 
 | O365Defender.SafeLinks.Rule.WhenChanged | Date | The date and time the rule was modified. Time format: YYYY-MM-DDThh:mm:ss\+00:00. | 
-
 
 
 #### Command Example
@@ -654,12 +643,12 @@ Create a Safe Links rule in your cloud-based organization.
 | --- | --- | --- |
 | name | A unique name for the Safe Links rule. | Required | 
 | safe_links_policy | The Safe Links policy to associate with this Safe Links rule. | Required | 
-| comments | An informative comment for the rule, such as what the rule is used for or how it has changed over time. The length of the comment can't exceed 1024 characters. | Optional | 
+| comments | An informative comment for the rule, such as what the rule is used for or how it has changed over time. The length of the comment cannot exceed 1024 characters. | Optional | 
 | enabled | Whether the rule is enabled. Possible values are: true, false. | Optional | 
 | except_if_recipient_domain_is | A comma-separated list of exceptions of recipients with email address in the specified domains. | Optional | 
 | except_if_sent_to | A comma-separated list of exceptions of recipients in messages. | Optional | 
 | except_if_sent_to_member_of | A comma-separated list of exceptions of messages sent to members of groups. | Optional | 
-| priority | The priority value for the rule to determines the order of rule processing. A lower integer value indicates a higher priority. The value 0 is the highest priority. Rules can't have the same priority value. | Optional | 
+| priority | The priority value for the rule to determines the order of rule processing. A lower integer value indicates a higher priority. The value 0 is the highest priority. Rules cannot have the same priority value. | Optional | 
 | recipient_domain_is | A comma-separated list of recipients with email address in the specified domains. | Optional | 
 | sent_to | A comma-separated list of recipients in messages. You can use any value that uniquely identifies the recipient. | Optional | 
 | sent_to_member_of | A comma-separated list of messages sent to members of distribution groups, dynamic distribution groups, or mail-enabled security groups. You can use any value that uniquely identifies the group. | Optional | 
@@ -669,11 +658,11 @@ Create a Safe Links rule in your cloud-based organization.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| O365Defender.SafeLinks.Rule.Comments | Unknown | Informative comments for the rule, such as what the rule is used for or how it has changed over time. The length of the comment can't exceed 1024 characters. | 
+| O365Defender.SafeLinks.Rule.Comments | Unknown | Informative comments for the rule, such as what the rule is used for or how it has changed over time. The length of the comment cannot exceed 1024 characters. | 
 | O365Defender.SafeLinks.Rule.Conditions | String | The rule condition. | 
 | O365Defender.SafeLinks.Rule.Description | String | The description of the rule. | 
 | O365Defender.SafeLinks.Rule.DistinguishedName | String | Rule distinguished name \(DN\). | 
-| O365Defender.SafeLinks.Rule.ExceptIfRecipientDomainIs | Unknown | Recipients with email address in the specified domains are excluded. | 
+| O365Defender.SafeLinks.Rule.ExceptIfRecipientDomainIs | Unknown | Recipients with an email address in the specified domains are excluded. | 
 | O365Defender.SafeLinks.Rule.ExceptIfSentTo | Unknown | Recipients to be excluded. | 
 | O365Defender.SafeLinks.Rule.ExceptIfSentToMemberOf | Unknown | Recipients in these groups are excluded. | 
 | O365Defender.SafeLinks.Rule.Exceptions | Unknown | Rule exceptions. | 
@@ -691,7 +680,6 @@ Create a Safe Links rule in your cloud-based organization.
 | O365Defender.SafeLinks.Rule.SentToMemberOf | Unknown | List of distribution groups, dynamic distribution groups, or mail-enabled security groups included in the rule. | 
 | O365Defender.SafeLinks.Rule.State | String | The state of the rule. | 
 | O365Defender.SafeLinks.Rule.WhenChanged | Date | The date and time the rule was modified. Time format: YYYY-MM-DDThh:mm:ss\+00:00. | 
-
 
 
 #### Command Example
@@ -766,13 +754,13 @@ Update a given Safe Links rule.
 | --- | --- | --- |
 | name | A unique name for the Safe Links rule. | Required | 
 | safe_links_policy | The Safe Links policy to associate with this Safe Links rule. | Required | 
-| comments | An informative comment for the rule, such as what the rule is used for or how it has changed over time. The length of the comment can't exceed 1024 characters. | Optional | 
+| comments | An informative comment for the rule, such as what the rule is used for or how it has changed over time. The length of the comment cannot exceed 1024 characters. | Optional | 
 | enabled | Whether the rule is enabled. Possible values are: true, false. | Optional | 
-| except_if_recipient_domain_is | A comma-separated list of exceptions of recipients with email address in the specified domains. | Optional | 
-| except_if_sent_to |A comma-separated list of exceptions of recipients in messages. | Optional | 
+| except_if_recipient_domain_is | A comma-separated list of exceptions of recipients with an email address in the specified domains. | Optional | 
+| except_if_sent_to | A comma-separated list of exceptions of recipients in messages. | Optional | 
 | except_if_sent_to_member_of | A comma-separated list of exceptions of messages sent to members of groups. | Optional | 
-| priority | The priority value for the rule to determines the order of rule processing. A lower integer value indicates a higher priority. The value 0 is the highest priority. Rules can't have the same priority value. | Optional | 
-| recipient_domain_is | A comma-separated list of recipients with email address in the specified domains. | Optional | 
+| priority | The priority value for the rule to determines the order of rule processing. A lower integer value indicates a higher priority. The value 0 is the highest priority. Rules cannot have the same priority value. | Optional | 
+| recipient_domain_is | A comma-separated list of recipients with an email address in the specified domains. | Optional | 
 | sent_to | A comma-separated list of recipients in messages. You can use any value that uniquely identifies the recipient. | Optional | 
 | sent_to_member_of | A comma-separated list of messages sent to members of distribution groups, dynamic distribution groups, or mail-enabled security groups. You can use any value that uniquely identifies the group. | Optional | 
 
@@ -781,7 +769,7 @@ Update a given Safe Links rule.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| O365Defender.SafeLinks.Rule.Comments | Unknown | Informative comments for the rule, such as what the rule is used for or how it has changed over time. The length of the comment can't exceed 1024 characters. | 
+| O365Defender.SafeLinks.Rule.Comments | Unknown | Informative comments for the rule, such as what the rule is used for or how it has changed over time. The length of the comment cannot exceed 1024 characters. | 
 | O365Defender.SafeLinks.Rule.Conditions | String | The rule condition. | 
 | O365Defender.SafeLinks.Rule.Description | String | The description of the rule. | 
 | O365Defender.SafeLinks.Rule.DistinguishedName | String | Rule distinguished name \(DN\). | 
@@ -802,8 +790,7 @@ Update a given Safe Links rule.
 | O365Defender.SafeLinks.Rule.SentTo | Unknown | List of recipients included in the rule. | 
 | O365Defender.SafeLinks.Rule.SentToMemberOf | Unknown | List of distribution groups, dynamic distribution groups, or mail-enabled security groups included in the rule. | 
 | O365Defender.SafeLinks.Rule.State | String | The state of the rule. | 
-| O365Defender.SafeLinks.Rule.WhenChanged | Date | The date and time the rule was modified. Time format: YYYY-MM-DDThh:mm:ss\+00:00 | 
-
+| O365Defender.SafeLinks.Rule.WhenChanged | Date | The date and time the rule was modified. Time format: YYYY-MM-DDThh:mm:ss\+00:00. | 
 
 
 #### Command Example

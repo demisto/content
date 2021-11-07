@@ -141,7 +141,7 @@ script:
           isArray: false
         - name: deliver_message_after_scan
           description: 'Whether to deliver email messages only after Safe Links scanning was
-            completed. When true, messages that contain malicious links are not delivered. Possible values: "true" and "false". Default is false.'
+            completed. When true, messages that contain malicious links are not delivered. Default is false.'
           required: false
           isArray: false
           auto: PREDEFINED
@@ -150,7 +150,7 @@ script:
             - 'false'
         - name: do_not_allow_click_through
           description: 'Whether to allow users to click through to the original URL on
-            warning pages. Possible values: "true" and "false". Default is false.'
+            warning pages. Default is false.'
           required: false
           isArray: false
           auto: PREDEFINED
@@ -163,7 +163,7 @@ script:
           isArray: false
         - name: do_not_track_user_clicks
           description: 'Whether to track user clicks related to Safe Links protection of
-            links in email messages. Possible values: "true" and "false". Default is false.'
+            links in email messages. Default is false.'
           required: false
           isArray: false
           auto: PREDEFINED
@@ -173,7 +173,7 @@ script:
         - name: enable_for_internal_senders
           description: 'Whether the Safe Links policy is applied to messages sent between
             internal senders and internal recipients within the same Exchange
-            Online organization. Possible values: "true" and "false". Default is false.'
+            Online organization.Default is false.'
           required: false
           isArray: false
           auto: PREDEFINED
@@ -181,7 +181,7 @@ script:
             - 'true'
             - 'false'
         - name: enable_organization_branding
-          description: 'Whether to display the organization''s logo on Safe Links warning and notification pages. Possible values: "true" and "false". Default is false.'
+          description: 'Whether to display the organization''s logo on Safe Links warning and notification pages. Default is false.'
           required: false
           isArray: false
           auto: PREDEFINED
@@ -189,7 +189,7 @@ script:
             - 'true'
             - 'false'
         - name: enable_safe_links_for_teams
-          description: 'Whether to enable Safe Links for Microsoft Teams. Possible values: "true" and "false". Default is false.'
+          description: 'Whether to enable Safe Links for Microsoft Teams. Default is false.'
           required: false
           isArray: false
           auto: PREDEFINED
@@ -197,7 +197,7 @@ script:
             - 'true'
             - 'false'
         - name: is_enabled
-          description: 'Whether to enable Safe Links protection for email messages. Possible values: "true" and "false". Default is false.'
+          description: 'Whether to enable Safe Links protection for email messages. Default is false.'
           required: false
           isArray: false
           auto: PREDEFINED
@@ -206,7 +206,7 @@ script:
             - 'false'
         - name: scan_urls
           description: 'Whether to enable or disable real-time scanning of clicked links in
-            email messages. Possible values: "true" and "false". Default is false.'
+            email messages. Default is false.'
           required: false
           isArray: false
           auto: PREDEFINED
@@ -216,7 +216,7 @@ script:
         - name: use_translated_notification_text
           description: 'Whether to use Microsoft Translator to automatically localize the
             custom notification text that you specified with the
-            CustomNotificationText parameter. Possible values: "true" and "false". Default is false.'
+            CustomNotificationText parameter. Default is false.'
           required: false
           isArray: false
           auto: PREDEFINED
@@ -330,7 +330,7 @@ script:
           isArray: false
         - name: deliver_message_after_scan
           description: 'Whether to deliver email messages only after Safe Links scanning was
-            completed. When true, messages that contain malicious links are not delivered. Possible values: "true" and "false". Default is false.'
+            completed. When true, messages that contain malicious links are not delivered. Default is false.'
           required: false
           isArray: false
           auto: PREDEFINED
@@ -339,7 +339,7 @@ script:
             - 'false'
         - name: do_not_allow_click_through
           description: 'Whether to allow users to click through to the original URL on
-            warning pages. Possible values: "true" and "false". Default is false.'
+            warning pages. Default is false.'
           required: false
           isArray: false
           auto: PREDEFINED
@@ -352,7 +352,7 @@ script:
           isArray: false
         - name: do_not_track_user_clicks
           description: 'Whether to track user clicks related to Safe Links protection of
-            links in email messages. Possible values: "true" and "false". Default is false.'
+            links in email messages. Default is false.'
           required: false
           isArray: false
           auto: PREDEFINED
@@ -362,7 +362,7 @@ script:
         - name: enable_for_internal_senders
           description: 'Whether the Safe Links policy is applied to messages sent between
             internal senders and internal recipients within the same Exchange
-            Online organization. Possible values: "true" and "false". Default is false.'
+            Online organization. Default is false.'
           required: false
           isArray: false
           auto: PREDEFINED
@@ -370,7 +370,7 @@ script:
             - 'true'
             - 'false'
         - name: enable_organization_branding
-          description: 'Whether to display the organization''s logo on Safe Links warning and notification pages. Possible values: "true" and "false". Default is false.'
+          description: 'Whether to display the organization''s logo on Safe Links warning and notification pages. Default is false.'
           required: false
           isArray: false
           auto: PREDEFINED
@@ -378,7 +378,7 @@ script:
             - 'true'
             - 'false'
         - name: enable_safe_links_for_teams
-          description: 'Whether to enable the Safe Links for Microsoft Teams. Possible values: "true" and "false". Default is false.'
+          description: 'Whether to enable the Safe Links for Microsoft Teams. Default is false.'
           required: false
           isArray: false
           auto: PREDEFINED
@@ -386,7 +386,7 @@ script:
             - 'true'
             - 'false'
         - name: is_enabled
-          description: 'Whether to enable Safe Links protection for email messages. Possible values: "true" and "false". Default is false.'
+          description: 'Whether to enable Safe Links protection for email messages. Default is false.'
           required: false
           isArray: false
           auto: PREDEFINED
@@ -395,7 +395,7 @@ script:
             - 'false'
         - name: scan_urls
           description: 'Whether to enable or disable real-time scanning of clicked links in
-            email messages. Possible values: "true" and "false". Default is false.'
+            email messages. Default is false.'
           required: false
           isArray: false
           auto: PREDEFINED
@@ -405,7 +405,7 @@ script:
         - name: use_translated_notification_text
           description: 'Whether to use Microsoft Translator to automatically localize the
             custom notification text that you specified with the
-            CustomNotificationText parameter. Possible values: "true" and "false". Default is false.'
+            CustomNotificationText parameter. Default is false.'
           required: false
           isArray: false
           auto: PREDEFINED
@@ -525,7 +525,7 @@ script:
         - default: false
           isArray: false
           name: state
-          description: 'The state of the rules. Possible values: "Enabled" and "Disabled".'
+          description: 'The state of the rules.'
           required: false
           secret: false
           auto: PREDEFINED
@@ -621,7 +621,7 @@ script:
           required: false
           isArray: false
         - name: enabled
-          description: 'Whether the rule is enabled. Possible value: "true" and "false".'
+          description: 'Whether the rule is enabled.'
           required: false
           isArray: false
           auto: PREDEFINED
@@ -746,7 +746,7 @@ script:
           required: false
           isArray: false
         - name: enabled
-          description: 'Whether the rule is enabled. Possible values: "true" and "false".'
+          description: 'Whether the rule is enabled.'
           required: false
           isArray: false
           auto: PREDEFINED
