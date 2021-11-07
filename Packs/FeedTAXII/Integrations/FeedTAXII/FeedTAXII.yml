@@ -160,7 +160,7 @@ script:
       description: The indicator type.
       type: String
     - contextPath: TAXII.Indicator.title
-      description: The indicator title.
+      description: The observable title.
       type: String
     - contextPath: TAXII.Indicator.description
       description: The observable description.
@@ -184,7 +184,7 @@ script:
       description: The indicator DBot score.
       type: String
     - contextPath: TAXII.Indicator.fields
-      description: The indicator value.
+      description: The indicator fields.
       type: Unknown
     - contextPath: TAXII.Indicator.Rawjson
       description: The indicator rawJSON value.
