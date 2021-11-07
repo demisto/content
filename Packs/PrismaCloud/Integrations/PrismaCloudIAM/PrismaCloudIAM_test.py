@@ -128,7 +128,7 @@ class TestGetUserCommand:
         assert outputs.get('action') == IAMActions.GET_USER
         assert outputs.get('success') is False
         assert outputs.get('errorCode') == 500
-        assert outputs.get('errorMessage') == 'Error in API call [500] - bad request'
+        assert 'Error in API call [500] - bad request' in outputs.get('errorMessage')
 
 
 class TestCreateUserCommand:

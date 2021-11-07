@@ -4588,7 +4588,7 @@
             "playbookID": "TestAzureSentinelPlaybookV2"
         },
         {
-            "integrations": "AutoFocusTagsFeed",
+            "integrations": ["AutoFocusTagsFeed", "Demisto REST API"],
             "playbookID": "AutoFocusTagsFeed-test"
         },
         {
@@ -4618,6 +4618,21 @@
             "is_mockable": false,
             "instance_names": "MISP_feed_instance",
             "timeout": 2400
+        },
+        {
+            "integrations": [
+                "Demisto REST API"
+            ],
+            "playbookID": "GetTasksWithSections SetIRProcedures end to end test",
+            "fromversion": "6.0.0"
+        },
+        {
+            "scripts": [
+                "SplunkShowAsset",
+                "SplunkShowDrilldown",
+                "SplunkShowIdentity"
+            ],
+            "playbookID": "SplunkShowEnrichment"
         }
     ],
     "skipped_tests": {
