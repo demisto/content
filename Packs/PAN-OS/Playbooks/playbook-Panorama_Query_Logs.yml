@@ -336,7 +336,7 @@ tasks:
       id: 3a40b2a9-6c37-4bd7-85cd-bb8c5720b91c
       version: -1
       name: Filter JobID
-      description: Filtering JOBID.
+      description: Filtering the JOBID.
       type: condition
       iscommand: false
       brand: ""
