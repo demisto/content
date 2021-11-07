@@ -154,7 +154,9 @@ def remove_old_incident_ids(last_run_fetched_ids, start_time_query, end_time_que
     """
     new_last_run_fetched_ids = {}
     for incident in last_run_fetched_ids.keys():
-        if end_time_query > last_run_fetched_ids[incident] >= start_time_query:
+        end_time_query_datetime = datetime.strptime(end_time_query, SPLUNK_TIME_FORMAT)
+        start_time_query_datetime = datetime.strptime(start_time_query, SPLUNK_TIME_FORMAT)
+        if end_time_query_datetime > last_run_fetched_ids[incident] >= start_time_query_datetime:
             # query time range is [start_time_query, end_time_query)
             new_last_run_fetched_ids[incident] = last_run_fetched_ids[incident]
     return new_last_run_fetched_ids
