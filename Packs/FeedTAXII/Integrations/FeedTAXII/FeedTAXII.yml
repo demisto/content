@@ -183,6 +183,9 @@ script:
     - contextPath: TAXII.Indicator.Score
       description: The indicator DBot score.
       type: String
+    - contextPath: TAXII.Indicator.Relationships
+      description: The indicator relationships.
+      type: String
     - contextPath: TAXII.Indicator.Fields
       description: The indicator fields.
       type: Unknown

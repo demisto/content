@@ -88,6 +88,7 @@ Gets indicators from the the feed.
 | TAXII.Indicator.Stixmalwaretypes | String | The stix malware type. | 
 | TAXII.Indicator.Confidence | String | The indicator confidence. | 
 | TAXII.Indicator.Score | String | The indicator DBot score. | 
+| TAXII.Indicator.Relationships | String | The indicator relationships. | 
 | TAXII.Indicator.Fields | Unknown | The indicator fields. | 
 | TAXII.Indicator.Rawjson | Unknown | The indicator rawJSON value. | 
 
