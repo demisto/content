@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: AutoFocusTagsFeed-test
-description: Test playbook for AutoFocus Tags Feed integration
+description: Test playbook for AutoFocus Tags Feed integration.
 starttaskid: "0"
 tasks:
   "0":
