@@ -1960,10 +1960,6 @@
             "playbookID": "VMWare Test"
         },
         {
-            "integrations": "Anomali ThreatStream",
-            "playbookID": "Anomali_ThreatStream_Test"
-        },
-        {
             "integrations": "carbonblack-v2",
             "playbookID": "Carbon Black Response Test",
             "fromversion": "5.0.0"
@@ -2745,10 +2741,6 @@
             "integrations": "EWS Mail Sender",
             "fromversion": "4.5.0",
             "memory_threshold": 100
-        },
-        {
-            "integrations": "Anomali ThreatStream v2",
-            "playbookID": "ThreatStream-Test"
         },
         {
             "integrations": "Flashpoint",
@@ -4596,6 +4588,10 @@
             "playbookID": "TestAzureSentinelPlaybookV2"
         },
         {
+            "integrations": "Anomali ThreatStream v3",
+            "playbookID": "ThreatStream-Test"
+        },
+        {
             "integrations": ["AutoFocusTagsFeed", "Demisto REST API"],
             "playbookID": "AutoFocusTagsFeed-test"
         },
@@ -4805,8 +4801,6 @@
         "Preempt": "Issue 20268",
         "Jask": "Issue 18879",
         "vmray": "Issue 18752",
-        "Anomali ThreatStream v2": "Issue 19182",
-        "Anomali ThreatStream": "Issue 19182",
         "SCADAfence CNM": "Issue 18376",
         "ArcSight ESM v2": "Issue #18328",
         "AlienVault USM Anywhere": "Issue #18273",
