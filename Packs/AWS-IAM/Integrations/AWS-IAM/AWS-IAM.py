@@ -1144,7 +1144,7 @@ def list_attached_group_policies(args, aws_client):
         'GroupName': group_name,
         'PolicyArn': policy.get('PolicyArn'),
         'PolicyName': policy.get('PolicyName')
-    }) for policy in data]
+    } for policy in data]
 
     ec = {'AWS.IAM.AttachedGroupPolicies(val.PolicyArn && val.GroupName && val.PolicyArn === obj.PolicyArn && '
           'val.GroupName === obj.GroupName)': policy_data,
