@@ -204,7 +204,6 @@ class Client:
         params = {'api-version': '6.1-preview.1'}
 
         url_suffix = f'{project}/_apis/git/repositories/{repository_id}/pullrequests/{pull_request_id}'
-        # url_suffix = f'{project}/_apis/git/pullrequests/{pull_request_id}' # The difference is that URL is not retrieve links.
 
         response = self.ms_client.http_request(method='GET',
                                                url_suffix=url_suffix,
@@ -248,15 +247,6 @@ class Client:
             dict: API response from Azure.
 
         """
-
-        # params = remove_empty_elements({'api-version': '6.1-preview.1'})
-        #
-        # response = self.ms_client.http_request(method='GET',
-        #                                        url_suffix=f'xsoar/_apis/sourceProviders/xsoar/branches',
-        #                                        params=params,
-        #                                        resp_type='json')
-
-        # print(response)
 
         params = remove_empty_elements({'api-version': '6.1-preview.4', "$skip": skip, "$top": limit})
 
@@ -558,10 +548,10 @@ def user_add_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     if not dict_safe_get(response, ['operationResult', 'isSuccess']):
         error = dict_safe_get(response, ['operationResult', 'errors'])
         if not isinstance(error, list) or not error:
-            raise Exception('Error occurred')
+            raise ValueError('Error occurred')
 
         error_message = error[0].get('value')
-        raise Exception(error_message)
+        raise ValueError(error_message)
 
     outputs = {
         "id": dict_safe_get(response, ['operationResult', 'userId']),
@@ -1676,7 +1666,6 @@ def main() -> None:
 
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
-    # demisto.log(f'Currently in azure devops, test command is: {command}')
 
     try:
         requests.packages.urllib3.disable_warnings()

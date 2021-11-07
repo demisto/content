@@ -13,14 +13,6 @@ configuration:
   name: organization
   required: true
   type: 0
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
 - additionalinfo: Default is 50. Maximum is 200.
   defaultvalue: '50'
   display: Maximum incidents for one fetch.
@@ -56,6 +48,20 @@ configuration:
   type: 13
 - display: Fetch incidents
   name: isFetch
+  required: false
+  type: 8
+- defaultvalue: 7 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  hidden: false
+  name: first_fetch
+  required: false
+  type: 0
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
   required: false
   type: 8
 description: Create and manage Git repositories in Azure DevOps Services.
@@ -128,7 +134,7 @@ script:
     - default: false
       defaultValue: '60'
       description: Indicates the time in seconds until the polling sequence timeouts.
-        Default is 60 seconds
+        Default is 60 seconds.
       isArray: false
       name: timeout
       required: false
