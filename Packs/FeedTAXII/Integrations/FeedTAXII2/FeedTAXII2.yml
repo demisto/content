@@ -116,6 +116,32 @@ configuration:
   name: initial_interval
   required: false
   type: 0
+- display: STIX Objects To Fetch
+  name: objects_to_fetch
+  defaultvalue: indicator,report,malware,campaign,attack-pattern,course-of-action,intrusion-set,tool,threat-actor,infrastructure
+  type: 16
+  required: false
+  options:
+  - indicator
+  - report
+  - malware
+  - campaign
+  - attack-pattern
+  - course-of-action
+  - intrusion-set
+  - tool
+  - threat-actor
+  - infrastructure
+- additionalinfo: Add a certificate file as text to connect to the TAXII server
+  display: Certificate File as Text
+  name: certificate
+  required: false
+  type: 12
+- additionalinfo: Add a key file as text to connect to the TAXII server
+  display: Key File as Text
+  name: key
+  required: false
+  type: 4
 - additionalinfo: Set the number of stix object that will be requested with each taxii
     poll (http request). A single fetch is made of several taxii polls. Changing this
     setting can help speed up fetches, or fix issues on slower networks. Please note
@@ -213,7 +239,7 @@ script:
     description: 'WARNING: This command will reset your fetch history.'
     execution: false
     name: taxii2-reset-fetch-indicators
-  dockerimage: demisto/taxii2:1.0.0.19258
+  dockerimage: demisto/taxii2:1.0.0.23423
   feed: true
   isfetch: false
   longRunning: false
@@ -225,4 +251,3 @@ script:
 tests:
 - TAXII 2 Feed Test
 fromversion: 5.5.0
-autoUpdateDockerImage: false
