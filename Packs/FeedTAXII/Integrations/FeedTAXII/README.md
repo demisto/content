@@ -75,7 +75,7 @@ Gets indicators from the the feed.
 | initial_interval | The time interval for the first fetch (retroactive). `<number> <time unit>` of type minute/hour/day. For example, 1 minute, 12 hours, 7 days. | Optional | 
 
 
-#### Context Output
+##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
