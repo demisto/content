@@ -153,10 +153,10 @@ script:
     execution: false
     name: get-indicators
     outputs:
-    - contextPath: TAXII.Indicator.Value
+    - contextPath: TAXII.Indicator.value
       description: The indicator value.
       type: String
-    - contextPath: TAXII.Indicator.Type
+    - contextPath: TAXII.Indicator.type
       description: The indicator type.
       type: String
     - contextPath: TAXII.Indicator.title
@@ -186,7 +186,7 @@ script:
     - contextPath: TAXII.Indicator.fields
       description: The indicator fields.
       type: Unknown
-    - contextPath: TAXII.Indicator.Rawjson
+    - contextPath: TAXII.Indicator.rawJSON
       description: The indicator rawJSON value.
       type: Unknown
   dockerimage: demisto/taxii:1.0.0.23209
