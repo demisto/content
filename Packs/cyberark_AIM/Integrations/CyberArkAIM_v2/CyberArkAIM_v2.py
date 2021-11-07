@@ -126,10 +126,10 @@ def test_module(client: Client) -> str:
         client.list_credentials()
     else:
         try:
-            # Running a dummy credential just to check connection.
+            # Running a dummy credential just to check connection itself.
             client.get_credentials("test_cred")
         except DemistoException as e:
-            if 'Error in API call [500]' in e.message:
+            if 'Error in API call [500]' in e.message or 'Error in API call [404]' in e.message:
                 return 'ok'
             else:
                 raise e
