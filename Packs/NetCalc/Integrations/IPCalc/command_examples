@@ -1,8 +1,0 @@
-!ipcalc-check-subnet-collision subnet_one="192.168.20.20/21" subnet_two="192.168.20.21"
-!ipcalc-return-subnet-addresses subnet="192.168.20.20/30"
-!ipcalc-return-subnet-binary subnet="192.168.20.20"
-!ipcalc-return-subnet-broadcast-address subnet="192.168.20.20/21"
-!ipcalc-return-subnet-first-address subnet="192.168.20.20/21"
-!ipcalc-return-subnet-iana-allocation subnet="192.168.10.10/23"
-!ipcalc-return-subnet-last-address subnet="192.168.20.20/21"
-!ipcalc-return-subnet-network subnet="192.168.10.10/16"
