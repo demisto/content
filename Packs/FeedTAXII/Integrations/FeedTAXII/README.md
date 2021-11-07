@@ -89,7 +89,7 @@ Gets indicators from the the feed.
 | TAXII.Indicator.Confidence | String | The indicator confidence. | 
 | TAXII.Indicator.Score | String | The indicator DBot score. | 
 | TAXII.Indicator.Fields | Unknown | The indicator fields. | 
-| TAXII.Indicator.RawJSON | Unknown | The indicator rawJSON value. | 
+| TAXII.Indicator.Rawjson | Unknown | The indicator rawJSON value. | 
 
 
 #### Command Example
