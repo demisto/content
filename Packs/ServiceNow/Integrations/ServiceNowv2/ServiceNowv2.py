@@ -841,7 +841,7 @@ class Client(BaseClient):
         return self.send_request('/table/label_entry', 'POST', body=body)
 
     def query(self, table_name: str, sys_param_limit: str, sys_param_offset: str, sys_param_query: str,
-              system_params: dict={}, sysparm_fields: Optional[str]=None, escape_amp=True) -> dict:
+              system_params: dict = {}, sysparm_fields: Optional[str] = None, escape_amp: bool = True) -> dict:
         """Query records by sending a GET request.
 
         Args:
