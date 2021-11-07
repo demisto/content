@@ -4631,8 +4631,8 @@
             "fromversion": "6.0.0"
         },
         {
-            "integrations": "LogRhythmRest",
-            "playbookID": "LogRhythm REST test"
+            "integrations": "LogRhythmRest V2",
+            "playbookID": "LogRhythmRestV2-test"
         },
         {
             "scripts": [
