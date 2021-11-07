@@ -830,7 +830,7 @@ class Client(BaseClient):
         return self.send_request('/table/label_entry', 'POST', body=body)
 
     def query(self, table_name: str, sys_param_limit: str, sys_param_offset: str, sys_param_query: str,
-              system_params: dict = {}, sysparm_fields: Optional[str] = None) -> dict:
+              system_params: dict = {}, sysparm_fields: Optional[str] = None, escape_amp = True) -> dict:
         """Query records by sending a GET request.
 
         Args:
@@ -840,6 +840,7 @@ class Client(BaseClient):
         sys_param_query: the query
         system_params: system parameters
         sysparm_fields: Comma-separated list of field names to return in the response.
+        escape_amp: when querying fields you may want not to escape &'s.
 
         Returns:
             Response from API.
@@ -847,7 +848,10 @@ class Client(BaseClient):
 
         query_params = {'sysparm_limit': sys_param_limit, 'sysparm_offset': sys_param_offset}
         if sys_param_query:
-            query_params['sysparm_query'] = build_query_for_request_params(sys_param_query)
+            if escape_amp:
+              query_params['sysparm_query'] = build_query_for_request_params(sys_param_query)
+            else:
+              query_params['sysparm_query'] = sys_param_query
         if system_params:
             query_params.update(system_params)
         if sysparm_fields:
@@ -1592,7 +1596,7 @@ def query_groups_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any
     else:
         if group_name:
             group_query = f'name={group_name}'
-        result = client.query(table_name, limit, offset, group_query)
+        result = client.query(table_name, limit, offset, group_query, escape_amp=False)
 
     if not result or 'result' not in result:
         return 'No groups found.', {}, {}, False
