@@ -42,8 +42,7 @@ class Client:
         """
         params = {'api-version': '6.1-preview.1'}
 
-        data = {"resources": {"repositories": {"self": {"refName": f'refs/heads/{branch_name}'}}},
-                "stagesToSkip": [], "variables": {}}
+        data = {"resources": {"repositories": {"self": {"refName": f'refs/heads/{branch_name}'}}}}
 
         url_suffix = f"{project}/_apis/pipelines/{pipeline_id}/runs"
 

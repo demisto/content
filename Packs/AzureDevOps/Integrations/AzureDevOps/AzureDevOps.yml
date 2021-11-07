@@ -64,7 +64,9 @@ configuration:
   name: insecure
   required: false
   type: 8
-description: Create and manage Git repositories in Azure DevOps Services.
+description: Manage Git repositories in Azure DevOps Services. Integration capabilities
+  include retrieving, creating, and updating pull requests. Run pipelines and retrieve
+  git information.
 display: AzureDevOps
 name: AzureDevOps
 script:
@@ -148,7 +150,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Run a pipeline.
+    description: Run a pipeline. A DevOps pipeline is a set of automated processes
+      and tools that allows both developers and operations professionals to work cohesively
+      to build and deploy code to a production environment.
     execution: false
     polling: true
     name: azure-devops-pipeline-run
@@ -1078,5 +1082,6 @@ script:
   subtype: python3
   type: python
 fromversion: 6.0.0
+beta: true
 tests:
 - No tests (auto formatted)
