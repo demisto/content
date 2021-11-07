@@ -1078,7 +1078,7 @@
         },
         {
             "playbookID": "Block IP - Generic V3_Test",
-            "fromversion": "6.0.0",
+            "fromversion": "6.0.0"
         },
         {
             "playbookID": "PAN-OS - Block URL - Custom URL Category Test",
