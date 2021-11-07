@@ -130,16 +130,22 @@ class IAMUserProfile:
     DEFAULT_INCIDENT_TYPE = 'User Profile'
     CREATE_INCIDENT_TYPE = 'User Profile - Create'
     UPDATE_INCIDENT_TYPE = 'User Profile - Update'
+    DISABLE_INCIDENT_TYPE = 'User Profile - Disable'
 
-    def __init__(self, user_profile, user_profile_delta=None):
+    def __init__(self, user_profile, mapper: str, incident_type: str, user_profile_delta=None):
         self._user_profile = safe_load_json(user_profile)
+        # Mapping is added here for GET USER commands, where we need to map Cortex XSOAR fields to the given app fields.
+        self.mapped_user_profile = None
+        self.mapped_user_profile = self.map_object(mapper, incident_type, map_old_data=True) if \
+            mapper else self._user_profile
         self._user_profile_delta = safe_load_json(user_profile_delta) if user_profile_delta else {}
-        self._vendor_action_results = []
+        self._vendor_action_results: List = []
 
-    def get_attribute(self, item, use_old_user_data=False):
-        if use_old_user_data and self._user_profile.get('olduserdata', {}).get(item):
-            return self._user_profile.get('olduserdata', {}).get(item)
-        return self._user_profile.get(item)
+    def get_attribute(self, item, use_old_user_data=False, user_profile_data: Optional[Dict] = None):
+        user_profile = user_profile_data if user_profile_data else self._user_profile
+        if use_old_user_data and user_profile.get('olduserdata', {}).get(item):
+            return user_profile.get('olduserdata', {}).get(item)
+        return user_profile.get(item)
 
     def to_entry(self):
         """ Generates a XSOAR IAM entry from the data in _vendor_action_results.
@@ -195,6 +201,9 @@ class IAMUserProfile:
         if not email:
             email = self.get_attribute('email')
 
+        if not details:
+            details = self.mapped_user_profile
+
         vendor_action_result = IAMVendorActionResult(
             success=success,
             active=active,
@@ -212,7 +221,7 @@ class IAMUserProfile:
 
         self._vendor_action_results.append(vendor_action_result)
 
-    def map_object(self, mapper_name, incident_type):
+    def map_object(self, mapper_name, incident_type, map_old_data: bool = False):
         """ Returns the user data, in an application data format.
 
         :type mapper_name: ``str``
@@ -221,14 +230,25 @@ class IAMUserProfile:
         :type incident_type: ``str``
         :param incident_type: The incident type used.
 
+        :type map_old_data ``bool``
+        :param map_old_data: Whether to map old data as well.
+
         :return: the user data, in the app data format.
         :rtype: ``dict``
         """
-        if incident_type not in [IAMUserProfile.CREATE_INCIDENT_TYPE, IAMUserProfile.UPDATE_INCIDENT_TYPE]:
+        if self.mapped_user_profile:
+            if not map_old_data:
+                return {k: v for k, v in self.mapped_user_profile.items() if k != 'olduserdata'}
+            return self.mapped_user_profile
+        if incident_type not in [IAMUserProfile.CREATE_INCIDENT_TYPE, IAMUserProfile.UPDATE_INCIDENT_TYPE,
+                                 IAMUserProfile.DISABLE_INCIDENT_TYPE]:
             raise DemistoException('You must provide a valid incident type to the map_object function.')
         if not self._user_profile:
             raise DemistoException('You must provide the user profile data.')
         app_data = demisto.mapObject(self._user_profile, mapper_name, incident_type)
+        if map_old_data and 'olduserdata' in self._user_profile:
+            app_data['olduserdata'] = demisto.mapObject(self._user_profile.get('olduserdata', {}), mapper_name,
+                                                        incident_type)
         return app_data
 
     def update_with_app_data(self, app_data, mapper_name, incident_type=None):
@@ -249,6 +269,36 @@ class IAMUserProfile:
             app_data = safe_load_json(app_data)
         self._user_profile = demisto.mapObject(app_data, mapper_name, incident_type)
 
+    def get_first_available_iam_user_attr(self, iam_attrs: List[str], use_old_user_data: bool = False):
+        # Special treatment for ID field, because he is not included in outgoing mappers.
+        for iam_attr in iam_attrs:
+            # Special treatment for ID field, because he is not included in outgoing mappers.
+            if iam_attr == 'id':
+                if attr_value := self.get_attribute(iam_attr, use_old_user_data):
+                    return iam_attr, attr_value
+            if attr_value := self.get_attribute(iam_attr, use_old_user_data, self.mapped_user_profile):
+                # Special treatment for emails, as mapper maps it to a list object.
+                if iam_attr == 'emails' and not isinstance(attr_value, str):
+                    if isinstance(attr_value, dict):
+                        attr_value = attr_value.get('value')
+                    elif isinstance(attr_value, list):
+                        if not attr_value:
+                            continue
+                        attr_value = next((email.get('value') for email in attr_value if email.get('primary', False)),
+                                          attr_value[0].get('value', ''))
+                return iam_attr, attr_value
+
+        raise DemistoException('Your user profile argument must contain at least one attribute that is mapped into one'
+                               f' of the following attributes in the outgoing mapper: {iam_attrs}')
+
+    def set_user_is_already_disabled(self, details):
+        self.set_result(
+            action=IAMActions.DISABLE_USER,
+            skip=True,
+            skip_reason='User is already disabled.',
+            details=details
+        )
+
 
 class IAMUserAppData:
     """ Holds user attributes retrieved from an application.
@@ -268,11 +318,13 @@ class IAMUserAppData:
     :return: None
     :rtype: ``None``
     """
-    def __init__(self, user_id, username, is_active, app_data):
+
+    def __init__(self, user_id, username, is_active, app_data, email=None):
         self.id = user_id
         self.username = username
         self.is_active = is_active
         self.full_data = app_data
+        self.email = email
 
 
 class IAMCommand:
@@ -293,8 +345,9 @@ class IAMCommand:
     :return: None
     :rtype: ``None``
     """
+
     def __init__(self, is_create_enabled=True, is_enable_enabled=True, is_disable_enabled=True, is_update_enabled=True,
-                 create_if_not_exists=True, mapper_in=None, mapper_out=None, attr='email'):
+                 create_if_not_exists=True, mapper_in=None, mapper_out=None, get_user_iam_attrs=None):
         """ The IAMCommand c'tor
 
         :param is_create_enabled: (bool) Whether or not to allow creating users in the application.
@@ -304,7 +357,11 @@ class IAMCommand:
         :param create_if_not_exists: (bool) Whether or not to create a user if does not exist in the application.
         :param mapper_in: (str) Incoming mapper from the application to Cortex XSOAR
         :param mapper_out: (str) Outgoing mapper from the Cortex XSOAR to the application
+        :param get_user_iam_attrs (List[str]): List of IAM attributes supported by integration by precedence
+                                                        order to get user details.
         """
+        if get_user_iam_attrs is None:
+            get_user_iam_attrs = ['email']
         self.is_create_enabled = is_create_enabled
         self.is_enable_enabled = is_enable_enabled
         self.is_disable_enabled = is_disable_enabled
@@ -312,7 +369,7 @@ class IAMCommand:
         self.create_if_not_exists = create_if_not_exists
         self.mapper_in = mapper_in
         self.mapper_out = mapper_out
-        self.attr = attr
+        self.get_user_iam_attrs = get_user_iam_attrs
 
     def get_user(self, client, args):
         """ Searches a user in the application and updates the user profile object with the data.
@@ -321,10 +378,11 @@ class IAMCommand:
         :param args: (dict) The `iam-get-user` command arguments
         :return: (IAMUserProfile) The user profile object.
         """
-        user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
+        user_profile = IAMUserProfile(user_profile=args.get('user-profile'), mapper=self.mapper_out,
+                                      incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
         try:
-            identifier = user_profile.get_attribute(self.attr)
-            user_app_data = client.get_user(identifier)
+            iam_attribute, iam_attribute_val = user_profile.get_first_available_iam_user_attr(self.get_user_iam_attrs)
+            user_app_data = client.get_user(iam_attribute, iam_attribute_val)
             if not user_app_data:
                 error_code, error_message = IAMErrors.USER_DOES_NOT_EXIST
                 user_profile.set_result(action=IAMActions.GET_USER,
@@ -337,7 +395,7 @@ class IAMCommand:
                     action=IAMActions.GET_USER,
                     active=user_app_data.is_active,
                     iden=user_app_data.id,
-                    email=user_profile.get_attribute('email'),
+                    email=user_profile.get_attribute('email') or user_app_data.email,
                     username=user_app_data.username,
                     details=user_app_data.full_data
                 )
@@ -355,16 +413,17 @@ class IAMCommand:
         :param args: (dict) The `iam-disable-user` command arguments
         :return: (IAMUserProfile) The user profile object.
         """
-
-        user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
+        user_profile = IAMUserProfile(user_profile=args.get('user-profile'), mapper=self.mapper_out,
+                                      incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
         if not self.is_disable_enabled:
             user_profile.set_result(action=IAMActions.DISABLE_USER,
                                     skip=True,
                                     skip_reason='Command is disabled.')
         else:
             try:
-                identifier = user_profile.get_attribute(self.attr)
-                user_app_data = client.get_user(identifier)
+                iam_attribute, iam_attribute_val = user_profile.get_first_available_iam_user_attr(
+                    self.get_user_iam_attrs)
+                user_app_data = client.get_user(iam_attribute, iam_attribute_val)
                 if not user_app_data:
                     _, error_message = IAMErrors.USER_DOES_NOT_EXIST
                     user_profile.set_result(action=IAMActions.DISABLE_USER,
@@ -372,15 +431,17 @@ class IAMCommand:
                                             skip_reason=error_message)
                 else:
                     if user_app_data.is_active:
-                        user_app_data = client.disable_user(user_app_data.id)
-                    user_profile.set_result(
-                        action=IAMActions.DISABLE_USER,
-                        active=False,
-                        iden=user_app_data.id,
-                        email=user_profile.get_attribute('email'),
-                        username=user_app_data.username,
-                        details=user_app_data.full_data
-                    )
+                        disabled_user = client.disable_user(user_app_data.id)
+                        user_profile.set_result(
+                            action=IAMActions.DISABLE_USER,
+                            active=False,
+                            iden=disabled_user.id,
+                            email=user_profile.get_attribute('email') or user_app_data.email,
+                            username=disabled_user.username,
+                            details=disabled_user.full_data
+                        )
+                    else:
+                        user_profile.set_user_is_already_disabled(user_app_data.full_data)
 
             except Exception as e:
                 client.handle_exception(user_profile, e, IAMActions.DISABLE_USER)
@@ -396,17 +457,17 @@ class IAMCommand:
         :param args: (dict) The `iam-create-user` command arguments
         :return: (IAMUserProfile) The user profile object.
         """
-
-        user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
-
+        user_profile = IAMUserProfile(user_profile=args.get('user-profile'), mapper=self.mapper_out,
+                                      incident_type=IAMUserProfile.CREATE_INCIDENT_TYPE)
         if not self.is_create_enabled:
             user_profile.set_result(action=IAMActions.CREATE_USER,
                                     skip=True,
                                     skip_reason='Command is disabled.')
         else:
             try:
-                identifier = user_profile.get_attribute(self.attr)
-                user_app_data = client.get_user(identifier)
+                iam_attribute, iam_attribute_val = user_profile.get_first_available_iam_user_attr(
+                    self.get_user_iam_attrs)
+                user_app_data = client.get_user(iam_attribute, iam_attribute_val)
                 if user_app_data:
                     # if user exists, update it
                     user_profile = self.update_user(client, args)
@@ -418,7 +479,7 @@ class IAMCommand:
                         action=IAMActions.CREATE_USER,
                         active=created_user.is_active,
                         iden=created_user.id,
-                        email=user_profile.get_attribute('email'),
+                        email=user_profile.get_attribute('email') or created_user.email,
                         username=created_user.username,
                         details=created_user.full_data
                     )
@@ -437,29 +498,34 @@ class IAMCommand:
         :param args: (dict) The `iam-update-user` command arguments
         :return: (IAMUserProfile) The user profile object.
         """
-
-        user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
-        allow_enable = args.get('allow-enable') == 'true'
+        user_profile = IAMUserProfile(user_profile=args.get('user-profile'), mapper=self.mapper_out,
+                                      incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
+        allow_enable = args.get('allow-enable') == 'true' and self.is_enable_enabled
         if not self.is_update_enabled:
             user_profile.set_result(action=IAMActions.UPDATE_USER,
                                     skip=True,
                                     skip_reason='Command is disabled.')
         else:
             try:
-                identifier = user_profile.get_attribute(self.attr, use_old_user_data=True)
-                user_app_data = client.get_user(identifier)
+                iam_attribute, iam_attribute_val = user_profile.get_first_available_iam_user_attr(
+                    self.get_user_iam_attrs, use_old_user_data=True)
+                user_app_data = client.get_user(iam_attribute, iam_attribute_val)
                 if user_app_data:
                     app_profile = user_profile.map_object(self.mapper_out, IAMUserProfile.UPDATE_INCIDENT_TYPE)
 
-                    if allow_enable and self.is_enable_enabled and not user_app_data.is_active:
+                    if allow_enable and not user_app_data.is_active:
                         client.enable_user(user_app_data.id)
 
                     updated_user = client.update_user(user_app_data.id, app_profile)
+
+                    if updated_user.is_active is None:
+                        updated_user.is_active = True if allow_enable else user_app_data.is_active
+
                     user_profile.set_result(
                         action=IAMActions.UPDATE_USER,
                         active=updated_user.is_active,
                         iden=updated_user.id,
-                        email=user_profile.get_attribute('email'),
+                        email=user_profile.get_attribute('email') or updated_user.email or user_app_data.email,
                         username=updated_user.username,
                         details=updated_user.full_data
                     )
@@ -476,3 +542,7 @@ class IAMCommand:
                 client.handle_exception(user_profile, e, IAMActions.UPDATE_USER)
 
         return user_profile
+
+
+def get_first_primary_email_by_scim_schema(res: Dict):
+    return next((email.get('value') for email in res.get('emails', []) if email.get('primary')), None)
