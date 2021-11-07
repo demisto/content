@@ -408,7 +408,7 @@ inputs:
 - key: playbookDescription
   value: {}
   required: false
-  description: The playbook description.
+  description: The playbook description
   playbookInputQuery:
 - key: countTotalIndicators
   value: {}
