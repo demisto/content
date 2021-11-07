@@ -1078,8 +1078,7 @@
         },
         {
             "playbookID": "Block IP - Generic V3_Test",
-            "integrations": ["Panorama","ThreatX"],
-            "instance_names": "panorama_instance_security_team",
+            "integrations": "ThreatX",
             "fromversion": "6.0.0"
         },
         {

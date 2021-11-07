@@ -3353,29 +3353,11 @@ tasks:
           - operator: uniq
       IPListName:
         simple: ${inputs.IPListName}
-      URL:
-        complex:
-          root: URL
-          filters:
-          - - operator: isExists
-              left:
-                value:
-                  simple: URL.Malicious
-                iscontext: true
-          accessor: Data
-          transformers:
-          - operator: uniq
-      URLListName:
-        simple: Demisto-Remediation-URL-EDL
       inbound-or-outbound-rule:
         simple: ${inputs.RuleDirection}
       ip-pre-post-rulebase:
         simple: pre-rulebase
       ip-rule-position:
-        simple: top
-      url-pre-post-rulebase:
-        simple: pre-rulebase
-      url-rule-position:
         simple: top
     separatecontext: true
     loop:
