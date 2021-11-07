@@ -4,6 +4,7 @@ from CommonServerPython import DemistoException
 import demistomock as demisto
 import pytest
 import json
+import time
 import QRadar_v2  # import module separately for mocker
 from QRadar_v2 import (
     QRadarClient,
@@ -103,7 +104,7 @@ class TestQRadarv2:
         assert sic_mock.call_args[0][0]['id'] == 450
         assert len(sic_mock.call_args[0][0]['samples']) == 1
 
-    def test_fetch_incidents_long_running_events(self, mocker):
+    def test_fetch_incidents_long_running_events__success(self, mocker):
         """
         Assert fetch_incidents_long_running_events updates integration context with the expected id, samples and events
 
@@ -138,6 +139,44 @@ class TestQRadarv2:
         assert len(sic_mock.call_args[0][0]['samples']) == 1
         incident_raw_json = json.loads(sic_mock.call_args[0][0]['samples'][0]['rawJSON'])
         assert incident_raw_json['events'] == expected_events
+
+    def test_fetch_incidents_long_running_events__timeout(self, mocker):
+        """
+        Assert raw offenses are populated as expected when timeout is reached
+
+        Given:
+            - Fetch incidents is set to: FetchMode.all_events
+            - There is an offense to fetch: 450
+        When:
+            - Fetch loop is triggered
+        Then:
+            - Assert print_debug_msg was called with timeout message
+            - Assert integration context id is set correctly
+            - Assert integration context samples is set with correct length
+            - Assert integration context events is not set
+        """
+        def mock_enrich_offense_with_events(client, offense, fetch_mode, events_columns, events_limit):
+            time.sleep(0.001)
+            return offense
+
+        QRadar_v2.DEFAULT_EVENTS_TIMEOUT = 0
+        client = QRadarClient("", {}, {"identifier": "*", "password": "*"})
+        fetch_mode = FetchMode.all_events
+        mocker.patch.object(QRadar_v2, "get_integration_context", return_value={})
+        mocker.patch.object(QRadar_v2, "fetch_raw_offenses", return_value=[RAW_RESPONSES["fetch-incidents"]])
+        print_debug_msg_mock = mocker.patch.object(QRadar_v2, "print_debug_msg")
+        QRadar_v2.enrich_offense_with_events = mock_enrich_offense_with_events
+        mocker.patch.object(demisto, "createIncidents")
+        mocker.patch.object(demisto, "debug")
+        sic_mock = mocker.patch.object(QRadar_v2, "set_to_integration_context_with_retries")
+
+        fetch_incidents_long_running_events(client, "", "", False, False, fetch_mode, "", "")
+
+        assert print_debug_msg_mock.call_args_list[0].args[0] == "Timed out while waiting for events"
+        assert sic_mock.call_args[0][0]['id'] == 450
+        assert len(sic_mock.call_args[0][0]['samples']) == 1
+        incident_raw_json = json.loads(sic_mock.call_args[0][0]['samples'][0]['rawJSON'])
+        assert 'events' not in incident_raw_json
 
     def test_enrich_offense_with_events__correlations(self, mocker):
         """

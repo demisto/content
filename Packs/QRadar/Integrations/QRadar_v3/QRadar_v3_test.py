@@ -1788,3 +1788,31 @@ def test_cleared_ctx_is_compatible_with_retries():
     cleared_ctx = clear_integration_ctx({'id': 5, 'last_mirror_update': '1000'})
     QRadar_v3.set_to_integration_context_with_retries(cleared_ctx)
     QRadar_v3.set_to_integration_context_with_retries({'id': 7})
+
+
+def test_update_missing_offenses_from_raw_offenses():
+    """
+    Assert missing offenses are copied from raw offenses
+    Given:
+        - enriched_offenses is missing some offenses
+        - raw_offenses has the offenses missing from enriched_offenses
+    When:
+        - Calling update_missing_offenses_from_raw_offenses
+    Then:
+        - Assert missing offenses are copied from raw_offenses
+        - Assert enriched offenses are not copied from raw_offenses
+    """
+    raw_offenses = [
+        {'id': 1},
+        {'id': 2},
+        {'id': 3}
+    ]
+    enriched_offenses = [{'id': 2, 'events': []}]
+    QRadar_v3.update_missing_offenses_from_raw_offenses(raw_offenses, enriched_offenses)
+    assert len(enriched_offenses) == 3
+    assert enriched_offenses[0]['id'] == 2
+    assert 'events' in enriched_offenses[0]
+    assert enriched_offenses[1]['id'] == 1
+    assert 'events' not in enriched_offenses[1]
+    assert enriched_offenses[2]['id'] == 3
+    assert 'events' not in enriched_offenses[2]
