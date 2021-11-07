@@ -1,0 +1,134 @@
+id: Block IP - Generic V3_Test
+version: -1
+name: Block IP - Generic V3_Test
+description: |-
+  Test Playbook for the "Block IP - generic V3" playbook.
+  This playbook will attempt to block - 141.98.10.81 IP (which is considered malicious by VT) o the following integrations:
+  * Pan-OS FW
+  * ThreatX
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 0904ffce-b274-4eff-89da-167044ff160e
+    type: start
+    task:
+      id: 0904ffce-b274-4eff-89da-167044ff160e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 737da3f6-1ea0-4d28-8252-71c6f721e85e
+    type: playbook
+    task:
+      id: 737da3f6-1ea0-4d28-8252-71c6f721e85e
+      version: -1
+      name: Block IP - Generic v3
+      playbookName: Block IP - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      AutoCommit:
+        simple: "Yes"
+      CustomBlockRule:
+        simple: "True"
+      IP:
+        simple: 141.98.10.81
+      InputEnrichment:
+        simple: "True"
+      ResolveIP:
+        simple: "False"
+      RuleDirection:
+        simple: outbound
+      RuleName:
+        simple: XSOAR - Block IP playbook - ${incident.id}
+      UserVerification:
+        simple: "False"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: eda8bdee-f4c5-4986-8271-5596eb6da0c7
+    type: title
+    task:
+      id: eda8bdee-f4c5-4986-8271-5596eb6da0c7
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 475,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.0.0
