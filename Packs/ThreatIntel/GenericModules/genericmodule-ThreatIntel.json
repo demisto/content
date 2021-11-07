@@ -120,7 +120,7 @@
                                     "dataType": "generics",
                                     "definitionId": "ThreatIntelReport",
                                     "widgetType": "pie",
-                                    "query": "status:Review,Done,Draft",
+                                    "query": "reportstatus:Review or Draft",
                                     "sort": [],
                                     "isPredefined": false,
                                     "dateRange": {
@@ -194,7 +194,7 @@
                                     },
                                     "params": {
                                         "groupBy": [
-                                            "status"
+                                            "reportstatus"
                                         ],
                                         "valuesFormat": "abbreviated"
                                     },
