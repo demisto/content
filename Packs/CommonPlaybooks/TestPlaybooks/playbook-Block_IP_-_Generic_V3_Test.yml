@@ -26,7 +26,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 50,
           "y": 50
         }
       }
@@ -39,17 +39,28 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 737da3f6-1ea0-4d28-8252-71c6f721e85e
+    taskid: 72549ae4-cc01-44af-8512-8077a4899df0
     type: playbook
     task:
-      id: 737da3f6-1ea0-4d28-8252-71c6f721e85e
+      id: 72549ae4-cc01-44af-8512-8077a4899df0
       version: -1
       name: Block IP - Generic v3
+      description: "This playbook blocks malicious IP addresses using all integrations\
+        \ that are enabled. The direction of the traffic that will be blocked is determined\
+        \ by the XSOAR user (and set by default to outgoing)\nNote the following:\n\
+        -  some of those integrations require specific parameters to run, which are\
+        \ based on the playbook inputs. Also, certain integrations use FW rules or\
+        \ appended network objects.\n- Note that the appended network objects should\
+        \ be specified in blocking rules inside the system later on. \n\n\nSupported\
+        \ integrations for this playbook [Network security products such as FW/WAF/IPs/etc.]:\
+        \ \n\n* Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n\
+        * Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n\
+        * Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n\
+        * Sophos Firewall\n\n"
       playbookName: Block IP - Generic v3
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -57,9 +68,9 @@ tasks:
       AutoCommit:
         simple: "Yes"
       CustomBlockRule:
-        simple: "True"
+        simple: "false"
       IP:
-        simple: 141.98.10.81
+        simple: 45.155.204.39
       InputEnrichment:
         simple: "True"
       ResolveIP:
@@ -68,6 +79,8 @@ tasks:
         simple: outbound
       RuleName:
         simple: XSOAR - Block IP playbook - ${incident.id}
+      Tag:
+        simple: testpb
       UserVerification:
         simple: "False"
     separatecontext: true
@@ -79,8 +92,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 240
+          "x": 50,
+          "y": 195
         }
       }
     note: false
@@ -92,10 +105,88 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: eda8bdee-f4c5-4986-8271-5596eb6da0c7
+    taskid: 31db64ee-000c-4ddf-8486-9f4010f87368
+    type: regular
+    task:
+      id: 31db64ee-000c-4ddf-8486-9f4010f87368
+      version: -1
+      name: Get indicator by tag
+      description: commands.local.cmd.find.indicators
+      script: Builtin|||findIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      extend-context:
+        simple: indicator=
+      query:
+        simple: tags:testpb
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 7ddab282-fe27-4675-8654-15af8e503166
+    type: condition
+    task:
+      id: 7ddab282-fe27-4675-8654-15af8e503166
+      version: -1
+      name: Check if the tag was applied for EDL
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${indicator.value}
+            iscontext: true
+          right:
+            value:
+              simple: 45.155.204.39
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 94b850d4-cac9-4898-8fce-87910687ea86
     type: title
     task:
-      id: eda8bdee-f4c5-4986-8271-5596eb6da0c7
+      id: 94b850d4-cac9-4898-8fce-87910687ea86
       version: -1
       name: Done
       type: title
@@ -106,8 +197,42 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 460
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 8fe41eff-1f02-43fc-8dc2-128c90bfc888
+    type: regular
+    task:
+      id: 8fe41eff-1f02-43fc-8dc2-128c90bfc888
+      version: -1
+      name: Error in the test playbook
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      message:
+        simple: 'IP was not matched '
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 720
         }
       }
     note: false
@@ -122,9 +247,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 475,
-        "width": 380,
-        "x": 450,
+        "height": 910,
+        "width": 690,
+        "x": 50,
         "y": 50
       }
     }
