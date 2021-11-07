@@ -779,9 +779,6 @@ def upload_file(entry_id, issue_id, attachment_name=None):
     return jira_req(
         method='POST',
         resource_url=f'rest/api/latest/issue/{issue_id}/attachments',
-        headers={
-            'X-Atlassian-Token': 'no-check'
-        },
         files={'file': (attachment_name or file_name, file_bytes)},
         resp_type='json'
     )
