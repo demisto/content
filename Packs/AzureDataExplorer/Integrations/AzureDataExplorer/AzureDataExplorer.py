@@ -10,10 +10,10 @@ from azure.kusto.data.response import KustoResponseDataSet, KustoResponseDataSet
 from datetime import datetime
 
 ''' CONSTANTS '''
-MANAGEMENT_URL_SUFFIX = "/v1/rest/mgmt"
 DEFAULT_PAGE_NUMBER = '1'
 DEFAULT_PAGE_SIZE = '50'
 DATE_TIME_FORMAT = '%Y-%m-%dT%H:%M:%S'
+REQUEST_BASE_TIMEOUT = 20
 
 
 class DataExplorerClient:
@@ -38,7 +38,7 @@ class DataExplorerClient:
         )
 
     def http_request(self, method, url_suffix: str = None, full_url: str = None, params: dict = None, headers=None,
-                     data=None, timeout: int = 20):
+                     data=None, timeout: int = REQUEST_BASE_TIMEOUT):
         if headers is None:
             headers = {}
         if data is None:
@@ -87,22 +87,18 @@ class DataExplorerClient:
         Returns:
             Dict[str,Any]: API response from Azure.
         """
-        data = {
-            "db": database_name,
-            "csl": query,
-            "properties": {
-                "Options": {
-                    "servertimeout": f"{server_timeout}m"
-                }
-            }
-        }
 
+        data = retrieve_common_request_body(database_name, query, {
+            "Options": {
+                "servertimeout": f"{server_timeout}m"
+            }
+        })
         headers = {
             "x-ms-client-request-id": client_activity_id
         }
-
         response = self.http_request(
-            "POST", url_suffix="/v1/rest/query", data=data, headers=headers)
+            "POST", url_suffix="/v1/rest/query", data=data, headers=headers,
+            timeout=calculate_total_request_timeout(server_timeout))
         return response
 
     def search_queries_list_request(self, database_name: str,
@@ -122,13 +118,7 @@ class DataExplorerClient:
         """
         mgmt_query = f".show queries | where ClientActivityId=='{client_activity_id}'" if client_activity_id \
             else ".show queries | sort by StartedOn"
-        data = {
-            "db": database_name,
-            "csl": mgmt_query
-        }
-        response = self.http_request(
-            "POST", url_suffix=MANAGEMENT_URL_SUFFIX, data=data)
-        return response
+        return self.management_query_request(database_name, mgmt_query)
 
     def running_search_queries_list_request(self, database_name: str, client_activity_id: str) -> \
             Dict[str, Any]:
@@ -147,13 +137,7 @@ class DataExplorerClient:
         mgmt_query = f".show running queries | where ClientActivityId=='{client_activity_id}'" if client_activity_id \
             else ".show running queries | sort by StartedOn"
 
-        data = {
-            "db": database_name,
-            "csl": mgmt_query
-        }
-        response = self.http_request(
-            "POST", url_suffix=MANAGEMENT_URL_SUFFIX, data=data)
-        return response
+        return self.management_query_request(database_name, mgmt_query)
 
     def running_search_query_delete_request(self, database_name: str, client_activity_id: str,
                                             reason: str) -> Dict[str, Any]:
@@ -172,12 +156,11 @@ class DataExplorerClient:
 
         if reason:
             cancel_running_query += f" with ( reason = '{reason}' )"
-        data = {
-            "db": database_name,
-            "csl": cancel_running_query
-        }
+        return self.management_query_request(database_name, cancel_running_query)
 
-        response = self.http_request("POST", url_suffix=MANAGEMENT_URL_SUFFIX, data=data)
+    def management_query_request(self, database_name: str, mgmt_query: str):
+        data = retrieve_common_request_body(database_name, mgmt_query)
+        response = self.http_request("POST", url_suffix="/v1/rest/mgmt", data=data)
         return response
 
 
@@ -235,32 +218,12 @@ def search_queries_list_command(client: DataExplorerClient, args: Dict[str, Any]
     page = arg_to_number(args.get('page', DEFAULT_PAGE_NUMBER))
     limit = arg_to_number(args.get('limit', DEFAULT_PAGE_SIZE))
     client_activity_id = str(args.get('client_activity_id', ''))
+    validate_list_command_arguments(page, limit)
     response = client.search_queries_list_request(
         database_name, client_activity_id)
 
-    response_kusto_dataset = KustoResponseDataSetV1(response)
-    total_rows = response_kusto_dataset.primary_results[0].rows_count
-    total_pages = total_rows // limit + 1
-    readable_header = build_header_for_list_commands('List of Completed Search Queries',
-                                                     total_rows, total_pages, page, limit)
-    outputs = convert_kusto_response_to_dict(response_kusto_dataset, page, limit)
-    readable_output = tableToMarkdown(readable_header,
-                                      outputs,
-                                      headers=['ClientActivityId', 'User', 'Text',
-                                               'Database', 'StartedOn',
-                                               'LastUpdatedOn',
-                                               'State'],
-                                      headerTransform=pascalToSpace)
-
-    command_results = CommandResults(
-        outputs_prefix='AzureDataExplorer.SearchQuery',
-        outputs_key_field='ClientActivityId',
-        outputs=outputs,
-        raw_response=response,
-        readable_output=readable_output
-    )
-
-    return command_results
+    return retrieve_command_results_of_list_commands(response, 'List of Completed Search Queries',
+                                                     page, limit)
 
 
 def running_search_queries_list_command(client: DataExplorerClient, args: Dict[str, Any]) -> CommandResults:
@@ -278,31 +241,12 @@ def running_search_queries_list_command(client: DataExplorerClient, args: Dict[s
     limit = arg_to_number(args.get('limit', DEFAULT_PAGE_SIZE))
     client_activity_id = str(args.get('client_activity_id', ''))
 
+    validate_list_command_arguments(page, limit)
     response = client.running_search_queries_list_request(
         database_name, client_activity_id)
 
-    response_kusto_dataset = KustoResponseDataSetV1(response)
-    total_rows = response_kusto_dataset.primary_results[0].rows_count
-    total_pages = total_rows // limit + 1
-    outputs = convert_kusto_response_to_dict(response_kusto_dataset, page, limit)
-    readable_header = build_header_for_list_commands('List of Currently running Search Queries',
-                                                     total_rows, total_pages, page, limit)
-    readable_output = tableToMarkdown(readable_header,
-                                      outputs,
-                                      headers=['ClientActivityId', 'User', 'Text',
-                                               'Database', 'StartedOn',
-                                               'LastUpdatedOn',
-                                               'State'],
-                                      headerTransform=pascalToSpace)
-    command_results = CommandResults(
-        outputs_prefix='AzureDataExplorer.RunningSearchQuery',
-        outputs_key_field='ClientActivityId',
-        outputs=outputs,
-        raw_response=response,
-        readable_output=readable_output
-    )
-
-    return command_results
+    return retrieve_command_results_of_list_commands(response, 'List of Currently running Search Queries',
+                                                     page, limit)
 
 
 def running_search_query_cancel_command(client: DataExplorerClient, args: Dict[str, Any]) -> \
@@ -334,6 +278,42 @@ def running_search_query_cancel_command(client: DataExplorerClient, args: Dict[s
     command_results = CommandResults(
         outputs_prefix='AzureDataExplorer.CanceledSearchQuery',
         outputs_key_field='ClientRequestId',
+        outputs=outputs,
+        raw_response=response,
+        readable_output=readable_output
+    )
+
+    return command_results
+
+
+def retrieve_command_results_of_list_commands(response: Dict[str, Any], base_header: str,
+                                              page: int, limit: int) -> CommandResults:
+    """
+    Retrieves the command results of list commands. 
+    Args: 
+        response (Dict[str,Any]): API response from Azure.
+        base_header: (str) Header prefix in the readable output.
+        page (int): Page number.
+        limit (int): Page size. 
+    Returns:
+        CommandResults: List Command results. 
+    """
+    response_kusto_dataset = KustoResponseDataSetV1(response)
+    total_rows = response_kusto_dataset.primary_results[0].rows_count
+    total_pages = total_rows // limit + 1
+    outputs = convert_kusto_response_to_dict(response_kusto_dataset, page, limit)
+    readable_header = format_header_for_list_commands(base_header,
+                                                      total_rows, total_pages, page, limit)
+    readable_output = tableToMarkdown(readable_header,
+                                      outputs,
+                                      headers=['ClientActivityId', 'User', 'Text',
+                                               'Database', 'StartedOn',
+                                               'LastUpdatedOn',
+                                               'State'],
+                                      headerTransform=pascalToSpace)
+    command_results = CommandResults(
+        outputs_prefix='AzureDataExplorer.RunningSearchQuery',
+        outputs_key_field='ClientActivityId',
         outputs=outputs,
         raw_response=response,
         readable_output=readable_output
@@ -389,8 +369,8 @@ def convert_kusto_response_to_dict(kusto_response: KustoResponseDataSet, page: i
     return serialized_data
 
 
-def build_header_for_list_commands(base_header: str, rows_count: int, total_pages: int,
-                                   page: int, limit: int) -> str:
+def format_header_for_list_commands(base_header: str, rows_count: int, total_pages: int,
+                                    page: int, limit: int) -> str:
     """
     Retrieve the header of the readable output for list commands.
 
@@ -408,6 +388,61 @@ def build_header_for_list_commands(base_header: str, rows_count: int, total_page
                        f' Current page size: {limit}.'
 
     return base_header
+
+
+def retrieve_common_request_body(database_name: str, query: str,
+                                 properties: Dict[str, Any] = None) -> Dict[str, Any]:
+    """
+    Retrieve requests body.
+    for every request, the body contains the database name and the query to the execute. 
+
+    Args:
+        database_name (str): The database name. 
+        query (str): The query to execute. 
+        properties (Dict[str, Any], optional): Other user's properties to send in the request
+                                               Defaults to None.
+
+    Returns:
+        Dict[str, Any]: Body raw data for the request. 
+    """
+    data = {
+        "db": database_name,
+        "csl": query
+    }
+    if properties:
+        data['properties'] = properties
+
+    return data
+
+
+def calculate_total_request_timeout(server_timeout: int) -> int:
+    """
+    Calculates the total timeout duration of a request.
+    Takes into consideration the timeout duration on server side. 
+
+    Args:
+        server_timeout (int): Quesry execution duration on server side. 
+
+    Returns:
+        int: Total timeout duration of a request. 
+    """
+    server_timeout_in_seconds = server_timeout * 60
+    return server_timeout_in_seconds + REQUEST_BASE_TIMEOUT
+
+
+def validate_list_command_arguments(page: int, limit: int) -> None:
+    """
+    Validation of page and limit arguments in list commands. 
+
+    Args:
+        page (int): The page number.
+        limit (int): Limit on page size. 
+
+    Raises:
+        ValueError: Error message.
+    """
+    if not page >= 1 and limit >= 1:
+        raise ValueError("Page and limit arguments must be integers greater than 0.")
 
 
 ''' AUTHORIZATION METHODS '''
@@ -513,11 +548,14 @@ def main() -> None:
             raise NotImplementedError(f'{command} command is not implemented.')
 
     except Exception as e:
-        if "OneApiErrors" in str(e):
+        error_text = str(e)
+        if "OneApiErrors" in error_text:
             return_error("The execution of search query failed"
                          " due a client cancel request.")
+        elif "Request execution timeout" in error_text:
+            return_error("Search query execution took longer than the assigned timeout value and has been aborted.")
         else:
-            return_error(str(e))
+            return_error(error_text)
 
 
 from MicrosoftApiModule import *  # noqa: E402
