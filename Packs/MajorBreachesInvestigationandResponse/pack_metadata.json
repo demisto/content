@@ -13,7 +13,7 @@
         "TIM",
         "Incident Response"
     ],
-    "itemPrefix": ["RapidBreachResponse"],
+    "itemPrefix": ["MajorBreach"],
     "useCases": [
         "Hunting",
         "Incident Response"
