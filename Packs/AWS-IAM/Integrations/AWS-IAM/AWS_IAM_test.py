@@ -1,7 +1,6 @@
 import pytest
 import importlib
 import demistomock as demisto
-from CommonServerPython import tableToMarkdown, pascalToSpace
 
 AWS_IAM = importlib.import_module("AWS-IAM")
 
@@ -54,6 +53,19 @@ class Boto3Client:
 
 @pytest.mark.parametrize('args, res', PAGINATION_CHECK)
 def test_list_user_policies(mocker, args, res):
+    """
+
+    Given:
+    - user_name - user name to retrieve policies for.
+    - pagination args - combination of marker, limit, page and page_size args in order to control pagination.
+
+    When:
+    - After running a list_user_policies command
+
+    Then:
+    - Ensure that the returned list includes only the policies the user posses.
+    """
+
     response = {
         'PolicyNames': [
             'AllAccessPolicy',
@@ -70,10 +82,6 @@ def test_list_user_policies(mocker, args, res):
             'PolicyName': policy,
         })
 
-    ec = {'AWS.IAM.UserPolicies(val.PolicyName && val.UserName && val.PolicyName === obj.PolicyName && '
-          'val.UserName === obj.UserName)': policy_data,
-          'AWS.IAM.Users(val.UserName === \'{}\').InlinePoliciesMarker'.format('test'): response.get('Marker')}
-
     mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
     mocker.patch.object(Boto3Client, "list_user_policies", return_value=response)
     mocker.patch.object(demisto, 'results')
@@ -81,15 +89,25 @@ def test_list_user_policies(mocker, args, res):
     client = AWSClient()
     AWS_IAM.list_user_policies(args, client)
     contents = demisto.results.call_args[0][0]
-    human_readable = tableToMarkdown('AWS IAM Policies for user {}'.format('test'),
-                                     headers=["PolicyNames"],
-                                     headerTransform=pascalToSpace,
-                                     t=res)
-    assert contents.get('HumanReadable') == human_readable
-    assert contents.get('EntryContext') == ec
+
+    assert 'AWS IAM Policies for user test' in contents.get('HumanReadable')
+    assert policy_data in contents.get('EntryContext').values()
+    assert response.get('Marker') in contents.get('EntryContext').values()
 
 
 def test_list_attached_user_polices(mocker):
+    """
+
+    Given:
+    - user_name - user name to retrieve policies for.
+    - pagination args - combination of marker, limit, page and page_size args in order to control pagination.
+
+    When:
+    - After running a list_user_attached_policies command
+
+    Then:
+    - Ensure that the returned list includes only the attached policies the user posses.
+    """
     args = {
         'userName': 'test'
     }
@@ -105,19 +123,25 @@ def test_list_attached_user_polices(mocker):
     AWS_IAM.list_attached_user_policies(args, client)
     contents = demisto.results.call_args[0][0]
 
-    ec = {'AWS.IAM.AttachedUserPolicies(val.PolicyArn && val.UserName && val.PolicyArn === obj.PolicyArn && '
-          'val.UserName === obj.UserName)': [{'UserName': 'test', 'PolicyName': policy_name, 'PolicyArn': policy_arn}],
-          'AWS.IAM.Users(val.UserName === \'{}\').AttachedPoliciesMarker'.format('test'): '111'}
-
-    human_readable = tableToMarkdown('AWS IAM Attached Policies for user {}'.format('test'),
-                                     headers=['PolicyName', 'PolicyArn'],
-                                     headerTransform=pascalToSpace,
-                                     t=ATTACHED_POLICIES)
-    assert contents.get('HumanReadable') == human_readable
-    assert contents.get('EntryContext') == ec
+    assert 'AWS IAM Attached Policies for user test' in contents.get('HumanReadable')
+    assert [{'UserName': 'test', 'PolicyName': policy_name, 'PolicyArn': policy_arn}] in contents.get(
+        'EntryContext').values()
+    assert '111' in contents.get('EntryContext').values()
 
 
 def test_list_attached_group_polices(mocker):
+    """
+
+     Given:
+    - group_name - group name to retrieve policies for.
+    - pagination args - combination of marker, limit, page and page_size args in order to control pagination.
+
+    When:
+    - After running a list_group_attached_policies command
+
+    Then:
+    - Ensure that the returned list includes only the attached policies the group posses.
+    """
     args = {
         'groupName': 'test'
     }
@@ -133,21 +157,23 @@ def test_list_attached_group_polices(mocker):
     AWS_IAM.list_attached_group_policies(args, client)
     contents = demisto.results.call_args[0][0]
 
-    human_readable = tableToMarkdown('AWS IAM Attached Policies for group {}'.format('test'),
-                                     headers=['PolicyName', 'PolicyArn'],
-                                     headerTransform=pascalToSpace,
-                                     t=ATTACHED_POLICIES)
-
-    ec = {'AWS.IAM.AttachedGroupPolicies(val.PolicyArn && val.GroupName && val.PolicyArn === obj.PolicyArn && '
-          'val.GroupName === obj.GroupName)':
-              [{'GroupName': 'test', 'PolicyName': policy_name, 'PolicyArn': policy_arn}],
-          'AWS.IAM.Groups(val.GroupName === \'{}\').AttachedPoliciesMarker'.format('test'): '111'}
-
-    assert contents.get('HumanReadable') == human_readable
-    assert contents.get('EntryContext') == ec
+    assert 'AWS IAM Attached Policies for group test' in contents.get('HumanReadable')
+    assert [{'GroupName': 'test', 'PolicyName': policy_name, 'PolicyArn': policy_arn}] in contents.get(
+        'EntryContext').values()
+    assert '111' in contents.get('EntryContext').values()
 
 
 def test_get_user_login_profile(mocker):
+    """
+        Given:
+       - user_name - user name to retrieve login profile for.
+
+       When:
+       - After running a get_user_login_profile command
+
+       Then:
+       - Ensure that the returned profile set correctly.
+       """
     res = {
         'LoginProfile': {
             'UserName': 'test',
@@ -167,14 +193,6 @@ def test_get_user_login_profile(mocker):
         }
     })
 
-    ec = {'AWS.IAM.Users(val.UserName && val.UserName === obj.UserName)': data}
-
-    human_readable = tableToMarkdown('AWS IAM Login Profile for user {}'.format('test'),
-                                     t=data.get('LoginProfile'),
-                                     headers=['CreateDate', 'PasswordResetRequired'],
-                                     removeNull=True,
-                                     headerTransform=pascalToSpace)
-
     mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
     mocker.patch.object(Boto3Client, "get_login_profile", return_value=res)
     mocker.patch.object(demisto, 'results')
@@ -183,5 +201,5 @@ def test_get_user_login_profile(mocker):
     AWS_IAM.get_user_login_profile(args, client)
     contents = demisto.results.call_args[0][0]
 
-    assert contents.get('HumanReadable') == human_readable
-    assert contents.get('EntryContext') == ec
+    assert 'AWS IAM Login Profile for user test' in contents.get('HumanReadable')
+    assert data in contents.get('EntryContext').values()

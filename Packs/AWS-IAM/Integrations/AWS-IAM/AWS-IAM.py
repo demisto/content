@@ -21,6 +21,16 @@ class DatetimeEncoder(json.JSONEncoder):
 
 
 def get_limit(args):
+    """
+    Args:
+        args: Args input for command, this function uses limit, page and page_size
+
+    Returns:
+        - limit - how many items to request from AWS - IAM API.
+        - is_manual - whether manual pagination is active (using page and page_size)
+        - page_size - used when manual pagination is active, to bring the relevant number of results from the data.
+
+    """
     limit = arg_to_number(str(args.get("limit"))) if "limit" in args else None
     page = arg_to_number(str(args.get("page"))) if "page" in args else None
     page_size = arg_to_number(str(args.get("page_size"))) if "page_size" in args else None
