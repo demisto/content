@@ -50,6 +50,9 @@ def calculate_freshness_time(freshness):
     return t.strftime('%Y-%m-%dT00:00:00Z')
 
 
+TC_INDICATOR_PATH = 'TC.Indicator(val.ID && val.ID === obj.ID)'
+
+
 def create_context(indicators, include_dbot_score=False):
     indicators_dbot_score = {}  # type: dict
     params = demisto.params()
@@ -61,7 +64,7 @@ def create_context(indicators, include_dbot_score=False):
         outputPaths['url']: [],
         outputPaths['domain']: [],
         outputPaths['file']: [],
-        'TC.Indicator(val.ID && val.ID === obj.ID)': [],
+        TC_INDICATOR_PATH: [],
     }  # type: dict
     tc_type_to_demisto_type = {
         'Address': 'ip',
@@ -152,7 +155,7 @@ def create_context(indicators, include_dbot_score=False):
                 for k in keys:
                     indicators_dbot_score[k] = dbot_object
 
-        context['TC.Indicator(val.ID && val.ID === obj.ID)'].append({
+        context[TC_INDICATOR_PATH].append({
             'ID': ind['id'],
             'Name': value,
             'Type': ind['type'],
@@ -175,30 +178,30 @@ def create_context(indicators, include_dbot_score=False):
 
         if 'group_associations' in ind:
             if ind['group_associations']:
-                context['TC.Indicator(val.ID && val.ID === obj.ID)'][0]['IndicatorGroups'] = ind['group_associations']
+                context[TC_INDICATOR_PATH][0]['IndicatorGroups'] = ind['group_associations']
 
         if 'indicator_associations' in ind:
             if ind['indicator_associations']:
-                context['TC.Indicator(val.ID && val.ID === obj.ID)'][0]['IndicatorAssociations'] = ind[
+                context[TC_INDICATOR_PATH][0]['IndicatorAssociations'] = ind[
                     'indicator_associations']
 
         if 'indicator_tags' in ind:
             if ind['indicator_tags']:
-                context['TC.Indicator(val.ID && val.ID === obj.ID)'][0]['IndicatorTags'] = ind['indicator_tags']
+                context[TC_INDICATOR_PATH][0]['IndicatorTags'] = ind['indicator_tags']
 
         if 'indicator_observations' in ind:
             if ind['indicator_observations']:
-                context['TC.Indicator(val.ID && val.ID === obj.ID)'][0]['IndicatorsObservations'] = ind[
+                context[TC_INDICATOR_PATH][0]['IndicatorsObservations'] = ind[
                     'indicator_observations']
 
         if 'indicator_attributes' in ind:
             if ind['indicator_attributes']:
-                context['TC.Indicator(val.ID && val.ID === obj.ID)'][0]['IndicatorAttributes'] = ind[
+                context[TC_INDICATOR_PATH][0]['IndicatorAttributes'] = ind[
                     'indicator_attributes']
 
     context['DBotScore'] = list(indicators_dbot_score.values())
     context = {k: createContext(v, removeNull=True)[:MAX_CONTEXT] for k, v in context.items() if v}
-    return context, context.get('TC.Indicator(val.ID && val.ID === obj.ID)', [])
+    return context, context.get(TC_INDICATOR_PATH, [])
 
 
 def get_xindapi(tc, indicator_value, indicator_type, owner):
