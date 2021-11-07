@@ -1,8 +1,5 @@
 name: Handle stale branches
 on:
-  push:
-    branches:
-      - fix-failing-github-actions
   schedule:
     # runs every day at midnight (UTC time).
     - cron:  '0 0 * * *'
