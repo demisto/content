@@ -6,7 +6,6 @@ import io
 import json
 from datetime import datetime
 from typing import Dict, Callable
-from unittest.mock import Mock
 import QRadar_v3  # import module separately for mocker
 import pytest
 import pytz

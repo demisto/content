@@ -673,6 +673,7 @@ def safely_update_context_data(func: Callable):
     raise ValueError if context_data or version are not in the kwargs for the function.
     raise DemistoException if reached maximum of retries.
     """
+
     def wrapper(*args, **kwargs):
         context_was_set = False
         retries = 0
@@ -705,6 +706,7 @@ def safely_update_context_data(func: Callable):
         if retries == max_retries:
             raise DemistoException(f'Reached maximum retries, could not update context data for function {func}.')
         return return_value
+
     return wrapper
 
 
@@ -1683,8 +1685,9 @@ def move_updated_offenses(context_data: dict, version: Any, include_context_data
     """
     new_context_data = include_context_data.copy()
     if updated_list:
-        all_updated_mirrored_offenses = merge_lists(original_list=context_data.get(UPDATED_MIRRORED_OFFENSES_CTX_KEY, []),
-                                                    updated_list=updated_list, key='id')
+        all_updated_mirrored_offenses = merge_lists(
+            original_list=context_data.get(UPDATED_MIRRORED_OFFENSES_CTX_KEY, []),
+            updated_list=updated_list, key='id')
         not_updated_list = exclude_lists(original=context_data.get(MIRRORED_OFFENSES_CTX_KEY, []),
                                          exclude=updated_list, key="id")
         new_context_data.update({UPDATED_MIRRORED_OFFENSES_CTX_KEY: all_updated_mirrored_offenses,
@@ -1692,10 +1695,11 @@ def move_updated_offenses(context_data: dict, version: Any, include_context_data
                                  RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY:
                                      context_data.get(RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY, [])})  # type: ignore
     else:
-        new_context_data.update({UPDATED_MIRRORED_OFFENSES_CTX_KEY: context_data.get(UPDATED_MIRRORED_OFFENSES_CTX_KEY, []),
-                                 MIRRORED_OFFENSES_CTX_KEY: context_data.get(MIRRORED_OFFENSES_CTX_KEY, []),
-                                 RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY:
-                                     context_data.get(RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY, [])})
+        new_context_data.update(
+            {UPDATED_MIRRORED_OFFENSES_CTX_KEY: context_data.get(UPDATED_MIRRORED_OFFENSES_CTX_KEY, []),
+             MIRRORED_OFFENSES_CTX_KEY: context_data.get(MIRRORED_OFFENSES_CTX_KEY, []),
+             RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY:
+                 context_data.get(RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY, [])})
 
     if not new_context_data.get('samples'):
         new_context_data.update({'samples': context_data.get('samples')})
@@ -1752,6 +1756,7 @@ def perform_long_running_loop(client: Client, offenses_per_fetch: int, fetch_mod
                                              updated_list=updated_mirrored_offenses)
 
     print_mirror_events_stats(new_context_data, "Long Running Command - After Update")
+
 
 def long_running_execution_command(client: Client, params: Dict):
     """
