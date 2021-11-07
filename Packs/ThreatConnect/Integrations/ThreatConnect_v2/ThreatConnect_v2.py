@@ -93,8 +93,12 @@ def create_context(indicators, include_dbot_score=False):
             # returned in general indicator request - REST API
             rating = int(ind.get('threatAssessRating', 0))
 
+        md5 = ind.get('md5')
+        sha1 = ind.get('sha1')
+        sha256 = ind.get('sha256')
+
         if confidence >= confidence_threshold and rating >= rating_threshold:
-            dbot_score = 3
+            dbot_score = Common.DBotScore.BAD
             desc = ''
             if hasattr(ind, 'description'):
                 desc = ind.description
@@ -108,9 +112,9 @@ def create_context(indicators, include_dbot_score=False):
                 mal['Address'] = value
 
             elif indicator_type == 'file':
-                mal['MD5'] = value
-                mal['SHA1'] = ind.get('sha1')
-                mal['SHA256'] = ind.get('sha256')
+                mal['MD5'] = md5
+                mal['SHA1'] = sha1
+                mal['SHA256'] = sha256
 
             elif indicator_type == 'url':
                 mal['Data'] = value
@@ -123,23 +127,30 @@ def create_context(indicators, include_dbot_score=False):
                 context[context_path].append(mal)
         # if both confidence and rating values are less than the threshold - DBOT score is unknown
         elif confidence < confidence_threshold and rating < rating_threshold:
-            dbot_score = 0
+            dbot_score = Common.DBotScore.NONE
         else:
-            dbot_score = 2
+            dbot_score = Common.DBotScore.SUSPICIOUS
 
         # if there is more than one indicator results - take the one with the highest score
         if include_dbot_score:
+            # see explanation in issue #42224
+            keys = (value,) if indicator_type != 'file' else filter(None, (md5, sha1, sha256))
+
             old_val = indicators_dbot_score.get(value)
             if old_val and old_val['Score'] < dbot_score:
-                indicators_dbot_score[value]['Score'] = dbot_score
+                for k in keys:
+                    indicators_dbot_score[k]['Score'] = dbot_score
+
             else:
-                indicators_dbot_score[value] = {
+                dbot_object = {
                     'Indicator': value,
                     'Score': dbot_score,
                     'Type': indicator_type,
-                    'Vendor': 'ThreatConnect'
+                    'Vendor': 'ThreatConnect',
+                    'Reliability': RELIABILITY
                 }
-            indicators_dbot_score[value]['Reliability'] = RELIABILITY
+                for k in keys:
+                    indicators_dbot_score[k] = dbot_object
 
         context['TC.Indicator(val.ID && val.ID === obj.ID)'].append({
             'ID': ind['id'],
@@ -157,9 +168,9 @@ def create_context(indicators, include_dbot_score=False):
             'Active': ind.get('whoisActive'),
 
             # relevant for file
-            'File.MD5': ind.get('md5'),
-            'File.SHA1': ind.get('sha1'),
-            'File.SHA256': ind.get('sha256'),
+            'File.MD5': md5,
+            'File.SHA1': sha1,
+            'File.SHA256': sha256,
         })
 
         if 'group_associations' in ind:
