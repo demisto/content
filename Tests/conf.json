@@ -4580,6 +4580,14 @@
             "playbookID": "TestAzureSentinelPlaybookV2"
         },
         {
+            "integrations": "Anomali ThreatStream v3",
+            "playbookID": "ThreatStream-Test"
+        },
+        {
+            "integrations": ["AutoFocusTagsFeed", "Demisto REST API"],
+            "playbookID": "AutoFocusTagsFeed-test"
+        },
+        {
             "playbookID": "Tanium Threat Response V2 Test",
             "integrations": ["Tanium Threat Response v2", "Demisto REST API"],
             "fromversion": "6.0.0",
@@ -4608,8 +4616,19 @@
             "timeout": 2400
         },
         {
-            "integrations": "Anomali ThreatStream v3",
-            "playbookID": "ThreatStream-Test"
+            "integrations": [
+                "Demisto REST API"
+            ],
+            "playbookID": "GetTasksWithSections SetIRProcedures end to end test",
+            "fromversion": "6.0.0"
+        },
+        {
+            "scripts": [
+                "SplunkShowAsset",
+                "SplunkShowDrilldown",
+                "SplunkShowIdentity"
+            ],
+            "playbookID": "SplunkShowEnrichment"
         }
     ],
     "skipped_tests": {
