@@ -27,10 +27,7 @@ jobs:
         run: |
           echo "Deleting stale contribution base branches (contrib/*)"
           cd Utils/github_workflow_scripts
-          pipenv install --ignore-pipfile
-          echo "Check Installed pip Packages"
-          pipenv run pip list
-          pipenv graph --reverse
+          pipenv sync
           pipenv run ./delete_stale_contrib_branches.py
           echo "Finished deleting stale branches"
 
@@ -54,8 +51,6 @@ jobs:
         run: |
           echo "Deleting stale non contribution branches"
           cd Utils/github_workflow_scripts
-          pipenv install --dev
-          echo "Check Installed pip Packages"
-          pipenv run pip list
+          pipenv sync
           pipenv run ./delete_stale_non_contrib_branches.py
           echo "Finished deleting stale branches"
