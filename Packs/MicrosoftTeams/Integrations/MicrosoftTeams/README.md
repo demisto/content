@@ -140,6 +140,7 @@ Before you can create an instance of the Microsoft Teams integration in Cortex X
 4. Fill in `Demisto Bot` in the prompt, click the *Add* button, and wait a few seconds until the bot is created.
 5. Record the **Bot ID** of `Demisto Bot` for the next steps.
 6. Click on the line where `Demisto Bot` shows under the **Bot Name**.
+![image](./doc_files/appentry.png)
 7. Navigate to **Configure** and fill in the **Bot endpoint address**.
 8. Navigate to **Client Secrets** and click the **Add a client secret for your bot** button, and wait a few seconds to allow the secret to be generated.
 9. Store the generated secret securely for the next steps.
