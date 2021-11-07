@@ -280,42 +280,6 @@ references:
             python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType CustomBuild -custombuild true -circleurl $SERVER_DOWNLOAD_LINK -circleToken $SERVER_CI_TOKEN -timetolive $TTL -outfile $ENV_RESULTS_PATH
         fi
 
-  trigger_private_build: &trigger_private_build
-    unless:
-      condition:
-        or:
-          - << pipeline.parameters.force_pack_upload >>
-          - << pipeline.parameters.bucket_upload >>
-      steps:
-        run:
-          name: Trigger Private Repo Build
-          when: always
-          command: |
-            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]
-              then
-                echo "Skipping - not running in contribution instance"
-                exit 0
-            fi
-            python3 Utils/trigger_private_build.py --github-token $GITHUB_TOKEN
-
-  get_private_build_status: &get_private_build_status
-    unless:
-      condition:
-        or:
-          - << pipeline.parameters.force_pack_upload >>
-          - << pipeline.parameters.bucket_upload >>
-      steps:
-        run:
-          name: Get Private Build Status
-          when: always
-          command: |
-            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]
-              then
-                echo "Skipping - not running in contribution instance"
-                exit 0
-            fi
-            python3 Utils/get_private_build_status.py --github-token $GITHUB_TOKEN
-
   create_artifact: &create_artifact
     run:
       name: Create Content Artifacts
@@ -418,6 +382,16 @@ references:
           demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report
         fi
 
+  generate_coverage_reports: &generate_coverage_reports
+    run:
+      name: Generate coverage reports
+      when: always
+      no_output_timeout: 1h
+      command: |
+        if [[ -f $ARTIFACTS_FOLDER/coverage_report/.coverage ]]; then
+          demisto-sdk coverage-analyze -i $ARTIFACTS_FOLDER/coverage_report/.coverage --report-dir $ARTIFACTS_FOLDER/coverage_report --report-type all
+        fi
+
   infrastructure_testing: &infrastructure_testing
     run:
       name: Infrastructure testing
@@ -439,7 +413,7 @@ references:
       name: Create ID Set
       when: always
       command: |
-        demisto-sdk create-id-set -o ./Tests/id_set.json
+        demisto-sdk create-id-set -o ./Tests/id_set.json --fail-duplicates
         cp ./Tests/id_set.json $CIRCLE_ARTIFACTS
 
   merge_public_and_private_id_sets: &merge_public_and_private_id_sets
@@ -452,13 +426,9 @@ references:
             exit 0
         fi
 
-        gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
-        echo "successfully activated google cloud service account"
-
         # Download private ID set
         gsutil cp gs://marketplace-dist/content/private_id_set.json $CIRCLE_ARTIFACTS/unified_id_set.json
         echo "successfully downloaded private ID set"
-        gcloud auth revoke --all &> /dev/null
 
         # Merge public and private ID sets
         demisto-sdk merge-id-sets -i1 ./Tests/id_set.json -i2 $CIRCLE_ARTIFACTS/unified_id_set.json -o $CIRCLE_ARTIFACTS/unified_id_set.json
@@ -689,10 +659,9 @@ jobs:
       - *restore_cache
       - *add_ssh_keys
       - *prepare_environment
-      - *trigger_private_build
       - *infrastructure_testing
       - *run_unit_testing_and_lint
-      - *get_private_build_status
+      - *generate_coverage_reports
       - store_test_results:
           path: ./unit-tests
       - run:
