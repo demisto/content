@@ -4,7 +4,6 @@ commonfields:
 dockerimage: demisto/python3:3.9.7.24076
 enabled: true
 name: GetCampaignLowSimilarityIncidentsInfo
-runas: DBotRole
 runonce: false
 script: ''
 comment: Gets the campaign incidents with low similarity information as a markdown table.

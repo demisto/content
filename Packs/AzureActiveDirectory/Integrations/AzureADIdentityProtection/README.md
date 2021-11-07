@@ -1,6 +1,24 @@
 Gets information from the Azure Active Directory Identity Protection service.
 This integration was integrated and tested with the beta version of Azure Active Directory Identity Protection API.
 
+## Required Permissions
+To use this integration, the following permissions are required on the Azure app.  
+- `IdentityRiskEvent.Read.All` 
+- `IdentityRiskyUser.ReadWrite.All`
+- `User.Read`
+
+## Authorization
+Choose between the following Azure app options. Both of them use the [device authorization grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code).
+
+#### Cortex XSOAR Azure app
+To use the Cortex XSOAR Azure app, use the default application ID `4ffef4a4-601f-4393-a789-432f3f3b8470` and fill in your subscription ID.
+
+#### Self Deployed Azure app 
+To use a self-deployed Azure app, add a new Azure App Registration in the Azure Portal
+1. The app must allow public client flows (which can be found under the **Authentication** section of the app).
+2. The app must be multi-tenant.
+3. The app should be granted the permissions listed in the [required permissions](#required-permissions) section above. 
+
 ## Configure Azure Active Directory Identity Protection on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -9,13 +27,13 @@ This integration was integrated and tested with the beta version of Azure Active
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Application ID | The ID of the managed application. Use one of the following: <ul><li>  **The Cortex XSOAR Azure application**. Use the application ID `4ffef4a4-601f-4393-a789-432f3f3b8470`, and fill in your subscription ID (from the Azure Portal). </li> <li> Add a **new Azure App Registration** in the Azure Portal, with the following permissions: <br>`IdentityRiskEvent.Read.All` <br> `User.Read` <br> `IdentityRiskyUser.ReadWrite.All` (used to update user status, for example by calling the `!azure-ad-identity-protection-risky-user-confirm-compromised` command). <br> Copy the **Application (client) ID** and **Subscription ID** in the Azure Portal and add it to the instance settings in Cortex XSOAR. </li></ul> | True |
-    | Subscription ID | The Azure Active Directory subscription ID. | True |
+    | Application ID | The ID of the managed application. | True |
+    | Subscription ID | The Azure Active Directory subscription ID, found on the Azure Portal. | True |
     | Azure Active Directory endpoint | The Azure Active Directory endpoint associated with a national cloud. | True |
     | Trust any certificate (not secure) | When selected, certificates are not checked.  | False |
-    | Use system proxy settings | When selected, runs the integraion instance using a proxy server (https or http) that you defined in the server configuration.  | False |
+    | Use system proxy settings | When selected, runs the integration instance using a proxy server (https or http) that you defined in the server configuration.  | False |
 5. Run the **!azure-ad-auth-start** command to start the connection process.
-6. Follow the instruction shown, the last of them should be running the **!azure-ad-auth-complete** command.
+6. Follow the instructions shown. The last of them should be running the **!azure-ad-auth-complete** command.
 7. Run the **!azure-ad-auth-test** command to validate the URLs, token, and connection.
     
 #### Base Command
@@ -114,6 +132,8 @@ There is no context output for this command.
 ***
 Retrieve the properties of a collection of riskDetection objects.
 
+#### Required Permissions
+`IdentityRiskEvent.Read.All`
 
 #### Base Command
 
@@ -254,6 +274,8 @@ Retrieve the properties of a collection of riskDetection objects.
 ***
 Retrieves the properties of a collection of riskDetection objects.
 
+#### Required Permissions
+`IdentityRiskEvent.Read.All`
 
 #### Base Command
 
@@ -323,6 +345,9 @@ Retrieves the properties of a collection of riskDetection objects.
 ***
 Gets the risk history of a riskyUser resource.
 
+#### Required Permissions
+`IdentityRiskyUser.Read.All`
+`IdentityRiskyUser.ReadWrite.All`
 
 #### Base Command
 
@@ -410,6 +435,8 @@ Gets the risk history of a riskyUser resource.
 ***
 Confirms one or more riskyUser objects as compromised. This action sets the targeted user's risk level to high.
 
+#### Required Permissions
+`IdentityRiskyUser.ReadWrite.All`
 
 #### Base Command
 
@@ -436,6 +463,8 @@ There is no context output for this command.
 ***
 Dismisses the risk of one or more riskyUser objects. This action sets the targeted user's risk level to none.
 
+#### Required Permissions
+`IdentityRiskyUser.ReadWrite.All`
 
 #### Base Command
 
