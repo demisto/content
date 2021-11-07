@@ -1236,7 +1236,7 @@ def is_reset_triggered():
     ctx = get_integration_context()
     if ctx and RESET_KEY in ctx:
         print_debug_msg('Reset fetch-incidents.')
-        set_integration_context({'samples': '[]'})
+        set_to_integration_context_with_retries({'samples': '[]'})
         return True
     return False
 
@@ -1505,23 +1505,30 @@ def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int
     range_max = offenses_per_fetch - 1 if offenses_per_fetch else MAXIMUM_OFFENSES_PER_FETCH - 1
     range_ = f'items=0-{range_max}'
 
-    offenses = client.offenses_list(range_, filter_=filter_fetch_query, sort=ASCENDING_ID_ORDER)
-    new_highest_offense_id = offenses[-1].get('id') if offenses else offense_highest_id
+    raw_offenses = client.offenses_list(range_, filter_=filter_fetch_query, sort=ASCENDING_ID_ORDER)
+    new_highest_offense_id = raw_offenses[-1].get('id') if raw_offenses else offense_highest_id
     print_debug_msg(f'New highest ID returned from QRadar offenses: {new_highest_offense_id}')
 
+    offenses = []
     if fetch_mode != FetchMode.no_events.value:
-        futures = []
-        for offense in offenses:
-            futures.append(EXECUTOR.submit(
-                enrich_offense_with_events,
-                client=client,
-                offense=offense,
-                fetch_mode=fetch_mode,
-                events_columns=events_columns,
-                events_limit=events_limit,
-            ))
-        offenses = [future.result() for future in futures]
-
+        try:
+            futures = []
+            for offense in raw_offenses:
+                futures.append(EXECUTOR.submit(
+                    enrich_offense_with_events,
+                    client=client,
+                    offense=offense,
+                    fetch_mode=fetch_mode,
+                    events_columns=events_columns,
+                    events_limit=events_limit,
+                ))
+            offenses = [future.result(timeout=DEFAULT_EVENTS_TIMEOUT * 60) for future in futures]
+        except concurrent.futures.TimeoutError as e:
+            print_debug_msg(
+                f"Error while enriching mirrored offenses with events: {str(e)} \n {traceback.format_exc()}")
+            update_missing_offenses_from_raw_offenses(raw_offenses, offenses)
+    else:
+        offenses = raw_offenses
     if is_reset_triggered():
         return None, None
     offenses_with_mirror = [
@@ -1531,6 +1538,19 @@ def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int
     final_offenses = sanitize_outputs(enriched_offenses)
     incidents = create_incidents_from_offenses(final_offenses, incident_type)
     return incidents, new_highest_offense_id
+
+
+def update_missing_offenses_from_raw_offenses(raw_offenses: list, offenses: list):
+    """
+    Populate offenses with missing offenses
+    """
+    offenses_ids = {offense['id'] for offense in raw_offenses} or set()
+    updated_offenses_ids = {offense['id'] for offense in offenses} or set()
+    missing_ids = offenses_ids - updated_offenses_ids
+    if missing_ids:
+        for offense in raw_offenses:
+            if offense['id'] in missing_ids:
+                offenses.append(offense)
 
 
 def exclude_lists(original: List[dict], exclude: List[dict], key: str):
@@ -1584,10 +1604,11 @@ def update_mirrored_events(client: Client,
                 ))
 
             updated_offenses += [future.result(timeout=DEFAULT_EVENTS_TIMEOUT * 60) for future in futures]
-        return updated_offenses
 
     except Exception as e:
         print_debug_msg(f"Error while enriching mirrored offenses with events: {str(e)} \n {traceback.format_exc()}")
+        update_missing_offenses_from_raw_offenses(offenses, updated_offenses)
+    finally:
         return updated_offenses
 
 
@@ -2833,7 +2854,7 @@ def qradar_reset_last_run_command() -> str:
     """
     ctx = get_integration_context()
     ctx[RESET_KEY] = True
-    set_integration_context(ctx)
+    set_to_integration_context_with_retries(ctx)
     return 'fetch-incidents was reset successfully.'
 
 
@@ -3383,7 +3404,7 @@ def change_ctx_to_be_compatible_with_retry() -> None:
 
     if not extract_works:
         cleared_ctx = clear_integration_ctx(new_ctx)
-        set_integration_context(cleared_ctx)
+        set_to_integration_context_with_retries(cleared_ctx)
         print_debug_msg(f"Change ctx context data was cleared and changed to {cleared_ctx}")
 
 

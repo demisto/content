@@ -2337,7 +2337,7 @@ Retrieves a list of event regex properties.
 ### qradar-reset-last-run
 ***
 Resets the fetch incidents last run value, which resets the fetch to its initial fetch state. (Will try to fetch the first available offense).
-**Please Note**: It is recommended to *disable* and then *enable* the QRadar instance for the fetch to take effect immediately.
+**Please Note**: It is recommended to *disable* and then *enable* the QRadar instance for the reset to take effect immediately.
 
 #### Base Command
 

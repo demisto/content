@@ -954,7 +954,7 @@ def seek_fetchable_offenses(client: QRadarClient, start_offense_id, user_query):
                 if tries % 10 == 0:
                     last_run = get_integration_context(SYNC_CONTEXT)
                     last_run["id"] = end_offense_id
-                    set_integration_context(last_run, SYNC_CONTEXT)
+                    set_to_integration_context_with_retries(last_run, SYNC_CONTEXT)
             else:
                 latest_offense_fnd = True
     if isinstance(raw_offenses, list):
@@ -974,7 +974,7 @@ def is_reset_triggered():
     ctx = get_integration_context(SYNC_CONTEXT)
     if ctx and RESET_KEY in ctx:
         print_debug_msg("Reset fetch-incidents.")
-        set_integration_context(
+        set_to_integration_context_with_retries(
             {"samples": ctx.get("samples", [])}, sync=SYNC_CONTEXT
         )
         return True
@@ -1019,7 +1019,13 @@ def fetch_incidents_long_running_events(
             enriched_offenses.append(future.result())
     except concurrent.futures.TimeoutError:
         print_debug_msg("Timed out while waiting for events")
-
+        raw_offenses_ids = {offense['id'] for offense in raw_offenses} or set()
+        enriched_offenses_ids = {offense['id'] for offense in enriched_offenses} or set()
+        missing_ids = raw_offenses_ids - enriched_offenses_ids
+        if missing_ids:
+            for offense in raw_offenses:
+                if offense['id'] in missing_ids:
+                    enriched_offenses.append(offense)
     if is_reset_triggered():
         return
 
@@ -1034,7 +1040,7 @@ def fetch_incidents_long_running_events(
     )
 
     context = {LAST_FETCH_KEY: offense_id, "samples": incidents_batch_for_sample}
-    set_integration_context(context, sync=SYNC_CONTEXT)
+    set_to_integration_context_with_retries(context, sync=SYNC_CONTEXT)
 
 
 def create_incidents(enriched_offenses, incident_type):
@@ -1077,7 +1083,7 @@ def fetch_incidents_long_running_no_events(
     )
 
     context = {LAST_FETCH_KEY: offense_id, "samples": incidents_batch_for_sample}
-    set_integration_context(context, sync=SYNC_CONTEXT)
+    set_to_integration_context_with_retries(context, sync=SYNC_CONTEXT)
 
 
 def create_incident_from_offense(offense, incident_type):
@@ -2065,7 +2071,7 @@ def long_running_main(
 def reset_fetch_incidents():
     ctx = get_integration_context(SYNC_CONTEXT)
     ctx[RESET_KEY] = True
-    set_integration_context(ctx, sync=SYNC_CONTEXT)
+    set_to_integration_context_with_retries(ctx, sync=SYNC_CONTEXT)
     return "fetch-incidents was reset successfully."
 
 
