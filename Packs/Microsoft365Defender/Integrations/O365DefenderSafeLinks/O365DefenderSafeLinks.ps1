@@ -468,9 +468,9 @@ function TestModuleCommand($client) {
 
 }
 
-function Main() {
+function Main {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '')]
-
+    param()
     $command = $demisto.GetCommand()
     $command_arguments = $demisto.Args()
     $integration_params = [Hashtable] $demisto.Params()
