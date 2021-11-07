@@ -163,7 +163,7 @@ script:
       description: The indicator title.
       type: String
     - contextPath: TAXII.Indicator.description
-      description: The indicator description.
+      description: The observable description.
       type: String
     - contextPath: TAXII.Indicator.stixindicatordescription
       description: The indicator description.
