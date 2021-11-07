@@ -1739,7 +1739,7 @@ outputs:
   type: string
 - contextPath: Email
   description: Email object.
-  type: unknown
+  type: string
 - contextPath: Email.CC
   description: Email 'cc' addresses.
   type: string
@@ -1766,7 +1766,7 @@ outputs:
   type: string
 - contextPath: File
   description: The File object.
-  type: unknown
+  type: string
 tests:
 - Process Email - Generic - Test - Incident Starter
 fromversion: 6.1.0

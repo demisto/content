@@ -341,13 +341,13 @@ inputs:
 - key: UserID
   value: {}
   required: false
-  description: The user's email address. The "me" special value can be used to indicate
+  description: The email address of the user for which to fetch the original email.
     the authenticated user.
   playbookInputQuery:
 outputs:
 - contextPath: Email
   description: The email object
-  type: unknown
+  type: string
 - contextPath: Email.To
   description: The recipient of the email.
   type: string
@@ -374,7 +374,7 @@ outputs:
   type: string
 - contextPath: File
   description: The original attachments.
-  type: unknown
+  type: string
 tests:
 - Get Original Email - Gmail v2 - test
 fromversion: 6.1.0

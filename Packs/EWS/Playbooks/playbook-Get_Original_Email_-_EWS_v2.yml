@@ -301,7 +301,7 @@ inputs:
 outputs:
 - contextPath: File
   description: The original email as an eml file.
-  type: unknown
+  type: string
 tests:
 - Get Original Email - EWS v2 - test
 fromversion: 6.1.0

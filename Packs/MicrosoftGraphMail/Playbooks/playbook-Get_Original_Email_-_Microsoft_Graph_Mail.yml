@@ -348,7 +348,7 @@ inputs:
 outputs:
 - contextPath: File
   description: The original email as an eml file.
-  type: unknown
+  type: string
 tests:
 - Get Original Email - Microsoft Graph Mail - test
 fromversion: 6.1.0

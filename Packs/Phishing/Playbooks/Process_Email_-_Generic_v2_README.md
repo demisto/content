@@ -51,7 +51,7 @@ This playbook does not use any integrations.
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | Email.HTML | Email 'html' body if exists. | string |
-| Email | Email object. | unknown |
+| Email | Email object. | string |
 | Email.CC | Email 'cc' addresses. | string |
 | Email.From | Email 'from' sender. | string |
 | Email.Subject | Email subject. | string |
@@ -60,7 +60,7 @@ This playbook does not use any integrations.
 | Email.Headers | The full email headers as a single string. | string |
 | Email.Attachments | The list of attachment names in the email. | string |
 | Email.Format | The format of the email if available. | string |
-| File | The File object. | unknown |
+| File | The File object. | string |
 
 ## Playbook Image
 ---
