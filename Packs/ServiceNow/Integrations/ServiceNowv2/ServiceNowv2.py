@@ -460,7 +460,7 @@ def escape_build_query(sys_param_query, escape_amp=True):
     """
       Used to escape or build the query parameters
     """
-    
+
     if sys_param_query:
         if escape_amp:
             return build_query_for_request_params(sys_param_query)
@@ -841,7 +841,7 @@ class Client(BaseClient):
         return self.send_request('/table/label_entry', 'POST', body=body)
 
     def query(self, table_name: str, sys_param_limit: str, sys_param_offset: str, sys_param_query: str,
-              system_params: dict = {}, sysparm_fields: Optional[str] = None, escape_amp = True) -> dict:
+              system_params: dict={}, sysparm_fields: Optional[str]=None, escape_amp=True) -> dict:
         """Query records by sending a GET request.
 
         Args:
@@ -859,7 +859,7 @@ class Client(BaseClient):
 
         query_params = {'sysparm_limit': sys_param_limit, 'sysparm_offset': sys_param_offset}
         if sys_param_query:
-          query_params['sysparm_query'] = escape_build_query(sys_param_query, escape_amp)
+            query_params['sysparm_query'] = escape_build_query(sys_param_query, escape_amp)
         if system_params:
             query_params.update(system_params)
         if sysparm_fields:
