@@ -426,9 +426,6 @@ references:
             exit 0
         fi
 
-        gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
-        echo "successfully activated google cloud service account"
-
         # Download private ID set
         gsutil cp gs://marketplace-dist/content/private_id_set.json $CIRCLE_ARTIFACTS/unified_id_set.json
         echo "successfully downloaded private ID set"
