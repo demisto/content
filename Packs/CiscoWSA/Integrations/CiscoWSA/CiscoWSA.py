@@ -182,7 +182,7 @@ class Client(BaseClient):
                     outputs=outputs)
 
         except DemistoException as a:
-            outputs = a
+            outputs = {"ModifyAccessPolicyException": a}
             return CommandResults(outputs=outputs)
 
     def delete_access_policies(self, a_data) -> CommandResults:
@@ -208,7 +208,7 @@ class Client(BaseClient):
                     outputs=outputs)
 
         except DemistoException as a:
-            outputs = a
+            outputs = {"DeleteAccessPolicyException": a}
             return CommandResults(outputs=outputs)
 
 
@@ -218,8 +218,9 @@ class Client(BaseClient):
 def initiateheaderrequest(api_key):
 
     headerrequest = {'Content-Type': 'application/json',
-             "cache-control": "no-cache", "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36",
-             "Accept": "*/*", 'Authorization': 'Basic {}'.format(api_key), "accept-encoding": "gzip, deflate"}
+                     "cache-control": "no-cache", "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36"
+                                                                "(KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36",
+                     "Accept": "*/*", 'Authorization': 'Basic {}'.format(api_key), "accept-encoding": "gzip, deflate"}
 
     return headerrequest
 
@@ -296,7 +297,7 @@ def main() -> None:
     args = demisto.args()
     api_key = demisto.params()['apikey']
     port = demisto.params()['port']
-    port = ":"+port
+    port = ":" + port
     base_url = demisto.params()['url'] + port
     verify_certificate = demisto.params()['insecure']
     proxyy = demisto.params().get('proxy', False)
