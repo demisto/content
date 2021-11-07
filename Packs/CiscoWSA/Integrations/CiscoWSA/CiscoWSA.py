@@ -1,8 +1,3 @@
-import urllib3
-from CommonServerPython import *
-
-# Disable insecure warnings
-urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
@@ -74,7 +69,7 @@ class Client(BaseClient):
                     ET.parse(res.text)
                 return res
 
-            except ValueError as exception:
+            except ValueError:
                 pass
 
         except requests.exceptions.ConnectTimeout as exception:
@@ -90,7 +85,7 @@ class Client(BaseClient):
             raise DemistoException(err_msg, exception)
         except requests.exceptions.ProxyError as exception:
             err_msg = 'Proxy Error - if the \'Use system proxy\' checkbox in the integration configuration is' \
-                        ' selected, try clearing the checkbox.'
+                      ' selected, try clearing the checkbox.'
             raise DemistoException(err_msg, exception)
         except requests.exceptions.ConnectionError as exception:
             # Get originating Exception in Exception chain
@@ -160,8 +155,9 @@ class Client(BaseClient):
         accesspoliciesdata = {"access_policies": [{"policy_name": "{}".format(policy_name),
                                                    "policy_status": "{}".format(policy_status), "policy_order":
                                                        int(policy_order),
-                                                   "membership": {"identification_profiles": [{"profile_name": "{}".format(profile_name),
-                                                                                               "auth": "{}".format(auth)}]}}]}
+                                                   "membership": {"identification_profiles":
+                                                                      [{"profile_name": "{}".format(profile_name),
+                                                                        "auth": "{}".format(auth)}]}}]}
         response = self._httpp_request(method='PUT', url_suffix='/wsa/api/v3.0/web_security/access_policies?format=json',
                                        data=json.dumps(accesspoliciesdata))
 
@@ -169,22 +165,18 @@ class Client(BaseClient):
             if not response:
                 outputs = {'wsa': {
                     'response': "The modifying request has been processed successfully and all "
-                                "the given access policies are updated with the given payload"
-                    }
-                }
+                                "the given access policies are updated with the given payload"}}
                 return CommandResults(
                     outputs=outputs)
 
             else:
                 outputs = {'wsa': {
-                    'response': response
-                    }
-                }
+                    'response': response}}
                 return CommandResults(
                     outputs=outputs)
 
         except DemistoException as a:
-            outputs = {'response': a}
+            outputs = a
             return CommandResults(outputs=outputs)
 
     def delete_access_policies(self, a_data) -> CommandResults:
@@ -199,22 +191,18 @@ class Client(BaseClient):
             if not data:
                 outputs = {'wsa': {
                     'response': "The deleting request has been processed successfully and all "
-                                "the given access policies are updated with the given payload"
-                    }
-                }
+                                "the given access policies are updated with the given payload"}}
                 return CommandResults(
                     outputs=outputs)
 
             else:
                 outputs = {'wsa': {
-                    'response': data
-                    }
-                }
+                    'response': data}}
                 return CommandResults(
                     outputs=outputs)
 
         except DemistoException as a:
-            outputs = {'response': a}
+            outputs = a
             return CommandResults(outputs=outputs)
 
 
@@ -318,8 +306,7 @@ def main() -> None:
             base_url=base_url,
             verify=verify_certificate,
             headers=header,
-            proxy=proxyy
-            )
+            proxy=proxyy)
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.

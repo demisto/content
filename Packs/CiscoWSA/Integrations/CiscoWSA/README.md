@@ -1,17 +1,17 @@
 Cisco WSA
-This integration was integrated and tested with VSeries-100 - and AsyncOS 14.0 API of Cisco WSA.
+This integration was integrated and tested with version xx of WSA-Testing
 
-## Configure Cisco WSA on Cortex XSOAR
+## Configure WSA-Testing on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Cisco WSA.
+2. Search for WSA-Testing.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Required** |
     | --- | --- |
-    | Base_URL | True |
-    | API_KEY | True |
-    | PORT | False |
+    |  | True |
+    |  | True |
+    |  | False |
     | Trust any certificate (not secure) | False |
     | Use system proxy settings | False |
 
@@ -31,7 +31,6 @@ Retrieving all access policies
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-No Arguments required.
 
 
 #### Context Output
@@ -80,7 +79,7 @@ No Arguments required.
             },
             "policy_description": "",
             "policy_expiry": "",
-            "policy_name": "nader2",
+            "policy_name": "policy2",
             "policy_order": 1,
             "policy_status": "enable",
             "protocols_user_agents": {
@@ -150,78 +149,8 @@ No Arguments required.
             },
             "policy_description": "",
             "policy_expiry": "",
-            "policy_name": "nader1",
-            "policy_order": 2,
-            "policy_status": "enable",
-            "protocols_user_agents": {
-                "state": "use_global"
-            },
-            "url_filtering": {
-                "custom_cats": {
-                    "use_global": [
-                        "SocialURLCategorynader1"
-                    ]
-                },
-                "exception_referred_embedded_content": {
-                    "state": "disable"
-                },
-                "state": "custom",
-                "update_cats_action": "use_global",
-                "yt_cats": {
-                    "use_global": [
-                        "Film & Animation",
-                        "Autos & Vehicles",
-                        "Music",
-                        "Pets & Animals",
-                        "Sports",
-                        "Travel & Events",
-                        "Gaming",
-                        "People & Blogs",
-                        "Comedy",
-                        "Entertainment",
-                        "News & Politics",
-                        "Howto & Style",
-                        "Education",
-                        "Science & Technology",
-                        "Nonprofits & Activism"
-                    ]
-                }
-            }
-        },
-        {
-            "amw_reputation": {
-                "state": "use_global"
-            },
-            "avc": {
-                "state": "use_global"
-            },
-            "http_rewrite_profile": "use_global",
-            "membership": {
-                "identification_profiles": [
-                    {
-                        "profile1": {
-                            "auth": "No Authentication"
-                        }
-                    }
-                ],
-                "protocols": [
-                    {
-                        "id_profile": "profile1",
-                        "value": [
-                            "http",
-                            "https",
-                            "ftp"
-                        ]
-                    }
-                ]
-            },
-            "objects": {
-                "state": "use_global"
-            },
-            "policy_description": "",
-            "policy_expiry": "",
             "policy_name": "policy1",
-            "policy_order": 3,
+            "policy_order": 2,
             "policy_status": "enable",
             "protocols_user_agents": {
                 "state": "use_global"
@@ -290,7 +219,77 @@ No Arguments required.
             },
             "policy_description": "",
             "policy_expiry": "",
-            "policy_name": "policy2",
+            "policy_name": "nader2",
+            "policy_order": 3,
+            "policy_status": "enable",
+            "protocols_user_agents": {
+                "state": "use_global"
+            },
+            "url_filtering": {
+                "custom_cats": {
+                    "use_global": [
+                        "SocialURLCategorynader1"
+                    ]
+                },
+                "exception_referred_embedded_content": {
+                    "state": "disable"
+                },
+                "state": "custom",
+                "update_cats_action": "use_global",
+                "yt_cats": {
+                    "use_global": [
+                        "Film & Animation",
+                        "Autos & Vehicles",
+                        "Music",
+                        "Pets & Animals",
+                        "Sports",
+                        "Travel & Events",
+                        "Gaming",
+                        "People & Blogs",
+                        "Comedy",
+                        "Entertainment",
+                        "News & Politics",
+                        "Howto & Style",
+                        "Education",
+                        "Science & Technology",
+                        "Nonprofits & Activism"
+                    ]
+                }
+            }
+        },
+        {
+            "amw_reputation": {
+                "state": "use_global"
+            },
+            "avc": {
+                "state": "use_global"
+            },
+            "http_rewrite_profile": "use_global",
+            "membership": {
+                "identification_profiles": [
+                    {
+                        "profile1": {
+                            "auth": "No Authentication"
+                        }
+                    }
+                ],
+                "protocols": [
+                    {
+                        "id_profile": "profile1",
+                        "value": [
+                            "http",
+                            "https",
+                            "ftp"
+                        ]
+                    }
+                ]
+            },
+            "objects": {
+                "state": "use_global"
+            },
+            "policy_description": "",
+            "policy_expiry": "",
+            "policy_name": "nader1",
             "policy_order": 4,
             "policy_status": "enable",
             "protocols_user_agents": {
@@ -499,6 +498,10 @@ No Arguments required.
 >|access_policies|
 >|---|
 >|  |
+>|  |
+>|  |
+>|  |
+>|  |
 
 
 ### wsa-get-domain-map
@@ -513,7 +516,6 @@ Retrieving the Domain Map Details
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-No Argument Required.
 
 
 #### Context Output
@@ -554,7 +556,6 @@ Retrieving URL Categories
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-No Arguments required.
 
 
 #### Context Output
@@ -597,7 +598,6 @@ Modifying identification profiles
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-No Arguments required.
 
 
 #### Context Output
@@ -689,7 +689,7 @@ Modifying an Access Policy
 
 
 #### Command Example
-```!wsa-modify-access-policies policyname=policy1 profile_name=profile1 policy_order=1 policy_status=disable auth="No Authentication"```
+```!wsa-modify-access-policies policyname=policy1 profile_name=profile1 policy_order=2 policy_status=disable auth="No Authentication"```
 
 #### Context Example
 ```json
