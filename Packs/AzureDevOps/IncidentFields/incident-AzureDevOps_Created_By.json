@@ -2,7 +2,7 @@
     "id": "incident_azuredevopscreatedby",
     "version": -1,
     "modified": "2021-10-21T15:15:55.031187237+03:00",
-    "name": "Azure DevOps Created By",
+    "name": "AzureDevOps Created By",
     "ownerOnly": false,
     "cliName": "azuredevopscreatedby",
     "type": "shortText",
