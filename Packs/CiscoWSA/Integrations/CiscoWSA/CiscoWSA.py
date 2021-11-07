@@ -80,7 +80,7 @@ class Client(BaseClient):
 
         except requests.exceptions.ConnectTimeout as exception:
             err_msg = 'Connection Timeout Error - potential reasons might be that the Server URL parameter' \
-                          ' is incorrect or that the Server is not accessible from your host.'
+                      ' is incorrect or that the Server is not accessible from your host.'
             raise DemistoException(err_msg, exception)
         except requests.exceptions.SSLError as exception:
             # in case the "Trust any certificate" is already checked
@@ -105,8 +105,8 @@ class Client(BaseClient):
         except requests.exceptions.RetryError as exception:
             try:
                 reason = 'Reason: {}'.format(exception.args[0].reason.args[0])
-            except Exception:  # noqa: disable=broad-except
-                reason = ''
+            except Exception as a:  # noqa: disable=broad-except
+                reason = a
             err_msg = 'Max Retries Error- Request attempts with {} retries failed. \n{}'.format(retries, reason)
             raise DemistoException(err_msg, exception)
 
@@ -123,9 +123,7 @@ class Client(BaseClient):
         data = self._httpp_request(
 
             method='GET',
-            url_suffix='/wsa/api/v2.0/configure/web_security/domain_map'
-
-        )
+            url_suffix='/wsa/api/v2.0/configure/web_security/domain_map')
 
         return data
 
@@ -174,7 +172,6 @@ class Client(BaseClient):
                                 "the given access policies are updated with the given payload"}}
                 return CommandResults(
                     outputs=outputs)
-
             else:
                 outputs = {'wsa': {
                     'response': response}}
@@ -182,7 +179,7 @@ class Client(BaseClient):
                     outputs=outputs)
 
         except DemistoException as a:
-            outputs = {"ModifyAccessPolicyException": a}
+            outputs = {"exception": {"ModifyAccessPolicyException": a}}
             return CommandResults(outputs=outputs)
 
     def delete_access_policies(self, a_data) -> CommandResults:
@@ -208,7 +205,7 @@ class Client(BaseClient):
                     outputs=outputs)
 
         except DemistoException as a:
-            outputs = {"DeleteAccessPolicyException": a}
+            outputs = {"exception": {"DeleteAccessPolicyException": a}}
             return CommandResults(outputs=outputs)
 
 
