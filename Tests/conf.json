@@ -4588,7 +4588,7 @@
             "playbookID": "TestAzureSentinelPlaybookV2"
         },
         {
-            "integrations": "AutoFocusTagsFeed",
+            "integrations": ["AutoFocusTagsFeed", "Demisto REST API"],
             "playbookID": "AutoFocusTagsFeed-test"
         },
         {
@@ -4625,6 +4625,14 @@
             ],
             "playbookID": "GetTasksWithSections SetIRProcedures end to end test",
             "fromversion": "6.0.0"
+        },
+        {
+            "scripts": [
+                "SplunkShowAsset",
+                "SplunkShowDrilldown",
+                "SplunkShowIdentity"
+            ],
+            "playbookID": "SplunkShowEnrichment"
         }
     ],
     "skipped_tests": {
