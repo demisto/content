@@ -9,8 +9,8 @@ configuration:
   type: 0
   defaultvalue: 'https://eu.knowbe4.com'
   additionalinfo: URL of the API endpoint, only FQDN is required, e.g. https://eu.knowbe4.com
-- name: apikey
-  required: true
+- name: user
+  required: false
   displaypassword: API Key
   hiddenusername: true
   type: 9
