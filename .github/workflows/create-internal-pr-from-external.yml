@@ -17,7 +17,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.8'
+          python-version: '3.9'
 
       - name: Print Context
         run: |
@@ -37,5 +37,7 @@ jobs:
           echo "Creating an internal PR from original merged external PR ${{ github.event.pull_request.html_url }}"
           cd Utils/github_workflow_scripts
           pipenv install --dev
+          echo "Check Installed pip Packages"
+          pipenv run pip list
           pipenv run ./create_internal_pr.py
           echo "Finished Creating Internal PR"
