@@ -1,6 +1,6 @@
 category: Utilities
 commonfields:
-  id: DNS-over-https
+  id: DNSOverHttps
   version: -1
 configuration:
 - additionalinfo: Select Cloudflare or Google DNS over HTTPS server to use
@@ -21,8 +21,8 @@ configuration:
   required: false
   type: 8
 description: Query dns names over https from Cloudflare or Google
-display: DNS-over-https
-name: DNS-over-https
+display: DNSOverHttps
+name: DNSOverHttps
 script:
   commands:
   - arguments:

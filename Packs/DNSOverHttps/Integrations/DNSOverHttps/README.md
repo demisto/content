@@ -1,5 +1,4 @@
-Query dns names over https from Cloudflare or Google
-This integration was integrated and tested with version xx of DNSOverHttps
+Query dns names over https from Cloudflare or Google.
 
 ## Configure DNSOverHttps on Cortex XSOAR
 
