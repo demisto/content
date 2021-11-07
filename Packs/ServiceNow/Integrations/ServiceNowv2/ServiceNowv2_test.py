@@ -122,7 +122,7 @@ def test_split_fields_with_special_delimiter():
 
 @pytest.mark.parametrize('query, escaped, result',[
     ('&', False, '&'),
-    ('&', True, ['something']),
+    ('&', True, []),
     ('noampersand', False, 'noampersand'),
     ('noampersand', True, 'noampersand')
 ])
