@@ -153,40 +153,40 @@ script:
     execution: false
     name: get-indicators
     outputs:
-    - contextPath: TAXII.Indicator.value
+    - contextPath: TAXII.Indicator.Value
       description: The indicator value.
       type: String
-    - contextPath: TAXII.Indicator.type
+    - contextPath: TAXII.Indicator.Type
       description: The indicator type.
       type: String
-    - contextPath: TAXII.Indicator.title
+    - contextPath: TAXII.Indicator.Title
       description: The observable title.
       type: String
-    - contextPath: TAXII.Indicator.description
+    - contextPath: TAXII.Indicator.Description
       description: The observable description.
       type: String
-    - contextPath: TAXII.Indicator.stixindicatordescription
+    - contextPath: TAXII.Indicator.Stixindicatordescription
       description: The indicator description.
       type: String
-    - contextPath: TAXII.Indicator.stixindicatorname
+    - contextPath: TAXII.Indicator.Stixindicatorname
       description: The indicator title.
       type: String
-    - contextPath: TAXII.Indicator.stixttptitle
+    - contextPath: TAXII.Indicator.Stixttptitle
       description: The ttp title.
       type: String
-    - contextPath: TAXII.Indicator.stixmalwaretypes
+    - contextPath: TAXII.Indicator.Stixmalwaretypes
       description: The stix malware type.
       type: String
-    - contextPath: TAXII.Indicator.confidence
+    - contextPath: TAXII.Indicator.Confidence
       description: The indicator confidence.
       type: String
-    - contextPath: TAXII.Indicator.score
+    - contextPath: TAXII.Indicator.Score
       description: The indicator DBot score.
       type: String
-    - contextPath: TAXII.Indicator.fields
+    - contextPath: TAXII.Indicator.Fields
       description: The indicator fields.
       type: Unknown
-    - contextPath: TAXII.Indicator.rawJSON
+    - contextPath: TAXII.Indicator.RawJSON
       description: The indicator rawJSON value.
       type: Unknown
   dockerimage: demisto/taxii:1.0.0.23209

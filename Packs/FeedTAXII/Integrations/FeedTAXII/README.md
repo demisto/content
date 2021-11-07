@@ -74,93 +74,90 @@ Gets indicators from the the feed.
 | limit | The maximum number of results to return. | Optional | 
 | initial_interval | The time interval for the first fetch (retroactive). `<number> <time unit>` of type minute/hour/day. For example, 1 minute, 12 hours, 7 days. | Optional | 
 
-
-##### Context Output
+#### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TAXII.Indicator.value | String | The indicator value. | 
-| TAXII.Indicator.type | String | The indicator type. | 
-| TAXII.Indicator.title | String | The observable title. | 
-| TAXII.Indicator.description | String | The observable description. | 
-| TAXII.Indicator.stixindicatordescription | String | The indicator description. | 
-| TAXII.Indicator.stixindicatorname | String | The indicator title. | 
-| TAXII.Indicator.stixttptitle | String | The ttp title. | 
-| TAXII.Indicator.stixmalwaretypes | String | The stix malware type. | 
-| TAXII.Indicator.confidence | String | The indicator confidence. | 
-| TAXII.Indicator.score | String | The indicator DBot score. | 
-| TAXII.Indicator.fields | Unknown | The indicator value. | 
-| TAXII.Indicator.rawJSON | Unknown | The indicator rawJSON value. | 
+| TAXII.Indicator.Value | String | The indicator value. | 
+| TAXII.Indicator.Type | String | The indicator type. | 
+| TAXII.Indicator.Title | String | The observable title. | 
+| TAXII.Indicator.Description | String | The observable description. | 
+| TAXII.Indicator.Stixindicatordescription | String | The indicator description. | 
+| TAXII.Indicator.Stixindicatorname | String | The indicator title. | 
+| TAXII.Indicator.Stixttptitle | String | The ttp title. | 
+| TAXII.Indicator.Stixmalwaretypes | String | The stix malware type. | 
+| TAXII.Indicator.Confidence | String | The indicator confidence. | 
+| TAXII.Indicator.Score | String | The indicator DBot score. | 
+| TAXII.Indicator.Fields | Unknown | The indicator fields. | 
+| TAXII.Indicator.RawJSON | Unknown | The indicator rawJSON value. | 
 
 
 #### Command Example
 ```!get-indicators limit=1 initial_interval="1 day"```
 
-
-##### Context Example
-```
+#### Context Example
+```json
 {
-    "TAXII.Indicator": [
-       {
-           "value": "http://example.com/?n",
-           "type": "URL",
-           "title": "URL: http://example.com/?n...",
-           "description": "URL: http://example.com/?n| isOnline:yes| dateVerified:2021-10-19T04:13:43+00:00",
-           "stixindicatorname": "phishTank.com id:7324360 with malicious URL:http://example...",
-           "stixindicatordescription": "This URL:[http://example.com/?n] was identified by phishtank.com as part of a phishing email. This URL appears to still be online as of 2021-10-19T04:13:43+00:00. More detailed infomation can be found at http://www.phishtank.com/phish_detail.php?phish_id=7324360",
-           "confidence": "High",
-           "fields": {
-               "title": "URL: http://example.com/?n...",
-               "description": "URL: http://example.com/?n| isOnline:yes| dateVerified:2021-10-19T04:13:43+00:00",
-               "stixindicatorname": "phishTank.com id:7324360 with malicious URL:http://example...",
-               "stixindicatordescription": "This URL:[http://example.com/?n] was identified by phishtank.com as part of a phishing email. This URL appears to still be online as of 2021-10-19T04:13:43+00:00. More detailed infomation can be found at http://www.phishtank.com/phish_detail.php?phish_id=7324360",
-               "confidence": "High"
-           },
-           "relationships": [
-               {
-                   "name": "related-to",
-                   "reverseName": "related-to",
-                   "type": "IndicatorToIndicator",
-                   "entityA": "http://example.com/?n",
-                   "entityAFamily": "Indicator",
-                   "entityAType": "URL",
-                   "entityB": "URL embedded in Email",
-                   "entityBFamily": "Indicator",
-                   "entityBType": "Attack Pattern",
-                   "fields": {}
-               }
-           ],
-           "rawJSON": {
-               "indicator": "http://example.com/?n",
-               "type": "URL",
-               "indicator_ref": "opensource:Observable-335290e0-3496-4644-bdaa-25b323814b46",
-               "stix_title": "URL: http://example.com/?n...",
-               "stix_description": "URL: http://example.com/?n| isOnline:yes| dateVerified:2021-10-19T04:13:43+00:00",
-               "TLP": "WHITE",
-               "stix_indicator_name": "phishTank.com id:7324360 with malicious URL:http://example...",
-               "stix_indicator_description": "This URL:[http://example.com/?n] was identified by phishtank.com as part of a phishing email. This URL appears to still be online as of 2021-10-19T04:13:43+00:00. More detailed infomation can be found at http://www.phishtank.com/phish_detail.php?phish_id=7324360",
-               "confidence": "High",
-               "ttp_ref": [
-                   "opensource:ttp-c819f3ef-fbc3-4077-8d56-bf619c8d9b29"
-               ],
-               "relationships": [
-                   {
-                       "stix_ttp_title": "Email Emmbedded URL",
-                       "ttp_description": "Target Users via Email by adding a malicious URL",
-                       "type": "Attack Pattern",
-                       "indicator": "URL embedded in Email",
-                       "value": "URL embedded in Email"
-                   }
-               ],
-               "value": "http://example.com/?n"
-           }
-       }
-    ]
+    "TAXII": {
+        "Indicator": [
+            {
+                "Confidence": "High",
+                "Description": "URL: https://example.com| isOnline:yes| dateVerified:2021-11-06T21:53:09+00:00",
+                "Fields": {},
+                "Rawjson": {
+                    "TLP": "WHITE",
+                    "confidence": "High",
+                    "indicator": "https://example.com",
+                    "indicator_ref": "opensource:Observable-9fe6464a-4a53-4269-90c6-d81013b2073e",
+                    "relationships": [
+                        {
+                            "indicator": "URL embedded in Email",
+                            "stix_ttp_title": "Email Emmbedded URL",
+                            "ttp_description": "Target Users via Email by adding a malicious URL",
+                            "type": "Attack Pattern",
+                            "value": "URL embedded in Email"
+                        }
+                    ],
+                    "share_level": "white",
+                    "stix_description": "URL: https://example.com| isOnline:yes| dateVerified:2021-11-06T21:53:09+00:00",
+                    "stix_indicator_description": "This URL:[https://example.com] was identified by phishtank.com as part of a phishing email. This URL appears to still be online as of 2021-11-06T21:53:09+00:00. More detailed infomation can be found at http://www.phishtank.com/phish_detail.php?phish_id=7341640",
+                    "stix_indicator_name": "phishTank.com id:7341640 with malicious URL:https://example.com...",
+                    "stix_title": "URL: https://example.com...",
+                    "ttp_ref": [
+                        "opensource:ttp-c819f3ef-fbc3-4077-8d56-bf619c8d9b29"
+                    ],
+                    "type": "URL",
+                    "value": "https://example.com"
+                },
+                "Relationships": [
+                    {
+                        "entityA": "https://example.com",
+                        "entityAFamily": "Indicator",
+                        "entityAType": "URL",
+                        "entityB": "URL embedded in Email",
+                        "entityBFamily": "Indicator",
+                        "entityBType": "Attack Pattern",
+                        "fields": {},
+                        "name": "related-to",
+                        "reverseName": "related-to",
+                        "type": "IndicatorToIndicator"
+                    }
+                ],
+                "Stixindicatordescription": "This URL:[https://example.com] was identified by phishtank.com as part of a phishing email. This URL appears to still be online as of 2021-11-06T21:53:09+00:00. More detailed infomation can be found at http://www.phishtank.com/phish_detail.php?phish_id=7341640",
+                "Stixindicatorname": "phishTank.com id:7341640 with malicious URL:https://example.com...",
+                "Title": "URL: https://example.com...",
+                "Type": "URL",
+                "Value": "https://example.com"
+            }
+        ]
+    }
 }
 ```
 
 #### Human Readable Output
-### Indicators
-|Value|Type|Rawjson|
-|---|---|---|
-| http://example.com/?n | URL | indicator: http://example.com/?n<br>type: URL<br>indicator_ref: opensource:Observable-335290e0-3496-4644-bdaa-25b323814b46<br>stix_title: URL: http://example.com/?n...<br>stix_description: URL: http://example.com/?n\| isOnline:yes\| dateVerified:2021-10-19T04:13:43+00:00<br>TLP: WHITE<br>stix_indicator_name: phishTank.com id:7324360 with malicious URL:http://example...<br>stix_indicator_description: This URL:[http://example/?n] was identified by phishtank.com as part of a phishing email. This URL appears to still be online as of 2021-10-19T04:13:43+00:00. More detailed infomation can be found at http://www.phishtank.com/phish_detail.php?phish_id=7324360<br>confidence: High<br>ttp_ref: opensource:ttp-c819f3ef-fbc3-4077-8d56-bf619c8d9b29<br>relationships: {'stix_ttp_title': 'Email Emmbedded URL', 'ttp_description': 'Target Users via Email by adding a malicious URL', 'type': 'Attack Pattern', 'indicator': 'URL embedded in Email', 'value': 'URL embedded in Email'}<br>value: http://example.com/?n |
+
+>### Indicators
+>|Value|Type|Rawjson|
+>|---|---|---|
+>| https://example.com | URL | indicator: https://example.com<br/>type: URL<br/>indicator_ref: opensource:Observable-9fe6464a-4a53-4269-90c6-d81013b2073e<br/>stix_title: URL: https://example.com...<br/>stix_description: URL: https://example.com\| isOnline:yes\| dateVerified:2021-11-06T21:53:09+00:00<br/>share_level: white<br/>TLP: WHITE<br/>stix_indicator_name: phishTank.com id:7341640 with malicious URL:https://example.com...<br/>stix_indicator_description: This URL:[https://example.com] was identified by phishtank.com as part of a phishing email. This URL appears to still be online as of 2021-11-06T21:53:09+00:00. More detailed infomation can be found at http:<span>//</span>www.phishtank.com/phish_detail.php?phish_id=7341640<br/>confidence: High<br/>ttp_ref: opensource:ttp-c819f3ef-fbc3-4077-8d56-bf619c8d9b29<br/>relationships: {'stix_ttp_title': 'Email Emmbedded URL', 'ttp_description': 'Target Users via Email by adding a malicious URL', 'type': 'Attack Pattern', 'indicator': 'URL embedded in Email', 'value': 'URL embedded in Email'}<br/>value: https://example.com |
+
