@@ -76,9 +76,6 @@ def fetch_indicators_command(
         else None
     )
 
-    # add filter for indicator types by default
-    filter_args = {"type": "indicator"}
-
     if client.collection_to_fetch is None:
         # fetch all collections
         if client.collections is None:
@@ -86,10 +83,10 @@ def fetch_indicators_command(
         indicators: list = []
         for collection in client.collections:
             client.collection_to_fetch = collection
-            filter_args["added_after"] = get_added_after(
+            added_after = get_added_after(
                 fetch_full_feed, initial_interval, last_run_ctx.get(collection.id)
             )
-            fetched_iocs = client.build_iterator(limit, **filter_args)
+            fetched_iocs = client.build_iterator(limit, added_after=added_after)
             indicators.extend(fetched_iocs)
             if limit >= 0:
                 limit -= len(fetched_iocs)
@@ -98,12 +95,12 @@ def fetch_indicators_command(
             last_run_ctx[collection.id] = client.last_fetched_indicator__modified
     else:
         # fetch from a single collection
-        filter_args["added_after"] = get_added_after(fetch_full_feed, initial_interval, last_fetch_time)
-        indicators = client.build_iterator(limit, **filter_args)
+        added_after = get_added_after(fetch_full_feed, initial_interval, last_fetch_time)
+        indicators = client.build_iterator(limit, added_after=added_after)
         last_run_ctx[client.collection_to_fetch.id] = (
             client.last_fetched_indicator__modified
             if client.last_fetched_indicator__modified
-            else filter_args.get("added_after")
+            else added_after
         )
     return indicators, last_run_ctx
 
@@ -136,13 +133,9 @@ def get_indicators_command(
     :return: indicators in cortex TIM format
     """
 
-    # add filter for indicator types by default
-    filter_args = {"type": "indicator"}
-
     limit = try_parse_integer(limit)
     if added_after:
         added_after, _ = parse_date_range(added_after, date_format=TAXII_TIME_FORMAT)
-        filter_args["added_after"] = added_after
     raw = argToBoolean(raw)
 
     if client.collection_to_fetch is None:
@@ -152,7 +145,7 @@ def get_indicators_command(
         indicators: list = []
         for collection in client.collections:
             client.collection_to_fetch = collection
-            fetched_iocs = client.build_iterator(limit, **filter_args)
+            fetched_iocs = client.build_iterator(limit, added_after=added_after)
             indicators.extend(fetched_iocs)
             if limit >= 0:
                 limit -= len(fetched_iocs)
@@ -160,7 +153,7 @@ def get_indicators_command(
                     break
 
     else:
-        indicators = client.build_iterator(limit=limit, **filter_args)
+        indicators = client.build_iterator(limit=limit, added_after=added_after)
 
     if raw:
         demisto.results({"indicators": [x.get("rawJSON") for x in indicators]})
@@ -209,6 +202,8 @@ def reset_fetch_command(client):
 
 
 def main():
+    objects_types = ['report', 'indicator', 'malware', 'campaign', 'attack-pattern',
+                     'course-of-action', 'intrusion-set', 'tool', 'threat-actor', 'infrastructure']
     params = demisto.params()
     args = demisto.args()
     url = params.get("url")
@@ -229,6 +224,9 @@ def main():
     is_incremental_feed = params.get('feedIncremental') or False
     limit = try_parse_integer(params.get("limit") or -1)
     limit_per_request = try_parse_integer(params.get("limit_per_request"))
+    certificate = params.get('certificate', None)
+    key = params.get('key', None)
+    objects_to_fetch = argToList(params.get('objects_to_fetch') or objects_types)
 
     command = demisto.command()
     demisto.info(f"Command being called in {CONTEXT_PREFIX} is {command}")
@@ -239,12 +237,15 @@ def main():
             collection_to_fetch=collection_to_fetch,
             proxies=proxies,
             verify=verify_certificate,
+            objects_to_fetch=objects_to_fetch,
             skip_complex_mode=skip_complex_mode,
             username=username,
             password=password,
             tags=feed_tags,
             limit_per_request=limit_per_request,
-            tlp_color=tlp_color
+            tlp_color=tlp_color,
+            certificate=certificate,
+            key=key,
         )
         client.initialise()
         commands = {

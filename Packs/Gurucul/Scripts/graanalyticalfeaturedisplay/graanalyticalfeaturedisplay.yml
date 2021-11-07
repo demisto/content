@@ -1,0 +1,19 @@
+commonfields:
+  id: GRAAnalyticalFeatureDisplay
+  version: -1
+name: GRAAnalyticalFeatureDisplay
+script: |
+type: python
+tags:
+- dynamic-section
+comment: Display GRA analytical feature on the layout
+enabled: true
+scripttarget: 0
+subtype: python3
+timeout: 900ns
+runonce: false
+dockerimage: demisto/python3:3.9.7.24076
+runas: DBotWeakRole
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
