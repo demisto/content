@@ -1,3 +1,5 @@
+import botocore.exceptions
+
 import demistomock as demisto
 from CommonServerPython import *
 from datetime import datetime, date
@@ -1170,25 +1172,33 @@ def get_user_login_profile(args, aws_client):
         'UserName': user_name
     }
 
-    response = client.get_login_profile(**kwargs)
-    user_profile = response['LoginProfile']
-    data = {
-        'UserName': user_profile.get('UserName'),
-        'LoginProfile': {
-            'CreateDate': user_profile.get('CreateDate'),
-            'PasswordResetRequired': user_profile.get('PasswordResetRequired')
+    try:
+        response = client.get_login_profile(**kwargs)
+        user_profile = response['LoginProfile']
+        create_date = datetime_to_string(user_profile.get('CreateDate')) or user_profile.get('CreateDate')
+        data = {
+            'UserName': user_profile.get('UserName'),
+            'LoginProfile': {
+                'CreateDate': create_date,
+                'PasswordResetRequired': user_profile.get('PasswordResetRequired')
+            }
         }
-    }
 
-    ec = {'AWS.IAM.Users(val.UserName && val.UserName === obj.UserName)': data}
+        ec = {'AWS.IAM.Users(val.UserName && val.UserName === obj.UserName)': data}
 
-    human_readable = tableToMarkdown('AWS IAM Login Profile for user {}'.format(user_name),
-                                     t=data.get('LoginProfile'),
-                                     headers=['CreateDate', 'PasswordResetRequired'],
-                                     removeNull=True,
-                                     headerTransform=pascalToSpace)
+        human_readable = tableToMarkdown('AWS IAM Login Profile for user {}'.format(user_name),
+                                         t=data.get('LoginProfile'),
+                                         headers=['CreateDate', 'PasswordResetRequired'],
+                                         removeNull=True,
+                                         headerTransform=pascalToSpace)
 
-    return_outputs(human_readable, ec, response)
+        return_outputs(human_readable, ec, response)
+    except botocore.exceptions.ClientError as error:
+        if error.response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 404:
+            return_outputs(tableToMarkdown('AWS IAM Login Profile for user {}'.format(user_name), t={}))
+        else:
+            raise error
+
 
 
 def test_function(aws_client):
