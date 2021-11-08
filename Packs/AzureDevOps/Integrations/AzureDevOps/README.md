@@ -1,5 +1,6 @@
 # Azure DevOps
-Create and manage Git repositories in Azure DevOps Services.
+Manage Git repositories in Azure DevOps Services. Integration capabilities include retrieving, creating, and updating pull requests. Run pipelines and retrieve git information.
+Note: This is a beta Integration, which lets you implement and test pre-release software. Since the integration is beta, it might contain bugs. Updates to the integration during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the integration to help us identify issues, fix them, and continually improve.
 This integration was integrated and tested with version 6.1 of AzureDevOps
 
 ## Configure AzureDevOps on Cortex XSOAR
@@ -120,7 +121,7 @@ There is no context output for this command.
 
 ### azure-devops-pipeline-run
 ***
-Run a pipeline.
+Run a pipeline. A DevOps pipeline is a set of automated processes and tools that allows both developers and operations professionals to work cohesively to build and deploy code to a production environment.
 
 
 #### Base Command

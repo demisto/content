@@ -6,78 +6,54 @@
         "Azure DevOps": {
             "dontMapEventToLabels": true,
             "internalMapping": {
-                "AzureDevOps Created By": {
-                    "complex": null,
-                    "simple": "created_by"
-                },
-                "AzureDevOps Creation Date": {
-                    "complex": null,
-                    "simple": "creation_date"
-                },
-                "AzureDevOps Project ID": {
+                "AzureDevOps  Project ID": {
                     "complex": null,
                     "simple": "project_id"
                 },
-                "AzureDevOps Project Name": {
+                "AzureDevOps  Project Name": {
                     "complex": null,
                     "simple": "project_name"
                 },
-                "AzureDevOps Pull Request ID": {
+                "AzureDevOps  Pull Request ID": {
                     "complex": null,
                     "simple": "pull_request_id"
                 },
-                "AzureDevOps Repository ID": {
-                    "complex": null,
-                    "simple": "repository_id"
-                },
-                "AzureDevOps Repository Name": {
+                "AzureDevOps  Repository Name": {
                     "complex": null,
                     "simple": "repository_name"
                 },
-                "AzureDevOps Description": {
+                "AzureDevOps  RepositoryID": {
                     "complex": null,
-                    "simple": "description"
+                    "simple": "repository_id"
                 },
-                "AzureDevOps Status": {
+                "AzureDevOps  Status": {
                     "complex": null,
                     "simple": "status"
-                },
-                "AzureDevOps Title": {
-                    "complex": null,
-                    "simple": "title"
                 }
             }
         },
         "dbot_classification_incident_type_all": {
-            "dontMapEventToLabels": false,
+            "dontMapEventToLabels": true,
             "internalMapping": {
-                "Created By": {
-                    "complex": null,
-                    "simple": "created_by"
-                },
-                "Created Date": {
-                    "complex": null,
-                    "simple": "creation_date"
-                },
                 "Description": {
                     "complex": null,
                     "simple": "description"
+                },
+                "Title": {
+                    "complex": null,
+                    "simple": "title"
+                },
+                "dbotCreatedBy": {
+                    "complex": null,
+                    "simple": "created_by"
                 },
                 "dbotMirrorDirection": {
                     "complex": null,
                     "simple": "mirror_direction"
                 },
-                "dbotMirrorId": {
-                    "complex": null,
-                    "simple": "pull_request_id"
-                },
                 "dbotMirrorInstance": {
                     "complex": null,
                     "simple": "mirror_instance"
-                },
-                "occurred": {
-                    "complex": null,
-                    "simple": "creation_date"
                 }
             }
         }

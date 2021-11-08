@@ -2,7 +2,12 @@ In order to connect to the Azure DevOps, please follow  these steps:
 
 
 1. You have to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following [Microsoft article](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app).
-2. In your registered app - Get the Application (client) ID.
+   Then, add the following permisions:
+       <ul>
+      <li>Azure DevOps/user_impersonation</li>
+      <li>Microsoft Graph/User.Read</li>
+    </ul> </li>
+2. In your registered app - Get the Application (client) ID. 
    1. Navigate in the Azure Portal to **App registrations** > your registered application > **Overview**.
    2. Copy and save the Application (client) ID.
 3. In the ***Client ID*** parameter, enter your registered app Application (client) ID.
