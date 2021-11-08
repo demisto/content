@@ -1,5 +1,4 @@
 import pytest
-
 from CommonServerPython import *
 
 ACCOUNT_NAME = "test"
