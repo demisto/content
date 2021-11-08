@@ -41,7 +41,8 @@ class Client:
         401: 'Unauthorized access. An issue occurred during authentication. This can indicate an '    # noqa: W504
              + 'incorrect key, id, or other invalid authentication parameters.',
         402: 'Unauthorized access. User does not have the required license type to run this API.',
-        403: 'Unauthorized access. The provided API key does not have the required RBAC permissions to run this API.'
+        403: 'Unauthorized access. The provided API key does not have the required RBAC permissions to run this API.',
+        404: 'XDR Not found: The provided URL may not be of an active XDR server.'
     }
 
     def __init__(self, params: Dict):
