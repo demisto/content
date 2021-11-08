@@ -15,7 +15,7 @@
 <li><strong>Use system proxy settings</strong></li>
 <li>
 <strong>URL Threshold. </strong>Minimum number of positive results from urlscan.io to consider the URL malicious.</li>
-<li>
+<li><strong>User Agent</strong>: default User Agent header used during scans with this integration.</li>
 </ul>
 </li>
 <li>Click <strong>Test</strong> to validate the URLs, token, and connection.</li>
