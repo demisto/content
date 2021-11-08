@@ -456,13 +456,13 @@ def build_query_for_request_params(query):
         return query
 
 
-def escape_build_query(sys_param_query, escape_amp=True):
+def parse_build_query(sys_param_query, parse_amp=True):
     """
-      Used to escape or build the query parameters
+      Used to parse build the query parameters or ignore parsing.
     """
 
     if sys_param_query:
-        if escape_amp:
+        if parse_amp:
             return build_query_for_request_params(sys_param_query)
     return sys_param_query
 
@@ -841,7 +841,7 @@ class Client(BaseClient):
         return self.send_request('/table/label_entry', 'POST', body=body)
 
     def query(self, table_name: str, sys_param_limit: str, sys_param_offset: str, sys_param_query: str,
-              system_params: dict = {}, sysparm_fields: Optional[str] = None, escape_amp: bool = True) -> dict:
+              system_params: dict = {}, sysparm_fields: Optional[str] = None, parse_amp: bool = True) -> dict:
         """Query records by sending a GET request.
 
         Args:
@@ -851,7 +851,7 @@ class Client(BaseClient):
         sys_param_query: the query
         system_params: system parameters
         sysparm_fields: Comma-separated list of field names to return in the response.
-        escape_amp: when querying fields you may want not to escape &'s.
+        parse_amp: when querying fields you may want not to parse &'s.
 
         Returns:
             Response from API.
@@ -859,7 +859,7 @@ class Client(BaseClient):
 
         query_params = {'sysparm_limit': sys_param_limit, 'sysparm_offset': sys_param_offset}
         if sys_param_query:
-            query_params['sysparm_query'] = escape_build_query(sys_param_query, escape_amp)
+            query_params['sysparm_query'] = parse_build_query(sys_param_query, parse_amp)
         if system_params:
             query_params.update(system_params)
         if sysparm_fields:
