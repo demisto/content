@@ -1482,10 +1482,10 @@ class Pack(object):
                 PackFolders.LAYOUTS.value: "layoutscontainer",
                 PackFolders.CLASSIFIERS.value: "classifier",
                 PackFolders.WIDGETS.value: "widget",
-                PackFolders.GENERIC_DEFINITIONS.value: "GenericDefinitions",
-                PackFolders.GENERIC_FIELDS.value: "GenericFields",
-                PackFolders.GENERIC_MODULES.value: "GenericModules",
-                PackFolders.GENERIC_TYPES.value: "GenericTypes",
+                PackFolders.GENERIC_DEFINITIONS.value: "genericdefinition",
+                PackFolders.GENERIC_FIELDS.value: "genericfield",
+                PackFolders.GENERIC_MODULES.value: "genericmodule",
+                PackFolders.GENERIC_TYPES.value: "generictype",
                 PackFolders.LISTS.value: "list",
                 PackFolders.PREPROCESS_RULES.value: "preprocessrule",
             }
@@ -1640,6 +1640,7 @@ class Pack(object):
                         folder_collected_items.append({
                             'name': content_item.get('name', ""),
                             'description': content_item.get('description', ""),
+                            'type': content_item.get('type', ""),
                         })
                     elif current_directory == PackFolders.GENERIC_MODULES.value:
                         folder_collected_items.append({
