@@ -1,5 +1,7 @@
 from copy import deepcopy
 import pytest
+from mock import mock
+
 import SplunkPyPreRelease as splunk
 import demistomock as demisto
 from CommonServerPython import *
@@ -1052,29 +1054,21 @@ def test_remove_old_incident_ids():
     - When running with look_behind of 1 hour, only the ID of the incident that occurred more than 2 hours ago was removed.
     """
     from SplunkPyPreRelease import remove_old_incident_ids
-    cur_time = int(time.time())
-
-    incident_ids_one_hour = {
-        "incident_under_one_hour_old": cur_time - 300,
-        "incident_over_one_hour_old": cur_time - 4200,
-        "incident_over_two_hours_old": cur_time - 7800
+    now = datetime.utcnow()
+    occurred_start_time = now - timedelta(minutes=60)
+    last_run_fetched_ids = {
+        "incident_in_fetch_time_range": (now - timedelta(minutes=30)),
+        "incident_not_in_fetch_time_range": (now - timedelta(minutes=70)),  # incident did not fetched on the current fetch
+        "incident_in_fetch_start_time_range": occurred_start_time
     }
+    now_splunk_format = now.strftime(SPLUNK_TIME_FORMAT)
+    occurred_start_time_splunk_format = occurred_start_time.strftime(SPLUNK_TIME_FORMAT)
 
-    assert "incident_under_one_hour_old" in incident_ids_one_hour
-    assert "incident_over_one_hour_old" in incident_ids_one_hour
-    assert "incident_over_two_hours_old" in incident_ids_one_hour
+    new_incident_ids_after_remove_olds = remove_old_incident_ids(last_run_fetched_ids, occurred_start_time_splunk_format, now_splunk_format)
 
-    new_incident_ids_one_hour_look_behind = remove_old_incident_ids(incident_ids_one_hour, cur_time, 30)
-
-    assert "incident_under_one_hour_old" in new_incident_ids_one_hour_look_behind
-    assert "incident_over_one_hour_old" not in new_incident_ids_one_hour_look_behind
-    assert "incident_over_two_hours_old" not in new_incident_ids_one_hour_look_behind
-
-    new_incident_ids_one_hour_look_behind = remove_old_incident_ids(incident_ids_one_hour, cur_time, 60)
-
-    assert "incident_under_one_hour_old" in new_incident_ids_one_hour_look_behind
-    assert "incident_over_one_hour_old" in new_incident_ids_one_hour_look_behind
-    assert "incident_over_two_hours_old" not in new_incident_ids_one_hour_look_behind
+    assert "incident_in_fetch_time_range" in new_incident_ids_after_remove_olds
+    assert "incident_not_in_fetch_time_range" not in new_incident_ids_after_remove_olds
+    assert "incident_in_fetch_start_time_range" in new_incident_ids_after_remove_olds
 
 
 occurred_time = str(int(time.time()) - 300)
@@ -1343,3 +1337,199 @@ def test_fetch_incidents_incident_next_run_calculation(mocker):
     next_run_time = datetime.strptime(next_run["time"], SPLUNK_TIME_FORMAT)
 
     assert next_run_time == found_incident_time
+
+
+response_12_14 = [{
+    '_bkt': 'notable~668~66D21DF4-F4FD-4886-A986-82E72ADCBFE9',
+    '_cd': '668:17198',
+    '_indextime': '1596545116',
+    '_raw': '1596545116, search_name="Endpoint - Recurring Malware Infection - Rule", count="17", '
+            'day_count="8", dest="ACME-workstation-012", info_max_time="1596545100.000000000", '
+            'info_min_time="1595939700.000000000", info_search_time="1596545113.965466000", '
+            'signature="Trojan.Gen.2"',
+    '_serial': '50',
+    '_si': ['ip-172-31-44-193', 'notable'],
+    '_sourcetype': 'stash',
+    '_time': '2020-08-24T13:30:17.000-07:00',
+    'dest': 'ACME-workstation-012',
+    'dest_asset_id': '028877d3c80cb9d87900eb4f9c9601ea993d9b63',
+    'dest_asset_tag': ['cardholder', 'pci', 'americas'],
+    'dest_bunit': 'americas',
+    'dest_category': ['cardholder', 'pci'],
+    'dest_city': 'Pleasanton',
+    'dest_country': 'USA',
+    'dest_ip': '192.168.3.12',
+    'dest_is_expected': 'TRUE',
+    'dest_lat': '37.694452',
+    'dest_long': '-121.894461',
+    'dest_nt_host': 'ACME-workstation-012',
+    'dest_pci_domain': ['trust', 'cardholder'],
+    'dest_priority': 'medium',
+    'dest_requires_av': 'TRUE',
+    'dest_risk_object_type': 'system',
+    'dest_risk_score': '15680',
+    'dest_should_timesync': 'TRUE',
+    'dest_should_update': 'TRUE',
+    'host': 'ip-172-31-44-193',
+    'host_risk_object_type': 'system',
+    'host_risk_score': '0',
+    'index': 'notable',
+    'linecount': '1',
+    'priorities': 'medium',
+    'priority': 'medium',
+    'risk_score': '15680',
+    'rule_description': 'Endpoint - Recurring Malware Infection - Rule',
+    'rule_name': 'Endpoint - Recurring Malware Infection - Rule',
+    'rule_title': 'Endpoint - Recurring Malware Infection - Rule',
+    'security_domain': 'Endpoint - Recurring Malware Infection - Rule',
+    'severity': 'unknown',
+    'signature': 'Trojan.Gen.2',
+    'source': 'Endpoint - Recurring Malware Infection - Rule',
+    'sourcetype': 'stash',
+    'splunk_server': 'ip-172-31-44-193',
+    'urgency': 'low'
+}]
+
+response_12_1_14_1 = [{
+    '_bkt': 'notable~668~66D21DF4-F4FD-4886-A986-82E72ADCBFE9',
+    '_cd': '668:17198',
+    '_indextime': '1596545116',
+    '_raw': '1596545116, search_name="Endpoint - Recurring Malware Infection - Rule", count="17", '
+            'day_count="8", dest="ACME-workstation-012", info_max_time="1596545100.000000000", '
+            'info_min_time="1595939700.000000000", info_search_time="1596545113.965466000", '
+            'signature="Trojan.Gen.2"',
+    '_serial': '50',
+    '_si': ['ip-172-31-44-193', 'notable'],
+    '_sourcetype': 'stash',
+    '_time': '2020-08-24T12:10:17.000-07:00',
+    'dest': 'ACME-workstation-012',
+    'dest_asset_id': '028877d3c80cb9d87900eb4f9c9601ea993d9b63',
+    'dest_asset_tag': ['cardholder', 'pci', 'americas'],
+    'dest_bunit': 'americas',
+    'dest_category': ['cardholder', 'pci'],
+    'dest_city': 'Pleasanton',
+    'dest_country': 'USA',
+    'dest_ip': '192.168.3.12',
+    'dest_is_expected': 'TRUE',
+    'dest_lat': '37.694452',
+    'dest_long': '-121.894461',
+    'dest_nt_host': 'ACME-workstation-012',
+    'dest_pci_domain': ['trust', 'cardholder'],
+    'dest_priority': 'medium',
+    'dest_requires_av': 'TRUE',
+    'dest_risk_object_type': 'system',
+    'dest_risk_score': '15680',
+    'dest_should_timesync': 'TRUE',
+    'dest_should_update': 'TRUE',
+    'host': 'ip-172-31-44-193',
+    'host_risk_object_type': 'system',
+    'host_risk_score': '0',
+    'index': 'notable',
+    'linecount': '1',
+    'priorities': 'medium',
+    'priority': 'medium',
+    'risk_score': '15680',
+    'rule_description': 'Endpoint - Recurring Malware Infection - Rule',
+    'rule_name': 'Endpoint - Recurring Malware Infection - Rule',
+    'rule_title': 'Endpoint - Recurring Malware Infection - Rule',
+    'security_domain': 'Endpoint - Recurring Malware Infection - Rule',
+    'severity': 'unknown',
+    'signature': 'Trojan.Gen.2',
+    'source': 'Endpoint - Recurring Malware Infection - Rule',
+    'sourcetype': 'stash',
+    'splunk_server': 'ip-172-31-44-193',
+    'urgency': 'low'
+}, {
+    '_bkt': 'notable~668~66D21DF4-F4FD-4886-A986-82E72ADCBFE9',
+    '_cd': '668:17198',
+    '_indextime': '1596545116',
+    '_raw': '1596545116, search_name="Endpoint - Recurring Malware Infection - Rule", count="17", '
+            'day_count="8", dest="ACME-workstation-012", info_max_time="1596545100.000000000", '
+            'info_min_time="1595939700.000000000", info_search_time="1596545113.965466000", '
+            'signature="Trojan.Gen.2"',
+    '_serial': '50',
+    '_si': ['ip-172-31-44-193', 'notable'],
+    '_sourcetype': 'stash',
+    '_time': '2020-08-24T13:30:17.000-07:00',
+    'dest': 'ACME-workstation-012',
+    'dest_asset_id': '028877d3c80cb9d87900eb4f9c9601ea993d9b63',
+    'dest_asset_tag': ['cardholder', 'pci', 'americas'],
+    'dest_bunit': 'americas',
+    'dest_category': ['cardholder', 'pci'],
+    'dest_city': 'Pleasanton',
+    'dest_country': 'USA',
+    'dest_ip': '192.168.3.12',
+    'dest_is_expected': 'TRUE',
+    'dest_lat': '37.694452',
+    'dest_long': '-121.894461',
+    'dest_nt_host': 'ACME-workstation-012',
+    'dest_pci_domain': ['trust', 'cardholder'],
+    'dest_priority': 'medium',
+    'dest_requires_av': 'TRUE',
+    'dest_risk_object_type': 'system',
+    'dest_risk_score': '15680',
+    'dest_should_timesync': 'TRUE',
+    'dest_should_update': 'TRUE',
+    'host': 'ip-172-31-44-193',
+    'host_risk_object_type': 'system',
+    'host_risk_score': '0',
+    'index': 'notable',
+    'linecount': '1',
+    'priorities': 'medium',
+    'priority': 'medium',
+    'risk_score': '15680',
+    'rule_description': 'Endpoint - Recurring Malware Infection - Rule',
+    'rule_name': 'Endpoint - Recurring Malware Infection - Rule',
+    'rule_title': 'Endpoint - Recurring Malware Infection - Rule',
+    'security_domain': 'Endpoint - Recurring Malware Infection - Rule',
+    'severity': 'unknown',
+    'signature': 'Trojan.Gen.2',
+    'source': 'Endpoint - Recurring Malware Infection - Rule',
+    'sourcetype': 'stash',
+    'splunk_server': 'ip-172-31-44-193',
+    'urgency': 'low'
+}]
+
+
+def test_exceeded_limit_with_delay_indexed_events(mocker):
+    """
+    Given:
+    - Look behind 2 hours, fetch every minute, limit is 1
+    - Fetch 12:00-14:00 return 1 events, first returned event was on 13:00
+    - Fetch 12:01-14:01 return 2 events. 1 event from 12:10 index between the last fetch to the current + 1 event (previous event)
+    returned on the previous fetch
+    When:
+    - Fetch returned number of event that exceeded the limit
+    Then:
+    - All the 51 events in two following fetches.
+    """
+    from SplunkPyPreRelease import splunk_time_to_datetime
+
+    splunk.ENABLED_ENRICHMENTS = []
+    mocker.patch.object(demisto, 'incidents')
+    mocker.patch.object(demisto, 'setLastRun')
+
+    mocker.patch.object(datetime, 'utcnow', return_value=datetime(2018, 10, 24, 14, 00, 12, 703618))
+    mock_params = {'fetchQuery': "something", 'enabled_enrichments': [], 'fetch_limit': 1, 'occurrence_look_behind': 120}
+    mocker.patch('demistomock.params', return_value=mock_params)
+    service = mocker.patch('splunklib.client.connect', return_value=None)
+    mocker.patch('demistomock.getLastRun', return_value={'time': '2018-10-24T13:59:00'})
+    mocker.patch('splunklib.results.ResultsReader', return_value=response_12_14)
+    splunk.fetch_notables(service)
+    next_run = demisto.setLastRun.call_args[0][0]
+    incidents = demisto.incidents.call_args[0][0]
+    incident_found = incidents[0]
+    found_incident_time = splunk_time_to_datetime(incident_found['occurred'])
+    next_run_time = datetime.strptime(next_run["time"], SPLUNK_TIME_FORMAT)
+    assert next_run_time == found_incident_time
+
+    mocker.patch('demistomock.getLastRun', return_value=next_run)
+    mocker.patch('splunklib.results.ResultsReader', return_value=response_12_1_14_1)
+    splunk.fetch_notables(service)
+    next_run = demisto.setLastRun.call_args[0][0]
+    incidents = demisto.incidents.call_args[0][0]
+    last_incident_found = incidents[1]
+    found_incident_time = splunk_time_to_datetime(last_incident_found['occurred'])
+    next_run_time = datetime.strptime(next_run["time"], SPLUNK_TIME_FORMAT)
+    assert next_run_time == found_incident_time
+

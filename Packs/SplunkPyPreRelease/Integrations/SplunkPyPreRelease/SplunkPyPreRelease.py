@@ -146,8 +146,8 @@ def remove_old_incident_ids(last_run_fetched_ids, start_time_query, end_time_que
     Args:
         last_run_fetched_ids (dict): All the event IDs that weren't out of date in the last run + all the new event IDs
         and their occurrence time
-        start_time_query (datetime): fetch start time
-        end_time_query (datetime): fetch end time
+        start_time_query (str): fetch start time
+        end_time_query (str): fetch end time
 
     Returns:
     new_last_run_fetched_ids (dict): The updated dictionary of IDs, without old IDs.
