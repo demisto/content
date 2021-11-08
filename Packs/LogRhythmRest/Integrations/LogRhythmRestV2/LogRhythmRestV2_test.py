@@ -328,3 +328,35 @@ def test_case_update_request(requests_mock):
     requests_mock.put(f'{BASE_URL}lr-case-api/cases/1', json={})
     CLIENT.case_update_request('1', '', '5', '', '', 'summary', '', '')
     assert requests_mock.last_request.text == '{"summary": "summary", "priority": 5}'
+
+
+def test_case_status_change_request(requests_mock):
+    """
+    Given:
+    - Case status and case ID to update.
+
+    When:
+    - Running case_status_change_request.
+
+    Then:
+    - Validate that case update status request body created as expected.
+    """
+    requests_mock.put(f'{BASE_URL}lr-case-api/cases/1/actions/changeStatus/', json={})
+    CLIENT.case_status_change_request(case_id='1', status='Mitigated')
+    assert requests_mock.last_request.text == '{"statusNumber": 4}'
+
+
+def test_case_evidence_list_request(requests_mock):
+    """
+    Given:
+    - Case ID, evidence type and evidence status to filter.
+
+    When:
+    - Running case_evidence_list_request.
+
+    Then:
+    - Validate that case evidence list request query created as expected.
+    """
+    requests_mock.get(f'{BASE_URL}lr-case-api/cases/1/evidence', json={})
+    CLIENT.case_evidence_list_request('1', '', 'alarm', 'pending')
+    assert requests_mock.last_request.query == 'type=alarm&status=pending'
