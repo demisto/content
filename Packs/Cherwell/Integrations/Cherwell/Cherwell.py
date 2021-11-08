@@ -858,9 +858,9 @@ def get_business_object_template_command():
         field_list = {}
         for field in template_dict.get('fields'):
             field_list[field['name']] = field['fieldId']
-        results = {"results": field_list}
+        result = {"result": field_list}
     else:
-        results = {"results": template_dict}
+        result = {"result": template_dict}
 
     first_item = result['result'][0]
     md = tableToMarkdown('Fields', result['result'], headers=[*first_item])
