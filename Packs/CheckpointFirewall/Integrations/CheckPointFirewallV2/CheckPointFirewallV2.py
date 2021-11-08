@@ -1681,8 +1681,8 @@ def checkpoint_add_objects_batch_command(client: Client, object_type: str, ipadd
                                           context_data)
 
     command_results = CommandResults(
-        outputs_prefix='CheckPoint.add_objects_batch',
-        outputs_key_field='uid',
+        outputs_prefix='CheckPoint.AddObjectBatch',
+        outputs_key_field='task-id',
         readable_output=readable_output,
         outputs=context_data,
         raw_response=result
@@ -1704,8 +1704,8 @@ def checkpoint_delete_objects_batch_command(client: Client, object_type: str, na
         readable_output = tableToMarkdown('CheckPoint data for delete-objects-batch command:',
                                           context_data)
     command_results = CommandResults(
-        outputs_prefix='CheckPoint.delete_objects_batch',
-        outputs_key_field='uid',
+        outputs_prefix='CheckPoint.DeleteObjectsBatch',
+        outputs_key_field='task-id',
         readable_output=readable_output,
         outputs=context_data,
         raw_response=result
