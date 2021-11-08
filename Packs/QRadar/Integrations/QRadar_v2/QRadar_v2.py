@@ -914,7 +914,7 @@ def fetch_raw_offenses(client: QRadarClient, offense_id, user_query):
     offense_id = get_minimum_id_to_fetch(offense_id, user_query)
     raw_offenses, fetch_query = seek_fetchable_offenses(client, offense_id, user_query)
     if raw_offenses:
-        print_debug_msg(f"Fetched {fetch_query}successfully.")
+        print_debug_msg(f"Fetched {fetch_query} successfully.")
 
     return raw_offenses
 
