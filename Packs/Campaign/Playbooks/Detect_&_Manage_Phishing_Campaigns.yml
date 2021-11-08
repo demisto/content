@@ -940,7 +940,7 @@ tasks:
       name:
         simple: Phishing - Campaign Detection
       timeout:
-        simple: "159600"
+        simple: "7200"
     separatecontext: false
     view: |-
       {
