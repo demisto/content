@@ -118,8 +118,8 @@ def test_empty_api_token(mocker):
     mocker.patch.object(demisto, 'getLicenseCustomField', return_value=None)
     demisto_mock = mocker.patch('WildFireReports.return_error')
 
-    expected_description_error = 'Authorization Error: It\'s seems that the token is empty and you have not a ' \
-                                 'TIM license that is up-to-date, Please fill the token or update your TIM license ' \
+    expected_description_error = 'Authorization Error: It seems that the token is empty and you have not a ' \
+                                 'TIM license that is up-to-date. Please fill the token or update your TIM license ' \
                                  'and try again.'
 
     main()
