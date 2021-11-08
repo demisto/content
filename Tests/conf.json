@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "LogRhythmRest V2",
+            "playbookID": "LogRhythmRestV2-test"
+        },
+        {
             "playbookID": "Base64Decode - Test"
         },
         {
@@ -4590,10 +4594,6 @@
         {
             "integrations": "Anomali ThreatStream v3",
             "playbookID": "ThreatStream-Test"
-        },
-        {
-            "integrations": "LogRhythmRest V2",
-            "playbookID": "LogRhythmRestV2-test"
         },
         {
             "integrations": ["AutoFocusTagsFeed", "Demisto REST API"],
