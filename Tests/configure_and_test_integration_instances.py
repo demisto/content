@@ -481,10 +481,12 @@ def set_integration_params(build,
     Returns:
         (bool): True if integrations params were filled with secret configuration values, otherwise false
     """
+    added_integration_configurations = []
     for integration in integrations:
         integration_params = [change_placeholders_to_values(placeholders_map, item) for item
                               in secret_params if item['name'] == integration['name']]
         if integration_params:
+            logging.info(f"Integration_params are: {integration_params}")
             matched_integration_params = integration_params[0]
             # if there are more than one integration params, it means that there are configuration
             # values in our secret conf for multiple instances of the given integration and now we
@@ -521,6 +523,17 @@ def set_integration_params(build,
                 logging.info(
                     f'Configuring integration "{integration["name"]}" with proxy=False')
             logging.info(f"Integration params are {integration}")
+            if len(instance_names) > 1:
+                for instance_name in instance_names:
+                    if integration['instance_name'] == instance_name:
+                        logging.info(f"Found {instance_name} in the integration dict object.")
+                    else:
+                        integration_copy = json.loads(json.dumps(integration))
+                        integration_copy['instance_name'] = instance_name
+                        added_integration_configurations.append(integration_copy)
+
+    logging.info(f"Added integration configurations are: {added_integration_configurations}")
+    integrations.extend(added_integration_configurations)
 
     return True
 
