@@ -1096,6 +1096,9 @@
             "playbookID": "ParseExcel-test"
         },
         {
+            "playbookID": "ParseHTMLIndicators-Test"
+        },
+        {
             "playbookID": "Detonate File - No Files test"
         },
         {

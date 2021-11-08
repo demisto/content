@@ -43,4 +43,4 @@ dockerimage: demisto/bs4-tld:1.0.0.21999
 runas: DBotWeakRole
 fromversion: 5.5.0
 tests:
-- No tests (auto formatted)
+- ParseHTMLIndicators-Test
