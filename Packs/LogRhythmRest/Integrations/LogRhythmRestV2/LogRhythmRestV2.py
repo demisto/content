@@ -1082,13 +1082,13 @@ class Client(BaseClient):
         alarm_history = response.get('alarmHistoryDetails')
         return alarm_history, response
 
-    def alarm_events_list_request(self, alarm_id):
+    def alarm_events_list_request(self, alarm_id):  # pragma: no cover
         response = self._http_request('GET', f'lr-alarm-api/alarms/{alarm_id}/events')
 
         alarm_events = response.get('alarmEventsDetails')
         return alarm_events, response
 
-    def alarm_summary_request(self, alarm_id):
+    def alarm_summary_request(self, alarm_id):  # pragma: no cover
         response = self._http_request('GET', f'lr-alarm-api/alarms/{alarm_id}/summary')
 
         alarm_summary = response.get('alarmSummaryDetails')
@@ -1160,7 +1160,7 @@ class Client(BaseClient):
             evidences = next((evidence for evidence in evidences if evidence.get('number') == int(evidence_number)), None)
         return evidences
 
-    def case_alarm_evidence_add_request(self, case_id, alarm_numbers):
+    def case_alarm_evidence_add_request(self, case_id, alarm_numbers):  # pragma: no cover
         alarms = [int(alarm) for alarm in alarm_numbers]
         data = {"alarmNumbers": alarms}
 
@@ -1169,7 +1169,7 @@ class Client(BaseClient):
 
         return response
 
-    def case_note_evidence_add_request(self, case_id, note):
+    def case_note_evidence_add_request(self, case_id, note):  # pragma: no cover
         data = {"text": note}
         response = self._http_request(
             'POST', f'lr-case-api/cases/{case_id}/evidence/note', json_data=data)
@@ -1201,17 +1201,17 @@ class Client(BaseClient):
 
         return response
 
-    def case_evidence_delete_request(self, case_id, evidence_number):
+    def case_evidence_delete_request(self, case_id, evidence_number):  # pragma: no cover
         self._http_request('DELETE', f'lr-case-api/cases/{case_id}/evidence/{evidence_number}', resp_type='text')
 
-    def case_file_evidence_download_request(self, case_id, evidence_number):
+    def case_file_evidence_download_request(self, case_id, evidence_number):  # pragma: no cover
         response = self._http_request(
             'GET', f'lr-case-api/cases/{case_id}/evidence/{evidence_number}/download/', resp_type='other')
 
         filename = re.findall("filename=\"(.+)\"", response.headers['Content-Disposition'])[0]
         return fileResult(filename, response.content)
 
-    def case_tags_add_request(self, case_id, tag_numbers):
+    def case_tags_add_request(self, case_id, tag_numbers):  # pragma: no cover
         tags = [int(tag) for tag in tag_numbers]
         data = {"numbers": tags}
 
@@ -1478,7 +1478,7 @@ class Client(BaseClient):
             return self._http_request('GET', 'lr-admin-api/networks/', params=params)
 
 
-def alarms_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def alarms_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
     alarm_id = args.get('alarm_id')
     alarm_status = args.get('alarm_status')
     alarm_rule_name = args.get('alarm_rule_name')
@@ -1506,7 +1506,7 @@ def alarms_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     return command_results
 
 
-def alarm_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def alarm_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
     alarm_id = args.get('alarm_id')
     alarm_status = args.get('alarm_status')
     rbp = args.get('rbp')
@@ -1523,7 +1523,7 @@ def alarm_update_command(client: Client, args: Dict[str, Any]) -> CommandResults
     return command_results
 
 
-def alarm_add_comment_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def alarm_add_comment_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
     alarm_id = args.get('alarm_id')
     alarm_comment = args.get('alarm_comment')
 
@@ -1536,7 +1536,7 @@ def alarm_add_comment_command(client: Client, args: Dict[str, Any]) -> CommandRe
     return command_results
 
 
-def alarm_history_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def alarm_history_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
     alarm_id = args.get('alarm_id')
     person_id = args.get('person_id')
     date_updated = args.get('date_updated')
@@ -1562,7 +1562,7 @@ def alarm_history_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     return command_results
 
 
-def alarm_events_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def alarm_events_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
     alarm_id = args.get('alarm_id')
     if not alarm_id:
         raise DemistoException('Invalid alarm_id')
@@ -1588,7 +1588,7 @@ def alarm_events_list_command(client: Client, args: Dict[str, Any]) -> CommandRe
     return command_results
 
 
-def alarm_summary_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def alarm_summary_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
     alarm_id = args.get('alarm_id')
     if not alarm_id:
         raise DemistoException('Invalid alarm_id')
@@ -1618,7 +1618,7 @@ def alarm_summary_command(client: Client, args: Dict[str, Any]) -> CommandResult
     return command_results
 
 
-def cases_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def cases_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
     case_id = args.get('case_id')
     timestamp_filter_type = args.get('timestamp_filter_type')
     timestamp = args.get('timestamp')
@@ -1652,7 +1652,7 @@ def cases_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     return command_results
 
 
-def case_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def case_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
     name = args.get('name')
     priority = args.get('priority')
     external_id = args.get('external_id')
@@ -1674,7 +1674,7 @@ def case_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     return command_results
 
 
-def case_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def case_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
     case_id = args.get('case_id')
     name = args.get('name')
     priority = args.get('priority')
@@ -1699,7 +1699,7 @@ def case_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     return command_results
 
 
-def case_status_change_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def case_status_change_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
     case_id = args.get('case_id')
     status = args.get('status')
 
@@ -1718,7 +1718,7 @@ def case_status_change_command(client: Client, args: Dict[str, Any]) -> CommandR
     return command_results
 
 
-def case_evidence_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def case_evidence_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
     case_id = args.get('case_id')
     evidence_number = args.get('evidence_number')
     evidence_type = args.get('evidence_type')
@@ -1745,7 +1745,7 @@ def case_evidence_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     return command_results
 
 
-def case_alarm_evidence_add_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def case_alarm_evidence_add_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
     case_id = args.get('case_id')
     alarm_numbers = argToList(args.get('alarm_numbers'))
 
@@ -1767,7 +1767,7 @@ def case_alarm_evidence_add_command(client: Client, args: Dict[str, Any]) -> Com
     return command_results
 
 
-def case_note_evidence_add_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def case_note_evidence_add_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
     case_id = args.get('case_id')
     note = args.get('note')
 
@@ -1788,7 +1788,7 @@ def case_note_evidence_add_command(client: Client, args: Dict[str, Any]) -> Comm
     return command_results
 
 
-def case_file_evidence_add_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def case_file_evidence_add_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
     case_id = args.get('case_id')
     entry_id = args.get('entryId')
 
@@ -1809,7 +1809,7 @@ def case_file_evidence_add_command(client: Client, args: Dict[str, Any]) -> Comm
     return command_results
 
 
-def case_evidence_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def case_evidence_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
     case_id = args.get('case_id')
     evidence_number = args.get('evidence_number')
 
@@ -1821,14 +1821,14 @@ def case_evidence_delete_command(client: Client, args: Dict[str, Any]) -> Comman
     return command_results
 
 
-def case_file_evidence_download_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def case_file_evidence_download_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
     case_id = args.get('case_id')
     evidence_number = args.get('evidence_number')
 
     return client.case_file_evidence_download_request(case_id, evidence_number)
 
 
-def case_tags_add_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def case_tags_add_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
     case_id = args.get('case_id')
     tag_numbers = argToList(args.get('tag_numbers'))
 
@@ -1846,7 +1846,7 @@ def case_tags_add_command(client: Client, args: Dict[str, Any]) -> CommandResult
     return command_results
 
 
-def case_tags_remove_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def case_tags_remove_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
     case_id = args.get('case_id')
     tag_numbers = argToList(args.get('tag_numbers'))
 
@@ -1864,7 +1864,7 @@ def case_tags_remove_command(client: Client, args: Dict[str, Any]) -> CommandRes
     return command_results
 
 
-def tags_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def tags_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
     tag_name = args.get('tag_name')
     offset = args.get('offset')
     count = args.get('count')
@@ -1886,7 +1886,7 @@ def tags_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     return command_results
 
 
-def case_collaborators_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def case_collaborators_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
     case_id = args.get('case_id')
 
     response = client.case_collaborators_list_request(case_id)
@@ -1910,7 +1910,7 @@ def case_collaborators_list_command(client: Client, args: Dict[str, Any]) -> Com
     return command_results
 
 
-def case_collaborators_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def case_collaborators_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
     case_id = args.get('case_id')
     owner = args.get('owner')
     collaborators = argToList(args.get('collaborators'))
@@ -1937,7 +1937,7 @@ def case_collaborators_update_command(client: Client, args: Dict[str, Any]) -> C
     return command_results
 
 
-def entities_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def entities_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
     entity_id = args.get('entity_id')
     parent_entity_id = args.get('parent_entity_id')
     offset = args.get('offset')
@@ -1960,7 +1960,7 @@ def entities_list_command(client: Client, args: Dict[str, Any]) -> CommandResult
     return command_results
 
 
-def hosts_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def hosts_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
     host_id = args.get('host_id')
     host_name = args.get('host_name')
     entity_name = args.get('entity_name')
@@ -1986,7 +1986,7 @@ def hosts_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     return command_results
 
 
-def users_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def users_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
     user_ids = args.get('user_ids')
     entity_ids = args.get('entity_ids')
     user_status = args.get('user_status')
@@ -2010,7 +2010,7 @@ def users_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     return command_results
 
 
-def lists_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def lists_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
     list_type = args.get('list_type')
     list_name = args.get('list_name')
     can_edit = args.get('can_edit')
@@ -2032,7 +2032,7 @@ def lists_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     return command_results
 
 
-def list_summary_create_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_summary_create_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
     list_type = args.get('list_type')
     name = args.get('name')
     enabled = argToBoolean(args.get('enabled'))
@@ -2063,7 +2063,7 @@ def list_summary_create_update_command(client: Client, args: Dict[str, Any]) -> 
     return command_results
 
 
-def list_details_and_items_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_details_and_items_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
     list_guid = args.get('list_guid')
     max_items = args.get('max_items')
 
@@ -2087,7 +2087,7 @@ def list_details_and_items_get_command(client: Client, args: Dict[str, Any]) -> 
     return command_results
 
 
-def list_items_add_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_items_add_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
     list_guid = args.get('list_guid')
     items_json = args.get('items')
     if not items_json:
@@ -2113,7 +2113,7 @@ def list_items_add_command(client: Client, args: Dict[str, Any]) -> CommandResul
     return command_results
 
 
-def list_items_remove_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_items_remove_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
     list_guid = args.get('list_guid')
     items_json = args.get('items')
     if not items_json:
@@ -2139,7 +2139,7 @@ def list_items_remove_command(client: Client, args: Dict[str, Any]) -> CommandRe
     return command_results
 
 
-def execute_search_query_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def execute_search_query_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
     number_of_days = args.get('number_of_days')
     source_type = args.get('source_type')
     host_name = args.get('host_name')
@@ -2173,7 +2173,7 @@ def execute_search_query_command(client: Client, args: Dict[str, Any]) -> Comman
     return command_results
 
 
-def get_query_result_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_query_result_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
     task_id = args.get('task_id')
     page_size = args.get('page_size')
 
@@ -2199,7 +2199,7 @@ def get_query_result_command(client: Client, args: Dict[str, Any]) -> CommandRes
     return command_results
 
 
-def add_host_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def add_host_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
     entity_id = args.get('entity-id')
     entity_name = args.get('entity-name')
     name = args.get('name')
@@ -2231,7 +2231,7 @@ def add_host_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     return command_results
 
 
-def hosts_status_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def hosts_status_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
     host_id = args.get('host_id')
     status = args.get('host_status')
 
@@ -2244,7 +2244,7 @@ def hosts_status_update_command(client: Client, args: Dict[str, Any]) -> Command
     return command_results
 
 
-def networks_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def networks_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
     network_id = args.get('network_id')
     name = args.get('name')
     record_status = args.get('record_status')
@@ -2270,7 +2270,7 @@ def networks_list_command(client: Client, args: Dict[str, Any]) -> CommandResult
     return command_results
 
 
-def endpoint_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def endpoint_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:  # pragma: no cover
     endpoint_id_list = argToList(args.get('id'))
     endpoint_hostname_list = argToList(args.get('hostname'))
 
@@ -2309,7 +2309,7 @@ def endpoint_command(client: Client, args: Dict[str, Any]) -> List[CommandResult
 
 
 def test_module(client: Client, is_fetch: bool, fetch_type: str, cases_max_fetch: int, alarms_max_fetch: int,
-                fetch_time: str) -> None:
+                fetch_time: str) -> None:  # pragma: no cover
     client.lists_get_request(None, None, None)
     if is_fetch:
         fetch_incidents_command(client, fetch_type, cases_max_fetch, alarms_max_fetch, fetch_time)
@@ -2318,7 +2318,8 @@ def test_module(client: Client, is_fetch: bool, fetch_type: str, cases_max_fetch
 
 def fetch_incidents_command(client: Client, fetch_type: str, cases_max_fetch: int, alarms_max_fetch: int,
                             fetch_time: str, alarm_status_filter: str = '', alarm_rule_name_filter: str = '',
-                            case_tags_filter: str = '', case_status_filter: str = '', case_priority_filter: str = ''):
+                            case_tags_filter: str = '', case_status_filter: str = '',
+                            case_priority_filter: str = ''):  # pragma: no cover
     if fetch_type == 'Both':
         case_incidents = fetch_cases(client, cases_max_fetch, fetch_time,
                                      case_tags_filter, case_status_filter, case_priority_filter)
@@ -2332,7 +2333,8 @@ def fetch_incidents_command(client: Client, fetch_type: str, cases_max_fetch: in
                            case_tags_filter, case_status_filter, case_priority_filter)
 
 
-def fetch_alarms(client: Client, limit: int, fetch_time: str, alarm_status_filter: str, alarm_rule_name_filter: str):
+def fetch_alarms(client: Client, limit: int, fetch_time: str, alarm_status_filter: str,
+                 alarm_rule_name_filter: str):  # pragma: no cover
     alarm_incidents = []
     last_run = demisto.getLastRun()
     alarm_last_run = last_run.get('AlarmLastRun')
@@ -2369,7 +2371,7 @@ def fetch_alarms(client: Client, limit: int, fetch_time: str, alarm_status_filte
 
 
 def fetch_cases(client: Client, limit: int, fetch_time: str,
-                case_tags_filter: str, case_status_filter: str, case_priority_filter: str):
+                case_tags_filter: str, case_status_filter: str, case_priority_filter: str):  # pragma: no cover
     case_incidents = []
     last_run = demisto.getLastRun()
     case_last_run = last_run.get('CaseLastRun')
@@ -2409,7 +2411,7 @@ def fetch_cases(client: Client, limit: int, fetch_time: str,
     return case_incidents
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     params: Dict[str, Any] = demisto.params()
     args: Dict[str, Any] = demisto.args()
     url = params.get('url')
