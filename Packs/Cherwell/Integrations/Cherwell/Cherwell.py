@@ -318,9 +318,6 @@ def lookup_field_values(payload, is_fetch=False):
     return parsed_response
 
 
-''' Custom Code End '''
-
-
 def delete_business_object(name, object_id, id_type):
     business_object_id = resolve_business_object_id_by_name(name)
     return delete_business_object_record(business_object_id, object_id, id_type)
