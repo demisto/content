@@ -97,6 +97,7 @@ tasks:
       - "71"
       - "79"
       - "74"
+      - "104"
     separatecontext: false
     view: |-
       {
@@ -397,13 +398,12 @@ tasks:
       '#none#':
       - "22"
       - "23"
-      - "24"
       - "25"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -20,
+          "x": 190,
           "y": 1115
         }
       }
@@ -527,7 +527,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -650,
+          "x": -220,
           "y": 1450
         }
       }
@@ -628,13 +628,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: cfb64703-f760-4f50-8d1f-61432c06e611
+    taskid: ee8f45ff-6077-4e92-83b4-6d3197c6b8ff
     type: condition
     task:
-      id: cfb64703-f760-4f50-8d1f-61432c06e611
+      id: ee8f45ff-6077-4e92-83b4-6d3197c6b8ff
       version: -1
       name: Use External Dynamic List?
-      description: Verify if there is an EDL Server IP as a playbook input.
+      description: Verify if there is a Tag to mark IPs for EDL/EIS query.
       type: condition
       iscommand: false
       brand: ""
@@ -656,7 +656,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -230,
+          "x": -640,
           "y": 1270
         }
       }
@@ -698,7 +698,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -650,
+          "x": -220,
           "y": 1270
         }
       }
@@ -3381,8 +3381,38 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -230,
+          "x": -640,
           "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "104":
+    id: "104"
+    taskid: 664aaee7-a87a-47d8-89e9-5af93caa37c1
+    type: title
+    task:
+      id: 664aaee7-a87a-47d8-89e9-5af93caa37c1
+      version: -1
+      name: EDL/EIS
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -640,
+          "y": 1115
         }
       }
     note: false
@@ -3469,7 +3499,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    This input determines whether Palo Alto Networks Panorama or Firewall External Dynamic Lists is used for blocking IPs.
+    This input determines whether the External Dynamic Lists option is used for blocking IPs.
     Specify the tag which will be used for filtering IPs in the indicator query.
   playbookInputQuery:
 - key: DAG
