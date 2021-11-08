@@ -78,7 +78,7 @@ class KafkaCommunicator:
             KProducer(self.conf_producer)
             # self.get_topics(AdminClient(self.conf_producer))
             self.get_topics(KConsumer(self.conf_consumer))
-            self.get_topics(KProducer(self.conf_producer))
+            self.get_topics()  # Checks the KProducer
 
         except Exception as e:
             raise DemistoException(f'Error connecting to kafka: {str(e)}\n{traceback.format_exc()}')
@@ -246,7 +246,6 @@ def print_topics(kafka: KafkaCommunicator, demisto_args: dict) -> Union[CommandR
                 'Name': topic.topic,
                 'Partitions': partitions
             })
-
 
         readable_output = tableToMarkdown('Kafka Topics', topics)
 

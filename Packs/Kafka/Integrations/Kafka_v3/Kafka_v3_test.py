@@ -12,12 +12,17 @@ KAFKA = KafkaCommunicator(brokers=['some_broker_ip'])
 
 
 def test_passing_simple_test_module(mocker):
+    mocker.patch.object(Kafka_v3, 'KConsumer')
+    mocker.patch.object(Kafka_v3, 'KProducer')
     mocker.patch.object(KConsumer, 'list_topics', return_value=ClusterMetadata())
     mocker.patch.object(KProducer, 'list_topics', return_value=ClusterMetadata())
     assert command_test_module(KAFKA, {'isFetch': False}) == 'ok'
 
 
 def test_failing_simple_test_module(mocker):
+    mocker.patch.object(KConsumer, '__init__', return_value=None)
+    mocker.patch.object(KProducer, '__init__', return_value=None)
+
     def raise_kafka_error():
         raise KafkaError('Some connection error')
     mocker.patch.object(KConsumer, 'list_topics', return_value=ClusterMetadata(), side_effect=raise_kafka_error)
@@ -54,6 +59,8 @@ def create_cluster_metadata(topic_partitions):
     ({'isFetch': True, 'topic': 'some-topic', 'partition': '1'}, {'some-topic': [1, 2]}),
     ({'isFetch': True, 'topic': 'some-topic', 'partition': '1'}, {'some-topic': [1, 2], 'some-other-topic': [2]})])
 def test_passing_test_module_with_fetch(mocker, demisto_params, cluster_tree):
+    mocker.patch.object(KConsumer, '__init__', return_value=None)
+    mocker.patch.object(KProducer, '__init__', return_value=None)
     cluster_metadata = create_cluster_metadata(cluster_tree)
     mocker.patch.object(KConsumer, 'list_topics', return_value=cluster_metadata)
     mocker.patch.object(KProducer, 'list_topics', return_value=cluster_metadata)
@@ -65,6 +72,8 @@ def test_passing_test_module_with_fetch(mocker, demisto_params, cluster_tree):
     ({'isFetch': True, 'topic': 'some-topic', 'partition': '1', 'offset': '1'}, {'some-topic': [1]}, 1, 7)])
 def test_passing_test_module_with_fetch_and_offset_as_num(mocker, demisto_params, cluster_tree, first_offset,
                                                           last_offset):
+    mocker.patch.object(KConsumer, '__init__', return_value=None)
+    mocker.patch.object(KProducer, '__init__', return_value=None)
     cluster_metadata = create_cluster_metadata(cluster_tree)
     mocker.patch.object(KConsumer, 'list_topics', return_value=cluster_metadata)
     mocker.patch.object(KProducer, 'list_topics', return_value=cluster_metadata)
@@ -81,6 +90,8 @@ def test_passing_test_module_with_fetch_and_offset_as_num(mocker, demisto_params
      'Did not find topic some-topic in kafka topics')
 ])
 def test_failing_test_module_with_fetch(mocker, demisto_params, cluster_tree, expected_failure):
+    mocker.patch.object(KConsumer, '__init__', return_value=None)
+    mocker.patch.object(KProducer, '__init__', return_value=None)
     cluster_metadata = create_cluster_metadata(cluster_tree)
     mocker.patch.object(KConsumer, 'list_topics', return_value=cluster_metadata)
     mocker.patch.object(KProducer, 'list_topics', return_value=cluster_metadata)
@@ -99,6 +110,8 @@ def test_failing_test_module_with_fetch(mocker, demisto_params, cluster_tree, ex
 ])
 def test_failing_test_module_with_fetch_and_offset_as_num(mocker, demisto_params, cluster_tree, first_offset,
                                                           last_offset, expected_failure):
+    mocker.patch.object(KConsumer, '__init__', return_value=None)
+    mocker.patch.object(KProducer, '__init__', return_value=None)
     cluster_metadata = create_cluster_metadata(cluster_tree)
     mocker.patch.object(KConsumer, 'list_topics', return_value=cluster_metadata)
     mocker.patch.object(KProducer, 'list_topics', return_value=cluster_metadata)
@@ -114,6 +127,7 @@ def test_failing_test_module_with_fetch_and_offset_as_num(mocker, demisto_params
                         ({'include_offsets': 'false'}, {'some-topic': [2], 'some-other-topic': [1, 3]}),
                         ({'include_offsets': 'false'}, {'some-topic': [1, 2]})])
 def test_print_topics_without_offsets(mocker, demisto_args, cluster_tree):
+    mocker.patch.object(KProducer, '__init__', return_value=None)
     cluster_metadata = create_cluster_metadata(cluster_tree)
     mocker.patch.object(KProducer, 'list_topics', return_value=cluster_metadata)
     result = print_topics(KAFKA, demisto_args)
@@ -127,6 +141,8 @@ def test_print_topics_without_offsets(mocker, demisto_args, cluster_tree):
                         ({'include_offsets': 'true'}, 1, 5),
                         ({'include_offsets': 'true'}, 0, 2)])
 def test_print_topics_with_offsets(mocker, demisto_args, first_offset, last_offset):
+    mocker.patch.object(KProducer, '__init__', return_value=None)
+    mocker.patch.object(KConsumer, '__init__', return_value=None)
     cluster_metadata = create_cluster_metadata({'some-topic': [1]})
     mocker.patch.object(KProducer, 'list_topics', return_value=cluster_metadata)
     mocker.patch.object(KConsumer, 'get_watermark_offsets', return_value=(first_offset, last_offset))
@@ -138,6 +154,7 @@ def test_print_topics_with_offsets(mocker, demisto_args, first_offset, last_offs
 
 @pytest.mark.parametrize('demisto_args', [{'include_offsets': 'true'}, {'include_offsets': 'false'}])
 def test_print_topics_no_topics(mocker, demisto_args):
+    mocker.patch.object(KProducer, '__init__', return_value=None)
     mocker.patch.object(KProducer, 'list_topics', return_value=ClusterMetadata())
     assert print_topics(KAFKA, demisto_args) == 'No topics found.'
 
@@ -147,14 +164,16 @@ def test_print_topics_no_topics(mocker, demisto_args):
                         ({'topic': 'some-topic'}, {'some-topic': [1], 'some-other-topic': [1]}, 'some-topic'),
                         ({'topic': 'some-topic'}, {'some-topic': [1, 2]}, 'some-topic')])
 def test_fetch_partitions(mocker, demisto_args, cluster_tree, topic):
+    mocker.patch.object(KProducer, '__init__', return_value=None)
     cluster_metadata = create_cluster_metadata(cluster_tree)
     mocker.patch.object(KProducer, 'list_topics', return_value=cluster_metadata)
     result = fetch_partitions(KAFKA, demisto_args)
-    assert {topic: cluster_tree[topic]} == result.outputs
+    assert {'Name': topic, 'Partition': cluster_tree[topic]} == result.outputs
 
 
 @pytest.mark.parametrize('demisto_args', [{'topic': 'some-topic'}, {'topic': None}])
 def test_fetch_partitions_no_topics(mocker, demisto_args):
+    mocker.patch.object(KProducer, '__init__', return_value=None)
     mocker.patch.object(KProducer, 'list_topics', return_value=ClusterMetadata())
     with pytest.raises(DemistoException) as exception_info:
         fetch_partitions(KAFKA, demisto_args)
@@ -196,6 +215,7 @@ class MessageMock(object):
     ({'topic': 'some-topic', 'partition': 0},
      [TopicPartition(topic='some-topic', partition=0, offset=0)])])
 def test_consume_message(mocker, demisto_args, topic_partitions):
+    mocker.patch.object(KConsumer, '__init__', return_value=None)
     assign_mock = mocker.patch.object(KConsumer, 'assign')
     polled_msg = MessageMock(message='polled_msg', offset=0)
     poll_mock = mocker.patch.object(KConsumer, 'poll', return_value=polled_msg)
@@ -206,8 +226,8 @@ def test_consume_message(mocker, demisto_args, topic_partitions):
 
     msg_value = polled_msg.value()
     msg_value = msg_value.decode('utf-8')
-    assert result.outputs['Message'] == msg_value
-    assert result.outputs['Offset'] == polled_msg.offset()
+    assert result.outputs['Message'] == {'Value': msg_value, 'Offset': polled_msg.offset()}
+    assert result.outputs['Name'] == 'some-topic'
 
     assign_mock.assert_called_once_with(topic_partitions)
     poll_mock.assert_called_once()
@@ -223,6 +243,7 @@ def test_consume_message(mocker, demisto_args, topic_partitions):
       TopicPartition(topic='some-topic', partition=1, offset=0)],
      {'some-topic': [0, 1]})])
 def test_consume_message_without_partition(mocker, demisto_args, topic_partitions, cluster):
+    mocker.patch.object(KConsumer, '__init__', return_value=None)
     assign_mock = mocker.patch.object(KConsumer, 'assign')
     polled_msg = MessageMock(message='polled_msg', offset=0)
     poll_mock = mocker.patch.object(KConsumer, 'poll', return_value=polled_msg)
@@ -235,8 +256,8 @@ def test_consume_message_without_partition(mocker, demisto_args, topic_partition
 
     msg_value = polled_msg.value()
     msg_value = msg_value.decode('utf-8')
-    assert result.outputs['Message'] == msg_value
-    assert result.outputs['Offset'] == polled_msg.offset()
+    assert result.outputs['Message'] == {'Value': msg_value, 'Offset': polled_msg.offset()}
+    assert result.outputs['Name'] == 'some-topic'
 
     assign_mock.assert_called_once_with(topic_partitions)
     poll_mock.assert_called_once()
@@ -244,6 +265,7 @@ def test_consume_message_without_partition(mocker, demisto_args, topic_partition
 
 
 def test_nothing_in_consume_message(mocker):
+    mocker.patch.object(KConsumer, '__init__', return_value=None)
     demisto_args = {'topic': 'some-topic', 'partition': 0, 'offset': 0}
     topic_partitions = [TopicPartition(topic='some-topic', partition=0, offset=0)]
     assign_mock = mocker.patch.object(KConsumer, 'assign')
@@ -261,6 +283,7 @@ def test_nothing_in_consume_message(mocker):
 
 @pytest.mark.parametrize('partition_number', [0, 1])
 def test_produce_message(mocker, partition_number):
+    mocker.patch.object(KProducer, '__init__', return_value=None)
     demisto_args = {'topic': 'some-topic', 'partition': partition_number, 'value': 'some-value'}
     produce_mock = mocker.patch.object(KProducer, 'produce')
 
@@ -281,6 +304,7 @@ def test_produce_message(mocker, partition_number):
 
 
 def test_produce_error_message(mocker):
+    mocker.patch.object(KProducer, '__init__', return_value=None)
     demisto_args = {'topic': 'some-topic', 'partition': 1, 'value': 'some-value'}
     produce_mock = mocker.patch.object(KProducer, 'produce')
     kafka_error = KafkaError(1)
