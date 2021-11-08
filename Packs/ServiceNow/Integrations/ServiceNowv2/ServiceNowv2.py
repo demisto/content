@@ -1604,7 +1604,7 @@ def query_groups_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any
     else:
         if group_name:
             group_query = f'name={group_name}'
-        result = client.query(table_name, limit, offset, group_query, escape_amp=False)
+        result = client.query(table_name, limit, offset, group_query, parse_amp=False)
 
     if not result or 'result' not in result:
         return 'No groups found.', {}, {}, False
