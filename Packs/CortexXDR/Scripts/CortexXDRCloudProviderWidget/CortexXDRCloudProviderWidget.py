@@ -28,13 +28,7 @@ HTML = """<span style="color: #{color};"><strong>{provider}&nbsp; &nbsp; &nbsp; 
 
 
 def get_cloudprovider_html_result():
-    incident = demisto.incident()
-    xdr_alerts = demisto.get(incident, 'CustomFields.xdralerts')
-    if not xdr_alerts:
-        raise DemistoException('xdralerts is not configured in the incident')
-    if not isinstance(xdr_alerts, list):
-        xdr_alerts = [xdr_alerts]
-    cloud_providers = list(set([alert.get('cloudprovider') for alert in xdr_alerts]))
+    cloud_providers = get_cloud_providers()
     results = [HTML_START]
     results.extend([HTML.format(provider=provider, color=COLORS.get(provider)) for provider in cloud_providers])
 
@@ -42,6 +36,17 @@ def get_cloudprovider_html_result():
     return {'ContentsFormat': EntryFormat.HTML,
             'Type': EntryType.NOTE,
             'Contents': html_result}
+
+
+def get_cloud_providers():
+    incident = demisto.incident()
+    xdr_alerts = demisto.get(incident, 'CustomFields.xdralerts')
+    if not xdr_alerts:
+        raise DemistoException('xdralerts is not configured in the incident')
+    if not isinstance(xdr_alerts, list):
+        xdr_alerts = [xdr_alerts]
+    cloud_providers = list({alert.get('cloudprovider') for alert in xdr_alerts})
+    return cloud_providers
 
 
 ''' MAIN FUNCTION '''
