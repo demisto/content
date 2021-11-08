@@ -168,7 +168,7 @@ class Client(BaseClient):
                 return group
         raise Exception(f'The group {groupName} was not found.')
 
-    # Create new user in the tenant.
+    # Create a new user in the tenant.
     def create_user_sta(self, args):
 
         data = {
@@ -790,7 +790,7 @@ def get_user_info_sta_command(client: Client, args: Dict[str, Any]) -> CommandRe
 
 
 def create_user_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """ Function for sta-create-user command. Create new user in the tenant. """
+    """ Function for sta-create-user command. Create a new user in the tenant. """
 
     response = client.create_user_sta(args=args)
     if not response:
@@ -922,7 +922,7 @@ def get_group_members_sta_command(client: Client, args: Dict[str, Any]) -> Comma
 
 
 def create_group_sta_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """ Function for sta-create-group command. Create new group in the tenant. """
+    """ Function for sta-create-group command. Create a new group in the tenant. """
 
     response = client.create_group_sta(args=args)
     if not response:

@@ -196,7 +196,7 @@ script:
       name: postal_code
     - description: Is user synchronized.
       name: synchronized
-    description: Create new user in the tenant
+    description: Create a new user in the tenant
     name: sta-create-user
     outputs:
     - contextPath: STA.USER.ID

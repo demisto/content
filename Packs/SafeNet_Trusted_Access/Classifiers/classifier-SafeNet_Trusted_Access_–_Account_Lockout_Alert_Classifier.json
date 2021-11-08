@@ -1,7 +1,7 @@
 {
     "description": "Classifies SafeNet Trusted Access account lockout alerts.",
     "feed": false,
-    "id": "accccf10-97da-425d-840f-beac0233efb1",
+    "id": "SafeNet Trusted Access – Account Lockout Alert Classifier",
     "keyTypeMap": {
         "Fwd: SafeNet Authentication Service Push Notification Rejection Alert": "STA - Email Alert",
         "Re: SafeNet Authentication Service Push Notification Rejection Alert": "STA - Email Alert",
