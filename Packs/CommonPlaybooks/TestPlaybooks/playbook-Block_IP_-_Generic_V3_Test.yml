@@ -39,10 +39,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 72549ae4-cc01-44af-8512-8077a4899df0
+    taskid: 42d36a82-4520-4563-80c4-9ddfdc08ae40
     type: playbook
     task:
-      id: 72549ae4-cc01-44af-8512-8077a4899df0
+      id: 42d36a82-4520-4563-80c4-9ddfdc08ae40
       version: -1
       name: Block IP - Generic v3
       description: "This playbook blocks malicious IP addresses using all integrations\
@@ -66,13 +66,13 @@ tasks:
       - "2"
     scriptarguments:
       AutoCommit:
-        simple: "Yes"
+        simple: "No"
       CustomBlockRule:
         simple: "false"
       IP:
-        simple: 45.155.204.39
+        simple: 45.155.204.39, 141.98.10.81, 141.98.10.60
       InputEnrichment:
-        simple: "True"
+        simple: "False"
       ResolveIP:
         simple: "False"
       RuleDirection:

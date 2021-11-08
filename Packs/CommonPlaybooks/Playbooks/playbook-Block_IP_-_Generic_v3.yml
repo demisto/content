@@ -33,7 +33,7 @@ tasks:
       {
         "position": {
           "x": 1040,
-          "y": -3100
+          "y": -2840
         }
       }
     note: false
@@ -1048,63 +1048,7 @@ tasks:
       {
         "position": {
           "x": 1040,
-          "y": -2920
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "39":
-    id: "39"
-    taskid: d7dc287f-99ce-4da0-8003-18eae529898d
-    type: playbook
-    task:
-      id: d7dc287f-99ce-4da0-8003-18eae529898d
-      version: -1
-      name: IP Enrichment - Generic v2
-      description: |-
-        Enrich IP addresses using one or more integrations.
-
-        - Resolve IP addresses to host names (DNS).
-        - Provide threat information.
-        - Separate internal and external IP addresses.
-        - For internal IP addresses, get host information.
-      playbookName: IP Enrichment - Generic v2
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "100"
-    scriptarguments:
-      IP:
-        complex:
-          root: inputs.IP
-          transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-      InternalRange:
-        simple: ${inputs.InternalRange}
-      ResolveIP:
-        simple: ${inputs.ResolveIP}
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 760,
-          "y": -1950
+          "y": -2700
         }
       }
     note: false
@@ -1616,45 +1560,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "50":
-    id: "50"
-    taskid: 21398eb3-812d-493b-840d-126b8f89bc3e
-    type: condition
-    task:
-      id: 21398eb3-812d-493b-840d-126b8f89bc3e
-      version: -1
-      name: An error occurred during enrichment?
-      description: Check whether the given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If an array is provided, will return yes
-        if one of the entries returned an error.
-      scriptName: isError
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "100"
-      "yes":
-      - "39"
-    scriptarguments:
-      entryId:
-        complex:
-          root: lastCompletedTaskEntries
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 760,
-          "y": -2150
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "51":
     id: "51"
     taskid: 1d3bf4e7-1c97-4947-8faf-158c070b5eaf
@@ -1689,35 +1594,25 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: 0f68ff71-9612-418a-84e9-f6a21a184143
+    taskid: 7a23e7e3-6f18-4341-8cd0-22c4778ef25e
     type: regular
     task:
-      id: 0f68ff71-9612-418a-84e9-f6a21a184143
+      id: 7a23e7e3-6f18-4341-8cd0-22c4778ef25e
       version: -1
       name: Enrich Indicators
-      description: Checks the reputation of an IP address.
-      script: '|||ip'
+      description: commands.local.cmd.enrich.indicators
+      script: Builtin|||enrichIndicators
       type: regular
       iscommand: true
-      brand: ""
+      brand: Builtin
     nexttasks:
       '#none#':
-      - "50"
+      - "100"
     scriptarguments:
-      ip:
+      indicatorsValues:
         complex:
           root: IP
           filters:
-          - - operator: inList
-              left:
-                value:
-                  simple: IP.Address
-                iscontext: true
-              right:
-                value:
-                  simple: inputs.IP
-                iscontext: true
-              ignorecase: true
           - - operator: isEqualString
               left:
                 value:
@@ -1727,9 +1622,16 @@ tasks:
                 value:
                   simple: "No"
               ignorecase: true
+          - - operator: inList
+              left:
+                value:
+                  simple: IP.Address
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.IP
+                iscontext: true
           accessor: Address
-          transformers:
-          - operator: uniq
     reputationcalc: 2
     continueonerror: true
     separatecontext: false
@@ -1737,13 +1639,13 @@ tasks:
       {
         "position": {
           "x": 760,
-          "y": -2330
+          "y": -1950
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -2632,7 +2534,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "99"
+      - "105"
     scriptarguments:
       ip:
         complex:
@@ -2651,7 +2553,7 @@ tasks:
       {
         "position": {
           "x": 760,
-          "y": -2725
+          "y": -2525
         }
       }
     note: false
@@ -2749,23 +2651,22 @@ tasks:
     isautoswitchedtoquietmode: false
   "89":
     id: "89"
-    taskid: c69a6474-7ea7-4046-833d-95b857d7ed05
+    taskid: 9c275081-8770-40c6-8c5d-9041e5da00bb
     type: playbook
     task:
-      id: c69a6474-7ea7-4046-833d-95b857d7ed05
+      id: 9c275081-8770-40c6-8c5d-9041e5da00bb
       version: -1
       name: Cisco FirePower- Append network group object
+      description: This Playbook will append a network group object with new elements
+        ( IPs or network objects ).
       playbookName: Cisco FirePower- Append network group object
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "2"
     scriptarguments:
-      ID:
-        simple: ${inputs.CiscoFPID}
       IP:
         complex:
           root: BlockList
@@ -2776,8 +2677,6 @@ tasks:
               separator:
                 value:
                   simple: ','
-      Name:
-        simple: ${inputs.CiscoFPName}
       Override:
         simple: "False"
     separatecontext: true
@@ -3243,7 +3142,7 @@ tasks:
       {
         "position": {
           "x": 760,
-          "y": -2540
+          "y": -2170
         }
       }
     note: false
@@ -3357,15 +3256,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "103":
     id: "103"
-    taskid: 4ffd075f-d338-4415-8ea5-ad931e171459
+    taskid: 5b0e085d-9979-4117-883a-24f8146d867b
     type: regular
     task:
-      id: 4ffd075f-d338-4415-8ea5-ad931e171459
+      id: 5b0e085d-9979-4117-883a-24f8146d867b
       version: -1
       name: Update Indicator Tag for EDL
-      description: Change the properties of an indicator and add the relevant tag,
-        determined by the user.
-      script: Builtin|||createNewIndicator
+      description: commands.local.cmd.set.indicators
+      script: Builtin|||setIndicators
       type: regular
       iscommand: true
       brand: Builtin
@@ -3373,10 +3271,18 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
+      indicatorsValues:
+        complex:
+          root: BlockList
+          accessor: Final
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
       tags:
         simple: ${inputs.Tag}
-      value:
-        simple: ${BlockList.Final}
     separatecontext: false
     view: |-
       {
@@ -3422,6 +3328,48 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "105":
+    id: "105"
+    taskid: fac2d139-f8b7-4e2d-81fc-ff0410ba1778
+    type: regular
+    task:
+      id: fac2d139-f8b7-4e2d-81fc-ff0410ba1778
+      version: -1
+      name: Create IP indicators in the system
+      description: Create System indicators
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "99"
+    scriptarguments:
+      value:
+        complex:
+          root: inputs.IP
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": -2340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -3436,7 +3384,6 @@ view: |-
       "41_42_yes": 0.65,
       "41_8_#default#": 0.1,
       "47_8_#default#": 0.12,
-      "50_100_#default#": 0.82,
       "56_2_#default#": 0.11,
       "58_2_#default#": 0.14,
       "61_2_#default#": 0.1,
@@ -3449,14 +3396,15 @@ view: |-
       "7_2_#default#": 0.39,
       "8_43_yes": 0.5,
       "8_96_#default#": 0.1,
+      "99_100_#default#": 0.83,
       "99_53_yes": 0.62
     },
     "paper": {
       "dimensions": {
-        "height": 4865,
+        "height": 4605,
         "width": 7860,
         "x": -2750,
-        "y": -3100
+        "y": -2840
       }
     }
   }
@@ -3486,7 +3434,8 @@ inputs:
     simple: "No"
   required: false
   description: "This input determines whether to commit the configuration automatically\
-    \ on PAN-OS devices. \nYes - Commit automatically.\nNo - Commit manually."
+    \ on PAN-OS devices and other FWs. \nYes - Commit automatically.\nNo - Commit\
+    \ manually."
   playbookInputQuery:
 - key: StaticAddressGroup
   value: {}
@@ -3541,18 +3490,6 @@ inputs:
   description: Signal Sciences WAF - Enter the site name for the integration to be
     applied. The site name can be found in your instance console.
   playbookInputQuery:
-- key: CiscoFPName
-  value: {}
-  required: false
-  description: Cisco FirePower - Enter the Object Group Name to be appended with the
-    blocklisted IPs.
-  playbookInputQuery:
-- key: CiscoFPID
-  value: {}
-  required: false
-  description: Cisco FirePower - Enter the Object Group ID to be appended with the
-    blocklisted IPs.
-  playbookInputQuery:
 - key: AkamaiNetworkListID
   value: {}
   required: false
@@ -3568,10 +3505,10 @@ inputs:
   playbookInputQuery:
 - key: InputEnrichment
   value:
-    simple: "True"
+    simple: "False"
   required: false
   description: |-
-    Possible values: True/False . Default: True
+    Possible values: True/False . Default: False
     Enrich the input IP address/es with reputation commands.
   playbookInputQuery:
 - key: RuleName
