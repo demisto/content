@@ -398,11 +398,10 @@ def attachment_results(attachments):
 
 
 # def run_query_on_business_objects(bus_id, filter_query, max_results, is_fetch):
-def run_query_on_business_objects(bus_id, filter_query, max_results, fields, include_all_fields, is_fetch):         # custom code
+def run_query_on_business_objects(bus_id, filter_query, max_results, fields, include_all_fields, is_fetch):
     payload = {
         'busObId': bus_id,
-        'includeAllFields': include_all_fields,             # custom code
-        # 'fields': [fields],                                 # custom code
+        'includeAllFields': include_all_fields,
         'filters': filter_query
     }
     if max_results:
@@ -651,8 +650,7 @@ def parse_string_query_to_list(query_string, is_fetch=False):
 
 
 # Changed function to add fields and include_all_fields
-# def query_business_object_string(business_object_name, query_string, max_results):
-def query_business_object_string(business_object_name, query_string, max_results, fields, include_all_fields):  # custom code
+def query_business_object_string(business_object_name, query_string, max_results, fields, include_all_fields):
     if max_results:
         try:
             int(max_results)
@@ -828,9 +826,6 @@ def get_business_object_command():
     }
 
 
-''' Custom Code Start '''
-
-
 def get_business_object_schema_command():
     args = demisto.args()
     busobjectid = args.get('busobjectid')
@@ -867,7 +862,15 @@ def get_business_object_template_command():
     else:
         results = {"results": template_dict}
 
-    return results
+    first_item = result['result'][0]
+    md = tableToMarkdown('Fields', result['result'], headers=[*first_item])
+
+    return CommandResults(
+        outputs = result,
+        readable_output = md,
+        outputs_key_field ='busObId',
+        outputs_prefix = 'Cherwell.BusinessObjectTemplate',
+        raw_response = result)
 
 
 def lookup_field_values_command():
@@ -876,10 +879,13 @@ def lookup_field_values_command():
     payload = args.get('request')
     results = lookup_field_values(payload)
 
-    return results
-
-
-''' Custom Code End '''
+    return {
+        'Contents': results['values'],
+        'ContentsFormat': formats['json'],
+        'EntryContext': {
+            'Cherwell.FieldValueLookup': createContext(results)
+        }
+    }
 
 
 def delete_business_object_command():
@@ -1190,9 +1196,9 @@ def main():
             'cherwell-create-business-object': create_business_object_command,
             'cherwell-update-business-object': update_business_object_command,
             'cherwell-get-business-object': get_business_object_command,
-            'cherwell-get-business-object-schema': get_business_object_schema_command,      # custom function
-            'cherwell-get-business-object-template': get_business_object_template_command,      # custom function
-            'cherwell-lookup-field-values': lookup_field_values_command,        # custom function
+            'cherwell-get-business-object-schema': get_business_object_schema_command,
+            'cherwell-get-business-object-template': get_business_object_template_command,
+            'cherwell-lookup-field-values': lookup_field_values_command,
             'cherwell-delete-business-object': delete_business_object_command,
             'cherwell-download-attachments': download_attachments_command,
             'cherwell-get-attachments-info': get_attachments_info_command,
