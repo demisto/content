@@ -11,5 +11,3 @@ The  query should be a CSV list of filters, such that each filter is of the form
 `[["CreatedDateTime","gt","4/10/2019 3:10:12 PM"],["Priority","eq","1"]]` 
 NOTE: If received multiple filters for the same field name, an 'OR' operation between the filters will be performed, 
 if the field names are different an 'AND' operation will be performed.
----
-[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/cherwell)
