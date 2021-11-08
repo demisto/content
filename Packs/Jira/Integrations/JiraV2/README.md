@@ -394,7 +394,7 @@ Modifies an issue in Jira.
 
 
 #### Command Example
-```!jira-edit-issue issueId=DEM-5415 issueJson=`{"fields":{"description":"testing3"}}````
+```!jira-edit-issue issueId=DEM-5415 issueJson=`{"fields":{"description":"testing3"}}` ```
 
 #### Context Example
 ```json
