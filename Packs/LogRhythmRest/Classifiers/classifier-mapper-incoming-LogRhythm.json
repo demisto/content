@@ -35,7 +35,7 @@
                     "complex": null,
                     "simple": "status.name"
                 },
-                "Priority": {
+                "LogRhythm Case Priority": {
                     "complex": null,
                     "simple": "priority"
                 },
