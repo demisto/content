@@ -290,9 +290,6 @@ def get_business_object(name, object_id, id_type):
     return parsed_business_object, results
 
 
-''' Custom Code Start '''
-
-
 def get_business_object_schema(object_id, include_relationships='false', required_only='false', is_fetch=False):
     url = BASE_URL + f'api/V1/getbusinessobjectschema/busobid/{object_id}?includerelationships={include_relationships}'
     response = make_request('GET', url, is_fetch=is_fetch)
