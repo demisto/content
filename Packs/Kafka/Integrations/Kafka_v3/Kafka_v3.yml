@@ -111,9 +111,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: Message partition key (number)
+      description: Message partition (number)
       isArray: false
-      name: partitioning_key
+      name: partition
       required: false
       secret: false
     deprecated: false

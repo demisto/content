@@ -1,10 +1,12 @@
 from CommonServerPython import DemistoException
 
-from Kafka_v3 import KafkaCommunicator, command_test_module, KConsumer, KProducer, print_topics, fetch_partitions
+from Kafka_v3 import KafkaCommunicator, command_test_module, KConsumer, KProducer, print_topics, fetch_partitions,\
+    consume_message, produce_message
 from confluent_kafka.admin import ClusterMetadata, TopicMetadata, PartitionMetadata
-from confluent_kafka import KafkaError
+from confluent_kafka import KafkaError, TopicPartition
 
 import pytest
+import Kafka_v3
 
 KAFKA = KafkaCommunicator(brokers=['some_broker_ip'])
 
@@ -117,7 +119,7 @@ def test_print_topics_without_offsets(mocker, demisto_args, cluster_tree):
     result = print_topics(KAFKA, demisto_args)
     for topic in cluster_tree.keys():
         topic_partitions = [{'ID': partition} for partition in cluster_tree[topic]]
-        assert {'Name': topic, 'Partitions': topic_partitions} in result['Contents']
+        assert {'Name': topic, 'Partitions': topic_partitions} in result.outputs
 
 
 @pytest.mark.parametrize('demisto_args, first_offset, last_offset', [
@@ -131,11 +133,10 @@ def test_print_topics_with_offsets(mocker, demisto_args, first_offset, last_offs
     result = print_topics(KAFKA, demisto_args)
     expected = {'Name': 'some-topic',
                 'Partitions': [{'ID': 1, 'EarliestOffset': first_offset, 'OldestOffset': last_offset}]}
-    assert expected in result['Contents']
+    assert expected in result.outputs
 
 
-@pytest.mark.parametrize('demisto_args', [
-                        {'include_offsets': 'true'}, {'include_offsets': 'false'}])
+@pytest.mark.parametrize('demisto_args', [{'include_offsets': 'true'}, {'include_offsets': 'false'}])
 def test_print_topics_no_topics(mocker, demisto_args):
     mocker.patch.object(KProducer, 'list_topics', return_value=ClusterMetadata())
     assert print_topics(KAFKA, demisto_args) == 'No topics found.'
@@ -149,7 +150,7 @@ def test_fetch_partitions(mocker, demisto_args, cluster_tree, topic):
     cluster_metadata = create_cluster_metadata(cluster_tree)
     mocker.patch.object(KProducer, 'list_topics', return_value=cluster_metadata)
     result = fetch_partitions(KAFKA, demisto_args)
-    assert {topic: cluster_tree[topic]} == result['Contents']
+    assert {topic: cluster_tree[topic]} == result.outputs
 
 
 @pytest.mark.parametrize('demisto_args', [{'topic': 'some-topic'}, {'topic': None}])
@@ -158,3 +159,144 @@ def test_fetch_partitions_no_topics(mocker, demisto_args):
     with pytest.raises(DemistoException) as exception_info:
         fetch_partitions(KAFKA, demisto_args)
     assert f'Topic {demisto_args["topic"]} was not found in Kafka' in str(exception_info.value)
+
+
+class MessageMock(object):
+    message = None
+    offset_value = None
+    topic_value = None
+    partition_value = None
+
+    def __init__(self, message=None, offset=None, topic=None, partition=None):
+        self.message = message.encode('utf-8')
+        self.offset_value = offset
+        self.topic_value = topic
+        self.partition_value = partition
+
+    def value(self):
+        return self.message
+
+    def offset(self):
+        return self.offset_value
+
+    def topic(self):
+        return self.topic_value
+
+    def partition(self):
+        return self.partition_value
+
+
+@pytest.mark.parametrize('demisto_args, topic_partitions', [
+    ({'topic': 'some-topic', 'partition': 0, 'offset': 0},
+     [TopicPartition(topic='some-topic', partition=0, offset=0)]),
+    ({'topic': 'some-topic', 'partition': 0, 'offset': 1},
+     [TopicPartition(topic='some-topic', partition=0, offset=1)]),
+    ({'topic': 'some-topic', 'partition': 0, 'offset': 'latest'},
+     [TopicPartition(topic='some-topic', partition=0, offset=1)]),
+    ({'topic': 'some-topic', 'partition': 0},
+     [TopicPartition(topic='some-topic', partition=0, offset=0)])])
+def test_consume_message(mocker, demisto_args, topic_partitions):
+    assign_mock = mocker.patch.object(KConsumer, 'assign')
+    polled_msg = MessageMock(message='polled_msg', offset=0)
+    poll_mock = mocker.patch.object(KConsumer, 'poll', return_value=polled_msg)
+    mocker.patch.object(KConsumer, 'get_watermark_offsets', return_value=(0, 2))
+    close_mock = mocker.patch.object(KConsumer, 'close')
+
+    result = consume_message(KAFKA, demisto_args)
+
+    msg_value = polled_msg.value()
+    msg_value = msg_value.decode('utf-8')
+    assert result.outputs['Message'] == msg_value
+    assert result.outputs['Offset'] == polled_msg.offset()
+
+    assign_mock.assert_called_once_with(topic_partitions)
+    poll_mock.assert_called_once()
+    close_mock.assert_called_once()
+
+
+@pytest.mark.parametrize('demisto_args, topic_partitions, cluster', [
+    ({'topic': 'some-topic'},
+     [TopicPartition(topic='some-topic', partition=1, offset=0)],
+     {'some-topic': [1]}),
+    ({'topic': 'some-topic'},
+     [TopicPartition(topic='some-topic', partition=0, offset=0),
+      TopicPartition(topic='some-topic', partition=1, offset=0)],
+     {'some-topic': [0, 1]})])
+def test_consume_message_without_partition(mocker, demisto_args, topic_partitions, cluster):
+    assign_mock = mocker.patch.object(KConsumer, 'assign')
+    polled_msg = MessageMock(message='polled_msg', offset=0)
+    poll_mock = mocker.patch.object(KConsumer, 'poll', return_value=polled_msg)
+    mocker.patch.object(KConsumer, 'get_watermark_offsets', return_value=(0, 2))
+    close_mock = mocker.patch.object(KConsumer, 'close')
+    cluster_metadata = create_cluster_metadata(cluster)
+    mocker.patch.object(KConsumer, 'list_topics', return_value=cluster_metadata)
+
+    result = consume_message(KAFKA, demisto_args)
+
+    msg_value = polled_msg.value()
+    msg_value = msg_value.decode('utf-8')
+    assert result.outputs['Message'] == msg_value
+    assert result.outputs['Offset'] == polled_msg.offset()
+
+    assign_mock.assert_called_once_with(topic_partitions)
+    poll_mock.assert_called_once()
+    close_mock.assert_called_once()
+
+
+def test_nothing_in_consume_message(mocker):
+    demisto_args = {'topic': 'some-topic', 'partition': 0, 'offset': 0}
+    topic_partitions = [TopicPartition(topic='some-topic', partition=0, offset=0)]
+    assign_mock = mocker.patch.object(KConsumer, 'assign')
+    poll_mock = mocker.patch.object(KConsumer, 'poll', return_value=None)
+    mocker.patch.object(KConsumer, 'get_watermark_offsets', return_value=(0, 2))
+    close_mock = mocker.patch.object(KConsumer, 'close')
+
+    result = consume_message(KAFKA, demisto_args)
+    assert result == 'No message was consumed.'
+
+    assign_mock.assert_called_once_with(topic_partitions)
+    poll_mock.assert_called_once()
+    close_mock.assert_called_once()
+
+
+@pytest.mark.parametrize('partition_number', [0, 1])
+def test_produce_message(mocker, partition_number):
+    demisto_args = {'topic': 'some-topic', 'partition': partition_number, 'value': 'some-value'}
+    produce_mock = mocker.patch.object(KProducer, 'produce')
+
+    def run_delivery_report():
+        message = MessageMock(message='some-value', offset=0, topic='some-topic', partition=partition_number)
+        KafkaCommunicator.delivery_report(None, message)
+
+    flush_mock = mocker.patch.object(KProducer, 'flush', side_effect=run_delivery_report)
+    return_results_mock = mocker.patch.object(Kafka_v3, 'return_results')
+
+    produce_message(KAFKA, demisto_args)
+
+    produce_mock.assert_called_once_with(topic='some-topic', partition=partition_number, value='some-value',
+                                         on_delivery=KAFKA.delivery_report)
+    flush_mock.assert_called_once()
+    return_results_mock.assert_called_once_with(f"Message was successfully produced to topic 'some-topic', "
+                                                f"partition {partition_number}")
+
+
+def test_produce_error_message(mocker):
+    demisto_args = {'topic': 'some-topic', 'partition': 1, 'value': 'some-value'}
+    produce_mock = mocker.patch.object(KProducer, 'produce')
+    kafka_error = KafkaError(1)
+
+    def run_delivery_report():
+        message = MessageMock(message='some-value', offset=0, topic='some-topic', partition=1)
+        KafkaCommunicator.delivery_report(kafka_error, message)
+
+    flush_mock = mocker.patch.object(KProducer, 'flush', side_effect=run_delivery_report)
+
+    with pytest.raises(DemistoException) as exception_info:
+        produce_message(KAFKA, demisto_args)
+
+    assert 'Message delivery failed:' in str(exception_info.value)
+    assert str(kafka_error) in str(exception_info.value)
+
+    produce_mock.assert_called_once_with(topic='some-topic', partition=1, value='some-value',
+                                         on_delivery=KAFKA.delivery_report)
+    flush_mock.assert_called_once()
