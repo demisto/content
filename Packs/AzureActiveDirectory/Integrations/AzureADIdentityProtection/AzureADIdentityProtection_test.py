@@ -4,7 +4,7 @@ import time
 
 from freezegun import freeze_time
 import dateparser
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import pytest
 from AzureADIdentityProtection import (AADClient, OUTPUTS_PREFIX,
@@ -200,17 +200,19 @@ def test_fetch_new_incidents(mocker):
 
 
 # set time to 2021-07-29 11:10:00
-@freeze_time(time.ctime(1627600200))
 def test_first_fetch_start_time():
     from AzureADIdentityProtection import get_last_fetch_time
     last_run = {}
     params = {
         "first_fetch": "2 days"
     }
-    assert get_last_fetch_time(last_run, params) == '2021-07-27T11:10:00.000Z'
+    expected_datetime = datetime.now() - timedelta(days=2)
+
+    last_fetch, last_fetch_datetime = get_last_fetch_time(last_run, params)
+
+    assert expected_datetime - timedelta(minutes=1) < last_fetch_datetime < expected_datetime + timedelta(minutes=1)
 
 
-@freeze_time(time.ctime(1627600200))
 def test_non_first_fetch_start_time():
     from AzureADIdentityProtection import get_last_fetch_time
     last_run = {
@@ -219,7 +221,8 @@ def test_non_first_fetch_start_time():
     params = {
         "first_fetch": "2 days"
     }
-    assert get_last_fetch_time(last_run, params) == '2021-07-28T00:10:00.000Z'
+    last_fetch, last_fetch_datetime = get_last_fetch_time(last_run, params)
+    assert last_fetch == '2021-07-28T00:10:00.000Z'
 
 
 def mock_list_detections(limit, filter_expression):
@@ -230,18 +233,49 @@ def mock_list_detections(limit, filter_expression):
     start_time = filter_expression.split('gt ')[-1]
     start_time_datetime = datetime.strptime(start_time, DATE_FORMAT_WITH_MS)
 
-    incidents_complient_with_filter = []
+    incidents_compliant_with_filter = []
     for detection in test_incidents:
         detection_time = detection['detectedDateTime']
         detection_datetime = datetime.strptime(detection_time, DATE_FORMAT_WITHOUT_MS)
         if detection_datetime > start_time_datetime:
-            incidents_complient_with_filter.append(detection)
+            incidents_compliant_with_filter.append(detection)
 
-    incidents_complient_with_limit = incidents_complient_with_filter[:limit]
+    incidents_compliant_with_limit = incidents_compliant_with_filter[:limit]
 
     res = {
-        'value': incidents_complient_with_limit
+        'value': incidents_compliant_with_limit
     }
 
     return res
 
+
+def test_filter_creation():
+    from AzureADIdentityProtection import build_filter
+    last_fetch = '2021-07-28T00:10:00.000Z'
+    params = {
+        "first_fetch": "2 days",
+        "fetch_filter_expression": "id gt 1234"
+    }
+
+    user_filter = params['fetch_filter_expression']
+    constructed_filter = build_filter(last_fetch, params)
+    assert constructed_filter == f"{user_filter} and detectedDateTime gt {last_fetch}"
+
+
+def mock_get_last_fetch_time(last_run, params):
+    from AzureADIdentityProtection import DATE_FORMAT_WITH_MS
+    last_fetch = last_run.get('latest_detection_found')
+    if not last_fetch:
+        # To handle the fact
+        days_ago = params.get('first_fetch').split(' ')[0]
+        default_fetch_datetime = time.
+        last_fetch = str(default_fetch_datetime.isoformat(timespec='milliseconds')) + 'Z'
+
+    last_fetch_datetime: datetime = datetime.strptime(last_fetch, DATE_FORMAT_WITH_MS)
+    return last_fetch, last_fetch_datetime
+
+
+def test_first_fetch():
+    from AzureADIdentityProtection import fetch_incidents
+
+    mocker.patch('AzureADIdentityProtection.get_last_fetch_time', )

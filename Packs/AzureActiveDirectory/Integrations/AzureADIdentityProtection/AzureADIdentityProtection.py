@@ -292,9 +292,8 @@ def get_last_fetch_time(last_run, params):
     if not last_fetch:
         demisto.debug(f'[AzureADIdentityProtection] First run')
         # handle first time fetch
-        first_fetch = params.get('first_fetch') or '1 days'
-        default_fetch_datetime, _ = dateparser.parse(date_range=first_fetch, date_formats=[DATE_FORMAT_WITH_MS],
-                                                     utc=True, to_timestamp=False)
+        first_fetch = f"{params.get('first_fetch') or '1 days'} ago"
+        default_fetch_datetime = dateparser.parse(date_string=first_fetch, date_formats=[DATE_FORMAT_WITH_MS])
         last_fetch = str(default_fetch_datetime.isoformat(timespec='milliseconds')) + 'Z'
 
     last_fetch_datetime: datetime = datetime.strptime(last_fetch, DATE_FORMAT_WITH_MS)
