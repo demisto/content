@@ -1192,6 +1192,7 @@ def get_user_login_profile(args, aws_client):
                                          removeNull=True,
                                          headerTransform=pascalToSpace)
 
+        response['LoginProfile'].update({'CreateDate': create_date})
         return_outputs(human_readable, ec, response)
     except botocore.exceptions.ClientError as error:
         if error.response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 404:
