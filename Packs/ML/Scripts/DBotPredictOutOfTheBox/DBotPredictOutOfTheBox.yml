@@ -107,5 +107,6 @@ tests:
 tags:
 - phishing
 - ml
-comment: Predict phishing incidents using the out-of-the-box pre-trained model.
+comment: Deprecated. Use DBotPredictOutOfTheBoxV2 instead.
 fromversion: 5.0.0
+deprecated: true

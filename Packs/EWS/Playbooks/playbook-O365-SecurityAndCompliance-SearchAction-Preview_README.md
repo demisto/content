@@ -25,6 +25,8 @@ This playbook does not use any scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | search_name | The name of the compliance search. |  | Required |
+| polling_interval | Search action polling interval. | 3 | Optional |
+| polling_timeout | Search action polling timeout. | 45 | Optional |
 
 ## Playbook Outputs
 ---

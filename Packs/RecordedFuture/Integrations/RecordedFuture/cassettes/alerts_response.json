@@ -1,0 +1,67 @@
+{
+    "data": {
+      "results": [
+        {
+          "review": {
+            "assignee": null,
+            "status": "no-action",
+            "noteDate": null,
+            "noteAuthor": null,
+            "note": null
+          },
+          "url": "https://app.recordedfuture.com/live/sc/notification/?id=jy5xRA",
+          "rule": {
+            "name": "Global Vulnerability Risk, Vendors and Products Mentioned with Vulnerabilities",
+            "id": "biQXYk",
+            "url": "https://app.recordedfuture.com/live/sc/ViewIdkobra_view_report_item_alert_editor?view_opts=%7B%22reportId%22%3A%22biQXYk%22%2C%22bTitle%22%3Atrue%2C%22title%22%3A%22Global+Vulnerability+Risk%2C+Vendors+and+Products+Mentioned+with+Vulnerabilities%22%7D&state.bNavbar=false"
+          },
+          "triggered": "2021-09-11T04:04:49.808Z",
+          "id": "jy5xRA",
+          "title": "Global Vulnerability Risk, Vendors and Products Mentioned with Vulnerabili...",
+          "type": "ENTITY"
+        },
+        {
+          "review": {
+            "assignee": null,
+            "status": "no-action",
+            "noteDate": null,
+            "noteAuthor": null,
+            "note": null
+          },
+          "url": "https://app.recordedfuture.com/live/sc/notification/?id=jzj0f5",
+          "rule": {
+            "name": "Global Vulnerability Risk, Vendors and Products Mentioned with Vulnerabilities",
+            "id": "biQXYk",
+            "url": "https://app.recordedfuture.com/live/sc/ViewIdkobra_view_report_item_alert_editor?view_opts=%7B%22reportId%22%3A%22biQXYk%22%2C%22bTitle%22%3Atrue%2C%22title%22%3A%22Global+Vulnerability+Risk%2C+Vendors+and+Products+Mentioned+with+Vulnerabilities%22%7D&state.bNavbar=false"
+          },
+          "triggered": "2021-09-12T04:04:50.924Z",
+          "id": "jzj0f5",
+          "title": "Global Vulnerability Risk, Vendors and Products Mentioned with Vulnerabili...",
+          "type": "ENTITY"
+        },
+        {
+          "review": {
+            "assignee": null,
+            "status": "no-action",
+            "noteDate": null,
+            "noteAuthor": null,
+            "note": null
+          },
+          "url": "https://app.recordedfuture.com/live/sc/notification/?id=j0MSf6",
+          "rule": {
+            "name": "Global Vulnerability Risk, Vendors and Products Mentioned with Vulnerabilities",
+            "id": "biQXYk",
+            "url": "https://app.recordedfuture.com/live/sc/ViewIdkobra_view_report_item_alert_editor?view_opts=%7B%22reportId%22%3A%22biQXYk%22%2C%22bTitle%22%3Atrue%2C%22title%22%3A%22Global+Vulnerability+Risk%2C+Vendors+and+Products+Mentioned+with+Vulnerabilities%22%7D&state.bNavbar=false"
+          },
+          "triggered": "2021-09-13T04:04:10.720Z",
+          "id": "j0MSf6",
+          "title": "Global Vulnerability Risk, Vendors and Products Mentioned with Vulnerabili...",
+          "type": "ENTITY"
+        }
+      ]
+    },
+    "counts": {
+      "returned": 3,
+      "total": 672
+    }
+  }

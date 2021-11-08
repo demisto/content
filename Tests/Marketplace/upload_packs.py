@@ -334,7 +334,9 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
 
 def create_corepacks_config(storage_bucket: Any, build_number: str, index_folder_path: str,
                             artifacts_dir: Optional[str], storage_base_path: str):
-    """Create corepacks.json file to artifacts dir. Corepacks file includes core packs for server installation.
+    """Create corepacks.json file and stores it in the artifacts dir. This files contains all of the server's core packs, under
+    the key corepacks, and specifies which core packs should be upgraded upon XSOAR upgrade, under the key upgradeCorePacks.
+
 
      Args:
         storage_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where core packs config is uploaded.
@@ -379,6 +381,7 @@ def create_corepacks_config(storage_bucket: Any, build_number: str, index_folder
     corepacks_json_path = os.path.join(artifacts_dir, GCPConfig.CORE_PACK_FILE_NAME)
     core_packs_data = {
         'corePacks': core_packs_public_urls,
+        'upgradeCorePacks': GCPConfig.CORE_PACKS_LIST_TO_UPDATE,
         'buildNumber': build_number
     }
     json_write(corepacks_json_path, core_packs_data)

@@ -7,7 +7,7 @@ Example - InRange left=4right=1,8 will return true
 
 | **Name** | **Description** |
 | --- | --- |
-| Script Type | python |
+| Script Type | python3 |
 | Tags | filter, number |
 
 

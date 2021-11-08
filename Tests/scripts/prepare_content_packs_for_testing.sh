@@ -64,7 +64,7 @@ if [ ! -n "${BUCKET_UPLOAD}" ]; then
       echo "Did not get content packs to update in the bucket."
     else
       echo "Updating the following content packs: $CONTENT_PACKS_TO_INSTALL ..."
-      python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -d $ARTIFACTS_FOLDER/packs_dependencies.json -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s "$GCS_MARKET_KEY" -n $CI_BUILD_ID -p $CONTENT_PACKS_TO_INSTALL -o true -sb $BUILD_BUCKET_PACKS_DIR_PATH -k $PACK_SIGNING_KEY -rt false -bu false -c $CI_COMMIT_BRANCH -f false
+      python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -d $ARTIFACTS_FOLDER/packs_dependencies.json -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s "$GCS_MARKET_KEY" -n $CI_PIPELINE_ID -p $CONTENT_PACKS_TO_INSTALL -o true -sb $BUILD_BUCKET_PACKS_DIR_PATH -k $PACK_SIGNING_KEY -rt false -bu false -c $CI_COMMIT_BRANCH -f false
       echo "Finished updating content packs successfully."
     fi
   fi

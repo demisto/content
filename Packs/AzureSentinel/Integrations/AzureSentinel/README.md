@@ -5,14 +5,18 @@ This integration was integrated and tested with version 2021-04-01 of Azure Sent
 
 Follow these steps for a self-deployed configuration.
 
-1. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following [Microsoft article](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app).
+1. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the **Register an application** section of the following [Microsoft article](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app#register-an-application). (Note: There is no need to create a redirect URI or complete subsequent steps of the article).
 2. In your registered app - create a new Client secret.
    1. Navigate in the Azure Portal to **App registrations** > your registered application > **Certificates & secrets** and click **+ New client secret**.
    2. Copy and save the new secret value to use in the add credentials step.
-3. In Cortex XSOAR, go to  **Settings** > **Integrations** > **Credentials** and create a new credentials set. 
-4. Enter your registered app Application (client) ID in the ***Username*** parameter.
-5. Enter the secret value you created in the *Password* parameter.
-6. Copy your tenant ID for the integration configuration usage.
+3. Assign a role to the registered app.
+   1. In Azure portal, go to the Subscriptions and select the subscription you are using -> Access control (IAM).
+   2. Click Add -> Add role assignment.
+   3. Select the Azure Sentinel Contributor role -> Select your registered app, and click Save.
+4. In Cortex XSOAR, go to  **Settings** > **Integrations** > **Credentials** and create a new credentials set. 
+5. In the ***Username*** parameter, enter your registered app Application (client) ID.
+6. In the ***Password*** parameter, enter the secret value you created.
+7. Copy your tenant ID for the integration configuration usage.
 
 ## Configure the server URL
 If you have a dedicated server URL, enter it in the *Server Url* parameter. 
@@ -878,6 +882,34 @@ Adds a comment to an incident in Azure Sentinel.
 >|ID|Incident ID|Message|Created Time UTC|
 >|---|---|---|---|
 >| 231020399272240422047777436922721687523 | 8a44b7bb-c8ae-4941-9fa0-3aecc8ef1742 | test messages | 2021-08-23T13:30:42Z |
+
+
+### azure-sentinel-incident-delete-comment
+***
+Deletes a comment from incident in Azure Sentinel.
+
+
+#### Base Command
+
+`azure-sentinel-incident-delete-comment`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | The incident ID. | Required | 
+| comment_id | The comment ID. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!azure-sentinel-incident-delete-comment incident_id=8a44b7bb-c8ae-4941-9fa0-3aecc8ef1742 comment_id="296745069631925005023508651351426"```
+
+#### Human Readable Output
+
+>Comment 296745069631925005023508651351426 was deleted successfully.
 
 
 ### azure-sentinel-list-incident-relations

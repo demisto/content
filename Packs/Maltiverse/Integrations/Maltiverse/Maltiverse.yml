@@ -43,7 +43,7 @@ script:
   - arguments:
     - default: true
       description: IP address to check
-      isArray: false
+      isArray: true
       name: ip
       required: true
       secret: false
@@ -113,7 +113,7 @@ script:
   - arguments:
     - default: true
       description: Domain address to check.
-      isArray: false
+      isArray: true
       name: domain
       required: true
       secret: false
@@ -201,7 +201,7 @@ script:
   - arguments:
     - default: true
       description: URL address to check.
-      isArray: false
+      isArray: true
       name: url
       required: true
       secret: false
@@ -286,7 +286,7 @@ script:
   - arguments:
     - default: true
       description: SHA256 hash to check.
-      isArray: false
+      isArray: true
       name: file
       required: true
       secret: false
