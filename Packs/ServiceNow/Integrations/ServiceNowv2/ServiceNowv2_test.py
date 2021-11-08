@@ -136,7 +136,7 @@ def test_parse_build_query(query, parsed, result):
     Then
     -  Validate the query field is parsed correctly.
     """
-    assert parse_build_query(query, parsed_amp=parsed) == result
+    assert parse_build_query(query, parse_amp=parsed) == result
 
 
 @pytest.mark.parametrize('command, args, response, expected_result, expected_auto_extract', [
