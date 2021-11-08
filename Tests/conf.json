@@ -1960,10 +1960,6 @@
             "playbookID": "VMWare Test"
         },
         {
-            "integrations": "Anomali ThreatStream",
-            "playbookID": "Anomali_ThreatStream_Test"
-        },
-        {
             "integrations": "carbonblack-v2",
             "playbookID": "Carbon Black Response Test",
             "fromversion": "5.0.0"
@@ -2745,10 +2741,6 @@
             "integrations": "EWS Mail Sender",
             "fromversion": "4.5.0",
             "memory_threshold": 100
-        },
-        {
-            "integrations": "Anomali ThreatStream v2",
-            "playbookID": "ThreatStream-Test"
         },
         {
             "integrations": "Flashpoint",
@@ -3599,6 +3591,14 @@
             "instance_names": "snow_basic_auth",
             "fromversion": "6.0.0",
             "is_mockable": false,
+            "timeout": 2400
+        },
+        {
+            "integrations": ["MalwareBazaar Feed", "Demisto REST API"],
+            "playbookID": "Fetch Indicators Test",
+            "fromversion": "6.0.0",
+            "is_mockable": false,
+            "instance_names": "malwarebazzar_auto",
             "timeout": 2400
         },
         {
@@ -4588,7 +4588,20 @@
             "playbookID": "TestAzureSentinelPlaybookV2"
         },
         {
-            "integrations": "AutoFocusTagsFeed",
+            "integrations": "Anomali ThreatStream",
+            "playbookID": "Anomali_ThreatStream_Test"
+        },
+        {
+            "integrations": "Anomali ThreatStream v2",
+            "playbookID": "ThreatStream-Test"
+        },
+        {
+            "integrations": "Anomali ThreatStream v3",
+            "fromversion": "6.0.0",
+            "playbookID": "ThreatStream-Test"
+        },
+        {
+            "integrations": ["AutoFocusTagsFeed", "Demisto REST API"],
             "playbookID": "AutoFocusTagsFeed-test"
         },
         {
@@ -4620,6 +4633,29 @@
             "timeout": 2400
         },
         {
+            "playbookID": "Get Original Email - Microsoft Graph Mail - test",
+            "fromversion": "6.1.0",
+            "integrations": [
+                "MicrosoftGraphMail"
+            ],
+            "instance_names": "ms_graph_mail_dev_no_oproxy"
+        },
+        {
+            "playbookID": "Get Original Email - Gmail v2 - test",
+            "fromversion": "6.1.0",
+            "integrations": [
+                "Gmail"
+            ]
+        },
+        {
+            "playbookID": "Get Original Email - EWS v2 - test",
+            "fromversion": "6.1.0",
+            "integrations": [
+                "EWS v2"
+            ],
+            "instance_names": "ewv2_regular"
+       },
+       {
             "integrations": [
                 "Demisto REST API"
             ],
@@ -4802,8 +4838,6 @@
         "Preempt": "Issue 20268",
         "Jask": "Issue 18879",
         "vmray": "Issue 18752",
-        "Anomali ThreatStream v2": "Issue 19182",
-        "Anomali ThreatStream": "Issue 19182",
         "SCADAfence CNM": "Issue 18376",
         "ArcSight ESM v2": "Issue #18328",
         "AlienVault USM Anywhere": "Issue #18273",
@@ -4846,6 +4880,8 @@
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
 
         "_comment4": "~~~ OTHER ~~~",
+        "Anomali ThreatStream v2": "Will be deprecated soon.",
+        "Anomali ThreatStream": "Will be deprecated soon.",
         "AlienVault OTX TAXII Feed": "Issue 29197",
         "EclecticIQ Platform": "Issue 8821",
         "Forescout": "Can only be run from within PANW network. Look in keeper for - Demisto in the LAB",
