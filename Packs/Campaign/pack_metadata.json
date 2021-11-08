@@ -23,11 +23,29 @@
         "Phishing": {
             "mandatory": true,
             "display_name": "Phishing"
+        },
+        "DemistoLocking": {
+            "mandatory": true,
+            "display_name": "Demisto Lock"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
         }
     },
     "itemPrefix": [
         "Actions On Low Similarity",
         "Select Low Similarity",
         "Campaign"
+    ],
+    "displayedImages": [
+        "Phishing",
+        "DemistoLocking",
+        "CommonTypes",
+        "CommonScripts"
     ]
 }

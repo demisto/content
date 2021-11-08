@@ -23,6 +23,7 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
+      - "30"
     separatecontext: false
     view: |-
       {
@@ -36,6 +37,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
     taskid: e9f8368f-3e17-4a51-82c4-06c0fdb69590
@@ -105,7 +108,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 90
+          "y": 640
         }
       }
     note: false
@@ -113,6 +116,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
     taskid: 182eac17-f27b-4979-8c58-277fec52442e
@@ -144,7 +149,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 260
+          "y": 810
         }
       }
     note: false
@@ -152,6 +157,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
     taskid: b78b6205-9f7a-4e2f-8586-5fc7b9219aea
@@ -183,7 +190,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 670
+          "y": 1210
         }
       }
     note: false
@@ -191,6 +198,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
     taskid: 9134a981-4ba9-42f3-8d48-d4838c0e980a
@@ -217,8 +226,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 720,
-          "y": 1020
+          "x": 730,
+          "y": 1580
         }
       }
     note: false
@@ -226,6 +235,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
     taskid: 724b3269-bfa9-4b15-8777-6a675f6a5f36
@@ -245,7 +256,6 @@ tasks:
       '#none#':
       - "19"
     scriptarguments:
-      append: {}
       errorUnfinished:
         simple: "true"
       id:
@@ -265,8 +275,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 720,
-          "y": 1360
+          "x": 730,
+          "y": 1920
         }
       }
     note: false
@@ -274,6 +284,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
     taskid: a07d5342-50af-4e84-8809-a9c6e69ce882
@@ -306,7 +318,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 820
+          "y": 1370
         }
       }
     note: false
@@ -314,6 +326,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
     taskid: 8526d05b-0198-47d9-8ef8-198518a43f71
@@ -334,7 +348,7 @@ tasks:
       {
         "position": {
           "x": 1200,
-          "y": 530
+          "y": 1080
         }
       }
     note: false
@@ -342,6 +356,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
     taskid: 5ceaf4be-b151-475d-82da-f93afcd7f57d
@@ -362,8 +378,6 @@ tasks:
       '#none#':
       - "18"
     scriptarguments:
-      append: {}
-      errorUnfinished: {}
       id:
         complex:
           root: ExistingCampaignID
@@ -385,8 +399,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 190,
-          "y": 1020
+          "x": 200,
+          "y": 1580
         }
       }
     note: false
@@ -394,6 +408,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
     taskid: 7a8ceece-9cdb-408c-89df-33159f32edeb
@@ -420,8 +436,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 720,
-          "y": 1180
+          "x": 730,
+          "y": 1740
         }
       }
     note: false
@@ -429,6 +445,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
     taskid: 4dcd3711-f256-4756-860a-0a580ba2790c
@@ -447,7 +465,6 @@ tasks:
       '#none#':
       - "23"
     scriptarguments:
-      action: {}
       incidentId:
         complex:
           root: ExistingCampaignID
@@ -477,8 +494,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 120,
-          "y": 1900
+          "x": 130,
+          "y": 2460
         }
       }
     note: false
@@ -486,6 +503,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
     taskid: 2fe416fb-631c-41ab-8fec-f9071512247a
@@ -522,8 +541,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1710
+          "x": 460,
+          "y": 2270
         }
       }
     note: false
@@ -531,24 +550,32 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 93a1f988-1047-4d7a-81d1-62de4eaeb17e
+    taskid: 476d4c48-0e78-40be-8550-ab0ca49e1800
     type: title
     task:
-      id: 93a1f988-1047-4d7a-81d1-62de4eaeb17e
+      id: 476d4c48-0e78-40be-8550-ab0ca49e1800
       version: -1
-      name: Done
+      name: Resume Campaign Detections
+      description: Releases the phishing campaign lock to allow other phishing incidents
+        to detect and find campaigns.
       type: title
       iscommand: false
       brand: ""
-      description: ''
+    nexttasks:
+      '#none#':
+      - "29"
+      - "32"
+    reputationcalc: 1
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 1200,
-          "y": 2690
+          "y": 3250
         }
       }
     note: false
@@ -556,6 +583,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "17":
     id: "17"
     taskid: 98fbb059-c69b-4f0c-8599-decb7f0cabcb
@@ -576,7 +605,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 530
+          "y": 1080
         }
       }
     note: false
@@ -584,6 +613,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "18":
     id: "18"
     taskid: 44990df1-aed9-4373-81cf-110eb8876e8c
@@ -633,8 +664,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 190,
-          "y": 1180
+          "x": 200,
+          "y": 1740
         }
       }
     note: false
@@ -642,6 +673,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "19":
     id: "19"
     taskid: d8130aea-44d3-4a6d-8e30-8f6cadadc635
@@ -685,8 +718,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 720,
-          "y": 1530
+          "x": 730,
+          "y": 2090
         }
       }
     note: false
@@ -694,6 +727,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "20":
     id: "20"
     taskid: a705c222-b75c-4ed3-89d5-2e6047d71ce0
@@ -730,8 +765,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 2260
+          "x": 460,
+          "y": 2820
         }
       }
     note: false
@@ -739,6 +774,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "21":
     id: "21"
     taskid: d5a6c069-de9f-4129-83ec-3273aa2431e2
@@ -757,25 +794,21 @@ tasks:
       '#none#':
       - "15"
     scriptarguments:
-      assetid: {}
-      closeNotes: {}
       closeReason:
         simple: Part of a phishing campaign.
-      emailclassification: {}
       id:
         complex:
           root: EmailCampaign.incidents
           accessor: id
           transformers:
           - operator: uniq
-      phishingsubtype: {}
     reputationcalc: 1
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 2460
+          "x": 460,
+          "y": 3020
         }
       }
     note: false
@@ -783,6 +816,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "23":
     id: "23"
     taskid: 99b6a61f-0d65-4a7f-898c-5248ea680c56
@@ -829,8 +864,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 2090
+          "x": 460,
+          "y": 2650
         }
       }
     note: false
@@ -838,19 +873,237 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 3589f687-12ea-4308-802d-5f38f66b6d46
+    type: condition
+    task:
+      id: 3589f687-12ea-4308-802d-5f38f66b6d46
+      version: -1
+      name: Is the Demsito Lock integration enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "1"
+      "yes":
+      - "27"
+    scriptarguments:
+      brandname:
+        simple: Demisto Lock
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: e46447a3-ef23-4064-836b-2aa5eeaeb3b5
+    type: regular
+    task:
+      id: e46447a3-ef23-4064-836b-2aa5eeaeb3b5
+      version: -1
+      name: Lock campaign detection
+      description: Locks phishing incidents before searching campaigns to prevent
+        them from all being unable to find an existing campaign at the same time,
+        and creating multiple new campaign incidents.
+      script: '|||demisto-lock-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      info:
+        simple: Locks phishing incidents before searching campaigns to prevent them
+          from all being unable to find an existing campaign at the same time, and
+          creating multiple new campaign incidents.
+      name:
+        simple: Phishing - Campaign Detection
+      timeout:
+        simple: "6000"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 2315df0b-5769-4fbf-8cf9-3a11b87587f3
+    type: regular
+    task:
+      id: 2315df0b-5769-4fbf-8cf9-3a11b87587f3
+      version: -1
+      name: Unlock campaign detection
+      description: Allows more phishing campaigns to be detected again.
+      script: '|||demisto-lock-release'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      name:
+        simple: Phishing - Campaign Detection
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 3580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 6b2cac9a-8198-4f51-85ef-dd9362569233
+    type: condition
+    task:
+      id: 6b2cac9a-8198-4f51-85ef-dd9362569233
+      version: -1
+      name: Is the Demsito Lock integration enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "32"
+      "yes":
+      - "28"
+    scriptarguments:
+      brandname:
+        simple: Demisto Lock
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 3400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: cd621d18-0f4d-4773-8991-9243ee285ece
+    type: title
+    task:
+      id: cd621d18-0f4d-4773-8991-9243ee285ece
+      version: -1
+      name: Pause Campaign Detections
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "26"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 33b16cb0-8ba6-4336-81e6-80a79ba24a60
+    type: title
+    task:
+      id: 33b16cb0-8ba6-4336-81e6-80a79ba24a60
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": 3780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
       "13_12_yes": 0.46,
       "20_15_#default#": 0.53,
+      "26_1_#default#": 0.42,
+      "26_27_yes": 0.66,
+      "29_32_#default#": 0.32,
       "2_17_yes": 0.55,
       "2_8_#default#": 0.44
     },
     "paper": {
       "dimensions": {
-        "height": 2805,
-        "width": 1460,
-        "x": 120,
+        "height": 3895,
+        "width": 1450,
+        "x": 130,
         "y": -50
       }
     }
