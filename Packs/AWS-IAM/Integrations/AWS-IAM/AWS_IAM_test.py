@@ -182,7 +182,7 @@ def test_get_user_login_profile(mocker):
     res = {
         'LoginProfile': {
             'UserName': 'test',
-            'CreateDate': datetime.datetime(2021, 11, 7, 15, 55, 3, tzinfo=tzlocal()),
+            'CreateDate': datetime.datetime(2021, 11, 7, 15, 55, 3),
             'PasswordResetRequired': False
         }
     }
@@ -193,7 +193,7 @@ def test_get_user_login_profile(mocker):
     data = ({
         'UserName': 'test',
         'LoginProfile': {
-            'CreateDate': '2021-11-07 15:55:03+02:00',
+            'CreateDate': '2021-11-07 15:55:03',
             'PasswordResetRequired': False
         }
     })
