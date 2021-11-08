@@ -413,11 +413,12 @@ Modifies an issue in Jira.
 
 #### Human Readable Output
 
->### jira-edit-issue
->|assignee|attachment|created|creator|description|duedate|id|issueType|key|labels|priority|project|reporter|status|summary|ticket_link|
->|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| {assignee} |  | 2021-06-02T10:45:15.838-0400 | {creator} | testing3 |  | 10044 | A small, distinct piece of work. | DEM-5415 |  | Medium | SomethingGreat | {reporter} | To Do | Phishing Incident Declared | https://somejira.atlassian.net/rest/api/latest/issue/10044 |
->Issue #DEM-5415 was updated successfully
+### jira-edit-issue
+|assignee|attachment|created|creator|description|duedate|id|issueType|key|labels|priority|project|reporter|status|summary|ticket_link|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| {assignee} |  | 2021-06-02T10:45:15.838-0400 | {creator} | testing3 |  | 10044 | A small, distinct piece of work. | DEM-5415 |  | Medium | SomethingGreat | {reporter} | To Do | Phishing Incident Declared | https://somejira.atlassian.net/rest/api/latest/issue/10044 |
+
+Issue #DEM-5415 was updated successfully
 
 ### jira-get-comments
 ***
