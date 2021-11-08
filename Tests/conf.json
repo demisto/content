@@ -4588,7 +4588,16 @@
             "playbookID": "TestAzureSentinelPlaybookV2"
         },
         {
+            "integrations": "Anomali ThreatStream",
+            "playbookID": "Anomali_ThreatStream_Test"
+        },
+        {
+            "integrations": "Anomali ThreatStream v2",
+            "playbookID": "ThreatStream-Test"
+        },
+        {
             "integrations": "Anomali ThreatStream v3",
+            "fromversion": "6.0.0",
             "playbookID": "ThreatStream-Test"
         },
         {
@@ -4624,6 +4633,29 @@
             "timeout": 2400
         },
         {
+            "playbookID": "Get Original Email - Microsoft Graph Mail - test",
+            "fromversion": "6.1.0",
+            "integrations": [
+                "MicrosoftGraphMail"
+            ],
+            "instance_names": "ms_graph_mail_dev_no_oproxy"
+        },
+        {
+            "playbookID": "Get Original Email - Gmail v2 - test",
+            "fromversion": "6.1.0",
+            "integrations": [
+                "Gmail"
+            ]
+        },
+        {
+            "playbookID": "Get Original Email - EWS v2 - test",
+            "fromversion": "6.1.0",
+            "integrations": [
+                "EWS v2"
+            ],
+            "instance_names": "ewv2_regular"
+       },
+       {
             "integrations": [
                 "Demisto REST API"
             ],
@@ -4843,6 +4875,8 @@
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
 
         "_comment4": "~~~ OTHER ~~~",
+        "Anomali ThreatStream v2": "Will be deprecated soon.",
+        "Anomali ThreatStream": "Will be deprecated soon.",
         "AlienVault OTX TAXII Feed": "Issue 29197",
         "EclecticIQ Platform": "Issue 8821",
         "Forescout": "Can only be run from within PANW network. Look in keeper for - Demisto in the LAB",

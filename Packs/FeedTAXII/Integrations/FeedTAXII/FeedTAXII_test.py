@@ -29,8 +29,8 @@ class TestStixDecode:
                 res = StixDecode.decode(stix_str)
                 res_path = f'{file_path.rstrip(".xml")}-result.json'
                 with open(res_path, 'r') as res_f:
-                    expctd_res = json.load(res_f)
-                    assert expctd_res == list(res[1])
+                    expected_res = json.load(res_f)
+                    assert expected_res == list(res[1])
 
 
 class TestUtilFunctions:
@@ -98,7 +98,35 @@ class TestCommands:
                 assert res == expected
 
 
-@pytest.mark.parametrize('tags', (['tags1, tags2'], []))
+def test_poll_collection(mocker):
+    """
+    Given:
+        - A collection of indicators in STIX format.
+
+    When:
+        - fetch_indicators_command is running.
+
+    Then:
+        - Validate the indicator extract as expected.
+    """
+    import requests_mock
+    from FeedTAXII import fetch_indicators_command
+    client = TAXIIClient(collection='a collection', poll_service='http://example/taxii-data')
+
+    with open('FeedTAXII_test/TestCommands/collection_example.xml', 'rb') as xml_f:
+        stix_content = xml_f.read()
+
+    with requests_mock.Mocker() as m:
+        m.post('http://example/taxii-data', content=stix_content)
+        res = fetch_indicators_command(client)
+
+    with open('FeedTAXII_test/TestCommands/indicators_example.json') as json_f:
+        expected_result = json.load(json_f)
+
+    assert res == expected_result
+
+
+@pytest.mark.parametrize('tags', (['title', 'description'], []))
 def test_tags_parameter(mocker, tags):
     """
     Given:
@@ -113,4 +141,4 @@ def test_tags_parameter(mocker, tags):
         raw_indicators = json.load(f)
         mocker.patch.object(client, 'build_iterator', return_value=raw_indicators)
         res = fetch_indicators_command(client)
-        assert tags == res[0]['fields']['tags']
+        assert tags == list(res[0]['fields'].keys())
