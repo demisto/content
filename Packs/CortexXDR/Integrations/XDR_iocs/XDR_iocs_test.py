@@ -69,7 +69,7 @@ class TestHttpRequest:
         (INVALID_CREDS, 'Unauthorized access. An issue occurred during authentication. This can indicate an incorrect key, id, or other invalid authentication parameters.\t(error)'),  # noqa: E501
         (LICENSE_ERROR, 'Unauthorized access. User does not have the required license type to run this API.\t(error)'),
         (PERMISSION_ERROR, 'Unauthorized access. The provided API key does not have the required RBAC permissions to run this API.\t(error)'),   # noqa: E501
-        (NOT_FOUND_ERROR,'XDR Not found: The provided URL may not be of an active XDR server.\t(error)')
+        (NOT_FOUND_ERROR, 'XDR Not found: The provided URL may not be of an active XDR server.\t(error)')
     ]
 
     @pytest.mark.parametrize('res, expected_output', data_test_http_request_error_codes)
