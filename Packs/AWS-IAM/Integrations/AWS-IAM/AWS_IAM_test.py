@@ -2,9 +2,6 @@ import datetime
 
 import pytest
 import importlib
-
-from dateutil.tz import tzlocal
-
 import demistomock as demisto
 
 AWS_IAM = importlib.import_module("AWS-IAM")

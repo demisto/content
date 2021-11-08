@@ -1200,7 +1200,6 @@ def get_user_login_profile(args, aws_client):
             raise error
 
 
-
 def test_function(aws_client):
     client = aws_client.aws_session(service=SERVICE)
     response = client.list_users()
