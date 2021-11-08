@@ -7949,8 +7949,8 @@ class IndicatorsSearcher:
     :type value: ``str``
     :param value: the indicator value to search.
 
-    :type limit ``Optional[int]``
-    :param limit the upper limit of the search (will be updated via iter)
+    :type limit: ``Optional[int]``
+    :param limit: the current upper limit of the search (will be updated per iteration)
 
     :return: No data returned
     :rtype: ``None``
@@ -7996,8 +7996,6 @@ class IndicatorsSearcher:
                                                 to_date=self._to_date,
                                                 value=self._value)
         fetched_len = len(res.get('iocs') or [])
-        if fetched_len == 0:
-            raise StopIteration
         if self._limit:
             self._limit -= fetched_len
         return res
@@ -8061,8 +8059,7 @@ class IndicatorsSearcher:
         :return: object contains the search results
         :rtype: ``dict``
         """
-        # use paging as fallback when cannot use search_after
-        search_iocs_params = assign_params(
+        res = demisto.searchIndicators(
             fromDate=from_date,
             toDate=to_date,
             query=query,
@@ -8070,9 +8067,9 @@ class IndicatorsSearcher:
             value=value,
             searchAfter=self._search_after_param if self._can_use_search_after else None,
             populateFields=self._filter_fields if self._can_use_filter_fields else None,
+            # use paging as fallback when cannot use search_after
             page=self.page if not self._can_use_search_after else None
         )
-        res = demisto.searchIndicators(**search_iocs_params)
         if isinstance(self._page, int) and len(res.get('iocs') or []) > 0:
             self._page += 1  # advance pages
         self._search_after_param = res.get(self.SEARCH_AFTER_TITLE)
