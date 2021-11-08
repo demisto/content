@@ -13,7 +13,8 @@
         "TIM",
         "Incident Response"
     ],
-    "itemPrefix": ["MajorBreach"],
+    "itemPrefix": ["Completed", "Source", "Playbook", "Remaining", "Remediation", "Total", "Hunting", "Mitigation",
+    "Eradication"],
     "useCases": [
         "Hunting",
         "Incident Response"
