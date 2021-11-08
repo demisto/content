@@ -2,7 +2,6 @@
 import json
 import logging
 import os
-import re
 import sys
 import time
 from subprocess import check_output
@@ -12,7 +11,6 @@ import requests
 import urllib3.util
 
 from Tests.scripts.utils.log_util import install_logging
-from demisto_sdk.commands.common.tools import run_command
 # Disable insecure warnings
 from demisto_sdk.commands.test_content.constants import SSH_USER
 from demisto_sdk.commands.test_content.tools import is_redhat_instance
@@ -24,15 +22,6 @@ MAX_TRIES = 30
 PRINT_INTERVAL_IN_SECONDS = 30
 SETUP_TIMEOUT = 60 * 60
 SLEEP_TIME = 45
-
-
-def is_release_branch():
-    """Check if we are working on a release branch."""
-    diff_string_config_yml = run_command("git diff origin/master .circleci/config.yml")
-    if re.search(r'[+-][ ]+CONTENT_VERSION: ".*', diff_string_config_yml):
-        return True
-
-    return False
 
 
 def exit_if_timed_out(loop_start_time, current_time):
