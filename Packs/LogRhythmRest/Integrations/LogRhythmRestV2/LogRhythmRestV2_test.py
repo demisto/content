@@ -248,3 +248,83 @@ def test_add_host_request(requests_mock):
     requests_mock.post(f'{BASE_URL}lr-admin-api/hosts', json={})
     CLIENT.add_host_request('1', 'entity', 'host1', None, None, None, None, None, None, None, None, None, None)
     assert requests_mock.last_request.text == '{"id": -1, "entity": {"name": "entity", "id": 1}, "name": "host1"}'
+
+
+def test_alarm_update_request(requests_mock):
+    """
+    Given:
+    - Alarm status and alarm ID to update.
+
+    When:
+    - Running alarm_update_request.
+
+    Then:
+    - Validate that update alarm request body created as expected.
+    """
+    requests_mock.patch(f'{BASE_URL}lr-alarm-api/alarms/1', json={})
+    CLIENT.alarm_update_request(alarm_id='1', alarm_status='New', rbp='')
+    assert requests_mock.last_request.text == '{"alarmStatus": "New"}'
+
+
+def test_alarm_add_comment_request(requests_mock):
+    """
+    Given:
+    - Alarm comment and alarm ID.
+
+    When:
+    - Running alarm_add_comment_request.
+
+    Then:
+    - Validate that add alarm comment request body created as expected.
+    """
+    requests_mock.post(f'{BASE_URL}lr-alarm-api/alarms/1/comment', json={})
+    CLIENT.alarm_add_comment_request(alarm_id='1', alarm_comment='hi')
+    assert requests_mock.last_request.text == '{"alarmComment": "hi"}'
+
+
+def test_alarm_history_list_request(requests_mock):
+    """
+    Given:
+    - Alarm ID, person ID, date updated, history type, offset and count to filter alarm history.
+
+    When:
+    - Running alarm_history_list_request.
+
+    Then:
+    - Validate that get alarm history request query created as expected.
+    """
+    requests_mock.get(f'{BASE_URL}lr-alarm-api/alarms/1/history', json={})
+    CLIENT.alarm_history_list_request('1', '2', '2020-04-20', 'comment', '0', '0')
+    assert requests_mock.last_request.query == 'personid=2&dateupdated=2020-04-20&type=comment&offset=0&count=0'
+
+
+def test_case_create_request(requests_mock):
+    """
+    Given:
+    - Case name, priority and external Id to create a case.
+
+    When:
+    - Running case_create_request.
+
+    Then:
+    - Validate that create case request body created as expected.
+    """
+    requests_mock.post(f'{BASE_URL}lr-case-api/cases', json={})
+    CLIENT.case_create_request(name='case name', priority='5', external_id='9900', due_date='', summary='')
+    assert requests_mock.last_request.text == '{"name": "case name", "priority": 5, "externalId": "9900"}'
+
+
+def test_case_update_request(requests_mock):
+    """
+    Given:
+    - Priority, case summary and case ID to update.
+
+    When:
+    - Running case_update_request.
+
+    Then:
+    - Validate that case update request body created as expected.
+    """
+    requests_mock.put(f'{BASE_URL}lr-case-api/cases/1', json={})
+    CLIENT.case_update_request('1', '', '5', '', '', 'summary', '', '')
+    assert requests_mock.last_request.text == '{"summary": "summary", "priority": 5}'
