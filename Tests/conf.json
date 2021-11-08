@@ -4562,6 +4562,10 @@
         {
             "integrations": "Azure Sentinel",
             "playbookID": "TestAzureSentinelPlaybookV2"
+        },
+        {
+            "integrations": "Kafka v3",
+            "playbookID": "KafkaV3 Test"
         }
     ],
     "skipped_tests": {

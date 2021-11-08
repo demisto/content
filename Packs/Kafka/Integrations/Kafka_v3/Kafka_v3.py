@@ -384,9 +384,9 @@ def fetch_incidents(demisto_params: dict) -> None:
     topic = demisto_params.get('topic', '')
     partitions = handle_empty(argToList(demisto_params.get('partition', '')), -1)
     brokers = str(demisto_params.get('brokers'))
-    offset = handle_empty(demisto_params.get('offset', 'earliest'), 'earliest')
+    offset = handle_empty(demisto_params.get('first_fetch', 'earliest'), 'earliest')
     message_max_bytes = int(handle_empty(demisto_params.get("max_bytes_per_message", 1048576), 1048576))
-    max_messages = int(handle_empty(demisto_params.get('max_messages', 50), 50))
+    max_messages = int(handle_empty(demisto_params.get('max_fetch', 50), 50))
     last_fetched_offsets = demisto.getLastRun().get('last_fetched_offsets', {})
     demisto.debug(f"Starting fetch incidents with last_fetched_offsets: {last_fetched_offsets}")
     incidents = []
