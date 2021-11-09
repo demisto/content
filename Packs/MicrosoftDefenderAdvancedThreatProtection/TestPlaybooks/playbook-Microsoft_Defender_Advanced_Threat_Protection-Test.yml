@@ -928,7 +928,6 @@ tasks:
     skipunavailable: false
     quietmode: 0
     isoversize: false
-system: true
 view: |-
   {
     "linkLabelsPosition": {},
