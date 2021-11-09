@@ -8192,3 +8192,14 @@ def get_tenant_account_name():
         account_name = "acc_{}".format(tenant_name) if tenant_name != "" else ""
 
     return account_name
+
+def indicator_value_to_md_link(indicator):
+    res = demisto.executeCommand('GetIndicatorsByQuery', {'query': f'value:{indicator}'})
+    if isError(res[0]):
+        raise DemistoException('Query for get indicators is invalid')
+    res_content = res[0].get('Contents')
+    if not res_content:
+        raise DemistoException(f'Indicator {indicator} was not found')
+    indicator_id = res_content[0].get('id')
+    incident_url = os.path.join('#', 'indicator', indicator_id)
+    return f'[{indicator}]({incident_url})'

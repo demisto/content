@@ -17,20 +17,6 @@ import traceback
 
 ''' STANDALONE FUNCTION '''
 
-''' COMMAND FUNCTION '''
-
-
-def indicator_to_clickable(indicator):
-    res = demisto.executeCommand('GetIndicatorsByQuery', {'query': f'value:{indicator}'})
-    if isError(res[0]):
-        return_error('Query for get indicators is invalid')
-    res_content = res[0].get('Contents')
-    if not res_content:
-        return_error(f'Indicator {indicator} was not found')
-    indicator_id = res_content[0].get('id')
-    incident_url = os.path.join('#', 'indicator', indicator_id)
-    return f'[{indicator}]({incident_url})'
-
 
 def get_remediation_info() -> Dict:
     remediation_actions = demisto.get(demisto.context(), 'RemediationActions')
@@ -46,7 +32,7 @@ def get_remediation_info() -> Dict:
 
     res = {}
     if blocked_ip_addresses:
-        res['Blocked IP Addresses'] = [indicator_to_clickable(ip) for ip in blocked_ip_addresses]
+        res['Blocked IP Addresses'] = [indicator_value_to_md_link(ip) for ip in blocked_ip_addresses]
     if inactive_access_keys:
         res['Inactive Access keys'] = inactive_access_keys
     if deleted_login_profiles:

@@ -1,5 +1,18 @@
-This README contains the full documentation for your script.
+Widget to show cortex XDR identity information
 
-You auto-generate this README file from your script YML file using the `demisto-sdk generate-docs` command.
+## Script Data
+---
 
-For more information see the [documentation article](https://xsoar.pan.dev/docs/integrations/integration-docs).
+| **Name** | **Description** |
+| --- | --- |
+| Script Type | python3 |
+| Tags | dynamic-section |
+| Cortex XSOAR Version | 6.0.0 |
+
+## Inputs
+---
+There are no inputs for this script.
+
+## Outputs
+---
+There are no outputs for this script.

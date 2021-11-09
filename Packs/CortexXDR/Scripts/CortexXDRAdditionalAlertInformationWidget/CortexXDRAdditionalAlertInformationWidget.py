@@ -11,24 +11,11 @@ Linting: https://xsoar.pan.dev/docs/integrations/linting
 
 """
 
-import demistomock as demisto
 from CommonServerPython import *
 
 import traceback
 
 ''' COMMAND FUNCTION '''
-
-
-def indicator_to_clickable(indicator):
-    res = demisto.executeCommand('GetIndicatorsByQuery', {'query': f'value:{indicator}'})
-    if isError(res[0]):
-        return_error('Query for get indicators is invalid')
-    res_content = res[0].get('Contents')
-    if not res_content:
-        return_error(f'Indicator {indicator} was not found')
-    indicator_id = res_content[0].get('id')
-    incident_url = os.path.join('#', 'indicator', indicator_id)
-    return f'[{indicator}]({incident_url})'
 
 
 def get_additonal_info() -> List[Dict]:
@@ -47,7 +34,7 @@ def get_additonal_info() -> List[Dict]:
                'Provider': alert_event.get('cloud_provider'),
                'Log Name': alert_event.get('log_name'),
                'Event Type': alert_event.get('raw_log').get('eventType'),
-               'Caller IP': indicator_to_clickable(alert_event.get('caller_ip')),
+               'Caller IP': indicator_value_to_md_link(alert_event.get('caller_ip')),
                'Caller IP Geo Location': alert_event.get('caller_ip_geolocation'),
                'Resource Type': alert_event.get('resource_type'),
                'Identity Name': alert_event.get('identity_name'),
