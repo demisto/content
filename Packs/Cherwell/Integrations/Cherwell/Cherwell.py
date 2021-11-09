@@ -832,13 +832,18 @@ def get_business_object_schema_command():
     include_relationships = args.get('include_relationships')
     required_only = args.get('required_only')
     results = get_business_object_schema(busobjectid, include_relationships, required_only)
-    # md = tableToMarkdown(f'{type_name.capitalize()}: {busobjectid}', business_object,
-    #                     headerTransform=pascalToSpace)
+    md_dict = {}
+    for k, v in results.items():
+        if k in ["busObId","name","fieldDefinitions","states","stateFieldId","relationships"]:
+            md_dict[k] = v
+    headers = md_dict['fieldDefinitions'][0]
+    md = tableToMarkdown('fieldDefinitions', md_dict['fieldDefinitions'], headers=[*headers])
 
     return {
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
-        'Contents': results,
+        'Contents': md_dict,
+        'HumanReadable': md,
         'EntryContext': {
             'Cherwell.BusinessObjects(val.busobjectid == obj.busobjectid)': createContext(results)
         }
