@@ -2,4 +2,4 @@
 ignore=RM104
 
 [file:LogRhythmRest.yml]
-ignore=CJ105
+ignore=CJ105,IN145

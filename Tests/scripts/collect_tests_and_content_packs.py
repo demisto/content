@@ -1321,16 +1321,6 @@ def get_from_version_and_to_version_bounderies(all_modified_files_paths: set,
     return min_from_version.vstring, max_to_version.vstring
 
 
-def is_release_branch():
-    """
-    Checks for the current build's branch
-    Returns:
-        True if the branch name under the 'CI_COMMIT_BRANCH' env variable is a release branch, else False.
-    """
-    branch_name = os.getenv('CI_COMMIT_BRANCH', '')
-    return re.match(r'[0-9]{2}\.[0-9]{1,2}\.[0-9]', branch_name)
-
-
 def create_filter_envs_file(from_version: str, to_version: str, documentation_changes_only: bool = False):
     """
     Create a file containing all the envs we need to run for the CI
@@ -1341,9 +1331,7 @@ def create_filter_envs_file(from_version: str, to_version: str, documentation_ch
 
     """
     envs_to_test = {
-        'Server 5.5': is_runnable_in_server_version(from_version, '5.5', to_version),
         'Server Master': True,
-        'Server 5.0': is_runnable_in_server_version(from_version, '5.0', to_version),
         'Server 6.0': is_runnable_in_server_version(from_version, '6.0', to_version),
         'Server 6.1': is_runnable_in_server_version(from_version, '6.1', to_version),
         'Server 6.2': is_runnable_in_server_version(from_version, '6.2', to_version),
@@ -1353,19 +1341,11 @@ def create_filter_envs_file(from_version: str, to_version: str, documentation_ch
     if documentation_changes_only:
         # No need to create the instances.
         envs_to_test = {
-            'Server 5.5': False,
             'Server Master': False,
-            'Server 5.0': False,
             'Server 6.0': False,
             'Server 6.1': False,
             'Server 6.2': False,
         }
-    # Releases are only relevant for non marketplace server versions, therefore - there is no need to create marketplace
-    # server in release branches.
-    if is_release_branch():
-        marketplace_server_keys = {key for key in envs_to_test.keys() if key not in {'Server 5.5', 'Server 5.0'}}
-        for key in marketplace_server_keys:
-            envs_to_test[key] = False
 
     logging.info("Creating filter_envs.json with the following envs: {}".format(envs_to_test))
     with open("./artifacts/filter_envs.json", "w") as filter_envs_file:

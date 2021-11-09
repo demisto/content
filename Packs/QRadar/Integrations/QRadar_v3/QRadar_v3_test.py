@@ -11,10 +11,10 @@ import pytest
 import pytz
 
 import QRadar_v3  # import module separately for mocker
-from CommonServerPython import DemistoException, set_integration_context, CommandResults, \
+from CommonServerPython import DemistoException, set_to_integration_context_with_retries, CommandResults, \
     GetModifiedRemoteDataResponse, GetRemoteDataResponse
 from QRadar_v3 import USECS_ENTRIES, OFFENSE_OLD_NEW_NAMES_MAP, MINIMUM_API_VERSION, REFERENCE_SETS_OLD_NEW_MAP, \
-    Client, RESET_KEY, ASSET_PROPERTIES_NAME_MAP, FetchMode, \
+    Client, ASSET_PROPERTIES_NAME_MAP, FetchMode, \
     FULL_ASSET_PROPERTIES_NAMES_MAP, EntryType, EntryFormat, MIRROR_OFFENSE_AND_EVENTS, LAST_FETCH_KEY, \
     MIRRORED_OFFENSES_CTX_KEY, UPDATED_MIRRORED_OFFENSES_CTX_KEY, RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY
 from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_outputs, build_headers, \
@@ -32,7 +32,11 @@ from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_o
     qradar_log_sources_list_command, qradar_get_custom_properties_command, enrich_asset_properties, \
     flatten_nested_geolocation_values, get_modified_remote_data_command, get_remote_data_command, is_valid_ip, \
     qradar_ips_source_get_command, qradar_ips_local_destination_get_command, update_mirrored_events, \
-    encode_context_data, extract_context_data, change_ctx_to_be_compatible_with_retry
+    encode_context_data, extract_context_data, change_ctx_to_be_compatible_with_retry, clear_integration_ctx
+
+QRadar_v3.FAILURE_SLEEP = 0
+QRadar_v3.SLEEP_FETCH_EVENT_RETIRES = 0
+
 
 client = Client(
     server='https://192.168.0.1',
@@ -403,7 +407,7 @@ def test_create_search_with_retry(mocker, search_exception, fetch_mode, query_ex
      - Case c: Ensure that QRadar service response is returned.
      - Case d: Ensure that None is returned.
     """
-    set_integration_context(dict())
+    set_to_integration_context_with_retries(dict())
     if search_exception:
         mocker.patch.object(client, "search_create", side_effect=[search_exception])
     else:
@@ -523,33 +527,6 @@ def test_enrich_offense_with_events(mocker, offense: Dict, fetch_mode, mock_sear
     if mock_search_response:
         assert poll_events_mock.call_args[0][1] == mock_search_response['search_id']
     assert enriched_offense == expected_offense
-
-
-@pytest.mark.parametrize('func, args, expected',
-                         [(create_search_with_retry,
-                           {'client': client, 'offense': command_test_data['offenses_list']['response'][0],
-                            'fetch_mode': '', 'event_columns': '', 'events_limit': 0}, None),
-                          (poll_offense_events_with_retry, {'client': client, 'search_id': '', 'offense_id': 0},
-                           ([], 'Reset was triggered for integration.')),
-                          (enrich_offense_with_events,
-                           {'client': client, 'offense': command_test_data['offenses_list']['response'][0],
-                            'fetch_mode': '', 'events_columns': '', 'events_limit': 0},
-                           command_test_data['offenses_list']['response'][0])
-                          ])
-def test_reset_triggered_stops_enrichment_test(func, args, expected):
-    """
-    Given:
-     - Reset last run command was triggered.
-
-    When:
-     - Function given is executed.
-
-    Then:
-     - Ensure that function notices reset flag and stops its run.
-    """
-    set_integration_context({RESET_KEY: True})
-    assert func(**args) == expected
-    set_integration_context({})
 
 
 def test_create_incidents_from_offenses():
@@ -893,7 +870,7 @@ def test_get_modified_remote_data_command(mocker):
     Then:
      - Ensure that command outputs the IDs of the offenses to update.
     """
-    set_integration_context(dict())
+    set_to_integration_context_with_retries(dict())
     expected = GetModifiedRemoteDataResponse(list(map(str, command_test_data['get_modified_remote_data']['outputs'])))
     mocker.patch.object(client, 'offenses_list', return_value=command_test_data['get_modified_remote_data']['response'])
     result = get_modified_remote_data_command(client, dict(), command_test_data['get_modified_remote_data']['args'])
@@ -926,7 +903,7 @@ def test_get_remote_data_command_pre_6_1(mocker, params, args, expected: GetRemo
     Then:
      - Ensure that command outputs the IDs of the offenses to update.
     """
-    set_integration_context(dict())
+    set_to_integration_context_with_retries(dict())
     enriched_response = command_test_data['get_remote_data']['enrich_offenses_result']
     mocker.patch.object(client, 'offenses_list', return_value=command_test_data['get_remote_data']['response'])
     mocker.patch.object(QRadar_v3, 'enrich_offenses_result', return_value=enriched_response)
@@ -1021,7 +998,7 @@ def test_get_remote_data_command_6_1_and_higher(mocker, params, offense: Dict, e
      - Case d: Ensure that offense is returned, along with expected entries.
      - Case e: Ensure that offense is returned, along with expected entries.
     """
-    set_integration_context({'last_update': 1})
+    set_to_integration_context_with_retries({'last_update': 1})
     mocker.patch.object(client, 'offenses_list', return_value=offense)
     mocker.patch.object(QRadar_v3, 'enrich_offenses_result', return_value=enriched_offense)
     if 'close_incident' in params:
@@ -1110,7 +1087,7 @@ class MockResults:
     def __init__(self, value):
         self.value = value
 
-    def result(self):
+    def result(self, timeout=None):
         return self.value
 
 
@@ -1658,6 +1635,22 @@ def test_extract_decode_encode(context_data):
      RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: ['1', '11'],
      'retry_compatible': False},
      False),
+    ({'samples': [{'id': '1', 'last_persisted_time': 2,
+                   'events': [{'event_id': '2'}, {'event_id': '3'}]}],
+      'last_mirror_update': '10',
+      LAST_FETCH_KEY: 5,
+      UPDATED_MIRRORED_OFFENSES_CTX_KEY: [{'id': '1',
+                                           'last_persisted_time': 2,
+                                           'events': [{'event_id': '2'},
+                                                      {'event_id': '3'}]},
+                                          {'id': '11',
+                                           'last_persisted_time': 3,
+                                           'events': [{'event_id': '22'},
+                                                      {'event_id': '33'}]}],
+      MIRRORED_OFFENSES_CTX_KEY: [],
+      RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: ['1', '11'],
+      'retry_compatible': False, 'reset': True},
+     False),
     ({'samples': '["{\\"id\\": \\"1\\", '
                  '\\"last_persisted_time\\": 2, '
                  '\\"events\\": [{\\"event_id\\": \\"2\\"}, {\\"event_id\\": \\"3\\"}]}"]',
@@ -1687,7 +1680,28 @@ def test_extract_decode_encode(context_data):
       'mirrored_offenses': '[]',
       'resubmitted_mirrored_offenses': '["\\"1\\"", "\\"11\\""]',
       'retry_compatible': False},
-     True)
+     True),
+    ({'samples': '["{\\"id\\": \\"1\\", '
+                 '\\"last_persisted_time\\": 2, '
+                 '\\"events\\": [{\\"event_id\\": \\"2\\"}, {\\"event_id\\": \\"3\\"}]}"]',
+      'id': '"5"',
+      'last_mirror_update': '"10"',
+      'updated_mirrored_offenses': '["{\\"id\\": \\"1\\", '
+                                   '\\"last_persisted_time\\": 2, '
+                                   '\\"events\\": [{\\"event_id\\": \\"2\\"}, {\\"event_id\\": \\"3\\"}]}", '
+                                   '"{\\"id\\": \\"11\\", '
+                                   '\\"last_persisted_time\\": 3, '
+                                   '\\"events\\": [{\\"event_id\\": \\"22\\"}, {\\"event_id\\": \\"33\\"}]}"]',
+      'mirrored_offenses': '[]',
+      'resubmitted_mirrored_offenses': '["\\"1\\"", "\\"11\\""]',
+      'retry_compatible': False,
+      'reset': True},
+     True),
+    ({'samples': '[{"id": "1", "last_persisted_time": 2, "events": [{"event_id": "2"}, {"event_id": "3"}]}]',
+      'id': '"5"',
+      'last_mirror_update': '"10"',
+      'retry_compatible': True},
+     False)
 ])
 def test_change_ctx_to_be_compatible(mocker, context_data, retry_compatible):
     """Test changing the context data to be compatible with set_to_integration_context_with_retries.
@@ -1702,68 +1716,103 @@ def test_change_ctx_to_be_compatible(mocker, context_data, retry_compatible):
         Ensure the context_data is transformed to the new format if needed.
     """
     mocker.patch.object(QRadar_v3, 'get_integration_context', return_value=context_data)
-    encoded_context = context_data
     mocker.patch.object(QRadar_v3, 'set_to_integration_context_with_retries')
 
     change_ctx_to_be_compatible_with_retry()
-    if not retry_compatible:
-        encoded_context = set_context_data_as_json(context_data)
 
-    encoded_context.pop('retry_compatible', None)
-
-    extracted_ctx = {'samples': [{'id': '1', 'last_persisted_time': 2,
-                                  'events': [{'event_id': '2'}, {'event_id': '3'}]}],
-                     'last_mirror_update': '10',
-                     UPDATED_MIRRORED_OFFENSES_CTX_KEY: [{'id': '1',
-                                                          'last_persisted_time': 2,
-                                                          'events': [{'event_id': '2'},
-                                                                     {'event_id': '3'}]},
-                                                         {'id': '11',
-                                                          'last_persisted_time': 3,
-                                                          'events': [{'event_id': '22'},
-                                                                     {'event_id': '33'}]}],
-                     MIRRORED_OFFENSES_CTX_KEY: [],
-                     RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: ['1', '11']}
-
-    assert extract_context_data(encoded_context) == extracted_ctx
+    extracted_ctx = {'last_mirror_update': '10', LAST_FETCH_KEY: 5}
 
     if not retry_compatible:
-        QRadar_v3.set_to_integration_context_with_retries.assert_called_once_with(encode_context_data(extracted_ctx))
+        QRadar_v3.set_to_integration_context_with_retries.assert_called_once_with(clear_integration_ctx(extracted_ctx))
     else:
         assert not QRadar_v3.set_to_integration_context_with_retries.called
 
 
-@pytest.mark.parametrize('context_data, retry_compatible, extracted_ctx', [
+@pytest.mark.parametrize('context_data', [
     # Expected after previous bug fix
-    ({'samples': '[{"id": "1", "last_persisted_time": 2, "events": [{"event_id": "2"}, {"event_id": "3"}]}]',
-      'id': '"5"',
-      'last_mirror_update': '"10"',
-      'retry_compatible': True},
-     False,
-     {'samples': [{'id': '1', 'last_persisted_time': 2,
-                   'events': [{'event_id': '2'}, {'event_id': '3'}]}],
-      'id': 5,
-      'last_mirror_update': 10})
+    {'samples': '[{"id": "1", "last_persisted_time": 2, "events": [{"event_id": "2"}, {"event_id": "3"}]}]',
+     'id': '"5"',
+     'last_mirror_update': '"1000"',
+     'retry_compatible': True,
+     'reset': True},
+    {'samples': [{"id": "1", "last_persisted_time": 2, "events": [{"event_id": "2"}, {"event_id": "3"}]}],
+     'id': '5',
+     'last_mirror_update': '"1000"',
+     'retry_compatible': True},
+    {'samples': "",
+     'id': 5,
+     'last_mirror_update': '1000'},
+    {'samples': "",
+     'id': 5,
+     'last_mirror_update': 1000},
 ])
-def test_change_ctx_with_dirty_samples(mocker, context_data, retry_compatible, extracted_ctx):
-    """Test changing the context data to be compatible with set_to_integration_context_with_retries after this
-    sort of change was preformed on a previous integration version 2.0.27/28 -> 2.1.0 .
+def test_clearing_of_ctx(context_data):
+    """Test clearing context data works for all supported cases
 
     Given:
-        Context data in the 2.0.28 format.
+        Context data in the old or new format.
 
     When:
-        Executing any command.
+        Clearing the context data.
 
     Then:
-        Ensure the context_data is transformed to the new format.
+        Ensure the context_data is cleared as expected.
     """
-    mocker.patch.object(QRadar_v3, 'get_integration_context', return_value=context_data)
-    mocker.patch.object(QRadar_v3, 'set_to_integration_context_with_retries')
+    expected_ctx = {LAST_FETCH_KEY: '5',
+                    'last_mirror_update': '"1000"',
+                    UPDATED_MIRRORED_OFFENSES_CTX_KEY: '[]',
+                    MIRRORED_OFFENSES_CTX_KEY: '[]',
+                    RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: '[]',
+                    'samples': '[]'}
 
-    change_ctx_to_be_compatible_with_retry()
+    assert clear_integration_ctx(context_data) == expected_ctx
 
-    if not retry_compatible:
-        QRadar_v3.set_to_integration_context_with_retries.assert_called_once_with(encode_context_data(extracted_ctx))
-    else:
-        assert not QRadar_v3.set_to_integration_context_with_retries.called
+
+def test_cleared_ctx_is_compatible_with_retries():
+    """Make sure the cleared context data is compatoble with
+    set_to_integration_context_with_retries as promised.
+
+    This is needed since set_to_integration_context_with_retries
+    runs update_integration_context which in turn assumes a certain
+    context_data format.
+
+    Given:
+        Cleared context data in the set_to_integration_context_with_retries.
+
+    When:
+        Running set_to_integration_context_with_retries.
+
+    Then:
+        Ensure no error is raised.
+    """
+    cleared_ctx = clear_integration_ctx({'id': 5, 'last_mirror_update': '1000'})
+    QRadar_v3.set_to_integration_context_with_retries(cleared_ctx)
+    QRadar_v3.set_to_integration_context_with_retries({'id': 7})
+
+
+def test_update_missing_offenses_from_raw_offenses():
+    """
+    Assert missing offenses are copied from raw offenses
+    Given:
+        - enriched_offenses is missing some offenses
+        - raw_offenses has the offenses missing from enriched_offenses
+    When:
+        - Calling update_missing_offenses_from_raw_offenses
+    Then:
+        - Assert missing offenses are copied from raw_offenses
+        - Assert enriched offenses are not copied from raw_offenses
+    """
+    raw_offenses = [
+        {'id': 1},
+        {'id': 2},
+        {'id': 3}
+    ]
+    enriched_offenses = [{'id': 2, 'events': []}]
+    QRadar_v3.update_missing_offenses_from_raw_offenses(raw_offenses, enriched_offenses)
+    assert len(enriched_offenses) == 3
+    assert enriched_offenses[0]['id'] == 2
+    assert 'events' in enriched_offenses[0]
+    assert enriched_offenses[1]['id'] == 1
+    assert 'events' not in enriched_offenses[1]
+    assert enriched_offenses[2]['id'] == 3
+    assert 'events' not in enriched_offenses[2]
