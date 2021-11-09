@@ -20,7 +20,7 @@ def get_identity_info() -> List[Dict]:
         alert_event = alert.get('event')
         username = alert_event.get('identity_orig').get('userName')
         access_keys_ids = list({access_key.get('AccessKeyId') for access_key in access_keys
-                                if access_key and access_key.get('UserName') == username})
+                                if isinstance(access_key, dict) and access_key.get('UserName') == username})
         res = {'Name': alert_event.get('identity_name'),
                'Type': alert_event.get('identity_type'),
                'Sub Type': alert_event.get('identity_sub_type'),
