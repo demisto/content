@@ -7956,6 +7956,7 @@ class IndicatorsSearcher:
     :rtype: ``None``
     """
     SEARCH_AFTER_TITLE = 'searchAfter'
+
     def __init__(self,
                  page=0,
                  filter_fields=None,
@@ -8021,8 +8022,8 @@ class IndicatorsSearcher:
 
     def is_search_done(self):
         """
-        Checks one of these conditions:
-        1. self.limit is set, and it's updated to be less or equal to zero
+        Return True if one of these conditions is met (else False):
+        1. self.limit is set, and it's updated to be less or equal to zero - return True
         2. for search_after if self.total was populated by a previous search, but no self._search_after_param
         3. for page if self.total was populated by a previous search, but page is too large
         """

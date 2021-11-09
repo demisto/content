@@ -355,13 +355,12 @@ def search_command(client, args):
     return_list_md: List[Dict] = list()
     entries = list()
     all_indicators: List[Dict] = list()
-    size = 1000
-    search_indicators = IndicatorsSearcher()
+    search_indicators = IndicatorsSearcher(query=f'type:"{client.indicatorType}"', size=1000)
 
-    raw_data = search_indicators.search_indicators_by_version(query=f'type:"{client.indicatorType}"', size=size)
-    while len(raw_data.get('iocs', [])) > 0:
-        all_indicators.extend(raw_data.get('iocs', []))
-        raw_data = search_indicators.search_indicators_by_version(query=f'type:"{client.indicatorType}"', size=size)
+    for ioc_res in search_indicators:
+        fetched_iocs = ioc_res.get('iocs') or []
+        # save only the value and type of each indicator
+        all_indicators.extend(fetched_iocs)
 
     for indicator in all_indicators:
         custom_fields = indicator.get('CustomFields', {})

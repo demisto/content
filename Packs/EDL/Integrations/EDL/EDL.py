@@ -131,7 +131,7 @@ def create_new_edl(request_args: RequestArguments) -> str:
         size=PAGE_SIZE,
         limit=limit
     )
-    iocs = []
+    iocs: List[dict] = []
     formatted_iocs: set = set()
     while len(iocs) <= limit:
         current_limit = limit - len(formatted_iocs)
