@@ -23,7 +23,7 @@ comment: |-
 
   Requirements: This automation requires "Demisto REST API" integration enabled and connected to the XSOAR itself. Automation uses it to read the objects of the playbook.
 commonfields:
-  id: create-playbook-doc
+  id: CreatePlaybookDoc
   version: -1
 contentitemexportablefields:
   contentitemfields:
