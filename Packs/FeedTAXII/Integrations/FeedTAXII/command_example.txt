@@ -1,0 +1,1 @@
+!get-indicators limit=1 initial_interval="1 day"
