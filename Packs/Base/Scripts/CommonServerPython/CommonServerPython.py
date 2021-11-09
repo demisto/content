@@ -8172,7 +8172,7 @@ def support_multithreading():
             finally:
                 demisto.lock.release()  # type: ignore[attr-defined]
         else:
-            raise RuntimeError('Failed acquiring lock')      
+            raise RuntimeError('Failed acquiring lock')
 
     demisto._Demisto__do = locked_do  # type: ignore[attr-defined]
 
