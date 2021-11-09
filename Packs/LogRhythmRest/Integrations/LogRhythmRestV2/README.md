@@ -6093,3 +6093,19 @@ Returns all networks that match the specified criteria.
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1 | Test network | This is a test network | This is a test network | Active | 1.1.1.1 | 2.2.2.2 | id: -100<br/>name: Global Entity | None | 2021-10-12T13:48:43.133Z | None | string | Internal | id: 1<br/>name: Andorra |
 >| 2 | Test network2 | This is a test network | This is a test network | Active | 127.0.0.1 | 127.0.0.2 | id: -100<br/>name: Global Entity | None | 2021-10-12T14:01:21.54Z | None | string | Internal | id: 1<br/>name: Andorra |
+
+
+## Breaking changes from the previous version of this integration - LogRhythmRest v2
+The following sections list the changes in this version.
+
+### Commands
+#### The following commands were removed in this version:
+* *lr-execute-query*
+* *lr-get-hosts-by-entity* - this command was replaced by *lr-hosts-list*.
+* *lr-get-hosts* - this command was replaced by *lr-hosts-list*.
+* *lr-update-host-status* - this command was replaced by *lr-hosts-status-update*.
+* *lr-get-persons* - this command was replaced by *lr-users-list*.
+* *lr-get-networks* - this command was replaced by *lr-networks-list*.
+* *lr-get-alarm-data* - this command was replaced by *lr-alarms-list*.
+* *lr-get-alarm-events* - this command was replaced by *lr-alarm-events-list*.
+* *lr-get-case-evidence* - this command was replaced by *lr-case-evidence-list*.
