@@ -1177,3 +1177,35 @@ def test_get_issue_and_attachments(mocker, get_attachments_arg, should_get_attac
         demisto_results_mocker.assert_called_once()
     else:
         demisto_results_mocker.assert_not_called()
+
+OAUTH1 = {'url':'example.com',
+     'consumerKey':'example_key',
+     'accessToken':'example_token',
+     'privateKey': 'example_private_key',
+     'username':''
+     }
+
+PAT = {'url':'example.com', 'username':'', 'accessToken': 'example_token'}
+
+BASIC = {'url':'example.com', 'username':'example_user', 'APItoken':'example_token'}
+AUTH_CASES = [
+    (OAUTH1, {}, {'Content-Type': 'application/json', 'X-Atlassian-Token': 'nocheck'}),
+    (OAUTH1, {'X-Atlassian-Token': 'nocheck'}, {'X-Atlassian-Token': 'nocheck'}),
+    (PAT, {}, {'Content-Type': 'application/json', 'Authorization': 'Bearer example_token'}),
+    (PAT, {'X-Atlassian-Token': 'nocheck'}, {'X-Atlassian-Token': 'nocheck', 'Authorization': 'Bearer example_token'}),
+    (BASIC, {}, {'Content-Type': 'application/json'}),
+]
+@pytest.mark.parametrize('params, custom_headers, expected_headers', AUTH_CASES)
+
+def test_jira_req(mocker, requests_mock, params, custom_headers, expected_headers):
+    import JiraV2
+    import requests
+    req_mock = mocker.patch.object(requests, 'request')
+    # requests_mock.register_uri(requests_mock.ANY, 'example.com', text='resp')
+    JiraV2.USERNAME = params.get('username')
+    JiraV2.HEADERS = {'Content-Type': 'application/json'}
+    mocker.patch.object(demisto, "params", return_value=params)
+    JiraV2.jira_req(method='get',
+             resource_url=params.get('url'),
+             headers=custom_headers)
+    assert expected_headers == req_mock.call_args[1]['headers']
