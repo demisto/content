@@ -7,6 +7,8 @@ import traceback
 
 def get_remediation_info() -> Dict:
     remediation_actions = demisto.get(demisto.context(), 'RemediationActions')
+    if not remediation_actions:
+        raise DemistoException('RemediationActions not in context')
     blocked_ip_addresses = demisto.get(remediation_actions, 'BlockedIP.Addresses')
     if blocked_ip_addresses is not None and not isinstance(blocked_ip_addresses, list):
         blocked_ip_addresses = [blocked_ip_addresses]
@@ -19,7 +21,7 @@ def get_remediation_info() -> Dict:
 
     res = {}
     if blocked_ip_addresses:
-        res['Blocked IP Addresses'] = [indicator_value_to_clickable(ip) for ip in blocked_ip_addresses]
+        res['Blocked IP Addresses'] = list(indicators_value_to_clickable(blocked_ip_addresses).values())
     if inactive_access_keys:
         res['Inactive Access keys'] = inactive_access_keys
     if deleted_login_profiles:

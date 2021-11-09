@@ -9,6 +9,8 @@ import traceback
 def get_identity_info() -> List[Dict]:
     context = demisto.context()
     alerts = demisto.get(context, 'PaloAltoNetworksXDR.OriginalAlert')
+    if not alerts:
+        raise DemistoException('PaloAltoNetworksXDR.OriginalAlert is not in the context')
     users = demisto.get(context, 'AWS.IAM.Users')
     if not users:
         raise DemistoException('AWS users are not in context')
@@ -18,7 +20,7 @@ def get_identity_info() -> List[Dict]:
     results = []
     for alert in alerts:
         alert_event = alert.get('event')
-        username = alert_event.get('identity_orig').get('userName')
+        username = demisto.get(alert_event, 'identity_orig.userName')
         access_keys_ids = list({access_key.get('AccessKeyId') for access_key in access_keys
                                 if isinstance(access_key, dict) and access_key.get('UserName') == username})
         res = {'Name': alert_event.get('identity_name'),

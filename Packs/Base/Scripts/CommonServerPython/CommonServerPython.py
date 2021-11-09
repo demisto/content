@@ -8193,13 +8193,16 @@ def get_tenant_account_name():
 
     return account_name
 
-def indicator_value_to_clickable(indicator):
-    res = demisto.executeCommand('GetIndicatorsByQuery', {'query': f'value:{indicator}'})
-    if isError(res[0]):
-        raise DemistoException('Query for get indicators is invalid')
-    res_content = res[0].get('Contents')
-    if not res_content:
-        raise DemistoException(f'Indicator {indicator} was not found')
-    indicator_id = res_content[0].get('id')
-    incident_url = os.path.join('#', 'indicator', indicator_id)
-    return f'[{indicator}]({incident_url})'
+def indicators_value_to_clickable(indicators):
+    if not isinstance(indicators, list):
+        indicators = [indicators]
+    res = {}
+    query =  ' or '.join([f'value:{indicator}' for indicator in indicators])
+    indicator_searcher = IndicatorsSearcher(query=query)
+    for ioc_res in indicator_searcher:
+        for inidicator_data in ioc_res.get('iocs', []):
+            indicator = inidicator_data.get('value')
+            indicator_id = inidicator_data.get('id')
+            indicator_url = os.path.join('#', 'indicator', indicator_id)
+            res[indicator] = indicator_url
+    return res
