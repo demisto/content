@@ -1,8 +1,9 @@
-from CommonServerPython import *
-from CommonServerUserPython import *
+# from CommonServerPython import *
+# from CommonServerUserPython import *
 
 import requests
 import traceback
+import json
 
 requests.packages.urllib3.disable_warnings()
 ''' CONSTANTS '''
@@ -82,33 +83,6 @@ class Client(BaseClient):
             err_msg = 'Connection Timeout Error - potential reasons might be that the Server URL parameter' \
                       ' is incorrect or that the Server is not accessible from your host.'
             raise DemistoException(err_msg, exception)
-        except requests.exceptions.SSLError as exception:
-            # in case the "Trust any certificate" is already checked
-            if not self._verify:
-                raise
-            err_msg = 'SSL Certificate Verification Failed - try selecting \'Trust any certificate\' checkbox in' \
-                      ' the integration configuration.'
-            raise DemistoException(err_msg, exception)
-        except requests.exceptions.ProxyError as exception:
-            err_msg = 'Proxy Error - if the \'Use system proxy\' checkbox in the integration configuration is' \
-                      ' selected, try clearing the checkbox.'
-            raise DemistoException(err_msg, exception)
-        except requests.exceptions.ConnectionError as exception:
-            # Get originating Exception in Exception chain
-            error_class = str(exception.__class__)
-            err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
-            err_msg = 'Verify that the server URL parameter' \
-                      ' is correct and that you have access to the server from your host.' \
-                      '\nError Type: {}\nError Number: [{}]\nMessage: {}\n' \
-                .format(err_type, exception.errno, exception.strerror)
-            raise DemistoException(err_msg, exception)
-        except requests.exceptions.RetryError as exception:
-            try:
-                reason = 'Reason: {}'.format(exception.args[0].reason.args[0])
-            except Exception as a:  # noqa: disable=broad-except
-                reason = a
-            err_msg = 'Max Retries Error- Request attempts with {} retries failed. \n{}'.format(retries, reason)
-            raise DemistoException(err_msg, exception)
 
     def get_access_policies(self) -> CommandResults:
 
@@ -159,9 +133,9 @@ class Client(BaseClient):
         accesspoliciesdata = {"access_policies": [{"policy_name": "{}".format(policy_name),
                                                    "policy_status": "{}".format(policy_status), "policy_order":
                                                        int(policy_order),
-                                                   "membership": {"identification_profiles":
-                                                                      [{"profile_name": "{}".format(profile_name),
-                                                                        "auth": "{}".format(auth)}]}}]}
+                                                   "membership": {"identification_profiles": [
+                                                       {"profile_name": "{}".format(profile_name),
+                                                        "auth": "{}".format(auth)}]}}]}
         response = self._httpp_request(method='PUT', url_suffix='/wsa/api/v3.0/web_security/access_policies?format=json',
                                        data=json.dumps(accesspoliciesdata))
 
@@ -179,8 +153,8 @@ class Client(BaseClient):
                     outputs=outputs)
 
         except DemistoException as a:
-            outputs = {"exception": {"ModifyAccessPolicyException": a}}
-            return CommandResults(outputs=outputs)
+            outputs = {"exception": "ModifyAccessPolicyException"}
+            return DemistoException ("Check",CommandResults(outputs=outputs))
 
     def delete_access_policies(self, a_data) -> CommandResults:
         policy_namess = a_data.get('policy_name')
@@ -201,12 +175,11 @@ class Client(BaseClient):
             else:
                 outputs = {'wsa': {
                     'response': data}}
-                return CommandResults(
-                    outputs=outputs)
+                return DemistoException ("Check",CommandResults(
+                    outputs=outputs))
 
         except DemistoException as a:
-            outputs = {"exception": {"DeleteAccessPolicyException": a}}
-            return CommandResults(outputs=outputs)
+            return DemistoException("Check ", CommandResults(outputs=a))
 
 
 ''' HELPER FUNCTIONS '''
