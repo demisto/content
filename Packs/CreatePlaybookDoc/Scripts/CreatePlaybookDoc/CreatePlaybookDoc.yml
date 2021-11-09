@@ -1,7 +1,8 @@
 args:
 - name: DocFileName
   required: true
-  description: Name of the output docx file. Please include extension as well. For example, test-doc.docx  
+  description: Name of the output docx file. Please include extension as well. For
+    example, test-doc.docx
 - name: PlaybookName
   required: true
   description: Name of the playbook to be used for the document creation.
@@ -22,21 +23,14 @@ comment: |-
 
   Requirements: This automation requires "Demisto REST API" integration enabled and connected to the XSOAR itself. Automation uses it to read the objects of the playbook.
 commonfields:
-  id: e4f27c24-5c59-4099-8ab8-3cc6dbec21bf
+  id: create-playbook-doc
   version: -1
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: "6.0.0"
-    itemVersion: "1.0.0"
-    packID: f33b17c9-b22e-490b-8778-51203ee7ea32
-    propagationLabels:
-    - all
-    toServerVersion: ""
-dockerimage: demisto/sane-doc-reports:1.0.0.20692
+dockerimage: demisto/sane-doc-reports:1.0.0.24118
 enabled: true
-engineinfo: {}
 name: create-playbook-doc
-pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: ''
@@ -46,3 +40,6 @@ tags:
 - General
 - Utility
 type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
