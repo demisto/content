@@ -5,7 +5,7 @@ commonfields:
 configuration:
 - additionalinfo: The credentials to associate with the instance.
   display: Username
-  name: creds
+  name: credentials
   required: true
   type: 9
 - additionalinfo: The default port to use if one is not specified in the commands
