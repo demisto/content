@@ -1,6 +1,5 @@
 id: Playbook-HYASInsight-Test
-version: 9
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Playbook-HYASInsight-Test
 fromversion: 6.0.0
 starttaskid: "0"
@@ -15,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -1217,6 +1217,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -1426,3 +1427,4 @@ view: |-
   }
 inputs: []
 outputs: []
+description: HYASInsight Test Playbook
