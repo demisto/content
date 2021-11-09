@@ -532,7 +532,7 @@ def set_integration_params(build,
                         for item in integration_params:
                             logging.info(f"Instance names in conf are: {instance_names}")
                             if item.get('instance_name', 'Not Found') == instance_name:
-                                integration_copy['params'] = item
+                                integration_copy['params'] = item.get('params', {})
                         integration_copy['instance_name'] = instance_name
                         added_integration_configurations.append(integration_copy)
 
