@@ -1,11 +1,6 @@
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-import requests
-import traceback
-import json
-
-requests.packages.urllib3.disable_warnings()
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
@@ -40,8 +35,7 @@ class Client(BaseClient):
                 headers=headers,
                 auth=auth,
                 timeout=timeout,
-                **kwargs
-            )
+                **kwargs)
             # Handle error responses gracefully
             if not self._is_status_code_valid(res, ok_codes):
                 if error_handler:
@@ -79,10 +73,8 @@ class Client(BaseClient):
             except ValueError:
                 pass
 
-        except requests.exceptions.ConnectTimeout as exception:
-            err_msg = 'Connection Timeout Error - potential reasons might be that the Server URL parameter' \
-                      ' is incorrect or that the Server is not accessible from your host.'
-            raise DemistoException(err_msg, exception)
+        except requests.exceptions.RetryError:
+            pass
 
     def get_access_policies(self) -> CommandResults:
 
@@ -106,9 +98,7 @@ class Client(BaseClient):
         data = self._httpp_request(
 
             method='GET',
-            url_suffix='/wsa/api/v3.0/generic_resources/url_categories'
-
-        )
+            url_suffix='/wsa/api/v3.0/generic_resources/url_categories')
 
         return data
 
@@ -117,9 +107,7 @@ class Client(BaseClient):
         data = self._httpp_request(
 
             method='GET',
-            url_suffix='/wsa/api/v3.0/web_security/identification_profiles'
-
-        )
+            url_suffix='/wsa/api/v3.0/web_security/identification_profiles')
 
         return data
 
@@ -131,12 +119,14 @@ class Client(BaseClient):
         policy_status = args.get('policy_status')
         auth = args.get('auth')
         accesspoliciesdata = {"access_policies": [{"policy_name": "{}".format(policy_name),
-                                                   "policy_status": "{}".format(policy_status), "policy_order":
-                                                       int(policy_order),
-                                                   "membership": {"identification_profiles": [
-                                                       {"profile_name": "{}".format(profile_name),
-                                                        "auth": "{}".format(auth)}]}}]}
-        response = self._httpp_request(method='PUT', url_suffix='/wsa/api/v3.0/web_security/access_policies?format=json',
+                                                   "policy_status": "{}".format(policy_status),
+                                                   "policy_order": int(policy_order),
+                                                   "membership":
+                                                       {"identification_profiles": [{
+                                                           "profile_name": "{}".format(profile_name),
+                                                           "auth": "{}".format(auth)}]}}]}
+        response = self._httpp_request(method='PUT',
+                                       url_suffix='/wsa/api/v3.0/web_security/access_policies?format=json',
                                        data=json.dumps(accesspoliciesdata))
 
         try:
@@ -146,15 +136,17 @@ class Client(BaseClient):
                                 "the given access policies are updated with the given payload"}}
                 return CommandResults(
                     outputs=outputs)
+
             else:
                 outputs = {'wsa': {
                     'response': response}}
                 return CommandResults(
                     outputs=outputs)
 
-        except DemistoException as a:
-            outputs = {"exception": "ModifyAccessPolicyException"}
-            return DemistoException ("Check",CommandResults(outputs=outputs))
+        except DemistoException:
+            pass
+
+        return CommandResults(outputs=outputs)
 
     def delete_access_policies(self, a_data) -> CommandResults:
         policy_namess = a_data.get('policy_name')
@@ -175,11 +167,12 @@ class Client(BaseClient):
             else:
                 outputs = {'wsa': {
                     'response': data}}
-                return DemistoException ("Check",CommandResults(
-                    outputs=outputs))
+                return CommandResults(
+                    outputs=outputs)
 
-        except DemistoException as a:
-            return DemistoException("Check ", CommandResults(outputs=a))
+        except DemistoException:
+            pass
+        return CommandResults(outputs=outputs)
 
 
 ''' HELPER FUNCTIONS '''
@@ -188,8 +181,9 @@ class Client(BaseClient):
 def initiateheaderrequest(api_key):
 
     headerrequest = {'Content-Type': 'application/json',
-                     "cache-control": "no-cache", "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36"
-                                                                "(KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36",
+                     "cache-control": "no-cache", "User-Agent":
+                         "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 "
+                         "(KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36",
                      "Accept": "*/*", 'Authorization': 'Basic {}'.format(api_key), "accept-encoding": "gzip, deflate"}
 
     return headerrequest
@@ -216,8 +210,7 @@ def wsa_get_access_policies_command(client) -> CommandResults:
 
     return CommandResults(
         outputs_key_field='',
-        outputs=results
-    )
+        outputs=results)
 
 
 def wsa_get_domain_map_command(client) -> CommandResults:
@@ -225,8 +218,7 @@ def wsa_get_domain_map_command(client) -> CommandResults:
 
     return CommandResults(
         outputs_key_field='',
-        outputs=results
-    )
+        outputs=results)
 
 
 def wsa_get_url_categories_command(client) -> CommandResults:
@@ -234,8 +226,7 @@ def wsa_get_url_categories_command(client) -> CommandResults:
 
     return CommandResults(
         outputs_key_field='',
-        outputs=results
-    )
+        outputs=results)
 
 
 def wsa_get_identification_profiles_command(client) -> CommandResults:
@@ -243,8 +234,7 @@ def wsa_get_identification_profiles_command(client) -> CommandResults:
 
     return CommandResults(
         outputs_key_field='',
-        outputs=results
-    )
+        outputs=results)
 
 
 def wsa_delete_access_policies_command(client, args):

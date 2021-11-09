@@ -1,5 +1,5 @@
 Cisco WSA
-This integration was integrated and tested with version Vseries-100 of WSA-Testing
+This integration was integrated and tested with version xx of WSA-Testing
 
 ## Configure WSA-Testing on Cortex XSOAR
 
@@ -9,9 +9,9 @@ This integration was integrated and tested with version Vseries-100 of WSA-Testi
 
     | **Parameter** | **Required** |
     | --- | --- |
-    | BASE_URL | True |
-    | API_KEY | True |
-    | PORT | True |
+    |  | True |
+    |  | True |
+    |  | False |
     | Trust any certificate (not secure) | False |
     | Use system proxy settings | False |
 
@@ -31,7 +31,6 @@ Retrieving all access policies
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-No parameter required.
 
 
 #### Context Output

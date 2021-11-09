@@ -12,7 +12,7 @@ detaileddescription: |
 configuration:
 - display: ""
   name: url
-  defaultvalue: ""
+  defaultvalue: http://192.168.1.1
   type: 12
   required: true
 - display: ""
@@ -34,7 +34,9 @@ configuration:
   type: 8
   required: false
 script:
-  script: |2
+  script: |
+    from CommonServerPython import *
+    from CommonServerUserPython import *
 
     ''' CONSTANTS '''
 
@@ -70,8 +72,7 @@ script:
                     headers=headers,
                     auth=auth,
                     timeout=timeout,
-                    **kwargs
-                )
+                    **kwargs)
                 # Handle error responses gracefully
                 if not self._is_status_code_valid(res, ok_codes):
                     if error_handler:
@@ -109,37 +110,8 @@ script:
                 except ValueError:
                     pass
 
-            except requests.exceptions.ConnectTimeout as exception:
-                err_msg = 'Connection Timeout Error - potential reasons might be that the Server URL parameter' \
-                              ' is incorrect or that the Server is not accessible from your host.'
-                raise DemistoException(err_msg, exception)
-            except requests.exceptions.SSLError as exception:
-                # in case the "Trust any certificate" is already checked
-                if not self._verify:
-                    raise
-                err_msg = 'SSL Certificate Verification Failed - try selecting \'Trust any certificate\' checkbox in' \
-                          ' the integration configuration.'
-                raise DemistoException(err_msg, exception)
-            except requests.exceptions.ProxyError as exception:
-                err_msg = 'Proxy Error - if the \'Use system proxy\' checkbox in the integration configuration is' \
-                          ' selected, try clearing the checkbox.'
-                raise DemistoException(err_msg, exception)
-            except requests.exceptions.ConnectionError as exception:
-                # Get originating Exception in Exception chain
-                error_class = str(exception.__class__)
-                err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
-                err_msg = 'Verify that the server URL parameter' \
-                          ' is correct and that you have access to the server from your host.' \
-                          '\nError Type: {}\nError Number: [{}]\nMessage: {}\n' \
-                    .format(err_type, exception.errno, exception.strerror)
-                raise DemistoException(err_msg, exception)
-            except requests.exceptions.RetryError as exception:
-                try:
-                    reason = 'Reason: {}'.format(exception.args[0].reason.args[0])
-                except Exception:  # noqa: disable=broad-except
-                    reason = ''
-                err_msg = 'Max Retries Error- Request attempts with {} retries failed. \n{}'.format(retries, reason)
-                raise DemistoException(err_msg, exception)
+            except requests.exceptions.RetryError:
+                pass
 
         def get_access_policies(self) -> CommandResults:
 
@@ -154,9 +126,7 @@ script:
             data = self._httpp_request(
 
                 method='GET',
-                url_suffix='/wsa/api/v2.0/configure/web_security/domain_map'
-
-            )
+                url_suffix='/wsa/api/v2.0/configure/web_security/domain_map')
 
             return data
 
@@ -165,9 +135,7 @@ script:
             data = self._httpp_request(
 
                 method='GET',
-                url_suffix='/wsa/api/v3.0/generic_resources/url_categories'
-
-            )
+                url_suffix='/wsa/api/v3.0/generic_resources/url_categories')
 
             return data
 
@@ -176,9 +144,7 @@ script:
             data = self._httpp_request(
 
                 method='GET',
-                url_suffix='/wsa/api/v3.0/web_security/identification_profiles'
-
-            )
+                url_suffix='/wsa/api/v3.0/web_security/identification_profiles')
 
             return data
 
@@ -190,12 +156,14 @@ script:
             policy_status = args.get('policy_status')
             auth = args.get('auth')
             accesspoliciesdata = {"access_policies": [{"policy_name": "{}".format(policy_name),
-                                                       "policy_status": "{}".format(policy_status), "policy_order":
-                                                           int(policy_order),
-                                                       "membership": {"identification_profiles":
-                                                                          [{"profile_name": "{}".format(profile_name),
-                                                                            "auth": "{}".format(auth)}]}}]}
-            response = self._httpp_request(method='PUT', url_suffix='/wsa/api/v3.0/web_security/access_policies?format=json',
+                                                       "policy_status": "{}".format(policy_status),
+                                                       "policy_order": int(policy_order),
+                                                       "membership":
+                                                           {"identification_profiles": [{
+                                                               "profile_name": "{}".format(profile_name),
+                                                               "auth": "{}".format(auth)}]}}]}
+            response = self._httpp_request(method='PUT',
+                                           url_suffix='/wsa/api/v3.0/web_security/access_policies?format=json',
                                            data=json.dumps(accesspoliciesdata))
 
             try:
@@ -212,9 +180,10 @@ script:
                     return CommandResults(
                         outputs=outputs)
 
-            except DemistoException as a:
-                outputs = a
-                return CommandResults(outputs=outputs)
+            except DemistoException:
+                pass
+
+            return CommandResults(outputs=outputs)
 
         def delete_access_policies(self, a_data) -> CommandResults:
             policy_namess = a_data.get('policy_name')
@@ -238,9 +207,9 @@ script:
                     return CommandResults(
                         outputs=outputs)
 
-            except DemistoException as a:
-                outputs = a
-                return CommandResults(outputs=outputs)
+            except DemistoException:
+                pass
+            return CommandResults(outputs=outputs)
 
 
     ''' HELPER FUNCTIONS '''
@@ -249,8 +218,10 @@ script:
     def initiateheaderrequest(api_key):
 
         headerrequest = {'Content-Type': 'application/json',
-                 "cache-control": "no-cache", "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36",
-                 "Accept": "*/*", 'Authorization': 'Basic {}'.format(api_key), "accept-encoding": "gzip, deflate"}
+                         "cache-control": "no-cache", "User-Agent":
+                             "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 "
+                             "(KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36",
+                         "Accept": "*/*", 'Authorization': 'Basic {}'.format(api_key), "accept-encoding": "gzip, deflate"}
 
         return headerrequest
 
@@ -276,8 +247,7 @@ script:
 
         return CommandResults(
             outputs_key_field='',
-            outputs=results
-        )
+            outputs=results)
 
 
     def wsa_get_domain_map_command(client) -> CommandResults:
@@ -285,8 +255,7 @@ script:
 
         return CommandResults(
             outputs_key_field='',
-            outputs=results
-        )
+            outputs=results)
 
 
     def wsa_get_url_categories_command(client) -> CommandResults:
@@ -294,8 +263,7 @@ script:
 
         return CommandResults(
             outputs_key_field='',
-            outputs=results
-        )
+            outputs=results)
 
 
     def wsa_get_identification_profiles_command(client) -> CommandResults:
@@ -303,8 +271,7 @@ script:
 
         return CommandResults(
             outputs_key_field='',
-            outputs=results
-        )
+            outputs=results)
 
 
     def wsa_delete_access_policies_command(client, args):
@@ -327,7 +294,7 @@ script:
         args = demisto.args()
         api_key = demisto.params()['apikey']
         port = demisto.params()['port']
-        port = ":"+port
+        port = ":" + port
         base_url = demisto.params()['url'] + port
         verify_certificate = demisto.params()['insecure']
         proxyy = demisto.params().get('proxy', False)
@@ -440,10 +407,25 @@ script:
     description: Modifying an Access Policy
   - name: wsa-delete-access-policies
     arguments:
-    - name: policy_name
+    - name: policyname
       required: true
       description: Name of the policy. Unique identifier of the policy
-      isArray: true
+    - name: policy_status
+      description: Enable/disable
+    - name: profile_name
+      description: (profile_name, auth). Use "No Authentication" in case of no authentication
+        required for the specific profile. Empty strings represents "global identification
+        profile". _all_ represents "All identification profiles".  Please  all inputs
+        comma separated.
+    - name: policy_order
+      description: Index of this specific profile in the collection. Its starts from
+        1. Index of this specific profile in the collection. Its starts from 1. Order
+        of policy in collection of policies. Not applicable for global_policy.
+    - name: auth
+      description: (profile_name,auth). Use "No Authentication" in case of no authentication
+        required for the specific profile. Empty strings represents "global identification
+        profile". _all_ represents "All identification profiles".  Please  all inputs
+        comma separated.
     outputs:
     - contextPath: wsa.response
       description: whether the result indicates if request is success or failure
