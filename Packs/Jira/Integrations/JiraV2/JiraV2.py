@@ -13,6 +13,7 @@ API_TOKEN = demisto.getParam('APItoken')
 USERNAME = demisto.getParam('username')
 PASSWORD = demisto.getParam('password')
 COMMAND_NOT_IMPELEMENTED_MSG = 'Command not implemented'
+CONTENT_TYPE_HEADER = 'Content-Type': 'application/json'
 
 HEADERS = {
     'Content-Type': 'application/json',
@@ -45,19 +46,17 @@ def jira_req(
         files: Optional[dict] = None
 ):
     url = resource_url if link else (BASE_URL + resource_url)
-    if not headers:
-        headers = HEADERS
-    else:
-        # Merging the specific request headers with HEADERS
-        headers = {**headers, **HEADERS}
+    AUTH = get_auth()
+    if headers and HEADERS.get('Authorization'):
+        headers['Authorization'] = HEADERS.get('Authorization')
     try:
         result = requests.request(
             method=method,
             url=url,
             data=body,
-            headers=headers,
+            auth=AUTH,
+            headers=headers if headers else HEADERS,
             verify=USE_SSL,
-            auth=get_auth(),
             files=files
         )
     except ValueError:
