@@ -33,7 +33,7 @@ This playbook does not use any commands.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | MessgaeID | The original email message id to retrieve. This should hold the value of the "Message-ID" header of the original email. |  | Optional |
-| UserID | The user's email address. The "me" special value can be used to indicate the authenticated user \(gmail\). |  | Optional |
+| UserID | The email address of the user for which to fetch the original email. |  | Optional |
 | EmailSubject | The original email subject. |  | Optional |
 | EmailBrand | When this value is supplied only the relevant playbook will run.<br/>Possible values:<br/>- Gmail<br/>- EWS v2<br/>- MicrosoftGraphMail<br/><br/>If none of the above values is supplied, all of the playbooks will run. |  | Optional |
 
@@ -42,17 +42,17 @@ This playbook does not use any commands.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| Email | The email object | unknown |
-| File | Original attachments | unknown |
+| Email | The email object | string |
+| File | Original attachments | string |
 | Email.To | The recipient of the email | string |
 | Email.From | The sender of the email | string |
 | Email.CC | The CC address of the email | string |
 | Email.BCC | The BCC address of the email | string |
 | Email.HTML | The email HTML | string |
 | Email.Body | The email text body | string |
-| Email.Headers | The email headers | unknown |
+| Email.Headers | The email headers | string |
 | Email.Subject | The email subject | string |
-| Email.HeadersMap | The headers of the email. | unknown |
+| Email.HeadersMap | The headers of the email. | string |
 | reportedemailentryid | In case the original eml was retrieved, this field will hold the File's Entry ID. | unknown |
 
 ## Playbook Image

@@ -346,7 +346,7 @@ inputs:
 - key: UserID
   value: {}
   required: false
-  description: The user's email address. The "me" special value can be used to indicate
+  description: The email address of the user for which to fetch the original email.
     the authenticated user (gmail).
   playbookInputQuery:
 - key: EmailSubject
@@ -369,10 +369,10 @@ inputs:
 outputs:
 - contextPath: Email
   description: The email object
-  type: unknown
+  type: string
 - contextPath: File
   description: Original attachments
-  type: unknown
+  type: string
 - contextPath: Email.To
   description: The recipient of the email
   type: string
@@ -393,7 +393,7 @@ outputs:
   type: string
 - contextPath: Email.Headers
   description: The email headers
-  type: unknown
+  type: string
 - contextPath: Email.Subject
   description: The email subject
   type: string
@@ -402,7 +402,7 @@ outputs:
 - contextPath: reportedemailentryid
   description: In case the original eml was retrieved, this field will hold the File's
     Entry ID.
-  type: unknown
+  type: string
 tests:
 - No tests (auto formatted)
 fromversion: 6.1.0

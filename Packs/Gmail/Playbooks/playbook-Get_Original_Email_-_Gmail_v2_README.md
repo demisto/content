@@ -28,14 +28,14 @@ This playbook does not use any sub-playbooks.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | MessageID | The original email message id to retrieve. Holds the value of the "Message-ID" header of the original email and not Gmail's internal ID of the message. |  | Optional |
-| UserID | The user's email address. The "me" special value can be used to indicate the authenticated user. |  | Optional |
+| UserID | The email address of the user for which to fetch the original email. |  | Optional |
 
 ## Playbook Outputs
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| Email | The email object. | unknown |
+| Email | The email object. | string |
 | Email.To | The recipient of the email. | string |
 | Email.From | The sender of the email. | string |
 | Email.CC | The CC address of the email. | string |
@@ -44,7 +44,7 @@ This playbook does not use any sub-playbooks.
 | Email.Body | The text body of the email. | string |
 | Email.Headers | The headers of the email. | string |
 | Email.Subject | The subject of the email. | string |
-| File | The original attachments. | unknown |
+| File | The original attachments. | string |
 
 ## Playbook Image
 ---

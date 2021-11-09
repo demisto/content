@@ -908,7 +908,8 @@ tasks:
       '#none#':
       - "13"
     scriptarguments:
-      Domain: {}
+      Domain:
+        simple: ' '
       Email:
         complex:
           root: ReporterAddress
