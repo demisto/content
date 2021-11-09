@@ -4852,7 +4852,7 @@ class TestIndicatorsSearcher:
             # mock the end of indicators
             searchAfter = None
 
-        if page >= 17:
+        if page and page >= 17:
             # checking a unique case when trying to reach a certain page and not all the indicators
             iocs = []
             searchAfter = None

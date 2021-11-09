@@ -7996,8 +7996,11 @@ class IndicatorsSearcher:
                                                 to_date=self._to_date,
                                                 value=self._value)
         fetched_len = len(res.get('iocs') or [])
-        if self._limit:
-            self._limit -= fetched_len
+        if fetched_len == 0:
+            self.limit = 0
+            raise StopIteration
+        elif self.limit:
+            self.limit -= fetched_len
         return res
 
     @property
