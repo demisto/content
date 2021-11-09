@@ -269,7 +269,7 @@ def fetch_notables(service, cache_object=None, enrich_notables=False):
     notables = []
     incident_ids_to_add = {}
     for item in reader:
-        if len(incidents) >= FETCH_LIMIT:
+        if len(incidents) > FETCH_LIMIT:
             break
         extensive_log('[SplunkPyPreRelease] Incident data before parsing to notable: {}'.format(item))
         notable_incident = Notable(data=item)
