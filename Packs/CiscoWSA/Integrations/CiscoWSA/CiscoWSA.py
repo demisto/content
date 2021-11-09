@@ -277,8 +277,7 @@ def main() -> None:
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client)
-            return_results(result)
+            return_results(test_module(client))
 
         elif demisto.command() == 'wsa-get-access-policies':
             return_results(wsa_get_access_policies_command(client))
