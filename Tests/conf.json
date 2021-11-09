@@ -4602,7 +4602,8 @@
         },
         {
             "integrations": ["AutoFocusTagsFeed", "Demisto REST API"],
-            "playbookID": "AutoFocusTagsFeed-test"
+            "playbookID": "AutoFocusTagsFeed-test",
+            "timeout": 300
         },
         {
             "playbookID": "Tanium Threat Response V2 Test",
