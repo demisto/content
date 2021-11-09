@@ -109,7 +109,7 @@ def generic_command(client: MsGraphClient, args: Dict[str, Any]) -> CommandResul
             results['outputs'] = response.get('value')
             results['outputs_prefix'] = 'MicrosoftGraph'
 
-    return CommandResults(**results)
+    return CommandResults(**results)  # type: ignore[arg-type]
 
 
 def main() -> None:
