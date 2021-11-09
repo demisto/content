@@ -112,7 +112,7 @@ def generic_command(client: MsGraphClient, args: Dict[str, Any]) -> CommandResul
     return CommandResults(**results)  # type: ignore[arg-type]
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     params = demisto.params()
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
