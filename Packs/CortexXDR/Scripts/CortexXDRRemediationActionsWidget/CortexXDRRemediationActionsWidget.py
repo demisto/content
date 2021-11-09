@@ -19,7 +19,7 @@ def get_remediation_info() -> Dict:
 
     res = {}
     if blocked_ip_addresses:
-        res['Blocked IP Addresses'] = [indicator_value_to_md_link(ip) for ip in blocked_ip_addresses]
+        res['Blocked IP Addresses'] = [indicator_value_to_clickable(ip) for ip in blocked_ip_addresses]
     if inactive_access_keys:
         res['Inactive Access keys'] = inactive_access_keys
     if deleted_login_profiles:

@@ -8193,7 +8193,7 @@ def get_tenant_account_name():
 
     return account_name
 
-def indicator_value_to_md_link(indicator):
+def indicator_value_to_clickable(indicator):
     res = demisto.executeCommand('GetIndicatorsByQuery', {'query': f'value:{indicator}'})
     if isError(res[0]):
         raise DemistoException('Query for get indicators is invalid')

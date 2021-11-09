@@ -21,7 +21,7 @@ def get_additonal_info() -> List[Dict]:
                'Provider': alert_event.get('cloud_provider'),
                'Log Name': alert_event.get('log_name'),
                'Event Type': alert_event.get('raw_log').get('eventType'),
-               'Caller IP': indicator_value_to_md_link(alert_event.get('caller_ip')),
+               'Caller IP': indicator_value_to_clickable(alert_event.get('caller_ip')),
                'Caller IP Geo Location': alert_event.get('caller_ip_geolocation'),
                'Resource Type': alert_event.get('resource_type'),
                'Identity Name': alert_event.get('identity_name'),
