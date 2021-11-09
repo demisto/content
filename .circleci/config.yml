@@ -426,13 +426,9 @@ references:
             exit 0
         fi
 
-        gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
-        echo "successfully activated google cloud service account"
-
         # Download private ID set
         gsutil cp gs://marketplace-dist/content/private_id_set.json $CIRCLE_ARTIFACTS/unified_id_set.json
         echo "successfully downloaded private ID set"
-        gcloud auth revoke --all &> /dev/null
 
         # Merge public and private ID sets
         demisto-sdk merge-id-sets -i1 ./Tests/id_set.json -i2 $CIRCLE_ARTIFACTS/unified_id_set.json -o $CIRCLE_ARTIFACTS/unified_id_set.json
@@ -795,107 +791,6 @@ jobs:
             fi
           when: always
 
-  Server 5_0:
-    <<: *container_config
-    resource_class: medium
-    <<: *environment
-    steps:
-      - when:
-          condition:
-            or:
-              - << pipeline.parameters.contrib_branch >>
-              - << pipeline.parameters.non_ami_run >>
-          steps:
-            - run:
-                name:  Not running this job
-                when: always
-                command: |
-                  echo "Not running this job when triggered with one of contrib_branch, non_ami_run"
-      - unless:
-          condition:
-            or:
-              - << pipeline.parameters.contrib_branch >>
-              - << pipeline.parameters.non_ami_run >>
-          steps:
-            - *attach_workspace
-            - *restore_cache
-            - *add_ssh_keys
-            - *prepare_environment
-            - set-instance-role-env-variable:
-                instance_role: Server 5.0
-            - *check_if_instance_was_created
-            - start-tunnel
-            - *wait_until_server_ready
-            - *install_content_and_configure_integrations_on_server
-            - run:
-                name: Run Tests - Server 5.0
-                no_output_timeout: 5h
-                shell: /bin/bash
-                command: |
-                  if [ -z $INSTANCE_WAS_CREATED ];
-                    then
-                      echo "Skipping - instance was not created"
-                      exit 0
-                  fi
-                  if ./Tests/scripts/is_ami.sh ;
-                    then
-                      ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
-                    else
-                      echo "Not AMI run, can't run on this version"
-                      exit 0
-                  fi
-            - *destroy_instances
-            - *store_artifacts
-  Server 5_5:
-    <<: *container_config
-    resource_class: medium
-    <<: *environment
-    steps:
-      - when:
-          condition:
-            or:
-              - << pipeline.parameters.contrib_branch >>
-              - << pipeline.parameters.non_ami_run >>
-          steps:
-            - run:
-                name: Not running this job
-                when: always
-                command: |
-                  echo "Not running this job when triggered with one of instance_tests or non_ami_run"
-      - unless:
-          condition:
-            or:
-              - << pipeline.parameters.contrib_branch >>
-              - << pipeline.parameters.non_ami_run >>
-          steps:
-            - *attach_workspace
-            - *add_ssh_keys
-            - *prepare_environment
-            - set-instance-role-env-variable:
-                instance_role: Server 5.5
-            - *check_if_instance_was_created
-            - start-tunnel
-            - *wait_until_server_ready
-            - *install_content_and_configure_integrations_on_server
-            - run:
-                name: Run Tests - 5.5
-                no_output_timeout: 5h
-                shell: /bin/bash
-                command: |
-                  if [ -z $INSTANCE_WAS_CREATED ];
-                    then
-                      echo "Skipping - instance was not created"
-                      exit 0
-                  fi
-                  if ./Tests/scripts/is_ami.sh ;
-                    then
-                      ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
-                    else
-                      echo "Not AMI run, can't run on this version"
-                      exit 0
-                  fi
-            - *destroy_instances
-            - *store_artifacts
   Server 6_0:
     <<: *container_config
     resource_class: medium
