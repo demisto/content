@@ -169,6 +169,21 @@ class Client(BaseClient):
                 ok_codes=(200, 403)
             )
 
+    def sql(self, sql: str = None, timeout: int = 20):
+        return self._http_request(
+            'POST',
+            'query/scroll',
+            json_data=sql,
+            timeout=timeout
+        )
+
+    def sql_next(self, next_id: str = None, timeout: int = 20):
+        return self._http_request(
+            'GET',
+            f'query/scroll/{next_id}',
+            timeout=timeout
+        )
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -922,13 +937,51 @@ def get_useragents_command(client, args):
 #################################
 
 
-def query_dsl_command(client, args):
-    raw_query = args.get('query')
+def query_sql_command(client, args):
+    sql = args.get('sql')
+    timeout = int(args.get('timeout', '20'))
     query = {
-        "query": raw_query
+        "query": sql
     }
-    results = client.query(query)
-    return_results(results)
+    res = client.sql(sql=query, timeout=timeout)
+    total = res.get('total', {}).get('value')
+    if total:
+        pages = total // 100
+    output = {
+        "total": res.get('total', {}).get('value'),
+        "pages": pages,
+        "records": res.get('records'),
+        "id": res.get('id'),
+        "query": res.get('query')
+    }
+    readable_output = tableToMarkdown("SQL Query Results:", output)
+    command_results = CommandResults(
+        outputs_prefix='Securitytrails.SQL',
+        outputs_key_field=['query', 'id'],
+        outputs=output,
+        readable_output=readable_output
+    )
+    return_results(command_results)
+
+
+def query_sql_get_next_command(client, args):
+    next_id = args.get('id')
+    timeout = int(args.get('timeout', '20'))
+    res = client.sql_next(next_id=next_id, timeout=timeout)
+    output = {
+        "total": res.get('total', {}).get('value'),
+        "records": res.get('records'),
+        "id": res.get('id'),
+        "query": res.get('query')
+    }
+    readable_output = tableToMarkdown("SQL Query Results:", output)
+    command_results = CommandResults(
+        outputs_prefix='Securitytrails.SQL',
+        outputs_key_field=['query', 'id'],
+        outputs=output,
+        readable_output=readable_output
+    )
+    return_results(command_results)
 
 
 def test_module(client):
@@ -952,7 +1005,8 @@ def main() -> None:
     base_url = "https://api.securitytrails.com/v1/"
 
     commands = {
-        'securitytrails-query-dsl': query_dsl_command,
+        'securitytrails-sql-query': query_sql_command,
+        'securitytrails-sql-get-next': query_sql_get_next_command,
         'securitytrails-get-subdomains': domains_subdomains_command,
         'securitytrails-get-domain-details': domain_details_command,
         'securitytrails-get-tags': get_domain_tags_command,
