@@ -4670,6 +4670,11 @@
                 "SplunkShowIdentity"
             ],
             "playbookID": "SplunkShowEnrichment"
+        },
+        {
+            "integrations": "MalwareBazaar",
+            "playbookID": "MalwareBazaar_Test",
+            "fromversion": "6.0.0"
         }
     ],
     "skipped_tests": {
