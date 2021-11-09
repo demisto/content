@@ -16,7 +16,7 @@ def util_load_json(path):
 ])
 def test_additional_info(mocker, context_data, expected_result):
     mocker.patch.object(demisto, 'context', return_value=context_data)
-    mocker.patch.object(CortexXDRAdditionalAlertInformationWidget, 'indicator_to_clickable', side_effect=lambda x: x)
-
+    mocker.patch.object(CortexXDRAdditionalAlertInformationWidget, 'indicators_value_to_clickable',
+                        side_effect=lambda x: {a: a for a in x})
     results = CortexXDRAdditionalAlertInformationWidget.get_additonal_info()
     assert results == expected_result

@@ -32,7 +32,7 @@ def get_additonal_info() -> List[Dict]:
     indicators = [res.get('Caller IP') for res in results]
     indicators_callable = indicators_value_to_clickable(indicators)
     for res in results:
-        res['Caller IP'] = indicators_callable(res.get('Caller IP'))
+        res['Caller IP'] = indicators_callable.get(res.get('Caller IP'))
     return results
 
 

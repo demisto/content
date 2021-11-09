@@ -978,7 +978,7 @@
             {
                 "_type": "A2.0_ABIOC",
                 "alert_description": "A failed cloud API executed by a penetration testing tool.",
-                "alert_full_description": "A failed cloud API executed by a penetration testing tool.",
+                "alert_full_description": "desc1",
                 "content_version": "1.1.1.1",
                 "detection_modules": [
                     "Cloud"
@@ -1068,7 +1068,7 @@
             {
                 "_type": "A2.0_ABIOC",
                 "alert_description": "A cloud API was successfully executed by a penetration testing tool.",
-                "alert_full_description": "A cloud API was successfully executed by a penetration testing tool.",
+                "alert_full_description": "desc2",
                 "content_version": "1.1.1.1",
                 "detection_modules": [
                     "Cloud"
@@ -1162,7 +1162,7 @@
             {
                 "_type": "A2.0_ABIOC",
                 "alert_description": "The cloud user bob-test has called an API from 1.1.1.1. This IP address is known as a Tor exit node's IP address in the last 36 hours",
-                "alert_full_description": "* The cloud user bob-test has called an API from 1.1.1.1®\n* This IP address is known as a Tor exit node's IP address in the last 36 hours",
+                "alert_full_description": "desc3",
                 "content_version": "1.1.1.1",
                 "detection_modules": [
                     "Cloud"
@@ -1256,7 +1256,7 @@
             {
                 "_type": "A2.0_ABIOC",
                 "alert_description": "The cloud user bob-test has called an API from 1.1.1.1. This IP address is known as a Tor exit node's IP address in the last 36 hours",
-                "alert_full_description": "* The cloud user bob-test has called an API from 1.1.1.1\n* This IP address is known as a Tor exit node's IP address in the last 36 hours",
+                "alert_full_description": "desc4",
                 "content_version": "1.1.1.1",
                 "detection_modules": [
                     "Cloud"
