@@ -8062,7 +8062,7 @@ class IndicatorsSearcher:
         :return: object contains the search results
         :rtype: ``dict``
         """
-        res = demisto.searchIndicators(
+        search_args = assign_params(
             fromDate=from_date,
             toDate=to_date,
             query=query,
@@ -8073,6 +8073,7 @@ class IndicatorsSearcher:
             # use paging as fallback when cannot use search_after
             page=self.page if not self._can_use_search_after else None
         )
+        res = demisto.searchIndicators(**search_args)
         if isinstance(self._page, int) and len(res.get('iocs') or []) > 0:
             self._page += 1  # advance pages
         self._search_after_param = res.get(self.SEARCH_AFTER_TITLE)
