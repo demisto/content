@@ -16,7 +16,7 @@ from pprint import pformat
 from threading import Thread
 from time import sleep
 from typing import List, Tuple
-
+from urllib.parse import quote_plus
 import demisto_client
 from demisto_sdk.commands.test_content.constants import SSH_USER
 from ruamel import yaml
@@ -1302,7 +1302,7 @@ def get_non_added_packs_ids(build: Build):
 
 
 def set_marketplace_url(servers, branch_name, ci_build_number):
-    url_suffix = f'{branch_name}/{ci_build_number}'
+    url_suffix = quote_plus(f'{branch_name}/{ci_build_number}')
     config_path = 'marketplace.bootstrap.bypass.url'
     config = {config_path: f'https://storage.googleapis.com/marketplace-ci-build/content/builds/{url_suffix}'}
     for server in servers:
