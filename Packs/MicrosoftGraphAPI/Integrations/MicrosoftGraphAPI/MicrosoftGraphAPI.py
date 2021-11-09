@@ -57,17 +57,17 @@ class MsGraphClient:
             return res.json()
 
 
-def start_auth(client: MsGraphClient) -> CommandResults:
+def start_auth(client: MsGraphClient) -> CommandResults:  # pragma: no cover
     result = client.ms_client.start_auth('!msgraph-api-auth-complete')
     return CommandResults(readable_output=result)
 
 
-def complete_auth(client: MsGraphClient):
+def complete_auth(client: MsGraphClient):  # pragma: no cover
     client.ms_client.get_access_token()
     return 'Authorization completed successfully.'
 
 
-def test_module(client: MsGraphClient, params: Dict) -> str:
+def test_module(client: MsGraphClient, params: Dict) -> str:  # pragma: no cover
     if params.get('app_secret') and params.get('tenant_id'):
         client.ms_client.get_access_token()
         return 'ok'
@@ -76,7 +76,7 @@ def test_module(client: MsGraphClient, params: Dict) -> str:
                          'run the msgraph-test command instead.')
 
 
-def test_command(client: MsGraphClient) -> CommandResults:
+def test_command(client: MsGraphClient) -> CommandResults:  # pragma: no cover
     client.ms_client.get_access_token()
     return CommandResults(readable_output='```✅ Success!```')
 
