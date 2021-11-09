@@ -18,12 +18,12 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "7"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 50
         }
       }
@@ -48,8 +48,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 370
+          "x": 162.5,
+          "y": 545
         }
       }
     note: false
@@ -89,6 +89,43 @@ tasks:
       {
         "position": {
           "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 92f81e13-2240-4174-864a-824c7f543380
+    type: condition
+    task:
+      id: 92f81e13-2240-4174-864a-824c7f543380
+      version: -1
+      name: Is FireMon Integration available
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "5"
+      "yes":
+      - "6"
+    scriptarguments:
+      brandname:
+        simple: FireMonSecurityManager
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
           "y": 195
         }
       }
@@ -102,14 +139,55 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 385,
-        "width": 380,
+        "height": 560,
+        "width": 492.5,
         "x": 50,
         "y": 50
       }
     }
   }
-inputs: []
+inputs:
+- key: Domain Id
+  value:
+    complex:
+      root: incident
+      accessor: domainid
+  required: true
+  description: Enter Domain Id (Integer)
+  playbookInputQuery: null
+- key: Workflow Name
+  value:
+    complex:
+      root: incident
+      accessor: workflowname
+  required: true
+  description: Enter Workflow Name
+  playbookInputQuery: null
+- key: Requirements
+  value:
+    complex:
+      root: incident
+      accessor: requirements
+  required: true
+  description: Enter list of Requirements containing Sources, Service, Destinations
+    and Action
+  playbookInputQuery: null
+- key: Priority
+  value:
+    complex:
+      root: incident
+      accessor: priority
+  required: true
+  description: Set the Priority
+  playbookInputQuery: null
+- key: Due Date
+  value:
+    complex:
+      root: incident
+      accessor: ppticketduedate
+  required: true
+  description: 'Enter Due date '
+  playbookInputQuery: null
 outputs: []
 tests:
 - No tests (auto formatted)
