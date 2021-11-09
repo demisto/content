@@ -17,7 +17,7 @@ HTML = """<span style="color: #{color};"><strong>{provider}&nbsp; &nbsp; &nbsp; 
 def get_cloudprovider_html_result():
     cloud_providers = get_cloud_providers()
     results = [HTML_START]
-    results.extend([HTML.format(provider=provider, color=COLORS.get(provider)) for provider in cloud_providers])
+    results.extend([HTML.format(provider=provider, color=COLORS.get(provider, '000000')) for provider in cloud_providers])
 
     html_result = ''.join(results)
     return {'ContentsFormat': EntryFormat.HTML,
@@ -32,7 +32,7 @@ def get_cloud_providers():
         raise DemistoException('xdralerts is not configured in the incident')
     if not isinstance(xdr_alerts, list):
         xdr_alerts = [xdr_alerts]
-    cloud_providers = list({alert.get('cloudprovider') for alert in xdr_alerts})
+    cloud_providers = {alert.get('cloudprovider') for alert in xdr_alerts}
     return cloud_providers
 
 

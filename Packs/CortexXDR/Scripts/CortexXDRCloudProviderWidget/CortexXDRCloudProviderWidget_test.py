@@ -16,4 +16,10 @@ def util_load_json(path):
 def test_cloud_provider(mocker, incident_data, expected_result):
     mocker.patch.object(demisto, 'incident', return_value=incident_data)
     results = CortexXDRCloudProviderWidget.get_cloud_providers()
-    assert set(results) == expected_result
+    assert results == expected_result
+
+
+def test_cloud_provider_other_provider(mocker):
+    mocker.patch.object(CortexXDRCloudProviderWidget, 'get_cloud_providers', return_value={'IBM'})
+    results = CortexXDRCloudProviderWidget.get_cloudprovider_html_result()
+    assert '000000' in results.get('Contents')  # if not GCP, AWS or Azure should be in black
