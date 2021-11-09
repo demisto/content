@@ -2,7 +2,7 @@
 ignore=PA113
 
 [file:integration-SCADAfence_CNM.yml]
-ignore=IN126
+ignore=IN126,IN145
 
 [file:README.md]
 ignore=RM104

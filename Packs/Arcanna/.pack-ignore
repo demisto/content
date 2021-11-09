@@ -1,2 +1,5 @@
 [file:playbook-Arcanna-Generic-Investigation-V2-With-Feedback.yml]
 ignore=PB105
+
+[file:ArcannaAI.yml]
+ignore=IN145
