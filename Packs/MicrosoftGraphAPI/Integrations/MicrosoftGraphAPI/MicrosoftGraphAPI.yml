@@ -90,7 +90,6 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: $top=10
       description: OData system query options, e.g. $filter=startswith(givenName,
         'J'). For more details see https://docs.microsoft.com/en-us/graph/query-parameters
       isArray: false
@@ -108,13 +107,6 @@ script:
       - 'false'
       required: false
       secret: false
-    - auto: PREDEFINED
-      defaultValue: 'false'
-      description: Set to true if the API returns "No Content" in the response.
-      name: no_content
-      predefined:
-      - 'true'
-      - 'false'
     deprecated: false
     description: Run a Microsoft Graph API query.
     execution: false

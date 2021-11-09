@@ -43,6 +43,7 @@ def test_generic_command_positive(requests_mock, client):
     )
     args = {
         'resource': '/applications',
+        'odata': '$top=10',
 
     }
     res = generic_command(client, args)

@@ -43,17 +43,18 @@ class MsGraphClient:
             api_version: str = 'v1.0',
             odata: Optional[str] = None,
             request_body: Optional[Dict] = None,
-            resp_type: str = 'json',
     ):
         url_suffix = urljoin(api_version, resource)
         if odata:
             url_suffix += '?' + odata
-        return self.ms_client.http_request(
+        res = self.ms_client.http_request(
             method=http_method,
             url_suffix=url_suffix,
             json_data=request_body,
-            resp_type=resp_type,
+            resp_type='resp',
         )
+        if res.content:
+            return res.json()
 
 
 def start_auth(client: MsGraphClient) -> CommandResults:
@@ -88,22 +89,25 @@ def generic_command(client: MsGraphClient, args: Dict[str, Any]) -> CommandResul
         except json.decoder.JSONDecodeError as e:
             raise ValueError(f'Invalid request body - {str(e)}')
     http_method = args.get('http_method', 'GET')
-    resp_type = 'content' if (http_method == 'DELETE' or argToBoolean(args.get('no_content', 'false'))) else 'json'
 
     response = client.generic_request(
         resource=args.get('resource', ''),
         http_method=http_method,
         api_version=args.get('api_version', 'v1.0'),
-        odata=args.get('odata', '$top=10'),
+        odata=args.get('odata', ''),
         request_body=request_body,
-        resp_type=resp_type,
     )
 
-    results = {'raw_response': response}
+    if not response:
+        results = {
+            'readable_output': 'The API query ran successfully and returned no content.',
+        }
+    else:
+        results = {'raw_response': response}
 
-    if argToBoolean(args.get('populate_context', 'true')):
-        results['outputs'] = response.get('value')
-        results['outputs_prefix'] = 'MicrosoftGraph'
+        if argToBoolean(args.get('populate_context', 'true')):
+            results['outputs'] = response.get('value')
+            results['outputs_prefix'] = 'MicrosoftGraph'
 
     return CommandResults(**results)
 
