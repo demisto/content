@@ -7,7 +7,7 @@ configuration:
   defaultvalue: https://management.azure.com
   hidden: false
   name: server_url
-  required: false
+  required: true
   type: 0
 - display: Tenant ID
   name: tenant_id
