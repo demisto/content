@@ -45,12 +45,17 @@ def jira_req(
         files: Optional[dict] = None
 ):
     url = resource_url if link else (BASE_URL + resource_url)
+    if not headers:
+        headers = HEADERS
+    else:
+        # Merging the specific request headers with HEADERS
+        headers = {**headers, **HEADERS}
     try:
         result = requests.request(
             method=method,
             url=url,
             data=body,
-            headers=headers or HEADERS,
+            headers=headers,
             verify=USE_SSL,
             auth=get_auth(),
             files=files
@@ -779,6 +784,9 @@ def upload_file(entry_id, issue_id, attachment_name=None):
     return jira_req(
         method='POST',
         resource_url=f'rest/api/latest/issue/{issue_id}/attachments',
+        headers={
+            'X-Atlassian-Token': 'no-check'
+        },
         files={'file': (attachment_name or file_name, file_bytes)},
         resp_type='json'
     )
