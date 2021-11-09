@@ -8166,14 +8166,13 @@ def support_multithreading():
     demisto.lock = Lock()  # type: ignore[attr-defined]
 
     def locked_do(cmd):
-        try:
-            if demisto.lock.acquire(timeout=60):  # type: ignore[call-arg,attr-defined]
+        if demisto.lock.acquire(timeout=60):  # type: ignore[call-arg,attr-defined]
+            try:
                 return prev_do(cmd)  # type: ignore[call-arg]
-            else:
-                raise RuntimeError('Failed acquiring lock')
-        finally:
-            if demisto.lock.locked():  # type: ignore[attr-defined]
+            finally:
                 demisto.lock.release()  # type: ignore[attr-defined]
+        else:
+            raise RuntimeError('Failed acquiring lock')      
 
     demisto._Demisto__do = locked_do  # type: ignore[attr-defined]
 
