@@ -642,7 +642,7 @@ def set_integration_instance_parameters(integration_configuration,
     module_configuration = integration_configuration.get('configuration', {})
     if not module_configuration:
         module_configuration = []
-
+    logging.info(f"Looking for integrationInstanceName in integration_params object: {integration_params}")
     if 'integrationInstanceName' in integration_params:
         instance_name = integration_params['integrationInstanceName']
     else:
