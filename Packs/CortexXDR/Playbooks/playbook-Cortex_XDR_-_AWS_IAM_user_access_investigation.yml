@@ -5,7 +5,12 @@ description: "Investigate and respond to Cortex XDR Cloud alerts where an AWS IA
   \ user`s access key is used suspiciously to access the cloud environment. \nThe\
   \ following alerts are supported for AWS environments.\n- Penetration testing tool\
   \ attempt\n- Penetration testing tool activity\n- Suspicious API call from a Tor\
-  \ exit node\n"
+  \ exit node\n This is a beta playbook, which lets you implement and test pre-release\
+  \ software. At the moment we support AWS but are working towards multi-cloud support.\
+  \ Since the playbook is beta, it might contain bugs. Updates to the playbook during\
+  \ the beta phase might include non-backward compatible features. We appreciate your\
+  \ feedback on the quality and usability of the content to help us identify issues,\
+  \ fix them, and continually improve.\n"
 starttaskid: "0"
 tasks:
   "0":
@@ -422,21 +427,21 @@ tasks:
       id: 838d6965-463c-4fd4-8bcb-1453148e9705
       version: -1
       name: 'Investigate collected data '
-      description: "To determine if this is a true positive event, \
-        \ review the results of the XQL queries from the previous steps.\nThe queries\
-        \ search for the operations performed by the access key and the user in the\
-        \ recent time frame.\nGo over the results of the queries and search for the\
-        \ following items:\n\n1. Investigate the operation performed by the access\
-        \ key and examine the executed operations, by who it was executed, on which\
-        \ resource, and the operation status.\n\n2.  Investigate operations performed\
-        \ by the user and examine the executed operations, by who it was executed,\
-        \ on which resource, and the operation status.\nLook at any persistence, for\
-        \ example - a new user creation or key, etc.\n\n3. Investigate operations\
-        \ perform by the user and examine the executed operations, by who it was executed,\
-        \ on which resource, and the operation status.\nLook at any lateral movement\
-        \ operations. For example, an operation can be = AsumeRole.\n\n4. As an extra\
-        \ validation step it is recommended to query the user and/or the user's manager\
-        \ regarding the investigated suspicious activity."
+      description: "To determine if this is a true positive event,  review the results\
+        \ of the XQL queries from the previous steps.\nThe queries search for the\
+        \ operations performed by the access key and the user in the recent time frame.\n\
+        Go over the results of the queries and search for the following items:\n\n\
+        1. Investigate the operation performed by the access key and examine the executed\
+        \ operations, by who it was executed, on which resource, and the operation\
+        \ status.\n\n2.  Investigate operations performed by the user and examine\
+        \ the executed operations, by who it was executed, on which resource, and\
+        \ the operation status.\nLook at any persistence, for example - a new user\
+        \ creation or key, etc.\n\n3. Investigate operations perform by the user and\
+        \ examine the executed operations, by who it was executed, on which resource,\
+        \ and the operation status.\nLook at any lateral movement operations. For\
+        \ example, an operation can be = AsumeRole.\n\n4. As an extra validation step\
+        \ it is recommended to query the user and/or the user's manager regarding\
+        \ the investigated suspicious activity."
       type: regular
       iscommand: false
       brand: ""

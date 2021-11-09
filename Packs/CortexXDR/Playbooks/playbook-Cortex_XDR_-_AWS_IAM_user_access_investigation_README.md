@@ -4,6 +4,7 @@ The following alerts are supported for AWS environments.
 - Penetration testing tool activity
 - Suspicious API call from a Tor exit node
 
+This is a beta playbook, which lets you implement and test pre-release software. At the moment we support AWS but are working towards multi-cloud support. Since the playbook is beta, it might contain bugs. Updates to the playbook during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the content to help us identify issues, fix them, and continually improve.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
