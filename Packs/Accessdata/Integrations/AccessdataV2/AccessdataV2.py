@@ -111,8 +111,7 @@ def _process_evidence(client, caseid, evidence_path, evidence_type, options):
         )
     # if bad, raise error
     else:
-        raise ValueError("Processing Options supplied are not supported. " /
-            "Must be `dict` or `string`.")
+        raise ValueError("Processing Options supplied are not supported. Must be `dict` or `string`.")
 
 
 @wrap_demisto_command("accessdata-api-export-natives")
