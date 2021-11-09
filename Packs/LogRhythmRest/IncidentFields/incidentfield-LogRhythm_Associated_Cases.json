@@ -23,7 +23,7 @@
  "unsearchable": false,
  "useAsKpi": false,
  "associatedTypes": [
-  "LogRhythm Alarm"
+  "Logrhythm Alarm"
  ],
  "version": -1,
  "fromVersion": "5.5.0"

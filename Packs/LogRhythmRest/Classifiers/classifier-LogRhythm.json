@@ -3,8 +3,8 @@
     "feed": false,
     "id": "LogRhythm Classifier",
     "keyTypeMap": {
-        "Alarm": "LogRhythm Alarm",
-        "Case": "LogRhythm Case"
+		"Alarm": "Logrhythm Alarm",
+		"Case": "Logrhythm Case"
     },
     "name": "LogRhythm Classifier",
     "propagationLabels": [
