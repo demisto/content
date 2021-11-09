@@ -621,6 +621,7 @@ def get_user_iam(default_base_dn, args, mapper_in, mapper_out):
 
         # removing keys with no values
         user = {k: v for k, v in ad_user.items() if v}
+        user.pop('manageremail')
         attributes = list(user.keys())
 
         query = f'(&(objectClass=User)(objectCategory=person)({default_attribute}={value}))'
@@ -903,6 +904,7 @@ def create_user_iam(default_base_dn, args, mapper_out, disabled_users_group_cn):
             if manager_email := ad_user.get('manageremail'):
                 manager_dn = get_user_dn_by_email(default_base_dn, manager_email)
                 ad_user['manager'] = manager_dn
+                ad_user.pop('manageremail')
 
             success = conn.add(user_dn, object_classes, ad_user)
             if success:
