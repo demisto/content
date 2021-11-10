@@ -849,7 +849,18 @@ script:
           defaultValue: "20"
           predefined:
             - ""
-      outputs: []
+      outputs:
+    - contextPath: Securitytrails.SQL.total
+      description: The total number of hits discovered
+      type: number
+    - contextPath: Securitytrails.SQL.records
+      description: The records returned
+    - contextPath: Securitytrails.SQL.id
+      description: The ID to use for further GET calls to retrieve more results
+      type: string
+    - contextPath: Securitytrails.SQL.query
+      description: The original query used
+      type: string
   dockerimage: demisto/python3:3.9.7.24076
   runonce: false
   script: ""
