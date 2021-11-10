@@ -323,7 +323,7 @@ tasks:
       body:
         simple: |-
           Hi ${.=function(val) { if(!(val.Account.length > 1)) return val.ReporterAddress; var reporter = val.ReporterAddress; var account = val.Account && val.Account.filter(function(acc) { return acc.DisplayName && (acc.Email  === reporter || Array.isArray(acc.Email) && acc.Email.indexOf(reporter) > -1) }); return account && account[0] && account[0].DisplayName[0] || reporter || ''; }(val)},
-          We've concluded that the email you forwarded to us is safe.
+          We've concluded that the email you forwarded to us is safe. In case you think the verdict is not accurate and the email is suspicious, please contact our SOC team.
           Thank you for your alertness and your participation in keeping our organization secure.
 
           Cordially,
