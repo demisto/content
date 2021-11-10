@@ -2656,10 +2656,10 @@ tasks:
     task:
       id: 9c275081-8770-40c6-8c5d-9041e5da00bb
       version: -1
-      name: Cisco FirePower- Append network group object
+      name: f110702f-70b8-4c74-8438-829d4ec553c1
       description: This Playbook will append a network group object with new elements
         ( IPs or network objects ).
-      playbookName: Cisco FirePower- Append network group object
+      playbookId: f110702f-70b8-4c74-8438-829d4ec553c1
       type: playbook
       iscommand: false
       brand: ""
@@ -3420,8 +3420,8 @@ inputs:
     simple: "True"
   required: false
   description: "This input determines whether Palo Alto Networks Panorama or Firewall\
-    \ Custom Block Rules are used.\nSpecify True to use Custom Block Rules. \nFor\
-    \ a true statement, this option will create 2 FW rules inside the PAN-OS device."
+    \ Custom Block Rules are used.\nSpecify \"True\" to create new Custom Block Rules\
+    \ (2 FW rules inside the PAN-OS device). \nFor \"False\" - no rules will be created."
   playbookInputQuery:
 - key: LogForwarding
   value: {}
@@ -3447,9 +3447,9 @@ inputs:
 - key: Tag
   value: {}
   required: false
-  description: |-
-    This input determines whether the External Dynamic Lists option is used for blocking IPs.
-    Specify the tag which will be used for filtering IPs in the indicator query.
+  description: Insert a tag name with which indicators will get tagged. This tag can
+    be used later on in the External Dynamic Lists integration- by using the tag for
+    filtering IPs in the indicator query.
   playbookInputQuery:
 - key: DAG
   value: {}
@@ -3457,14 +3457,6 @@ inputs:
   description: |-
     This input determines whether Palo Alto Networks Panorama or Firewall Dynamic Address Groups are used.
     Specify the Dynamic Address Group tag name for IPs list handling.
-  playbookInputQuery:
-- key: ResolveIP
-  value:
-    simple: "False"
-  required: true
-  description: |-
-    This input is required for the IP Enrichment - Generic v2. Will be used for resolving the IP hostname. Default: False.
-    (Input value: True/False)
   playbookInputQuery:
 - key: UserVerification
   value:
@@ -3565,5 +3557,27 @@ outputs:
   description: Signal Sciences - the blocking rule's creator name.
   type: unknown
 tests:
+- Field polling test
+- test-domain-indicator
+- Calculate Severity - Generic v2 - Test
+- Wait Until Datetime - Test
+- Calculate Severity - Standard - Test
+- Extract Indicators From File - Generic v2 - Test
+- URL Enrichment - Generic v2 - Test
+- File Enrichment - Generic v2 - Test
+- Domain Enrichment - Generic v2 - Test
+- Account Enrichment - Generic v2.1 - Test
+- IP Enrichment - Generic v2 - Test
+- Get endpoint details - Generic - test
+- Detonate URL - Generic Test
+- Email Address Enrichment - Generic v2.1 - Test
+- Generic Polling Test
+- Send Investigation Summary Reports - Test
+- Detonate File - No Files test
+- Test Convert file hash to corresponding hashes
+- Detonate File - Generic Test
+- Endpoint Enrichment - Generic v2.1 - Test
+- Retrieve File from Endpoint - Generic V2 Test
+- Isolate and unisolate endpoint - test
 - Block IP - Generic V3_Test
 fromversion: 6.0.0

@@ -30,8 +30,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * PAN-OS DAG Configuration
 * Sophos Firewall - Block IP
 * Cisco FirePower- Append network group object
-* IP Enrichment - Generic v2
-* PAN-OS - Block IP and URL - External Dynamic List v2
 * PAN-OS - Block IP - Static Address Group
 * PAN-OS - Block IP - Custom Block Rule
 
@@ -74,19 +72,15 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | IP | An array of malicious IPs to block. Enter a comma-separated list of IPs \(i.e: 1.1.1.1,2.2.2.2\). |  | Optional |
-| CustomBlockRule | This input determines whether Palo Alto Networks Panorama or Firewall Custom Block Rules is used.<br/>Specify True to use Custom Block Rules. <br/>If set to true, this option will create 2 FW rules inside the PAN-OS device. | True | Optional |
+| CustomBlockRule | This input determines whether Palo Alto Networks Panorama or Firewall Custom Block Rules are used.<br/>Specify "True" to create new Custom Block Rules (2 FW rules inside the PAN-OS device).<br/>For "False" - no rules will be created. | True | Optional |
 | LogForwarding | Panorama log forwarding object name. This will indicate what type of Log Forwarding setting will be specified in the PAN-OS custom rules. |  | Optional |
 | AutoCommit | This input determines whether to commit the configuration automatically on PAN-OS devices. <br/>Yes - Commit automatically.<br/>No - Commit manually. | No | Optional |
 | StaticAddressGroup | This input determines whether Palo Alto Networks Panorama or Firewall Static Address Groups is used.<br/>Specify the Static Address Group name for IPs list handling. |  | Optional |
 | IPListName | This input determines whether Palo Alto Networks Panorama or Firewall External Dynamic Lists are used for blocking IPs.<br/>Specify the EDL name for IPs list handling. |  | Optional |
-| EDLServerIP | This input determines whether Palo Alto Networks Panorama or Firewall External Dynamic Lists are used:<br/>\* The IP address of the webserver on which the files are stored.<br/>\* The web server IP address is configured in the integration instance. |  | Optional |
-| DAG | This input determines whether Palo Alto Networks Panorama or Firewall Dynamic Address Groups is used.<br/>Specify the Dynamic Address Group tag name for IPs list handling. |  | Optional |
-| ResolveIP | This input is required for the IP Enrichment - Generic v2. Will be used for resolving the IP's hostname. Default: False.<br/>\(Input value: True/False\) | False | Required |
+| Tag | Insert a tag name with which indicators will get tagged.<br/>This tag can be used later on in the External Dynamic Lists integration- by using the tag for filtering IPs in the indicator query. |  | Optional |
 | UserVerification | Possible values: True/False.  Default: True.<br/>Whether to request user verification for blocking those IPs. <br/><br/>False - No prompt will be displayed to the user.<br/>True - The server will ask the user for blocking verification and will display the blocking list. | True | Optional |
 | InternalRange | A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges is: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). If a list is not provided, will use the default list provided in the IsIPInRanges script \(the known IPv4 private address ranges\). |  | Optional |
 | SiteName | Signal Sciences WAF - Enter the site name for the integration to be applied. The site name can be found in your instance console. |  | Optional |
-| CiscoFPName | Cisco FirePower - Enter the Object Group Name to be appended with the blocklisted IPs. |  | Optional |
-| CiscoFPID | Cisco FirePower - Enter the Object Group ID  to be appended with the blocklisted IPs. |  | Optional |
 | AkamaiNetworkListID | Akamai's WAF network list ID, which is mandatory to be mentioned for the integration. The chosen IPs will be added to this ID. |  | Optional |
 | CiscoFWSource | Cisco ASA \(firewall\) value for Rule's source object in the created blocking rule. Can be the value of an IPv4, an address block, or the name of a network object. |  | Optional |
 | InputEnrichment | Possible values: True/False . Default: True<br/>Enrich input IP address/es with reputation commands. | True | Optional |

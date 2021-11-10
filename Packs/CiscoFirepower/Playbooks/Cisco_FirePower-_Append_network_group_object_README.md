@@ -25,7 +25,7 @@ SetAndHandleEmpty
 | Name | The name of the Network Group. |  | Required |
 | Override | Possible Value: True / False<br/> | False | Optional |
 | IP | Enter a comma-separated list of IPs that will be added to the list. |  | Optional |
-| ObjectID | You may add a group of IPs by using the Object ID. You can use \!ciscofp-get-network-object for more details. |  | Optional |
+| ObjectID | You may add a group of IPs by using the Object ID. You can use \!ciscofp-get-network-object for more details.<br/> For example - you have certain Server Internal ranges unified in a networking group, and you wish to add them to a larger group (such as internal address - whose ID was supplied in the "ID" field). |  | Optional |
 
 ## Playbook Outputs
 ---
