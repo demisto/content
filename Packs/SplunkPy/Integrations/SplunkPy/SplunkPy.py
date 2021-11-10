@@ -1382,8 +1382,11 @@ def get_current_splunk_time(splunk_service):
             return item["clock"]
     raise ValueError('Error: Could not fetch Splunk time')
 
+
 def quote_group(text):
-    """ A function that groups quote values by checking they are even and end with ", """
+    """ A function that splits groups of key value pairs.
+        Taking into consideration key values pairs with nested quotes.
+    """
 
     def clean(t):
         return t.strip().rstrip(',')
@@ -1454,8 +1457,6 @@ def rawToDict(raw):
             # search for the pattern: `key="value", `
             # (the double quotes are optional)
             # we append `, ` to the end of the string to catch the last value
-            # raw_response = re.findall(r'(\S+=("?)[\S\s]+?\2), ', raw + ', ')
-            # raw_response = re.findall(r'[A-z\_]+\s*=.+?(?=([\s,]*)[A-z\_]+\s*=)', raw + ', ')
             groups = quote_group(raw)
             for g in groups:
                 key_value = g.replace('"', '').strip()
