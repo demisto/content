@@ -965,7 +965,7 @@ def query_sql_command(client, args):
 
 
 def query_sql_get_next_command(client, args):
-    next_id = args.get('id')
+    next_id = str(args.get('id'))
     timeout = int(args.get('timeout', '20'))
     res = client.sql_next(next_id=next_id, timeout=timeout)
     output = {
