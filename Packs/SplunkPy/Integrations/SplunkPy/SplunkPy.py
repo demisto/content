@@ -1417,8 +1417,11 @@ def quote_group(text):
     while rindex < len(text):
         if text[rindex] == '"':
             quote_counter += 1
-        if rindex > 1 and text[rindex - 1] == '"' and text[
-            rindex] == "," and quote_counter % 2 == 0:
+
+        is_end_keypair = rindex > 1 and \
+                         text[rindex - 1] == '"' and text[rindex] == ","
+        is_even_number_of_quotes = quote_counter % 2 == 0
+        if is_end_keypair and is_even_number_of_quotes:
             # Clean the match group and append to groups
             groups.append(clean(text[lindex:rindex]))
             lindex = rindex + 1
