@@ -147,7 +147,7 @@ def execute_shell_command(ssh_client: SSHClient, args: Dict[str, Any]) -> Comman
         readable_output = tableToMarkdown(f'Command {command} Outputs', outputs, removeNull=True)
     else:
         outputs = None
-        readable_output = f'### Command {command} Was Executed Successfully Without Any Outputs.'
+        readable_output = f'### Command {command} was executed successfully without any outputs.'
     return CommandResults(
         outputs_prefix='RemoteAccess.Command',
         outputs=outputs,
