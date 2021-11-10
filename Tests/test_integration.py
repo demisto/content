@@ -488,7 +488,7 @@ def check_integration(client, server_url, demisto_user, demisto_pass, integratio
         if module_instance is None:
             failure_message = failure_message if failure_message else 'No failure message could be found'
             logging_module.error(f'Failed to create instance: {failure_message}')
-            __delete_integrations_instances(client, module_instances, logging_module)
+            # __delete_integrations_instances(client, module_instances, logging_module)
             return False, -1
 
         module_instances.append(module_instance)
@@ -550,8 +550,8 @@ def check_integration(client, server_url, demisto_user, demisto_pass, integratio
         # delete incident
         __delete_incident(client, incident, logging_module)
 
-        # delete integration instance
-        __delete_integrations_instances(client, module_instances, logging_module)
+        # # delete integration instance
+        # __delete_integrations_instances(client, module_instances, logging_module)
 
     return playbook_state, inc_id
 
