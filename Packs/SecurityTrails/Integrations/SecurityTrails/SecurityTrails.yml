@@ -800,19 +800,106 @@ script:
           isArray: true
       name: domain
       description: Provides data enrichment for domains.
-      outputs: []
-    - name: securitytrails-sql-query
-      description: "Queries the SecurityTrails SQL endpoint. The SecurityTrails SQL
-        API provides a powerful SQL-like query interface to data via certain API
-        endpoints. For a full reference of properties and operators please check
-        the following link: https://securitytrails.com/reference/sql"
-      deprecated: false
-      arguments:
+      outputs:
+        - contextPath: Domain.Name
+          description: 'The domain name, for example: "google.com".'
+          type: String
+        - contextPath: Domain.DNS
+          description: A list of IP objects resolved by DNS.
+          type: String
+        - contextPath: Domain.DomainStatus
+          description: The status of the domain.
+          type: Datte
+        - contextPath: Domain.NameServers
+          description: (List<String>) Name servers of the domain.  
+          type: Unknown
+        - contextPath: Domain.Organization
+          description: The organization of the domain.
+          type: String
+        - contextPath: Domain.Subdomains
+          description: (List<String>) Subdomains of the domain.
+          type: Unknown
+        - contextPath: Domain.Admin.Country
+          description: The country of the domain administrator.
+          type: String
+        - contextPath: Domain.Admin.Email
+          description: The email address of the domain administrator.
+          type: String
+        - contextPath: Domain.Admin.Name
+          description: The name of the domain administrator.
+          type: String
+        - contextPath: Domain.Admin.Phone
+          description: The phone number of the domain administrator.
+          type: String
+        - contextPath: Domain.Registrant.Country
+          description: The country of the registrant.
+          type: String
+        - contextPath: Domain.Registrant.Email
+          description: The email address of the registrant.
+          type: String
+        - contextPath: Domain.Registrant.Name
+          description: The name of the registrant.
+          type: String
+        - contextPath: Domain.Registrant.Phone
+          description: The phone number for receiving abuse reports.
+          type: String
+        - contextPath: Domain.Tags
+          description: (List) Tags of the domain.
+          type: Unknown
+        - contextPath: Domain.WHOIS.DomainStatus
+          description: The status of the domain.
+          type: String
+        - contextPath: Domain.WHOIS.NameServers
+          description: (List<String>) Name servers of the domain.
+          type: String
+        - contextPath: Domain.WHOIS.CreationDate
+          description: The date that the domain was created.
+          type: Date
+        - contextPath: Domain.WHOIS.UpdatedDate
+          description: The date that the domain was last updated.
+          type: Date
+        - contextPath: Domain.WHOIS.ExpirationDate
+          description: The expiration date of the domain.
+          type: Date
+        - contextPath: Domain.WHOIS.Registrant.Name
+          description: The name of the registrant.
+          type: String
+        - contextPath: Domain.WHOIS.Registrant.Email
+          description: The email address of the registrant.
+          type: String
+        - contextPath: Domain.WHOIS.Registrant.Phone
+          description: The phone number of the registrant.
+          type: String
+        - contextPath: Domain.WHOIS.Registrar.Name
+          description: 'The name of the registrar, for example: `GoDaddy`'
+          type: String
+        - contextPath: Domain.WHOIS.Registrar.Email
+          description: The email address of the contact.
+          type: String
+        - contextPath: Domain.WHOIS.Registrar.Phone
+          description: The phone number of contact.
+          type: String
+        - contextPath: Domain.WHOIS.Admin.Name
+          description: The name of the domain administrator.
+          type: String
+        - contextPath: Domain.WHOIS.Admin.Email
+          description: The email address of the domain administrator.
+          type: String
+        - contextPath: Domain.WHOIS.Admin.Phone
+          description: The phone number of the domain administrator.
+          type: String
+    - arguments:
         - name: new_argument
           description: description
           required: false
           isArray: false
           defaultValue: ""
+      name: securitytrails-sql-query
+      description: "Queries the SecurityTrails SQL endpoint. The SecurityTrails SQL
+        API provides a powerful SQL-like query interface to data via certain API
+        endpoints. For a full reference of properties and operators please check
+        the following link: https://securitytrails.com/reference/sql"
+      deprecated: false
       outputs:
         - contextPath: Securitytrails.SQL.total
           description: The total number of hits discovered
@@ -830,11 +917,7 @@ script:
           description: The total number of pages that would need to be called to retrieve
             the rest of the results
           type: Number
-    - name: securitytrails-sql-get-next
-      description: Retrieves the next page of results returned from a SQL query where
-        the results exceeded the last page.
-      deprecated: false
-      arguments:
+    - arguments:
         - name: id
           description: The ID to use to retrieve the next page of results
           required: true
@@ -849,6 +932,11 @@ script:
           defaultValue: "20"
           predefined:
             - ""
+      name: securitytrails-sql-get-next
+      description: Retrieves the next page of results returned from a SQL query where
+        the results exceeded the last page.
+      deprecated: false
+      
       outputs:
       - contextPath: Securitytrails.SQL.total
         description: The total number of hits discovered
