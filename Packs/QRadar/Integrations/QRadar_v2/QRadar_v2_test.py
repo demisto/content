@@ -32,7 +32,6 @@ with open("TestData/raw_responses.json", "r") as f:
     RAW_RESPONSES = json.load(f)
 
 QRadar_v2.FAILURE_SLEEP = 0
-QRadar_v2.DEFAULT_EVENTS_TIMEOUT = 0
 
 command_tests = [
     ("qradar-searches", search_command, {"query_expression": "SELECT sourceip AS 'MY Source IPs' FROM events"},),
@@ -160,6 +159,7 @@ class TestQRadarv2:
             time.sleep(0.001)
             return offense
 
+        QRadar_v2.DEFAULT_EVENTS_TIMEOUT = 0
         offense_with_no_events = RAW_RESPONSES["fetch-incidents"]
         del offense_with_no_events['events']
         client = QRadarClient("", {}, {"identifier": "*", "password": "*"})
@@ -179,6 +179,7 @@ class TestQRadarv2:
         assert len(sic_mock.call_args[0][0]['samples']) == 1
         incident_raw_json = json.loads(sic_mock.call_args[0][0]['samples'][0]['rawJSON'])
         assert 'events' not in incident_raw_json
+        QRadar_v2.DEFAULT_EVENTS_TIMEOUT = 30
 
     def test_enrich_offense_with_events__correlations(self, mocker):
         """
