@@ -1,0 +1,17 @@
+{
+    "name": "RegexExtractAllValues",
+    "description": "Extraction of all matches from a specified regular expression pattern from a provided string.  Returns an array of values matched to the patterns.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Masahiko Inoue",
+    "url": "",
+    "email": "",
+    "created": "2021-11-10T06:26:48Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "spearmin10"
+    ]
+}
