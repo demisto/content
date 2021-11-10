@@ -51,7 +51,7 @@ def censys_search_command():
     args = demisto.args()
     query = args.get('query')
     index = args.get('index')
-    page = int(args.get('page'))
+    page = arg_to_number(args.get('page')) or 1
     url_suffix = 'search/{0}'.format(index)
     data = {
         "query": query,
