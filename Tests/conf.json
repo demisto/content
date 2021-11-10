@@ -1096,6 +1096,9 @@
             "playbookID": "ParseExcel-test"
         },
         {
+            "playbookID": "ParseHTMLIndicators-Test"
+        },
+        {
             "playbookID": "Detonate File - No Files test"
         },
         {
@@ -4586,6 +4589,42 @@
             "fromversion": "5.5.0",
             "is_mockable": false,
             "playbookID": "TestAzureSentinelPlaybookV2"
+        },
+        {
+            "integrations": "AnsibleAlibabaCloud",
+            "playbookID": "Test-AlibabaCloud"
+        },
+        {
+            "integrations": "AnsibleAzure",
+            "playbookID": "Test-AnsibleAzure"
+        },
+        {
+            "integrations": "AnsibleCiscoIOS",
+            "playbookID": "Test-AnsibleCiscoIOS"
+        },
+        {
+            "integrations": "AnsibleCiscoNXOS",
+            "playbookID": "Test-AnsibleCiscoNXOS"
+        },
+        {
+            "integrations": "AnsibleHCloud",
+            "playbookID": "Test-AnsibleHCloud"
+        },
+        {
+            "integrations": "AnsibleKubernetes",
+            "playbookID": "Test-AnsibleKubernetes"
+        },
+        {
+            "integrations": "AnsibleLinux",
+            "playbookID": "Test-AnsibleLinux"
+        },
+        {
+            "integrations": "AnsibleMicrosoftWindows",
+            "playbookID": "Test-AnsibleWindows"
+        },
+        {
+            "integrations": "AnsibleVMware",
+            "playbookID": "Test-AnsibleVMware"
         },
         {
             "integrations": "Anomali ThreatStream",
