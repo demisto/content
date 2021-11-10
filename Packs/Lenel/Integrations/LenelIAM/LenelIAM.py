@@ -10,7 +10,7 @@ urllib3.disable_warnings()
 ERROR_CODES_TO_SKIP = [
     404
 ]
-SUPPORTED_GET_USER_IAM_ATTRIBUTES = ['ID', 'USERNAME', 'EMAIL', 'SSNO']
+SUPPORTED_GET_USER_IAM_ATTRIBUTES = ['ID', 'EMAIL', 'USERNAME', 'SSNO']
 SCIM_EXTENSION_SCHEMA = "urn:scim:schemas:extension:custom:1.0:user"
 ACTIVE_FIELD = "ACTIVE__XR"
 
@@ -65,10 +65,10 @@ class Client(BaseClient):
     @staticmethod
     def get_cardholder(iam_attribute, iam_attribute_val) -> Optional[str]:
         filter_options = {
-            'id': f'ID={iam_attribute_val}',
-            'employee_id': f'SSNO="{iam_attribute_val}"',
-            'user_name': f'USERNAME="{iam_attribute_val}"',
-            'email': f'EMAIL="{iam_attribute_val}"'
+            'ID': f'ID={iam_attribute_val}',
+            'SSNO': f'SSNO="{iam_attribute_val}"',
+            'USERNAME': f'USERNAME="{iam_attribute_val}"',
+            'EMAIL': f'EMAIL="{iam_attribute_val}"'
         }
         return filter_options.get(iam_attribute, None)
 
@@ -128,6 +128,7 @@ class Client(BaseClient):
         }
         lenel_user['property_value_map'] = user_data
         lenel_user['property_value_map'][ACTIVE_FIELD] = True
+
         res = self._http_request(
             method='POST',
             url_suffix=uri,
@@ -157,6 +158,7 @@ class Client(BaseClient):
             'type_name': 'Lnl_Cardholder',
             'version': self.version
         }
+        user_data['ID'] = user_id
         lenel_user['property_value_map'] = user_data
         self._http_request(
             method='PUT',
@@ -165,7 +167,7 @@ class Client(BaseClient):
             params=query_params
         )
 
-        return self.get_user('id', user_id)
+        return self.get_user('ID', user_id)
 
     def enable_user(self, user_id: str) -> IAMUserAppData:
         """ Enables a user in the application using REST API.
@@ -180,13 +182,10 @@ class Client(BaseClient):
         # In this example, we use the same endpoint as in update_user() method,
         # But other APIs might have a unique endpoint for this request.
 
-        lenel_user = {
-            "property_value_map": {
-                'ID': user_id,
-                ACTIVE_FIELD: True,
-            }
+        user_data = {
+            ACTIVE_FIELD: True,
         }
-        return self.update_user(user_id, lenel_user)
+        return self.update_user(user_id, user_data)
 
     def disable_user(self, user_id: str) -> Optional[IAMUserAppData]:
         """ Disables a user in the application using REST API.
@@ -200,13 +199,10 @@ class Client(BaseClient):
         # Note: DISABLE user API endpoints might vary between different APIs.
         # In this example, we use the same endpoint as in update_user() method,
         # But other APIs might have a unique endpoint for this request.
-        lenel_user = {
-            "property_value_map": {
-                'ID': user_id,
-                'ACTIVE__XR': False,
-            }
+        user_data = {
+            'ACTIVE__XR': False,
         }
-        res = self.update_user(user_id, lenel_user)
+        res = self.update_user(user_id, user_data)
         full_data = res.full_data
 
         details = []
@@ -214,9 +210,8 @@ class Client(BaseClient):
         # Deactivate the badges associated with the user account
         filter = f'PERSONID={user_id}'
         get_badges_res = self.get_badges(filter)
-        res_badgejson = get_badges_res.json()
 
-        badge_list = res_badgejson.get("item_list")
+        badge_list = get_badges_res.get("item_list")
         if badge_list:
             for badge in badge_list:
                 badge_key = badge["property_value_map"]['BADGEKEY']
@@ -232,7 +227,7 @@ class Client(BaseClient):
         else:
             demisto.info(f"No badge associated with the user {user_id} for deactivation")
 
-        return self.get_user('id', user_id)
+        return self.get_user('ID', user_id)
 
     def get_badges(self, filter):
         uri = '/instances'
