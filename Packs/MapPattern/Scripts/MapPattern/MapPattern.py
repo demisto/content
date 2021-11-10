@@ -183,7 +183,6 @@ def main():
     mappings = args['mappings']
     algorithm = args.get('algorithm') or DEFAULT_ALGORITHM
     priority = args.get('priority') or DEFAULT_PRIORITY
-    caseless = argToBoolean(args.get('caseless') or 'true')
     context = args.get('context')
     regex_flags = re.IGNORECASE if argToBoolean(args.get('caseless') or 'true') else 0
     for flag in argToList(args.get('flags', '')):
