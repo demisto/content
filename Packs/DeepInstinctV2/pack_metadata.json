@@ -1,0 +1,17 @@
+{
+    "name": "DeepInstinct",
+    "description": "Integration for Deep Instinct 3.x",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Deep Instinct",
+    "url": "",
+    "email": "",
+    "created": "2021-11-10T00:40:37Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "DI-davidr"
+    ]
+}
