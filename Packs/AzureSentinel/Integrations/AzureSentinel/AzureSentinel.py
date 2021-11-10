@@ -889,7 +889,7 @@ def main():
     LOG(f'Command being called is {demisto.command()}')
     try:
         client = AzureSentinelClient(
-            server_url=params.get('server_url', DEFAULT_AZURE_SERVER_URL),
+            server_url=params.get('server_url') or DEFAULT_AZURE_SERVER_URL,
             tenant_id=params.get('tenant_id', ''),
             client_id=params.get('credentials', {}).get('identifier'),
             client_secret=params.get('credentials', {}).get('password'),
