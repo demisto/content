@@ -4826,6 +4826,7 @@
         "AnsibleDNS": "No instance - issue 40447",
         "AnsibleLinux": "No instance - issue 40447",
         "AnsibleOpenSSL": "No instance - issue 40447",
+        "AnsibleMicrosoftWindows": "No instance - issue 40447",
         "AnsibleVMware": "No instance - issue 40447",
         "SolarWinds": "No instance - developed by Crest",
         "SOCRadarIncidents": "No instance - developed by partner",
