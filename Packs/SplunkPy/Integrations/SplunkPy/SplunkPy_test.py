@@ -207,7 +207,8 @@ def test_raw_to_dict():
     ('cbd="a=123, b=321"', ['cbd="a="123", b="321""']),
     ('xyz=123, cbd="a="123", b=321"', ['xyz="123"', 'cbd="a="123", b="321""']),
     ('xyz="123", cbd="a="123", b="321""', ['xyz="123"', 'cbd="a="123", b="321""']),
-
+    ('xyz="123", cbd="a="123", b="321"", qqq=2', ['xyz="123"', 'cbd="a="123", b="321""', 'qqq="2"']),
+    ('xyz="123", cbd="a="123", b="321"", qqq="2"', ['xyz="123"', 'cbd="a="123", b="321""', 'qqq="2"']),
 ])
 def test_quote_group(text, output):
     assert sorted(splunk.quote_group(text)) == sorted(output)
