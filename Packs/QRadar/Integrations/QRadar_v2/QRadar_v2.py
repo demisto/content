@@ -954,7 +954,7 @@ def seek_fetchable_offenses(client: QRadarClient, start_offense_id, user_query):
                 if tries % 10 == 0:
                     last_run = get_integration_context(SYNC_CONTEXT)
                     last_run["id"] = end_offense_id
-                    set_to_integration_context_with_retries(last_run, SYNC_CONTEXT)
+                    set_to_integration_context_with_retries(last_run, sync=SYNC_CONTEXT)
             else:
                 latest_offense_fnd = True
     if isinstance(raw_offenses, list):
