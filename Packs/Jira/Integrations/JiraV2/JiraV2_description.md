@@ -15,5 +15,5 @@ As of June 2019, Basic authentication with passwords for Jira is no longer suppo
 To use OAuth1.0 follow [this tutorial](https://developer.atlassian.com/cloud/jira/platform/jira-rest-api-oauth-authentication/) to get the Access Token. Authorizing using OAuth1.0, requires Access Token, Private Key, and Consumer Key. 
 
 ##### 3. Private Access Token
-To use Private Access Token, follow [this tutorial](https://confluence.atlassian.com/enterprise/using-personal-access-tokens-1026032365.html) to get Access Tokens. Authorizing using PAT requires Access Token only.
+To use a Private Access Token, please follow [this tutorial](https://confluence.atlassian.com/enterprise/using-personal-access-tokens-1026032365.html) to obtain your Access Tokens. Authorizing using a PAT requires the Access Token only.
 Insert the generated token in the Access Token field.
