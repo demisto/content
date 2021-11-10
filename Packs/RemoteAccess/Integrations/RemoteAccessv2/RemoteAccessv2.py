@@ -157,7 +157,7 @@ def execute_shell_command(ssh_client: SSHClient, args: Dict[str, Any]) -> Comman
 
 def copy_to_command(ssh_client: SSHClient, args: Dict[str, Any]) -> CommandResults:
     """
-    Executes a safe copy from Cortex XSSOAR to remote machine.
+    Executes a safe copy from Cortex XSOAR to remote machine.
     Args:
         ssh_client (SSHClient): SSH client to perform the command with.
         args (Dict[str, Any]): Cortex XSOAR arguments.
