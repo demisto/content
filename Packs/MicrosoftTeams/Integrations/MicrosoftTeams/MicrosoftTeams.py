@@ -41,8 +41,15 @@ GRAPH_ENDPOINTS = {
     'Germany (.de)': 'https://graph.microsoft.de',
     'China (.cn)': 'https://microsoftgraph.chinacloudapi.cn'
 }
+BOTFRAMEWORK_ENDPOINT = {
+    'Default - Worldwide (.com)': 'botframework.com',
+    'GCC-High (US)': 'botframework.azure.us',
+    'Department of Defence - DoD (US)': 'botframework.azure.us'
+}
+
 LOGIN_URL: str = LOGIN_ENDPOINTS.get(ENDPOINT, 'https://login.microsoftonline.com')
 GRAPH_BASE_URL: str = GRAPH_ENDPOINTS.get(ENDPOINT, 'https://graph.microsoft.com')
+BOTFRAMEWORK: str = BOTFRAMEWORK_ENDPOINT.get(ENDPOINT, 'botframework.com')
 
 INCIDENT_TYPE: str = PARAMS.get('incidentType', '')
 
@@ -417,12 +424,12 @@ def get_bot_access_token() -> str:
     if access_token and valid_until:
         if epoch_seconds() < valid_until:
             return access_token
-    url: str = f'{LOGIN_URL}/botframework.com/oauth2/v2.0/token'  # TODO: check if to change botframework.com
+    url: str = f'{LOGIN_URL}/{BOTFRAMEWORK}/oauth2/v2.0/token'
     data: dict = {
         'grant_type': 'client_credentials',
         'client_id': BOT_ID,
         'client_secret': BOT_PASSWORD,
-        'scope': 'https://api.botframework.com/.default'  # TODO: check if to change botframework.com
+        'scope': f'https://api.{BOTFRAMEWORK}/.default'
     }
     response: requests.Response = requests.post(
         url,
@@ -631,7 +638,7 @@ def validate_auth_header(headers: dict) -> bool:
 
     decoded_payload: dict = jwt.decode(jwt=jwt_token, options={'verify_signature': False})
     issuer: str = decoded_payload.get('iss', '')
-    if issuer != 'https://api.botframework.com':  # TODO: check if to change botframework.com
+    if issuer != f'https://api.{BOTFRAMEWORK}':
         demisto.info('Authorization header validation - failed to verify issuer')
         return False
 
@@ -652,7 +659,7 @@ def validate_auth_header(headers: dict) -> bool:
     if not key_object:
         # Didn't find requested key in cache, getting new keys
         try:
-            open_id_url: str = 'https://login.botframework.com/v1/.well-known/openidconfiguration'  # TODO: check if to change botframework.com
+            open_id_url: str = f'https://login.{BOTFRAMEWORK}/v1/.well-known/openidconfiguration'
             response: requests.Response = requests.get(open_id_url, verify=USE_SSL)
             if not response.ok:
                 demisto.info(f'Authorization header validation failed to fetch open ID config - {response.reason}')
