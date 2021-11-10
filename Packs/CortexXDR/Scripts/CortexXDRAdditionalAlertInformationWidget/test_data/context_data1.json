@@ -19,7 +19,7 @@
                     ]
                 },
                 {
-                    "Arn": "arn:aws:iam::557395978203:user/bob-test",
+                    "Arn": "arn:aws:iam95978203:user/bob-test",
                     "CreateDate": "2021-02-13T18:40:21",
                     "Path": "/",
                     "UserId": "AIDAYDR3DU7NZYS5A3M3J",
@@ -255,19 +255,19 @@
                 "identity_invoked_by_name": "bob-test",
                 "identity_invoked_by_sub_type": "IAM",
                 "identity_invoked_by_type": "USER",
-                "identity_invoked_by_uuid": "arn:aws:iam::557395978203:user/bob-test",
+                "identity_invoked_by_uuid": "arn:aws:iam95978203:user/bob-test",
                 "identity_name": "bob-test",
                 "identity_orig": {
                     "accessKeyId": "AKIAYDR3DU7NTPVXBKMK",
                     "accountId": "557395978203",
-                    "arn": "arn:aws:iam::557395978203:user/bob-test",
+                    "arn": "arn:aws:iam95978203:user/bob-test",
                     "principalId": "AIDAYDR3DU7NZYS5A3M3J",
                     "type": "IAMUser",
                     "userName": "bob-test"
                 },
                 "identity_sub_type": "IAM",
                 "identity_type": "USER",
-                "identity_uuid": "arn:aws:iam::557395978203:user/bob-test",
+                "identity_uuid": "arn:aws:iam95978203:user/bob-test",
                 "ingestion_time": "2021-08-11T17:06:29.2Z",
                 "log_name": "cloudtrail",
                 "operation_name": "GET",
@@ -275,12 +275,12 @@
                 "operation_status": "PERMISSION_DENIED",
                 "operation_status_orig": "AccessDenied",
                 "operation_status_orig_code": "AccessDenied",
-                "operation_status_reason_provided": "User: arn:aws:iam::557395978203:user/bob-test is not authorized to perform: glue:GetDevEndpoints",
+                "operation_status_reason_provided": "User: arn:aws:iam95978203:user/bob-test is not authorized to perform: glue:GetDevEndpoints",
                 "project": 557395978203,
                 "raw_log": {
                     "awsRegion": "us-east-1",
                     "errorCode": "AccessDenied",
-                    "errorMessage": "User: arn:aws:iam::557395978203:user/bob-test is not authorized to perform: glue:GetDevEndpoints",
+                    "errorMessage": "User: arn:aws:iam95978203:user/bob-test is not authorized to perform: glue:GetDevEndpoints",
                     "eventCategory": "Management",
                     "eventID": "69cbefc7-8133-49c7-94c2-04510c08dd25",
                     "eventName": "GetDevEndpoints",
@@ -299,7 +299,7 @@
                     "userIdentity": {
                         "accessKeyId": "AKIAYDR3DU7NTPVXBKMK",
                         "accountId": "557395978203",
-                        "arn": "arn:aws:iam::557395978203:user/bob-test",
+                        "arn": "arn:aws:iam95978203:user/bob-test",
                         "principalId": "AIDAYDR3DU7NZYS5A3M3J",
                         "type": "IAMUser",
                         "userName": "bob-test"
