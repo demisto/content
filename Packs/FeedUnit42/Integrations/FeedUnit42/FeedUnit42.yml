@@ -1,7 +1,8 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Unit42 Feed
+  id: Unit42 Feed (Deprecated)
   version: -1
+deprecated: true
 configuration:
 - display: API Key
   hidden: false
@@ -89,7 +90,7 @@ configuration:
   name: insecure
   required: false
   type: 8
-description: Unit42 feed of published IOCs, which contains known malicious indicators.
+description: Deprecated. Use Unit42 ATOMs Feed instead. Unit42 feed of published IOCs, which contains known malicious indicators.
 display: Unit42 Feed
 name: Unit42 Feed
 script:
