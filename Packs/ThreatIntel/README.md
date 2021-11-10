@@ -1,4 +1,4 @@
-The Threat Intelligence Report pack gives the user a rich text creation and editing experience. The pack allows the user to publish the report within XSOAR to different roles as well as exporting it to PDF format with a push of a button.
+The Threat Intelligence Reports pack gives the user a rich text creation and editing experience. The pack allows the user to publish the report within XSOAR to different roles as well as exporting it to PDF format with a push of a button.
 
 The pack comes with 5 out of the box report templates for easier use:
 1. Executive Brief
