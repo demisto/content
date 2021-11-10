@@ -430,6 +430,4 @@ inputs:
     For example - you have certain Server Internal ranges unified in a networking group, and you wish to add them to a larger group (such as internal address - which ID was supplied in the "ID" field).
   playbookInputQuery:
 outputs: []
-tests:
-- Cisco Firepower - Test
 fromversion: 6.0.0
