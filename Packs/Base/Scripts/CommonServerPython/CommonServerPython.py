@@ -8203,7 +8203,7 @@ def indicators_value_to_clickable(indicators) -> Dict[str, str]:
         A dictionary. Key is the indicator, and the value is it's url in the server
 
     """
-    if not indicators:
+    if not isinstance(indicators, (list, dict)):
         return {}
     if not isinstance(indicators, list):
         indicators = [indicators]
