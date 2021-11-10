@@ -59,18 +59,7 @@ def censys_search_command():
     }
     raw = send_request('POST', url_suffix, json.dumps(data))
     readable = tableToMarkdown("Search results for {0} in {1} - page {2}".format(query, index, page), raw["results"])
-    results = {'Censys':
-               {
-                   'Search':
-                   {
-                       'metadata': raw['metadata'],
-                       'response': raw['results']
-                   }
-
-               }
-
-               }
-    return_outputs(readable, results)
+    return_outputs(readable, raw)
 
 
 ''' EXECUTION CODE '''
