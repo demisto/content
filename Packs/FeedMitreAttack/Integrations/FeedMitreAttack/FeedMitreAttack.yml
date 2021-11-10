@@ -5,7 +5,7 @@ name: MITRE ATT&CK
 deprecated: true
 display: MITRE ATT&CK Feed (Deprecated)
 category: Data Enrichment & Threat Intelligence
-description: Deprecated. Use MITRE ATT&CK Feed v2MITRE ATT&CK Feed v2 instead.
+description: Deprecated. Use MITRE ATT&CK Feed v2 instead.
 configuration:
 - display: Include external actor references as indicators
   name: includeAPT
