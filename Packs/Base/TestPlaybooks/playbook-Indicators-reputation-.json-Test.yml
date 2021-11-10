@@ -623,10 +623,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 8b074faa-f7fa-4506-889a-dcb223f5dc70
+    taskid: a045dc0e-7cf6-4f15-8df0-51f9f05b4aa3
     type: condition
     task:
-      id: 8b074faa-f7fa-4506-889a-dcb223f5dc70
+      id: a045dc0e-7cf6-4f15-8df0-51f9f05b4aa3
       version: -1
       name: check auto extract domains
       type: condition
@@ -751,14 +751,6 @@ tasks:
           right:
             value:
               simple: www.teöst.com
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${Domain.Name}
-            iscontext: true
-          right:
-            value:
-              simple: test[.]com
       - - operator: containsGeneral
           left:
             value:
