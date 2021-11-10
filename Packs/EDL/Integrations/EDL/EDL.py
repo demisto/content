@@ -133,15 +133,11 @@ def create_new_edl(request_args: RequestArguments) -> str:
     )
     iocs: List[dict] = []
     formatted_iocs: set = set()
-    while len(iocs) <= limit:
-        current_limit = limit - len(formatted_iocs)
-        indicator_searcher.limit = current_limit
+    while not indicator_searcher.is_search_done():
         new_iocs = find_indicators_to_limit(indicator_searcher)
         iocs.extend(new_iocs)
         formatted_iocs = format_indicators(iocs, request_args)
-        # break search if 1) cannot fetch new indicators or 2) iocs was not truncated
-        if indicator_searcher.is_search_done() or len(formatted_iocs) >= len(iocs):
-            break
+        indicator_searcher.limit = limit - len(formatted_iocs)
     return iterable_to_str(list(formatted_iocs)[request_args.offset:limit])
 
 

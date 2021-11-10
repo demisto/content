@@ -186,11 +186,11 @@ def refresh_outbound_context(request_args: RequestArguments, on_demand: bool = F
     limit = request_args.offset + request_args.limit
     indicator_searcher = IndicatorsSearcher(
         query=request_args.query,
-        size=PAGE_SIZE
+        size=PAGE_SIZE,
+        limit=limit
     )
-    while True:
-        indicator_searcher.limit = limit + 100  # fetch more indicators to reduce chances of search after truncation
-        new_iocs = find_indicators_with_limit(indicator_searcher)[request_args.offset:limit]
+    while not indicator_searcher.is_search_done():
+        new_iocs = find_indicators_with_limit(indicator_searcher)
         if not new_iocs:
             break
         iocs += new_iocs
@@ -199,11 +199,8 @@ def refresh_outbound_context(request_args: RequestArguments, on_demand: bool = F
         out_dict, actual_indicator_amount = create_values_for_returned_dict(iocs, request_args)
         if request_args.out_format in [FORMAT_CSV, FORMAT_XSOAR_CSV]:
             actual_indicator_amount = actual_indicator_amount - 1
-        # break search if 1) cannot fetch new indicators or 2) iocs was not truncated
-        if indicator_searcher.is_search_done() or actual_indicator_amount >= len(iocs):
-            break
         # advance search window with gap size
-        limit += (limit - actual_indicator_amount)
+        indicator_searcher.limit = limit - actual_indicator_amount
 
     if request_args.out_format == FORMAT_JSON:
         out_dict[CTX_MIMETYPE_KEY] = MIMETYPE_JSON
