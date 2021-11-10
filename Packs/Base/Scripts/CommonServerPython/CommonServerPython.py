@@ -8193,7 +8193,18 @@ def get_tenant_account_name():
 
     return account_name
 
-def indicators_value_to_clickable(indicators):
+def indicators_value_to_clickable(indicators) -> Dict[str, str]:
+    """
+    Function to get the indicator url link for indicators
+    Args:
+        indicators: An indicator or a list of indicators
+
+    Returns:
+        A dictionary. Key is the indicator, and the value is it's url in the server
+
+    """
+    if not indicators:
+        return {}
     if not isinstance(indicators, list):
         indicators = [indicators]
     res = {}
@@ -8203,6 +8214,8 @@ def indicators_value_to_clickable(indicators):
         for inidicator_data in ioc_res.get('iocs', []):
             indicator = inidicator_data.get('value')
             indicator_id = inidicator_data.get('id')
+            if not indicator or not indicator_id:
+                raise DemistoException('The response of indicator searcher is invalid')
             indicator_url = os.path.join('#', 'indicator', indicator_id)
             res[indicator] = f'[{indicator}]({indicator_url})'
     return res
