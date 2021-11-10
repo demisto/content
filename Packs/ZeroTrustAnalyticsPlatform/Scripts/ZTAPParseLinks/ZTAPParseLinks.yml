@@ -1,0 +1,20 @@
+args: []
+comment: |-
+  Parses ZTAP external links to display in a dynamic table.
+commonfields:
+  id: ZTAPParseLinks
+  version: -1
+enabled: false
+name: ZTAPParseLinks
+script: '-'
+system: false
+tags:
+- ztap
+- dynamic-section
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.9.7.24076
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
