@@ -20,7 +20,7 @@ def get_additonal_info() -> List[Dict]:
                'Vendor': alert_event.get('vendor'),
                'Provider': alert_event.get('cloud_provider'),
                'Log Name': alert_event.get('log_name'),
-               'Event Type': alert_event.get('raw_log').get('eventType'),
+               'Event Type': demisto.get(alert_event, 'raw_log.eventType'),
                'Caller IP': alert_event.get('caller_ip'),
                'Caller IP Geo Location': alert_event.get('caller_ip_geolocation'),
                'Resource Type': alert_event.get('resource_type'),
