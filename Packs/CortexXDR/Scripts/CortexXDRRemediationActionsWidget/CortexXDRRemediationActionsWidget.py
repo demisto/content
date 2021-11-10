@@ -36,7 +36,7 @@ def main():
     try:
         result = get_remediation_info()
         command_result = CommandResults(
-            readable_output=tableToMarkdown('Remediation Actions Information', result, headers=list(res.keys())))
+            readable_output=tableToMarkdown('Remediation Actions Information', result, headers=list(result.keys())))
         return_results(command_result)
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback

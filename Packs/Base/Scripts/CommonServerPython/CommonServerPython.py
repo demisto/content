@@ -8204,5 +8204,5 @@ def indicators_value_to_clickable(indicators):
             indicator = inidicator_data.get('value')
             indicator_id = inidicator_data.get('id')
             indicator_url = os.path.join('#', 'indicator', indicator_id)
-            res[indicator] = indicator_url
+            res[indicator] = f'[{indicator}]({indicator_url})'
     return res
