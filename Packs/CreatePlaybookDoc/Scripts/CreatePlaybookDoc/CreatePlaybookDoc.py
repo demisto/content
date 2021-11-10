@@ -21,8 +21,6 @@ from docx.shared import Inches
 # Requirements: This automation requires "Demisto REST API" integration enabled and connected to the XSOAR itself.
 #               Automation uses it to read the objects of the playbook.
 
-
-
 retVal: dict = {}
 DEMISTO_PLAYBOOKS_PATH = "/playbook/search"
 document = Document()
@@ -71,7 +69,7 @@ def StartParagraph(Name, Description):
         Description = ""
 
     Paragraph = document.add_paragraph(Description)
-    Paragraph.paragraph_format.left_indent = Inches(0.25) # mypy: ignore
+    Paragraph.paragraph_format.left_indent = Inches(0.25)   # mypy: ignore
     return
 
 
@@ -79,8 +77,8 @@ def StartTable():
 
     global Table
     Table = document.add_table(rows=1, cols=2)
-    Table.style = 'Light Grid Accent 1' # mypy: ignore
-    hdr_cells = Table.rows[0].cells # mypy: ignore
+    Table.style = 'Light Grid Accent 1'   # mypy: ignore
+    hdr_cells = Table.rows[0].cells   # mypy: ignore
     hdr_cells[0].text = 'Name'
     hdr_cells[1].text = 'Description'
 
@@ -152,7 +150,7 @@ def TraverseTasks(TaskID):
                 if (Table == ""):
                     StartTable()
 
-                row_cells = Table.add_row().cells # mypy: ignore
+                row_cells = Table.add_row().cells   # mypy: ignore
                 row_cells[0].text = Name
                 row_cells[1].text = Description
 
@@ -177,7 +175,7 @@ def TraverseTasks(TaskID):
 
                     else:
                         if (OutPutType == 'TABLE'):
-                            row_cells = Table.add_row().cells # mypy: ignore
+                            row_cells = Table.add_row().cells   # mypy: ignore
                             row_cells[0].text = NameOfNextTask
                         else:
                             StartParagraph(NameOfNextTask, "")
@@ -205,7 +203,7 @@ def TraverseTasks(TaskID):
 
                         else:
                             if (OutPutType == 'TABLE'):
-                                row_cells = Table.add_row().cells # mypy: ignore
+                                row_cells = Table.add_row().cells   # mypy: ignore
                                 row_cells[0].text = NameOfNextTask
                             else:
                                 StartParagraph(NameOfNextTask, "")
@@ -263,7 +261,7 @@ def main():
         try:
             assert(TaskIDsInLogic[i])
 
-        except Exception as exc:
+        except Exception:
             break
 
     if (OutPutType == 'TABLE'):
