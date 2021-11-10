@@ -30,7 +30,7 @@ contentitemexportablefields:
     fromServerVersion: "6.0.0"
 dockerimage: demisto/sane-doc-reports:1.0.0.24118
 enabled: true
-name: create-playbook-doc
+name: CreatePlbkDoc
 runas: DBotWeakRole
 runonce: false
 script: ''
