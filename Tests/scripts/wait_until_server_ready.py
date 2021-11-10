@@ -82,7 +82,7 @@ def main():
     global SETUP_TIMEOUT
     instance_name_to_wait_on = sys.argv[1]
 
-    ready_ami_list = []
+    ready_ami_list: list = []
     env_results_path = os.path.join(ARTIFACTS_FOLDER, 'env_results.json')
     with open(env_results_path, 'r') as json_file:
         env_results = json.load(json_file)

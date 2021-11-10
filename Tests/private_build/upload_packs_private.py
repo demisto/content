@@ -125,7 +125,7 @@ def add_existing_private_packs_from_index(metadata_files, changed_pack_id):
     Returns:
         private_packs (list): The modified list of private packs, including the added pack.
     """
-    private_packs = []
+    private_packs: list = []
     for metadata_file_path in metadata_files:
         # Adding all the existing private packs, already found in the index
         logging.info(f'Getting existing metadata files from the index, in path: {metadata_file_path}')

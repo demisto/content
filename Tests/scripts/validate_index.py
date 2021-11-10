@@ -5,7 +5,6 @@ Validate no missing ids are found and that all packs have a non negative price.
 Validate commit hash is in master's history.
 """
 import argparse
-import logging
 import sys
 import os
 from typing import Tuple
@@ -14,6 +13,7 @@ from Tests.Marketplace.marketplace_services import init_storage_client, load_jso
 from Tests.Marketplace.upload_packs import download_and_extract_index
 from Tests.Marketplace.marketplace_constants import GCPConfig, CONTENT_ROOT_PATH
 from Tests.scripts.utils.log_util import install_logging
+from Tests.scripts.utils import logging_wrapper as logging
 from pprint import pformat
 
 MANDATORY_PREMIUM_PACKS_PATH = "Tests/Marketplace/mandatory_premium_packs.json"
@@ -46,7 +46,7 @@ def log_message_if_statement(statement: bool, error_message: str, success_messag
     if not statement:
         logging.error(error_message)
     elif success_message:
-        logging.success(success_message)  # type: ignore  # pylint: disable=no-member
+        logging.success(success_message)
     return statement
 
 

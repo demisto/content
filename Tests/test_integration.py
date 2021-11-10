@@ -458,7 +458,7 @@ def check_integration(client, server_url, demisto_user, demisto_pass, integratio
                       logging_module=logging, options=None, is_mock_run=False):
     options = options if options is not None else {}
     # create integrations instances
-    module_instances = []
+    module_instances: list = []
 
     for integration in integrations:
         integration_name = integration.get('name', None)

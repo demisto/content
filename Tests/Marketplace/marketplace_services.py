@@ -398,7 +398,7 @@ class Pack(object):
             list: collection of integration display name and it's path in gcs.
 
         """
-        dependencies_integration_images_dict = {}
+        dependencies_integration_images_dict: dict = {}
         additional_dependencies_data = {k: v for k, v in dependencies_data.items() if k in display_dependencies_images}
 
         for dependency_data in additional_dependencies_data.values():
@@ -1466,7 +1466,7 @@ class Pack(object):
             .
         """
         task_status = False
-        content_items_result = {}
+        content_items_result: dict = {}
 
         try:
             # the format is defined in issue #19786, may change in the future

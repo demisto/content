@@ -25,4 +25,4 @@ if [[ $errors -ne 0 ]]; then
   exit 1
 fi
 
-echo "Finished flake8 run, no errors was found"
+echo "Finished flake8 run - no errors were found"

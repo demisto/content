@@ -377,9 +377,9 @@ def check_if_fetch_incidents_is_tested(missing_ids, integration_ids, id_set, con
 
 
 def find_tests_and_content_packs_for_modified_files(modified_files, conf=deepcopy(CONF), id_set=deepcopy(ID_SET)):
-    script_names = set([])
-    playbook_names = set([])
-    integration_ids = set([])
+    script_names: set = set([])
+    playbook_names: set = set([])
+    integration_ids: set = set([])
 
     tests_set, caught_scripts, caught_playbooks, packs_to_install = collect_changed_ids(
         integration_ids, playbook_names, script_names, modified_files, id_set)
@@ -500,11 +500,12 @@ def get_api_module_integrations(changed_api_modules, integration_set):
 
 
 def collect_changed_ids(integration_ids, playbook_names, script_names, modified_files, id_set=deepcopy(ID_SET)):
-    tests_set = set([])
-    updated_script_names = set([])
-    updated_playbook_names = set([])
-    catched_scripts, catched_playbooks = set([]), set([])
-    changed_api_modules = set([])
+    tests_set: set = set([])
+    updated_script_names: set = set([])
+    updated_playbook_names: set = set([])
+    catched_scripts: set = set([])
+    catched_playbooks: set = set([])
+    changed_api_modules: set = set([])
 
     script_to_version = {}
     playbook_to_version = {}

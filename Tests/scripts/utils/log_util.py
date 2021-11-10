@@ -1,5 +1,6 @@
 # import logging
-from Tests.scripts.utils import logging_wrapper as logging
+#from Tests.scripts.utils import logging_wrapper as logging
+import logging
 import os
 import sys
 
@@ -65,7 +66,7 @@ def _add_logging_level(level_name: str, level_num: int, method_name: str = None)
     setattr(logging, method_name, logToRoot)
 
 
-def install_logging(log_file_name: str, include_process_name=False) -> str:
+def install_logging(log_file_name: str, include_process_name=False, logger=logging) -> str:
     """
     This method install the logging mechanism so that info level logs will be sent to the console and debug level logs
     will be sent to the log_file_name only.
@@ -73,40 +74,42 @@ def install_logging(log_file_name: str, include_process_name=False) -> str:
         include_process_name: Whether to include the process name in the logs format, Should be used when
             using multiprocessing
         log_file_name: The name of the file in which the debug logs will be saved
+        logger: the logger to be configured, default are the logging module
     """
-    if not hasattr(logging, 'success'):
+    if not hasattr(logger, 'success'):
         _add_logging_level('SUCCESS', 25)
     logging_format = LOGGING_FORMAT
     if include_process_name:
         logging_format = '[%(asctime)s] - [%(processName)s] - [%(threadName)s] - [%(levelname)s] - %(message)s'
     formatter = coloredlogs.ColoredFormatter(fmt=logging_format,
                                              level_styles=LEVEL_STYLES)
-    ch = logging.StreamHandler(sys.stdout)
+    ch = logger.StreamHandler(sys.stdout)
     ch.setFormatter(formatter)
     log_file_path = os.path.join(ARTIFACTS_PATH, 'logs', log_file_name) if os.path.exists(
         os.path.join(ARTIFACTS_PATH, 'logs')) else os.path.join(ARTIFACTS_PATH, log_file_name)
-    fh = logging.FileHandler(log_file_path)
+    fh = logger.FileHandler(log_file_path)
     fh.setFormatter(formatter)
-    ch.setLevel(logging.INFO)
-    fh.setLevel(logging.DEBUG)
-    configure_root_logger(ch, fh)
+    ch.setLevel(logger.INFO)
+    fh.setLevel(logger.DEBUG)
+    configure_root_logger(ch, fh, logger)
     return log_file_path
 
 
-def configure_root_logger(ch: logging.StreamHandler, fh: logging.FileHandler) -> None:
+def configure_root_logger(ch: logging.StreamHandler, fh: logging.FileHandler, logger=logging) -> None:
     """
     - Configures the root logger with DEBUG level
     - Removes existing handlers from the root logger and adds the console handler and the file handler.
     Args:
         ch: StreamHandler to add to the root logger
         fh: FileHandler to add to the root logger
+        logger: The logger, default are logging module
     """
-    logging.root.setLevel(logging.DEBUG)
-    for h in logging.root.handlers[:]:
-        logging.root.removeHandler(h)
+    logger.root.setLevel(logger.DEBUG)
+    for h in logger.root.handlers[:]:
+        logger.root.removeHandler(h)
         h.close()
-    logging.root.addHandler(ch)
-    logging.root.addHandler(fh)
+    logger.root.addHandler(ch)
+    logger.root.addHandler(fh)
 
 
 def install_simple_logging():

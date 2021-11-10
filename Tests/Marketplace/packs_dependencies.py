@@ -205,7 +205,7 @@ def main():
     id_set_path = option.id_set_path
     id_set = get_id_set(id_set_path)
 
-    pack_dependencies_result = {}
+    pack_dependencies_result: dict = {}
 
     logging.info("Selecting packs for dependencies calculation")
     packs = select_packs_for_calculation()

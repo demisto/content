@@ -18,15 +18,5 @@ if [[ $errors -ne 0 ]]; then
   exit 1
 fi
 
-#pylint_out=$(python3 -m pylint --disable=$pylint_disabled_errors 2>&1 $*)
-#pylint_status=$?
-#
-#if [[ $pylint_status -ne 0 ]]; then
-#  echo "Finished pylint run, the following errors was found:"
-#  echo -e "$pylint_out" | sort | uniq | grep ": [A-Z][0-9]*: "
-#  if [[ $? -eq 0 ]]; then
-#        exit 1 # some errors founded by grep
-#  fi
-#fi
 
-echo "Finished pylint run no errors was found"
+echo "Finished pylint run - no errors were found"

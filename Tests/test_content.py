@@ -397,8 +397,8 @@ def get_json_file(path):
 
 
 def initialize_queue_and_executed_tests_set(tests):
-    tests_queue = Queue()
-    already_executed_test_playbooks = set()
+    tests_queue: Queue = Queue()
+    already_executed_test_playbooks: set = set()
     for t in tests:
         tests_queue.put(t)
     return already_executed_test_playbooks, tests_queue
