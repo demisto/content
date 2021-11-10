@@ -17,7 +17,6 @@ configuration:
   - name: proxy
     display: Use system proxy settings
     required: false
-    defaultvalue: "true"
     type: 8
     additionalinfo: null
   - name: feed
