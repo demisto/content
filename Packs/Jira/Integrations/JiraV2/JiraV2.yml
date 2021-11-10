@@ -20,7 +20,7 @@ configuration:
   required: false
   type: 4
 - defaultvalue: OauthKey
-  additionalinfo: If other required field are not provided (both Access Token and Private Key), will be ignored.
+  additionalinfo: Will be ignored if other required fields are not provided (for example both the Access Token and the Private Key).
   display: Consumer key (OAuth 1.0)
   name: consumerKey
   required: false
