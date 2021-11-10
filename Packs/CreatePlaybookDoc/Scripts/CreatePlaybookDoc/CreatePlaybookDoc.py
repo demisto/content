@@ -263,7 +263,7 @@ def main():
         try:
             assert(TaskIDsInLogic[i])
 
-        except:
+        except Exception as exc:
             break
 
     if (OutPutType == 'TABLE'):
