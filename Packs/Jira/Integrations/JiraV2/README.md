@@ -37,7 +37,7 @@ For more information about JQL syntax, go to https://www.atlassian.com/software/
     | Username (Basic Authentication) |  | False |
     | Password (Deprecated - Use API token) |  | False |
     | API token |  | False |
-    | Consumer key (OAuth 1.0) | If other required field are not provided (both Access Token and Private Key), will be ignored. | False |
+    | Consumer key (OAuth 1.0) | Will be ignored if other required fields are not provided (for example both the Access Token and the Private Key). | False |
     | Access token | Used for both OAuth 1.0 and Personal Access Token authentication methods. | False |
     | Private key (PKCS8 format) |  | False |
     | Query (in JQL) for fetching incidents |  | False |
