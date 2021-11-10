@@ -39,4 +39,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![TIM - Process Domain Registrant With Whois](Insert the link to your image here)
+![TIM - Process Domain Registrant With Whois](../doc_files/TIM_-_Process_Domain_Registrant_With_Whois.png)
