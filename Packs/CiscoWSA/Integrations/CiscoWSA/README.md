@@ -1,5 +1,5 @@
 Cisco WSA
-This integration was integrated and tested with version xx of WSA-Testing
+This integration was integrated and tested with version vSeries-100 of Cisco-WSA
 
 ## Configure WSA-Testing on Cortex XSOAR
 
@@ -9,9 +9,9 @@ This integration was integrated and tested with version xx of WSA-Testing
 
     | **Parameter** | **Required** |
     | --- | --- |
-    |  | True |
-    |  | True |
-    |  | False |
+    | BASE_URL | True |
+    | API_KEY | True |
+    | PORT | False |
     | Trust any certificate (not secure) | False |
     | Use system proxy settings | False |
 
