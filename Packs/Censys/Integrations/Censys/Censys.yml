@@ -65,13 +65,6 @@ script:
       name: page
     description: Searches for an attribute within the specified index.
     name: cen-search
-    outputs:
-    - contextPath: Censys.Search.response.results
-      description: Censys Search Results
-    - contextPath: Censys.metadata.pages
-      description: Censys Total Pages encountered
-    - contextPath: Censys.metadata.page
-      description: Current Search Page
   dockerimage: demisto/python:2.7.18.24066
   runonce: false
   script: ''
