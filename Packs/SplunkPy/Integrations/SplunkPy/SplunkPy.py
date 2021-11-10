@@ -1382,6 +1382,52 @@ def get_current_splunk_time(splunk_service):
             return item["clock"]
     raise ValueError('Error: Could not fetch Splunk time')
 
+def quote_group(text):
+    """ A function that groups quote values by checking they are even and end with ", """
+
+    def clean(t):
+        return t.strip().rstrip(',')
+
+    # Return strings that aren't key-valued, as is
+    if len(text.strip()) < 3 or "=" not in text:
+        return [text]
+
+    # Some of the text doesn't end with a comma so we add it
+    if not text.rstrip().endswith(","):
+        text = text.rstrip()
+        text += ","
+
+    # Fix elements that aren't key=value (`123, a="123"` => `a="123"`)
+    text = re.sub(r"(^|,)([^=]+),", ",", text).lstrip(",")
+
+    # Wrap all key values without a quote (`a=123` => `a="123"`)
+    text = re.sub(r'([^\"\,]+?=)([^\"]+?)(,|\")', r'\1"\2"\3', text)
+    # text = re.sub(r'(\S+\s*=)([^\"]+?(?=,))', r'\1"\2",', text)
+
+    # The basic idea here is to check that every key value ends with a `",`
+    # Assuming that there are even number of quotes before (some values can have
+    # deep nested quotes).
+    quote_counter = 0
+    rindex = 0
+    lindex = 0
+    groups = []
+    while rindex < len(text):
+        if text[rindex] == '"':
+            quote_counter += 1
+        if rindex > 1 and text[rindex - 1] == '"' and text[
+            rindex] == "," and quote_counter % 2 == 0:
+            # Clean the match group and append to groups
+            groups.append(clean(text[lindex:rindex]))
+            lindex = rindex + 1
+            rindex += 1
+            quote_counter = 0
+        rindex += 1
+
+    # Sometimes there aren't any quotes in the string so we cann just append it
+    if len(groups) == 0:
+        groups.append(clean(text))
+    return groups
+
 
 def rawToDict(raw):
     result = {}  # type: Dict[str, str]
@@ -1408,9 +1454,14 @@ def rawToDict(raw):
             # search for the pattern: `key="value", `
             # (the double quotes are optional)
             # we append `, ` to the end of the string to catch the last value
-            raw_response = re.findall(r'(\S+=("?)[\S\s]+?\2), ', raw + ', ')
-            for key_val, _ in raw_response:
-                key_value = key_val.replace('"', '').strip()
+            # raw_response = re.findall(r'(\S+=("?)[\S\s]+?\2), ', raw + ', ')
+            # raw_response = re.findall(r'[A-z\_]+\s*=.+?(?=([\s,]*)[A-z\_]+\s*=)', raw + ', ')
+            groups = quote_group(raw)
+            for g in groups:
+                key_value = g.replace('"', '').strip()
+                if key_value == '':
+                  continue
+
                 if '=' in key_value:
                     key_and_val = key_value.split('=', 1)
                     result[key_and_val[0]] = key_and_val[1]
