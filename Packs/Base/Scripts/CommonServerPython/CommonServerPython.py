@@ -8196,12 +8196,12 @@ def get_tenant_account_name():
 def indicators_value_to_clickable(indicators):
     """
     Function to get the indicator url link for indicators
-    Args:
-        indicators:
-            An indicator or a list of indicators
-            Supported types: List[str] + str
-    Returns:
-        A dictionary. Key is the indicator, and the value is it's url in the server
+
+    :type indicators: ``dict`` + List[dict]
+    :param indicators: An indicator or a list of indicators
+
+    :rtype: ``dict``
+    :return: Key is the indicator, and the value is it's url in the server
 
     """
     if not isinstance(indicators, (list, dict)):
