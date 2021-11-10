@@ -4968,7 +4968,7 @@ class TestIndicatorsSearcher:
         search_indicators_obj_search_after.search_indicators_by_version()
 
         assert search_indicators_obj_search_after._search_after_param is None
-        assert search_indicators_obj_search_after._page == 17
+        assert search_indicators_obj_search_after._page == 18
 
     def test_iterator__pages(self, mocker):
         """
@@ -5035,7 +5035,7 @@ class TestIndicatorsSearcher:
         for res in search_indicators:
             results.append(res)
         assert len(results) == 0
-        assert search_indicators.page == 18
+        assert search_indicators.page == 19
 
     def test_iterator__research_flow(self, mocker):
         from CommonServerPython import IndicatorsSearcher

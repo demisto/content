@@ -8075,7 +8075,7 @@ class IndicatorsSearcher:
             page=self.page if not self._can_use_search_after else None
         )
         res = demisto.searchIndicators(**search_args)
-        if isinstance(self._page, int) and len(res.get('iocs') or []) > 0:
+        if isinstance(self._page, int):
             self._page += 1  # advance pages
         self._search_after_param = res.get(self.SEARCH_AFTER_TITLE)
         self._total = res.get('total')
