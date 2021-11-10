@@ -16,4 +16,4 @@ To use OAuth1.0 follow [this tutorial](https://developer.atlassian.com/cloud/jir
 
 ##### 3. Private Access Token
 To use a Private Access Token, please follow [this tutorial](https://confluence.atlassian.com/enterprise/using-personal-access-tokens-1026032365.html) to obtain your Access Tokens. Authorizing using a PAT requires the Access Token only.
-Insert the generated token in the Access Token field.
+Insert the generated token in the `Access Token` field.
