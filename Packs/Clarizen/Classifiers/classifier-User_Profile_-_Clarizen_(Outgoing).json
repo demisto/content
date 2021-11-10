@@ -30,7 +30,7 @@
 					"complex": null,
 					"simple": "mobilephone"
 				},
-				"Username": {
+				"UserName": {
 					"complex": null,
 					"simple": "username"
 				},
@@ -57,6 +57,10 @@
 				"u_clarizen_company": {
 					"complex": null,
 					"simple": "C_Company"
+				},
+				"DisplayName": {
+					"complex": null,
+					"simple": "displayname"
 				}
 			}
 		},
@@ -87,7 +91,7 @@
 					"complex": null,
 					"simple": "mobilephone"
 				},
-				"Username": {
+				"UserName": {
 					"complex": null,
 					"simple": "username"
 				},
@@ -110,6 +114,10 @@
 				"u_clarizen_company": {
 					"complex": null,
 					"simple": "C_Company"
+				},
+				"DisplayName": {
+					"complex": null,
+					"simple": "displayname"
 				}
 			}
 		}
