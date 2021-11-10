@@ -22,7 +22,6 @@ configuration:
   - name: feed
     display: Fetch indicators
     required: false
-    defaultvalue: "true"
     type: 8
     additionalinfo: null
 description: This integration provides API access to the SecurityTrails platform.
