@@ -118,9 +118,9 @@ def options_handler():
                         required=False)
 
     parser.add_argument('-d', '--destination_blob_dir',
-                        default='code-coverage',
+                        default='code-coverage-reports',
                         help=("Blob Name in Google Cloud Storage. "
-                              "Default value is code-coverage."),
+                              "Default value is code-coverage-reports."),
                         required=False)
 
     return parser.parse_args()
