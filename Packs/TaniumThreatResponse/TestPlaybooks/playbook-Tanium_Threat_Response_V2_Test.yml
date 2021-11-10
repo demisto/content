@@ -1544,11 +1544,6 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: TaniumEvent.exitCode
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
               simple: TaniumEvent.createTime
             iscontext: true
       - - operator: isNotEmpty
@@ -1797,57 +1792,12 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Tanium.ProcessInfo.dnsEventsCount
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.ProcessInfo.driverEventsCount
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.ProcessInfo.endTime
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.ProcessInfo.endTimeRaw
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.ProcessInfo.exitCode
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.ProcessInfo.fileEventsCount
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
               simple: Tanium.ProcessInfo.groupName
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Tanium.ProcessInfo.hashTypeName
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
               simple: Tanium.ProcessInfo.id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.ProcessInfo.imageEventsCount
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.ProcessInfo.networkEventsCount
             iscontext: true
       - - operator: isNotEmpty
           left:
@@ -1862,37 +1812,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Tanium.ProcessInfo.processEventsCount
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.ProcessInfo.processHash
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.ProcessInfo.processPath
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
               simple: Tanium.ProcessInfo.processTableId
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.ProcessInfo.registryEventsCount
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.ProcessInfo.securityEventsCount
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.ProcessInfo.uniqueProcessId
             iscontext: true
       - - operator: isNotEmpty
           left:
@@ -2123,21 +2043,6 @@ tasks:
           left:
             value:
               simple: Tanium.ProcessChildren.driverEventsCount
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.ProcessChildren.endTime
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.ProcessChildren.endTimeRaw
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.ProcessChildren.exitCode
             iscontext: true
       - - operator: isNotEmpty
           left:
@@ -2503,16 +2408,6 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Tanium.ProcessTree.endTime
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.ProcessTree.endTimeRaw
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
               simple: Tanium.ProcessTree.fileEventsCount
             iscontext: true
       - - operator: isNotEmpty
@@ -2690,55 +2585,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "50"
+      - "51"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 2312.5,
           "y": 3345
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "50":
-    id: "50"
-    taskid: 9d9b0ae7-c5de-4789-8678-4ae9bbeb4ff5
-    type: condition
-    task:
-      id: 9d9b0ae7-c5de-4789-8678-4ae9bbeb4ff5
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "51"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.EvidenceProperties.type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Tanium.EvidenceProperties.value
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 2312.5,
-          "y": 3520
         }
       }
     note: false

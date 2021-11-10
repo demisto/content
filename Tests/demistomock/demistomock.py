@@ -1076,7 +1076,7 @@ def mapObject(obj, mapper, mapper_type):
       dict: the obj after mapping
 
     """
-    return {}
+    return obj
 
 
 def getModules():
@@ -1142,3 +1142,7 @@ def parentEntry():
 
     """
     return {}
+
+
+def getLicenseCustomField(api_key):
+    return api_key

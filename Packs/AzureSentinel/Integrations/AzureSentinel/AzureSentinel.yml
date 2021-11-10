@@ -7,7 +7,7 @@ configuration:
   defaultvalue: https://management.azure.com
   hidden: false
   name: server_url
-  required: false
+  required: true
   type: 0
 - display: Tenant ID
   name: tenant_id
@@ -681,6 +681,23 @@ script:
     - contextPath: AzureSentinel.IncidentComment.CreatedTimeUTC
       description: The date and time that the incident comment was created.
       type: Date
+  - arguments:
+    - default: false
+      description: The incident ID.
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    - default: false
+      description: The comment ID.
+      isArray: false
+      name: comment_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Deletes a comment from incident in Azure Sentinel.
+    execution: false
+    name: azure-sentinel-incident-delete-comment
   - arguments:
     - default: false
       description: The incident ID.
