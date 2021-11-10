@@ -658,6 +658,7 @@ tasks:
         simple: headername
       unpack_nested_elements:
         simple: "false"
+    reputationcalc: 2
     continueonerror: true
     separatecontext: false
     view: |-
@@ -1412,6 +1413,7 @@ tasks:
         simple: headername
       unpack_nested_elements:
         simple: "true"
+    reputationcalc: 2
     continueonerror: true
     separatecontext: false
     view: |-
@@ -1769,4 +1771,4 @@ outputs:
   type: string
 tests:
 - Process Email - Generic - Test - Incident Starter
-fromversion: 6.1.0
+fromversion: 6.0.0
