@@ -50,7 +50,7 @@ Run command on remote system with ssh
 
 
 #### Command Example
-```!remote-access-ssh command=`echo test````
+```!remote-access-ssh command="echo test"```
 
 #### Context Example
 ```json
