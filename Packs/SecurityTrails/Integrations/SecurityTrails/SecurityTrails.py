@@ -169,7 +169,7 @@ class Client(BaseClient):
                 ok_codes=(200, 403)
             )
 
-    def sql(self, sql: str = None, timeout: int = 20):
+    def sql(self, sql: dict = None, timeout: int = 20):
         return self._http_request(
             'POST',
             'query/scroll',
