@@ -231,7 +231,7 @@ Creates a new issue in Jira.
 
 
 ##### Command Example
-```!jira-create-issue summary="test SOC issue26" issueTypeId=10008 projectKey=DEM issueJson=\`{"fields":{"issuetype":{"name":"Request for Action"}}}```
+```!jira-create-issue summary="test SOC issue26" issueTypeId=10008 projectKey=DEM issueJson=`{"fields":{"issuetype":{"name":"Request for Action"}}}` ```
 
 ##### Context Example
 ```
@@ -393,32 +393,32 @@ Modifies an issue in Jira.
 | Ticket.Status | Unknown | The status of the ticket. | 
 
 
-##### Command Example
-```!jira-edit-issue issueId=15572 customFields=Type_of_incident:Malware(Virus,_Ransomware) description="Just a description"```
+#### Command Example
+```!jira-edit-issue issueId=DEM-5415 issueJson=`{"fields":{"description":"testing3"}}` ```
 
-##### Context Example
-```
+#### Context Example
+```json
 {
-    "Ticket": [
-        {
-            "Status": "To Do", 
-            "Creator": "{creator}", 
-            "Summary": "Test issue23", 
-            "Assignee": "{assignee}", 
-            "attachment": "test_file.yml", 
-            "Key": "DEM-5415", 
-            "Id": "15572"
-        }
-    ]
+    "Ticket": {
+        "Assignee": "{assignee}",
+        "Creator": "{creator}",
+        "Id": "10044",
+        "Key": "DEM-5415",
+        "Status": "To Do",
+        "Summary": "Phishing Incident Declared",
+        "attachment": ""
+    }
 }
 ```
-##### Human Readable Output
+
+#### Human Readable Output
+
 ### jira-edit-issue
 |assignee|attachment|created|creator|description|duedate|id|issueType|key|labels|priority|project|reporter|status|summary|ticket_link|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| {assignee} | test_file.yml | 2020-01-19T12:34:13.784+0200 | {creator} | Just a description |  | 15572 | Request for Action | DEM-5415 |  | Medium | demistodev | {reporter} | To Do | Test issue23 | https://demistodev.atlassian.net/rest/api/latest/issue/15572 |
-Issue #15572 was updated successfully
+| {assignee} |  | 2021-06-02T10:45:15.838-0400 | {creator} | testing3 |  | 10044 | A small, distinct piece of work. | DEM-5415 |  | Medium | SomethingGreat | {reporter} | To Do | Phishing Incident Declared | https://somejira.atlassian.net/rest/api/latest/issue/10044 |
 
+Issue #DEM-5415 was updated successfully
 
 ### jira-get-comments
 ***
