@@ -73,7 +73,7 @@ def get_available_ciphers() -> Set[str]:
 
 def get_available_key_algorithms() -> Set[str]:
     """
-    Gets a set of the available ciphers supported by server.
+    Gets a set of the available key algorithms supported by server.
     Returns:
         (Set[str]): Set of supported ciphers.
     """
