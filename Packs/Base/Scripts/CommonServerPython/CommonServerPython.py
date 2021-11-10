@@ -2454,7 +2454,7 @@ class Common(object):
                 raise TypeError('indicator_type must be of type DBotScoreType enum')
 
             if not Common.DBotScore.is_valid_score(score):
-                raise TypeError('indicator_type must be of type DBotScore enum')
+                raise TypeError('indicator `score` must be of type DBotScore enum')
 
             if reliability and not DBotScoreReliability.is_valid_type(reliability):
                 raise TypeError('reliability must be of type DBotScoreReliability enum')
@@ -7187,7 +7187,7 @@ if 'requests' in sys.modules:
                     if resp_type == 'content':
                         return res.content
                     if resp_type == 'xml':
-                        ET.parse(res.text)
+                        ET.fromstring(res.text)
                     if resp_type == 'response':
                         return res
                     return res
