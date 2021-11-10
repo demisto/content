@@ -43,7 +43,7 @@ script:
   commands:
   - arguments:
     - default: false
-      description: Command to run on remote machine.
+      description: A command to run on the remote machine.
       isArray: false
       name: command
       required: true
