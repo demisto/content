@@ -8209,7 +8209,7 @@ def indicators_value_to_clickable(indicators):
     if not isinstance(indicators, list):
         indicators = [indicators]
     res = {}
-    query =  ' or '.join([f'value:{indicator}' for indicator in indicators])
+    query = ' or '.join(['value:{indicator}'.format(indicator=indicator) for indicator in indicators])
     indicator_searcher = IndicatorsSearcher(query=query)
     for ioc_res in indicator_searcher:
         for inidicator_data in ioc_res.get('iocs', []):
@@ -8218,5 +8218,5 @@ def indicators_value_to_clickable(indicators):
             if not indicator or not indicator_id:
                 raise DemistoException('The response of indicator searcher is invalid')
             indicator_url = os.path.join('#', 'indicator', indicator_id)
-            res[indicator] = f'[{indicator}]({indicator_url})'
+            res[indicator] = '[{indicator}]({indicator_url})'.format(indicator=indicator, indicator_url=indicator_url)
     return res
