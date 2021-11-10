@@ -1,4 +1,4 @@
-This playbook is responsible for setting up the Rapid Breach Response Incident Info tab.
+This playbook is responsible for setting up the Rapid Breach Response Incident Info tab in the layout.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
