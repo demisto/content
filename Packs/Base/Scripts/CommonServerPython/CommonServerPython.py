@@ -8197,8 +8197,9 @@ def indicators_value_to_clickable(indicators):
     """
     Function to get the indicator url link for indicators
     Args:
-        indicators: An indicator or a list of indicators
-
+        indicators:
+            An indicator or a list of indicators
+            Supported types: List[str] + str
     Returns:
         A dictionary. Key is the indicator, and the value is it's url in the server
 
