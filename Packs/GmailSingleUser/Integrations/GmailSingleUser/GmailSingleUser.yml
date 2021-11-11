@@ -81,7 +81,6 @@ configuration:
   - name: isFetch
     display: Fetch incidents
     required: false
-    defaultvalue: "true"
     type: 8
     additionalinfo: null
   - name: fetch_time
@@ -106,13 +105,13 @@ configuration:
   - name: insecure
     display: Trust any certificate (not secure)
     required: false
-    defaultvalue: "true"
+    defaultvalue: ''
     type: 8
     additionalinfo: null
   - name: proxy
     display: Use system proxy settings
     required: false
-    defaultvalue: "true"
+    defaultvalue: ''
     type: 8
     additionalinfo: null
 description: Gmail API using OAuth 2.0.
