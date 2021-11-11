@@ -53,7 +53,7 @@ configuration:
   display: Timeout
   name: timeout
   required: true
-  type: 4
+  type: 0
 - display: Content types to fetch
   name: content_types_to_fetch
   options:
