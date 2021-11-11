@@ -503,6 +503,22 @@ script:
       predefined:
       - 'true'
       - 'false'
+    outputs:
+    - contextPath: Cherwell.BusinessObjectSchema.states
+      description: Possible states for this business object
+      type: string
+    - contextPath: Cherwell.BusinessObjectSchema.busObId
+      description: ID of the business object
+      type: string
+    - contextPath: Cherwell.BusinessObjectSchema.name
+      description: Name of the business object
+      type: string
+    - contextPath: Cherwell.BusinessObjectSchema.relationships
+      description: Relationships to this business object
+      type: string
+    - contextPath: Cherwell.BusinessObjectSchema.fieldDefinitions
+      description: Fields in this business object
+      type: string
     description: Operation that returns the schema for a Business Object and, optionally,
       its related Business Objects.
     name: cherwell-get-business-object-schema
@@ -514,6 +530,9 @@ script:
         }'
       name: request
       required: true
+    outputs:
+    - contextPath: Cherwell.FieldValueLookup
+      type: string
     description: Operation to get potentially valid values for Business Object fields.
     name: cherwell-lookup-field-values
   dockerimage: demisto/python3:3.9.7.24076
