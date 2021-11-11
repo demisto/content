@@ -956,7 +956,7 @@ def query_sql_command(client, args):
     }
     readable_output = tableToMarkdown("SQL Query Results:", output)
     command_results = CommandResults(
-        outputs_prefix='Securitytrails.SQL',
+        outputs_prefix='SecurityTrails.SQL',
         outputs_key_field=['query', 'id'],
         outputs=output,
         readable_output=readable_output
@@ -976,7 +976,7 @@ def query_sql_get_next_command(client, args):
     }
     readable_output = tableToMarkdown("SQL Query Results:", output)
     command_results = CommandResults(
-        outputs_prefix='Securitytrails.SQL',
+        outputs_prefix='SecurityTrails.SQL',
         outputs_key_field=['query', 'id'],
         outputs=output,
         readable_output=readable_output
