@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - additionalinfo: Server URL to connect to HackerOne.
-  defaultvalue: https://api.hackerone.com/v1/
+  defaultvalue: https://api.hackerone.com
   display: Server URL
   name: url
   required: true
@@ -128,7 +128,6 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: '50'
       description: "The number of reports to retrieve per page. \n\nNote: Possible\
         \ values are between 1 and 100."
       isArray: false
@@ -136,7 +135,6 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: '0'
       description: Page number to retrieve the reports from the specified page.
       isArray: false
       name: page_number
@@ -183,6 +181,12 @@ script:
         Note: Supports comma separated values.
       isArray: false
       name: severity
+      required: false
+      secret: false
+    - default: false
+      description: Number of reports to retrieve.
+      isArray: false
+      name: limit
       required: false
       secret: false
     deprecated: false
@@ -632,7 +636,6 @@ script:
       type: String
   - arguments:
     - default: false
-      defaultValue: '50'
       description: |-
         The number of programs to retrieve per page.
 
@@ -645,6 +648,12 @@ script:
       description: Page number to retrieve the programs from the specified page.
       isArray: false
       name: page_number
+      required: false
+      secret: false
+    - default: false
+      description: Number of programs to retrieve.
+      isArray: false
+      name: limit
       required: false
       secret: false
     deprecated: false

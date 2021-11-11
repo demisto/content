@@ -12,15 +12,18 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 URL_SUFFIX = {
-    "REPORTS": "reports",
-    "PROGRAMS": "me/programs"
+    "REPORTS": "/v1/reports",
+    "PROGRAMS": "/v1/me/programs"
 }
 
-BASE_URL = 'https://api.hackerone.com/v1/'
+BASE_URL = 'https://api.hackerone.com'
 DEFAULT_MAX_FETCH = "15"
 DEFAULT_FIRST_FETCH = "3 days"
 INT32 = 2147483647
-
+LOWER_BOUND = 1
+MAXIMUM_PAGE_SIZE = 100
+MAXIMUM_LIMIT = 1000
+DEFAULT_PAGE_SIZE = 50
 HTTP_ERROR = {
     401: "Unauthenticated. Check the configured Username and API Key.",
     403: "Forbidden. Verify the URL.",
@@ -42,6 +45,8 @@ MESSAGES = {
                            "For example: '2 days', '2 months' or of the format 'yyyy-mm-dd', 'yyyy-mm-ddTHH:MM:SSZ'",
     "FILTER": 'Please provide filter in a valid JSON format. Format accepted- \' '
               '{"attribute1" : "value1, value2" , "attribute2" : "value3, value4"} \'.',
+    "INVALID_POSITIVE_INT": "{} is an invalid value for {}. It must be between {} and {}.",
+    "INVALID_ARGUMENT": "Limit argument cannot be given with 'page_size' or 'page_number' argument."
 }
 
 ''' CLIENT CLASS '''
@@ -134,6 +139,24 @@ class Client(BaseClient):
 
 
 ''' HELPER FUNCTIONS '''
+
+
+def remove_duplicates(data) -> List:
+    """
+    Remove duplicates from list
+    :type data: ``List``
+    :param data: list of response
+
+    :return: list of unique response
+    :rtype: ``List``
+    """
+    cleaned_list = []  # type: ignore
+
+    for entry in data:
+        if entry not in cleaned_list:
+            cleaned_list.append(entry)
+
+    return cleaned_list
 
 
 def prepare_filter_by_arguments(program_handle, severity, state, filters) -> Dict[str, Any]:
@@ -231,28 +254,9 @@ def prepare_fetch_incidents_parameters(max_fetch, first_fetch, program_handle, s
     fetch_params.update(
         prepare_filter_by_arguments(program_handle, severity, state, filters))
 
-    fetch_params["filter[created_at__gt]"] = arg_to_datetime(first_fetch).isoformat()[:-6] + 'Z'  # type:ignore
+    fetch_params["filter[created_at__gt]"] = arg_to_datetime(first_fetch).isoformat()[:-6]  # type:ignore
 
     return assign_params(**fetch_params)
-
-
-def validate_common_args(**args):
-    """
-        Validate page_size and page_number argument, raise ValueError on invalid arguments.
-
-        :type args: ``kwargs``
-        :param args: The command arguments provided by the user.
-    """
-
-    page_size = args.get("page_size")
-    if page_size is not None:
-        if page_size <= 0 or page_size > 100:
-            raise ValueError(MESSAGES['PAGE_SIZE'].format(page_size))
-
-    page_number = args.get("page_number")
-    if page_number is not None:
-        if page_number < 0 or page_number > INT32:
-            raise ValueError(MESSAGES['PAGE_NUMBER'].format(page_number))
 
 
 def validate_report_list_args(args):
@@ -281,13 +285,9 @@ def prepare_report_list_args(args: Dict[str, Any]) -> Dict[str, Any]:
     :return: Parameters to send in request
     :rtype: ``Dict[str, Any]``
     """
-    page_size = arg_to_number(args.get("page_size", 50))
-    page_number = arg_to_number(args.get("page_number", 0))
-    validate_common_args(page_size=page_size, page_number=page_number)
 
     params: Dict[str, Any] = {
-        "page[size]": page_size,
-        "page[number]": page_number,
+
         "filter[keyword]": args.get("filter_by_keyword")
     }
 
@@ -359,6 +359,64 @@ def prepare_hr_for_reports(results: List[Dict[str, Any]]) -> str:
     return tableToMarkdown("Report(s)", reports_hr,
                            headers=["Report ID", "Reporter Username", "Title", "State", "Severity", "Created At",
                                     "Vulnerability Information"], removeNull=True)
+
+
+def get_and_validate_positive_int_argument(args: Dict, argument_name: str, lower_bound: int = 1,
+                                           upper_bound: Optional[int] = None) -> Optional[int]:
+    """
+    Extracts int argument from Demisto arguments.
+    If argument exists, validates that:
+    - lower_bound <= argument's value.
+    - argument's value <= maximum_bound if maximum_bound is not None.
+    Args:
+        args (Dict): Demisto arguments.
+        argument_name (str): The name of the argument to extract.
+        lower_bound (int): Lower number bound of the argument value.
+        upper_bound (Optional[int]): Maximum number bound of the argument value, if given.
+    Returns:
+        - (int): If argument exists and is between 'lower_bound' and 'maximum_bound', returns argument.
+        - (None): If argument does not exist, returns None.
+        - (Exception): If argument exists and is lower than 'lower_bound' or
+                       higher than 'maximum_bound' (if 'maximum_bound' exists), raises DemistoException.
+    """
+    argument_value = arg_to_number(args.get(argument_name), arg_name=argument_name)
+    if argument_value is None:
+        return None
+    if argument_value < lower_bound or argument_value > upper_bound:  # type:ignore
+        raise ValueError(
+            MESSAGES["INVALID_POSITIVE_INT"].format(argument_value, argument_name, lower_bound, upper_bound))
+    return argument_value
+
+
+def get_page_and_limit_args(args: Dict):
+    """
+       Receives demisto argument, and extract the relevant arguments for limits and paging:
+       'page_number', 'page_size', 'limit'.
+       Follows the logic:
+       - 'limit' argument cannot be specified with 'page' or 'page_size' argument.
+       - 'page_size' argument is within its expected lower/upper bounds.
+       - If 'limit' is not given, and 'page_size' is, sets 'limit' value to 'page_size' value.
+       - If 'limit' is not given, and 'page_size' is not given, sets 'limit' value to 'DEFAULT_PAGE_SIZE' value.
+       Args:
+           args (Dict): Demisto argument.
+       Returns:
+           - (int, int): 'page', 'limit' extracted, or their default values used.
+           - (DemistoException): If arguments don't follow the expected logic mentioned.
+       """
+    page = get_and_validate_positive_int_argument(args, 'page_number', lower_bound=LOWER_BOUND, upper_bound=INT32)
+    page_size = get_and_validate_positive_int_argument(args, 'page_size', lower_bound=LOWER_BOUND,
+                                                       upper_bound=MAXIMUM_PAGE_SIZE)
+    limit = get_and_validate_positive_int_argument(args, 'limit', lower_bound=LOWER_BOUND, upper_bound=MAXIMUM_LIMIT)
+    if limit and (page_size or page):
+        raise ValueError(MESSAGES["INVALID_ARGUMENT"])
+    if not limit and page_size:
+        limit = page_size
+    if not limit:
+        limit = DEFAULT_PAGE_SIZE
+    if not page:
+        page = LOWER_BOUND
+
+    return page, limit
 
 
 ''' COMMAND FUNCTIONS '''
@@ -458,16 +516,24 @@ def hackerone_program_list_command(client: Client, args: Dict[str, str]) -> Comm
     :return: Standard command result.
     :rtype: ``CommandResults``
     """
+    page, limit = get_page_and_limit_args(args)
+    raw_responses = []
+    outputs = []
+    count = limit
+    while limit > 0:
+        page_size = 100 if limit > 100 else limit
+        params: Dict[str, Any] = {"page[size]": page_size, "page[number]": page}
+        raw_response = client.program_list(params=params)
+        program_list = raw_response.get('data', [])
+        if not program_list:
+            break
+        raw_responses.append(raw_response)
+        outputs.extend(program_list)
+        limit -= 100
+        page += 1
 
-    page_size = arg_to_number(args.get("page_size", 50))
-    page_number = arg_to_number(args.get("page_number", 0))
-    validate_common_args(page_size=page_size, page_number=page_number)
-    params: Dict[str, Any] = {"page[size]": page_size, "page[number]": page_number}
-
-    # Sending http request
-    response = client.program_list(params=assign_params(**params))
-
-    result = response.get("data")
+    response = remove_duplicates(raw_responses[:count])
+    result = remove_duplicates(outputs[:count])
 
     # Returning if data is empty or not present
     if not result:
@@ -501,11 +567,26 @@ def hackerone_report_list_command(client: Client, args: Dict[str, str]) -> Comma
     :rtype: ``CommandResults``
     """
     validate_report_list_args(args)
+    params = prepare_report_list_args(args)
+    page, limit = get_page_and_limit_args(args)
+    raw_responses = []
+    outputs = []
+    count = limit
+    while limit > 0:
+        page_size = 100 if limit > 100 else limit
+        params["page[size]"] = page_size,
+        params["page[number]"] = page
+        raw_response = client.report_list(params=params)
+        report_list = raw_response.get('data', [])
+        if not report_list:
+            break
+        raw_responses.append(raw_response)
+        outputs.extend(report_list)
+        limit -= 100
+        page += 1
 
-    # Sending http request
-    response = client.report_list(params=prepare_report_list_args(args))
-
-    result = response.get("data")
+    response = remove_duplicates(raw_responses[:count])
+    result = remove_duplicates(outputs[:count])
 
     # Returning if data is empty or not present
     if not result:
@@ -573,7 +654,6 @@ def main():
 
         elif command == 'fetch-incidents':
             last_run = demisto.getLastRun()
-
             next_run, incidents = fetch_incidents(client, last_run)
             demisto.incidents(incidents)
             demisto.setLastRun(next_run)

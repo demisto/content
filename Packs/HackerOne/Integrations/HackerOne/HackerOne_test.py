@@ -8,11 +8,11 @@ from CommonServerPython import DemistoException
 from test_data import input_data
 from unittest import mock
 
-BASE_URL = 'https://mocked_url/'
+BASE_URL = 'https://mocked_url'
 
 URL_SUFFIX = {
-    "REPORTS": "reports",
-    "PROGRAMS": "me/programs"
+    "REPORTS": "/v1/reports",
+    "PROGRAMS": "/v1/me/programs"
 }
 
 
@@ -157,7 +157,6 @@ def test_hackerone_program_list_command_when_valid_response_is_returned(client, 
     assert command_response.outputs_key_field == "id"
     assert command_response.outputs == context_output
     assert command_response.readable_output == readable_output
-    assert command_response.raw_response == response
 
 
 def test_hackerone_program_list_command_when_empty_response_is_returned(client, requests_mock):
@@ -270,7 +269,6 @@ def test_hackerone_report_list_command_when_valid_response_is_returned(client, r
     assert command_response.outputs_key_field == "id"
     assert command_response.outputs == context_output
     assert command_response.readable_output == readable_output
-    assert command_response.raw_response == response
 
 
 @pytest.mark.parametrize("args, expected_error", input_data.invalid_args_for_report_list)
@@ -308,7 +306,7 @@ def test_fetch_incident_when_empty_result_is_returned_on_first_fetch(client, req
     requests_mock.get(BASE_URL + URL_SUFFIX["REPORTS"], json=expected_response, status_code=200)
     fetched_incidents = fetch_incidents(client, last_run)
 
-    expected_next_run = {'current_created_at': '2020-09-07T04:59:51Z', 'next_page': 1}
+    expected_next_run = {'current_created_at': '2020-09-07T04:59:51', 'next_page': 1}
 
     assert fetched_incidents == (expected_next_run, [])
 
@@ -333,7 +331,7 @@ def test_fetch_incident_when_valid_result_is_returned(client, requests_mock):
     requests_mock.get(BASE_URL + URL_SUFFIX["REPORTS"], json=incident_data, status_code=200)
     fetched_incidents = fetch_incidents(client, last_run)
 
-    next_run = {'next_page': 2, 'current_created_at': '2020-09-07T04:59:51Z',
+    next_run = {'next_page': 2, 'current_created_at': '2020-09-07T04:59:51',
                 'next_created_at': '2021-08-09T13:41:38.039Z',
                 'report_ids': ['1295856']}
 

@@ -58,7 +58,7 @@ Retrieves all the reports based on program handle and provided arguments.
 | filter_by_keyword | The keyword filter to retrieve the reports by title and keywords. | Optional | 
 | state | The state filter to retrieve the reports by current report state.<br/><br/>Possible values: new, pending-program-review, triaged, needs-more-info, resolved, not-applicable, informative, duplicate, spam, retesting.<br/><br/>Note: Supports comma separated values. | Optional | 
 | severity | The severity filter to retrieve the reports by the severity ratings.<br/><br/>Possible values: none, low, medium, high, critical.<br/><br/>Note: Supports comma separated values. | Optional | 
-
+| limit | Number of reports to retrieve. | Optional |
 
 #### Context Output
 
@@ -405,10 +405,10 @@ Retrieves all the reports based on program handle and provided arguments.
 #### Human Readable Output
 
 >### Report(s)
->|Report ID|Reporter Username|Title|State|Created At|Vulnerability Information|
->|---|---|---|---|---|---|
->| 1297733 | jahnvi_crest | Do not use depreciated function isSecure | new | 2021-08-10T07:17:41.923Z | ## Summary:<br/>The depreciated function isSecure is not compatible with for SSL verification.<br/><br/>## Impact<br/><br/>SSL verification will fail regardless of certificate authenticity. |
->| 1297727 | jahnvi_crest | SQL injection vulnerability in user signup form | resolved | 2021-08-10T07:09:28.496Z | ## Summary:<br/>[add summary of the vulnerability]<br/><br/>## Steps To Reproduce:<br/>[add details for how we can reproduce the issue]<br/><br/>  1. [add step]<br/>  1. [add step]<br/>  1. [add step]<br/><br/>## Supporting Material/References:<br/>[list any additional material (e.g. screenshots, logs, etc.)]<br/><br/>  * [attachment / reference]<br/><br/>## Impact<br/><br/>Can query for all users in db |
+>|Report ID|Reporter Username|Title|State|Severity|Created At|Vulnerability Information|
+>|---|---|---|---|---|---|---|
+>| 1297733 | jahnvi_crest | Do not use depreciated function isSecure | new | medium | 2021-08-10T07:17:41.923Z | ## Summary:<br/>The depreciated function isSecure is not compatible with for SSL verification.<br/><br/>## Impact<br/><br/>SSL verification will fail regardless of certificate authenticity. |
+>| 1297727 | jahnvi_crest | SQL injection vulnerability in user signup form | resolved | low | 2021-08-10T07:09:28.496Z | ## Summary:<br/>[add summary of the vulnerability]<br/><br/>## Steps To Reproduce:<br/>[add details for how we can reproduce the issue]<br/><br/>  1. [add step]<br/>  1. [add step]<br/>  1. [add step]<br/><br/>## Supporting Material/References:<br/>[list any additional material (e.g. screenshots, logs, etc.)]<br/><br/>  * [attachment / reference]<br/><br/>## Impact<br/><br/>Can query for all users in db |
 
 
 ### hackerone-program-list
@@ -424,7 +424,8 @@ Retrieves information about the programs in which the user is a member.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | page_size | The number of programs to retrieve per page.<br/><br/>Note: Possible values are between 1 and 100. Default is 50. | Optional | 
-| page_number | Page number to retrieve the programs from the specified page. | Optional | 
+| page_number | Page number to retrieve the programs from the specified page. | Optional |
+| limit | Number of programs to retrieve. | Optional |
 
 
 #### Context Output
