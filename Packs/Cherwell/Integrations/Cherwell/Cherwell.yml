@@ -318,7 +318,7 @@ script:
     - auto: PREDEFINED
       default: true
       defaultValue: 'False'
-      description: Includes all fields from the record
+      description: Includes all fields from the record.
       name: include_all_fields
       predefined:
       - 'True'
