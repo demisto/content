@@ -34,6 +34,7 @@ Moreover, enter your client secret as the “Key” parameter and your client ID
 | refresh_token | Token \(received from the authorization step \- see Detailed Instructions \(?\) section\) | False |
 | self_deployed | Use a self\-deployed Azure application | False |
 | auth_code | The authentication code you got for the service. For instructions on how to receive it, see the detailed description \(&\#x27;?&\#x27;\) section. | False |
+| timeout | The default timeout (in seconds) for API calls. Can be overridden by providing value to the corresponding argument when calling supported commands. Default is 15 seconds. | True |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 | first_fetch_delta | First fetch time range \(&lt;number&gt; &lt;time unit&gt;, e.g., 1 hour, 30 minutes\) | False |
@@ -198,7 +199,7 @@ Returns all content of a specific content type.
 | record_types_filter | A comma-separated list of the record types to fetch. Content records with a record  type that isn&#x27;t specified will not be fetched. If this field is left empty, all record types will be fetched. | Optional | 
 | workloads_filter | A comma-separated list of the workloads to fetch. Content records with a workload that isn&#x27;t specified will not be fetched. If this field is left empty, all workloads will be fetched. | Optional | 
 | operations_filter | A comma-separated list of the operations to fetch. Content records with an operation that isn&#x27;t specified will not be fetched. If this field is left empty, all operations will be fetched. | Optional |
-| timeout | The timeout for the content requesting http call. | Optional 
+| timeout | The timeout for the content requesting http call. The default is configured at the corresponding integration instance parameter. | Optional 
 
 
 ##### Context Output
