@@ -20,7 +20,7 @@ configuration:
     required: false
     defaultvalue: ''
     type: 8
-    additionalinfo: null
+    additionalinfo: Some commands can take a while to return. Extending the timeout can avoid timeout issues.
   - name: proxy
     display: Use system proxy settings
     required: false

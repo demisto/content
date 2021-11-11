@@ -11,7 +11,7 @@ removed_keys = ['endpoint', 'domain', 'hostname']
 class Client(BaseClient):
 
     def __init__(self, base_url, verify=True, proxy=False, ok_codes=tuple(), headers=None, auth=None, timeout=10):
-        super().__init__(base_url, verify=True, proxy=False, ok_codes=tuple(), headers=None, auth=None)
+        super().__init__(base_url, verify=verify, proxy=proxy, ok_codes=ok_codes, headers=headers, auth=auth)
         self.timeout = timeout
 
     def domain_tags(self, hostname: str = None):
@@ -92,8 +92,9 @@ class Client(BaseClient):
             'GET',
             f'ips/{ip_address}/useragents',
             params=params or {},
-            ok_codes=(200, 403)),
+            ok_codes=(200, 403),
             timeout=self.timeout
+        )
 
     def get_company_associated_ips(self, domain: str = None):
         res = self._http_request(
@@ -109,7 +110,7 @@ class Client(BaseClient):
             return self._http_request(
                 'GET',
                 f'domain/{hostname}/whois',
-                ok_codes=(200, 403),,
+                ok_codes=(200, 403),
                 timeout=self.timeout
             )
         elif query_type == "ip":
