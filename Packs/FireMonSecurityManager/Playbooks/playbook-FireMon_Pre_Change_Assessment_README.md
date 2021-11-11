@@ -31,3 +31,7 @@ This playbook does not use any sub-playbooks.
 ---
 There are no outputs for this playbook.
 
+## Playbook Image
+---
+![FireMon Pre Change Assessment](https://raw.githubusercontent.com/demisto/content/daf3dab8a76d316777520a23d4747d2c9fbda5aa/Packs/FireMonSecurityManager/Playbooks/playbook-FireMon_Pre_Change_Assessment.png)
+

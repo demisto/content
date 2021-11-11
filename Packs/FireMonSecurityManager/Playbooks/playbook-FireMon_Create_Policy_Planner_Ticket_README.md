@@ -30,3 +30,6 @@ This playbook does not use any sub-playbooks.
 ---
 There are no outputs for this playbook.
 
+## Playbook Image
+---
+![FireMon Create Policy Planner Ticket](https://raw.githubusercontent.com/demisto/content/daf3dab8a76d316777520a23d4747d2c9fbda5aa/Packs/FireMonSecurityManager/Playbooks/playbook-FireMon_Create_Policy_Planner_Ticket.png)
