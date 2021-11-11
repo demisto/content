@@ -314,6 +314,7 @@ script:
       name: max_results
     - description: Comma separated list of field ids to return
       name: fields
+      isArray: true
     - auto: PREDEFINED
       default: true
       defaultValue: 'False'
