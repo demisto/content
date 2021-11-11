@@ -1,9 +1,6 @@
 commonfields:
   id: MapPattern
   version: -1
-contentitemexportablefields:
-  contentitemfields:
-    fromServerVersion: ""
 name: MapPattern
 script: ''
 type: python
