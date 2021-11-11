@@ -845,7 +845,7 @@ def get_business_object_schema_command():
         'Contents': md_dict,
         'HumanReadable': md,
         'EntryContext': {
-            'Cherwell.BusinessObjects(val.busobjectid == obj.busobjectid)': createContext(results)
+            'Cherwell.BusinessObjects(val.busObId == obj.busObId)': createContext(results)
         }
     }
 
