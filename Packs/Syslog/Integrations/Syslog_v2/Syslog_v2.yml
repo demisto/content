@@ -9,12 +9,6 @@ configuration:
   required: true
   type: 0
   additionalinfo: The hostname or IP address of the listening machine.
-- defaultvalue: 514
-  display: Port
-  name: port
-  required: true
-  type: 0
-  additionalinfo: The port in Cortex XSOAR machine that the Syslog server will send the logs to. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances.
 - display: Protocol
   hidden: false
   defaultvalue: UDP
@@ -47,24 +41,7 @@ description: A Syslog server provides the ability to automatically open incident
 display: Syslog v2
 name: Syslog v2
 script:
-  commands:
-  - arguments:
-    - default: false
-      description: '[Enter a description of the argument, including any important
-        information users need to know, for example, default values.]'
-      isArray: false
-      name: dummy
-      required: true
-      secret: false
-    deprecated: false
-    description: '[Enter a description of the command, including any important information
-      users need to know, for example required permissions.]'
-    execution: false
-    name: baseintegration-dummy
-    outputs:
-    - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
-      type: String
+  commands: []
   isfetch: false
   runonce: false
   script: '-'
