@@ -1,4 +1,4 @@
-Widget to show Cortex XDR remediation actions information
+This widget displays Cortex XDR remediation action information.
 
 ## Script Data
 ---
