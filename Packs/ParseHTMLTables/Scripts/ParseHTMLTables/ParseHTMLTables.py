@@ -1,8 +1,9 @@
 import copy
 from typing import Any, Dict, Generator, List, Optional, Tuple
 
+from bs4 import BeautifulSoup, NavigableString, Tag
+
 import demistomock as demisto  # noqa: F401
-from bs4 import BeautifulSoup, NavigableString
 from CommonServerPython import *  # noqa: F401
 
 
@@ -82,28 +83,43 @@ class Table:
         return rows
 
 
-def find_table_title(node) -> Optional[str]:
-    for elem in node.find_all_previous():
-        tnode = copy.copy(elem)
-        for t in tnode.find_all('table'):
-            t.decompose()
+def find_table_title(base: Optional[Union[BeautifulSoup, Tag, NavigableString]],
+                     node: Union[BeautifulSoup, Tag, NavigableString]) -> Optional[str]:
 
-        title = tnode.text.strip()
-        if title:
-            return title
+    title = ''
+    orig = node
+    prev = node.previous_element
+    while prev and node is not base:
+        node = prev
+        if isinstance(node, Tag) and node.name in ('h1', 'h2', 'h3', 'h4', 'h5', 'h6'):
+            title = node.text.strip()
+            break
 
-    elem = node.previous_element
-    while elem:
-        if isinstance(elem, NavigableString):
-            title = str(elem).strip()
-            if title:
-                return title
-        elem = elem.previous_element
+        prev = node.previous_element
 
-    return None
+    if not title or title.count(' ') >= 4:
+        message = ''
+        node = orig
+        prev = node.previous_element
+        while prev and node is not base:
+            node = prev
+            if isinstance(node, NavigableString):
+                if not message:
+                    message = str(node).rstrip()
+                else:
+                    message = str(node) + message
+
+                if message.lstrip() and any(c in message for c in ('\n', '\r')):
+                    break
+
+            prev = node.previous_element
+
+        title = title if title and message.count(' ') >= title.count(' ') else message
+
+    return ' '.join(title.strip().split()) if title else None
 
 
-def list_text(node, name: str) -> List[str]:
+def list_text(node: Union[BeautifulSoup, Tag, NavigableString], name: str) -> List[str]:
     vals = []
     ancestor = node
     name_list = ['table', 'td', 'th', name]
@@ -121,12 +137,14 @@ def list_text(node, name: str) -> List[str]:
     return vals
 
 
-def is_descendant(ancestor, node) -> bool:
-    return ancestor and node and (ancestor in node.parents)
+def is_descendant(ancestor: Optional[Union[BeautifulSoup, Tag, NavigableString]],
+                  node: Optional[Union[BeautifulSoup, Tag, NavigableString]]) -> bool:
+    return ancestor is not None and node is not None and any([ancestor is p for p in node.parents])
 
 
-def parse_table(table_node) -> Generator[Table, None, None]:
-    table = Table(title=find_table_title(table_node) or 'No Title')
+def parse_table(base: Optional[Union[BeautifulSoup, Tag, NavigableString]],
+                table_node: Union[BeautifulSoup, Tag, NavigableString]) -> Generator[Table, None, None]:
+    table = Table(title=find_table_title(base, table_node) or 'No Title')
     has_nested_tables = False
 
     node = table_node.find(['table', 'tr'])
@@ -143,8 +161,9 @@ def parse_table(table_node) -> Generator[Table, None, None]:
 
         elif node.name == 'table':
             has_nested_tables = True
-            yield from parse_table(node)
+            yield from parse_table(base, node)
 
+            base = node.previous_element
             node = node.find_next_sibling(True)
         else:
             node = node.find_next(['table', 'tr'])
@@ -162,14 +181,19 @@ def parse_table(table_node) -> Generator[Table, None, None]:
         yield table
 
 
-def parse_tables(node) -> Generator[Table, None, None]:
+def parse_tables(node: Union[BeautifulSoup, Tag, NavigableString]) -> Generator[Table, None, None]:
+    base = None
     node = node.find('table')
     while node:
-        yield from parse_table(node)
+        yield from parse_table(base, node)
+        base = node.next_sibling
 
         while node:
             next = node.find_next_sibling(True)
             if next:
+                if next.name == 'table':
+                    break
+
                 next = next.find_next('table')
                 if next:
                     break
@@ -177,7 +201,7 @@ def parse_tables(node) -> Generator[Table, None, None]:
         node = next
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+def main():
     args = demisto.args()
     html = args.get('value') or ''
     overwriting_title = args.get('title')
@@ -205,3 +229,7 @@ if __name__ in ('__main__', '__builtin__', 'builtins'):
         tables.append({overwriting_title or original_title: rows})
 
     demisto.results(tables)
+
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()
