@@ -3190,7 +3190,7 @@
         {
             "integrations": "Google IP Ranges Feed",
             "playbookID": "Fetch Indicators Test",
-            "fromversion": "5.5.0"
+            "fromversion": "6.0.0"
         },
         {
             "integrations": "Azure AD Connect Health Feed",
