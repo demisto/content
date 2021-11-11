@@ -1,9 +1,9 @@
-from CommonServerPython import DemistoException
+from CommonServerPython import DemistoException, demisto
 
 from Kafka_v3 import KafkaCommunicator, command_test_module, KConsumer, KProducer, print_topics, fetch_partitions,\
-    consume_message, produce_message
+    consume_message, produce_message, fetch_incidents
 from confluent_kafka.admin import ClusterMetadata, TopicMetadata, PartitionMetadata
-from confluent_kafka import KafkaError, TopicPartition
+from confluent_kafka import KafkaError, TopicPartition, TIMESTAMP_NOT_AVAILABLE
 
 import pytest
 import Kafka_v3
@@ -186,11 +186,12 @@ class MessageMock(object):
     topic_value = None
     partition_value = None
 
-    def __init__(self, message=None, offset=None, topic=None, partition=None):
+    def __init__(self, message=None, offset=None, topic=None, partition=None, timestamp=None):
         self.message = message.encode('utf-8')
         self.offset_value = offset
         self.topic_value = topic
         self.partition_value = partition
+        self.timestamp_value = timestamp
 
     def value(self):
         return self.message
@@ -203,6 +204,9 @@ class MessageMock(object):
 
     def partition(self):
         return self.partition_value
+
+    def timestamp(self):
+        return self.timestamp_value
 
 
 @pytest.mark.parametrize('demisto_args, topic_partitions', [
@@ -324,3 +328,36 @@ def test_produce_error_message(mocker):
     produce_mock.assert_called_once_with(topic='some-topic', partition=1, value='some-value',
                                          on_delivery=KAFKA.delivery_report)
     flush_mock.assert_called_once()
+
+
+@pytest.mark.parametrize('demisto_params, last_run, cluster_tree, topic_partitions, incidents', [
+    ({  # first run
+        'topic': 'some-topic',
+        'partition': '0',
+        'first_fetch': 'earliest',
+        'max_fetch': '1'
+    }, {}, {'some-topic': [0]}, [TopicPartition(topic='some-topic', partition=0, offset=0)],
+    )])
+def test_fetch_incidents(mocker, demisto_params, last_run, cluster_tree, topic_partitions, incidents):
+    mocker.patch.object(KConsumer, '__init__', return_value=None)
+    cluster_metadata = create_cluster_metadata(cluster_tree)
+    mocker.patch.object(KConsumer, 'list_topics', return_value=cluster_metadata)
+    mocker.patch.object(demisto, 'getLastRun', return_value=last_run)
+    assign_mock = mocker.patch.object(KConsumer, 'assign')
+    polled_msg = MessageMock(message='polled_msg', partition=0, offset=0, timestamp=(TIMESTAMP_NOT_AVAILABLE, 0))
+    poll_mock = mocker.patch.object(KConsumer, 'poll', return_value=polled_msg)
+    mocker.patch.object(KConsumer, 'get_watermark_offsets', return_value=(0, 2))
+    close_mock = mocker.patch.object(KConsumer, 'close')
+    set_last_run_mock = mocker.patch.object(demisto, 'setLastRun')
+    incidents_mock = mocker.patch.object(demisto, 'incidents')
+
+    fetch_incidents(KAFKA, demisto_params)
+
+    #msg_value = polled_msg.value()
+    #msg_value = msg_value.decode('utf-8')
+
+    assign_mock.assert_called_once_with(topic_partitions)
+    poll_mock.assert_called_once()
+    close_mock.assert_called_once()
+    incidents_mock.assert_called_once_with('stuff')
+    set_last_run_mock.assert_called_once_with('stuffs')

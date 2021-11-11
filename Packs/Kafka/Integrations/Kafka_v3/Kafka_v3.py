@@ -59,8 +59,10 @@ class KafkaCommunicator:
             with open(client_path, 'wb') as file:
                 file.write(client_cert)
                 client_path = os.path.abspath(client_path)
-            self.conf_producer.update({'ssl.certificate.location': client_path})
-            self.conf_consumer.update({'ssl.certificate.location': client_path})
+            self.conf_producer.update({'ssl.certificate.location': client_path,
+                                       'security.protocol': 'ssl'})
+            self.conf_consumer.update({'ssl.certificate.location': client_path,
+                                       'security.protocol': 'ssl'})
         if client_cert_key:
             client_key_path = 'client_key.key'
             with open(client_key_path, 'wb') as file:
@@ -71,14 +73,22 @@ class KafkaCommunicator:
             self.conf_producer.update({'ssl.key.password': ssl_password})
             self.conf_consumer.update({'ssl.key.password': ssl_password})
 
+    def update_conf_for_fetch(self, offset: str = 'earliest', message_max_bytes: int = None,
+                              enable_auto_commit: bool = False):
+        if message_max_bytes:
+            self.conf_consumer.update({'message.max.bytes': int(message_max_bytes)})
+
+        self.conf_consumer.update({'auto.offset.reset': offset,
+                                   'enable.auto.commit': enable_auto_commit})
+
     def test_connection(self) -> str:
         try:
             # AdminClient(self.conf_producer)  # doesn't work!
             KConsumer(self.conf_consumer)
             KProducer(self.conf_producer)
             # self.get_topics(AdminClient(self.conf_producer))
-            self.get_topics(KConsumer(self.conf_consumer))
-            self.get_topics()  # Checks the KProducer
+            self.get_topics(consumer=True)
+            self.get_topics(consumer=False)  # Checks the KProducer
 
         except Exception as e:
             raise DemistoException(f'Error connecting to kafka: {str(e)}\n{traceback.format_exc()}')
@@ -94,8 +104,10 @@ class KafkaCommunicator:
             return_results(f'Message was successfully produced to '
                            f'topic \'{msg.topic()}\', partition {msg.partition()}')
 
-    def get_topics(self, client: Union[KConsumer, KProducer, None] = None) -> dict:
-        if not client:
+    def get_topics(self, consumer: bool = False) -> dict:
+        if consumer:
+            client = KConsumer(self.conf_consumer)
+        else:
             client = KProducer(self.conf_producer)
         cluster_metadata = client.list_topics(timeout=3.0)
         return cluster_metadata.topics
@@ -117,7 +129,7 @@ class KafkaCommunicator:
 
     def consume(self, topic: str, partition: int = -1, offset: str = '0') -> Message:
         kafka_consumer = KConsumer(self.conf_consumer)
-        kafka_consumer.assign(self.get_topic_partitions(kafka_consumer, topic, partition, offset))
+        kafka_consumer.assign(self.get_topic_partitions(topic, partition, offset))
         polled_msg = kafka_consumer.poll(1.0)
         demisto.debug(f"polled {polled_msg}")
         kafka_consumer.close()
@@ -137,7 +149,7 @@ class KafkaCommunicator:
                                        f'[{earliest_offset}, {oldest_offset})')
             return number_offset
 
-    def get_topic_partitions(self, client: Union[KConsumer, KProducer, None], topic: str, partition: Union[int, list],
+    def get_topic_partitions(self, topic: str, partition: Union[int, list],
                              offset: Union[str, int]) -> list:
         topic_partitions = []
         if partition != -1 and type(partition) is not list:
@@ -154,7 +166,7 @@ class KafkaCommunicator:
                         raise e
 
         else:
-            topics = self.get_topics(client=client)
+            topics = self.get_topics()
             topic_metadata = topics[topic]
             for metadata_partition in topic_metadata.partitions.values():
                 try:
@@ -347,9 +359,9 @@ def handle_empty(value: Any, default_value: Any) -> Any:
 
 
 def check_params(kafka: KafkaCommunicator, topic: str, partitions: list = None,
-                 offset: str = None) -> bool:
+                 offset: str = None, consumer: bool = False) -> bool:
     check_offset = False
-    topics = kafka.get_topics()
+    topics = kafka.get_topics(consumer=consumer)
     if topic not in topics.keys():
         raise DemistoException(f"Did not find topic {topic} in kafka topics.")
 
@@ -377,13 +389,12 @@ def check_params(kafka: KafkaCommunicator, topic: str, partitions: list = None,
     return True
 
 
-def fetch_incidents(demisto_params: dict) -> None:
+def fetch_incidents(kafka, demisto_params: dict) -> None:
     """
     Fetches incidents
     """
     topic = demisto_params.get('topic', '')
     partitions = handle_empty(argToList(demisto_params.get('partition', '')), -1)
-    brokers = str(demisto_params.get('brokers'))
     offset = handle_empty(demisto_params.get('first_fetch', 'earliest'), 'earliest')
     message_max_bytes = int(handle_empty(demisto_params.get("max_bytes_per_message", 1048576), 1048576))
     max_messages = int(handle_empty(demisto_params.get('max_fetch', 50), 50))
@@ -391,11 +402,10 @@ def fetch_incidents(demisto_params: dict) -> None:
     demisto.debug(f"Starting fetch incidents with last_fetched_offsets: {last_fetched_offsets}")
     incidents = []
 
-    kafka = KafkaCommunicator(brokers=brokers, offset=offset, enable_auto_commit=True,
-                              message_max_bytes=message_max_bytes)
+    kafka.update_conf_for_fetch(offset=offset, enable_auto_commit=True, message_max_bytes=message_max_bytes)
 
     kafka_consumer = KConsumer(kafka.conf_consumer)
-    check_params(kafka, topic, partitions, offset)
+    check_params(kafka, topic, partitions, offset, True)
 
     for partition in partitions:
         specific_offset = handle_empty(last_fetched_offsets.get(partition), offset)
@@ -405,7 +415,7 @@ def fetch_incidents(demisto_params: dict) -> None:
             earliest_offset, latest_offset = kafka.get_partition_offsets(topic=topic, partition=int(partition))
             if specific_offset >= latest_offset:
                 continue
-        topic_partitions = kafka.get_topic_partitions(client=kafka_consumer, topic=topic, partition=int(partition),
+        topic_partitions = kafka.get_topic_partitions(topic=topic, partition=int(partition),
                                                       offset=specific_offset)
         demisto.debug(f"The topic partitions assigned to the consumer are: {topic_partitions}")
         kafka_consumer.assign(topic_partitions)
@@ -464,7 +474,7 @@ def main():
         elif demisto_command == 'kafka-fetch-partitions':
             return_results(fetch_partitions(kafka, demisto_args))
         elif demisto_command == 'fetch-incidents':
-            fetch_incidents(demisto_params)
+            fetch_incidents(kafka, demisto_params)
         else:
             raise NotImplementedError(f'Command {demisto_command} not found in command list')
 
