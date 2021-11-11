@@ -308,8 +308,6 @@ def domain_command(client, args):
             }
         )
         )
-
-
     return_results(command_results)
 
 
