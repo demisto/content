@@ -1566,7 +1566,7 @@ def logger(func):
     return func_wrapper
 
 
-def formatCell(data, is_pretty=True):
+def formatCell(data, json_transform, is_pretty=True):
     """
        Convert a given object to md while decending multiple levels
 
@@ -1582,12 +1582,12 @@ def formatCell(data, is_pretty=True):
     if isinstance(data, STRING_TYPES):
         return data
     elif isinstance(data, dict):
-        return '\n'.join([u'{}: {}'.format(k, flattenCell(v, is_pretty)) for k, v in data.items()])
+        return '\n'.join([u'{}: {}'.format(k, flattenCell(v, is_pretty, json_transform)) for k, v in data.items()])
     else:
         return flattenCell(data, is_pretty)
 
 
-def flattenCell(data, is_pretty=True):
+def flattenCell(data, is_pretty=True, json_transform=None):
     """
        Flattens a markdown table cell content into a single string
 
@@ -1600,6 +1600,8 @@ def flattenCell(data, is_pretty=True):
        :return: A sting representation of the cell content
        :rtype: ``str``
     """
+    if isinstance(data, dict) and json_transform:
+        return json_transform(data)
     indent = 4 if is_pretty else None
     if isinstance(data, STRING_TYPES):
         return data
@@ -1773,9 +1775,17 @@ def create_clickable_url(url):
         return ['[{}]({})'.format(item, item) for item in url]
     return '[{}]({})'.format(url, url)
 
+def json_to_str(dct, keys):
+    str_lst = ['\n']
+    for key in keys:
+        val = dct.get(key)
+        val = re.sub('[#\n]', "", val)
+        str_lst.append("{key}: {val}".format(key=key, val=val))
+    return ', '.join(str_lst)
+
 
 def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False, metadata=None, url_keys=None,
-                    date_fields=None):
+                    date_fields=None, json_transform=None):
     """
        Converts a demisto table in JSON form to a Markdown table
 
@@ -1804,9 +1814,15 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
        :type date_fields: ``list``
        :param date_fields: A list of date fields to format the value to human-readable output.
 
+        :param json_transform:
+
+
        :return: A string representation of the markdown table
        :rtype: ``str``
     """
+    if json_transform is None:
+        json_transform = {}
+
     # Turning the urls in the table to clickable
     if url_keys:
         t = url_to_clickable_markdown(t, url_keys)
@@ -1854,6 +1870,11 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
                 headers_aux.remove(header)
         headers = headers_aux
 
+    if json_transform:
+        for k, v in json_transform.items():
+            if isinstance(v, list):
+                json_transform[k] = lambda data: json_to_str(data, v)
+
     if t and len(headers) > 0:
         newHeaders = []
         if headerTransform is None:  # noqa
@@ -1877,8 +1898,8 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
                     except Exception:
                         pass
 
-            vals = [stringEscapeMD((formatCell(entry_copy.get(h, ''), False) if entry_copy.get(h) is not None else ''),
-                                   True, True) for h in headers]
+            vals = [stringEscapeMD((formatCell(entry_copy.get(h, ''), json_transform.get(h), False) if
+                                    entry_copy.get(h) is not None else ''), True, True) for h in headers]
 
             # this pipe is optional
             mdResult += '| '
