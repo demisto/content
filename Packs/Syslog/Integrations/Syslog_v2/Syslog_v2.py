@@ -1,16 +1,20 @@
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
-import syslogmp
-from syslog_rfc5424_parser import SyslogMessage
 from dataclasses import dataclass
 from typing import Callable
+
+import syslogmp
+from syslog_rfc5424_parser import SyslogMessage
+
+from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+from CommonServerUserPython import *  # noqa
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 MAX_SAMPLES = 10
-BUF_SIZE=1024
+BUF_SIZE = 1024
+
+
 @dataclass
 class SyslogMessageExtract:
     app_name: Optional[str]  # su
@@ -91,13 +95,6 @@ def fetch_samples() -> None:
     demisto.incidents(get_integration_context().get('samples'))
 
 
-def create_incident_from_log_message(log_message: str):
-    return {
-        'Name': f'Syslog from [hostname][date_formatab]',
-        'RawJSON': json.dumps(log_message),
-        'Details': 'details'
-    }
-
 def perform_long_running_loop(s: socket.socket, log_format: str, message_regex: str,
                               incident_type: Optional[str]) -> None:
     data, address = s.recvfrom(BUF_SIZE)
@@ -115,6 +112,8 @@ def perform_long_running_loop(s: socket.socket, log_format: str, message_regex: 
             updated_samples_list.pop()
         ctx['samples'] = updated_samples_list
         demisto.createIncidents([incident])
+
+
 def log_message_passes_filter(log_message: SyslogMessageExtract, message_regex: str) -> bool:
     return not message_regex or (True if re.match(message_regex, log_message.msg) else False)
 
