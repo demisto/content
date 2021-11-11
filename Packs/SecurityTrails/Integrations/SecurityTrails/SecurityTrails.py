@@ -335,7 +335,7 @@ def get_company_details_command(client, args):
 def get_company_associated_ips_command(client, args):
     domain = args.get('domain')
     res = client.get_company_associated_ips(domain=domain)
-    readable_output = tableToMarkdown("Associated IPs for {domain}", res)
+    readable_output = tableToMarkdown(f"Associated IPs for {domain}", res)
     output_data = {
         "name": domain,
         "associatedips": res,
