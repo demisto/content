@@ -453,6 +453,13 @@ script:
     description: Operation that returns a template to create Business Objects. The
       template includes placeholders for field values. You can then send the template
       with these values to the Business Object Save operation.
+    outputs:
+    - contextPath: Cherwell.BusinessObjectTemplate.busObId
+      description: The business object template ID
+      type: string
+    - contextPath: Cherwell.BusinessObjectTemplate.fields
+      description: The fields of the business object
+      type: string
     name: cherwell-get-business-object-template
   - arguments:
     - description: The ID of the business object.
