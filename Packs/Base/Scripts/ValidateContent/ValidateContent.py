@@ -20,7 +20,7 @@ from demisto_sdk.commands.init.contribution_converter import (
     AUTOMATION, INTEGRATION, INTEGRATIONS_DIR, SCRIPT, SCRIPTS_DIR,
     ContributionConverter, get_child_directories, get_child_files)
 from demisto_sdk.commands.lint.lint_manager import LintManager
-from demisto_sdk.commands.split_yml.extractor import Extractor
+from demisto_sdk.commands.split.ymlsplitter import YmlSplitter
 from demisto_sdk.commands.validate.validate_manager import ValidateManager
 from ruamel.yaml import YAML
 
@@ -46,7 +46,7 @@ def _create_pack_base_files(self):
     fp.close()
 
 
-def get_extracted_code_filepath(extractor: Extractor) -> str:
+def get_extracted_code_filepath(extractor: YmlSplitter) -> str:
     output_path = extractor.get_output_path()
     base_name = os.path.basename(output_path) if not extractor.base_name else extractor.base_name
     code_file = f'{output_path}/{base_name}'
@@ -68,7 +68,7 @@ def content_item_to_package_format(
             file_type = find_type(content_item_file_path)
             file_type = file_type.value if file_type else file_type
             try:
-                extractor = Extractor(
+                extractor = YmlSplitter(
                     input=content_item_file_path, file_type=file_type, output=content_item_dir, no_logging=True,
                     no_pipenv=True, no_basic_fmt=True)
                 extractor.extract_to_package_format()
@@ -240,7 +240,7 @@ def prepare_single_content_item_for_validation(filename: str, data: bytes, tmp_d
     file_type = file_type.value if file_type else file_type
     if is_json or file_type in (FileType.PLAYBOOK.value, FileType.TEST_PLAYBOOK.value):
         return str(file_path), {}
-    extractor = Extractor(
+    extractor = YmlSplitter(
         input=str(file_path), file_type=file_type, output=containing_dir,
         no_logging=True, no_pipenv=True, no_basic_fmt=True
     )
