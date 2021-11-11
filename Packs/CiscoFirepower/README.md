@@ -16,5 +16,5 @@ Use the Cisco Firepower integration for unified management of firewalls, applica
 
 
 This pack contains:
-- Integration with Cisco Firepower
+- An integration with Cisco Firepower.
 - A playbook for appending network objects in Cisco Firepower.
