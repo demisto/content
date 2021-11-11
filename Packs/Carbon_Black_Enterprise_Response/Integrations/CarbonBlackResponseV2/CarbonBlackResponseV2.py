@@ -280,8 +280,16 @@ def _add_to_current_query(current_query: str = '', params: dict = None) -> str:
 
 
 def _get_sensor_isolation_change_body(client: Client, sensor_id: str, new_isolation: bool) -> dict:
-    new_sensor_data = client.get_sensors(sensor_id)[1][0]  # returns (length, [sensor_data])
-    new_sensor_data['network_isolation_enabled'] = new_isolation
+    sensor_data = client.get_sensors(sensor_id)[1][0]  # returns (length, [sensor_data])
+    new_sensor_data = {
+        'network_isolation_enabled': new_isolation,
+        'restart_queued': sensor_data.get('restart_queued'),
+        'uninstall': sensor_data.get('uninstall'),
+        'liveresponse_init': sensor_data.get('liveresponse_init'),
+        'group_id': sensor_data.get('group_id'),
+        'event_log_flush_time': sensor_data.get('event_log_flush_time')
+    }
+
     new_sensor_data.pop('id', None)
     return new_sensor_data
 
