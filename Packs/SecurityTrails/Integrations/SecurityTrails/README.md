@@ -718,6 +718,10 @@ Provides data enrichment for domains.
 | Domain.WHOIS.Admin.Name | String | The name of the domain administrator. | 
 | Domain.WHOIS.Admin.Email | String | The email address of the domain administrator. | 
 | Domain.WHOIS.Admin.Phone | String | The phone number of the domain administrator. | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Score | Number | The actual score. | 
 
 
 #### Command Example
@@ -739,7 +743,8 @@ Queries the SecurityTrails SQL endpoint. The SecurityTrails SQL API provides a p
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| new_argument | description. | Optional | 
+| sql | The SQL query to execute (example: SELECT attribute FROM table WHERE condition = "value"). Possible values are: . | Required | 
+| timeout | Read timeout for calls (default is 20 seconds). Possible values are: . Default is 20. | Optional | 
 
 
 #### Context Output
