@@ -312,7 +312,7 @@ script:
     - defaultValue: '30'
       description: Maximum number of results to pull.
       name: max_results
-    - description: Comma separated list of field ids to return
+    - description: Comma separated list of field ids to return.
       name: fields
       isArray: true
     - auto: PREDEFINED
