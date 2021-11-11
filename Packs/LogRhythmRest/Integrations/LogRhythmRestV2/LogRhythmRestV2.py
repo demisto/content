@@ -2074,7 +2074,7 @@ def list_details_and_items_get_command(client: Client, args: Dict[str, Any]) -> 
 
     hr = tableToMarkdown(f'List {list_guid} details', response, headerTransform=pascalToSpace, headers=LIST_HEADERS)
     if list_items:
-        hr = hr + tableToMarkdown('fList items', list_items, headerTransform=pascalToSpace)
+        hr = hr + tableToMarkdown('List items', list_items, headerTransform=pascalToSpace)
 
     command_results = CommandResults(
         readable_output=hr,
@@ -2164,7 +2164,7 @@ def execute_search_query_command(client: Client, args: Dict[str, Any]) -> Comman
 
     command_results = CommandResults(
         readable_output=f'New search query created, Task ID={task_id}',
-        outputs_prefix='Logrhythm.Search.Task',
+        outputs_prefix='LogRhythm.Search.Task',
         outputs_key_field='TaskId',
         outputs=ec,
         raw_response=response,
@@ -2190,7 +2190,7 @@ def get_query_result_command(client: Client, args: Dict[str, Any]) -> CommandRes
 
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='Logrhythm.Search.Results',
+        outputs_prefix='LogRhythm.Search.Results',
         outputs_key_field='TaskID',
         outputs=ec,
         raw_response=response,
@@ -2360,6 +2360,7 @@ def fetch_alarms(client: Client, limit: int, fetch_time: str, alarm_status_filte
         incident = {
             'name': f'Alarm #{alarm.get("alarmId")} {alarm.get("alarmRuleName")}',
             'occurred': f'{alarm.get("dateInserted")}Z',
+            'labels': [{'type': 'alarmId', 'value': str(alarm.get('alarmId'))}],
             'rawJSON': json.dumps(alarm)
         }
         alarm_incidents.append(incident)

@@ -5099,7 +5099,7 @@ Returns list details and list items based on the list GUID.
 >|Guid|Name|List Type|Status|Short Description|Id|Entity Name|Date Created|Owner|Write Access|Read Access|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| EA778B8F-20CA-4413-9A2D-CF69FB536793 | test list 2 | Application | Active |  | 2002 | Primary Site | 2021-08-09T05:41:30.443Z | -100 | Private | Private |
->### fList items
+>### List items
 >|Display Value|Expiration Date|Is Expired|Is List Item|Is Pattern|List Item Data Type|List Item Type|Value|
 >|---|---|---|---|---|---|---|---|
 >| 8081,8085 |  | false | false | false | PortRange | PortRange | 8081,8085 |
@@ -5317,8 +5317,8 @@ Execute a search query on the LogRhythm log database.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Logrhythm.Search.Task.TaskId | String | The task ID returned from the database for the current search. This is actually the search GUID. | 
-| Logrhythm.Search.Task.StatusMessage | String | The task status returned from the database for the current search. | 
+| LogRhythm.Search.Task.TaskId | String | The task ID returned from the database for the current search. This is actually the search GUID. | 
+| LogRhythm.Search.Task.StatusMessage | String | The task status returned from the database for the current search. | 
 
 
 #### Command Example
@@ -5327,7 +5327,7 @@ Execute a search query on the LogRhythm log database.
 #### Context Example
 ```json
 {
-    "Logrhythm": {
+    "LogRhythm": {
         "Search": {
             "Task": {
                 "StatusMessage": "Success",
@@ -5362,25 +5362,25 @@ Get the search query result for the specified task ID. The task ID can be retrie
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Logrhythm.Search.Results.TaskStatus | String | Task status. | 
-| Logrhythm.Search.Results.TaskID | String | Task ID. | 
-| Logrhythm.Search.Results.Items.originEntityId | Number | Entity ID. | 
-| Logrhythm.Search.Results.Items.impactedIp | String | Impacted IP address. | 
-| Logrhythm.Search.Results.Items.classificationTypeName | String | Classification name. | 
-| Logrhythm.Search.Results.Items.logSourceName | String | Log source name. | 
-| Logrhythm.Search.Results.Items.entityName | String | Entity name. | 
-| Logrhythm.Search.Results.Items.normalDate | Date | Date. | 
-| Logrhythm.Search.Results.Items.vendorMessageId | String | Vendor log message. | 
-| Logrhythm.Search.Results.Items.priority | Number | Log priority. | 
-| Logrhythm.Search.Results.Items.sequenceNumber | String | Sequence number. | 
-| Logrhythm.Search.Results.Items.originHostId | Number | Origin host ID. | 
-| Logrhythm.Search.Results.Items.mpeRuleId | Number | Logrhythm rule ID. | 
-| Logrhythm.Search.Results.Items.originIp | String | Origin IP address. | 
-| Logrhythm.Search.Results.Items.mpeRuleName | String | Logrhythm rule name. | 
-| Logrhythm.Search.Results.Items.logSourceHostId | Number | Log source host ID. | 
-| Logrhythm.Search.Results.Items.originHost | String | Origin host. | 
-| Logrhythm.Search.Results.Items.logDate | Date | Log date. | 
-| Logrhythm.Search.Results.Items.classificationName | String | Log classification name. | 
+| LogRhythm.Search.Results.TaskStatus | String | Task status. | 
+| LogRhythm.Search.Results.TaskID | String | Task ID. | 
+| LogRhythm.Search.Results.Items.originEntityId | Number | Entity ID. | 
+| LogRhythm.Search.Results.Items.impactedIp | String | Impacted IP address. | 
+| LogRhythm.Search.Results.Items.classificationTypeName | String | Classification name. | 
+| LogRhythm.Search.Results.Items.logSourceName | String | Log source name. | 
+| LogRhythm.Search.Results.Items.entityName | String | Entity name. | 
+| LogRhythm.Search.Results.Items.normalDate | Date | Date. | 
+| LogRhythm.Search.Results.Items.vendorMessageId | String | Vendor log message. | 
+| LogRhythm.Search.Results.Items.priority | Number | Log priority. | 
+| LogRhythm.Search.Results.Items.sequenceNumber | String | Sequence number. | 
+| LogRhythm.Search.Results.Items.originHostId | Number | Origin host ID. | 
+| LogRhythm.Search.Results.Items.mpeRuleId | Number | Logrhythm rule ID. | 
+| LogRhythm.Search.Results.Items.originIp | String | Origin IP address. | 
+| LogRhythm.Search.Results.Items.mpeRuleName | String | Logrhythm rule name. | 
+| LogRhythm.Search.Results.Items.logSourceHostId | Number | Log source host ID. | 
+| LogRhythm.Search.Results.Items.originHost | String | Origin host. | 
+| LogRhythm.Search.Results.Items.logDate | Date | Log date. | 
+| LogRhythm.Search.Results.Items.classificationName | String | Log classification name. | 
 
 
 #### Command Example
@@ -5389,7 +5389,7 @@ Get the search query result for the specified task ID. The task ID can be retrie
 #### Context Example
 ```json
 {
-    "Logrhythm": {
+    "LogRhythm": {
         "Search": {
             "Results": {
                 "Items": [

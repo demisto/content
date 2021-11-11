@@ -3681,10 +3681,10 @@ script:
       isArray: false
     outputs:
     - type: String
-      contextPath: Logrhythm.Search.Task.TaskId
+      contextPath: LogRhythm.Search.Task.TaskId
       description: 'The task ID returned from the database for the current search. This is actually the search GUID.'
     - type: String
-      contextPath: Logrhythm.Search.Task.StatusMessage
+      contextPath: LogRhythm.Search.Task.StatusMessage
       description: 'The task status returned from the database for the current search.'
   - name: lr-get-query-result
     description: 'Get the search query result for the specified task ID. The task ID can be retrieved from the lr-execute-search-query command.'
@@ -3699,61 +3699,61 @@ script:
       isArray: false
       defaultValue: "50"
     outputs:
-    - contextPath: Logrhythm.Search.Results.TaskStatus
+    - contextPath: LogRhythm.Search.Results.TaskStatus
       description: 'Task status.'
       type: String
-    - contextPath: Logrhythm.Search.Results.TaskID
+    - contextPath: LogRhythm.Search.Results.TaskID
       description: 'Task ID.'
       type: String
-    - contextPath: Logrhythm.Search.Results.Items.originEntityId
+    - contextPath: LogRhythm.Search.Results.Items.originEntityId
       description: 'Entity ID.'
       type: Number
-    - contextPath: Logrhythm.Search.Results.Items.impactedIp
+    - contextPath: LogRhythm.Search.Results.Items.impactedIp
       description: 'Impacted IP address.'
       type: String
-    - contextPath: Logrhythm.Search.Results.Items.classificationTypeName
+    - contextPath: LogRhythm.Search.Results.Items.classificationTypeName
       description: 'Classification name.'
       type: String
-    - contextPath: Logrhythm.Search.Results.Items.logSourceName
+    - contextPath: LogRhythm.Search.Results.Items.logSourceName
       description: 'Log source name.'
       type: String
-    - contextPath: Logrhythm.Search.Results.Items.entityName
+    - contextPath: LogRhythm.Search.Results.Items.entityName
       description: 'Entity name.'
       type: String
-    - contextPath: Logrhythm.Search.Results.Items.normalDate
+    - contextPath: LogRhythm.Search.Results.Items.normalDate
       description: 'Date.'
       type: Date
-    - contextPath: Logrhythm.Search.Results.Items.vendorMessageId
+    - contextPath: LogRhythm.Search.Results.Items.vendorMessageId
       description: 'Vendor log message.'
       type: String
-    - contextPath: Logrhythm.Search.Results.Items.priority
+    - contextPath: LogRhythm.Search.Results.Items.priority
       description: 'Log priority.'
       type: Number
-    - contextPath: Logrhythm.Search.Results.Items.sequenceNumber
+    - contextPath: LogRhythm.Search.Results.Items.sequenceNumber
       description: 'Sequence number.'
       type: String
-    - contextPath: Logrhythm.Search.Results.Items.originHostId
+    - contextPath: LogRhythm.Search.Results.Items.originHostId
       description: 'Origin host ID.'
       type: Number
-    - contextPath: Logrhythm.Search.Results.Items.mpeRuleId
+    - contextPath: LogRhythm.Search.Results.Items.mpeRuleId
       description: 'Logrhythm rule ID.'
       type: Number
-    - contextPath: Logrhythm.Search.Results.Items.originIp
+    - contextPath: LogRhythm.Search.Results.Items.originIp
       description: 'Origin IP address.'
       type: String
-    - contextPath: Logrhythm.Search.Results.Items.mpeRuleName
+    - contextPath: LogRhythm.Search.Results.Items.mpeRuleName
       description: 'Logrhythm rule name.'
       type: String
-    - contextPath: Logrhythm.Search.Results.Items.logSourceHostId
+    - contextPath: LogRhythm.Search.Results.Items.logSourceHostId
       description: 'Log source host ID.'
       type: Number
-    - contextPath: Logrhythm.Search.Results.Items.originHost
+    - contextPath: LogRhythm.Search.Results.Items.originHost
       description: 'Origin host.'
       type: String
-    - contextPath: Logrhythm.Search.Results.Items.logDate
+    - contextPath: LogRhythm.Search.Results.Items.logDate
       description: 'Log date.'
       type: Date
-    - contextPath: Logrhythm.Search.Results.Items.classificationName
+    - contextPath: LogRhythm.Search.Results.Items.classificationName
       description: 'Log classification name.'
       type: String
   - name: lr-add-host
