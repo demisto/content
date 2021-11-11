@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Callable
 
 import syslogmp
-from syslog_rfc5424_parser import SyslogMessage
+from syslog_rfc5424_parser import SyslogMessage, ParseError
 
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
@@ -30,7 +30,18 @@ class SyslogMessageExtract:
 
 
 def parse_rfc_3164_format(log_message: bytes) -> SyslogMessageExtract:
-    syslog_message: syslogmp.Message = syslogmp.parse(log_message)
+    """
+    Receives a log message which is in RFC 3164 format. Parses it into SyslogMessageExtract data class object
+    Args:
+        log_message (bytes): Syslog message.
+
+    Returns:
+        (SyslogMessageExtract): Extraction data class
+    """
+    try:
+        syslog_message: syslogmp.Message = syslogmp.parse(log_message)
+    except syslogmp.parser.MessageFormatError as e:
+        raise DemistoException(f'Could not parse the log message. Error was: {e}') from e
     return SyslogMessageExtract(
         app_name=None,
         facility=syslog_message.facility.name,
@@ -46,16 +57,27 @@ def parse_rfc_3164_format(log_message: bytes) -> SyslogMessageExtract:
 
 
 def parse_rfc_5424_format(log_message: bytes) -> SyslogMessageExtract:
-    syslog_message: SyslogMessage = SyslogMessage.parse(log_message.decode('utf-8'))
+    """
+    Receives a log message which is in RFC 5424 format. Parses it into SyslogMessageExtract data class object
+    Args:
+        log_message (bytes): Syslog message.
+
+    Returns:
+        (SyslogMessageExtract): Extraction data class
+    """
+    try:
+        syslog_message: SyslogMessage = SyslogMessage.parse(log_message.decode('utf-8'))
+    except ParseError as e:
+        raise DemistoException(f'Could not parse the log message. Error was: {e}') from e
     return SyslogMessageExtract(
         app_name=syslog_message.appname,
-        facility=syslog_message.facility,
+        facility=syslog_message.facility.name,
         host_name=syslog_message.hostname,
         msg=syslog_message.msg,
         msg_id=syslog_message.msgid,
         process_id=syslog_message.procid,
         sd=syslog_message.sd,
-        severity=syslog_message.severity,
+        severity=syslog_message.severity.name,
         timestamp=syslog_message.timestamp,
         version=syslog_message.version
     )
@@ -79,6 +101,7 @@ def test_module(host_address: str, port: int) -> str:
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
     """
+    message: str = 'ok'
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
         try:
             s.bind((host_address, port))
@@ -86,6 +109,12 @@ def test_module(host_address: str, port: int) -> str:
             if "Can't assign requested address" in str(e):
                 message = 'The given IP address could not be accessed\n.Please make sure the IP address in valid' \
                           ' and can be accessed.'
+            elif 'nodename nor servname provided, or not known' in str(e):
+                message = 'Could not find the host address. Please verify host address is correct.'
+            elif 'Permission denied' in str(e):
+                message = 'Permission was denied. Make sure you have permissions to access to the given port.'
+            else:
+                raise e
     return message
 
 
@@ -114,22 +143,42 @@ def create_incident_from_syslog_message(extracted_message: SyslogMessageExtract,
     }
 
 
-def update_integration_context_samples(incident: dict) -> None:
+def update_integration_context_samples(incident: dict, max_samples: int = MAX_SAMPLES) -> None:
     """
     Updates the integration context samples with the newly created incident.
     If the size of the samples has reached `MAX_SAMPLES`, will pop out the latest sample.
     Args:
         incident (dict): The newly created incident.
+        max_samples (int): Max samples size.
 
     Returns:
         (None): Modifies the integration context samples field.
     """
     ctx = get_integration_context()
     updated_samples_list: List[Dict] = [incident] + ctx.get('samples', [])
-    if len(updated_samples_list) > MAX_SAMPLES:
+    if len(updated_samples_list) > max_samples:
         updated_samples_list.pop()
     ctx['samples'] = updated_samples_list
     set_integration_context(ctx)
+
+
+def log_message_passes_filter(log_message: SyslogMessageExtract, message_regex: Optional[str]) -> bool:
+    """
+    Given log message extraction and a possible message regex, checks if the message passes the filters:
+    1) Message regex is None, therefore no filter was asked to be made.
+    2) Message regex is not None: Filter the Syslog message if regex does not exist in the message,
+                                  if regex exists in the Syslog message, do not filter.
+    Args:
+        log_message (SyslogMessageExtract): The extracted details of a Syslog message.
+        message_regex (Optional[str]): Message regex to match if exists.
+
+    Returns:
+        (bool): True if the message shouldn't be filtered, false if the message should be filtered.
+    """
+    if not message_regex:
+        return True
+    regexp = re.compile(message_regex)
+    return True if regexp.search(log_message.msg) else False
 
 
 def perform_long_running_loop(s: socket.socket, log_format: str, message_regex: Optional[str],
@@ -156,22 +205,6 @@ def perform_long_running_loop(s: socket.socket, log_format: str, message_regex: 
         incident: dict = create_incident_from_syslog_message(extracted_message, incident_type)
         update_integration_context_samples(incident)
         demisto.createIncidents([incident])
-
-
-def log_message_passes_filter(log_message: SyslogMessageExtract, message_regex: Optional[str]) -> bool:
-    """
-    Given log message extraction and a possible message regex, checks if the message passes the filters:
-    1) Message regex is None, therefore no filter was asked to be made.
-    2) Message regex is not None: Filter the Syslog message if regex does not exist in the message,
-                                  if regex exists in the Syslog message, do not filter.
-    Args:
-        log_message (SyslogMessageExtract): The extracted details of a Syslog message.
-        message_regex (Optional[str]): Message regex to match if exists.
-
-    Returns:
-        (bool): True if the message shouldn't be filtered, false if the message should be filtered.
-    """
-    return not message_regex or (True if re.match(message_regex, log_message.msg) else False)
 
 
 def perform_long_running_execution(host_address: str, port: int, log_format: str, protocol: str,
@@ -218,7 +251,7 @@ def main() -> None:
         'longRunningPort': 32376,
         'log_format': RFC3164
     }
-    command = 'test-module'
+    command = 'long-running-execution'
 
     host_address: str = params.get('host_address', '')
     protocol: str = params.get('protocol', '')
@@ -261,10 +294,10 @@ def main() -> None:
 ''' ENTRY POINT '''
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
-    z = b'<116>Nov  9 17:07:20 M-C02DKB3QMD6M softwareupdated[288]: Removing client SUUpdateServiceClient pid=90550, uid=375597002, installAuth=NO rights=(), transactions=0 (/System/Library/PreferencePanes/SoftwareUpdate.prefPane/Contents/XPCServices/com.apple.preferences.softwareupdate.remoteservice.xpc/Contents/MacOS/com.apple.preferences.softwareupdate.remoteservice)\n'
+    # z = b'<116>Nov  9 17:07:20 M-C02DKB3QMD6M softwareupdated[288]: Removing client SUUpdateServiceClient pid=90550, uid=375597002, installAuth=NO rights=(), transactions=0 (/System/Library/PreferencePanes/SoftwareUpdate.prefPane/Contents/XPCServices/com.apple.preferences.softwareupdate.remoteservice.xpc/Contents/MacOS/com.apple.preferences.softwareupdate.remoteservice)\n'
     # z = """<165>1 2003-10-11T22:14:15.003Z mymachine.example.com evntslog - ID47 [exampleSDID@32473 iut="3" eventSource="Application" eventID="1011"] BOMAn application event log entry"""
     # x = SyslogMessage.parse(z)
     # z = 2
-    x = syslogmp.parse(z)
-    zzz = 32
+    # x = syslogmp.parse(z)
+    # zzz = 32
     main()
