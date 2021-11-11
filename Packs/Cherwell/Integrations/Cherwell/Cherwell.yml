@@ -540,6 +540,7 @@ script:
     outputs:
     - contextPath: Cherwell.FieldValueLookup
       type: string
+      description: Valid values for the field
     description: Operation to get potentially valid values for Business Object fields.
     name: cherwell-lookup-field-values
   dockerimage: demisto/python3:3.9.7.24076
