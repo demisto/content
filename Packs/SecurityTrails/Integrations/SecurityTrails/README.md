@@ -1,5 +1,5 @@
 This integration provides API access to the SecurityTrails platform.
-This integration was integrated and tested with version xx of SecurityTrails
+This integration was integrated and tested with V1 of SecurityTrails
 
 ## Configure SecurityTrails on Cortex XSOAR
 
