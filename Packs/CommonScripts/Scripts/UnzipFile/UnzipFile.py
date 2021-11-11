@@ -11,6 +11,7 @@ from tempfile import mkdtemp
 import shutil
 import shlex
 import zipfile as z
+import tarfile
 
 MAX_FILENAME_SIZE_BYTES = 255
 SLICE_FILENAME_SIZE_BYTES = 235
@@ -99,6 +100,8 @@ def extract(file_info, dir_path, zip_tool='7z', password=None):
     stdout = ''
     if '.rar' in file_name and sys.version_info > (3, 0):
         stdout = extract_using_unrar(file_path, dir_path, password=password)
+    elif '.tar' in file_name:
+        stdout = extract_using_tarfile(file_path, dir_path, file_name)
     else:
         if zip_tool == '7z':
             stdout = extract_using_7z(file_path, dir_path, password=password)
@@ -134,6 +137,20 @@ def extract_using_unrar(file_path, dir_path, password=None):
         else:
             return_error(str(stderr))
     return stdout
+
+
+def extract_using_tarfile(file_path: str, dir_path: str, file_name: str):
+    file_list = []
+    tar_type = 'r:'
+    if '.tar.gz' in file_name:
+        tar_type = 'r:gz'
+    tar = tarfile.open(file_path, tar_type)
+    tar.extractall(dir_path)
+    for root, _, files in os.walk(dir_path):
+        for file_ in files:
+            file_path = os.path.join(root, file_)
+            file_list.append(file_path)
+    return file_list
 
 
 def extract_using_7z(file_path, dir_path, password=None):
