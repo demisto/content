@@ -312,25 +312,26 @@ def domain_command(client, args):
                 "Phone": registrant_contact[0].get('Phone', None) if registrant_contact else None
             }
         }
+        dbot_score = Common.DBotScore(
+            indicator=domain,
+            indicator_type=DBotScoreType.DOMAIN,
+            integration_name='SecurityTrails',
+            score=Common.DBotScore.NONE
+        )
+        domain_indicator = Common.Domain(
+            domain=domain,
+            dbot_score=dbot_score
+        )
         md = tableToMarkdown(f"Domain {domain}:", domain_data)
         result = CommandResults(
             outputs_prefix="Domain",
             outputs_key_field="Name",
             outputs=domain_data,
+            indicator=domain_indicator,
             readable_output=md
         )
         command_results.append(result)
-        command_results.append(CommandResults(
-            outputs_prefix="DBotScore",
-            outputs_key_field=['Indicator', 'Vendor'],
-            outputs={
-                "Indicator": domain,
-                "Type": "domain",
-                "Vendor": "SecurityTrails",
-                "Score": 0
-            }
-        )
-        )
+        
     return_results(command_results)
 
 #################################
