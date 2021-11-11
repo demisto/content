@@ -7,7 +7,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * GenericPolling
 
 ### Integrations
-* CortexXDRIR
+* CortexXDRI
 
 ### Scripts
 * PrintErrorEntry
