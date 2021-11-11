@@ -9,6 +9,12 @@ configuration:
   type: 9
   required: true
   hiddenusername: true
+- display: Limit
+  name: limit
+  defaultvalue: 40
+  type: 0
+  required: false
+  additionalinfo: Limit of indicators to fetch from retrohunt job results.
 - display: Fetch indicators
   name: feed
   defaultvalue: 'true'
@@ -56,7 +62,7 @@ configuration:
   required: false
 - display: Feed Fetch Interval
   name: feedFetchInterval
-  defaultvalue: "240"
+  defaultvalue: "30"
   type: 19
   required: false
 - display: Bypass exclusion list
@@ -91,7 +97,7 @@ script:
   commands:
   - arguments:
     - name: limit
-      defaultValue: '10'
+      defaultValue: '40'
       description: The maximum number of results to return. The default value is 10.
       isArray: false
       default: false

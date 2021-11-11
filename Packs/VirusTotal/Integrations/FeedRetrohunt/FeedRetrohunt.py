@@ -19,7 +19,7 @@ class Client(BaseClient):
 
         return f'{malicious}/{total}'
 
-    def build_iterator(self, limit: int = 10, job_id: str = '') -> List:
+    def build_iterator(self, limit: int = 40, job_id: str = '') -> List:
         """Retrieves all entries from the feed.
         Returns:
             A list of objects, containing the indicators.
@@ -68,10 +68,10 @@ def test_module(client: Client, args: dict) -> str:
     client.list_last_job_matches()
     return 'ok'
 
-def fetch_indicators(client: Client,
+def fetch_indicators_command(client: Client,
                      tlp_color: Optional[str] = None,
                      feed_tags: List = [],
-                     limit: int = 10,
+                     limit: int = 40,
                      job_id: Optional[str] = None) -> List[Dict]:
     """Retrieves indicators from the feed
     Args:
@@ -146,11 +146,11 @@ def get_indicators_command(client: Client,
     Returns:
         Outputs.
     """
-    limit = int(args.get('limit', 10))
+    limit = int(args.get('limit', params.get('limit')))
     job_id = args.get('job_id')
     tlp_color = params.get('tlp_color')
     feed_tags = argToList(params.get('feedTags', ''))
-    indicators = fetch_indicators(client, tlp_color, feed_tags, limit, job_id)
+    indicators = fetch_indicators_command(client, tlp_color, feed_tags, limit, job_id)
 
     human_readable = tableToMarkdown('Indicators from VirusTotal Retrohunt Feed:',
                                      indicators,
