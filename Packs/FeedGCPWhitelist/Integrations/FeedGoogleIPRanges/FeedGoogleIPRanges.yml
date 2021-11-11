@@ -17,7 +17,7 @@ configuration:
     - All available Google IP ranges
   required: true
   type: 15
-  additionalinfo: IP address ranges grop to be fetched. see integration help for more information.
+  additionalinfo: IP address ranges group to be fetched. See integration help for more information.
 - additionalinfo: Indicators from this integration instance will be marked with this
     reputation
   defaultvalue: None
