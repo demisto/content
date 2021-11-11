@@ -29,35 +29,50 @@ configuration:
   name: timeZone
   required: false
   type: 0
-description: Query the Symantec Endpoint Protection Manager using the official REST API.
+- defaultvalue: '24'
+  display: Hours before the first fetch to retrieve incidents
+  name: fetchDelta
+  required: true
+  type: 0
+- defaultvalue: No
+  display: Fetch acknowledged incidents?
+  name: fetchAcknowledged
+  options:
+  - No
+  - Yes
+  required: true
+  type: 15
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+description: Query the Symantec Endpoint Protection Manager using the official REST
+  API.
 display: Symantec Endpoint Protection v2
 name: Symantec Endpoint Protection V2
 script:
   commands:
   - arguments:
-    - default: false
-      description: A CSV list of the displayed columns.
-      isArray: false
+    - description: A CSV list of the displayed columns.
       name: columns
-      required: false
-      secret: false
-    - default: false
-      description: Filters by the host name of the computer. A wild card search can be done using '*' at the end of the query.
-      isArray: false
+    - description: Filters by the host name of the computer. A wild card search can
+        be done using '*' at the end of the query.
       name: computerName
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
-      description: Indicates when a computer's status was last updated. The default is "0", which returns all results.
-      isArray: false
+    - defaultValue: '0'
+      description: Indicates when a computer's status was last updated. The default
+        is "0", which returns all results.
       name: lastUpdate
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The operating system by which to filter.
-      isArray: false
       name: os
       predefined:
       - CentOs
@@ -85,23 +100,12 @@ script:
       - WinXP
       - WinXPEmb
       - WinXPProf64
-      required: false
-      secret: false
-    - default: false
-      description: The number of results to include on each page. The default is 20.
-      isArray: false
+    - description: The number of results to include on each page. The default is 20.
       name: pageSize
-      required: false
-      secret: false
-    - default: false
-      description: The name of the group to which the endpoint belongs. A wild card search can be done using '*' at the end of the query.
-      isArray: false
+    - description: The name of the group to which the endpoint belongs. A wild card
+        search can be done using '*' at the end of the query.
       name: groupName
-      required: false
-      secret: false
-    deprecated: false
     description: Returns information about endpoints.
-    execution: false
     name: sep-endpoints-info
     outputs:
     - contextPath: SEPM.Endpoint.Hostname
@@ -192,15 +196,9 @@ script:
       description: The update time of the endpoint.
       type: String
   - arguments:
-    - default: false
-      description: The column by which the results are sorted.
-      isArray: false
+    - description: The column by which the results are sorted.
       name: columns
-      required: false
-      secret: false
-    deprecated: false
     description: Returns information about groups.
-    execution: false
     name: sep-groups-info
     outputs:
     - contextPath: SEPM.Groups
@@ -227,24 +225,18 @@ script:
     - contextPath: SEPM.Groups.policySerialNumber
       description: The serial number of the policy.
       type: number
-  - deprecated: false
+  - arguments: []
     description: Returns information about the system, such as version or AV definition.
-    execution: false
     name: sep-system-info
     outputs:
     - contextPath: SEPM.ServerAVDefVersion
       description: The version of the AV definition.
       type: string
   - arguments:
-    - default: false
-      description: The ID of the command.
-      isArray: false
+    - description: The ID of the command.
       name: commandId
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves the status of a command.
-    execution: false
     name: sep-command-status
     outputs:
     - contextPath: SEPM.LastCommand.CommandDetails
@@ -253,9 +245,8 @@ script:
     - contextPath: SEPM.LastCommand.CommandId
       description: The ID of the command.
       type: string
-  - deprecated: false
+  - arguments: []
     description: Retrieves the content of the client.
-    execution: false
     name: sep-client-content
     outputs:
     - contextPath: SEPM.ClientContentVersions
@@ -264,9 +255,8 @@ script:
     - contextPath: SEPM.LastUpdated
       description: The last update of a date.
       type: string
-  - deprecated: false
+  - arguments: []
     description: Retrieves a list of existing policies.
-    execution: false
     name: sep-list-policies
     outputs:
     - contextPath: SEPM.PoliciesList.PolicyName
@@ -294,72 +284,46 @@ script:
       description: The ID of the cloud group of the locations assigned to this policy.
       type: string
     - contextPath: SEPM.PoliciesList.AssignedCloudGroups.Locations
-      description: The list of location IDs belonging to a cloud group assigned to this policy.
+      description: The list of location IDs belonging to a cloud group assigned to
+        this policy.
       type: string
   - arguments:
-    - default: false
-      description: The ID of the group to which the endpoint belongs.
-      isArray: false
+    - description: The ID of the group to which the endpoint belongs.
       name: groupID
       required: true
-      secret: false
-    - default: false
-      description: The ID of the location of the endpoint.
-      isArray: false
+    - description: The ID of the location of the endpoint.
       name: locationID
       required: true
-      secret: false
-    - default: false
-      description: The type of policy to be assigned.
-      isArray: false
+    - description: The type of policy to be assigned.
       name: policyType
       required: true
-      secret: false
-    - default: false
-      description: The ID of the policy to be assigned.
-      isArray: false
+    - description: The ID of the policy to be assigned.
       name: policyID
       required: true
-      secret: false
-    deprecated: false
     description: Assigns an existing policy to a specified location.
-    execution: false
     name: sep-assign-policy
   - arguments:
-    - default: false
-      description: The group ID for which to list locations.
-      isArray: false
+    - description: The group ID for which to list locations.
       name: groupID
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves a list of location IDs for a specified group.
-    execution: false
     name: sep-list-locations
     outputs:
     - contextPath: SEPM.Locations.ID
       description: The ID of the location.
       type: Unknown
   - arguments:
-    - default: false
-      description: The IP or hostname of the endpoint.
-      isArray: false
+    - description: The IP or hostname of the endpoint.
       name: endpoint
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Adds or removes an endpoint from quarantine.
-      isArray: false
       name: actionType
       predefined:
       - Add
       - Remove
       required: true
-      secret: false
-    deprecated: false
     description: Quarantines an endpoint according to its policy.
-    execution: false
     name: sep-endpoint-quarantine
     outputs:
     - contextPath: SEPM.Quarantine.CommandID
@@ -372,47 +336,36 @@ script:
       description: The IP or hostname of the identifier of the endpoint.
       type: string
   - arguments:
-    - default: false
-      description: The IP address or hostname of the endpoint.
-      isArray: false
+    - description: The IP address or hostname of the endpoint.
       name: endpoint
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: The scan type of the endpoint. Can be "ScanNow_Quick", "ScanNow_Full", or "ScanNow_Custom".
-      isArray: false
+      description: The scan type of the endpoint. Can be "ScanNow_Quick", "ScanNow_Full",
+        or "ScanNow_Custom".
       name: scanType
       predefined:
       - ScanNow_Quick
       - ScanNow_Full
       - ScanNow_Custom
       required: true
-      secret: false
-    deprecated: false
     description: Scans an endpoint.
-    execution: false
     name: sep-scan-endpoint
     outputs:
     - contextPath: SEPM.Scan.CommandID
       description: The ID of the command that was run.
       type: string
     - contextPath: SEPM.Scan.Type
-      description: The type of the scan. Can be "ScanNow_Quick", "ScanNow_Full", or "ScanNow_Custom".
+      description: The type of the scan. Can be "ScanNow_Quick", "ScanNow_Full", or
+        "ScanNow_Custom".
       type: string
     - contextPath: SEPM.Scan.Endpoint
       description: The IP or hostname of the identifier of the endpoint.
       type: Unknown
   - arguments:
-    - default: false
-      description: The IP address or hostname of the endpoint.
-      isArray: false
+    - description: The IP address or hostname of the endpoint.
       name: endpoint
       required: true
-      secret: false
-    deprecated: false
     description: Updates the content of a specified client.
-    execution: false
     name: sep-update-endpoint-content
     outputs:
     - contextPath: SEPM.Update.Endpoint
@@ -422,75 +375,239 @@ script:
       description: The ID of the command for which to check the status.
       type: String
   - arguments:
-    - default: false
-      description: The ID of the group to which to move the client.
-      isArray: false
+    - description: The ID of the group to which to move the client.
       name: groupID
       required: true
-      secret: false
-    - default: false
-      description: The hardware key of the client to be moved.
-      isArray: false
+    - description: The hardware key of the client to be moved.
       name: hardwareKey
       required: true
-      secret: false
-    deprecated: false
     description: Moves a client to a group.
-    execution: false
     name: sep-move-client-to-group
   - arguments:
-    - default: false
-      description: Sets which columns will be displayed.
-      isArray: false
+    - description: Sets which columns will be displayed.
       name: columns
-      required: false
-      secret: false
-    - default: false
-      description: Filters by the host name of the computer. A wild card search can be done using '*' at the end of the query.
-      isArray: false
+    - description: Filters by the host name of the computer. A wild card search can
+        be done using '*' at the end of the query.
       name: computerName
-      required: false
-      secret: false
-    - default: false
-      description: Indicates when a computer's status was last updated. The default is "0", which returns all results.
-      isArray: false
+    - description: Indicates when a computer's status was last updated. The default
+        is "0", which returns all results.
       name: lastUpdate
-      required: false
-      secret: false
-    - default: false
-      description: The operating system by which to filter.
-      isArray: false
+    - description: The operating system by which to filter.
       name: os
-      required: false
-      secret: false
-    - default: false
-      description: The number of results to include on each page. The default is 20.
-      isArray: false
+    - description: The number of results to include on each page. The default is 20.
       name: pageSize
-      required: false
-      secret: false
-    - default: false
-      description: The name of the group to which the endpoint belongs. A wild card search can be done using '*'at the end of the query.
-      isArray: false
+    - description: The name of the group to which the endpoint belongs. A wild card
+        search can be done using '*'at the end of the query.
       name: groupName
-      required: false
-      secret: false
-    - default: false
-      description: desiredVersion
-      isArray: false
+    - description: desiredVersion
       name: desiredVersion
-      required: false
-      secret: false
-    deprecated: false
-    description: Get endpoints for a running version that is different than the target version or the desired version (if specified).
-    execution: false
+    description: Get endpoints for a running version that is different than the target
+      version or the desired version (if specified).
     name: sep-identify-old-clients
-  isfetch: false
-  runonce: false
-  script: '-'
-  type: python
-  subtype: python2
+  - arguments: []
+    description: Gets a list and count of the online and offline clients.
+    name: sep-stats-online-offline-clients
+    outputs:
+    - contextPath: SEPM.Stats.Client.OnlineStatus.online
+      description: Number of online clients
+      type: number
+    - contextPath: SEPM.Stats.Client.OnlineStatus.offline
+      description: Number of offline clients
+      type: number
+    - contextPath: SEPM.Stats.Client.OnlineStatus.total
+      description: Total number of clients
+      type: number
+  - arguments: []
+    description: Gets threat statistics
+    name: sep-stats-get-threat-stats
+    outputs:
+    - contextPath: SEPM.Stats.Threat.lastUpdated
+      description: Last updated date
+      type: date
+    - contextPath: SEPM.Stats.Threat.infectedClients
+      description: Number of infected clients
+      type: number
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: Day
+      description: The type of report
+      name: report_type
+      predefined:
+      - Hour
+      - Day
+      - Week
+      - Month
+      required: true
+    - defaultValue: '604800'
+      description: Start time in seconds. Default is 604800 or 7 days
+      name: start_time
+    - description: End time in second. Default is the current timestamp/now
+      name: end_time
+    description: Gets a list of threats that were automatically resolved. Threats
+      include viruses, spyware, and risks
+    name: sep-stats-get-autoresolved-attacks-count
+    outputs:
+    - contextPath: SEPM.Stats.AutoResolvedAttacks.clientsCount
+      description: The number of attacks that were automatically resolved during a
+        specified time period
+      type: number
+    - contextPath: SEPM.Stats.AutoResolvedAttacks.epochTime
+      type: number
+    - contextPath: SEPM.Stats.AutoResolvedAttacks.datetime
+      type: date
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: Day
+      description: The type of report
+      name: report_type
+      predefined:
+      - Hour
+      - Day
+      - Week
+      - Month
+      required: true
+    - defaultValue: '604800'
+      description: Start time in seconds. Default is 604800 or 7 days
+      name: start_time
+    - description: End time in second. Default is the current timestamp/now
+      name: end_time
+    description: Gets a list and count for a specified time range of infected clients
+    name: sep-stats-get-infected-clients-count
+    outputs:
+    - contextPath: SEPM.Stats.Client.Infection.clientsCount
+      description: The number of attacks that were automatically resolved during a
+        specified time period
+      type: number
+    - contextPath: SEPM.Stats.Client.Infection.epochTime
+      type: number
+    - contextPath: SEPM.Stats.Client.Infection.datetime
+      type: date
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: Day
+      description: The type of report
+      name: report_type
+      predefined:
+      - Hour
+      - Day
+      - Week
+      - Month
+      required: true
+    - defaultValue: '604800'
+      description: Start time in seconds. Default is 604800 or 7 days
+      name: start_time
+    - description: End time in second. Default is the current timestamp/now
+      name: end_time
+    description: Gets a list for a specified time range of clients reporting malware
+      events
+    name: sep-stats-get-malware-clients-count
+    outputs:
+    - contextPath: SEPM.Stats.Client.Malware.clientsCount
+      description: The number of attacks that were automatically resolved during a
+        specified time period
+      type: number
+    - contextPath: SEPM.Stats.Client.Malware.epochTime
+      type: number
+    - contextPath: SEPM.Stats.Client.Malware.datetime
+      type: date
+  - arguments:
+    - defaultValue: '604800'
+      description: Start time in seconds. Default is 604800 or 7 days
+      name: start_time
+    - description: End time in second. Default is the current timestamp/now
+      name: end_time
+    description: Gets a list for a specified time range the risk distribution by protection
+      technology information for the given time range
+    name: sep-stats-get-risk-distribution
+    outputs:
+    - contextPath: SEPM.Stats.Client.Risk.riskCount
+      description: The number of attacks that were automatically resolved during a
+        specified time period
+      type: number
+    - contextPath: SEPM.Stats.Client.Risk.protectionName
+      type: string
+    - contextPath: SEPM.Stats.Client.Risk.protectionEnabledClientCount
+      type: number
+  - arguments: []
+    description: Gets a list and count of clients by client product version
+    name: sep-stats-get-client-version
+    outputs:
+    - contextPath: SEPM.Stats.Client.Version.version
+      description: The client's product version number
+      type: string
+    - contextPath: SEPM.Stats.Client.Version.clientsCount
+      description: The number of clients on each product version
+      type: number
+    - contextPath: SEPM.Stats.Client.Version.formattedVersion
+      description: The formatted product version number. For example, 12.1.5 (12.1
+        RU5) build 5337, or 12.1 (12.1) build 4971
+      type: string
+  - arguments: []
+    description: Gets replication status
+    name: sep-replication-status
+    outputs:
+    - contextPath: SEPM.Replication.Status.siteName
+      description: he local site name of the replication partner
+      type: string
+    - contextPath: SEPM.Replication.Status.siteLocation
+      description: The geographical location of the local replication site. Currently,
+        this always displays NA
+      type: string
+    - contextPath: SEPM.Replication.Status.id
+      description: The local site id of the replication partner
+      type: number
+    - contextPath: SEPM.Replication.Status.replicationPartnerStatusList.name
+      description: Replication partner status
+      type: string
+    - contextPath: SEPM.Replication.Status.replicationPartnerStatusList.location
+      description: The geographical location of the replication site. Currently, this
+        always displays NA
+      type: string
+    - contextPath: SEPM.Replication.Status.replicationPartnerStatusList.status_code
+      description: The replication status. Possible values include SUCCEEDED, CONNECTING,
+        AUTHENTICATING, SUBMITTING, PROCESSING, CANCELED, NEVER_REPLICATED, and FAILED_CONNECT
+      type: string
+    - contextPath: SEPM.Replication.Status.replicationPartnerStatusList.lastSuccessfulRunTime
+      description: The last time that the replication ran and succeeded
+      type: number
+    - contextPath: SEPM.Replication.Status.replicationPartnerStatusList.lastRunTime
+      description: The last time that the replication ran
+      type: number
+    - contextPath: SEPM.Replication.Status.replicationPartnerStatusList.nextRunTime
+      description: The next time that the replication is scheduled to run
+      type: number
+    - contextPath: SEPM.Replication.Status.replicationPartnerStatusList.id
+      description: Replication partner id
+      type: string
+  - arguments: []
+    description: Check whether site has replication partner. Returns a boolean value.
+    name: sep-replication-site-has-replication-partner
+  - arguments: []
+    description: Returns LicenseSummary object, which contains information about license
+      type and expiration state.
+    name: sep-license-summary
+    outputs:
+    - contextPath: SEPM.License.Summary.license_type
+      type: string
+    - contextPath: SEPM.License.Summary.ended
+      type: boolean
+    - contextPath: SEPM.License.Summary.service_end_date
+      type: date
+    - contextPath: SEPM.License.Summary.service_expiration_date
+      type: date
+    - contextPath: SEPM.License.Summary.serial_number
+      type: string
+    - contextPath: SEPM.License.Summary.ordered_quantity
+      type: number
+    - contextPath: SEPM.License.Summary.unexpired_seats
+      type: number
   dockerimage: demisto/python:2.7.18.24066
+  isFetchSamples: true
+  isfetch: true
+  runonce: false
+  script: ''
+  subtype: python2
+  type: python
+fromversion: 5.0.0
 tests:
 - SymantecEndpointProtection_Test
-fromversion: 5.0.0

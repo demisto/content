@@ -1,8 +1,10 @@
-import demistomock as demisto
-from CommonServerPython import *
-import requests
 import json
 import re
+from datetime import datetime, timedelta
+
+import demistomock as demisto  # noqa: F401
+import requests
+from CommonServerPython import *  # noqa: F401
 
 requests.packages.urllib3.disable_warnings()
 
@@ -43,8 +45,64 @@ GROUPS_INFO_DEFAULT_COLUMNS = [
 
 EPOCH_MINUTE = 60 * 1000
 EPOCH_HOUR = 60 * EPOCH_MINUTE
+FETCH_DELTA = int(demisto.params().get('fetchDelta', 24))
+FETCH_ACKNOWLEDGED_EVENTS = False if demisto.params().get('fetchAcknowledged', 'No') == 'No' else True
+SEP_EVENT_DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S.0'
+OUTPUT_DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 '''HELPER FUNCTIONS'''
+
+
+def get_stats_args(report_type_required=True):
+    args = demisto.args()
+
+    # Get report type
+    report_type = None
+    if report_type_required is True:
+        report_type = args.get("report_type")
+        if report_type not in ["Hour", "Day", "Week", "Month"]:
+            raise Exception("Invalid value provided for report type. Must be Hour, Day, Week or Month")
+
+    start_time = get_arg_start_time_to_epoch(args)
+    end_time = get_arg_end_time_to_epoch(args)
+
+    return end_time, report_type, start_time
+
+
+def epoch_to_date_string(epoch):
+    return datetime.fromtimestamp(epoch).strftime(OUTPUT_DATETIME_FORMAT)
+
+
+def get_utcfromtimestamp(time):
+    return datetime.utcfromtimestamp(time)
+
+
+def get_utcnow():
+    return datetime.utcnow()
+
+
+def epoch_seconds(d=None):
+    if not d:
+        d = get_utcnow()
+    return int((d - get_utcfromtimestamp(0)).total_seconds())
+
+
+def get_arg_end_time_to_epoch(args):
+    # Default is now.
+    end_time = args.get("end_time", None)
+    if end_time is None:
+        end_time = epoch_seconds()
+    else:
+        time_ago = get_utcnow() - timedelta(seconds=int(args.get("end_time")))
+        end_time = epoch_seconds(time_ago)
+    return end_time
+
+
+def get_arg_start_time_to_epoch(args):
+    # Default is seven days ago.
+    time_ago = get_utcnow() - timedelta(seconds=int(args.get("start_time", 604800)))
+    start_time = epoch_seconds(time_ago)
+    return start_time
 
 
 def fix_url(base):
@@ -89,11 +147,11 @@ def build_query_params(params):
     return '?' + query_params if query_params else ''
 
 
-def do_auth(server, crads, insecure, domain):
+def do_auth(server, creds, insecure, domain):
     url = fix_url(str(server)) + 'sepm/api/v1/identity/authenticate'
     body = {
-        'username': crads.get('identifier') if crads.get('identifier') else '',
-        'password': crads.get('password') if crads.get('password') else '',
+        'username': creds.get('identifier') if creds.get('identifier') else '',
+        'password': creds.get('password') if creds.get('password') else '',
         'domain': domain if domain else ''
     }
     res = requests.post(url, headers={"Content-Type": "application/json"}, data=json.dumps(body), verify=not insecure)
@@ -173,11 +231,42 @@ def parse_response(resp):
             return_error('Error: {}'.format(resp))
 
 
-def get_token_from_response(resp):
-    if resp.get('token'):
-        return resp.get('token')
-    else:
-        return_error('No token: {}'.format(resp))
+def get_token():
+    integration_context = get_integration_context()
+    refresh_token = integration_context.get('current_refresh_token', '')
+
+    # Set keywords. Default without the scope prefix.
+    access_token_keyword = 'access_token'
+    valid_until_keyword = 'valid_until'
+
+    access_token = integration_context.get(access_token_keyword)
+    valid_until = integration_context.get(valid_until_keyword)
+    if access_token and valid_until:
+        if epoch_seconds() < valid_until:
+            return access_token
+
+    resp = do_auth(server=demisto.getParam('server'), creds=demisto.getParam(
+        'authentication'), insecure=demisto.getParam('insecure'), domain=demisto.getParam('domain'))
+
+    access_token = resp.get("token")
+    expires_in = resp.get("tokenExpiration")
+    refresh_token = resp.get("refreshToken")
+
+    time_now = epoch_seconds()
+    time_buffer = 5  # seconds by which to shorten the validity period
+    if expires_in - time_buffer > 0:
+        # err on the side of caution with a slightly shorter access token validity period
+        expires_in = expires_in - time_buffer
+
+    valid_until = time_now + expires_in
+    integration_context.update({
+        access_token_keyword: access_token,
+        valid_until_keyword: valid_until,
+        'current_refresh_token': refresh_token
+    })
+
+    set_integration_context(integration_context)
+    return access_token
 
 
 def choose_columns(column_arg, default_list):
@@ -274,7 +363,8 @@ def update_content(token, computer_id):
         error_code = demisto.get(
             res_json, 'Envelope.Body.runClientCommandUpdateContentResponse.CommandClientResult.inputErrors.errorCode')
         error_message = demisto.get(
-            res_json, 'Envelope.Body.runClientCommandUpdateContentResponse.CommandClientResult.inputErrors.errorMessage')
+            res_json,
+            'Envelope.Body.runClientCommandUpdateContentResponse.CommandClientResult.inputErrors.errorMessage')
         if error_code or error_message:
             return_error('An error response has returned from server:'
                          ' {0} with code: {1}'.format(error_message, error_code))
@@ -524,7 +614,14 @@ def filter_only_old_clients(filtered_json_response, desired_version):
     return filtered
 
 
-'''COMMANDS'''
+def event_to_incident(event):
+    occurred = datetime.strptime(event.get("eventDateTime"), SEP_EVENT_DATETIME_FORMAT)
+    incident = {
+        'name': event.get("subject"),
+        'occurred': occurred.isoformat().split('.')[0] + 'Z',
+        'rawJSON': json.dumps(event)
+    }
+    return incident
 
 
 def system_info_command(token):
@@ -801,19 +898,407 @@ def move_client_to_group_command(token):
         })
 
 
+def fetch_incidents(token):
+    json_response = do_get(token, False, 'sepm/api/v1/events/critical')
+    if json_response is None:
+        raise Exception("The response received is malformed. Null received.")
+
+    return json_response
+
+
+def fetch_incidents_command(token):
+    last_run = demisto.getLastRun()
+    last_fetch = last_run.get('time')
+
+    # handle first time fetch
+    if last_fetch is None:
+        last_fetch = datetime.now() - timedelta(hours=FETCH_DELTA)
+    else:
+        last_fetch = datetime.strptime(last_fetch, OUTPUT_DATETIME_FORMAT)
+
+    current_fetch = last_fetch
+
+    incidents = []
+    response = fetch_incidents(token)
+    events = response.get("criticalEventsInfoList", [])
+    for event in events:
+
+        event_acknowledged = False if event.get("acknowledged", 0) == 0 else True
+        if event_acknowledged and not FETCH_ACKNOWLEDGED_EVENTS:
+            demisto.info("Skipping event " + event.get('eventId') + " because it has already been acknowledged.")
+            continue
+
+        incident = event_to_incident(event)
+        temp_date = datetime.strptime(incident['occurred'], OUTPUT_DATETIME_FORMAT)
+
+        # update last run
+        if temp_date > last_fetch:
+            last_fetch = temp_date + timedelta(seconds=1)
+
+        # avoid duplication due to weak time query
+        if temp_date > current_fetch:
+            incidents.append(incident)
+
+    demisto.setLastRun({'time': last_fetch.isoformat().split('.')[0] + 'Z'})
+    demisto.incidents(incidents)
+
+
+def list_online_offline_clients(token):
+    json_response = do_get(token, False, 'sepm/api/v1/stats/client/onlinestatus')
+    if json_response is None:
+        raise Exception("The response received is malformed. Null received.")
+
+    return json_response
+
+
+def list_online_offline_clients_command(token):
+    response = list_online_offline_clients(token)
+    client_count_stats_list = response.get("clientCountStatsList", [])
+    online_count = offline_count = 0
+    for item in client_count_stats_list:
+        status = item.get("status").lower()
+        if status == "online":
+            online_count = item.get("clientsCount")
+
+        if status == "offline":
+            offline_count = item.get("clientsCount")
+
+    context = {
+        "online": online_count,
+        "offline": offline_count,
+        "total": online_count + offline_count
+    }
+
+    human_readable = tableToMarkdown("Online-offline clients", context, headerTransform=pascalToSpace)
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': response,
+        'HumanReadable': human_readable,
+        'IgnoreAutoExtract': True,
+        'EntryContext': {
+            'SEPM.Stats.Client.OnlineStatus': context
+        }
+    })
+
+
+def get_threat_stats(token):
+    json_response = do_get(token, False, 'sepm/api/v1/stats/threat')
+    if json_response is None:
+        raise Exception("The response received is malformed. Null received.")
+
+    return json_response
+
+
+def get_threat_stats_command(token):
+    response = get_threat_stats(token)
+    epoch_time = demisto.get(response, "Stats.lastUpdated")
+
+    last_update_date = epoch_to_date_string(epoch_time)
+    context = response.get("Stats")
+    context["lastUpdated"] = last_update_date
+
+    human_readable = tableToMarkdown("Threat Stats", context, headerTransform=pascalToSpace)
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': response,
+        'HumanReadable': human_readable,
+        'IgnoreAutoExtract': True,
+        'EntryContext': {
+            'SEPM.Stats.Threat': context
+        }
+    })
+
+
+def get_autoresolved_attack_count(token):
+    end_time, report_type, start_time = get_stats_args()
+
+    url = 'sepm/api/v1/stats/autoresolved/{0}/{1}/to/{2}'.format(report_type, start_time, end_time)
+    json_response = do_get(token, False, url)
+    if json_response is None:
+        raise Exception("The response received is malformed. Null received.")
+
+    return json_response
+
+
+def get_autoresolved_attack_count_command(token):
+    response = get_autoresolved_attack_count(token)
+    auto_resolved_attacks = response.get("autoResolvedAttacks")
+    context = []
+    for auto_resolved_attack in auto_resolved_attacks:
+        epoch_time = auto_resolved_attack.get("epochTime")
+        date_string = epoch_to_date_string(epoch_time)
+        context.append({
+            "clientsCount": auto_resolved_attack.get("autoResolvedAttacksCount"),
+            "epochTime": epoch_time,
+            "datetime": date_string
+        })
+
+    human_readable = tableToMarkdown("Auto-resolved attacks", context, headerTransform=pascalToSpace)
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': response,
+        'HumanReadable': human_readable,
+        'IgnoreAutoExtract': True,
+        'EntryContext': {
+            'SEPM.Stats.AutoResolvedAttacks': context
+        }
+    })
+
+
+def get_infected_clients_count(token):
+    end_time, report_type, start_time = get_stats_args()
+
+    url = 'sepm/api/v1/stats/client/infection/{0}/{1}/to/{2}'.format(report_type, start_time, end_time)
+    json_response = do_get(token, False, url)
+    if json_response is None:
+        raise Exception("The response received is malformed. Null received.")
+
+    return json_response
+
+
+def get_infected_clients_count_command(token):
+    response = get_infected_clients_count(token)
+    infected_clients = response.get("infectedClientStats")
+    context = []
+    for infected_client in infected_clients:
+        epoch_time = infected_client.get("epochTime")
+        date_string = epoch_to_date_string(epoch_time)
+        context.append({
+            "clientsCount": infected_client.get("clientsCount"),
+            "epochTime": epoch_time,
+            "datetime": date_string
+        })
+
+    human_readable = tableToMarkdown("Infected Clients", context, headerTransform=pascalToSpace)
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': response,
+        'HumanReadable': human_readable,
+        'IgnoreAutoExtract': True,
+        'EntryContext': {
+            'SEPM.Stats.Client.Infection': context
+        }
+    })
+
+
+def get_malware_clients_count(token):
+    end_time, report_type, start_time = get_stats_args()
+
+    url = 'sepm/api/v1/stats/client/malware/{0}/{1}/to/{2}'.format(report_type, start_time, end_time)
+    json_response = do_get(token, False, url)
+    if json_response is None:
+        raise Exception("The response received is malformed. Null received.")
+
+    return json_response
+
+
+def get_malware_clients_count_command(token):
+    response = get_malware_clients_count(token)
+    malware_clients = response.get("malwareClientStats")
+    context = []
+    for malware_client in malware_clients:
+        epoch_time = malware_client.get("epochTime")
+        date_string = epoch_to_date_string(epoch_time)
+        context.append({
+            "clientsCount": malware_client.get("clientsCount"),
+            "epochTime": epoch_time,
+            "datetime": date_string
+        })
+
+    human_readable = tableToMarkdown("Clients Reporting Malware Events", context, headerTransform=pascalToSpace)
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': response,
+        'HumanReadable': human_readable,
+        'IgnoreAutoExtract': True,
+        'EntryContext': {
+            'SEPM.Stats.Client.Malware': context
+        }
+    })
+
+
+def get_risk_distribution(token):
+    end_time, report_type, start_time = get_stats_args(report_type_required=False)
+
+    url = 'sepm/api/v1/stats/client/risk/{0}/to/{1}'.format(start_time, end_time)
+    json_response = do_get(token, False, url)
+    if json_response is None:
+        raise Exception("The response received is malformed. Null received.")
+
+    return json_response
+
+
+def get_risk_distribution_command(token):
+    response = get_risk_distribution(token)
+    context = response.get("riskDistributionStats")
+    human_readable = tableToMarkdown("Risk Distribution", context, headerTransform=pascalToSpace)
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': response,
+        'HumanReadable': human_readable,
+        'IgnoreAutoExtract': True,
+        'EntryContext': {
+            'SEPM.Stats.Client.Risk': context
+        }
+    })
+
+
+def get_client_version(token):
+    url = 'sepm/api/v1/stats/client/version'
+    json_response = do_get(token, False, url)
+    if json_response is None:
+        raise Exception("The response received is malformed. Null received.")
+
+    return json_response
+
+
+def get_client_version_command(token):
+    response = get_client_version(token)
+    context = response.get("clientVersionList")
+    human_readable = tableToMarkdown("Client Version", context, headerTransform=pascalToSpace)
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': response,
+        'HumanReadable': human_readable,
+        'IgnoreAutoExtract': True,
+        'EntryContext': {
+            'SEPM.Stats.Client.Version': context
+        }
+    })
+
+
+def get_replication_status(token):
+    url = 'sepm/api/v1/replication/status'
+    json_response = do_get(token, False, url)
+    if json_response is None:
+        raise Exception("The response received is malformed. Null received.")
+
+    return json_response
+
+
+def get_replication_status_command(token):
+    response = get_replication_status(token)
+    context = response.get("replicationStatus")
+    human_readable = tableToMarkdown("Replication Status", context, headerTransform=pascalToSpace)
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': response,
+        'HumanReadable': human_readable,
+        'IgnoreAutoExtract': True,
+        'EntryContext': {
+            'SEPM.Replication.Status': context
+        }
+    })
+
+
+def site_has_replication_partner(token):
+    url = 'sepm/api/v1/replication/is_replicated'
+    json_response = do_get(token, False, url)
+    if json_response is None:
+        raise Exception("The response received is malformed. Null received.")
+
+    return json_response
+
+
+def site_has_replication_partner_command(token):
+    response = site_has_replication_partner(token)
+    if isinstance(response, bool):
+        demisto.results(response)
+    else:
+        raise Exception("An unexpected response was received. Expected boolean but got " + type(response))
+
+
+def replicate_site(token):
+    args = demisto.args()
+    params = {
+        "partnerSiteName": args.get("partner_site_name"),
+        "logs": argToBoolean(args.get("logs")),
+        "content": argToBoolean(args.get("content"))
+    }
+
+    params = createContext(params, removeNull=True)
+    if len(params) < 3:
+        raise Exception("partner_site_name, logs and content are required. Please provide values for these parameters.")
+
+    url = 'sepm/api/v1/replication/replicatenow' + build_query_params(params)
+    json_response = do_post(token=token, is_xml=False, suffix=url, body={})
+    if json_response is None:
+        raise Exception("The response received is malformed. Null received.")
+
+    return json_response
+
+
+def replicate_site_command(token):
+    has_replication_partner = site_has_replication_partner(token)
+    if not has_replication_partner:
+        raise Exception("Cannot replicate a site that does not have a replication partner")
+
+    response = replicate_site(token)
+    human_readable = tableToMarkdown("Replication All Status", response, headerTransform=pascalToSpace)
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': response,
+        'HumanReadable': human_readable,
+        'IgnoreAutoExtract': True,
+        'EntryContext': {
+            'SEPM.Replication.Code': response.get("code")
+        }
+    })
+
+
+def get_license_summary(token):
+    url = 'sepm/api/v1/licenses/summary'
+    json_response = do_get(token, False, url)
+    if json_response is None:
+        raise Exception("The response received is malformed. Null received.")
+
+    return json_response
+
+
+def get_license_summary_command(token):
+    response = get_license_summary(token)
+    human_readable = tableToMarkdown("Licenses Summary", response, headerTransform=pascalToSpace)
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': response,
+        'HumanReadable': human_readable,
+        'IgnoreAutoExtract': True,
+        'EntryContext': {
+            'SEPM.License.Summary': response
+        }
+    })
+
+
 def main():
     current_command = demisto.command()
     try:
-        '''
-        Before EVERY command the following tow lines are performed (do_auth and get_token_from_response)
-        '''
-        resp = do_auth(server=demisto.getParam('server'), crads=demisto.getParam(
-            'authentication'), insecure=demisto.getParam('insecure'), domain=demisto.getParam('domain'))
-        token = get_token_from_response(resp)
+        token = get_token()
         if current_command == 'test-module':
             # This is the call made when pressing the integration test button.
             if token:
                 demisto.results('ok')
+        if current_command == 'fetch-incidents':
+            fetch_incidents_command(token)
         if current_command == 'sep-system-info':
             system_info_command(token)
         if current_command == 'sep-client-content':
@@ -840,6 +1325,28 @@ def main():
             move_client_to_group_command(token)
         if current_command == 'sep-identify-old-clients':
             old_clients_command(token)
+        if current_command == 'sep-stats-online-offline-clients':
+            list_online_offline_clients_command(token)
+        if current_command == 'sep-stats-get-threat-stats':
+            get_threat_stats_command(token)
+        if current_command == 'sep-stats-get-autoresolved-attacks-count':
+            get_autoresolved_attack_count_command(token)
+        if current_command == 'sep-stats-get-infected-clients-count':
+            get_infected_clients_count_command(token)
+        if current_command == 'sep-stats-get-malware-clients-count':
+            get_malware_clients_count_command(token)
+        if current_command == 'sep-stats-get-risk-distribution':
+            get_risk_distribution_command(token)
+        if current_command == 'sep-stats-get-client-version':
+            get_client_version_command(token)
+        if current_command == 'sep-replication-status':
+            get_replication_status_command(token)
+        if current_command == 'sep-replication-replicate':
+            replicate_site_command(token)
+        if current_command == 'sep-replication-site-has-replication-partner':
+            site_has_replication_partner_command(token)
+        if current_command == 'sep-license-summary':
+            get_license_summary_command(token)
     except Exception as ex:
         return_error('Cannot perform the command: {}. Error: {}'.format(current_command, ex), ex)
 
