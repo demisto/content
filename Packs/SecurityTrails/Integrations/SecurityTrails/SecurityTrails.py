@@ -745,8 +745,8 @@ def get_whois_history_command(client, args):
         outputs_key_field="name",
         outputs={
             "name": hostname,
-            "whois_history": res.get('items', []),
-            "whois_history_count": res.get('count', 0)
+            "WHOIS_history": res.get('items', []),
+            "WHOIS_history_count": res.get('count', 0)
         },
         readable_output=readable_output
     )
