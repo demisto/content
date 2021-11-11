@@ -15,7 +15,7 @@ APP_NAME = 'ms-management-api'
 PUBLISHER_IDENTIFIER = 'ebac1a16-81bf-449b-8d43-5732c3c1d999'  # This isn't a secret and is public knowledge.
 
 # argument timeout is used (if provided). Else, the timeout parameter is used as default.
-timeout_value = int(demisto.getArg('timeout') or demisto.getParam('timeout'))
+timeout_value = int(demisto.getArg('timeout') or demisto.getParam('timeout') or 15)  # 15 is stated for running in IDE
 
 CONTENT_TYPE_TO_TYPE_ID_MAPPING = {
     'ExchangeAdmin': 1,
