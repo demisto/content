@@ -19,7 +19,7 @@ comment: Group an output field from a list using multiple keys.
 commonfields:
   id: ListGroupBy
   version: -1
-dockerimage: demisto/python3:3.8.3.9324
+dockerimage: demisto/python3:3.9.7.24076
 enabled: true
 name: ListGroupBy
 runas: DBotWeakRole

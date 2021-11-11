@@ -149,12 +149,20 @@ class Client(BaseClient):
     def get_group_info_sta(self, groupName):
 
         self.validate_mandatory_argument_sta(fields={"group": groupName})
-        group_list = self.http_request(
+        response = self.http_request(
             method='GET',
             url_suffix='/groups',
-        ).json()['page']['items']
-
-        for group in group_list:
+        )
+        paged_results = response.json()['page']['items']
+        while "next" in response.json()['links'] and len(response.json()['page']['items']) > 0:
+            next_page = response.json()['links']["next"]
+            response = self.http_request(
+                method="GET",
+                full_url=next_page,
+                url_suffix='',
+            )
+            paged_results += response.json()['page']['items']
+        for group in paged_results:
             if group['name'] == groupName:
                 return group
         raise Exception(f'The group {groupName} was not found.')

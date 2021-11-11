@@ -17,7 +17,7 @@ print = timestamped_print
 
 def get_non_contributor_stale_branch_names(repo: Repository) -> List[str]:  # noqa: E999
     """Return the list of branches that do not have the prefix of "contrib/" without open pull requests
-    and that have not been updated for 2 months (stale)
+    and that have not been updated for 2 months (stale). Protected branches are excluded from consideration.
 
     Args:
         repo (Repository): The repository whose branches will be searched and listed
@@ -33,6 +33,9 @@ def get_non_contributor_stale_branch_names(repo: Repository) -> List[str]:  # no
     for branch in all_branches:
         # Make sure the branch is not prefixed with contrib
         if not branch.name.startswith('contrib/'):
+            if branch.protected:
+                print(f"Skipping branch {branch.name} because it is a protected branch")
+                continue
             # Make sure HEAD commit is stale
             if (last_modified := branch.commit.commit.last_modified) and (
                     last_commit_datetime := parse(last_modified)):

@@ -6,7 +6,8 @@ def main():
     args = demisto.args()
     value = args.get('value')
     title = args.get('title')
-    markdown = tableToMarkdown(title, value)
+    headers = argToList(args.get('headers'))
+    markdown = tableToMarkdown(title, value, headers=headers)
 
     return_results(markdown)
 

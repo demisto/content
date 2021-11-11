@@ -7,6 +7,7 @@ from typing import Union, Optional
 import requests
 import base64
 import binascii
+from urllib.parse import quote
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -113,7 +114,7 @@ class MsGraphClient:
         odata = f'{odata}&$top={page_size}' if odata else f'$top={page_size}'
 
         if search:
-            odata = f'{odata}&$search="{search}"'
+            odata = f'{odata}&$search="{quote(search)}"'
         suffix = with_folder if folder_id else no_folder
         if odata:
             suffix += f'?{odata}'
@@ -381,7 +382,7 @@ class MsGraphClient:
                 '@odata.type': cls.FILE_ATTACHMENT,
                 'contentBytes': b64_encoded_data.decode('utf-8'),
                 'isInline': is_inline,
-                'name': attach_name if provided_names else uploaded_file_name,
+                'name': attach_name if provided_names or not uploaded_file_name else uploaded_file_name,
                 'size': file_size
             }
             file_attachments_result.append(attachment)

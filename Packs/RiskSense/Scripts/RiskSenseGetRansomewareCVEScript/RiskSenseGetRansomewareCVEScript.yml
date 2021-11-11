@@ -142,7 +142,7 @@ type: python
 dependson:
   must:
   - '|||risksense-get-host-findings'
-dockerimage: demisto/python3:3.8.3.9324
+dockerimage: demisto/python3:3.9.7.24076
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0

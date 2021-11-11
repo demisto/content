@@ -59,7 +59,7 @@ Describe 'Infocyte Integration Unit Tests' {
                                    
         It 'Returns 10 alerts after an alertId' {
             $demisto.ContextArgs = @{ lastAlertId = $TestAlertId }
-            $r = Get-InfocyteAlerts
+            $r = Get-InfocyteAlert
             $r.EntryContext.'Infocyte.Alert'.count | Should -Be 10
             $r.EntryContext.'Infocyte.Alert'[0].scanId | Should -Be $TestScanId
         }

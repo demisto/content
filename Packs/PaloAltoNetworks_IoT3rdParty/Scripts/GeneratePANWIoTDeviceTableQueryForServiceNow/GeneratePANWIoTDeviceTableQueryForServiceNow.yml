@@ -7,7 +7,7 @@ comment: Generates a single query or query list with which to query in ServiceNo
 commonfields:
   id: GeneratePANWIoTDeviceTableQueryForServiceNow
   version: -1
-dockerimage: demisto/python3:3.9.1.15759
+dockerimage: demisto/python3:3.9.7.24076
 enabled: true
 name: GeneratePANWIoTDeviceTableQueryForServiceNow
 outputs:

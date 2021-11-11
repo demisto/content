@@ -5,7 +5,7 @@ ignore=BA101,BA110
 ignore=RM104,RM106
 
 [file:Tanium_v2.yml]
-ignore=BA108,BA109
+ignore=BA108,BA109,IN145
 
 [file:script-TaniumFilterComputersByIndexQueryFileDetails_README.md]
 ignore=RM106

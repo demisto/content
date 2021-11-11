@@ -17,6 +17,8 @@ args:
   description: The json to transform to a markdown table.
 - name: title
   description: The markdown title.
+- name: headers
+  description: A comma-separated list of table header values. Default will include all available table headers.
 scripttarget: 0
 subtype: python3
 runonce: false

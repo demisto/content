@@ -1,0 +1,42 @@
+{
+  "totalCount": 532,
+  "types": [
+    "certficate_sha1",
+    "certificate_sha1",
+    "domain",
+    "email",
+    "hash_md5",
+    "hash_sha256",
+    "ip",
+    "pdb_path",
+    "soa_email",
+    "url",
+    "whois_email"
+  ],
+  "results": [
+    {
+      "id": "apt33:order396@yahoo.com",
+      "profileId": "apt33",
+      "type": "whois_email",
+      "value": "order396@yahoo.com",
+      "category": "network",
+      "firstSeen": "2014-07-23T07:00:00.000+00:00",
+      "lastSeen": "2018-05-21T13:03:51.000+00:00",
+      "osint": false,
+      "osintUrl": null,
+      "articleGuids": null
+    },
+    {
+      "id": "apt33:randel.norris.86@protonmail.com",
+      "profileId": "apt33",
+      "type": "soa_email",
+      "value": "randel.norris.86@protonmail.com",
+      "category": "network",
+      "firstSeen": "2019-11-02T18:24:59.000+00:00",
+      "lastSeen": "2020-09-26T07:20:47.000+00:00",
+      "osint": false,
+      "osintUrl": null,
+      "articleGuids": null
+    }
+  ]
+}

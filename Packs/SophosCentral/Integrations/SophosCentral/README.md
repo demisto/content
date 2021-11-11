@@ -8,13 +8,13 @@ The unified console for managing Sophos products.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| credentials | Sophos account ID | True |
+| credentials | Sophos client ID and secret | True |
+| Tenant ID | Tenant ID on which the commands would be executed by default. Required in case of partner/organization level credentials | False |
 | isFetch | Fetch incidents | False |
 | fetch_severity | Fetch Severity | False |
 | fetch_category | Fetch Category | False |
 | max_fetch | Fetch Limit | False |
 | fetch_time | First Fetch Time | False |
-| insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
@@ -33,29 +33,29 @@ List alerts.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of items to return. Default is "50". Maximum is "100". | Optional |
+| limit | The maximum number of items to return. Default is "50". Maximum is "100". | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.Alert.allowedActions | String | Actions that you can perform on these alerts. |
-| SophosCentral.Alert.category | String | Alert category. |
-| SophosCentral.Alert.description | String | Alert description. |
-| SophosCentral.Alert.groupKey | String | Alert group key. |
-| SophosCentral.Alert.id | String | The alert ID. |
-| SophosCentral.Alert.managedAgentId | String | The alert source ID. |
+| SophosCentral.Alert.allowedActions | String | Actions that you can perform on these alerts. | 
+| SophosCentral.Alert.category | String | Alert category. | 
+| SophosCentral.Alert.description | String | Alert description. | 
+| SophosCentral.Alert.groupKey | String | Alert group key. | 
+| SophosCentral.Alert.id | String | The alert ID. | 
+| SophosCentral.Alert.managedAgentId | String | The alert source ID. | 
 | SophosCentral.Alert.managedAgentName | String | The alert source name. |
-| SophosCentral.Alert.managedAgentType | String | The source that triggered the Alert. |
-| SophosCentral.Alert.person | String | The ID of the referenced person object. |
+| SophosCentral.Alert.managedAgentType | String | The source that triggered the Alert. | 
+| SophosCentral.Alert.person | String | The ID of the referenced person object. | 
 | SophosCentral.Alert.personName | String | The name of the referenced person object. |
-| SophosCentral.Alert.product | String | Product type. |
-| SophosCentral.Alert.raisedAt | Date | When the alert was triggered. |
-| SophosCentral.Alert.severity | String | Severity level for the alert. |
-| SophosCentral.Alert.tenantId | String | Tenant ID for the alert. |
-| SophosCentral.Alert.tenantName | String | Tenant name. |
-| SophosCentral.Alert.type | String | Alert type. |
+| SophosCentral.Alert.product | String | Product type. | 
+| SophosCentral.Alert.raisedAt | Date | When the alert was triggered. | 
+| SophosCentral.Alert.severity | String | Severity level for the alert. | 
+| SophosCentral.Alert.tenantId | String | Tenant ID for the alert. | 
+| SophosCentral.Alert.tenantName | String | Tenant name. | 
+| SophosCentral.Alert.type | String | Alert type. | 
 
 
 #### Command Example
@@ -147,29 +147,29 @@ Get a single alert by ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | The alert ID. | Required |
+| alert_id | The alert ID. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.Alert.allowedActions | String | Actions that you can perform on these alerts. |
-| SophosCentral.Alert.category | String | Alert category. |
-| SophosCentral.Alert.description | String | Alert description. |
-| SophosCentral.Alert.groupKey | String | Alert group key. |
-| SophosCentral.Alert.id | String | The alert ID. |
-| SophosCentral.Alert.managedAgentId | String | The alert source ID. |
+| SophosCentral.Alert.allowedActions | String | Actions that you can perform on these alerts. | 
+| SophosCentral.Alert.category | String | Alert category. | 
+| SophosCentral.Alert.description | String | Alert description. | 
+| SophosCentral.Alert.groupKey | String | Alert group key. | 
+| SophosCentral.Alert.id | String | The alert ID. | 
+| SophosCentral.Alert.managedAgentId | String | The alert source ID. | 
 | SophosCentral.Alert.managedAgentName | String | The alert source name. |
-| SophosCentral.Alert.managedAgentType | String | The source that triggered the alert. |
-| SophosCentral.Alert.person | String | The ID of the referenced person object. |
+| SophosCentral.Alert.managedAgentType | String | The source that triggered the alert. | 
+| SophosCentral.Alert.person | String | The ID of the referenced person object. | 
 | SophosCentral.Alert.personName | String | The name of the referenced person object. |
-| SophosCentral.Alert.product | String | Product type. |
-| SophosCentral.Alert.raisedAt | Date | When the alert was triggered. |
-| SophosCentral.Alert.severity | String | Severity level for the alert. |
-| SophosCentral.Alert.tenantId | String | Tenant ID for the alert. |
-| SophosCentral.Alert.tenantName | String | Tenant name. |
-| SophosCentral.Alert.type | String | Alert type. |
+| SophosCentral.Alert.product | String | Product type. | 
+| SophosCentral.Alert.raisedAt | Date | When the alert was triggered. | 
+| SophosCentral.Alert.severity | String | Severity level for the alert. | 
+| SophosCentral.Alert.tenantId | String | Tenant ID for the alert. | 
+| SophosCentral.Alert.tenantName | String | Tenant name. | 
+| SophosCentral.Alert.type | String | Alert type. | 
 
 
 #### Command Example
@@ -221,23 +221,23 @@ Take an action against alerts.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id |Comma-separated list of alert IDs. | Required |
-| action | Actions to perform on the alerts. Possible values are: "acknowledge", "cleanPua", "cleanVirus", "authPua", "clearThreat", "clearHmpa", "sendMsgPua", and "sendMsgThreat". | Required |
-| message | Message to send for the action. | Optional |
+| alert_id |Comma-separated list of alert IDs. | Required | 
+| action | Actions to perform on the alerts. Possible values are: "acknowledge", "cleanPua", "cleanVirus", "authPua", "clearThreat", "clearHmpa", "sendMsgPua", and "sendMsgThreat". | Required | 
+| message | Message to send for the action. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.AlertAction.action | String | Actions that you can perform on the alert. |
-| SophosCentral.AlertAction.alertId | String | Alert ID. |
-| SophosCentral.AlertAction.completedAt | Date | Time when the action was completed. |
-| SophosCentral.AlertAction.id | String | Alert action ID. |
-| SophosCentral.AlertAction.requestedAt | Date | Time when the action was requested. |
-| SophosCentral.AlertAction.result | String | The result of the action. |
-| SophosCentral.AlertAction.startedAt | Date | Time when the action was started. |
-| SophosCentral.AlertAction.status | String | Status of an alert action. |
+| SophosCentral.AlertAction.action | String | Actions that you can perform on the alert. | 
+| SophosCentral.AlertAction.alertId | String | Alert ID. | 
+| SophosCentral.AlertAction.completedAt | Date | Time when the action was completed. | 
+| SophosCentral.AlertAction.id | String | Alert action ID. | 
+| SophosCentral.AlertAction.requestedAt | Date | Time when the action was requested. | 
+| SophosCentral.AlertAction.result | String | The result of the action. | 
+| SophosCentral.AlertAction.startedAt | Date | Time when the action was started. | 
+| SophosCentral.AlertAction.status | String | Status of an alert action. | 
 
 
 #### Command Example
@@ -281,37 +281,37 @@ Get alerts matching request.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| group_key | Alert group key. | Optional |
-| start | Time on which or after the alerts were raised. Use ISO time format (YYYY-MM-DDTHH:MM:SSZ). | Optional |
-| end | Time before which alerts were raised. Use ISO time format (YYYY-MM-DDTHH:MM:SSZ). | Optional |
-| date_range | The date range in which to search from the current time instead of a start/end time in the format (`<number> <time unit>`, e.g., 12 hours, 7 days). date_range will overwrite the start and end arguments if defined. | Optional |
-| product | Alerts for a product(s). Possible values are: "other", "endpoint", "server", "mobile", "encryption", "emailGateway", "webGateway", "phishThreat", "wireless", "iaas", and "firewall". | Optional |
-| category | Alert category(s). | Optional |
-| severity | Alerts for a specific severity level(s). Possible values are: "high", "medium", and "low". | Optional |
-| ids | List of IDs. | Optional |
-| limit | The maximum number of items to return. Default is "50". Maximum is "100". | Optional |
+| group_key | Alert group key. | Optional | 
+| start | Time on which or after the alerts were raised. Use ISO time format (YYYY-MM-DDTHH:MM:SSZ). | Optional | 
+| end | Time before which alerts were raised. Use ISO time format (YYYY-MM-DDTHH:MM:SSZ). | Optional | 
+| date_range | The date range in which to search from the current time instead of a start/end time in the format (`<number> <time unit>`, e.g., 12 hours, 7 days). date_range will overwrite the start and end arguments if defined. | Optional | 
+| product | Alerts for a product(s). Possible values are: "other", "endpoint", "server", "mobile", "encryption", "emailGateway", "webGateway", "phishThreat", "wireless", "iaas", and "firewall". | Optional | 
+| category | Alert category(s). | Optional | 
+| severity | Alerts for a specific severity level(s). Possible values are: "high", "medium", and "low". | Optional | 
+| ids | List of IDs. | Optional | 
+| limit | The maximum number of items to return. Default is "50". Maximum is "100". | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.Alert.allowedActions | String | Actions that you can perform on these alerts. |
-| SophosCentral.Alert.category | String | Alert category. |
-| SophosCentral.Alert.description | String | Alert description. |
-| SophosCentral.Alert.groupKey | String | Alert group key. |
-| SophosCentral.Alert.id | String | The alert ID. |
-| SophosCentral.Alert.managedAgentId | String | The alert source ID. |
+| SophosCentral.Alert.allowedActions | String | Actions that you can perform on these alerts. | 
+| SophosCentral.Alert.category | String | Alert category. | 
+| SophosCentral.Alert.description | String | Alert description. | 
+| SophosCentral.Alert.groupKey | String | Alert group key. | 
+| SophosCentral.Alert.id | String | The alert ID. | 
+| SophosCentral.Alert.managedAgentId | String | The alert source ID. | 
 | SophosCentral.Alert.managedAgentName | String | The alert source name. |
-| SophosCentral.Alert.managedAgentType | String | The source that triggered the alert. |
+| SophosCentral.Alert.managedAgentType | String | The source that triggered the alert. | 
 | SophosCentral.Alert.person | String | The ID of the referenced person object. |
 | SophosCentral.Alert.personName | String | The name of the referenced person object. |
-| SophosCentral.Alert.product | String | Product type. |
-| SophosCentral.Alert.raisedAt | Date | When the alert was triggered. |
-| SophosCentral.Alert.severity | String | Severity level for the alert. |
-| SophosCentral.Alert.tenantId | String | Tenant ID for the alert. |
-| SophosCentral.Alert.tenantName | String | Tenant name. |
-| SophosCentral.Alert.type | String | Alert type. |
+| SophosCentral.Alert.product | String | Product type. | 
+| SophosCentral.Alert.raisedAt | Date | When the alert was triggered. | 
+| SophosCentral.Alert.severity | String | Severity level for the alert. | 
+| SophosCentral.Alert.tenantId | String | Tenant ID for the alert. | 
+| SophosCentral.Alert.tenantName | String | Tenant name. | 
+| SophosCentral.Alert.type | String | Alert type. | 
 
 
 #### Command Example
@@ -344,40 +344,40 @@ List all endpoints for a tenant.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| health_status | Match endpoints that have any of the specified health statuses. Possible values are: "bad", "good", "suspicious", and "unknown". | Optional |
-| endpoint_type | Match endpoints that have any of the specified endpoint types. Possible values are: "computer", "server", and "securityVm". | Optional |
-| tamper_protection_enabled | Whether tamper protection is enabled. Possible values are: "true" and "false". | Optional |
-| lockdown_status | Match endpoints that have any of the specified lockdown statuses. Possible values are: "creatingWhitelist", "installing", "locked", "notInstalled", "registering", "starting", "stopping", "unavailable", "uninstalled", and "unlocked". | Optional |
-| last_seen_before | The datetime before which the endpoints were last seen (UTC). | Optional |
-| last_seen_after | The datetime on or after which the endpoints were last seen (UTC). | Optional |
-| ids | List of IDs. | Optional |
-| view | Type of view to be returned in the response. Possible values are: "basic", "summary", and "full". | Optional |
-| limit | The maximum number of items to return. Default is "50". Maximum is "100". | Optional |
+| health_status | Match endpoints that have any of the specified health statuses. Possible values are: "bad", "good", "suspicious", and "unknown". | Optional | 
+| endpoint_type | Match endpoints that have any of the specified endpoint types. Possible values are: "computer", "server", and "securityVm". | Optional | 
+| tamper_protection_enabled | Whether tamper protection is enabled. Possible values are: "true" and "false". | Optional | 
+| lockdown_status | Match endpoints that have any of the specified lockdown statuses. Possible values are: "creatingWhitelist", "installing", "locked", "notInstalled", "registering", "starting", "stopping", "unavailable", "uninstalled", and "unlocked". | Optional | 
+| last_seen_before | The datetime before which the endpoints were last seen (UTC). | Optional | 
+| last_seen_after | The datetime on or after which the endpoints were last seen (UTC). | Optional | 
+| ids | List of IDs. | Optional | 
+| view | Type of view to be returned in the response. Possible values are: "basic", "summary", and "full". | Optional | 
+| limit | The maximum number of items to return. Default is "50". Maximum is "100". | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.Endpoint.assignedProductCodes | String | Code of a product assigned to the endpoint. |
-| SophosCentral.Endpoint.associatedPersonId | String | The unique ID for the person associated with the endpoint. |
-| SophosCentral.Endpoint.associatedPersonName | String | Name of the person associated with the endpoint. |
-| SophosCentral.Endpoint.associatedPersonViaLogin | String | The login of the person associated with the endpoint. |
-| SophosCentral.Endpoint.groupId | String | The unique ID for the endpoint group. |
-| SophosCentral.Endpoint.groupName | String | Endpoint group name. |
-| SophosCentral.Endpoint.hostname | String | The hostname of the endpoint. |
-| SophosCentral.Endpoint.id | String | The unique ID for the endpoint. |
-| SophosCentral.Endpoint.health | String | Health status of the endpoint. |
-| SophosCentral.Endpoint.ipv4Addresses | String | IPv4 address of the endpoint. |
-| SophosCentral.Endpoint.ipv6Addresses | String | IPv6 address of the endpoint. |
-| SophosCentral.Endpoint.macAddresses | String | MAC address of the endpoint. |
-| SophosCentral.Endpoint.osBuild | String | Operating system build. |
-| SophosCentral.Endpoint.osIsServer | Boolean | Whether the operating system is a server operating system. |
-| SophosCentral.Endpoint.osName | String | Operating system name as reported by the endpoint. |
-| SophosCentral.Endpoint.osPlatform | String | Operating system platform type. |
-| SophosCentral.Endpoint.tamperProtectionEnabled | Boolean | Whether tamper protection is enabled. |
-| SophosCentral.Endpoint.type | String | The endpoint type. |
-| SophosCentral.Endpoint.online | Boolean | Whether the endpoint is online. |
+| SophosCentral.Endpoint.assignedProductCodes | String | Code of a product assigned to the endpoint. | 
+| SophosCentral.Endpoint.associatedPersonId | String | The unique ID for the person associated with the endpoint. | 
+| SophosCentral.Endpoint.associatedPersonName | String | Name of the person associated with the endpoint. | 
+| SophosCentral.Endpoint.associatedPersonViaLogin | String | The login of the person associated with the endpoint. | 
+| SophosCentral.Endpoint.groupId | String | The unique ID for the endpoint group. | 
+| SophosCentral.Endpoint.groupName | String | Endpoint group name. | 
+| SophosCentral.Endpoint.hostname | String | The hostname of the endpoint. | 
+| SophosCentral.Endpoint.id | String | The unique ID for the endpoint. | 
+| SophosCentral.Endpoint.health | String | Health status of the endpoint. | 
+| SophosCentral.Endpoint.ipv4Addresses | String | IPv4 address of the endpoint. | 
+| SophosCentral.Endpoint.ipv6Addresses | String | IPv6 address of the endpoint. | 
+| SophosCentral.Endpoint.macAddresses | String | MAC address of the endpoint. | 
+| SophosCentral.Endpoint.osBuild | String | Operating system build. | 
+| SophosCentral.Endpoint.osIsServer | Boolean | Whether the operating system is a server operating system. | 
+| SophosCentral.Endpoint.osName | String | Operating system name as reported by the endpoint. | 
+| SophosCentral.Endpoint.osPlatform | String | Operating system platform type. | 
+| SophosCentral.Endpoint.tamperProtectionEnabled | Boolean | Whether tamper protection is enabled. | 
+| SophosCentral.Endpoint.type | String | The endpoint type. | 
+| SophosCentral.Endpoint.online | Boolean | Whether the endpoint is online. | 
 
 
 #### Command Example
@@ -470,16 +470,16 @@ Scan endpoints of a tenant.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| endpoint_id | The endpoint ID(s). | Required |
+| endpoint_id | The endpoint ID(s). | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.EndpointScan.id | String | Identifies a request to perform or configure the endpoint scan. |
-| SophosCentral.EndpointScan.requestedAt | Date | Time when the scan was requested. |
-| SophosCentral.EndpointScan.status | String | The status of an endpoint scan. |
+| SophosCentral.EndpointScan.id | String | Identifies a request to perform or configure the endpoint scan. | 
+| SophosCentral.EndpointScan.requestedAt | Date | Time when the scan was requested. | 
+| SophosCentral.EndpointScan.status | String | The status of an endpoint scan. | 
 
 
 #### Command Example
@@ -518,17 +518,17 @@ Get tamper protection information for one or more endpoints. Potentially harmful
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| endpoint_id | The endpoint ID(s). | Required |
-| get_password | Whether to return the tamper protection password. Possible values are: "true" and "false". | Optional |
+| endpoint_id | The endpoint ID(s). | Required | 
+| get_password | Whether to return the tamper protection password. Possible values are: "true" and "false". | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.EndpointTamper.endpointId | String | ID of the endpoint in regards to the tamper settings. |
-| SophosCentral.EndpointTamper.enabled | String | Whether tamper protection should be turned on for the endpoint. |
-| SophosCentral.EndpointTamper.password | String | Current tamper protection password. |
+| SophosCentral.EndpointTamper.endpointId | String | ID of the endpoint in regards to the tamper settings. | 
+| SophosCentral.EndpointTamper.enabled | String | Whether tamper protection should be turned on for the endpoint. | 
+| SophosCentral.EndpointTamper.password | String | Current tamper protection password. | 
 
 
 #### Command Example
@@ -567,18 +567,18 @@ Update tamper protection information for one or more endpoints. Potentially Harm
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| endpoint_id | The endpoint ID(s). | Required |
-| enabled | Whether tamper protection should be turned on for the endpoint. Possible values are: "true" and "false". | Required |
-| get_password | Whether to return the tamper protection password. Possible values are: "true" and "false". | Optional |
+| endpoint_id | The endpoint ID(s). | Required | 
+| enabled | Whether tamper protection should be turned on for the endpoint. Possible values are: "true" and "false". | Required | 
+| get_password | Whether to return the tamper protection password. Possible values are: "true" and "false". | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.EndpointTamper.endpointId | String | ID of the endpoint in regards to the tamper settings. |
-| SophosCentral.EndpointTamper.enabled | String | Whether tamper protection should be turned on for the endpoint.  |
-| SophosCentral.EndpointTamper.password | String | Current tamper protection password. |
+| SophosCentral.EndpointTamper.endpointId | String | ID of the endpoint in regards to the tamper settings. | 
+| SophosCentral.EndpointTamper.enabled | String | Whether tamper protection should be turned on for the endpoint.  | 
+| SophosCentral.EndpointTamper.password | String | Current tamper protection password. | 
 
 
 #### Command Example
@@ -617,28 +617,28 @@ List all allowed items.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page_size | he maximum size of the page requested. Default is "50". Maximum is "100". | Optional |
-| page | Page number to return. Default is "1". | Optional |
+| page_size | he maximum size of the page requested. Default is "50". Maximum is "100". | Optional | 
+| page | Page number to return. Default is "1". | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.AllowedItem.comment | String | A comment indicating why the item was allowed. |
-| SophosCentral.AllowedItem.createdAt | Date | Date and time \(UTC\) when the allowed application was created. |
-| SophosCentral.AllowedItem.createdById | String | The unique ID for the user who created the item. |
-| SophosCentral.AllowedItem.createdByName | String | The name for the user who created the item. |
-| SophosCentral.AllowedItem.id | String | The unique ID for the allowed application. |
-| SophosCentral.AllowedItem.certificateSigner | String | The value saved for the certificateSigner. |
-| SophosCentral.AllowedItem.fileName | String | The file name. |
-| SophosCentral.AllowedItem.path | String | The path for the application. |
-| SophosCentral.AllowedItem.sha256 | String | The SHA256 value for the application. |
-| SophosCentral.AllowedItem.type | String | The property by which an item is allowed. |
-| SophosCentral.AllowedItem.updatedAt | Date | Date and time \(UTC\) when the allowed application was updated. |
-| SophosCentral.AllowedItem.originEndpointId | String | ID of the originating endpoint. |
-| SophosCentral.AllowedItem.originPersonId | String | ID of the originating person. |
-| SophosCentral.AllowedItem.originPersonName | String | Name of the originating person. |
+| SophosCentral.AllowedItem.comment | String | A comment indicating why the item was allowed. | 
+| SophosCentral.AllowedItem.createdAt | Date | Date and time \(UTC\) when the allowed application was created. | 
+| SophosCentral.AllowedItem.createdById | String | The unique ID for the user who created the item. | 
+| SophosCentral.AllowedItem.createdByName | String | The name for the user who created the item. | 
+| SophosCentral.AllowedItem.id | String | The unique ID for the allowed application. | 
+| SophosCentral.AllowedItem.certificateSigner | String | The value saved for the certificateSigner. | 
+| SophosCentral.AllowedItem.fileName | String | The file name. | 
+| SophosCentral.AllowedItem.path | String | The path for the application. | 
+| SophosCentral.AllowedItem.sha256 | String | The SHA256 value for the application. | 
+| SophosCentral.AllowedItem.type | String | The property by which an item is allowed. | 
+| SophosCentral.AllowedItem.updatedAt | Date | Date and time \(UTC\) when the allowed application was updated. | 
+| SophosCentral.AllowedItem.originEndpointId | String | ID of the originating endpoint. | 
+| SophosCentral.AllowedItem.originPersonId | String | ID of the originating person. | 
+| SophosCentral.AllowedItem.originPersonName | String | Name of the originating person. | 
 
 
 #### Command Example
@@ -827,27 +827,27 @@ Get a single allowed item by ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| allowed_item_id | The ID of the allowed item. | Required |
+| allowed_item_id | The ID of the allowed item. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.AllowedItem.comment | String | A comment indicating why the item was allowed. |
-| SophosCentral.AllowedItem.createdAt | Date | Date and time \(UTC\) when the allowed application was created. |
-| SophosCentral.AllowedItem.createdById | String | The unique ID for the user who created the item. |
-| SophosCentral.AllowedItem.createdByName | String | The name for the user who created the item. |
-| SophosCentral.AllowedItem.id | String | The unique ID for the allowed application. |
-| SophosCentral.AllowedItem.certificateSigner | String | The value saved for the certificateSigner. |
-| SophosCentral.AllowedItem.fileName | String | The file name. |
-| SophosCentral.AllowedItem.path | String | The path for the application. |
-| SophosCentral.AllowedItem.sha256 | String | The SHA256 value for the application. |
-| SophosCentral.AllowedItem.type | String | The property by which an item is allowed. |
-| SophosCentral.AllowedItem.updatedAt | Date | Date and time \(UTC\) when the allowed application was updated. |
-| SophosCentral.AllowedItem.originEndpointId | String | ID of the originating endpoint. |
-| SophosCentral.AllowedItem.originPersonId | String | ID of the originating person. |
-| SophosCentral.AllowedItem.originPersonName | String | Name of the originating person. |
+| SophosCentral.AllowedItem.comment | String | A comment indicating why the item was allowed. | 
+| SophosCentral.AllowedItem.createdAt | Date | Date and time \(UTC\) when the allowed application was created. | 
+| SophosCentral.AllowedItem.createdById | String | The unique ID for the user who created the item. | 
+| SophosCentral.AllowedItem.createdByName | String | The name for the user who created the item. | 
+| SophosCentral.AllowedItem.id | String | The unique ID for the allowed application. | 
+| SophosCentral.AllowedItem.certificateSigner | String | The value saved for the certificateSigner. | 
+| SophosCentral.AllowedItem.fileName | String | The file name. | 
+| SophosCentral.AllowedItem.path | String | The path for the application. | 
+| SophosCentral.AllowedItem.sha256 | String | The SHA256 value for the application. | 
+| SophosCentral.AllowedItem.type | String | The property by which an item is allowed. | 
+| SophosCentral.AllowedItem.updatedAt | Date | Date and time \(UTC\) when the allowed application was updated. | 
+| SophosCentral.AllowedItem.originEndpointId | String | ID of the originating endpoint. | 
+| SophosCentral.AllowedItem.originPersonId | String | ID of the originating person. | 
+| SophosCentral.AllowedItem.originPersonName | String | Name of the originating person. | 
 
 
 #### Command Example
@@ -892,33 +892,33 @@ Add a new allowed item.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| comment | Comment indicating why the item should be allowed. | Required |
-| certificate_signer | The value saved for the certificateSigner. | Optional |
-| file_name | The file name. | Optional |
-| path | The path for the application. | Optional |
-| sha256 | The SHA256 value for the application. | Optional |
-| item_type | The property by which an item is allowed. Note that the specified item type requires the matching argument filled. For example, the item type "path" requires the path argument. Possible values are: "path", "sha256", and "certificateSigner". | Required |
-| origin_endpoint_id | The endpoint where the item to be allowed was last seen. | Optional |
+| comment | Comment indicating why the item should be allowed. | Required | 
+| certificate_signer | The value saved for the certificateSigner. | Optional | 
+| file_name | The file name. | Optional | 
+| path | The path for the application. | Optional | 
+| sha256 | The SHA256 value for the application. | Optional | 
+| item_type | The property by which an item is allowed. Note that the specified item type requires the matching argument filled. For example, the item type "path" requires the path argument. Possible values are: "path", "sha256", and "certificateSigner". | Required | 
+| origin_endpoint_id | The endpoint where the item to be allowed was last seen. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.AllowedItem.comment | String | A comment indicating why the item was allowed. |
-| SophosCentral.AllowedItem.createdAt | Date | Date and time \(UTC\) when the allowed application was created. |
-| SophosCentral.AllowedItem.createdById | String | The unique ID for the user who created the item. |
-| SophosCentral.AllowedItem.createdByName | String | The name for the user who created the item. |
-| SophosCentral.AllowedItem.id | String | The unique ID for the allowed application. |
-| SophosCentral.AllowedItem.certificateSigner | String | The value saved for the certificateSigner. |
-| SophosCentral.AllowedItem.fileName | String | The file name. |
-| SophosCentral.AllowedItem.path | String | The path for the application. |
-| SophosCentral.AllowedItem.sha256 | String | The SHA256 value for the application. |
-| SophosCentral.AllowedItem.type | String | The property by which an item is allowed. |
-| SophosCentral.AllowedItem.updatedAt | Date | Date and time \(UTC\) when the allowed application was updated. |
-| SophosCentral.AllowedItem.originEndpointId | String | ID of the originating endpoint. |
-| SophosCentral.AllowedItem.originPersonId | String | ID of the originating person. |
-| SophosCentral.AllowedItem.originPersonName | String | Name of the originating person. |
+| SophosCentral.AllowedItem.comment | String | A comment indicating why the item was allowed. | 
+| SophosCentral.AllowedItem.createdAt | Date | Date and time \(UTC\) when the allowed application was created. | 
+| SophosCentral.AllowedItem.createdById | String | The unique ID for the user who created the item. | 
+| SophosCentral.AllowedItem.createdByName | String | The name for the user who created the item. | 
+| SophosCentral.AllowedItem.id | String | The unique ID for the allowed application. | 
+| SophosCentral.AllowedItem.certificateSigner | String | The value saved for the certificateSigner. | 
+| SophosCentral.AllowedItem.fileName | String | The file name. | 
+| SophosCentral.AllowedItem.path | String | The path for the application. | 
+| SophosCentral.AllowedItem.sha256 | String | The SHA256 value for the application. | 
+| SophosCentral.AllowedItem.type | String | The property by which an item is allowed. | 
+| SophosCentral.AllowedItem.updatedAt | Date | Date and time \(UTC\) when the allowed application was updated. | 
+| SophosCentral.AllowedItem.originEndpointId | String | ID of the originating endpoint. | 
+| SophosCentral.AllowedItem.originPersonId | String | ID of the originating person. | 
+| SophosCentral.AllowedItem.originPersonName | String | Name of the originating person. | 
 
 
 #### Command Example
@@ -963,28 +963,28 @@ Update an existing allowed item.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| allowed_item_id | The allowed item ID. | Required |
-| comment | Comment indicating why the item should be allowed. | Required |
+| allowed_item_id | The allowed item ID. | Required | 
+| comment | Comment indicating why the item should be allowed. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.AllowedItem.comment | String | A comment indicating why the item was allowed. |
-| SophosCentral.AllowedItem.createdAt | Date | Date and time \(UTC\) when the allowed application was created. |
-| SophosCentral.AllowedItem.createdById | String | The unique ID for the user who created the item. |
-| SophosCentral.AllowedItem.createdByName | String | The name for the user who created the item. |
-| SophosCentral.AllowedItem.id | String | The unique ID for the allowed application. |
-| SophosCentral.AllowedItem.certificateSigner | String | The value saved for the certificateSigner. |
-| SophosCentral.AllowedItem.fileName | String | The file name. |
-| SophosCentral.AllowedItem.path | String | The path for the application. |
-| SophosCentral.AllowedItem.sha256 | String | The SHA256 value for the application. |
-| SophosCentral.AllowedItem.type | String | The property by which an item is allowed. |
-| SophosCentral.AllowedItem.updatedAt | Date | Date and time \(UTC\) when the allowed application was updated. |
-| SophosCentral.AllowedItem.originEndpointId | String | ID of the originating endpoint. |
-| SophosCentral.AllowedItem.originPersonId | String | ID of the originating person. |
-| SophosCentral.AllowedItem.originPersonName | String | Name of the originating person. |
+| SophosCentral.AllowedItem.comment | String | A comment indicating why the item was allowed. | 
+| SophosCentral.AllowedItem.createdAt | Date | Date and time \(UTC\) when the allowed application was created. | 
+| SophosCentral.AllowedItem.createdById | String | The unique ID for the user who created the item. | 
+| SophosCentral.AllowedItem.createdByName | String | The name for the user who created the item. | 
+| SophosCentral.AllowedItem.id | String | The unique ID for the allowed application. | 
+| SophosCentral.AllowedItem.certificateSigner | String | The value saved for the certificateSigner. | 
+| SophosCentral.AllowedItem.fileName | String | The file name. | 
+| SophosCentral.AllowedItem.path | String | The path for the application. | 
+| SophosCentral.AllowedItem.sha256 | String | The SHA256 value for the application. | 
+| SophosCentral.AllowedItem.type | String | The property by which an item is allowed. | 
+| SophosCentral.AllowedItem.updatedAt | Date | Date and time \(UTC\) when the allowed application was updated. | 
+| SophosCentral.AllowedItem.originEndpointId | String | ID of the originating endpoint. | 
+| SophosCentral.AllowedItem.originPersonId | String | ID of the originating person. | 
+| SophosCentral.AllowedItem.originPersonName | String | Name of the originating person. | 
 
 
 #### Command Example
@@ -1029,14 +1029,14 @@ Delete an existing allowed item.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| allowed_item_id | The allowed item ID. | Required |
+| allowed_item_id | The allowed item ID. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.DeletedAllowedItem.deletedItemId | String | The ID of the deleted item. |
+| SophosCentral.DeletedAllowedItem.deletedItemId | String | The ID of the deleted item. | 
 
 
 #### Command Example
@@ -1069,28 +1069,28 @@ Get all blocked items.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page_size |  The maximum size of the page requested. Default is "50". Maximum is "100". | Optional |
-| page | Page number to return. Default is "1" | Optional |
+| page_size |  The maximum size of the page requested. Default is "50". Maximum is "100". | Optional | 
+| page | Page number to return. Default is "1" | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.BlockedItem.comment | String | A comment indicating why the item was allowed. |
-| SophosCentral.BlockedItem.createdAt | Date | Date and time \(UTC\) when the allowed application was created. |
-| SophosCentral.BlockedItem.createdById | String | The unique ID for the user who created the item. |
-| SophosCentral.BlockedItem.createdByName | String | The name for the user who created the item. |
-| SophosCentral.BlockedItem.id | String | The unique ID for the allowed application. |
-| SophosCentral.BlockedItem.certificateSigner | String | The value saved for the certificateSigner. |
-| SophosCentral.BlockedItem.fileName | String | The file name. |
-| SophosCentral.BlockedItem.path | String | The path for the application. |
-| SophosCentral.BlockedItem.sha256 | String | The SHA256 value for the application. |
-| SophosCentral.BlockedItem.type | String | The property by which an item is allowed. |
-| SophosCentral.BlockedItem.updatedAt | Date | Date and time \(UTC\) when the allowed application was updated. |
-| SophosCentral.BlockedItem.originEndpointId | String | ID of the originating endpoint. |
-| SophosCentral.BlockedItem.originPersonId | String | ID of the originating person. |
-| SophosCentral.BlockedItem.originPersonName | String | Name of the originating person. |
+| SophosCentral.BlockedItem.comment | String | A comment indicating why the item was allowed. | 
+| SophosCentral.BlockedItem.createdAt | Date | Date and time \(UTC\) when the allowed application was created. | 
+| SophosCentral.BlockedItem.createdById | String | The unique ID for the user who created the item. | 
+| SophosCentral.BlockedItem.createdByName | String | The name for the user who created the item. | 
+| SophosCentral.BlockedItem.id | String | The unique ID for the allowed application. | 
+| SophosCentral.BlockedItem.certificateSigner | String | The value saved for the certificateSigner. | 
+| SophosCentral.BlockedItem.fileName | String | The file name. | 
+| SophosCentral.BlockedItem.path | String | The path for the application. | 
+| SophosCentral.BlockedItem.sha256 | String | The SHA256 value for the application. | 
+| SophosCentral.BlockedItem.type | String | The property by which an item is allowed. | 
+| SophosCentral.BlockedItem.updatedAt | Date | Date and time \(UTC\) when the allowed application was updated. | 
+| SophosCentral.BlockedItem.originEndpointId | String | ID of the originating endpoint. | 
+| SophosCentral.BlockedItem.originPersonId | String | ID of the originating person. | 
+| SophosCentral.BlockedItem.originPersonName | String | Name of the originating person. | 
 
 
 #### Command Example
@@ -1163,27 +1163,27 @@ Get a single blocked item by ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| blocked_item_id | The blocked item ID. | Required |
+| blocked_item_id | The blocked item ID. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.BlockedItem.comment | String | A comment indicating why the item was allowed. |
-| SophosCentral.BlockedItem.createdAt | Date | Date and time \(UTC\) when the allowed application was created. |
-| SophosCentral.BlockedItem.createdById | String | The unique ID for the user who created the item. |
-| SophosCentral.BlockedItem.createdByName | String | The name for the user who created the item. |
-| SophosCentral.BlockedItem.id | String | The unique ID for the allowed application. |
-| SophosCentral.BlockedItem.certificateSigner | String | The value saved for the certificateSigner. |
-| SophosCentral.BlockedItem.fileName | String | The file name. |
-| SophosCentral.BlockedItem.path | String | The path for the application. |
-| SophosCentral.BlockedItem.sha256 | String | The SHA256 value for the application. |
-| SophosCentral.BlockedItem.type | String | The property by which an item is allowed. |
-| SophosCentral.BlockedItem.updatedAt | Date | Date and time \(UTC\) when the allowed application was updated. |
-| SophosCentral.BlockedItem.originEndpointId | String | ID of the originating endpoint. |
-| SophosCentral.BlockedItem.originPersonId | String | ID of the originating person. |
-| SophosCentral.BlockedItem.originPersonName | String | Name of the originating person. |
+| SophosCentral.BlockedItem.comment | String | A comment indicating why the item was allowed. | 
+| SophosCentral.BlockedItem.createdAt | Date | Date and time \(UTC\) when the allowed application was created. | 
+| SophosCentral.BlockedItem.createdById | String | The unique ID for the user who created the item. | 
+| SophosCentral.BlockedItem.createdByName | String | The name for the user who created the item. | 
+| SophosCentral.BlockedItem.id | String | The unique ID for the allowed application. | 
+| SophosCentral.BlockedItem.certificateSigner | String | The value saved for the certificateSigner. | 
+| SophosCentral.BlockedItem.fileName | String | The file name. | 
+| SophosCentral.BlockedItem.path | String | The path for the application. | 
+| SophosCentral.BlockedItem.sha256 | String | The SHA256 value for the application. | 
+| SophosCentral.BlockedItem.type | String | The property by which an item is allowed. | 
+| SophosCentral.BlockedItem.updatedAt | Date | Date and time \(UTC\) when the allowed application was updated. | 
+| SophosCentral.BlockedItem.originEndpointId | String | ID of the originating endpoint. | 
+| SophosCentral.BlockedItem.originPersonId | String | ID of the originating person. | 
+| SophosCentral.BlockedItem.originPersonName | String | Name of the originating person. | 
 
 
 #### Command Example
@@ -1228,32 +1228,32 @@ Add a new blocked item.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| comment | Comment indicating why the item should be blocked. | Required |
-| certificate_signer | The value saved for the certificateSigner. | Optional |
-| file_name | The file name. | Optional |
-| path | The path for the application. | Optional |
-| sha256 | The SHA256 value for the application. | Required |
-| item_type | The property by which an item is blocked. Possible value is sha256. | Required |
+| comment | Comment indicating why the item should be blocked. | Required | 
+| certificate_signer | The value saved for the certificateSigner. | Optional | 
+| file_name | The file name. | Optional | 
+| path | The path for the application. | Optional | 
+| sha256 | The SHA256 value for the application. | Required | 
+| item_type | The property by which an item is blocked. Possible value is sha256. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.BlockedItem.comment | String | A comment indicating why the item was allowed. |
-| SophosCentral.BlockedItem.createdAt | Date | Date and time \(UTC\) when the allowed application was created. |
-| SophosCentral.BlockedItem.createdById | String | The unique ID for the user who created the item. |
-| SophosCentral.BlockedItem.createdByName | String | The name for the user who created the item. |
-| SophosCentral.BlockedItem.id | String | The unique ID for the allowed application. |
-| SophosCentral.BlockedItem.certificateSigner | String | The value saved for the certificateSigner. |
-| SophosCentral.BlockedItem.fileName | String | The file name. |
-| SophosCentral.BlockedItem.path | String | The path for the application. |
-| SophosCentral.BlockedItem.sha256 | String | The SHA256 value for the application. |
-| SophosCentral.BlockedItem.type | String | The property by which an item is allowed. |
-| SophosCentral.BlockedItem.updatedAt | Date | Date and time \(UTC\) when the allowed application was updated. |
-| SophosCentral.BlockedItem.originEndpointId | String | ID of the originating endpoint. |
-| SophosCentral.BlockedItem.originPersonId | String | ID of the originating person. |
-| SophosCentral.BlockedItem.originPersonName | String | Name of the originating person. |
+| SophosCentral.BlockedItem.comment | String | A comment indicating why the item was allowed. | 
+| SophosCentral.BlockedItem.createdAt | Date | Date and time \(UTC\) when the allowed application was created. | 
+| SophosCentral.BlockedItem.createdById | String | The unique ID for the user who created the item. | 
+| SophosCentral.BlockedItem.createdByName | String | The name for the user who created the item. | 
+| SophosCentral.BlockedItem.id | String | The unique ID for the allowed application. | 
+| SophosCentral.BlockedItem.certificateSigner | String | The value saved for the certificateSigner. | 
+| SophosCentral.BlockedItem.fileName | String | The file name. | 
+| SophosCentral.BlockedItem.path | String | The path for the application. | 
+| SophosCentral.BlockedItem.sha256 | String | The SHA256 value for the application. | 
+| SophosCentral.BlockedItem.type | String | The property by which an item is allowed. | 
+| SophosCentral.BlockedItem.updatedAt | Date | Date and time \(UTC\) when the allowed application was updated. | 
+| SophosCentral.BlockedItem.originEndpointId | String | ID of the originating endpoint. | 
+| SophosCentral.BlockedItem.originPersonId | String | ID of the originating person. | 
+| SophosCentral.BlockedItem.originPersonName | String | Name of the originating person. | 
 
 
 #### Command Example
@@ -1298,14 +1298,14 @@ Delete an existing blocked item.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| blocked_item_id | The blocked item ID. | Required |
+| blocked_item_id | The blocked item ID. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.DeletedBlockedItem.deletedItemId | String | The ID of the deleted item. |
+| SophosCentral.DeletedBlockedItem.deletedItemId | String | The ID of the deleted item. | 
 
 
 #### Command Example
@@ -1338,21 +1338,21 @@ List all scan exclusions.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| exclusion_type | Scan exclusion type. Possible values are: "path", "posixPath", "virtualPath", "process", "web", "pua", "exploitMitigation", "amsi", "behavioral" | Optional |
-| page_size | The maximum size of the page requested. Default is "50". Maximum is "100". | Optional |
-| page | The page number to fetch. Default is "1" | Optional |
+| exclusion_type | Scan exclusion type. Possible values are: "path", "posixPath", "virtualPath", "process", "web", "pua", "exploitMitigation", "amsi", "behavioral" | Optional | 
+| page_size | The maximum size of the page requested. Default is "50". Maximum is "100". | Optional | 
+| page | The page number to fetch. Default is "1" | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.ScanExclusion.comment | String | A comment indicating why the exclusion was updated. |
-| SophosCentral.ScanExclusion.description | String | The exclusion description added by the system. |
-| SophosCentral.ScanExclusion.id | String | The unique ID for the scanning exclusion setting. |
-| SophosCentral.ScanExclusion.scanMode | String | The scan mode. Default is "onDemandAndOnAccess" for exclusions of type path, posixPath, and virtualPath and "onAccess" for process, web, pua, amsi. Behavioral and Detected Exploits (exploitMitigation) type exclusions do not support a scan mode. |
-| SophosCentral.ScanExclusion.type | String | The scanning exclusion type. |
-| SophosCentral.ScanExclusion.value | String | The exclusion value. |
+| SophosCentral.ScanExclusion.comment | String | A comment indicating why the exclusion was updated. | 
+| SophosCentral.ScanExclusion.description | String | The exclusion description added by the system. | 
+| SophosCentral.ScanExclusion.id | String | The unique ID for the scanning exclusion setting. | 
+| SophosCentral.ScanExclusion.scanMode | String | The scan mode. Default is "onDemandAndOnAccess" for exclusions of type path, posixPath, and virtualPath and "onAccess" for process, web, pua, amsi. Behavioral and Detected Exploits (exploitMitigation) type exclusions do not support a scan mode. | 
+| SophosCentral.ScanExclusion.type | String | The scanning exclusion type. | 
+| SophosCentral.ScanExclusion.value | String | The exclusion value. | 
 
 
 #### Command Example
@@ -1416,19 +1416,19 @@ Get a single scan exclusion by ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| exclusion_id | The exclusion ID. | Required |
+| exclusion_id | The exclusion ID. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.ScanExclusion.comment | String | A comment indicating why the exclusion was updated. |
-| SophosCentral.ScanExclusion.description | String | The exclusion description added by the system. |
-| SophosCentral.ScanExclusion.id | String | The unique ID for the scanning exclusion setting. |
-| SophosCentral.ScanExclusion.scanMode | String | The scan mode. Default is "onDemandAndOnAccess" for exclusions of type path, posixPath, and virtualPath and "onAccess" for process, web, pua, amsi. Behavioral and Detected Exploits (exploitMitigation) type exclusions do not support a scan mode. |
-| SophosCentral.ScanExclusion.type | String | The scanning exclusion type. |
-| SophosCentral.ScanExclusion.value | String | The exclusion value. |
+| SophosCentral.ScanExclusion.comment | String | A comment indicating why the exclusion was updated. | 
+| SophosCentral.ScanExclusion.description | String | The exclusion description added by the system. | 
+| SophosCentral.ScanExclusion.id | String | The unique ID for the scanning exclusion setting. | 
+| SophosCentral.ScanExclusion.scanMode | String | The scan mode. Default is "onDemandAndOnAccess" for exclusions of type path, posixPath, and virtualPath and "onAccess" for process, web, pua, amsi. Behavioral and Detected Exploits (exploitMitigation) type exclusions do not support a scan mode. | 
+| SophosCentral.ScanExclusion.type | String | The scanning exclusion type. | 
+| SophosCentral.ScanExclusion.value | String | The exclusion value. | 
 
 
 #### Command Example
@@ -1470,22 +1470,22 @@ Add a new scan exclusion.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| comment | A comment indicating why the exclusion was created. | Optional |
-| scan_mode | The scan mode. Possible values are: "onDemand", "onAccess", and "onDemandAndOnAccess". Default is "onDemandAndOnAccess" for exclusions of type path, posixPath and virtualPath, "onAccess" for process, web, pua, amsi. Behavioral and Detected Exploits (exploitMitigation) type exclusions do not support a scan mode. | Optional |
-| exclusion_type | The scanning exclusion type. Possible values are: "path", "posixPath", "virtualPath", "process", "web", "pua", "exploitMitigation", "amsi", "behavioral". | Required |
-| value | The exclusion value. | Required |
+| comment | A comment indicating why the exclusion was created. | Optional | 
+| scan_mode | The scan mode. Possible values are: "onDemand", "onAccess", and "onDemandAndOnAccess". Default is "onDemandAndOnAccess" for exclusions of type path, posixPath and virtualPath, "onAccess" for process, web, pua, amsi. Behavioral and Detected Exploits (exploitMitigation) type exclusions do not support a scan mode. | Optional | 
+| exclusion_type | The scanning exclusion type. Possible values are: "path", "posixPath", "virtualPath", "process", "web", "pua", "exploitMitigation", "amsi", "behavioral". | Required | 
+| value | The exclusion value. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.ScanExclusion.comment | String | A comment indicating why the exclusion was updated. |
-| SophosCentral.ScanExclusion.description | String | The exclusion description added by the system. |
-| SophosCentral.ScanExclusion.id | String | The unique ID for the scanning exclusion setting. |
-| SophosCentral.ScanExclusion.scanMode | String | The scan mode. Default is "onDemandAndOnAccess" for exclusions of type path, posixPath, and virtualPath and "onAccess" for process, web, pua, amsi. Behavioral and Detected Exploits (exploitMitigation) type exclusions do not support a scan mode. |
-| SophosCentral.ScanExclusion.type | String | The scanning exclusion type. |
-| SophosCentral.ScanExclusion.value | String | The exclusion value. |
+| SophosCentral.ScanExclusion.comment | String | A comment indicating why the exclusion was updated. | 
+| SophosCentral.ScanExclusion.description | String | The exclusion description added by the system. | 
+| SophosCentral.ScanExclusion.id | String | The unique ID for the scanning exclusion setting. | 
+| SophosCentral.ScanExclusion.scanMode | String | The scan mode. Default is "onDemandAndOnAccess" for exclusions of type path, posixPath, and virtualPath and "onAccess" for process, web, pua, amsi. Behavioral and Detected Exploits (exploitMitigation) type exclusions do not support a scan mode. | 
+| SophosCentral.ScanExclusion.type | String | The scanning exclusion type. | 
+| SophosCentral.ScanExclusion.value | String | The exclusion value. | 
 
 
 #### Command Example
@@ -1527,22 +1527,22 @@ Update an existing scan exclusion.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| comment | A comment indicating why the exclusion was created. | Optional |
-| scan_mode | The default value of scan mode is "onDemandAndOnAccess" for exclusions of type path, posixPath and virtualPath, "onAccess" for process, web, pua, amsi. Behavioral and Detected Exploits (exploitMitigation) type exclusions do not support a scan mode. | Optional |
-| exclusion_id | The exclusion ID. | Required |
-| value | The exclusion value. | Optional |
+| comment | A comment indicating why the exclusion was created. | Optional | 
+| scan_mode | The default value of scan mode is "onDemandAndOnAccess" for exclusions of type path, posixPath and virtualPath, "onAccess" for process, web, pua, amsi. Behavioral and Detected Exploits (exploitMitigation) type exclusions do not support a scan mode. | Optional | 
+| exclusion_id | The exclusion ID. | Required | 
+| value | The exclusion value. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.ScanExclusion.comment | String | A comment indicating why the exclusion was updated. |
-| SophosCentral.ScanExclusion.description | String | The exclusion description added by the system. |
-| SophosCentral.ScanExclusion.id | String | The unique ID for the scanning exclusion setting. |
-| SophosCentral.ScanExclusion.scanMode | String | The scan mode. Default is "onDemandAndOnAccess" for exclusions of type path, posixPath, and virtualPath and "onAccess" for process, web, pua, amsi. Behavioral and Detected Exploits (exploitMitigation) type exclusions do not support a scan mode. |
-| SophosCentral.ScanExclusion.type | String | The scanning exclusion type. |
-| SophosCentral.ScanExclusion.value | String | The exclusion value. |
+| SophosCentral.ScanExclusion.comment | String | A comment indicating why the exclusion was updated. | 
+| SophosCentral.ScanExclusion.description | String | The exclusion description added by the system. | 
+| SophosCentral.ScanExclusion.id | String | The unique ID for the scanning exclusion setting. | 
+| SophosCentral.ScanExclusion.scanMode | String | The scan mode. Default is "onDemandAndOnAccess" for exclusions of type path, posixPath, and virtualPath and "onAccess" for process, web, pua, amsi. Behavioral and Detected Exploits (exploitMitigation) type exclusions do not support a scan mode. | 
+| SophosCentral.ScanExclusion.type | String | The scanning exclusion type. | 
+| SophosCentral.ScanExclusion.value | String | The exclusion value. | 
 
 
 #### Command Example
@@ -1584,14 +1584,14 @@ Delete an existing scan exclusion.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| exclusion_id | The exclusion ID. | Required |
+| exclusion_id | The exclusion ID. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.DeletedScanExclusion.deletedExclusionId | String | The ID of the deleted exclusion. |
+| SophosCentral.DeletedScanExclusion.deletedExclusionId | String | The ID of the deleted exclusion. | 
 
 
 #### Command Example
@@ -1624,21 +1624,21 @@ List exploit mitigation settings for all protected applications.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| mitigation_type | Exploit mitigation type. Possible values are: "detected" and "custom". | Optional |
-| page_size | The maximum size of the page requested. Default is "50". Maximum is "100". | Optional |
-| page | The page number to fetch. Default is "1". | Optional |
-| modified | Whether the Exploit Mitigation application has been customized. Possible values are: "true" and "false". | Optional |
+| mitigation_type | Exploit mitigation type. Possible values are: "detected" and "custom". | Optional | 
+| page_size | The maximum size of the page requested. Default is "50". Maximum is "100". | Optional | 
+| page | The page number to fetch. Default is "1". | Optional | 
+| modified | Whether the Exploit Mitigation application has been customized. Possible values are: "true" and "false". | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.ExploitMitigation.category | String | The Exploit Mitigation category ID. |
-| SophosCentral.ExploitMitigation.name | String | The name given to this Exploit Mitigation Application. |
-| SophosCentral.ExploitMitigation.id | String | The ID of this Exploit Mitigation Application. |
-| SophosCentral.ExploitMitigation.paths | String | Paths included in this Exploit Mitigation Application. |
-| SophosCentral.ExploitMitigation.type | String | Whether the application was detected by the system or created by the user. |
+| SophosCentral.ExploitMitigation.category | String | The Exploit Mitigation category ID. | 
+| SophosCentral.ExploitMitigation.name | String | The name given to this Exploit Mitigation Application. | 
+| SophosCentral.ExploitMitigation.id | String | The ID of this Exploit Mitigation Application. | 
+| SophosCentral.ExploitMitigation.paths | String | Paths included in this Exploit Mitigation Application. | 
+| SophosCentral.ExploitMitigation.type | String | Whether the application was detected by the system or created by the user. | 
 
 
 #### Command Example
@@ -1907,18 +1907,18 @@ Get exploit mitigation settings for a single application.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| mitigation_id | The Exploit Mitigation application ID. | Required |
+| mitigation_id | The Exploit Mitigation application ID. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.ExploitMitigation.category | String | The Exploit Mitigation category ID. |
-| SophosCentral.ExploitMitigation.name | String | The name given to this Exploit Mitigation Application. |
-| SophosCentral.ExploitMitigation.id | String | The ID of this Exploit Mitigation Application. |
-| SophosCentral.ExploitMitigation.paths | String | Paths included in this Exploit Mitigation Application. |
-| SophosCentral.ExploitMitigation.type | String | Whether the application was detected by the system or created by the user. |
+| SophosCentral.ExploitMitigation.category | String | The Exploit Mitigation category ID. | 
+| SophosCentral.ExploitMitigation.name | String | The name given to this Exploit Mitigation Application. | 
+| SophosCentral.ExploitMitigation.id | String | The ID of this Exploit Mitigation Application. | 
+| SophosCentral.ExploitMitigation.paths | String | Paths included in this Exploit Mitigation Application. | 
+| SophosCentral.ExploitMitigation.type | String | Whether the application was detected by the system or created by the user. | 
 
 
 #### Command Example
@@ -1961,18 +1961,18 @@ Exclude a set of file paths from exploit mitigation.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| path | An absolute path to an application file to exclude. You may use HitmanPro.Alert expansion variables (e.g., $desktop, $programfiles). | Required |
+| path | An absolute path to an application file to exclude. You may use HitmanPro.Alert expansion variables (e.g., $desktop, $programfiles). | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.ExploitMitigation.category | String | The Exploit Mitigation category ID. |
-| SophosCentral.ExploitMitigation.name | String | The name given to this Exploit Mitigation Application. |
-| SophosCentral.ExploitMitigation.id | String | The ID of this Exploit Mitigation Application. |
-| SophosCentral.ExploitMitigation.paths | String | Paths included in this Exploit Mitigation Application. |
-| SophosCentral.ExploitMitigation.type | String | Whether the application was detected by the system or created by the user. |
+| SophosCentral.ExploitMitigation.category | String | The Exploit Mitigation category ID. | 
+| SophosCentral.ExploitMitigation.name | String | The name given to this Exploit Mitigation Application. | 
+| SophosCentral.ExploitMitigation.id | String | The ID of this Exploit Mitigation Application. | 
+| SophosCentral.ExploitMitigation.paths | String | Paths included in this Exploit Mitigation Application. | 
+| SophosCentral.ExploitMitigation.type | String | Whether the application was detected by the system or created by the user. | 
 
 
 #### Command Example
@@ -2015,19 +2015,19 @@ Update exploit mitigation settings for an application.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| mitigation_id | The Exploit Mitigation application ID. | Required |
-| path | An absolute path to an application file to exclude. You may use HitmanPro.Alert expansion variables (e.g., $desktop, $programfiles). | Required |
+| mitigation_id | The Exploit Mitigation application ID. | Required | 
+| path | An absolute path to an application file to exclude. You may use HitmanPro.Alert expansion variables (e.g., $desktop, $programfiles). | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.ExploitMitigation.category | String | The Exploit Mitigation category ID. |
-| SophosCentral.ExploitMitigation.name | String | The name given to this Exploit Mitigation Application. |
-| SophosCentral.ExploitMitigation.id | String | The ID of this Exploit Mitigation Application. |
-| SophosCentral.ExploitMitigation.paths | String | Paths included in this Exploit Mitigation Application. |
-| SophosCentral.ExploitMitigation.type | String | Whether the application was detected by the system or created by the user. |
+| SophosCentral.ExploitMitigation.category | String | The Exploit Mitigation category ID. | 
+| SophosCentral.ExploitMitigation.name | String | The name given to this Exploit Mitigation Application. | 
+| SophosCentral.ExploitMitigation.id | String | The ID of this Exploit Mitigation Application. | 
+| SophosCentral.ExploitMitigation.paths | String | Paths included in this Exploit Mitigation Application. | 
+| SophosCentral.ExploitMitigation.type | String | Whether the application was detected by the system or created by the user. | 
 
 
 #### Command Example
@@ -2070,14 +2070,14 @@ Delete a custom (user-defined) exploit mitigation application by ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| mitigation_id | The Exploit Mitigation application ID. | Required |
+| mitigation_id | The Exploit Mitigation application ID. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.DeletedExploitMitigation.deletedMitigationId | String | The ID of the deleted mitigation. |
+| SophosCentral.DeletedExploitMitigation.deletedMitigationId | String | The ID of the deleted mitigation. | 
 
 
 #### Command Example
@@ -2110,25 +2110,25 @@ List all detected exploits.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page_size | The maximum size of the page requested. Default is "50". Maximum is "100". | Optional |
-| page | The page number to fetch. Default is "1". | Optional |
-| thumbprint_not_in | Filter out detected exploits with these thumbprints. | Optional |
+| page_size | The maximum size of the page requested. Default is "50". Maximum is "100". | Optional | 
+| page | The page number to fetch. Default is "1". | Optional | 
+| thumbprint_not_in | Filter out detected exploits with these thumbprints. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.DetectedExploit.count | Number | The number of times the same exploit has been detected, potentially across multiple endpoints. |
-| SophosCentral.DetectedExploit.description | String | The English description of the exploit detected event. |
-| SophosCentral.DetectedExploit.id | String | The ID of this Exploit Mitigation Application. |
-| SophosCentral.DetectedExploit.firstSeenAt | Date | When the exploit was first seen. |
-| SophosCentral.DetectedExploit.lastSeenAt | Date | When the exploit was last seen. |
-| SophosCentral.DetectedExploit.lastEndpointHostname | String | The endpoint hostname. |
-| SophosCentral.DetectedExploit.lastEndpointId | String | The unique endpoint ID. |
-| SophosCentral.DetectedExploit.lastUserName | String | Person's name. |
-| SophosCentral.DetectedExploit.lastUserId | String | The unique ID for the user. |
-| SophosCentral.DetectedExploit.thumbprint | String | Matches \[0-9a-zA-Z\]\{64\}. |
+| SophosCentral.DetectedExploit.count | Number | The number of times the same exploit has been detected, potentially across multiple endpoints. | 
+| SophosCentral.DetectedExploit.description | String | The English description of the exploit detected event. | 
+| SophosCentral.DetectedExploit.id | String | The ID of this Exploit Mitigation Application. | 
+| SophosCentral.DetectedExploit.firstSeenAt | Date | When the exploit was first seen. | 
+| SophosCentral.DetectedExploit.lastSeenAt | Date | When the exploit was last seen. | 
+| SophosCentral.DetectedExploit.lastEndpointHostname | String | The endpoint hostname. | 
+| SophosCentral.DetectedExploit.lastEndpointId | String | The unique endpoint ID. | 
+| SophosCentral.DetectedExploit.lastUserName | String | Person's name. | 
+| SophosCentral.DetectedExploit.lastUserId | String | The unique ID for the user. | 
+| SophosCentral.DetectedExploit.thumbprint | String | Matches \[0-9a-zA-Z\]\{64\}. | 
 
 
 #### Command Example
@@ -2163,23 +2163,23 @@ Get a single detected exploit.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| detected_exploit_id | The ID of a previously detected exploit. | Required |
+| detected_exploit_id | The ID of a previously detected exploit. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.DetectedExploit.count | Number | The number of times the same exploit has been detected, potentially across multiple endpoints. |
-| SophosCentral.DetectedExploit.description | String | The English description of the exploit detected event. |
-| SophosCentral.DetectedExploit.id | String | The ID of this Exploit Mitigation application. |
-| SophosCentral.DetectedExploit.firstSeenAt | Date | When the exploit was first seen. |
-| SophosCentral.DetectedExploit.lastSeenAt | Date | When the exploit was last seen. |
-| SophosCentral.DetectedExploit.lastEndpointHostname | String | The endpoint hostname. |
-| SophosCentral.DetectedExploit.lastEndpointId | String | The unique endpoint ID. |
-| SophosCentral.DetectedExploit.lastUserName | String | Person's name. |
-| SophosCentral.DetectedExploit.lastUserId | String | The unique ID for the user. |
-| SophosCentral.DetectedExploit.thumbprint | String | Matches \[0-9a-zA-Z\]\{64\}. |
+| SophosCentral.DetectedExploit.count | Number | The number of times the same exploit has been detected, potentially across multiple endpoints. | 
+| SophosCentral.DetectedExploit.description | String | The English description of the exploit detected event. | 
+| SophosCentral.DetectedExploit.id | String | The ID of this Exploit Mitigation application. | 
+| SophosCentral.DetectedExploit.firstSeenAt | Date | When the exploit was first seen. | 
+| SophosCentral.DetectedExploit.lastSeenAt | Date | When the exploit was last seen. | 
+| SophosCentral.DetectedExploit.lastEndpointHostname | String | The endpoint hostname. | 
+| SophosCentral.DetectedExploit.lastEndpointId | String | The unique endpoint ID. | 
+| SophosCentral.DetectedExploit.lastUserName | String | Person's name. | 
+| SophosCentral.DetectedExploit.lastUserId | String | The unique ID for the user. | 
+| SophosCentral.DetectedExploit.thumbprint | String | Matches \[0-9a-zA-Z\]\{64\}. | 
 
 
 #### Command Example
@@ -2188,3 +2188,121 @@ Get a single detected exploit.
 #### Human Readable Output
 
 
+### sophos-central-isolate-endpoint
+***
+Isolate one or more endpoints.
+
+
+#### Base Command
+
+`sophos-central-isolate-endpoint`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| endpoint_id | ID(s) of the endpoint(s) to be isolated. | Required |
+| comment | Comment indicating why the endpoint(s) should be isolated. | Optional |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SophosCentral.EndpointIsolation.items.id | String | The unique endpoint ID. |
+| SophosCentral.EndpointIsolation.items.isolation.enabled | Boolean | Isolation status. |
+| SophosCentral.EndpointIsolation.items.isolation.lastEnabledAt | String | When isolation was last enabled for the endpoint. |
+| SophosCentral.EndpointIsolation.items.isolation.lastEnabledBy.id | String | Principal Email or clientId by whom isolation was enabled. |
+| SophosCentral.EndpointIsolation.items.isolation.lastDisabledAt | String | When isolation was last disabled for the endpoint. |
+| SophosCentral.EndpointIsolation.items.isolation.lastDisabledBy.id | String | Principal Email or clientId by whom isolation was disabled. |
+| SophosCentral.EndpointIsolation.items.isolation.comment | String | Reason endpoint should be isolated or not. |
+
+
+#### Command Example
+```!sophos-central-isolate-endpoint endpoint_id=25de27bc-b07a-4728-b7b2-a021365xxxxx```
+
+#### Context Example
+```json
+{
+    "items": [
+        {
+            "id": "25de27bc-b07a-4728-b7b2-a021365xxxxx",
+            "isolation": {
+                "enabled": true,
+                "lastEnabledAt": "2021-08-13 09.07.03 GMT",
+                "lastEnabledBy": {
+                    "id": "e71332ab-c447-45ff-b356-b8b5f39xxxxx"
+                },
+                "lastDisabledAt": "2021-08-13 09.54.02 GMT",
+                "lastDisabledBy": {
+                    "id": "e71332ab-c447-45ff-b356-b8b5f39xxxxx"
+                },
+                "comment": "testing"
+            }
+        }
+    ]
+}
+```
+
+#### Human Readable Output
+
+Endpoint(s) isolated successfully.
+
+
+### sophos-central-deisolate-endpoint
+***
+De-isolate one or more endpoints.
+
+
+#### Base Command
+
+`sophos-central-deisolate-endpoint`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| endpoint_id | ID(s) of the endpoint(s) to be de-isolated. | Required |
+| comment | Comment indicating why the endpoint(s) should be de-isolated. | Optional |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SophosCentral.EndpointIsolation.items.id | String | The unique endpoint ID. |
+| SophosCentral.EndpointIsolation.items.isolation.enabled | Boolean | Isolation status. |
+| SophosCentral.EndpointIsolation.items.isolation.lastEnabledAt | String | When isolation was last enabled for the endpoint. |
+| SophosCentral.EndpointIsolation.items.isolation.lastEnabledBy.id | String | Principal Email or clientId by whom isolation was enabled. |
+| SophosCentral.EndpointIsolation.items.isolation.lastDisabledAt | String | When isolation was last disabled for the endpoint. |
+| SophosCentral.EndpointIsolation.items.isolation.lastDisabledBy.id | String | Principal Email or clientId by whom isolation was disabled. |
+| SophosCentral.EndpointIsolation.items.isolation.comment | String | Reason endpoint should be isolated or not. |
+
+
+#### Command Example
+```!sophos-central-deisolate-endpoint endpoint_id=25de27bc-b07a-4728-b7b2-a021365xxxxx```
+
+#### Context Example
+```json
+{
+    "items": [
+        {
+            "id": "25de27bc-b07a-4728-b7b2-a021365xxxxx",
+            "isolation": {
+                "enabled": false,
+                "lastEnabledAt": "2021-08-13 09.07.03 GMT",
+                "lastEnabledBy": {
+                    "id": "e71332ab-c447-45ff-b356-b8b5f39xxxxx"
+                },
+                "lastDisabledAt": "2021-08-13 09.54.02 GMT",
+                "lastDisabledBy": {
+                    "id": "e71332ab-c447-45ff-b356-b8b5f39xxxxx"
+                },
+                "comment": "testing"
+            }
+        }
+    ]
+}
+```
+
+#### Human Readable Output
+
+Endpoint(s) de-isolated successfully.
