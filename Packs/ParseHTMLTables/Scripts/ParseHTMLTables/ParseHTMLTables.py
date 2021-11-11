@@ -7,6 +7,8 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
+TITLE_THRESHOLD = 4
+
 class Table:
     def __init__(self, title: str):
         self.__title = title
@@ -97,7 +99,7 @@ def find_table_title(base: Optional[Union[BeautifulSoup, Tag, NavigableString]],
 
         prev = node.previous_element
 
-    if not title or title.count(' ') >= 4:
+    if not title or title.count(' ') >= TITLE_THRESHOLD:
         message = ''
         node = orig
         prev = node.previous_element
