@@ -149,7 +149,7 @@ def main() -> None:
     params = demisto.params()
     command = demisto.command()
     params = {
-        'host_address': '192.168.1.188',
+        'host_address': '127.0.0.1',
         'longRunningPort': 32376,
         'log_format': RFC3164
     }
