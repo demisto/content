@@ -10,11 +10,16 @@ removed_keys = ['endpoint', 'domain', 'hostname']
 
 class Client(BaseClient):
 
+    def __init__(self, base_url, verify=True, proxy=False, ok_codes=tuple(), headers=None, auth=None, timeout=10):
+        super().__init__(base_url, verify=True, proxy=False, ok_codes=tuple(), headers=None, auth=None)
+        self.timeout = timeout
+
     def domain_tags(self, hostname: str = None):
         res = self._http_request(
             'GET',
             f'domain/{hostname}/tags',
-            ok_codes=(200, 403)
+            ok_codes=(200, 403),
+            timeout=self.timeout
         )
         return res.get('tags', [])
 
@@ -22,7 +27,8 @@ class Client(BaseClient):
         return self._http_request(
             'GET',
             f'domain/{hostname}',
-            ok_codes=(200, 403)
+            ok_codes=(200, 403),
+            timeout=self.timeout
         )
 
     def domain_subdomains(self, hostname: str = None, children_only: str = 'true'):
@@ -32,6 +38,7 @@ class Client(BaseClient):
             f'domain/{hostname}/subdomains',
             params=query_string,
             ok_codes=(200, 403),
+            timeout=self.timeout
         )
         return res
 
@@ -44,6 +51,7 @@ class Client(BaseClient):
             f'domain/{hostname}/associated',
             params=params,
             ok_codes=(200, 403),
+            timeout=self.timeout
         )
         return res
 
@@ -55,7 +63,8 @@ class Client(BaseClient):
                 f'domain/{hostname}/ssl',
                 params=params or {},
                 ok_codes=(200, 403),
-                resp_type='response'
+                resp_type='response',
+                timeout=self.timeout
             )
         elif query_type == "stream":
             res = self._http_request(
@@ -63,7 +72,8 @@ class Client(BaseClient):
                 f'domain/{hostname}/ssl_stream',
                 params=params,
                 ok_codes=(200, 403),
-                resp_type='response'
+                resp_type='response',
+                timeout=self.timeout
             )
 
         return res
@@ -72,7 +82,8 @@ class Client(BaseClient):
         res = self._http_request(
             'GET',
             f'company/{domain}',
-            ok_codes=(200, 403)
+            ok_codes=(200, 403),
+            timeout=self.timeout
         )
         return res.get('record', {})
 
@@ -81,13 +92,15 @@ class Client(BaseClient):
             'GET',
             f'ips/{ip_address}/useragents',
             params=params or {},
-            ok_codes=(200, 403))
+            ok_codes=(200, 403)),
+            timeout=self.timeout
 
     def get_company_associated_ips(self, domain: str = None):
         res = self._http_request(
             'GET',
             f'company/{domain}/associated-ips',
-            ok_codes=(200, 403)
+            ok_codes=(200, 403),
+            timeout=self.timeout
         )
         return res.get('record', {})
 
@@ -96,13 +109,15 @@ class Client(BaseClient):
             return self._http_request(
                 'GET',
                 f'domain/{hostname}/whois',
-                ok_codes=(200, 403)
+                ok_codes=(200, 403),,
+                timeout=self.timeout
             )
         elif query_type == "ip":
             return self._http_request(
                 'GET',
                 f'ips/{hostname}/whois',
-                ok_codes=(200, 403)
+                ok_codes=(200, 403),
+                timeout=self.timeout
             )
 
     def get_dns_history(self, hostname: str = None, record_type: str = None, page: int = 1):
@@ -113,7 +128,8 @@ class Client(BaseClient):
             'GET',
             f'history/{hostname}/dns/{record_type}',
             params=params,
-            ok_codes=(200, 403)
+            ok_codes=(200, 403),
+            timeout=self.timeout
         )
 
     def get_whois_history(self, hostname: str = None, page: int = 1):
@@ -124,7 +140,8 @@ class Client(BaseClient):
             'GET',
             f'history/{hostname}/whois',
             params=params,
-            ok_codes=(200, 403)
+            ok_codes=(200, 403),
+            timeout=self.timeout
         )
         return res.get('result')
 
@@ -132,7 +149,8 @@ class Client(BaseClient):
         res = self._http_request(
             'GET',
             f'ips/nearby/{ipaddress}',
-            ok_codes=(200, 403)
+            ok_codes=(200, 403),
+            timeout=self.timeout
         )
         return res.get('blocks')
 
@@ -143,14 +161,16 @@ class Client(BaseClient):
                 'domains/list',
                 params=params,
                 json_data=body,
-                ok_codes=(200, 403)
+                ok_codes=(200, 403),
+                timeout=self.timeout
             )
         elif query_type == "domain_stats":
             return self._http_request(
                 'POST',
                 'domains/stats',
                 json_data=body,
-                ok_codes=(200, 403)
+                ok_codes=(200, 403),
+                timeout=self.timeout
             )
         elif query_type == "ip_search":
             return self._http_request(
@@ -158,7 +178,8 @@ class Client(BaseClient):
                 'ips/list',
                 params=params,
                 json_data=body,
-                ok_codes=(200, 403)
+                ok_codes=(200, 403),
+                timeout=self.timeout
             )
         elif query_type == "ip_stats":
             return self._http_request(
@@ -166,7 +187,8 @@ class Client(BaseClient):
                 'ips/stats',
                 params=params,
                 json_data=body,
-                ok_codes=(200, 403)
+                ok_codes=(200, 403),
+                timeout=self.timeout
             )
 
     def sql(self, sql: dict = None, timeout: int = 20):
@@ -174,14 +196,14 @@ class Client(BaseClient):
             'POST',
             'query/scroll',
             json_data=sql,
-            timeout=timeout
+            timeout=self.timeout
         )
 
     def sql_next(self, next_id: str = None, timeout: int = 20):
         return self._http_request(
             'GET',
             f'query/scroll/{next_id}',
-            timeout=timeout
+            timeout=self.timeout
         )
 
 
@@ -1009,6 +1031,7 @@ def main() -> None:
     args = demisto.args()
 
     api_key = params.get('apikey')
+    timeout = int(params.get('timeout', '10'))
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     base_url = "https://api.securitytrails.com/v1/"
@@ -1050,7 +1073,8 @@ def main() -> None:
             base_url=base_url,
             verify=verify_certificate,
             headers=headers,
-            proxy=proxy)
+            proxy=proxy,
+            timeout=timeout)
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.

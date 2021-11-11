@@ -9,6 +9,12 @@ configuration:
     defaultvalue: null
     type: 4
     additionalinfo: null
+  - name: timeout
+    display: Timout
+    required: false
+    defaultvalue: 10
+    type: 3
+    additionalinfo: null
   - name: insecure
     display: Trust any certificate (not secure)
     required: false
@@ -17,12 +23,6 @@ configuration:
     additionalinfo: null
   - name: proxy
     display: Use system proxy settings
-    required: false
-    defaultvalue: ''
-    type: 8
-    additionalinfo: null
-  - name: feed
-    display: Fetch indicators
     required: false
     defaultvalue: ''
     type: 8
