@@ -3189,7 +3189,7 @@
         },
         {
             "integrations": "Google IP Ranges Feed",
-            "playbookID": "GoogleIPRanges_Feed_Test",
+            "playbookID": "Fetch Indicators Test",
             "fromversion": "5.5.0"
         },
         {
