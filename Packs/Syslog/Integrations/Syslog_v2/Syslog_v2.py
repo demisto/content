@@ -84,7 +84,8 @@ def test_module(host_address: str, port: int) -> str:
             s.bind((host_address, port))
         except OSError as e:
             if "Can't assign requested address" in str(e):
-                message = 'The given IP address could not be accessed\n.Please make sure the IP address in valid and can be accessed.'
+                message = 'The given IP address could not be accessed\n.Please make sure the IP address in valid' \
+                          ' and can be accessed.'
     return message
 
 
@@ -95,31 +96,101 @@ def fetch_samples() -> None:
     demisto.incidents(get_integration_context().get('samples'))
 
 
-def perform_long_running_loop(s: socket.socket, log_format: str, message_regex: str,
+def create_incident_from_syslog_message(extracted_message: SyslogMessageExtract, incident_type: Optional[str]) -> dict:
+    """
+    Creates incident from the extracted Syslog message.
+    Args:
+        extracted_message (SyslogMessageExtract): Syslog message extraction details.
+        incident_type (Optional[str]): Incident type.
+
+    Returns:
+        (dict): Incident.
+    """
+    return {
+        'name': f'Syslog from [{extracted_message.host_name}][{extracted_message.timestamp}]',
+        'rawJSON': json.dumps(vars(extracted_message)),
+        'occurred': extracted_message.timestamp,
+        'type': incident_type
+    }
+
+
+def update_integration_context_samples(incident: dict) -> None:
+    """
+    Updates the integration context samples with the newly created incident.
+    If the size of the samples has reached `MAX_SAMPLES`, will pop out the latest sample.
+    Args:
+        incident (dict): The newly created incident.
+
+    Returns:
+        (None): Modifies the integration context samples field.
+    """
+    ctx = get_integration_context()
+    updated_samples_list: List[Dict] = [incident] + ctx.get('samples', [])
+    if len(updated_samples_list) > MAX_SAMPLES:
+        updated_samples_list.pop()
+    ctx['samples'] = updated_samples_list
+    set_integration_context(ctx)
+
+
+def perform_long_running_loop(s: socket.socket, log_format: str, message_regex: Optional[str],
                               incident_type: Optional[str]) -> None:
+    """
+    Performs one loop of a long running execution.
+    - Waits for data from socket
+    - Parses the Syslog message data.
+    - If the Syslog message data passes filter, creates a new incident.
+    - Saves the incident in integration context for samples.
+    Args:
+        s (socket.socket): Socket to retrieve Syslog messages from.
+        log_format (str): The Syslog format the messages will be sent with. one of the dictionary keys of the
+                          constant `FORMAT_TO_PARSER_FUNCTION` variable.
+        message_regex (Optional[str]): Message regex to match if exists.
+        incident_type (Optional[str]): Incident type.
+
+    Returns:
+        (None): Creates incident in Cortex XSOAR platform.
+    """
     data, address = s.recvfrom(BUF_SIZE)
     extracted_message: SyslogMessageExtract = FORMAT_TO_PARSER_FUNCTION[log_format](data)
     if log_message_passes_filter(extracted_message, message_regex):
-        incident: dict = {
-            'name': f'Syslog from [{extracted_message.host_name}][{extracted_message.timestamp}]',
-            'rawJSON': json.dumps(vars(extracted_message)),
-            'occurred': extracted_message.timestamp,
-            'type': incident_type
-        }
-        ctx = get_integration_context()
-        updated_samples_list: List[Dict] = [incident] + ctx.get('samples', [])
-        if len(updated_samples_list) > MAX_SAMPLES:
-            updated_samples_list.pop()
-        ctx['samples'] = updated_samples_list
+        incident: dict = create_incident_from_syslog_message(extracted_message, incident_type)
+        update_integration_context_samples(incident)
         demisto.createIncidents([incident])
 
 
-def log_message_passes_filter(log_message: SyslogMessageExtract, message_regex: str) -> bool:
+def log_message_passes_filter(log_message: SyslogMessageExtract, message_regex: Optional[str]) -> bool:
+    """
+    Given log message extraction and a possible message regex, checks if the message passes the filters:
+    1) Message regex is None, therefore no filter was asked to be made.
+    2) Message regex is not None: Filter the Syslog message if regex does not exist in the message,
+                                  if regex exists in the Syslog message, do not filter.
+    Args:
+        log_message (SyslogMessageExtract): The extracted details of a Syslog message.
+        message_regex (Optional[str]): Message regex to match if exists.
+
+    Returns:
+        (bool): True if the message shouldn't be filtered, false if the message should be filtered.
+    """
     return not message_regex or (True if re.match(message_regex, log_message.msg) else False)
 
 
-def perform_long_running_execution(host_address: str, port: int, log_format: str, protocol: str, message_regex: str,
-                                   incident_type: Optional[str]):
+def perform_long_running_execution(host_address: str, port: int, log_format: str, protocol: str,
+                                   message_regex: Optional[str], incident_type: Optional[str]):
+    """
+    The long running execution loop. Binds a socket, and performs a while True loop and logs any error that happens.
+    Args:
+        host_address (str): The host address to connect to.
+        port (int): Port.
+        log_format (str): The Syslog format the messages will be sent with. one of the dictionary keys of the
+                          constant `FORMAT_TO_PARSER_FUNCTION` variable.
+        protocol (str): TODO
+        message_regex (Optional[str]): Message regex. If given, will only create incidents of Syslog messages whom
+                                       matches this filter.
+        incident_type (Optional[str]): Incident type.
+
+    Returns:
+
+    """
     # Create socket and bind to address
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
         try:
@@ -140,11 +211,6 @@ def perform_long_running_execution(host_address: str, port: int, log_format: str
 
 
 def main() -> None:
-    """main function, parses params and runs command functions
-
-    :return:
-    :rtype:
-    """
     params = demisto.params()
     command = demisto.command()
     params = {
@@ -156,7 +222,7 @@ def main() -> None:
 
     host_address: str = params.get('host_address', '')
     protocol: str = params.get('protocol', '')
-    message_regex: str = params.get('message_regex', '')
+    message_regex: Optional[str] = params.get('message_regex')
     incident_type: Optional[str] = params.get('incident_type')
 
     log_format: str = params.get('log_format', '')
