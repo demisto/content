@@ -67,7 +67,6 @@ def test_generic_command_no_content(requests_mock, client):
     args = {
         'http_method': 'POST',
         'resource': '/identityProtection/riskyUsers/dismiss',
-        'odata': '',
         'no_content': 'true',
         'populate_context': 'false',
     }
