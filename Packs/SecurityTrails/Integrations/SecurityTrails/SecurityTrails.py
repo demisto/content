@@ -331,7 +331,7 @@ def domain_command(client, args):
             readable_output=md
         )
         command_results.append(result)
-        
+
     return_results(command_results)
 
 #################################
