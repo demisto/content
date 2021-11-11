@@ -1,4 +1,4 @@
-comment: 'Widget to show Cortex XDR remediation actions information'
+comment: 'This widget displays Cortex XDR remediation action information.'
 commonfields:
   id: CortexXDRRemediationActionsWidget
   version: -1
