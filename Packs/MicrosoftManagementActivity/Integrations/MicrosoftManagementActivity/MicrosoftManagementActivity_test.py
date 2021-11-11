@@ -651,7 +651,5 @@ def test_timeout(mocker, args_timeout, param_timeout, expected_value):
             validate the output of get_timeout matches the logic, based on availability:
              use arg, then param, then default.
     """
-    from MicrosoftManagementActivity import get_timeout
-    mocker.patch.object(demisto, 'params', return_value={'timeout': param_timeout})
-    mocker.patch.object(demisto, 'args', return_value={'timeout': args_timeout})
-    assert get_timeout() == expected_value
+    from MicrosoftManagementActivity import calculate_timeout_value
+    assert calculate_timeout_value(params={'timeout': param_timeout}, args={'timeout': args_timeout}) == expected_value
