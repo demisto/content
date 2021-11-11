@@ -117,4 +117,4 @@ script:
   type: python
 fromversion: 5.5.0
 tests:
-- GCPWhitelist_Feed_Test
+- GoogleIPRanges_Feed_Test

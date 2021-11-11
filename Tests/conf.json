@@ -3185,6 +3185,11 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "Google IP Ranges Feed",
+            "playbookID": "GoogleIPRanges_Feed_Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "Azure AD Connect Health Feed",
             "playbookID": "FeedAzureADConnectHealth_Test",
             "fromversion": "5.5.0"
