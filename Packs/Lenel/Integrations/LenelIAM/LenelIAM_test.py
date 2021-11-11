@@ -318,3 +318,178 @@ def test_get_mapping_fields_command(mocker):
 
     assert mapping.get(IAMUserProfile.DEFAULT_INCIDENT_TYPE, {}).get('field1') == 'desc1'
     assert mapping.get(IAMUserProfile.DEFAULT_INCIDENT_TYPE, {}).get('field2') == 'desc2'
+
+
+def test_get_cardholder():
+    res = Client.get_cardholder('ID', 'test_id')
+    assert res == 'ID=test_id'
+
+
+def test_client_get_user(mocker):
+    mock_res = {
+        "count": 1,
+        "item_list": [
+            {
+                "property_value_map": {
+                    "ACTIVE__XR": False,
+                    "ADDRESS": "3rd Floor, Office 305",
+                    "ALLOWEDVISITORS": True,
+                    "CITY": "Rome",
+                    "COMPANY": 0,
+                    "COUNTRY": 0,
+                    "COUNTRYCODE": 0,
+                    "COUNTRY__XR": "Italy",
+                    "EMAIL": "test@paloaltonetworks.com",
+                    "ID": 11111,
+                    "LASTCHANGED": "2021-10-27T00:10:32-07:00",
+                    "LASTNAME": "test last name",
+                    "REGION": 0,
+                    "SSNO": "00001",
+                }
+            },
+        ]
+    }
+
+    client = mock_client(mocker)
+    mocker.patch.object(client, '_http_request', return_value=mock_res)
+    user = client.get_user('email', 'test@paloaltonetworks.com')
+    assert user.id == 11111
+    assert not user.is_active
+    assert not user.username
+
+
+def test_client_create_user(mocker):
+    mock_res = {
+        "property_value_map": {
+            "ID": 11111
+        },
+        "type_name": "Lnl_Cardholder",
+        "version": "1.0"
+    }
+    mock_param = {'ADDRESS': '3rd Floor, Office 305', 'CITY': 'Venice', 'COUNTRYCODE__XR': 'IT', 'COUNTRY__XR': 'Italy',
+                  'EMAIL': 'test@paloaltonetworks.com', 'FIRSTNAME': 'test', 'HIREDATE': '04/01/2021',
+                  'LASTNAME': 'test2', 'SSNO': '00013', 'STATE': 'Venice',
+                  'TITLE': 'Major Account Manager Public Sector - Italy', 'TYPE__XR': 'Regular',
+                  'USERNAME': 'test@paloaltonetworks.com', 'ZIPCODE': '00144'}
+
+    client = mock_client(mocker)
+    mocker.patch.object(client, '_http_request', return_value=mock_res)
+    user = client.create_user(mock_param)
+    assert user.id == 11111
+    assert user.is_active
+    assert user.username == 'test@paloaltonetworks.com'
+
+
+update_mock_res = {
+    "property_value_map": {
+        "ID": 11111
+    },
+    "type_name": "Lnl_Cardholder",
+    "version": "1.0"
+}
+get_mock_res = {"count": 1, "item_list": [
+    {
+        "property_value_map": {
+            "ACTIVE__XR": None,
+            "ADDRESS": "6rd Floor, Office 305",
+            "ALLOWEDVISITORS": True,
+            "CITY": "Rome",
+            "COMPANY": 0,
+            "COUNTRY": 0,
+            "COUNTRYCODE": 0,
+            "COUNTRY__XR": "Italy",
+            "EMAIL": "test@paloaltonetworks.com",
+            "ID": 11111,
+            "LASTCHANGED": "2021-10-27T00:10:32-07:00",
+            "LASTNAME": "test last name",
+            "REGION": 0,
+            "SSNO": "00001",
+        }
+    },
+]}
+
+
+def http_request_side_effect(**args):
+    user_active_status = args['json_data']['property_value_map']['ACTIVE__XR'] if 'json_data' in args else None
+    if user_active_status is True:
+        get_mock_res['item_list'][0]['property_value_map']['ACTIVE__XR'] = 'true'
+    elif user_active_status is False:
+        get_mock_res['item_list'][0]['property_value_map']['ACTIVE__XR'] = 'false'
+
+    if args['method'] == 'GET':
+        return get_mock_res
+    else:
+        return update_mock_res
+
+
+def test_client_update_user(mocker):
+    user_id = 11111
+    user_data = {'ACTIVE__XR': 'true', 'ADDRESS': '6rd Floor, Office 305', 'CITY': 'Venice', 'COUNTRYCODE__XR': 'IT',
+                 'COUNTRY__XR': 'Italy', 'EMAIL': 'test@paloaltonetworks.com', 'FIRSTNAME': 'test', 'HIREDATE': '04/01/2021',
+                 'LASTNAME': 'test2', 'SSNO': '00013', 'STATE': 'Venice',
+                 'TITLE': 'Major Account Manager Public Sector - Italy', 'TYPE__XR': 'Regular',
+                 'USERNAME': 'test@paloaltonetworks.com', 'ZIPCODE': '00144'}
+
+    client = mock_client(mocker)
+    mocker.patch.object(client, '_http_request', side_effect=http_request_side_effect)
+    user = client.update_user(user_id, user_data)
+    assert user.id == 11111
+    assert user.full_data['ADDRESS'] == '6rd Floor, Office 305'
+
+
+def test_client_enable_user(mocker):
+    user_id = 11111
+    client = mock_client(mocker)
+    mocker.patch.object(client, '_http_request', side_effect=http_request_side_effect)
+    user = client.enable_user(user_id)
+    assert user.id == 11111
+    assert user.is_active is True
+
+
+def test_client_disable_user(mocker):
+    user_id = 11111
+    client = mock_client(mocker)
+    mocker.patch.object(client, '_http_request', side_effect=http_request_side_effect)
+    mocker.patch.object(client, 'get_badges', return_value={})
+
+    user = client.disable_user(user_id)
+    assert user.id == 11111
+    assert user.is_active is False
+
+
+def test_client_disable_user_and_badges(mocker):
+    user_id = 11111
+    client = mock_client(mocker)
+    mocker.patch.object(client, '_http_request', side_effect=http_request_side_effect)
+    mocker.patch.object(client, 'get_badges', return_value={
+        'item_list': [{
+            'property_value_map': {
+                'BADGEKEY': 'mock_badge_key'
+            }
+        }]
+    })
+    mocker.patch.object(client, 'deactivate_badge', return_value={'info': 'badge was deactivated'})
+    info = mocker.patch.object(demisto, 'info')
+    user = client.disable_user(user_id)
+    assert user.id == 11111
+    assert user.is_active is False
+    assert info.call_args.args[0] == 'Deactivated badge for user: 11111. Badge Key: mock_badge_key'
+
+
+def test_client_disable_user_and_badges_faliure(mocker):
+    user_id = 11111
+    client = mock_client(mocker)
+    mocker.patch.object(client, '_http_request', side_effect=http_request_side_effect)
+    mocker.patch.object(client, 'get_badges', return_value={
+        'item_list': [{
+            'property_value_map': {
+                'BADGEKEY': 'mock_badge_key'
+            }
+        }]
+    })
+    mocker.patch.object(client, 'deactivate_badge', return_value={})
+    info = mocker.patch.object(demisto, 'error')
+    user = client.disable_user(user_id)
+    assert user.id == 11111
+    assert user.is_active is False
+    assert 'Failed to deactivate badge for user' in info.call_args.args[0]

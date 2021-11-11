@@ -103,10 +103,11 @@ class Client(BaseClient):
 
         if result and count and count == 1:
             result = result[0]
-            lenel_active = result['property_value_map'].get(ACTIVE_FIELD)
+            property_value_map = result.get('property_value_map', {})
+            lenel_active = property_value_map.get(ACTIVE_FIELD)
             is_active = lenel_active and lenel_active.lower() == 'true'
-            user_id = result['property_value_map']['ID']
-            username = result['property_value_map']['USERNAME']
+            user_id = property_value_map.get('ID')
+            username = property_value_map.get('USERNAME')
 
             return IAMUserAppData(user_id, username, is_active, result['property_value_map'])
         return None
@@ -128,17 +129,16 @@ class Client(BaseClient):
         }
         lenel_user['property_value_map'] = user_data
         lenel_user['property_value_map'][ACTIVE_FIELD] = True
-
+        username = user_data.get('USERNAME')
         res = self._http_request(
             method='POST',
             url_suffix=uri,
             json_data=lenel_user,
             params=query_params
         )
-        property_value_map = res['property_value_map']
+        property_value_map = res.get('property_value_map', {})
         user_id = property_value_map.get('ID')
-        username = property_value_map.get('USERNAME')
-        return IAMUserAppData(user_id, username, is_active=lenel_user['property_value_map'][ACTIVE_FIELD], app_data=res)
+        return IAMUserAppData(user_id, username, is_active=True, app_data=res)
 
     def update_user(self, user_id: str, user_data: Dict[str, Any]) -> Optional[IAMUserAppData]:
         """ Updates a user in the application using REST API.
@@ -169,7 +169,7 @@ class Client(BaseClient):
 
         return self.get_user('ID', user_id)
 
-    def enable_user(self, user_id: str) -> IAMUserAppData:
+    def enable_user(self, user_id: str) -> Optional[IAMUserAppData]:
         """ Enables a user in the application using REST API.
 
         :type user_id: ``str``
@@ -202,8 +202,8 @@ class Client(BaseClient):
         user_data = {
             'ACTIVE__XR': False,
         }
-        res = self.update_user(user_id, user_data)
-        full_data = res.full_data
+        update_res = self.update_user(user_id, user_data)
+        full_data = update_res.full_data if update_res else {}
 
         details = []
         details.append(full_data)
@@ -217,17 +217,17 @@ class Client(BaseClient):
                 badge_key = badge["property_value_map"]['BADGEKEY']
                 deactivate_badge_res = self.deactivate_badge(badge_key)
                 details.append({
-                    f"Badge Key {badge_key}": deactivate_badge_res.json()
+                    f"Badge Key {badge_key}": deactivate_badge_res
                 })
                 if deactivate_badge_res:
                     demisto.info(f"Deactivated badge for user: {user_id}. Badge Key: {badge_key}")
                 else:
                     demisto.error(f"Failed to deactivate badge for user: {user_id}. Badge Key: {badge_key}. "
-                                  f"Error Response: {deactivate_badge_res.json()}")
+                                  f"Error Response: {deactivate_badge_res}")
         else:
             demisto.info(f"No badge associated with the user {user_id} for deactivation")
 
-        return self.get_user('ID', user_id)
+        return update_res
 
     def get_badges(self, filter):
         uri = '/instances'
@@ -380,7 +380,7 @@ def get_mapping_fields(client: Client) -> GetMappingFieldsResponse:
     return GetMappingFieldsResponse([incident_type_scheme])
 
 
-def main():
+def main():  # pragma: no cover
     user_profile = None
     params = demisto.params()
     base_url = urljoin(params['url'].strip('/'), '/api/access/onguard/openaccess')
