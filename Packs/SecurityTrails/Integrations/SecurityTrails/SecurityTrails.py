@@ -297,6 +297,18 @@ def domain_command(client, args):
             readable_output=md
         )
         command_results.append(result)
+        command_results.append(CommandResults(
+            outputs_prefix="DBotScore",
+            outputs_key_field=['Indicator', 'Vendor'],
+            outputs={
+                "Indicator": domain,
+                "Type": "domain",
+                "Vendor": "SecurityTrails",
+                "Score": 0
+            }
+            )
+        )
+
 
     return_results(command_results)
 
