@@ -1,5 +1,5 @@
 An Identity and Access Management integration template.
-This integration was integrated and tested with version xx of LenelIAM
+This integration was integrated and tested with version 1.0 of LenelIAM
 
 ## Configure LenelIAM on Cortex XSOAR
 
