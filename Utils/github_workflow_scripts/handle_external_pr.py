@@ -46,7 +46,7 @@ def determine_reviewer(potential_reviewers: List[str], repo: Repository) -> str:
             continue
         assignees = {assignee.login for assignee in pull.assignees}
         requested_reviewers, _ = pull.get_review_requests()
-        reviewers_info = {requested_reviewer.login for requested_reviewer in requested_reviewers}  # type: ignore
+        reviewers_info = {requested_reviewer.login for requested_reviewer in requested_reviewers}
         combined_list = assignees.union(reviewers_info)
         for reviewer in potential_reviewers:
             if reviewer in combined_list:

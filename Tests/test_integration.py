@@ -116,13 +116,13 @@ def __set_server_keys(client, logging_manager, integration_params, integration_n
 
     logging_manager.debug(f'Setting server keys for integration: {integration_name}')
 
-    data = {
+    data: dict = {
         'data': {},
         'version': -1
     }
 
     for key, value in integration_params.get('server_keys').items():
-        data['data'][key] = value  # type: ignore[index]
+        data['data'][key] = value
 
     update_server_configuration(
         client=client,

@@ -85,7 +85,7 @@ def calculate_single_pack_dependencies(pack: str, dependency_graph: object) -> T
         all_level_dependencies: A list with all dependencies names
         pack: The pack name
     """
-    install_logging('Calculate_Packs_Dependencies.log', include_process_name=True)
+    install_logging('Calculate_Packs_Dependencies.log', include_process_name=True, logger=logging)
     first_level_dependencies = {}
     all_level_dependencies = []
     try:

@@ -244,7 +244,7 @@ def execute_testing(tests_settings: SettingsTester, server_ip: str, all_tests: s
     :return: No object is returned, just updates the tests_data_keep object.
     """
     server = SERVER_URL.format(server_ip)
-    server_numeric_version = tests_settings.serverNumericVersion
+    server_numeric_version = tests_settings.serverNumericVersion or ''
     logging.info(f"Executing tests with the server {server} - and the server ip {server_ip}")
     slack = tests_settings.slack
     circle_ci = tests_settings.circleci
@@ -298,7 +298,7 @@ def execute_testing(tests_settings: SettingsTester, server_ip: str, all_tests: s
                                       filtered_tests, skipped_tests, secret_params,
                                       failed_playbooks, playbook_skipped_integration,
                                       succeed_playbooks, slack, circle_ci, build_number, server,
-                                      build_name, server_numeric_version, demisto_user,  # type: ignore
+                                      build_name, server_numeric_version, demisto_user,
                                       demisto_pass, demisto_api_key)
 
     except Exception:
@@ -372,7 +372,7 @@ def manage_tests(tests_settings: SettingsTester):
 
 
 def main():
-    install_logging('Run_Tests.log')
+    install_logging('Run_Tests.log', logger=logging)
     tests_settings = options_handler()
     logging.info(f"Build Name: {tests_settings.buildName}")
     logging.info(f" Build Number: {tests_settings.buildNumber}")

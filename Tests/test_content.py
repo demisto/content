@@ -461,7 +461,7 @@ def handle_github_response(response):
     return res_dict
 
 
-@contextmanager  # type: ignore
+@contextmanager
 def acquire_test_lock(integrations_details: list,
                       test_timeout: int,
                       conf_json_path: str) -> Generator:

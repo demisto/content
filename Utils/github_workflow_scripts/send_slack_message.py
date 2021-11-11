@@ -89,9 +89,9 @@ def create_individual_pack_segment(metadata_obj: dict) -> List[dict]:
         Returns:
             (List): List of slack blocks representing the pack information
     """
-    pack_name: str = metadata_obj.get('name')  # type: ignore[assignment]
-    version: str = metadata_obj.get('currentVersion')  # type: ignore[assignment]
-    support: str = metadata_obj.get('support')  # type: ignore[assignment]
+    pack_name: str = metadata_obj.get('name', '')
+    version: str = metadata_obj.get('currentVersion', '')
+    support: str = metadata_obj.get('support', '')
 
     pack_details = [
         create_slack_section('Pack Name', pack_name),

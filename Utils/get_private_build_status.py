@@ -6,8 +6,8 @@ import argparse
 from typing import Tuple
 
 import requests
-import logging
 from Tests.scripts.utils.log_util import install_logging
+from Tests.scripts.utils import logging_wrapper as logging
 from Utils.trigger_private_build import GET_WORKFLOW_URL, PRIVATE_REPO_WORKFLOW_ID_FILE, \
     GET_WORKFLOWS_TIMEOUT_THRESHOLD, WORKFLOW_HTML_URL
 
@@ -71,7 +71,7 @@ def get_workflow_status(github_token: str, workflow_id: str) -> Tuple[str, str, 
 
 
 def main():
-    install_logging("GetPrivateBuildStatus.log")
+    install_logging("GetPrivateBuildStatus.log", logger=logging)
 
     if not os.path.isfile(PRIVATE_REPO_WORKFLOW_ID_FILE):
         logging.info('Build private repo skipped')
@@ -92,14 +92,14 @@ def main():
 
     # initialize timer
     start = time.time()
-    elapsed = 0
+    elapsed: float = 0
 
     # polling the workflow status while is in progress
     while status in ['queued', 'in_progress'] and elapsed < GET_WORKFLOWS_TIMEOUT_THRESHOLD:
         logging.info(f'Workflow {workflow_id} status is {status}, current step: {step}')
         time.sleep(10)
         status, conclusion, step = get_workflow_status(github_token, workflow_id)
-        elapsed = time.time() - start  # type: ignore[assignment]
+        elapsed = time.time() - start
 
     if elapsed >= GET_WORKFLOWS_TIMEOUT_THRESHOLD:
         logging.critical(f'Timeout reached while waiting for private content build to complete, build url:'
@@ -112,7 +112,7 @@ def main():
             f'Private repo build failed,  build url: {WORKFLOW_HTML_URL}/{workflow_id}')
         sys.exit(1)
 
-    logging.success('Build private repo finished successfully')  # type: ignore # pylint: disable=no-member
+    logging.success('Build private repo finished successfully')
     sys.exit(0)
 
 

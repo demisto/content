@@ -30,7 +30,7 @@ def options_handler():
 
 
 def main():
-    install_logging('Install_Packs.log')
+    install_logging('Install_Packs.log', logger=logging)
     options = options_handler()
 
     # Get the host by the ami env

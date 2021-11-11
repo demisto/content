@@ -576,13 +576,13 @@ def __set_server_keys(client, integration_params, integration_name):
 
     logging.info(f'Setting server keys for integration: {integration_name}')
 
-    data = {
+    data: dict = {
         'data': {},
         'version': -1
     }
 
     for key, value in integration_params.get('server_keys').items():
-        data['data'][key] = value  # type: ignore[index]
+        data['data'][key] = value
 
     update_server_configuration(
         client=client,
@@ -1408,7 +1408,7 @@ def install_packs_pre_update(build: Build) -> bool:
 
 
 def main():
-    install_logging('Install_Content_And_Configure_Integrations_On_Server.log')
+    install_logging('Install_Content_And_Configure_Integrations_On_Server.log', logger=logging)
     build = Build(options_handler())
     logging.info(f"Build Number: {build.ci_build_number}")
 

@@ -151,7 +151,7 @@ class Pack(object):
         """
         self._is_feed = is_feed
 
-    @status.setter  # type: ignore
+    @status.setter  # type: ignore[attr-defined,no-redef]
     def status(self, status_value):
         """ setter of pack current status.
         """
@@ -229,7 +229,7 @@ class Pack(object):
         """
         return self._user_metadata
 
-    @display_name.setter  # type: ignore
+    @display_name.setter  # type: ignore[attr-defined,no-redef]
     def display_name(self, display_name_value):
         """ setter of display name property of the pack.
         """
@@ -587,7 +587,7 @@ class Pack(object):
             Metadata.VERSION_INFO: build_number,
             Metadata.COMMIT: commit_hash,
             Metadata.DOWNLOADS: self._downloads_count,
-            Metadata.TAGS: list(self._tags),  # type: ignore[arg-type]
+            Metadata.TAGS: list(self._tags or []),
             Metadata.CATEGORIES: self._categories,
             Metadata.CONTENT_ITEMS: self._content_items,
             Metadata.SEARCH_RANK: self._search_rank,
@@ -1696,7 +1696,7 @@ class Pack(object):
             self.current_version = user_metadata.get(Metadata.CURRENT_VERSION, '')
             self.hidden = user_metadata.get(Metadata.HIDDEN, False)
             self.description = user_metadata.get(Metadata.DESCRIPTION, False)
-            self.display_name = user_metadata.get(Metadata.NAME, '')  # type: ignore
+            self.display_name = user_metadata.get(Metadata.NAME, '')  # type: ignore[misc]
             self._user_metadata = user_metadata
             self.eula_link = user_metadata.get(Metadata.EULA_LINK, Metadata.EULA_URL)
 
@@ -1826,8 +1826,8 @@ class Pack(object):
 
         try:
             self.set_pack_dependencies(packs_dependencies_mapping)
-            if Metadata.DISPLAYED_IMAGES not in self.user_metadata:
-                self._user_metadata[Metadata.DISPLAYED_IMAGES] = packs_dependencies_mapping.get(  # type: ignore[index]
+            if Metadata.DISPLAYED_IMAGES not in self.user_metadata and self._user_metadata:
+                self._user_metadata[Metadata.DISPLAYED_IMAGES] = packs_dependencies_mapping.get(
                     self._pack_name, {}).get(Metadata.DISPLAYED_IMAGES, [])
                 logging.info(f"Adding auto generated display images for {self._pack_name} pack")
             dependencies_data, is_missing_dependencies = \
@@ -1882,7 +1882,7 @@ class Pack(object):
 
         if metadata:
             if metadata.get(Metadata.CREATED):
-                created_time = metadata.get(Metadata.CREATED)  # type: ignore[assignment]
+                created_time = metadata.get(Metadata.CREATED, '')
             else:
                 raise Exception(f'The metadata file of the {pack_name} pack does not contain "{Metadata.CREATED}" time')
 
@@ -1908,8 +1908,8 @@ class Pack(object):
 
     def set_pack_dependencies(self, packs_dependencies_mapping):
         pack_dependencies = packs_dependencies_mapping.get(self._pack_name, {}).get(Metadata.DEPENDENCIES, {})
-        if Metadata.DEPENDENCIES not in self.user_metadata:
-            self._user_metadata[Metadata.DEPENDENCIES] = {}  # type: ignore[index]
+        if Metadata.DEPENDENCIES not in self.user_metadata and self._user_metadata:
+            self._user_metadata[Metadata.DEPENDENCIES] = {}
 
         # If it is a core pack, check that no new mandatory packs (that are not core packs) were added
         # They can be overridden in the user metadata to be not mandatory so we need to check there as well
@@ -1923,7 +1923,8 @@ class Pack(object):
                                 f'found in the core pack {self._pack_name}')
 
         pack_dependencies.update(self.user_metadata[Metadata.DEPENDENCIES])
-        self._user_metadata[Metadata.DEPENDENCIES] = pack_dependencies  # type: ignore[index]
+        if self._user_metadata:
+            self._user_metadata[Metadata.DEPENDENCIES] = pack_dependencies
 
     def prepare_for_index_upload(self):
         """ Removes and leaves only necessary files in pack folder.
@@ -2489,7 +2490,8 @@ class Pack(object):
         else:
             # Important: Currently, implementation of aggregating BCs was decided to concat between them
             # In the future this might be needed to re-thought.
-            return '\n'.join(bc_version_to_text.values())  # type: ignore
+            return '\n'.join(bc_version_to_text.values())  # type: ignore[arg-type]
+
 
     def _handle_many_bc_versions_some_with_text(self, release_notes_dir: str, text_of_bc_versions: List[str],
                                                 bc_versions_without_text: List[str], ) -> str:

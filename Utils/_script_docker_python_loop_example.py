@@ -1,4 +1,4 @@
-# type: ignore
+# type: ignore[attr-defined]
 """
 This is a simplified example script which demonstrates the concept of how the XSOAR Server executes python integrations/scripts.
 
@@ -418,7 +418,7 @@ def send_script_completed():
 def send_script_exception(exc_type, exc_value, exc_traceback):
     ex_string = traceback.format_exception(exc_type, exc_value, exc_traceback)
     if ex_string == 'None\n':
-        ex_string = str(exc_value)  # type: ignore[assignment]
+        ex_string = str(exc_value)
 
     json.dump({'type': 'exception', 'args': {'exception': ex_string}}, sys.stdout)
     sys.stdout.write('\n')
@@ -448,7 +448,7 @@ for key in os.environ:
 
 
 def rollback_system():
-    os.environ = {}  # type: ignore[assignment]
+    os.environ = {}
     for key in backup_env_vars:
         os.environ[key] = backup_env_vars[key]
 

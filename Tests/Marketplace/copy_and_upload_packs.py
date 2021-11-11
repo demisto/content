@@ -314,7 +314,7 @@ def options_handler():
 
 
 def main():
-    install_logging('Copy_and_Upload_Packs.log')
+    install_logging('Copy_and_Upload_Packs.log', logger=logging)
     options = options_handler()
     packs_artifacts_path = options.artifacts_path
     extract_destination_path = options.extract_path

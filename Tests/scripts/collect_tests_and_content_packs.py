@@ -13,7 +13,6 @@ from typing import Dict, Tuple, Optional
 
 import os
 import sys
-import logging
 
 import demisto_sdk.commands.common.tools as tools
 from Tests.scripts.utils import collect_helpers
@@ -22,6 +21,7 @@ from Tests.scripts.utils.content_packs_util import should_test_content_pack, sho
     is_pack_xsoar_supported
 from Tests.scripts.utils.get_modified_files_for_testing import get_modified_files_for_testing
 from Tests.scripts.utils.log_util import install_logging
+from Tests.scripts.utils import logging_wrapper as logging
 from demisto_sdk.commands.common import constants  # noqa: E402
 
 SANITY_TESTS = {
@@ -1407,7 +1407,8 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
     else:
         branches = tools.run_command("git branch")
         branch_name_reg = re.search(r"\* (.*)", branches)
-        branch_name = branch_name_reg.group(1)  # type: ignore[union-attr]
+        if branch_name_reg:
+            branch_name = branch_name_reg.group(1)
 
         logging.info("Getting changed files from the branch: {0}".format(branch_name))
         if path_to_pack:
@@ -1450,19 +1451,19 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
     else:
         if tests_string:
             success_msg = 'Collected the following tests:\n{0}\n'.format(tests_string)
-            logging.success(success_msg)  # type: ignore # pylint: disable=no-member
+            logging.success(success_msg)
         else:
             logging.error('Did not find tests to run')
 
         if packs_to_install_string:
             success_msg = 'Collected the following content packs to install:\n{0}\n'.format(packs_to_install_string)
-            logging.success(success_msg)  # type: ignore # pylint: disable=no-member
+            logging.success(success_msg)
         else:
             logging.error('Did not find content packs to install')
 
 
 if __name__ == "__main__":
-    install_logging('Collect_Tests_And_Content_Packs.log')
+    install_logging('Collect_Tests_And_Content_Packs.log', logger=logging)
     logging.info("Starting creation of test filter file")
 
     parser = argparse.ArgumentParser(description='Utility CircleCI usage')

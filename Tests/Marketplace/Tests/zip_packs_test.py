@@ -1,4 +1,4 @@
-# type: ignore
+# type: ignore[attr-defined]
 # pylint: disable=no-member
 
 import pytest

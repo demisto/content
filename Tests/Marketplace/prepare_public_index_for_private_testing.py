@@ -189,7 +189,7 @@ def add_private_packs_from_dummy_index(private_packs, dummy_index_blob):
 
 
 def main():
-    install_logging('prepare_public_index_for_private_testing.log')
+    install_logging('prepare_public_index_for_private_testing.log', logger=logging)
     upload_config = option_handler()
     service_account = upload_config.service_account
     build_number = upload_config.ci_build_number

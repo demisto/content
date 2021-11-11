@@ -148,7 +148,7 @@ def get_index_json_data(service_account: str, production_bucket_name: str, extra
 
 
 def main():
-    install_logging("Validate index.log")
+    install_logging("Validate index.log", logger=logging)
     options = options_handler()
     exit_code = 0
     index_data, index_file_path = get_index_json_data(

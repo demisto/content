@@ -154,7 +154,7 @@ def slack_notifier(slack_token, secret_conf_path, server, user, password, build_
 
 
 if __name__ == "__main__":
-    install_logging('Instance-Test.log')
+    install_logging('Instance-Test.log', logger=logging)
     options = options_handler()
     if options.instance_tests:
         env_results_path = os.path.join(os.getenv('ARTIFACTS_FOLDER', './artifacts'), 'env_results.json')

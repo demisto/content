@@ -1,3 +1,5 @@
+# type: ignore[attr-defined]
+# pylint: disable=no-member
 import copy
 import json
 import logging
@@ -24,7 +26,6 @@ from Tests.scripts.utils import content_packs_util
 
 from TestSuite import repo, test_tools
 
-# pylint: disable=no-member
 with open('Tests/scripts/infrastructure_tests/tests_data/mock_id_set.json', 'r') as mock_id_set_f:
     MOCK_ID_SET = json.load(mock_id_set_f)
 with open('Tests/scripts/infrastructure_tests/tests_data/mock_conf.json', 'r') as mock_conf_f:
@@ -1180,8 +1181,8 @@ def test_remove_ignored_tests(tests_to_filter, ignored_tests, expected_result, m
     res = remove_ignored_tests(tests_to_filter, MOCK_ID_SET, tests_to_filter)
     assert res == expected_result
     if ignored_tests:
-        logging.info.assert_called_once_with("Skipping tests that were ignored via .pack-ignore:\n{}".format(  # type: ignore
-            '\n'.join(ignored_tests)))  # pylint: disable=no-member
+        logging.info.assert_called_once_with("Skipping tests that were ignored via .pack-ignore:\n{}".format(
+            '\n'.join(ignored_tests)))
 
 
 @pytest.mark.parametrize('tests_to_filter, should_test_content, expected_result', [
@@ -1206,9 +1207,9 @@ def test_remove_tests_for_non_supported_packs(tests_to_filter, should_test_conte
     res = remove_tests_for_non_supported_packs(tests_to_filter, MOCK_ID_SET)
     assert res == expected_result
     if not should_test_content:
-        logging.debug.assert_called_once_with(  # type: ignore
+        logging.debug.assert_called_once_with(
             'The following test playbooks are not supported and will not be tested: \n{} '.format(
-                '\n'.join(filtered_tests)))  # pylint: disable=no-member
+                '\n'.join(filtered_tests)))
 
 
 @pytest.mark.parametrize('files_string, expected_result', [
@@ -1239,7 +1240,7 @@ def test_get_from_version_and_to_version_bounderies_modified_metadata():
         - Check that the minimum version is 6.1.0
 
     """
-    all_modified_files_paths = set([])
+    all_modified_files_paths: set = set([])
     pack_list = {'Pack1'}
 
     with tempfile.TemporaryDirectory() as temp_dir:

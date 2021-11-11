@@ -1,4 +1,4 @@
-# type: ignore
+# type: ignore[attr-defined]
 from unittest.mock import patch
 import networkx as nx
 

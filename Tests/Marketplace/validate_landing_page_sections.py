@@ -67,5 +67,5 @@ def parse_landing_page_sections_to_json():
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
-    install_logging('ValidateLandingPageSections.log')
+    install_logging('ValidateLandingPageSections.log', logger=logging)
     main()

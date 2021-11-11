@@ -1,5 +1,5 @@
 
-# type: ignore
+# type: ignore[attr-defined]
 
 import shutil
 import pytest
