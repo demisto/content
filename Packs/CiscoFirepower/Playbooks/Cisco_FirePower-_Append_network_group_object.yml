@@ -1,8 +1,8 @@
 id: Cisco FirePower- Append network group object
 version: -1
 name: Cisco FirePower- Append network group object
-description: This playbook will append a network group object with new elements (
-  IPs or network objects ).
+description: This playbook will append a network group object with new elements 
+  (IPs or network objects).
 starttaskid: "0"
 tasks:
   "0":
@@ -353,7 +353,7 @@ tasks:
       version: -1
       name: Is Cisco FirePower Integration Enabled?
       description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+        'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -427,7 +427,7 @@ inputs:
   required: false
   description: |-
     You may add a group of IPs by using the Object ID. You can use !ciscofp-get-network-object for more details.
-    For example - you have certain Server Internal ranges unified in a networking group, and you wish to add them to a larger group (such as internal address - which ID was supplied in the "ID" field).
+    For example, if you have certain server internal ranges unified in a networking group, you can add them to a larger group (such as internal address whose ID was supplied in the "ID" field).
   playbookInputQuery:
 outputs: []
 fromversion: 6.0.0
