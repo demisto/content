@@ -492,7 +492,6 @@ def set_integration_params(build,
             # values in our secret conf for multiple instances of the given integration and now we
             # need to match the configuration values to the proper instance as specified in the
             # 'instance_names' list argument
-
             if len(integration_params) != 1:
                 found_matching_instance = False
                 for item in integration_params:
