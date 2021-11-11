@@ -21,6 +21,14 @@ configuration:
   name: proxy
   required: false
   type: 8
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: b99139f6-bdce-47c8-82fa-611806c5fe8c
+    propagationLabels: []
+    toServerVersion: ""
 description: 'CyberChef is a web-application developed by GCHQ that''s been called
   the “Cyber Swiss Army Knife”. '
 display: CyberChef (Community Contribution)Moshe
