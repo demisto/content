@@ -70,7 +70,7 @@ tasks:
       CustomBlockRule:
         simple: "false"
       IP:
-        simple: 45.155.204.39, 141.98.10.81, 141.98.10.60
+        simple: 1.1.1.1
       InputEnrichment:
         simple: "False"
       ResolveIP:
