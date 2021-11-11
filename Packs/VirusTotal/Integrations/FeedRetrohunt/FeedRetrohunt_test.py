@@ -42,7 +42,7 @@ MOCK_VT_RESPONSE = {
 
 
 def test_fetch_indicators_command(mocker):
-    client = Client('https://google.com/')
+    client = Client('https://fake')
     mocker.patch.object(
         client,
         'list_last_job_matches',
