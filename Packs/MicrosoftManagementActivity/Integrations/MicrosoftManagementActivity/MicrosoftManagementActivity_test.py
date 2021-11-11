@@ -630,3 +630,28 @@ def set_requests_mock(client, requests_mock, access_token_resp=GET_ACCESS_TOKEN_
     mock_list_subscriptions(requests_mock, client, list_subscriptions_resp)
     mock_list_content(requests_mock)
     mock_get_blob_data(requests_mock)
+
+
+@pytest.mark.parametrize('args_timeout,param_timeout,expected_value', (
+        (0, 0, 15),
+        (None, None, 15),
+        (1, None, 1),
+        (1, 0, 1),
+        (None, 2, 2),
+        (0, 2, 2),
+        (3, 0, 3),
+        (3, 4, 3)))
+def test_timeout(mocker, args_timeout, param_timeout, expected_value):
+    """
+    Given
+            args and params, both of which may contain `timeout`
+    When
+            running get_timeout
+    Then
+            validate the output of get_timeout matches the logic, based on availability:
+             use arg, then param, then default.
+    """
+    from MicrosoftManagementActivity import get_timeout
+    mocker.patch.object(demisto, 'params', return_value={'timeout': param_timeout})
+    mocker.patch.object(demisto, 'args', return_value={'timeout': args_timeout})
+    assert get_timeout() == expected_value
