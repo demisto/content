@@ -92,14 +92,18 @@ FORMAT_TO_PARSER_FUNCTION: Dict[str, Callable[[bytes], SyslogMessageExtract]] = 
 
 
 def test_module(host_address: str, port: int) -> str:
-    """Tests API connectivity and authentication'
-
+    """
+    Tests API connectivity and authentication'
     Returning 'ok' indicates that the integration works like it is supposed to.
     Connection to the service is successful.
     Raises exceptions if something goes wrong.
 
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
+    Args:
+        host_address (str): Host address
+        port (int): Port
+
+    Returns:
+        (str): 'ok' if test passed, anything else will fail the test.
     """
     message: str = 'ok'
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
@@ -230,8 +234,15 @@ def perform_long_running_execution(host_address: str, port: int, log_format: str
             s.bind((host_address, port))
         except OSError as e:
             if "Can't assign requested address" in str(e):
-                raise DemistoException('The given IP address could not be accessed\n.'
-                                       'Please make sure the IP address in valid and can be accessed.') from e
+                raise DemistoException('The given IP address could not be accessed\n.Please make sure the IP address '
+                                       'is valid and can be accessed.')
+            elif 'nodename nor servname provided, or not known' in str(e):
+                raise DemistoException('Could not find the host address. Please verify host address is correct.')
+            elif 'Permission denied' in str(e):
+                raise DemistoException(
+                    'Permission was denied. Make sure you have permissions to access to the given port.')
+            else:
+                raise e
         while True:
             try:
                 perform_long_running_loop(s, log_format, message_regex, incident_type)
@@ -274,14 +285,7 @@ def main() -> None:
         elif command == 'fetch-incidents':
             fetch_samples()
         elif command == 'long-running-execution':
-            perform_long_running_execution(
-                host_address,
-                port,
-                log_format,
-                protocol,
-                message_regex,
-                incident_type
-            )
+            perform_long_running_execution(host_address, port, log_format, protocol, message_regex, incident_type)
         else:
             raise NotImplementedError(f'''Command '{command}' is not implemented.''')
 

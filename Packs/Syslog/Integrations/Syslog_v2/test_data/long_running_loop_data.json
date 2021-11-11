@@ -1,0 +1,58 @@
+{
+ "rfc-3164": {
+  "log_message": "<116>Nov  9 17:07:20 HostName softwareupdated[288]: Removing client SUUpdateServiceClient pid=90550, uid=375597002, installAuth=NO rights=(), transactions=0 (/System/Library/PreferencePanes/SoftwareUpdate.prefPane/Contents/XPCServices/com.apple.preferences.softwareupdate.remoteservice.xpc/Contents/MacOS/com.apple.preferences.softwareupdate.remoteservice)",
+  "log_format": "RFC3164",
+  "no_regex": {
+   "expected": [
+    {
+     "name": "Syslog from [HostName][2021-11-09T17:07:20]",
+     "occurred": "2021-11-09T17:07:20",
+     "rawJSON": "{\"app_name\": null, \"facility\": \"log_alert\", \"host_name\": \"HostName\", \"msg\": \"softwareupdated[288]: Removing client SUUpdateServiceClient pid=90550, uid=375597002, installAuth=NO rights=(), transactions=0 (/System/Library/PreferencePanes/SoftwareUpdate.prefPane/Contents/XPCServices/com.apple.preferences.softwareupdate.remoteservice.xpc/Contents/MacOS/com.apple.preferences.softwareupdate.remoteservice)\", \"msg_id\": null, \"process_id\": null, \"sd\": {}, \"severity\": \"warning\", \"timestamp\": \"2021-11-09T17:07:20\", \"version\": null}",
+     "type": null
+    }
+   ]
+  },
+  "regex_pass_filter": {
+   "message_regex": "Removing client",
+   "expected": [
+    {
+     "name": "Syslog from [HostName][2021-11-09T17:07:20]",
+     "occurred": "2021-11-09T17:07:20",
+     "rawJSON": "{\"app_name\": null, \"facility\": \"log_alert\", \"host_name\": \"HostName\", \"msg\": \"softwareupdated[288]: Removing client SUUpdateServiceClient pid=90550, uid=375597002, installAuth=NO rights=(), transactions=0 (/System/Library/PreferencePanes/SoftwareUpdate.prefPane/Contents/XPCServices/com.apple.preferences.softwareupdate.remoteservice.xpc/Contents/MacOS/com.apple.preferences.softwareupdate.remoteservice)\", \"msg_id\": null, \"process_id\": null, \"sd\": {}, \"severity\": \"warning\", \"timestamp\": \"2021-11-09T17:07:20\", \"version\": null}",
+     "type": null
+    }
+   ]
+  },
+  "regex_doesnt_pass_filter": {
+   "message_regex": "Bla"
+  }
+ },
+ "rfc-5424": {
+  "log_message": "<165>1 2003-10-11T22:14:15.003Z mymachine.example.com evntslog - ID47 [exampleSDID@32473 iut=\"3\" eventSource=\"Application\" eventID=\"1011\"] BOMAn application event log entry",
+  "log_format": "RFC5424",
+  "no_regex": {
+   "expected": [
+    {
+     "name": "Syslog from [mymachine.example.com][2003-10-11T22:14:15.003Z]",
+     "occurred": "2003-10-11T22:14:15.003Z",
+     "rawJSON": "{\"app_name\": \"evntslog\", \"facility\": \"local4\", \"host_name\": \"mymachine.example.com\", \"msg\": \"BOMAn application event log entry\", \"msg_id\": \"ID47\", \"process_id\": null, \"sd\": {\"exampleSDID@32473\": {\"iut\": \"3\", \"eventSource\": \"Application\", \"eventID\": \"1011\"}}, \"severity\": \"notice\", \"timestamp\": \"2003-10-11T22:14:15.003Z\", \"version\": 1}",
+     "type": null
+    }
+   ]
+  },
+  "regex_pass_filter": {
+   "message_regex": "BOMAn",
+   "expected": [
+    {
+     "name": "Syslog from [mymachine.example.com][2003-10-11T22:14:15.003Z]",
+     "occurred": "2003-10-11T22:14:15.003Z",
+     "rawJSON": "{\"app_name\": \"evntslog\", \"facility\": \"local4\", \"host_name\": \"mymachine.example.com\", \"msg\": \"BOMAn application event log entry\", \"msg_id\": \"ID47\", \"process_id\": null, \"sd\": {\"exampleSDID@32473\": {\"iut\": \"3\", \"eventSource\": \"Application\", \"eventID\": \"1011\"}}, \"severity\": \"notice\", \"timestamp\": \"2003-10-11T22:14:15.003Z\", \"version\": 1}",
+     "type": null
+    }
+   ]
+  },
+  "regex_doesnt_pass_filter": {
+   "message_regex": "Host"
+  }
+ }
+}

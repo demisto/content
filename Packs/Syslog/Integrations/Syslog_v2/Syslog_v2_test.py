@@ -106,18 +106,18 @@ def test_module_test(host_address: str, port: int, expected: str):
 @pytest.mark.parametrize('samples', [({}), ([{'app_name': None, 'facility': 'security4', 'host_name': 'mymachine',
                                               'msg': "su: 'su root' failed for lonvick on /dev/pts/8", 'msg_id': None,
                                               'process_id': None, 'sd': {}, 'severity': 'critical',
-                                              'timestamp': '2021-10-11T22:14:15', 'version': None}]), [
-                                         {'app_name': None, 'facility': 'security4', 'host_name': 'mymachine',
-                                          'msg': "su: 'su root' failed for lonvick on /dev/pts/8", 'msg_id': None,
-                                          'process_id': None, 'sd': {}, 'severity': 'critical',
-                                          'timestamp': '2021-10-11T22:14:15', 'version': None},
-                                         {'app_name': 'evntslog', 'facility': 'local4',
-                                          'host_name': 'mymachine.example.com',
-                                          'msg': 'BOMAn application event log entry', 'msg_id': 'ID47',
-                                          'process_id': None, 'sd': {
-                                             'exampleSDID@32473': {'eventID': '1011', 'eventSource': 'Application',
-                                                                   'iut': '3'}}, 'severity': 'notice',
-                                          'timestamp': '2003-10-11T22:14:15.003Z', 'version': 1}]])
+                                              'timestamp': '2021-10-11T22:14:15', 'version': None}]),
+                                     [{'app_name': None, 'facility': 'security4', 'host_name': 'mymachine',
+                                       'msg': "su: 'su root' failed for lonvick on /dev/pts/8", 'msg_id': None,
+                                       'process_id': None, 'sd': {}, 'severity': 'critical',
+                                       'timestamp': '2021-10-11T22:14:15', 'version': None},
+                                      {'app_name': 'evntslog', 'facility': 'local4',
+                                       'host_name': 'mymachine.example.com',
+                                       'msg': 'BOMAn application event log entry', 'msg_id': 'ID47',
+                                       'process_id': None,
+                                       'sd': {'exampleSDID@32473': {'eventID': '1011', 'eventSource': 'Application',
+                                                                    'iut': '3'}}, 'severity': 'notice',
+                                       'timestamp': '2003-10-11T22:14:15.003Z', 'version': 1}]])
 def test_fetch_samples(samples: list[dict], mocker):
     """
     Given:
@@ -221,7 +221,9 @@ def test_fetch_samples(samples: list[dict], mocker):
                                           '"mymachine.example.com", "msg": "softwareupdated[288]: Removing '
                                           'client SUUpdateServiceClient pid=90550, uid=375597002, '
                                           'installAuth=NO rights=(), transactions=0 '
-                                          '(/System/Library/PreferencePanes/SoftwareUpdate.prefPane/Contents/XPCServices/com.apple.preferences.softwareupdate.remoteservice.xpc/Contents/MacOS/com.apple.preferences.softwareupdate.remoteservice)", '
+                                          '(/System/Library/PreferencePanes/SoftwareUpdate.prefPane/Contents'
+                                          '/XPCServices/com.apple.preferences.softwareupdate.remoteservice.xpc'
+                                          '/Contents/MacOS/com.apple.preferences.softwareupdate.remoteservice)", '
                                           '"msg_id": null, "process_id": null, "sd": {}, "severity": '
                                           '"warning", "timestamp": "2021-11-09T17:07:20", "version": null}',
                                'type': None}),
@@ -252,8 +254,7 @@ def test_fetch_samples(samples: list[dict], mocker):
                                           '/Contents/MacOS/com.apple.preferences.softwareupdate.remoteservice)", '
                                           '"msg_id": null, "process_id": null, "sd": {}, "severity": '
                                           '"warning", "timestamp": "2021-11-09T17:07:20", "version": null}',
-                               'type': 'Syslog Alert RFC-3164'}),
-                         ])
+                               'type': 'Syslog Alert RFC-3164'})])
 def test_create_incident_from_syslog_message(extracted_msg: SyslogMessageExtract, incident_type: Optional[str],
                                              expected: dict):
     """
