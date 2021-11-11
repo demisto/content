@@ -306,7 +306,7 @@ def domain_command(client, args):
                 "Vendor": "SecurityTrails",
                 "Score": 0
             }
-            )
+        )
         )
 
 
