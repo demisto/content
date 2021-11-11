@@ -9,6 +9,7 @@ from CommonServerPython import *  # noqa: F401
 
 TITLE_THRESHOLD = 4
 
+
 class Table:
     def __init__(self, title: str):
         self.__title = title
