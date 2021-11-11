@@ -3,7 +3,7 @@ version: -1
 name: Block IP - Generic V3_Test
 description: |-
   Test Playbook for the "Block IP - generic V3" playbook.
-  This playbook will attempt to block - 141.98.10.81 IP (which is considered malicious by VT) o the following integrations:
+  This playbook will attempt to block - 1.1.1.1 IP (which is considered malicious by VT) o the following integrations:
   * Pan-OS FW
   * ThreatX
 starttaskid: "0"
@@ -166,7 +166,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 45.155.204.39
+              simple: 1.1.1.1
     view: |-
       {
         "position": {
