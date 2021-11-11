@@ -692,6 +692,8 @@ class Client(BaseClient):
         if response:
             numb = 0
             for session in response:
+                session['start'] = datetime.fromtimestamp(session['start']).strftime('%Y-%m-%dT%H:%M:%S.000Z')
+                session['expiry'] = datetime.fromtimestamp(session['expiry']).strftime('%Y-%m-%dT%H:%M:%S.000Z')
                 applications = []
                 for application in session['applications']:
                     applications.append(application['name'])
