@@ -40,7 +40,6 @@
       "required": false,
       "script": "",
       "selectValues": [
-        "",
         "true",
         "false"
       ],
@@ -56,7 +55,6 @@
       "required": false,
       "script": "",
       "selectValues": [
-        "",
         "WHITE",
         "GREEN",
         "AMBER",
@@ -86,7 +84,6 @@
       "required": false,
       "script": "",
       "selectValues": [
-        "",
         "Ok",
         "Deleted"
       ],
