@@ -257,12 +257,12 @@ def perform_long_running_execution(host_address: str, port: int, log_format: str
 def main() -> None:
     params = demisto.params()
     command = demisto.command()
-    params = {
-        'host_address': '127.0.0.1',
-        'longRunningPort': 32376,
-        'log_format': RFC3164
-    }
-    command = 'long-running-execution'
+    # params = {
+    #     'host_address': '127.0.0.1',
+    #     'longRunningPort': 32376,
+    #     'log_format': RFC3164
+    # }
+    # command = 'long-running-execution'
 
     host_address: str = params.get('host_address', '')
     protocol: str = params.get('protocol', '')
