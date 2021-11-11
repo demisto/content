@@ -153,6 +153,8 @@ def create_context(indicators, include_dbot_score=False):
                     'Reliability': RELIABILITY
                 }
                 for k in keys:
+                    dbot_object = copy.copy(dbot_object)
+                    dbot_object['Indicator'] = k
                     indicators_dbot_score[k] = dbot_object
 
         context[TC_INDICATOR_PATH].append({
