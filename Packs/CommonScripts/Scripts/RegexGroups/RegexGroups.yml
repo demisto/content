@@ -1,9 +1,6 @@
 commonfields:
   id: RegexGroups
   version: -1
-contentitemexportablefields:
-  contentitemfields:
-    fromServerVersion: ""
 name: RegexGroups
 script: ''
 type: python
