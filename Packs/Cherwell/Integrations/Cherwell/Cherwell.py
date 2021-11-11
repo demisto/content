@@ -863,12 +863,13 @@ def get_business_object_template_command():
         field_list = {}
         for field in template_dict.get('fields'):
             field_list[field['name']] = field['fieldId']
-        result = {"result": field_list}
+        result = {"fields": field_list}
     else:
-        result = {"result": template_dict}
+        result = {"fields": template_dict['fields']}
+    result['busObId'] = business_object_id
 
-    first_item = result['result'][0]
-    md = tableToMarkdown('Fields', result['result'], headers=[*first_item])
+    first_item = result['fields'][0]
+    md = tableToMarkdown('Fields', result['fields'], headers=[*first_item])
 
     return CommandResults(
         outputs = result,
