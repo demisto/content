@@ -9,13 +9,14 @@ urllib3.disable_warnings()
 
 class Client(BaseClient):
     def get_detections_str(self, last_analysis_stats: dict):
-        if not last_analysis_stats: return '0/0'
+        if not last_analysis_stats:
+            return '0/0'
 
         malicious = last_analysis_stats['malicious']
         total = last_analysis_stats['harmless'] + \
-                last_analysis_stats['suspicious'] + \
-                last_analysis_stats['undetected'] + \
-                last_analysis_stats['malicious']
+            last_analysis_stats['suspicious'] + \
+            last_analysis_stats['undetected'] + \
+            last_analysis_stats['malicious']
 
         return f'{malicious}/{total}'
 
@@ -30,7 +31,7 @@ class Client(BaseClient):
         response = self.list_last_job_matches(limit, job_id)
 
         try:
-            for indicator in response.get('data'):
+            for indicator in response.get('data', []):
                 result.append({
                     'data': indicator,
                     'type': 'file',
@@ -44,19 +45,19 @@ class Client(BaseClient):
     def list_last_job_matches(
             self,
             limit: Optional[int] = None,
-            job_id: Optional[str] = None
+            job_id: str = ''
     ) -> dict:
         """ Retrieve matches for a given retrohunt job (latest by default).
         """
         if not job_id:
-          jobs = self._http_request(
-              'GET',
-              'intelligence/retrohunt_jobs',
-              params=assign_params(limit=limit)
-          )
-          if not jobs.get('data'):
-              return {}
-          job_id = jobs.get('data')[0].get('id')
+            jobs = self._http_request(
+                'GET',
+                'intelligence/retrohunt_jobs',
+                params=assign_params(limit=limit)
+            )
+            if not jobs.get('data'):
+                return {}
+            job_id = jobs.get('data')[0].get('id')
 
         return self._http_request(
             'GET',
@@ -64,15 +65,17 @@ class Client(BaseClient):
             params=assign_params(limit=limit)
         )
 
+
 def test_module(client: Client, args: dict) -> str:
     client.list_last_job_matches()
     return 'ok'
 
+
 def fetch_indicators_command(client: Client,
-                     tlp_color: Optional[str] = None,
-                     feed_tags: List = [],
-                     limit: int = 40,
-                     job_id: Optional[str] = None) -> List[Dict]:
+                             tlp_color: Optional[str] = None,
+                             feed_tags: List = [],
+                             limit: int = 40,
+                             job_id: str = '') -> List[Dict]:
     """Retrieves indicators from the feed
     Args:
         client (Client): Client object with request
@@ -92,7 +95,6 @@ def fetch_indicators_command(client: Client,
         value_ = item.get('data')
         type_ = FeedIndicatorType.File
         attributes = value_.get('attributes', {})
-        context_attributes = value_.get('context_attributes', {})
         raw_data = {
             'value': value_,
             'type': type_,
@@ -112,10 +114,10 @@ def fetch_indicators_command(client: Client,
             # One can use this section in order to map custom indicator fields previously defined
             # in Cortex XSOAR to their values.
             'fields': {
-                'md5': attributes['md5'],
-                'sha1': attributes['sha1'],
-                'sha256': attributes['sha256'],
-                'ssdeep': attributes['ssdeep'],
+                'md5': attributes.get('md5'),
+                'sha1': attributes.get('sha1'),
+                'sha256': attributes.get('sha256'),
+                'ssdeep': attributes.get('ssdeep'),
             },
             # A dictionary of the raw data returned from the feed source about the indicator.
             'rawJSON': raw_data,
@@ -134,6 +136,7 @@ def fetch_indicators_command(client: Client,
 
     return indicators
 
+
 def get_indicators_command(client: Client,
                            params: Dict[str, str],
                            args: Dict[str, str]
@@ -146,8 +149,8 @@ def get_indicators_command(client: Client,
     Returns:
         Outputs.
     """
-    limit = int(args.get('limit', params.get('limit')))
-    job_id = args.get('job_id')
+    limit = int(args.get('limit', params.get('limit', 40)))
+    job_id = args.get('job_id', '')
     tlp_color = params.get('tlp_color')
     feed_tags = argToList(params.get('feedTags', ''))
     indicators = fetch_indicators_command(client, tlp_color, feed_tags, limit, job_id)
@@ -155,9 +158,9 @@ def get_indicators_command(client: Client,
     human_readable = tableToMarkdown('Indicators from VirusTotal Retrohunt Feed:',
                                      indicators,
                                      headers=[
-                                        'sha256',
-                                        'detections',
-                                        'fileType'],
+                                         'sha256',
+                                         'detections',
+                                         'fileType'],
                                      headerTransform=string_to_table_header,
                                      removeNull=True)
 
@@ -168,6 +171,7 @@ def get_indicators_command(client: Client,
         raw_response=indicators,
         outputs={},
     )
+
 
 def main():
     """
