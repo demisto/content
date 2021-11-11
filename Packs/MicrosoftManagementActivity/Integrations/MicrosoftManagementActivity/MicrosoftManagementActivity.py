@@ -14,6 +14,9 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'
 APP_NAME = 'ms-management-api'
 PUBLISHER_IDENTIFIER = 'ebac1a16-81bf-449b-8d43-5732c3c1d999'  # This isn't a secret and is public knowledge.
 
+# argument timeout is used (if provided). Else, the timeout parameter is used as default.
+timeout_value = int(demisto.getArg('timeout') or demisto.getParam('timeout'))
+
 CONTENT_TYPE_TO_TYPE_ID_MAPPING = {
     'ExchangeAdmin': 1,
     'ExchangeItem': 2,
@@ -105,12 +108,11 @@ class Client(BaseClient):
     def get_authentication_string(self):
         return f'Bearer {self.access_token}'
 
-    def get_blob_data_request(self, blob_url, timeout=10):
+    def get_blob_data_request(self, blob_url, timeout=timeout_value):
         '''
         Args:
             blob_url: The URL for the blob.
             timeout: Timeout for http request.
-            The default timeout in the Client class is 10 seconds. That's why the defualt here is 10 as well.
         '''
         auth_string = self.get_authentication_string()
         headers = {
@@ -130,14 +132,13 @@ class Client(BaseClient):
         )
         return response
 
-    def list_content_request(self, content_type, start_time, end_time, timeout=10):
+    def list_content_request(self, content_type, start_time, end_time, timeout=timeout_value):
         """
         Args:
             content_type: the content type
             start_time: start time to fetch content
             end_time: end time to fetch content
             timeout: Timeout for http request.
-            The default timeout in the Client class is 10 seconds. That's why the defualt here is 10 as well.
         """
         auth_string = self.get_authentication_string()
         headers = {
@@ -315,7 +316,7 @@ def get_content_records_context(content_records):
     return content_records_context
 
 
-def get_all_content_type_records(client, content_type, start_time, end_time, timeout=10):
+def get_all_content_type_records(client, content_type, start_time, end_time, timeout=timeout_value):
     content_blobs = client.list_content_request(content_type, start_time, end_time, timeout)
     # The list_content request returns a list of content records, each containing a url that holds the actual data
     content_uris = [content_blob.get('contentUri') for content_blob in content_blobs]
@@ -397,9 +398,8 @@ def list_content_command(client, args):
     content_type = args['content_type']
     start_time = args.get('start_time')
     end_time = args.get('end_time')
-    timeout = args.get('timeout', 10)
 
-    content_records = get_all_content_type_records(client, content_type, start_time, end_time, timeout)
+    content_records = get_all_content_type_records(client, content_type, start_time, end_time, timeout_value)
     filtered_content_records = filter_records(content_records, args)
     content_records_context = get_content_records_context(filtered_content_records)
     human_readable = create_events_human_readable(content_records_context, content_type)
