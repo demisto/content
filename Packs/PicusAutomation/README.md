@@ -2,7 +2,7 @@
 
 When it comes to cybersecurity, prevention is always going to be more effective than reaction. Rather than responding to threats as they happen, a SOC will work to monitor a network around the clock. By doing so, they can detect malicious activities and prevent them before they can cause any severe damage. This step includes all actions taken to make successful attacks more difficult, including regularly maintaining and updating existing systems; updating firewall policies; patching vulnerabilities; and whitelisting, blacklisting, and securing applications.
 
-With the development of technology in the Security World, there have been new additions to the toolbox of security teams. Among these tools, SOAR and BAS products' relations are now considered indispensable. Integration between Picus and Cortex XSOAR provides automation into Preventive Security Monitoring and Management workflows. Collaboration With PICUS and XSOAR enhance visibility and traceability in many areas.
+With the development of technology in the Security World, there have been new additions to the toolbox of security teams. Among these tools, SOAR and BAS product's relations are now considered indispensable. Integration between Picus and Cortex XSOAR provides automation into Preventive Security Monitoring and Management workflows. Collaboration With PICUS and XSOAR enhance visibility and traceability in many areas.
 
 ## Run Threats with SLA in Mind
 
