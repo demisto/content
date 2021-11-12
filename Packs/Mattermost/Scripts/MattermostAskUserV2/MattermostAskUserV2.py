@@ -21,6 +21,6 @@ message = '%s - Please reply `%s %s` or `%s %s`' % (demisto.args()
 demisto.results(demisto.executeCommand('send-notification', {
     'to': demisto.get(demisto.args(), 'user'),
     'message': message,
-    'IgnoreAddURL': 'true',
+    'ignoreAddURL': 'true',
     'using-brand': 'mattermost'
 }))
