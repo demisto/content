@@ -466,39 +466,45 @@ def fetch_incidents(client: Client, last_run: dict, ) -> Tuple[dict, list]:
     first_fetch = fetch_params["filter[created_at__gt]"]
 
     fetch_params["page[number]"] = last_run.get("next_page", 1)
-    fetch_params["filter[created_at__gt]"] = last_run.get("current_created_at", first_fetch)  # type: ignore
+    fetch_params["filter[created_at__gt]"] = last_run.get("next_created_at", first_fetch)  # type: ignore
 
     response = client.report_list(params=fetch_params)
 
     results = response.get('data', [])
-
+    next_run = last_run
     if not results:
-        next_run = last_run
-        next_run["current_created_at"] = last_run.get("next_created_at", first_fetch)
-        next_run["next_page"] = 1
         return next_run, []
 
-    next_run = {"next_page": fetch_params["page[number]"] + 1,
-                "current_created_at": fetch_params["filter[created_at__gt]"],
-                "next_created_at": results[-1].get("attributes", {}).get("created_at")}
+    created_at_last_report = results[-1].get("attributes", {}).get("created_at")
+
+    if created_at_last_report == fetch_params["filter[created_at__gt]"]:
+        next_run = {
+            "next_page": fetch_params["page[number]"] + 1,
+            "next_created_at": fetch_params["filter[created_at__gt]"]
+        }
+    else:
+        next_run = {
+            "next_page": 1,
+            "next_created_at": created_at_last_report
+        }
 
     report_ids = last_run.get("report_ids", [])
-
-    if next_run.get("next_created_at") != last_run.get("next_created_at"):
-        report_ids = []
-
+    new_report_ids = []
     incidents = []
     for result in results:
         if result.get("id") in report_ids:
             continue
-        report_ids.append(result.get("id"))
+        new_report_ids.append(result.get("id"))
         incidents.append({
             'name': result.get('attributes', {}).get('title', ''),
             'occurred': result.get('attributes', {}).get('created_at'),
             'rawJSON': json.dumps(result)
         })
 
-    next_run["report_ids"] = report_ids
+    if created_at_last_report == fetch_params["filter[created_at__gt]"]:
+        next_run["report_ids"] = report_ids + new_report_ids
+    else:
+        next_run["report_ids"] = new_report_ids
 
     return next_run, incidents
 
