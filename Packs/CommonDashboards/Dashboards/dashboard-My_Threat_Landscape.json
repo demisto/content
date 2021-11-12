@@ -127,7 +127,7 @@
                 "sort": [
                     {
                         "asc": false,
-                        "field": "id",
+                        "field": "relatedIncCount",
                         "fieldType": ""
                     }
                 ],
