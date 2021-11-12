@@ -8193,6 +8193,7 @@ def get_tenant_account_name():
 
     return account_name
 
+
 def indicators_value_to_clickable(indicators):
     """
     Function to get the indicator url link for indicators
