@@ -95,7 +95,7 @@ def find_table_title(base: Optional[Union[BeautifulSoup, Tag, NavigableString]],
     while prev and node is not base:
         node = prev
         if isinstance(node, Tag) and node.name in ('h1', 'h2', 'h3', 'h4', 'h5', 'h6'):
-            title = node.text.strip()
+            title = ' '.join(node.text.strip().split())
             break
 
         prev = node.previous_element
@@ -107,19 +107,16 @@ def find_table_title(base: Optional[Union[BeautifulSoup, Tag, NavigableString]],
         while prev and node is not base:
             node = prev
             if isinstance(node, NavigableString):
-                if not message:
-                    message = str(node).rstrip()
-                else:
-                    message = str(node) + message
-
+                message = (str(node) if message else str(node).rstrip()) + message
                 if message.lstrip() and any(c in message for c in ('\n', '\r')):
                     break
 
             prev = node.previous_element
 
+        message = ' '.join(message.strip().split())
         title = title if title and message.count(' ') >= title.count(' ') else message
 
-    return ' '.join(title.strip().split()) if title else None
+    return title
 
 
 def list_text(node: Union[BeautifulSoup, Tag, NavigableString], name: str) -> List[str]:
