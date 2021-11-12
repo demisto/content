@@ -33,6 +33,7 @@ APS_API_VERSION = "2017-08-01-preview"
 IPP_API_VERSION = "2017-08-01-preview"
 JIT_API_VERSION = "2015-06-01-preview"
 STORAGE_API_VERSION = "2018-07-01"
+SECURE_STORES_API_VERSION = "2020-01-01"
 
 """ HELPER FUNCTIONS """
 
@@ -394,6 +395,17 @@ class MsClient:
         params = {"api-version": SUBSCRIPTION_API_VERSION}
         return self.ms_client.http_request(method="GET", full_url=full_url, url_suffix="", params=params)
 
+    def get_secure_scores(self, secure_score_name):
+        """
+        Returns:
+            dict: response body
+
+        """
+        """ subscriptions/{subscriptionId}/providers/Microsoft.Security/secureScores/{secureScoreName}?api-version=2020-01-0"""
+        
+        cmd_url = f"/providers/Microsoft.Security/secureScores/{secure_score_name}"
+        params= {"api-version": SECURE_STORES_API_VERSION}
+        return self.ms_client.http_request(method="GET", url_suffix=cmd_url, params=params)
 
 """ FUNCTIONS """
 
@@ -1263,6 +1275,24 @@ def list_sc_subscriptions_command(client: MsClient):
 
 """ Subscriptions end """
 
+""" Secure Score Start"""
+
+def get_secure_scores_command(client: MsClient, args: dict):
+    
+    secure_score_name = args.get("secure_score_name", "ascScore")
+
+    securescore = client.get_secure_scores(secure_score_name)
+    
+    md = tableToMarkdown(
+        "Azure Security Center - Secure Score",
+        securescore['properties']
+    )
+
+    ec =  {"Azure.Securescore(val.ID && val.ID === obj.ID)": securescore['properties']}
+
+    return md, ec, securescore
+
+""" Secure Scores End"""
 
 def test_module(client: MsClient):
     """
@@ -1332,6 +1362,8 @@ def main():
             return_outputs(*list_sc_storage_command(client))
         elif demisto.command() == "azure-list-subscriptions":
             return_outputs(*list_sc_subscriptions_command(client))
+        elif demisto.command() == "azure-get-secure-score":
+            return_outputs(*get_secure_scores_command(client, demisto.args()))
 
     except Exception as err:
         LOG(str(err))
