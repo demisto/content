@@ -24,10 +24,10 @@ And see how robust your processes are by measuring the SLA of all these steps.
 
 Using the Picus Security integration, you can run commands on Picus platform:
 
-- Get peer and vector list
-- Run attacks on Picus
-- Get specific threat and attack results
-- Get mitigation list
+- Get peer and vector list.
+- Run attacks on Picus.
+- Get specific threat and attack results.
+- Get mitigation list.
 
 And with **PICUS - Attack Validation Automation** playbook, you can automate security validation.
 
