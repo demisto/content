@@ -1414,10 +1414,10 @@ class IntegrationLogger(object):
                 if js.endswith('"'):
                     js = js[:-1]
                 to_add.append(js)
-                # if IS_PY3:
-                #     to_add.append(urllib.parse.quote_plus(a))  # type: ignore[attr-defined]
-                # else:
-                #     to_add.append(urllib.quote_plus(a))
+                if IS_PY3:
+                    to_add.append(urllib.parse.quote_plus(a))  # type: ignore[attr-defined]
+                else:
+                    to_add.append(urllib.quote_plus(a))
 
         self.replace_strs.extend(to_add)
 
