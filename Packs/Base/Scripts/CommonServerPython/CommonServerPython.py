@@ -2454,7 +2454,7 @@ class Common(object):
                 raise TypeError('indicator_type must be of type DBotScoreType enum')
 
             if not Common.DBotScore.is_valid_score(score):
-                raise TypeError('indicator_type must be of type DBotScore enum')
+                raise TypeError('indicator `score` must be of type DBotScore enum')
 
             if reliability and not DBotScoreReliability.is_valid_type(reliability):
                 raise TypeError('reliability must be of type DBotScoreReliability enum')
@@ -7187,7 +7187,7 @@ if 'requests' in sys.modules:
                     if resp_type == 'content':
                         return res.content
                     if resp_type == 'xml':
-                        ET.parse(res.text)
+                        ET.fromstring(res.text)
                     if resp_type == 'response':
                         return res
                     return res
@@ -8192,3 +8192,32 @@ def get_tenant_account_name():
         account_name = "acc_{}".format(tenant_name) if tenant_name != "" else ""
 
     return account_name
+
+
+def indicators_value_to_clickable(indicators):
+    """
+    Function to get the indicator url link for indicators
+
+    :type indicators: ``dict`` + List[dict]
+    :param indicators: An indicator or a list of indicators
+
+    :rtype: ``dict``
+    :return: Key is the indicator, and the value is it's url in the server
+
+    """
+    if not isinstance(indicators, (list, dict)):
+        return {}
+    if not isinstance(indicators, list):
+        indicators = [indicators]
+    res = {}
+    query = ' or '.join(['value:{indicator}'.format(indicator=indicator) for indicator in indicators])
+    indicator_searcher = IndicatorsSearcher(query=query)
+    for ioc_res in indicator_searcher:
+        for inidicator_data in ioc_res.get('iocs', []):
+            indicator = inidicator_data.get('value')
+            indicator_id = inidicator_data.get('id')
+            if not indicator or not indicator_id:
+                raise DemistoException('The response of indicator searcher is invalid')
+            indicator_url = os.path.join('#', 'indicator', indicator_id)
+            res[indicator] = '[{indicator}]({indicator_url})'.format(indicator=indicator, indicator_url=indicator_url)
+    return res

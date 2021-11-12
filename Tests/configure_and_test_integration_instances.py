@@ -16,6 +16,7 @@ from threading import Thread
 from time import sleep
 from typing import List, Tuple, Union
 
+from urllib.parse import quote_plus
 import demisto_client
 from demisto_sdk.commands.test_content.constants import SSH_USER
 from ruamel import yaml
@@ -219,7 +220,7 @@ def options_handler():
     parser.add_argument('-u', '--user', help='The username for the login', required=True)
     parser.add_argument('-p', '--password', help='The password for the login', required=True)
     parser.add_argument('--ami_env', help='The AMI environment for the current run. Options are '
-                                          '"Server Master", "Server 5.0". '
+                                          '"Server Master", "Server 6.0". '
                                           'The server url is determined by the AMI environment.')
     parser.add_argument('-g', '--git_sha1', help='commit sha1 to compare changes with')
     parser.add_argument('-c', '--conf', help='Path to conf file', required=True)
@@ -882,21 +883,15 @@ def configure_servers_and_restart(build):
     for server in build.servers:
         configurations = dict()
         configure_types = []
-        if LooseVersion(build.server_numeric_version) <= LooseVersion('5.5.0'):
-            configure_types.append('ignore docker image validation')
-            configurations.update(AVOID_DOCKER_IMAGE_VALIDATION)
+        if is_redhat_instance(server.internal_ip):
+            configurations.update(DOCKER_HARDENING_CONFIGURATION_FOR_PODMAN)
             configurations.update(NO_PROXY_CONFIG)
-        if LooseVersion(build.server_numeric_version) >= LooseVersion('5.5.0'):
-            if is_redhat_instance(server.internal_ip):
-                configurations.update(DOCKER_HARDENING_CONFIGURATION_FOR_PODMAN)
-                configurations.update(NO_PROXY_CONFIG)
-                configurations['python.pass.extra.keys'] += "##--network=slirp4netns:cidr=192.168.0.0/16"
-            else:
-                configurations.update(DOCKER_HARDENING_CONFIGURATION)
-            configure_types.append('docker hardening')
-            if LooseVersion(build.server_numeric_version) >= LooseVersion('6.0.0'):
-                configure_types.append('marketplace')
-                configurations.update(MARKET_PLACE_CONFIGURATION)
+            configurations['python.pass.extra.keys'] += "##--network=slirp4netns:cidr=192.168.0.0/16"
+        else:
+            configurations.update(DOCKER_HARDENING_CONFIGURATION)
+        configure_types.append('docker hardening')
+        configure_types.append('marketplace')
+        configurations.update(MARKET_PLACE_CONFIGURATION)
 
         error_msg = 'failed to set {} configurations'.format(' and '.join(configure_types))
         server.add_server_configuration(configurations, error_msg=error_msg, restart=not manual_restart)
@@ -1309,7 +1304,7 @@ def get_non_added_packs_ids(build: Build):
 
 
 def set_marketplace_url(servers, branch_name, ci_build_number):
-    url_suffix = f'{branch_name}/{ci_build_number}'
+    url_suffix = quote_plus(f'{branch_name}/{ci_build_number}')
     config_path = 'marketplace.bootstrap.bypass.url'
     config = {config_path: f'https://storage.googleapis.com/marketplace-ci-build/content/builds/{url_suffix}'}
     for server in servers:

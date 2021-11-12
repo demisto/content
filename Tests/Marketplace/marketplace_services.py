@@ -1641,6 +1641,7 @@ class Pack(object):
                         folder_collected_items.append({
                             'name': content_item.get('name', ""),
                             'description': content_item.get('description', ""),
+                            'type': content_item.get('type', ""),
                         })
                     elif current_directory == PackFolders.GENERIC_MODULES.value:
                         folder_collected_items.append({
