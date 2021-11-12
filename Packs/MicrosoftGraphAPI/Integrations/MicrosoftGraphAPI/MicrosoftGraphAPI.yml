@@ -91,7 +91,8 @@ script:
       secret: false
     - default: false
       description: OData system query options, e.g. $filter=startswith(givenName,
-        'J'). For more details see https://docs.microsoft.com/en-us/graph/query-parameters
+        'J'). For more details see https://docs.microsoft.com/en-us/graph/query-parameters.
+        It is recommended to use the $top query option to limit the result.
       isArray: false
       name: odata
       required: false
