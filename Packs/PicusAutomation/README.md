@@ -8,15 +8,15 @@ With the development of technology in the Security World, there have been new ad
 
 The integration between PICUS and XSOAR allows: 
 
-- Create Playbook to use specific threats in the Picus Threat Library which has thousands of threats to test your analyst capabilities 
+- Create Playbook to use specific threats in the Picus Threat Library which has thousands of threats to test your analyst capabilities.
 
-- Check if it has been fixed after remediation
+- Check if it has been fixed after remediation.
 
-- After a new threat is added to PICUS, use playbooks for a quick assessment, remediation steps, and observe
+- After a new threat is added to PICUS, use playbooks for a quick assessment, remediation steps, and observe.
 
-- Pull mitigation suggestions directly from the unique PICUS mitigation library and use them in your playbooks for seamless automation to a security product
+- Pull mitigation suggestions directly from the unique PICUS mitigation library and use them in your playbooks for seamless automation to a security product.
 
-- See which threats blocked or which are don't work properly in your environment and remediate them automatically
+- See which threats blocked or which are don't work properly in your environment and remediate them automatically.
 
 And see how robust your processes are by measuring the SLA of all these steps.
 
