@@ -1042,7 +1042,7 @@ def test_logger_replace_strs(mocker):
         'apikey': 'my_apikey',
     })
     ilog = IntegrationLogger()
-    ilog.add_replace_strs('special_str', 'ZAQ!@#$%&*')  # also check that empty string is not added by mistake
+    ilog.add_replace_strs('special_str', 'ZAQ!@#$%&*', '')  # also check that empty string is not added by mistake
     ilog('my_apikey is special_str and b64: ' + b64_encode('my_apikey'))
     ilog('special chars like ZAQ!@#$%&* should be replaced even when url-encoded like ZAQ%21%40%23%24%25%26%2A')
     assert ('' not in ilog.replace_strs)
