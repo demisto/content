@@ -192,7 +192,7 @@ def log_message_passes_filter(log_message: SyslogMessageExtract, message_regex: 
     return True if regexp.search(log_message.msg) else False
 
 
-def perform_long_running_loop(socket_data):
+def perform_long_running_loop(socket_data: bytes):
     """
     Performs one loop of a long running execution.
     - Gets data from socket.
@@ -200,7 +200,7 @@ def perform_long_running_loop(socket_data):
     - If the Syslog message data passes filter, creates a new incident.
     - Saves the incident in integration context for samples.
     Args:
-        socket_data (): TODO
+        socket_data (bytes): Retrieved socket data.
 
     Returns:
         (None): Creates incident in Cortex XSOAR platform.
@@ -208,7 +208,6 @@ def perform_long_running_loop(socket_data):
     extracted_message: SyslogMessageExtract = FORMAT_TO_PARSER_FUNCTION[LOG_FORMAT](socket_data)
     if log_message_passes_filter(extracted_message, MESSAGE_REGEX):
         incident: dict = create_incident_from_syslog_message(extracted_message, INCIDENT_TYPE)
-        demisto.error(f'incident = {incident}')
         update_integration_context_samples(incident)
         demisto.createIncidents([incident])
 
@@ -222,7 +221,7 @@ def perform_long_running_execution(sock: socket, _) -> None:
         _: Address. Not used inside loop so marked as underscore.
 
     Returns:
-        (None): Reads data, calls perform_long_running_loop that creates incidents from inputted data.
+        (None): Reads data, calls   that creates incidents from inputted data.
     """
     demisto.error('Starting long running execution')
     file_obj = sock.makefile(mode='rb')

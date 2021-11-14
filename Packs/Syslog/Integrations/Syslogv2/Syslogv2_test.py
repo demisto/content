@@ -134,16 +134,6 @@ def test_fetch_samples(samples: list[dict], mocker):
     assert mock_incident.call_args[0][0] == samples
 
 
-#     app_name: Optional[str]  # su
-#     facility: str  # SyslogFacility.auth
-#     host_name: Optional[str]  # client_machine
-#     msg: str  # su root failed for joe on /dev/pts/2
-#     msg_id: Optional[str]  # None
-#     process_id: Optional[str]  # None
-#     sd: dict  # sd
-#     severity: str  # err
-#     timestamp: str  # date
-#     version: Optional[int]  # 1
 @pytest.mark.parametrize('extracted_msg, incident_type, expected',
                          [(SyslogMessageExtract(
                              app_name='evntslog',
@@ -161,7 +151,8 @@ def test_fetch_samples(samples: list[dict], mocker):
                              },
                              severity='critical',
                              timestamp='2003-10-11T22:14:15.003Z',
-                             version=1),
+                             version=1,
+                             occurred='2003-10-11T22:14:15.003Z'),
                            None,
                            {'name': 'Syslog from [mymachine.example.com][2003-10-11T22:14:15.003Z]',
                             'occurred': '2003-10-11T22:14:15.003Z',
@@ -170,7 +161,8 @@ def test_fetch_samples(samples: list[dict], mocker):
                                        'entry", "msg_id": "ID47", "process_id": 123, "sd": '
                                        '{"exampleSDID@32473": {"eventID": "1011", "eventSource": '
                                        '"Application", "iut": "3"}}, "severity": "critical", "timestamp": '
-                                       '"2003-10-11T22:14:15.003Z", "version": 1}',
+                                       '"2003-10-11T22:14:15.003Z", "version": 1, '
+                                       '"occurred": "2003-10-11T22:14:15.003Z"}',
                             'type': None}),
                              (SyslogMessageExtract(
                                  app_name='evntslog',
@@ -188,7 +180,8 @@ def test_fetch_samples(samples: list[dict], mocker):
                                  },
                                  severity='critical',
                                  timestamp='2003-10-11T22:14:15.003Z',
-                                 version=1),
+                                 version=1,
+                                 occurred='2003-10-11T22:14:15.003Z'),
                               'Syslog Alert RFC-5424',
                               {'name': 'Syslog from [mymachine.example.com][2003-10-11T22:14:15.003Z]',
                                'occurred': '2003-10-11T22:14:15.003Z',
@@ -197,7 +190,8 @@ def test_fetch_samples(samples: list[dict], mocker):
                                           'entry", "msg_id": "ID47", "process_id": 123, "sd": '
                                           '{"exampleSDID@32473": {"eventID": "1011", "eventSource": '
                                           '"Application", "iut": "3"}}, "severity": "critical", "timestamp": '
-                                          '"2003-10-11T22:14:15.003Z", "version": 1}',
+                                          '"2003-10-11T22:14:15.003Z", "version": 1, '
+                                          '"occurred": "2003-10-11T22:14:15.003Z"}',
                                'type': 'Syslog Alert RFC-5424'}),
                              (SyslogMessageExtract(
                                  app_name=None,
@@ -213,10 +207,11 @@ def test_fetch_samples(samples: list[dict], mocker):
                                  sd={},
                                  severity='warning',
                                  timestamp='2021-11-09T17:07:20',
-                                 version=None),
+                                 version=None,
+                                 occurred=None),
                               None,
                               {'name': 'Syslog from [mymachine.example.com][2021-11-09T17:07:20]',
-                               'occurred': '2021-11-09T17:07:20',
+                               'occurred': None,
                                'rawJSON': '{"app_name": null, "facility": "log_alert", "host_name": '
                                           '"mymachine.example.com", "msg": "softwareupdated[288]: Removing '
                                           'client SUUpdateServiceClient pid=90550, uid=375597002, '
@@ -225,7 +220,8 @@ def test_fetch_samples(samples: list[dict], mocker):
                                           '/XPCServices/com.apple.preferences.softwareupdate.remoteservice.xpc'
                                           '/Contents/MacOS/com.apple.preferences.softwareupdate.remoteservice)", '
                                           '"msg_id": null, "process_id": null, "sd": {}, "severity": '
-                                          '"warning", "timestamp": "2021-11-09T17:07:20", "version": null}',
+                                          '"warning", "timestamp": "2021-11-09T17:07:20", "version": null, '
+                                          '"occurred": null}',
                                'type': None}),
                              (SyslogMessageExtract(
                                  app_name=None,
@@ -241,10 +237,11 @@ def test_fetch_samples(samples: list[dict], mocker):
                                  sd={},
                                  severity='warning',
                                  timestamp='2021-11-09T17:07:20',
-                                 version=None),
+                                 version=None,
+                                 occurred=None),
                               'Syslog Alert RFC-3164',
                               {'name': 'Syslog from [mymachine.example.com][2021-11-09T17:07:20]',
-                               'occurred': '2021-11-09T17:07:20',
+                               'occurred': None,
                                'rawJSON': '{"app_name": null, "facility": "log_alert", "host_name": '
                                           '"mymachine.example.com", "msg": "softwareupdated[288]: Removing '
                                           'client SUUpdateServiceClient pid=90550, uid=375597002, '
@@ -253,7 +250,8 @@ def test_fetch_samples(samples: list[dict], mocker):
                                           '/XPCServices/com.apple.preferences.softwareupdate.remoteservice.xpc'
                                           '/Contents/MacOS/com.apple.preferences.softwareupdate.remoteservice)", '
                                           '"msg_id": null, "process_id": null, "sd": {}, "severity": '
-                                          '"warning", "timestamp": "2021-11-09T17:07:20", "version": null}',
+                                          '"warning", "timestamp": "2021-11-09T17:07:20", "version": null, '
+                                          '"occurred": null}',
                                'type': 'Syslog Alert RFC-3164'})])
 def test_create_incident_from_syslog_message(extracted_msg: SyslogMessageExtract, incident_type: Optional[str],
                                              expected: dict):
@@ -353,7 +351,8 @@ MESSAGE_EXTRACT_EXAMPLE = SyslogMessageExtract(
     },
     severity='critical',
     timestamp='2003-10-11T22:14:15.003Z',
-    version=1)
+    version=1,
+    occurred='2003-10-11T22:14:15.003Z')
 
 
 @pytest.mark.parametrize('log_message, message_regex, expected', [(MESSAGE_EXTRACT_EXAMPLE, None, True),
@@ -408,18 +407,18 @@ def test_perform_long_running_loop(mocker, test_data, test_name):
     - Ensure incident is created if needed for each case, and exists in context data.
     """
     from mock import Mock
+    import Syslog_v2
+    tmp_format, tmp_reg, temp_incident = Syslog_v2.LOG_FORMAT, Syslog_v2.MESSAGE_REGEX, Syslog_v2.INCIDENT_TYPE
+    test_name_data = test_data[test_name]
+    Syslog_v2.LOG_FORMAT, Syslog_v2.MESSAGE_REGEX, Syslog_v2.INCIDENT_TYPE = test_data['log_format'], test_name_data.get('message_regex'), test_name_data.get('incident_type')
     set_integration_context({})
     incident_mock = mocker.patch.object(demisto, 'createIncidents')
-    mock_socket = Mock(spec=socket.socket)
-    mock_socket.configure_mock(**{'recvfrom.return_value': (test_data['log_message'].encode(), ('127.0.0.01', 49495))})
-    test_name_data = test_data[test_name]
     if test_name_data.get('expected'):
-        perform_long_running_loop(mock_socket, test_data['log_format'], test_name_data.get('message_regex'),
-                                  test_name_data.get('incident_type'))
+        perform_long_running_loop(test_data['log_message'].encode())
         assert incident_mock.call_args[0][0] == test_name_data.get('expected')
         assert get_integration_context() == {'samples': test_name_data.get('expected')}
     else:
-        perform_long_running_loop(mock_socket, test_data['log_format'], test_name_data.get('message_regex'),
-                                  test_name_data.get('incident_type'))
+        perform_long_running_loop(test_data['log_message'].encode())
         assert not demisto.createIncidents.called
         assert not get_integration_context()
+    Syslog_v2.LOG_FORMAT, Syslog_v2.MESSAGE_REGEX, Syslog_v2.INCIDENT_TYPE = tmp_format, tmp_reg, temp_incident

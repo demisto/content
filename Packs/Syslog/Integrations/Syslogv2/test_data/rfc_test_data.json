@@ -12,7 +12,8 @@
     "sd": {},
     "severity": "warning",
     "timestamp": "2021-11-09T17:07:20",
-    "version": null
+    "version": null,
+    "occurred": null
    }
   },
   "case_two_valid": {
@@ -27,7 +28,8 @@
     "sd": {},
     "severity": "critical",
     "timestamp": "2021-10-11T22:14:15",
-    "version": null
+    "version": null,
+    "occurred": null
    }
   },
   "case_weird_message": {
@@ -59,7 +61,8 @@
     },
     "severity": "notice",
     "timestamp": "2003-10-11T22:14:15.003Z",
-    "version": 1
+    "version": 1,
+    "occurred": "2003-10-11T22:14:15.003Z"
    }
   },
   "case_two_valid": {
@@ -74,7 +77,8 @@
     "sd": {},
     "severity": "notice",
     "timestamp": "2003-08-24T05:14:15.000003-07:00",
-    "version": 1
+    "version": 1,
+    "occurred": "2003-08-24T05:14:15.000003-07:00"
    }
   },
   "case_weird_message": {

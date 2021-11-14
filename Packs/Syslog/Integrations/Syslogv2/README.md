@@ -1,5 +1,4 @@
 A Syslog server provides the ability to automatically open incidents from Syslog clients. This integration provides the ability to filter which logs are to be converted to incidents (or choose to convert all logs).
-This integration was integrated and tested with version xx of Syslog v2
 
 Some changes have been made that might affect your existing content. 
 If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-syslog-v2).
