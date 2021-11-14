@@ -1,2 +1,5 @@
 [file:FeedRecordedFuture.yml]
 ignore=IN145
+
+[file:playbook-RecordedFutureFeed.yml]
+ignore=TP100

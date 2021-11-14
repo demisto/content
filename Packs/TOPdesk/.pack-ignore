@@ -1,2 +1,5 @@
 [file:classifier-mapper-incoming-TOPdesk.json]
 ignore=BA101
+
+[file:TestTOPdeskPlaybook.yml]
+ignore=TP100

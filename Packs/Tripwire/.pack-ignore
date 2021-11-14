@@ -3,3 +3,6 @@ ignore=RM104
 
 [file:classifier-mapper-incoming-Tripwire.json]
 ignore=BA101
+
+[file:TestplaybookTripwire.yml]
+ignore=TP100

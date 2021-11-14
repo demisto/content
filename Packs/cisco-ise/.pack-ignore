@@ -1,2 +1,5 @@
 [file:cisco-ise.yml]
 ignore=BA108,BA109
+
+[file:playbook-cisco-ise-test-playbook.yml]
+ignore=TP100

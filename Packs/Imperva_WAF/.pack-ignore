@@ -2,3 +2,7 @@
 ignore=RM102
 [file:ImpervaWAF.yml]
 ignore=IN136
+
+
+[file:playbook-Imperva_WAF_-_Test.yml]
+ignore=TP100

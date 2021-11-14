@@ -1,2 +1,5 @@
 [file:integration-Pipl.yml]
 ignore=IN144,IN145
+
+[file:playbook-Pipl_Test.yml]
+ignore=TP100

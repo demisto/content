@@ -3,3 +3,6 @@ ignore=RM104
 
 [file:GoogleKubernetesEngine.yml]
 ignore=IN145
+
+[file:playbook-GoogleKubernetesEngine-Test.yml]
+ignore=TP100

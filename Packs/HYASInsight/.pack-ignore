@@ -1,2 +1,5 @@
 [file:HYASInsight.yml]
 ignore=IN145
+
+[file:Playbook-HYASInsight-Test.yml]
+ignore=TP100

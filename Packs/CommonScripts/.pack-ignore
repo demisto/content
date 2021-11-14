@@ -45,3 +45,6 @@ ignore=BA110
 
 [file:script-PCAPMiner_README.md]
 ignore=RM106
+
+[file:playbook-EditServerConfig-Test.yml]
+ignore=TP100

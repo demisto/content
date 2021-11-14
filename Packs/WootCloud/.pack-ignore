@@ -1,2 +1,5 @@
 [file:WootCloud.yml]
 ignore=IN126,IN145
+
+[file:TestWootCloudPlaybook.yml]
+ignore=TP100

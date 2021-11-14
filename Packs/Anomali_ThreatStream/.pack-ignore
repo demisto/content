@@ -6,3 +6,7 @@ ignore=BA108,BA109,IN145
 
 [file:integration-AnomaliThreatStream.yml]
 ignore=IN144,IN145
+
+
+[file:playbook-ThreatStream-Test.yml]
+ignore=TP100

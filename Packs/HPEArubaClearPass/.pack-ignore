@@ -1,2 +1,5 @@
 [file:HPEArubaClearPass.yml]
 ignore=IN145
+
+[file:playbook-HPEArubaClearPass-Test.yml]
+ignore=TP100

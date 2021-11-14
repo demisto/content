@@ -6,3 +6,7 @@ ignore=BA108,BA109,IN145
 
 [file:FeediDefense.yml]
 ignore=IN145
+
+
+[file:Feed_iDefense_Test.yml]
+ignore=TP100

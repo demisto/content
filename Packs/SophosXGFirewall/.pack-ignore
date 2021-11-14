@@ -1,5 +1,5 @@
 [file:playbook-SophosXGFirewall-test.yml]
-ignore=auto-test
+ignore=auto-test,TP100
 
 [file:SophosXGFirewall.yml]
 ignore=BA109

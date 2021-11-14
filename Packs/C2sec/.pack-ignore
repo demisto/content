@@ -3,3 +3,6 @@ ignore=RM104
 
 [file:C2sec.yml]
 ignore=IN145
+
+[file:playbook-C2sec-Test.yml]
+ignore=TP100

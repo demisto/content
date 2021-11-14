@@ -9,3 +9,6 @@ ignore=IN145
 
 [file:AnsibleACME.yml]
 ignore=IN145
+
+[file:Test-AnsibleLinux.yml]
+ignore=TP100

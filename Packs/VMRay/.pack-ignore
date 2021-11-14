@@ -3,3 +3,9 @@ ignore=BA101
 
 [file:VMRay.yml]
 ignore=IN145
+
+[file:playbook-VMRay-test-File.yml]
+ignore=TP100
+
+[file:playbook-VMRay-test-URL.yml]
+ignore=TP100

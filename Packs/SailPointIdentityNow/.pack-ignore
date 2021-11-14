@@ -1,2 +1,5 @@
 [file:SailPointIdentityNow.yml]
 ignore=IN145
+
+[file:SailPointIdentityNow-Test.yml]
+ignore=TP100

@@ -15,3 +15,9 @@ ignore=RM104
 
 [file:GoogleVault.yml]
 ignore=IN145
+
+[file:playbook-GoogleVault-test.yml]
+ignore=TP100
+
+[file:playbook-Google_Vault_-_Search_And_Display_Results_test.yml]
+ignore=TP100

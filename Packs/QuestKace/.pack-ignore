@@ -3,3 +3,6 @@ ignore=RM106
 
 [file:QuestKace.yml]
 ignore=IN126
+
+[file:playbook-QuestKace_test.yml]
+ignore=TP100

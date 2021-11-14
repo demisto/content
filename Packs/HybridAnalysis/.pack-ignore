@@ -3,3 +3,6 @@ ignore=RM104
 
 [file:integration-HybridAnalysis.yml]
 ignore=IN145
+
+[file:playbook-HybridAnalysis-Test.yml]
+ignore=TP100

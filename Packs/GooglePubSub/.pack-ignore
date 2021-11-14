@@ -2,3 +2,7 @@
 ignore=IN126,IN136,IN145
 [file:README.md]
 ignore=RM102
+
+
+[file:playbook-GooglePubSub_Test.yml]
+ignore=TP100

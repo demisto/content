@@ -6,3 +6,6 @@ ignore=BA108,BA109,IN145
 
 [file:Slack.yml]
 ignore=IN145
+
+[file:playbook-Slack_TestPlaybook.yml]
+ignore=TP100

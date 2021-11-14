@@ -57,3 +57,22 @@ ignore=IF100
 
 [file:playbook-ChronicleAssets_Investigation_And_Remediation_-_Chronicle.yml]
 ignore=PB114
+
+
+[file:playbook-GoogleChronicleBackstoryAsset-Test.yml]
+ignore=TP100
+
+[file:playbook-GoogleChronicleBackstoryIOCDetails-Test.yml]
+ignore=TP100
+
+[file:playbook-GoogleChronicleBackstoryListAlerts-Test.yml]
+ignore=TP100
+
+[file:playbook-GoogleChronicleBackstoryListDetections-Test.yml]
+ignore=TP100
+
+[file:playbook-GoogleChronicleBackstoryListIOCs-Test.yml]
+ignore=TP100
+
+[file:playbook_GoogleChronicleBackstoryListEvents-Test.yml]
+ignore=TP100

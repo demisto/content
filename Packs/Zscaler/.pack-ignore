@@ -3,3 +3,6 @@ ignore=RM104,RM106
 
 [file:Zscaler.yml]
 ignore=IN145
+
+[file:playbook-Zscaler_Test.yml]
+ignore=TP100

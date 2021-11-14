@@ -9,3 +9,6 @@ ignore=BA101
 
 [file:MicrosoftCloudAppSecurity.yml]
 ignore=IN145
+
+[file:MicrosoftCloudAppSecurity-Test.yml]
+ignore=TP100

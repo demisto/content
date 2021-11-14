@@ -1,5 +1,5 @@
 [file:Microsoft-Graph-Calendar-Test.yml]
-ignore=auto-test
+ignore=auto-test,TP100
 
 [file:MicrosoftGraphCalendar.yml]
 ignore=DS107,IN145

@@ -12,3 +12,12 @@ ignore=RM104,RM106
 
 [file:playbook-Allow_IP_-_Okta_Zone.yml]
 ignore=PB114
+
+[file:OktaV2-Test.yml]
+ignore=TP100
+
+[file:Okta_IAM_-_Test_Playbook.yml]
+ignore=TP100
+
+[file:playbook-Test_Okta.yml]
+ignore=TP100

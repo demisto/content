@@ -1,2 +1,5 @@
 [file:GoogleCloudTranslate.yml]
 ignore=IN145
+
+[file:playbook-GoogleCloudTranslate-Test.yml]
+ignore=TP100

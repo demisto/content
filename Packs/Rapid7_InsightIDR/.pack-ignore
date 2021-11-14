@@ -1,5 +1,5 @@
 [file:InsightIDR-TestPlaybook.yml]
-ignore=auto-test
+ignore=auto-test,TP100
 
 [file:README.md]
 ignore=RM104

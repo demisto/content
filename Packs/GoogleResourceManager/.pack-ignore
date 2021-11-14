@@ -1,2 +1,5 @@
 [file:GoogleResourceManager.yml]
 ignore=IN145
+
+[file:playbook-GoogleResourceManager-Test.yml]
+ignore=TP100

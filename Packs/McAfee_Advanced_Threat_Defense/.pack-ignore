@@ -6,3 +6,10 @@ ignore=RM104,RM106
 
 [file:McAfee_Advanced_Threat_Defense.yml]
 ignore=BA108,BA109,IN145
+
+
+[file:playbook-McAfee-ATDTest-UploadFile.yml]
+ignore=TP100
+
+[file:playbook-McAfee-ATDTest.yml]
+ignore=TP100

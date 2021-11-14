@@ -1,2 +1,5 @@
 [file:integration-InfoArmor_VigilanteATI.yml]
 ignore=IN145
+
+[file:playbook-InfoArmorVigilanteATITest.yml]
+ignore=TP100

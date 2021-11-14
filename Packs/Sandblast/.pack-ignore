@@ -1,2 +1,5 @@
 [file:integration-Sandblast.yml]
 ignore=IN145
+
+[file:playbook-Sandblast_malicious_test.yml]
+ignore=TP100

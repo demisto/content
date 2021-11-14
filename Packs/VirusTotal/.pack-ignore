@@ -3,3 +3,6 @@ ignore=IN135,IN144,IN145
 
 [file:VirusTotal_V3_Premium.yml]
 ignore=BA108,BA109
+
+[file:VirusTotal Premium v3 TestPlaybook.yml]
+ignore=TP100

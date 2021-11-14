@@ -1,2 +1,5 @@
 [file:GoogleVisionAPI.yml]
 ignore=IN145
+
+[file:playbook-Google_Vision_API_Test.yml]
+ignore=TP100

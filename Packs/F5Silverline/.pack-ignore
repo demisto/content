@@ -15,3 +15,6 @@ ignore=BA113
 
 [file:incident_f5silverlinemessageoriginatorsourceip.json]
 ignore=BA113
+
+[file:F5Silverline_TestPlaybook.yml]
+ignore=TP100

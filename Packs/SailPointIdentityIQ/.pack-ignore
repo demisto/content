@@ -15,3 +15,6 @@ ignore=IF100
 
 [file:SailPointIdentityIQ.yml]
 ignore=IN145
+
+[file:SailPointIdentityIQ-Test.yml]
+ignore=TP100

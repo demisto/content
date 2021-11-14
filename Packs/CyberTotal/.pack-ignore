@@ -3,3 +3,6 @@ ignore=RM104
 
 [file:CyberTotal.yml]
 ignore=IN145
+
+[file:CyberTotal_TestPlaybook.yml]
+ignore=TP100

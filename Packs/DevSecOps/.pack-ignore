@@ -22,3 +22,12 @@ ignore=IN145
 
 [file:DockerEngine.yml]
 ignore=IN145
+
+[file:GitLab-test-playbook.yml]
+ignore=TP100
+
+[file:LGTM-test-playbook.yml]
+ignore=TP100
+
+[file:MinIO-test-playbook.yml]
+ignore=TP100

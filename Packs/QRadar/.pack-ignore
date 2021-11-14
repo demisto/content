@@ -35,3 +35,9 @@ ignore=IF100
 
 [file:incidentfield-Number_Of_Fetched_Events.json]
 ignore=IF100
+
+[file:QRadar_v3-test.yml]
+ignore=TP100
+
+[file:playbook-TestQradarV2.yml]
+ignore=TP100

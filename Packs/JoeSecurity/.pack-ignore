@@ -12,3 +12,6 @@ ignore=RM104
 
 [file:JoeSecurity.yml]
 ignore=IN145
+
+[file:playbook-JoeSecurityTest.yml]
+ignore=TP100

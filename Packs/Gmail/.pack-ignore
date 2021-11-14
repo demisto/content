@@ -6,3 +6,9 @@ ignore=RM106,RM104
 
 [file:classifier-mapper-incoming-Gsuite-gmail.json]
 ignore=BA101
+
+[file:playbook-GmailTest.yml]
+ignore=TP100
+
+[file:playbook-Gmail_Convert_Html_Test.yml]
+ignore=TP100

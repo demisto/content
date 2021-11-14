@@ -1,2 +1,9 @@
 [file:IntSight.yml]
 ignore=IN126
+
+
+[file:playbook-IntSights_Mssp_Test.yml]
+ignore=TP100
+
+[file:playbook-IntSights_Test.yml]
+ignore=TP100

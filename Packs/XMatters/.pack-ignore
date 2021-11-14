@@ -1,5 +1,5 @@
 [file:xMatters-Test.yml]
-ignore=auto-test
+ignore=auto-test,TP100
 
 [file:xMatters.yml]
 ignore=IN136,IN145

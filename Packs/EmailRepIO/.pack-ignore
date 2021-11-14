@@ -1,2 +1,6 @@
 [file:EmailRepIO.yml]
 ignore=IN144,IN145
+
+
+[file:TestEmailRepIOPlaybook.yml]
+ignore=TP100

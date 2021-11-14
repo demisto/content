@@ -1,2 +1,5 @@
 [file:AnsibleKubernetes.yml]
 ignore=IN145
+
+[file:Test-AnsibleKubernetes.yml]
+ignore=TP100

@@ -1,2 +1,5 @@
 [file:README.md]
 ignore=RM106
+
+[file:playbook-Bluecat_Address_Manager_test.yml]
+ignore=TP100

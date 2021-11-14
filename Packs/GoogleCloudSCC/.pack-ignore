@@ -9,3 +9,7 @@ ignore=BA101
 
 [file:incidentfield-GoogleCloudSCC_Finding_SourceProperties_Alert.json]
 ignore=IF100
+
+
+[file:GoogleCloudSCC-Test.yml]
+ignore=TP100

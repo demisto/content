@@ -1,2 +1,5 @@
 [file:APIVoid.yml]
 ignore=IN145
+
+[file:playbook-APIVoidTest.yml]
+ignore=TP100

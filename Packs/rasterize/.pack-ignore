@@ -1,0 +1,5 @@
+[file:playbook-RasterizeImageTest.yml]
+ignore=TP100
+
+[file:playbook-Rasterize_Test.yml]
+ignore=TP100

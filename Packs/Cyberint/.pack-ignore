@@ -8,3 +8,6 @@ ignore=IF100
 
 [file:Cyberint.yml]
 ignore=IN145
+
+[file:playbook-Cyberint_Test.yml]
+ignore=TP100

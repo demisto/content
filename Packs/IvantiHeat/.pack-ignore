@@ -1,2 +1,6 @@
 [file:IvantiHeat.yml]
 ignore=IN126,IN145
+
+
+[file:playbook-Ivanti_Heat_-_Test.yml]
+ignore=TP100

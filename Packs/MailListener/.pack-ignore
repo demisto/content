@@ -1,2 +1,6 @@
 [file:MailListenerV2.yml]
 ignore=IN126
+
+
+[file:playbook-MailListener_Test.yml]
+ignore=TP100

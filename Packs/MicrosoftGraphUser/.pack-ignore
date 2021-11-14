@@ -1,2 +1,5 @@
 [file:MicrosoftGraphUser.yml]
 ignore=IN145
+
+[file:Microsoft_Graph_User_test.yml]
+ignore=TP100

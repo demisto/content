@@ -3,3 +3,6 @@ ignore=PB115
 
 [file:PingCastle.yml]
 ignore=IN145
+
+[file:SX_-_PC_-_Test_Playbook.yml]
+ignore=TP100

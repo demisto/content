@@ -41,3 +41,10 @@ ignore=IF100
 
 [file:widget-Cortex_XDR_Disconnected_Endpoints.json]
 ignore=BA113
+
+
+[file:CortexXDR-XQL_Query_TestPlaybook.yml]
+ignore=TP100
+
+[file:Test_XDR_Playbook.yml]
+ignore=TP100

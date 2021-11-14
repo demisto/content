@@ -1,2 +1,5 @@
 [file:GSuiteAdmin.yml]
 ignore=IN145
+
+[file:playbook-GSuiteAdmin-Test.yml]
+ignore=TP100

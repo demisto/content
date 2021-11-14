@@ -7,3 +7,7 @@ ignore=BA101
 
 [file:incidentfield-Illusive_Networks_Events_Number.json]
 ignore=IF100
+
+
+[file:playbook-IllusiveNetworks-Test.yml]
+ignore=TP100

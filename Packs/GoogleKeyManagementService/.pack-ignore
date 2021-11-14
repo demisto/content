@@ -1,2 +1,5 @@
 [file:GoogleKeyManagementService.yml]
 ignore=IN145
+
+[file:playbook-Google-KMS-test.yml]
+ignore=TP100

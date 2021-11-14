@@ -3,3 +3,6 @@ ignore=RM102
 
 [file:Cymptom.yml]
 ignore=IN145
+
+[file:TestCymptomPlaybook.yml]
+ignore=TP100

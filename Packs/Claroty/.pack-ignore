@@ -6,3 +6,6 @@ ignore=RM104
 
 [file:classifier-mapper-incoming-Claroty.json]
 ignore=BA101
+
+[file:playbook-Claroty-Test.yml]
+ignore=TP100

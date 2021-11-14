@@ -1,0 +1,4 @@
+
+
+[file:Test-AnsibleCiscoNXOS.yml]
+ignore=TP100

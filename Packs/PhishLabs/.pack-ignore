@@ -9,3 +9,9 @@ ignore=IN126
 
 [file:README.md]
 ignore=RM104
+
+[file:playbook-PhishlabsIOC_DRP-Test.yml]
+ignore=TP100
+
+[file:playbook-PhishlabsIOC_EIR-Test.yml]
+ignore=TP100

@@ -1,2 +1,6 @@
 [file:AWS-Lambda.yml]
 ignore=BA108,BA109,IN145
+
+
+[file:playbook-AWS-Lambda-Test-(Read-Only).yml]
+ignore=TP100

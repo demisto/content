@@ -12,3 +12,7 @@ ignore=BA110
 
 [file:classifier-mapper-outgoing-Jira.json]
 ignore=BA101
+
+
+[file:playbook-Jira-v2-Test.yml]
+ignore=TP100

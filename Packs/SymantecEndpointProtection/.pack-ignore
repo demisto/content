@@ -1,2 +1,5 @@
 [file:SymantecEndpointProtection_V2.yml]
 ignore=BA108,BA109
+
+[file:playbook-SymantecEndpointProtection_Test.yml]
+ignore=TP100

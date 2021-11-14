@@ -1,2 +1,5 @@
 [file:FeedThreatConnect.yml]
 ignore=IN145
+
+[file:playbook-FeedThreatConnect-Test.yml]
+ignore=TP100

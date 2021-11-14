@@ -29,3 +29,15 @@ ignore=BA101
 ignore=BA101
 [file:incidentfield-ServiceNow_Ticket_Number.json]
 ignore=IF100
+
+[file:ServiceNow_IAM_-_Test_Playbook.yml]
+ignore=TP100
+
+[file:playbook-ServiceNow_CMDB_OAuth_Test.yml]
+ignore=TP100
+
+[file:playbook-ServiceNow_CMDB_Test.yml]
+ignore=TP100
+
+[file:playbook-ServiceNow_Test_New.yml]
+ignore=TP100

@@ -1,2 +1,5 @@
 [file:GoogleCalendar.yml]
 ignore=IN145
+
+[file:playbook-GoogleCalendar-Test.yml]
+ignore=TP100

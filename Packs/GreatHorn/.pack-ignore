@@ -3,3 +3,6 @@ ignore=RM104
 
 [file:GreatHorn.yml]
 ignore=IN145
+
+[file:TestGreatHornPlaybook.yml]
+ignore=TP100

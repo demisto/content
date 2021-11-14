@@ -1,2 +1,5 @@
 [file:README.md]
 ignore=RM104
+
+[file:playbook-Analyst1_Test.yml]
+ignore=TP100

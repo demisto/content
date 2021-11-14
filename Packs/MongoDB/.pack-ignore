@@ -1,2 +1,11 @@
 [file:README.md]
 ignore=RM106
+
+[file:playbook-MongoDBLog_-_Test.yml]
+ignore=TP100
+
+[file:playbook-MongoDBTest.yml]
+ignore=TP100
+
+[file:playbook-MongoDB_KeyValueStore_-_Test.yml]
+ignore=TP100

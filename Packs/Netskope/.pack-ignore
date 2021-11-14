@@ -1,2 +1,5 @@
 [file:integration-Netskope.yml]
 ignore=IN126,IN145
+
+[file:playbook-Netskope_Test.yml]
+ignore=TP100

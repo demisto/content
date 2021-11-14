@@ -6,3 +6,6 @@ ignore=RM104
 
 [file:integration-CrowdStrikeFalconSandbox.yml]
 ignore=IN145
+
+[file:playbook-VxStream_Test.yml]
+ignore=TP100

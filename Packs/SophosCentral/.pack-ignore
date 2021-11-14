@@ -1,2 +1,5 @@
 [file:SophosCentral.yml]
 ignore=IN129
+
+[file:playbook-SophosCentral_Test.yml]
+ignore=TP100

@@ -1,2 +1,6 @@
 [file:FeedBlocklist_de.yml]
 ignore=BA108,BA109
+
+
+[file:playbook-FeedBlocklist_de_test.yml]
+ignore=TP100

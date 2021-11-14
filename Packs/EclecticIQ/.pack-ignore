@@ -1,2 +1,5 @@
 [file:EclecticIQ.yml]
 ignore=IN144
+
+[file:playbook-EclecticIQ_Test.yml]
+ignore=TP100

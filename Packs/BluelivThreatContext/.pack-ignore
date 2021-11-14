@@ -3,3 +3,6 @@ ignore=RM102
 
 [file:BluelivThreatContext.yml]
 ignore=IN136
+
+[file:Blueliv_ThreatContext_test.yml]
+ignore=TP100

@@ -6,3 +6,6 @@ ignore=BA101
 
 [file:Darktrace.yml]
 ignore=IN145
+
+[file:playbook-Darktrace_Test.yml]
+ignore=TP100

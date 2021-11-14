@@ -3,3 +3,6 @@ ignore=IN126,IN145
 
 [file:README.md]
 ignore=RM104
+
+[file:playbook-PerceptionPoint_Test.yml]
+ignore=TP100

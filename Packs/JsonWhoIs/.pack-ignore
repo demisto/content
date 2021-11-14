@@ -1,2 +1,5 @@
 [file:JsonWhoIs.yml]
 ignore=IN145
+
+[file:playbook-jsonwhois_test.yml]
+ignore=TP100

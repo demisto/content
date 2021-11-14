@@ -1,2 +1,5 @@
 [file:GoogleBigQuery.yml]
 ignore=IN145
+
+[file:playbook-GoogleBigQueryTest.yml]
+ignore=TP100

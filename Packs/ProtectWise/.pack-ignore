@@ -1,2 +1,5 @@
 [file:integration-ProtectWise.yml]
 ignore=IN126,IN145
+
+[file:playbook-Protectwise-test.yml]
+ignore=TP100

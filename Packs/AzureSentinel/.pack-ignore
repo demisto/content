@@ -1,2 +1,9 @@
 [file:AzureSentinel.yml]
 ignore=IN126,IN145
+
+
+[file:playbook-TestAzureSentinelPlaybook.yml]
+ignore=TP100
+
+[file:TestAzureSentinelPlaybookV2.yml]
+ignore=TP100

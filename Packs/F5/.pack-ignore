@@ -1,2 +1,5 @@
 [file:F5_ASM.yml]
 ignore=BA108,BA109
+
+[file:playbook-F5_ASM-Test.yml]
+ignore=TP100

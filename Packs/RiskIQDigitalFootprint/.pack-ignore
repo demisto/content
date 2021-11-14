@@ -9,3 +9,6 @@ ignore=PB114
 
 [file:RiskIQDigitalFootprint.yml]
 ignore=IN145
+
+[file:playbook-RiskIQDigitalFootprint-Test.yml]
+ignore=TP100

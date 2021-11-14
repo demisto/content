@@ -6,3 +6,7 @@ ignore=RM106
 
 [file:classifier-mapper-incoming-gmail-single-user.json]
 ignore=BA101
+
+
+[file:playbook-Gmail_Single_user_-_Test.yml]
+ignore=TP100

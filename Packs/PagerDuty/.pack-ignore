@@ -3,3 +3,6 @@ ignore=IN126,IN145
 
 [file:README.md]
 ignore=RM106
+
+[file:playbook-PagerDuty_Test.yml]
+ignore=TP100

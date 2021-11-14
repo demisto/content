@@ -1,2 +1,6 @@
 [file:BeyondTrust_Password_Safe.yml]
 ignore=BA108,BA109,IN145
+
+
+[file:playbook-BeyondTrust-test.yml]
+ignore=TP100

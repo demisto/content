@@ -3,3 +3,6 @@ ignore=RM106
 
 [file:GoogleCloudFunctions.yml]
 ignore=IN145
+
+[file:Google_Cloud_Functions.yml]
+ignore=TP100

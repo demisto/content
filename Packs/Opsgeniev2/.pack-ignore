@@ -1,2 +1,5 @@
 [file:Opsgeniev2.yml]
 ignore=IN145
+
+[file:OpsGenieV2_-_Test_Playbook.yml]
+ignore=TP100

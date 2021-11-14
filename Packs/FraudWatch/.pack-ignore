@@ -1,2 +1,5 @@
 [file:classifier-mapper-incoming-FraudWatch_Incident.json]
 ignore=BA101
+
+[file:FraudWatch-Test.yml]
+ignore=TP100

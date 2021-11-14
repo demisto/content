@@ -20,3 +20,9 @@ ignore=IN145
 
 [file:FeedExpanse.yml]
 ignore=IN145
+
+[file:playbook-ExpanseV2_Test.yml]
+ignore=TP100
+
+[file:playbook-Feed_Expanse_Test.yml]
+ignore=TP100

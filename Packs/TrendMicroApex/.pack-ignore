@@ -3,3 +3,6 @@ ignore=RM104
 
 [file:TrendMicroApex.yml]
 ignore=IN145
+
+[file:playbook-TrendMicroApexTest.yml]
+ignore=TP100

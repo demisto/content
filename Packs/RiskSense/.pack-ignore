@@ -9,3 +9,9 @@ ignore=BA110
 
 [file:RiskSense.yml]
 ignore=IN145
+
+[file:playbook-RiskSenseGetUniqueCves-Test.yml]
+ignore=TP100
+
+[file:playbook-RiskSenseGetUniqueOpenFindings-Test.yml]
+ignore=TP100

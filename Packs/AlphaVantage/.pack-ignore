@@ -3,3 +3,6 @@ ignore=RM104
 
 [file:AlphaVantage.yml]
 ignore=IN145
+
+[file:AlphaVantage Test Playbook.yml]
+ignore=TP100

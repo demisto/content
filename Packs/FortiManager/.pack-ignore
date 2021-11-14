@@ -1,2 +1,5 @@
 [file:README.md]
 ignore=RM104
+
+[file:Test-Fortimanager.yml]
+ignore=TP100

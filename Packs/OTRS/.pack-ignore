@@ -3,3 +3,6 @@ ignore=IN126
 
 [file:pack_metadata.json]
 ignore=PA125
+
+[file:playbook-OTRS_Test.yml]
+ignore=TP100

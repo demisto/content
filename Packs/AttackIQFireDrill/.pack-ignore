@@ -3,3 +3,6 @@ ignore=RM106
 
 [file:AttackIQFireDrill.yml]
 ignore=IN145
+
+[file:playbook-AttackIQ_test.yml]
+ignore=TP100

@@ -1,2 +1,5 @@
 [file:Akamai_SIEM.yml]
 ignore=IN126,BA108,BA109,IN145
+
+[file:playbook-Akamai_WAF_SIEM-Test.yml]
+ignore=TP100

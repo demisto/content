@@ -1,2 +1,5 @@
 [file:BitcoinAbuse.yml]
 ignore=IN145
+
+[file:BitcoinAbuse-test.yml]
+ignore=TP100

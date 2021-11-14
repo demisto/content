@@ -3,3 +3,6 @@ ignore=CJ105
 
 [file:TrendMicroDeepSecurity.yml]
 ignore=IN145
+
+[file:playbook-TrendMicroDeepSecurity-Test.yml]
+ignore=TP100

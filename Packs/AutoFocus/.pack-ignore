@@ -9,3 +9,9 @@ ignore=IN145
 
 [file:FeedAutofocus.yml]
 ignore=IN145
+
+[file:playbook-FeedAutofocus_daily_test.yml]
+ignore=TP100
+
+[file:playbook-FeedAutofocus_test.yml]
+ignore=TP100

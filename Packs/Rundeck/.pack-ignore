@@ -3,3 +3,6 @@ ignore=RM104,RM106
 
 [file:Rundeck.yml]
 ignore=IN145
+
+[file:Rundeck_test.yml]
+ignore=TP100

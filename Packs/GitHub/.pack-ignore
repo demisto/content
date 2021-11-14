@@ -6,3 +6,10 @@ ignore=BA108,BA109,IN145
 
 [file:README.md]
 ignore=RM106
+
+
+[file:Git_Integration-Test.yml]
+ignore=TP100
+
+[file:IAM_-_Test_Playbook_Github.yml]
+ignore=TP100

@@ -15,3 +15,22 @@ ignore=RM102,RM106
 
 [file:classifier-mapper-incoming-EWS_v2.json]
 ignore=BA101
+
+
+[file:O365-EWS-Extension-Test.yml]
+ignore=TP100
+
+[file:playbook-EWS-Searchmailbox-Test.yml]
+ignore=TP100
+
+[file:playbook-EWS_O365_test.yml]
+ignore=TP100
+
+[file:playbook-EWS_Public_Folders_Test.yml]
+ignore=TP100
+
+[file:playbook-O365-SecurityAndCompliance-Test.yml]
+ignore=TP100
+
+[file:playbook-pyEWS_Test.yml]
+ignore=TP100

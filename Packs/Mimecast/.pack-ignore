@@ -1,2 +1,6 @@
 [file:MimecastV2.yml]
 ignore=IN126,IN145
+
+
+[file:playbook-Mimecast_Test.yml]
+ignore=TP100

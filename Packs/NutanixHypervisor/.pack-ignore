@@ -8,3 +8,6 @@ ignore=IF100
 
 [file:incidentfield-Alert_Type_UUID.json]
 ignore=IF100
+
+[file:Nutanix-test.yml]
+ignore=TP100

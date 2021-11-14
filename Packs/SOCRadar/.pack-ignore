@@ -3,3 +3,9 @@ ignore=IN145
 
 [file:SOCRadarThreatFusion.yml]
 ignore=IN145
+
+[file:SOCRadarIncidents-Test.yml]
+ignore=TP100
+
+[file:SOCRadarThreatFusion-Test.yml]
+ignore=TP100

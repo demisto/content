@@ -1,2 +1,5 @@
 [file:Microsoft365Defender.yml]
 ignore=IN145
+
+[file:playbook-Microsoft_365_Defender-Test.yml]
+ignore=TP100

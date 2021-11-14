@@ -6,3 +6,9 @@ ignore=IN145
 
 [file:PrismaAccessEgressIPFeed.yml]
 ignore=IN145
+
+[file:playbook-Prisma_Access-Test.yml]
+ignore=TP100
+
+[file:playbook-Prisma_Access_Egress_IP_Feed-Test.yml]
+ignore=TP100

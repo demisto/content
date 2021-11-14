@@ -9,3 +9,9 @@ ignore=RM104
 
 [file:WildFireReports.yml]
 ignore=IN145
+
+[file:playbook-Wildfire_Test.yml]
+ignore=TP100
+
+[file:playbook-Wildfire_Test_With_Polling.yml]
+ignore=TP100

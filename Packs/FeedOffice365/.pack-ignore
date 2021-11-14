@@ -3,3 +3,7 @@ ignore=RM104
 
 [file:playbook-TIM_-_Process_Office365_indicators.yml]
 ignore=PB115
+
+
+[file:playbook-Feed_Office365-Test.yml]
+ignore=TP100

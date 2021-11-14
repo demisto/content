@@ -15,3 +15,9 @@ ignore=IF100
 
 [file:CarbonBlackLiveResponseCloud.yml]
 ignore=IN145
+
+[file:CarbonBlackLiveResponseCloud-Test.yml]
+ignore=TP100
+
+[file:carbonBlackEndpointStandardTestPlaybook.yml]
+ignore=TP100

@@ -1,5 +1,5 @@
 [file:playbook-Microsoft_Graph_DeviceManagement_Test.yml]
-ignore=auto-test
+ignore=auto-test,TP100
 
 [file:MicrosoftGraphDeviceManagement.yml]
 ignore=DS107,IN145

@@ -6,3 +6,6 @@ ignore=BA101
 
 [file:TrendMicroCAS.yml]
 ignore=IN145
+
+[file:playbook-playbook_TrendmicroCAS_Test.yml]
+ignore=TP100

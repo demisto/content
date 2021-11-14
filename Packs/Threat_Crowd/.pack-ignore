@@ -1,2 +1,5 @@
 [file:ThreatCrowd_v2.yml]
 ignore=BA108,BA109
+
+[file:playbook-ThreatCrowd-Test.yml]
+ignore=TP100

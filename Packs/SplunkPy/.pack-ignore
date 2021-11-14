@@ -20,4 +20,4 @@ ignore=auto-test
 ignore=auto-test
 
 [file:playbook-SplunkPy-Test-V2.yml]
-ignore=auto-test
+ignore=auto-test,TP100

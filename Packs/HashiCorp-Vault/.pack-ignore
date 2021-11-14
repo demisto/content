@@ -1,2 +1,5 @@
 [file:HashiCorpVault.yml]
 ignore=IN145
+
+[file:playbook-hashicorp_test.yml]
+ignore=TP100

@@ -1,2 +1,5 @@
 [file:CrowdStrikeFalconIntel_v2.yml]
 ignore=BA108,BA109
+
+[file:playbook-CrowdStrikeFalconIntel_v2_Test.yml]
+ignore=TP100

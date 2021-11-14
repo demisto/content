@@ -1,2 +1,5 @@
 [file:FeedUnit42.yml]
 ignore=IN145
+
+[file:Unit42_Feed_test.yml]
+ignore=TP100

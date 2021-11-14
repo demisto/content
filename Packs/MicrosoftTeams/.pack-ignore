@@ -3,3 +3,10 @@ ignore=RM106
 
 [file:MicrosoftTeams.yml]
 ignore=DS107,IN145
+
+
+[file:Microsoft_Teams_-_Test.yml]
+ignore=TP100
+
+[file:Microsoft_Teams_Management_-_Test.yml]
+ignore=TP100

@@ -3,3 +3,7 @@ ignore=auto-test
 
 [file:EWSMailSender.yml]
 ignore=IN135
+
+
+[file:playbook-EWS-Mail-Sender-Test-2.yml]
+ignore=TP100

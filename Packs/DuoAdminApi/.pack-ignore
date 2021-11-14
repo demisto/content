@@ -1,2 +1,8 @@
 [file:DuoAdminApi.yml]
 ignore=IN145
+
+[file:playbook-DuoAdminaAPITest.yml]
+ignore=TP100
+
+[file:playbook-DuoAdminaAPITest_5_4_9.yml]
+ignore=TP100

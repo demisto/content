@@ -46,3 +46,13 @@ ignore=SC101
 [file:SanePdfReport.yml]
 ignore=SC101
 
+
+
+[file:playbook-DUO-Test.yml]
+ignore=TP100
+
+[file:playbook-Gsuite-Test.yml]
+ignore=TP100
+
+[file:playbook-MySQL_test.yml]
+ignore=TP100

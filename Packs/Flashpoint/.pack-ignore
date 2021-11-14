@@ -3,3 +3,9 @@ ignore=RM102,RM104
 
 [file:Flashpoint.yml]
 ignore=IN145
+
+[file:playbook-Flashpoint_alert_Test.yml]
+ignore=TP100
+
+[file:playbook-Flashpoint_compromised_Test.yml]
+ignore=TP100

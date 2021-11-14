@@ -1,2 +1,5 @@
 [file:MicrosoftGraphAPI.yml]
 ignore=IN145
+
+[file:Microsoft_Graph_Generic_-_Test.yml]
+ignore=TP100

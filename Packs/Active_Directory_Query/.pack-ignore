@@ -9,3 +9,12 @@ ignore=BA101
 
 [file:classifier-User_Profile_-_Active_Directory_(Outgoing).json]
 ignore=BA101
+
+[file:playbook-Active_Directory_-_ad-get-user_limit_check.yml]
+ignore=TP100
+
+[file:playbook-Active_Directory_Query_V2_with_port_conf_Test.yml]
+ignore=TP100
+
+[file:playbook-Active_Directory_Test.yml]
+ignore=TP100

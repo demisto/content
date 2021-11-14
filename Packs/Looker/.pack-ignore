@@ -1,2 +1,5 @@
 [file:Looker.yml]
 ignore=IN145
+
+[file:playbook-Test-Looker.yml]
+ignore=TP100

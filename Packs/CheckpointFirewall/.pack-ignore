@@ -3,3 +3,9 @@ ignore=RM104,RM106
 
 [file:CheckPointFirewall_v2.yml]
 ignore=BA108,BA109
+
+[file:checkpoint-testplaybook.yml]
+ignore=TP100
+
+[file:playbook-Checkpoint-FW-Test.yml]
+ignore=TP100

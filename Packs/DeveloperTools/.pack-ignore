@@ -6,3 +6,13 @@ ignore=BA101
 
 [file:CreateMockFeed.yml]
 ignore=DO102,DO107
+
+
+[file:playbook-Fetch_Incidents_Test.yml]
+ignore=TP100
+
+[file:playbook-Fetch_Indicators_Test.yml]
+ignore=TP100
+
+[file:playbook-XsoarPowershellTesting-Test.yml]
+ignore=TP100

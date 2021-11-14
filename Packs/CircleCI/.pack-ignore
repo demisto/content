@@ -1,2 +1,5 @@
 [file:CircleCI.yml]
 ignore=IN145
+
+[file:CircleCI-Test.yml]
+ignore=TP100

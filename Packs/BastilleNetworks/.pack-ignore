@@ -1,2 +1,6 @@
 [file:BastilleNetworks.yml]
 ignore=IN126,IN145
+
+
+[file:playbook-BastilleNetworks-Test.yml]
+ignore=TP100

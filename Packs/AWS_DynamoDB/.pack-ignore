@@ -3,3 +3,7 @@ ignore=BA108,BA109,IN145
 
 [file:README.md]
 ignore=RM106
+
+
+[file:playbook-AWS-DynamoDB-Test.yml]
+ignore=TP100

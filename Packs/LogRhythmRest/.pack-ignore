@@ -3,3 +3,7 @@ ignore=RM104
 
 [file:LogRhythmRest.yml]
 ignore=CJ105,IN145
+
+
+[file:playbook-LogRhythm_REST_test.yml]
+ignore=TP100

@@ -1,2 +1,5 @@
 [file:Cyberpion.yml]
 ignore=IN145
+
+[file:Cyberpion-Test.yml]
+ignore=TP100

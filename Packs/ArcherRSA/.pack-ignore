@@ -12,3 +12,6 @@ ignore=RM102,RM104
 
 [file:integration-ArcherRSA_README.md]
 ignore=RM106
+
+[file:playbook-Archer_v2_-_Test.yml]
+ignore=TP100

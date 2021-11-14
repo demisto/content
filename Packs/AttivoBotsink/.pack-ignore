@@ -1,2 +1,6 @@
 [file:AttivoBotsink.yml]
 ignore=IN126
+
+
+[file:playbook-AttivoBotsinkTest.yml]
+ignore=TP100

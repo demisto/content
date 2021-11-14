@@ -3,3 +3,6 @@ ignore=RM104
 
 [file:integration-Carbon_Black_Enterprise_Live_Response.yml]
 ignore=IN145
+
+[file:playbook-Carbon_Black_Live_Response_Test.yml]
+ignore=TP100

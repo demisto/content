@@ -1,2 +1,6 @@
 [file:Jask.yml]
 ignore=IN126
+
+
+[file:playbook-Jask_Test.yml]
+ignore=TP100

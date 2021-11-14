@@ -57,3 +57,7 @@ ignore=RM106
 
 [file:playbook-Block_Indicators_-_Generic_v2_5_5_README.md]
 ignore=RM106
+
+
+[file:playbook-Calculate_Severity_-_Standard_-_Test.yml]
+ignore=TP100

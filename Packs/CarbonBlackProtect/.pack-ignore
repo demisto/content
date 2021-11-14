@@ -9,3 +9,7 @@ ignore=IN126,IN145
 
 [file:README.md]
 ignore=RM104
+
+
+[file:playbook-CbP-PlayBook.yml]
+ignore=TP100

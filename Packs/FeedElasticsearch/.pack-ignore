@@ -1,0 +1,7 @@
+
+
+[file:playbook-Elasticsearch_Fetch_Custom_Indicators_Test.yml]
+ignore=TP100
+
+[file:playbook-Elasticsearch_Fetch_Demisto_Indicators_Test.yml]
+ignore=TP100

@@ -1,2 +1,6 @@
 [file:integration-LogRhythm.yml]
 ignore=IN126
+
+
+[file:playbook-LogRhythm_Test_Playbook.yml]
+ignore=TP100

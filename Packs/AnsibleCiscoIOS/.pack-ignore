@@ -1,2 +1,5 @@
 [file:AnsibleCiscoIOS.yml]
 ignore=IN145
+
+[file:Test-AnsibleCiscoIOS.yml]
+ignore=TP100

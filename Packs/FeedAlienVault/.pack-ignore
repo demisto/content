@@ -3,3 +3,6 @@ ignore=RM106
 
 [file:FeedAlienVaultOTXTaxii.yml]
 ignore=IN145
+
+[file:playbook-feedalienvaultotx_test.yml]
+ignore=TP100

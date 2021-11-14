@@ -3,3 +3,9 @@ ignore=RM104
 
 [file:McAfee-MAR.yml]
 ignore=BA108,BA109
+
+[file:playbook-Endpoint_data_collection_test.yml]
+ignore=TP100
+
+[file:playbook-MAR_-_Endpoint_data_collection_test.yml]
+ignore=TP100

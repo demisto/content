@@ -14,4 +14,16 @@ ignore=RM106
 ignore=RM106
 
 [file:playbook-PAN-OS_Create_Or_Edit_Rule_Test.yml]
-ignore=auto-test
+ignore=auto-test,TP100
+
+[file:playbook-PAN-OS_DAG_Configuration_Test.yml]
+ignore=TP100
+
+[file:playbook-palo_alto_firewall_test_pb.yml]
+ignore=TP100
+
+[file:playbook-palo_alto_panorama_test_best_practice.yml]
+ignore=TP100
+
+[file:playbook-palo_alto_panorama_test_pb.yml]
+ignore=TP100

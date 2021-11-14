@@ -1,2 +1,5 @@
 [file:layoutscontainer-JARM_Indicator_Layout.json]
 ignore=BA101
+
+[file:playbook-JARM-Test.yml]
+ignore=TP100

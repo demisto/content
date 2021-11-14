@@ -1,2 +1,5 @@
 [file:AWSSagemaker.yml]
 ignore=IN145
+
+[file:playbook-Sagemaker_Test.yml]
+ignore=TP100

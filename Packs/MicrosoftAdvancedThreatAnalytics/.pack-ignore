@@ -6,3 +6,6 @@ ignore=BA101,BA113
 
 [file:classifier-MicrosoftAdvancedThreatAnalytics.json]
 ignore=BA113
+
+[file:MicrosoftAdvancedThreatAnalytics-Test.yml]
+ignore=TP100

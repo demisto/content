@@ -3,3 +3,6 @@ ignore=RM104
 
 [file:KennaV2.yml]
 ignore=IN145
+
+[file:playbook-Kenna_Test.yml]
+ignore=TP100

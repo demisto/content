@@ -9,3 +9,7 @@ ignore=BA101
 
 [file:HelloWorld.yml]
 ignore=BA111,IN145
+
+
+[file:playbook-HelloWorld-Test.yml]
+ignore=TP100

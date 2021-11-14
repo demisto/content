@@ -1,2 +1,6 @@
 [file:AwakeSecurity.yml]
 ignore=IN126,IN144
+
+
+[file:playbook-Awake_Security_Test.yml]
+ignore=TP100

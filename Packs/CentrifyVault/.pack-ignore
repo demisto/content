@@ -1,2 +1,5 @@
 [file:CentrifyVault.yml]
 ignore=IN145
+
+[file:TestCentrifyPlaybook.yml]
+ignore=TP100

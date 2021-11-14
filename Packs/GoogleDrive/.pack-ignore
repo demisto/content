@@ -6,3 +6,6 @@ ignore=BA101
 
 [file:GoogleDrive.yml]
 ignore=IN145
+
+[file:playbook-GoogleDrive-Test.yml]
+ignore=TP100

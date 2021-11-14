@@ -3,3 +3,9 @@ ignore=IN126
 
 [file:README.md]
 ignore=RM106
+
+[file:playbook-Cherwell_-_test.yml]
+ignore=TP100
+
+[file:playbook-Cherwell_Example_Scripts_-_test.yml]
+ignore=TP100

@@ -1,2 +1,5 @@
 [file:UrlScan.yml]
 ignore=IN145
+
+[file:playbook-Urlscan_malicious_Test.yml]
+ignore=TP100
