@@ -38,6 +38,7 @@ When unmatched or the input value is structured (dict or list), it will simply r
 | caseless | Set to true for caseless comparison, false otherwise. |
 | priority | The option to choose which value matched to return. Available options: `first_match` (default) and `last_match`. |
 | context | \`demisto\` context: Input . \(single dot\) on \`From previous tasks\` to enable to extract the context data. |
+| flags | The comma separated flags for pattern matching in regex. `dotall` (s), `multiline` (m), `ignorecase` (i) and `unicode` (u) are supported. This will apply to all the algorithms. |
 
 ## Outputs
 ---
@@ -90,6 +91,8 @@ Transform a severity name to the corresponding number.
 
 > context:
 
+> flags:
+
 #### mappings:
 
     {
@@ -121,6 +124,8 @@ Normalize a human readable phrase to a cannonical name.
 
 > context:
 
+> flags:
+
 #### mappings:
 
     {
@@ -150,6 +155,8 @@ Remove all the heading "Re:" or "Fw:" from an email subject.
 
 > context:
 
+> flags:
+
 #### mappings:
 
     {
@@ -173,6 +180,8 @@ Extract the user name field from an text in an Active Directory user account for
 > priority: first_match
 
 > context:
+
+> flags:
 
 #### mappings:
 
@@ -202,6 +211,8 @@ Extract the user name field from an quoted text in an Active Directory user acco
 > priority: first_match
 
 > context:
+
+> flags:
 
 #### mappings:
 
@@ -245,6 +256,8 @@ Extract first name and last name from an email address in `firstname.lastname@do
 
 > context:
 
+> flags:
+
 #### mappings:
 
     [
@@ -280,6 +293,8 @@ Normalize a date/time text to `YYYY-MM-DD HH:mm:ss TZ`.
 > priority: first_match
 
 > context:
+
+> flags:
 
 #### mappings:
 
