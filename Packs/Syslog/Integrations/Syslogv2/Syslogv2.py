@@ -98,35 +98,17 @@ FORMAT_TO_PARSER_FUNCTION: Dict[str, Callable[[bytes], SyslogMessageExtract]] = 
 }
 
 
-def test_module(host_address: str, port: int) -> str:
+def test_module() -> str:
     """
     Tests API connectivity and authentication'
     Returning 'ok' indicates that the integration works like it is supposed to.
     Connection to the service is successful.
     Raises exceptions if something goes wrong.
 
-    Args:
-        host_address (str): Host address
-        port (int): Port
-
     Returns:
         (str): 'ok' if test passed, anything else will fail the test.
     """
-    message: str = 'ok'
-    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
-        try:
-            s.bind((host_address, port))
-        except OSError as e:
-            if "Can't assign requested address" in str(e):
-                message = 'The given IP address could not be accessed\n.Please make sure the IP address in valid' \
-                          ' and can be accessed.'
-            elif 'nodename nor servname provided, or not known' in str(e):
-                message = 'Could not find the host address. Please verify host address is correct.'
-            elif 'Permission denied' in str(e):
-                message = 'Permission was denied. Make sure you have permissions to access to the given port.'
-            else:
-                raise e
-    return message
+    return 'ok'
 
 
 def fetch_samples() -> None:
@@ -212,7 +194,7 @@ def perform_long_running_loop(socket_data: bytes):
         demisto.createIncidents([incident])
 
 
-def perform_long_running_execution(sock: socket, _) -> None:
+def perform_long_running_execution(sock: Any, _: tuple) -> None:
     """
     The long running execution loop. Gets input, and performs a while True loop and logs any error that happens.
     Stops when there is no more data to read.
@@ -259,7 +241,7 @@ def main() -> None:
         except ValueError as e:
             raise ValueError(f'Invalid listen port - {e}')
         if command == 'test-module':
-            return_results(test_module('0.0.0.0', port))
+            return_results(test_module())
         elif command == 'fetch-incidents':
             fetch_samples()
         elif command == 'long-running-execution':

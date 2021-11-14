@@ -1,10 +1,10 @@
 import json
 import io
 import pytest
-from Syslog_v2 import parse_rfc_3164_format, parse_rfc_5424_format, test_module, fetch_samples, \
+from Syslogv2 import parse_rfc_3164_format, parse_rfc_5424_format, fetch_samples, \
     create_incident_from_syslog_message, Callable, SyslogMessageExtract, Optional, update_integration_context_samples, \
     log_message_passes_filter, perform_long_running_loop
-from CommonServerPython import DemistoException, set_integration_context, get_integration_context, socket
+from CommonServerPython import DemistoException, set_integration_context, get_integration_context
 import demistomock as demisto
 
 
@@ -79,28 +79,6 @@ def test_parse_rfc_not_valid(test_case: dict, func: Callable[[bytes], SyslogMess
     import re
     with pytest.raises(DemistoException, match=re.escape(err_message)):
         func(test_case['log_message'].encode())
-
-
-@pytest.mark.parametrize('host_address, port, expected', [('127.0.0.1', 36666, 'ok'),
-                                                          ('abc', 36666, 'Could not find the host address. Please '
-                                                                         'verify host address is correct.'),
-                                                          ('127.0.0.1', 1, 'Permission was denied. Make sure you have '
-                                                                           'permissions to access to the given '
-                                                                           'port.')])
-def test_module_test(host_address: str, port: int, expected: str):
-    """
-    Given:
-    - host_address: Host to connect to.
-    - port: Port.
-
-    When:
-    - Executing test module command
-
-    Then:
-    - Ensure expected message is returned.
-
-    """
-    assert test_module(host_address, port) == expected
 
 
 @pytest.mark.parametrize('samples', [({}), ([{'app_name': None, 'facility': 'security4', 'host_name': 'mymachine',
@@ -406,11 +384,11 @@ def test_perform_long_running_loop(mocker, test_data, test_name):
     Then:
     - Ensure incident is created if needed for each case, and exists in context data.
     """
-    from mock import Mock
-    import Syslog_v2
-    tmp_format, tmp_reg, temp_incident = Syslog_v2.LOG_FORMAT, Syslog_v2.MESSAGE_REGEX, Syslog_v2.INCIDENT_TYPE
+    import Syslogv2
+    tmp_format, tmp_reg, temp_incident = Syslogv2.LOG_FORMAT, Syslogv2.MESSAGE_REGEX, Syslogv2.INCIDENT_TYPE
     test_name_data = test_data[test_name]
-    Syslog_v2.LOG_FORMAT, Syslog_v2.MESSAGE_REGEX, Syslog_v2.INCIDENT_TYPE = test_data['log_format'], test_name_data.get('message_regex'), test_name_data.get('incident_type')
+    Syslogv2.LOG_FORMAT, Syslogv2.MESSAGE_REGEX, Syslogv2.INCIDENT_TYPE = test_data['log_format'], test_name_data.get(
+        'message_regex'), test_name_data.get('incident_type')
     set_integration_context({})
     incident_mock = mocker.patch.object(demisto, 'createIncidents')
     if test_name_data.get('expected'):
@@ -421,4 +399,4 @@ def test_perform_long_running_loop(mocker, test_data, test_name):
         perform_long_running_loop(test_data['log_message'].encode())
         assert not demisto.createIncidents.called
         assert not get_integration_context()
-    Syslog_v2.LOG_FORMAT, Syslog_v2.MESSAGE_REGEX, Syslog_v2.INCIDENT_TYPE = tmp_format, tmp_reg, temp_incident
+    Syslogv2.LOG_FORMAT, Syslogv2.MESSAGE_REGEX, Syslogv2.INCIDENT_TYPE = tmp_format, tmp_reg, temp_incident
