@@ -1395,13 +1395,16 @@ def quote_group(text):
     if len(text.strip()) < 3 or "=" not in text:
         return [text]
 
+    # Remove wrapping quotes if present
+    text = re.sub(r'^\"([\s\S]+\")\"$', r'\1', text)
+
     # Some of the text doesn't end with a comma so we add it
     if not text.rstrip().endswith(","):
         text = text.rstrip()
         text += ","
 
     # Fix elements that aren't key=value (`123, a="123"` => `a="123"`)
-    text = re.sub(r"(^|,)([^=]+),", ",", text).lstrip(",")
+    text = re.sub(r"(^)([^=]+),", ",", text).lstrip(",")
 
     # Wrap all key values without a quote (`a=123` => `a="123"`)
     text = re.sub(r'([^\"\,]+?=)([^\"]+?)(,|\")', r'\1"\2"\3', text)
