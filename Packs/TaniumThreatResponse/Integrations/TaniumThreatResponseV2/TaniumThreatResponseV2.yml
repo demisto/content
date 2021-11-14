@@ -4,53 +4,67 @@ commonfields:
   id: Tanium Threat Response v2
   version: -1
 configuration:
-- display: Hostname, IP address, or server URL
-  name: url
+- name: url
+  display: Hostname, IP address, or server URL
   required: true
+  defaultvalue:
   type: 0
-- display: Username
-  name: credentials
+  additionalinfo:
+- name: credentials
+  display: Username
   required: false
+  defaultvalue:
   type: 9
+  additionalinfo:
+  displaypassword: ""
+  hiddenusername: false
 - display: Fetch incidents
   name: isFetch
   required: false
   type: 8
-- display: Incident type
-  name: incidentType
-  required: false
-  type: 13
-- defaultvalue: 24 hours
+- name: first_fetch
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
-  name: first_fetch
   required: false
+  defaultvalue: 24 hours
   type: 0
-- defaultvalue: '50'
+  additionalinfo:
+- name: max_fetch
   display: Maximum number of incidents to fetch each time
-  name: max_fetch
   required: false
+  defaultvalue: "50"
   type: 0
-- defaultvalue: unresolved
-  display: "Alert states to filter by in fetch incidents command.\
-    \ Empty list won't filter the incidents by state."
-  name: filter_alerts_by_state
+  additionalinfo:
+- name: filter_alerts_by_state
+  display: Alert states to filter by in fetch incidents command. Empty list won't
+    filter the incidents by state.
+  required: false
+  defaultvalue: unresolved
+  type: 16
+  additionalinfo:
   options:
   - unresolved
   - inprogress
   - resolved
   - suppressed
+- name: insecure
+  display: Trust any certificate (not secure)
   required: false
-  type: 16
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
+  defaultvalue: ""
   type: 8
-- display: Use system proxy settings
-  name: proxy
+  additionalinfo:
+- name: proxy
+  display: Use system proxy settings
   required: false
+  defaultvalue: ""
   type: 8
+  additionalinfo:
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
 description: Use the Tanium Threat Response integration to manage endpoints processes,
-  evidence, alerts, files, snapshots, and connections. This integration works with Tanium Threat Response version 3.0.159 and above.
+  evidence, alerts, files, snapshots, and connections. This integration works with
+  Tanium Threat Response version 3.0.159 and above.
 display: Tanium Threat Response v2
 name: Tanium Threat Response v2
 script:
@@ -95,14 +109,14 @@ script:
       type: Date
   - arguments:
     - default: false
-      defaultValue: '50'
+      defaultValue: "50"
       description: The maximum number of intel documents to return.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      defaultValue: '0'
+      defaultValue: "0"
       description: The offset number to begin listing intel documents.
       isArray: false
       name: offset
@@ -171,8 +185,8 @@ script:
       type: Date
   - arguments:
     - default: false
-      defaultValue: '5'
-      description: The maximum number of alerts to return. 
+      defaultValue: "5"
+      description: The maximum number of alerts to return.
       isArray: false
       name: limit
       required: false
@@ -354,6 +368,7 @@ script:
     description: Updates the state of the specified alerts.
     execution: false
     name: tanium-tr-alert-update-state
+    outputs: []
   - arguments:
     - default: false
       description: The connection id.
@@ -390,16 +405,17 @@ script:
     description: Deletes a snapshot by connection name and snapshot ID.
     execution: false
     name: tanium-tr-delete-snapshot
+    outputs: []
   - arguments:
     - default: false
-      defaultValue: '50'
-      description: The maximum number of local snapshots to return. 
+      defaultValue: "50"
+      description: The maximum number of local snapshots to return.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      defaultValue: '0'
+      defaultValue: "0"
       description: The offset number to begin listing local snapshots.
       isArray: false
       name: offset
@@ -451,21 +467,63 @@ script:
     description: Deletes a local snapshot by connection id.
     execution: false
     name: tanium-tr-delete-local-snapshot
+    outputs: []
   - arguments:
     - default: false
-      defaultValue: '50'
+      defaultValue: "50"
       description: The maximum number of connections to return.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      defaultValue: '0'
+      defaultValue: "0"
       description: The offset number to begin listing connections.
       isArray: false
       name: offset
       required: false
       secret: false
+    - name: status
+      description: "Get the connections that match only to a specific status. possible\
+        \ states: disconnected, timeout, waiting, connected. Can be a list, for example\
+        \ status=timeout,waiting"
+      required: false
+      isArray: true
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: ip
+      description: Get the connections that match only to a specific IP. Can be a
+        list, for example ip=1.1.1.1,8.8.8.8
+      required: false
+      isArray: true
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: platform
+      description: "Get the connections that match only to a specific platform (OS).\
+        \ (Windows, Linux). Can be a list, for example platform=Windows,Linux "
+      required: false
+      isArray: true
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: hostname
+      description: Get the connections that match only to a specific hostname, can
+        be a list, for example, hostname="hostname1,hostname2"
+      required: false
+      isArray: true
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: id
+      description: Get the connections that match only to a specific id, can be a
+        list. for example, id="123,356"
+      required: false
+      isArray: true
+      defaultValue: ""
+      predefined:
+      - ""
     deprecated: false
     description: Returns all connections.
     execution: false
@@ -555,6 +613,7 @@ script:
     description: Deletes a connection by connection id.
     execution: false
     name: tanium-tr-delete-connection
+    outputs: []
   - arguments:
     - default: false
       description: The connection id.
@@ -565,16 +624,17 @@ script:
     description: Closes a connection by connection id.
     execution: false
     name: tanium-tr-close-connection
+    outputs: []
   - arguments:
     - default: false
-      defaultValue: '50'
+      defaultValue: "50"
       description: The maximum number of labels to return.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      defaultValue: '0'
+      defaultValue: "0"
       description: The offset number to begin listing labels.
       isArray: false
       name: offset
@@ -646,15 +706,15 @@ script:
       type: Date
   - arguments:
     - default: false
-      defaultValue: '50'
-      description: The maximum number of files to return. 
+      defaultValue: "50"
+      description: The maximum number of files to return.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      defaultValue: '0'
-      description: Offset to start getting file downloads. 
+      defaultValue: "0"
+      description: Offset to start getting file downloads.
       isArray: false
       name: offset
       required: false
@@ -665,6 +725,29 @@ script:
       name: sort
       required: false
       secret: false
+    - name: hash
+      description: Get files that match only to a specific hash, can be a list, hash=123,768,878
+      required: false
+      isArray: true
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: hostname
+      description: Get files that match only to a specific hostname, can be a list,
+        hostname=hostname1,hostname2,hostname3
+      required: false
+      isArray: true
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: process_start_time
+      description: Get files that match only to a process that was created in a specific
+        time, for example process_time_start=2019-09-03T17:51:40.000Z
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
     deprecated: false
     description: Returns all downloaded files in the system.
     execution: false
@@ -717,7 +800,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: "Gets the actual content of a downloaded file by file ID. Downloaded file password: `infected`."
+    description: "Gets the actual content of a downloaded file by file ID. Downloaded\
+      \ file password: `infected`."
     execution: false
     name: tanium-tr-get-downloaded-file
     outputs:
@@ -780,15 +864,15 @@ script:
       required: true
       secret: false
     - default: false
-      defaultValue: '50'
-      description: The maximum number of events to return. 
+      defaultValue: "50"
+      description: The maximum number of events to return.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      defaultValue: '0'
-      description: Offset to start getting the result set. 
+      defaultValue: "0"
+      description: Offset to start getting the result set.
       isArray: false
       name: offset
       required: false
@@ -817,18 +901,18 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A comma-separated list of fields to sort on prefixed by +/- for
-        ascending or descending and ordered by priority left to right. Optional fields:
-        process_id, process_name, process_hash, process_command_line, username, process_name,
-        create_time (UTC).'
+      description: "A comma-separated list of fields to sort on prefixed by +/- for\
+        \ ascending or descending and ordered by priority left to right. Optional\
+        \ fields: process_id, process_name, process_hash, process_command_line, username,\
+        \ process_name, create_time (UTC)."
       isArray: false
       name: sort
       required: false
       secret: false
     - default: false
-      description: 'A comma-separated list of fields on which to search. Optional
-        fields: process_id, process_name, process_hash, process_command_line, username,
-        process_name, create_time.'
+      description: "A comma-separated list of fields on which to search. Optional\
+        \ fields: process_id, process_name, process_hash, process_command_line, username,\
+        \ process_name, create_time."
       isArray: false
       name: fields
       required: false
@@ -1119,14 +1203,14 @@ script:
       required: true
       secret: false
     - default: false
-      defaultValue: '50'
+      defaultValue: "50"
       description: The maximum number of events to return.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      defaultValue: '0'
+      defaultValue: "0"
       description: The offset number to begin listing events.
       isArray: false
       name: offset
@@ -1166,14 +1250,14 @@ script:
       required: true
       secret: false
     - default: false
-      defaultValue: '50'
+      defaultValue: "50"
       description: The maximum number of entries to return.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      defaultValue: '0'
+      defaultValue: "0"
       description: The offset number to begin listing entries.
       isArray: false
       name: offset
@@ -1459,15 +1543,15 @@ script:
       type: String
   - arguments:
     - default: false
-      defaultValue: '50'
-      description: The maximum number of evidences to return. 
+      defaultValue: "50"
+      description: The maximum number of evidences to return.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      defaultValue: '0'
-      description: Offset to start getting the events result set. 
+      defaultValue: "0"
+      description: Offset to start getting the events result set.
       isArray: false
       name: offset
       required: false
@@ -1479,6 +1563,20 @@ script:
       name: sort
       required: false
       secret: false
+    - name: hostname
+      description: Get events that match only to a specific hostname.
+      required: false
+      isArray: true
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: type
+      description: Get events that only match to a specific type.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
     deprecated: false
     description: Returns a list of all available evidence in the system.
     execution: false
@@ -1513,6 +1611,7 @@ script:
     - contextPath: Tanium.EvidenceProperties.value
       description: The evidence property value.
       type: String
+    arguments: []
   - arguments:
     - default: false
       description: The ID of the evidence.
@@ -1599,6 +1698,7 @@ script:
     description: Creates an event evidence from process.
     execution: false
     name: tanium-tr-create-evidence
+    outputs: []
   - arguments:
     - default: false
       description: The IDs of the evidences to delete.
@@ -1610,6 +1710,7 @@ script:
     description: Deletes event evidences from tanium.
     execution: false
     name: tanium-tr-delete-evidence
+    outputs: []
   - arguments:
     - default: false
       description: Path to file.
@@ -1657,6 +1758,7 @@ script:
     description: Deletes a file download.
     execution: false
     name: tanium-tr-delete-file-download
+    outputs: []
   - arguments:
     - default: false
       description: Path to the directory.
@@ -1671,15 +1773,15 @@ script:
       required: true
       secret: false
     - default: false
-      defaultValue: '50'
-      description: The maximum number of files to return. 
+      defaultValue: "50"
+      description: The maximum number of files to return.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      defaultValue: '0'
-      description: Offset to start getting files. 
+      defaultValue: "0"
+      description: Offset to start getting files.
       isArray: false
       name: offset
       required: false
@@ -1783,6 +1885,7 @@ script:
     description: Deletes a file from the given endpoint.
     execution: false
     name: tanium-tr-delete-file-from-endpoint
+    outputs: []
   - arguments:
     - default: false
       description: List the label IDs for the intel document with this ID.
@@ -1967,24 +2070,28 @@ script:
       description: The date when this intel was last updated.
       type: Date
     - contextPath: Tanium.IntelDoc.revisionId
-      description: The number of times the contents of the intel with this ID have been updated.
+      description: The number of times the contents of the intel with this ID have
+        been updated.
       type: Number
     - contextPath: Tanium.IntelDoc.Type
-      description: The shortened type name of the intel. For example, "openioc", "stix", "yara".
+      description: The shortened type name of the intel. For example, "openioc", "stix",
+        "yara".
       type: String
     - contextPath: Tanium.IntelDoc.typeVersion
-      description: The version number of the intel type. For example, "1.0", "2.3", etc.
+      description: The version number of the intel type. For example, "1.0", "2.3",
+        etc.
       type: String
     - contextPath: Tanium.IntelDoc.intrinsicId
-      description: The unique identifier claimed by the intel document, such as a guid or other built-in ID.
+      description: The unique identifier claimed by the intel document, such as a
+        guid or other built-in ID.
       type: String
     - contextPath: Tanium.IntelDoc.Md5
-      description: The hex digest of the MD5 sum of the contents of the document that represents this intel.
+      description: The hex digest of the MD5 sum of the contents of the document that
+        represents this intel.
       type: String
     - contextPath: Tanium.IntelDoc.Size
       description: The size of the intel document contents, in bytes.
       type: String
-
   - arguments:
     - default: false
       description: The ID of the intel document to update.
@@ -2044,19 +2151,24 @@ script:
       description: The date when this intel was last updated.
       type: Date
     - contextPath: Tanium.IntelDoc.revisionId
-      description: The number of times the contents of the intel with this ID have been updated.
+      description: The number of times the contents of the intel with this ID have
+        been updated.
       type: Number
     - contextPath: Tanium.IntelDoc.Type
-      description: The shortened type name of the intel. For example, "openioc", "stix", "yara".
+      description: The shortened type name of the intel. For example, "openioc", "stix",
+        "yara".
       type: String
     - contextPath: Tanium.IntelDoc.typeVersion
-      description: The version number of the intel type. For example, "1.0", "2.3", etc.
+      description: The version number of the intel type. For example, "1.0", "2.3",
+        etc.
       type: String
     - contextPath: Tanium.IntelDoc.intrinsicId
-      description: The unique identifier claimed by the intel document, such as a guid or other built-in ID.
+      description: The unique identifier claimed by the intel document, such as a
+        guid or other built-in ID.
       type: String
     - contextPath: Tanium.IntelDoc.Md5
-      description: The hex digest of the MD5 sum of the contents of the document that represents this intel.
+      description: The hex digest of the MD5 sum of the contents of the document that
+        represents this intel.
       type: String
     - contextPath: Tanium.IntelDoc.Size
       description: The size of the intel document contents, in bytes.
@@ -2066,6 +2178,8 @@ script:
     execution: false
     hidden: false
     name: tanium-tr-intel-deploy
+    arguments: []
+    outputs: []
   - deprecated: false
     description: Displays status of last intel deployment.
     execution: false
@@ -2084,6 +2198,7 @@ script:
     - contextPath: Tanium.IntelDeployStatus.CurrentSize
       description: The size of the intel document contents, in bytes.
       type: Number
+    arguments: []
   - arguments:
     - default: false
       description: The task ID.
@@ -2129,19 +2244,59 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      defaultValue: '50'
+      defaultValue: "50"
       description: The maximum number of entries to return.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      defaultValue: '0'
+      defaultValue: "0"
       description: The offset number to begin listing entries.
       isArray: false
       name: offset
       required: false
       secret: false
+    - name: status
+      description: "Get reporting clients that match only to a specific status. possible\
+        \ values are: Blocked, Leader, Normal, Slow link. can be a list, for example\
+        \ status= Blocked,Leader"
+      required: false
+      isArray: true
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: ip_client
+      description: "Get reporting clients that match only to a specific client IP.\
+        \ can be a list, for example: ip_client=1.1.1.1,8.8.8.8,3.3.3.3 "
+      required: false
+      isArray: true
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: ip_server
+      description: "Get reporting clients that match only to a specific server IP.\
+        \ can be a list, for example: ip_server=1.1.1.1,8.8.8.8,3.3.3.3 "
+      required: false
+      isArray: true
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: port
+      description: Ger reporting clients that match only to a specific port.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: hostname
+      description: Get reporting clients that match only to a specific host, can be
+        a list, for example, hostname="hostname1,hostname2,hostname3"
+      required: false
+      isArray: true
+      defaultValue: ""
+      predefined:
+      - ""
     deprecated: false
     description: Get system status, to retrieve all possible connection's client ids,
       hostnames, ips.
@@ -2185,7 +2340,7 @@ script:
   longRunning: false
   longRunningPort: false
   runonce: false
-  script: '-'
+  script: "-"
   subtype: python3
   type: python
 defaultmapperin: Tanium Threat Response
