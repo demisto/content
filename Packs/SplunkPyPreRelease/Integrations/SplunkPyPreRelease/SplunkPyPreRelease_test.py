@@ -1354,7 +1354,6 @@ def test_exceeded_limit_with_delay_indexed_events(mocker):
     from test_data.splunk_response import response_14, response_14_1
 
     from SplunkPyPreRelease import splunk_time_to_datetime
-    splunk.FETCH_LIMIT = 1
 
     splunk.ENABLED_ENRICHMENTS = []
     mocker.patch.object(demisto, 'incidents')
@@ -1363,7 +1362,7 @@ def test_exceeded_limit_with_delay_indexed_events(mocker):
     mock_dt.utcnow.return_value = datetime(2020, 8, 24, 14, 00, 12, 703618)
     service = mocker.patch('splunklib.client.connect', return_value=None)
     mocker.patch('demistomock.params',
-                 return_value={'fetchQuery': "something", 'enabled_enrichments': [], 'fetch_limit': 1,
+                 return_value={'fetchQuery': "something", 'enabled_enrichments': [],
                                'occurrence_look_behind': 120})
     mocker.patch('demistomock.getLastRun', return_value={'time': '2020-08-24T13:59:00'})
     mocker.patch('splunklib.results.ResultsReader', return_value=response_14)
@@ -1375,7 +1374,6 @@ def test_exceeded_limit_with_delay_indexed_events(mocker):
     found_incident_time = splunk_time_to_datetime(incident_found['occurred'])
     next_run_time = datetime.strptime(next_run["time"], SPLUNK_TIME_FORMAT)
     assert next_run_time == found_incident_time
-
     mocker.patch('demistomock.getLastRun', return_value=next_run)
     mocker.patch('splunklib.results.ResultsReader', return_value=response_14_1)
     mock_dt.utcnow.return_value = datetime(2020, 8, 24, 14, 01, 12, 703618)
@@ -1387,3 +1385,12 @@ def test_exceeded_limit_with_delay_indexed_events(mocker):
     found_incident_time = splunk_time_to_datetime(last_incident_found['occurred'])
     next_run_time = datetime.strptime(next_run["time"], SPLUNK_TIME_FORMAT)
     assert next_run_time == found_incident_time
+    assert len(incidents) == 1
+    assert next_run["batch_size"] == 200
+
+
+def test_increase_batch_size(mocker):
+    from test_data.splunk_response import response_14_1
+    mocker.patch('demistomock.params',
+                 return_value={'fetchQuery': "something", 'enabled_enrichments': [],
+                               'occurrence_look_behind': 120})
