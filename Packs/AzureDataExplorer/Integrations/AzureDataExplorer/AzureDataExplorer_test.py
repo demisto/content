@@ -165,3 +165,61 @@ def test_convert_kusto_response_to_dict():
     assert len(dict_kusto) == 1
     assert type(dict_kusto[0]['StartTime']) == str
     assert type(dict_kusto[0]['EndTime']) == str
+
+
+def test_format_header_for_list_commands():
+    """
+    Scenario: Format the header of readable output in list commands.
+    Given:
+        - Base command header.
+        - Number retrieved results.
+        - Number of total pages.
+        - The client entered page number.
+        - The client entered limit number.
+    When:
+     - azure-data-explorer-running-search-query-list command called.
+     - azure-data-explorer-search-query-list command called.
+    Then:
+     - Ensure the header is in the right format.
+    """
+    from AzureDataExplorer import format_header_for_list_commands
+    readable_output_header = format_header_for_list_commands('List of Completed Search Queries',
+                                                             1, 1, 1, 1)
+
+    assert readable_output_header == 'List of Completed Search Queries \nShowing' \
+                                     ' page 1 out of 1 total pages. Current page size: 1.'
+
+
+def test_calculate_total_request_timeout():
+    """
+        Scenario: Calculates total request timeout in search query execution API call.
+        Given:
+            - Client's server timeout argument.
+        When:
+         - azure-data-explorer-search-query-execution command called.
+        Then:
+         - Ensure total request timeout calculated correctly.
+        """
+    from AzureDataExplorer import calculate_total_request_timeout
+    total_request_timeout = calculate_total_request_timeout(5)
+    assert total_request_timeout == 320
+
+
+def test_validate_list_command_arguments():
+    """
+    Scenario: Validation list commands optional arguments.
+    Given:
+        - Number retrieved results.
+        - Limit number.
+    When:
+     - azure-data-explorer-running-search-query-list command called.
+     - azure-data-explorer-search-query-list command called.
+    Then:
+     - Ensure that exception is raised when page number and limit number are invalid.
+    """
+
+    from AzureDataExplorer import validate_list_command_arguments
+    try:
+        validate_list_command_arguments(1, 0)
+    except ValueError as v_error:
+        assert str(v_error) == 'Page and limit arguments must be integers greater than 0.'
