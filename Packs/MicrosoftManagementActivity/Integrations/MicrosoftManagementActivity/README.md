@@ -37,6 +37,7 @@ Moreover, enter your client secret as the “Key” parameter and your client ID
 | timeout | The default timeout (in seconds) for API calls. Can be overridden by providing value to the corresponding argument when calling supported commands. Default is 15 seconds. | True |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
+| redirect_uri | Application redirect URI (for self-deployed mode) | False |
 | first_fetch_delta | First fetch time range \(&lt;number&gt; &lt;time unit&gt;, e.g., 1 hour, 30 minutes\) | False |
 | content_types_to_fetch | Content types to fetch | False |
 | isFetch | Fetch incidents | False |
@@ -61,7 +62,7 @@ Starts a subscription to a given content type.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| content_type | The content type to subscribe to. | Required | 
+| content_type | The content type to subscribe to. Possible values are `Audit.AzureActiveDirectory`, `Audit.Exchange`, `Audit.SharePoint`, `Audit.General` | Required | 
 
 
 ##### Context Output
@@ -98,7 +99,7 @@ Stops a subscription to a given content type.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| content_type | The content type to unsubscribe from. | Required | 
+| content_type | The content type to unsubscribe from. Possible values are `Audit.AzureActiveDirectory`, `Audit.Exchange`, `Audit.SharePoint`, `Audit.General` | Required | 
 
 
 ##### Context Output
@@ -193,7 +194,7 @@ Returns all content of a specific content type.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| content_type | The content type for which to receive content. | Required | 
+| content_type | The content type for which to receive content. Possible values are `Audit.AzureActiveDirectory`, `Audit.Exchange`, `Audit.SharePoint`, `Audit.General` | Required | 
 | start_time | The earliest time to get content from. If start_time is specified, end_time must also be specified. The start_time must be before the end_time, can be at most 7 days ago, and has to be within 24 hours from end_time. Required format: YYYY-MM-DDTHH:MM:SS. If not specified, start time will be 24 hours ago. | Optional | 
 | end_time | The latest time to get content from. If end_time is specified, start_time must be also specified. The start_time must be before the end_time and has to be within 24 hours from start_time. Required format: YYYY-MM-DDTHH:MM:SS. If not specified, end_time will be now. | Optional | 
 | record_types_filter | A comma-separated list of the record types to fetch. Content records with a record  type that isn&#x27;t specified will not be fetched. If this field is left empty, all record types will be fetched. | Optional | 
