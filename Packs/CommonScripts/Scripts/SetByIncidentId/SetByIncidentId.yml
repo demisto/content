@@ -37,7 +37,6 @@ args:
   description: Returns an error if not all of the incidents where modified.
   defaultValue: "false"
 scripttarget: 0
-runas: DBotRole
 runonce: false
 tests:
 - No test

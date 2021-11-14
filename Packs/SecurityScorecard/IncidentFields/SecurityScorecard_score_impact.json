@@ -1,0 +1,31 @@
+{
+    "id": "incident_securityscorecardscoreimpact",
+    "version": -1,
+    "modified": "2021-07-04T08:30:36.561406366Z",
+    "name": "SecurityScorecard Score Impact",
+    "ownerOnly": false,
+    "description": "SecurityScorecard score impact (e.g. -2, 5)",
+    "cliName": "securityscorecardscoreimpact",
+    "type": "number",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedToAll": false,
+    "associatedTypes": [
+        "SecurityScorecard Alert"
+    ],
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

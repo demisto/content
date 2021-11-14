@@ -6,7 +6,7 @@ configuration:
 - display: API Key
   hidden: false
   name: api_key
-  required: false
+  required: true
   type: 4
 - display: Fetch indicators
   name: feed
