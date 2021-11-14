@@ -223,7 +223,7 @@ def search_queries_list_command(client: DataExplorerClient, args: Dict[str, Any]
         database_name, client_activity_id)
 
     return retrieve_command_results_of_list_commands(response, 'List of Completed Search Queries',
-                                                     page, limit)
+                                                     page, limit,'AzureDataExplorer.SearchQuery')
 
 
 def running_search_queries_list_command(client: DataExplorerClient, args: Dict[str, Any]) -> CommandResults:
@@ -246,7 +246,7 @@ def running_search_queries_list_command(client: DataExplorerClient, args: Dict[s
         database_name, client_activity_id)
 
     return retrieve_command_results_of_list_commands(response, 'List of Currently running Search Queries',
-                                                     page, limit)
+                                                     page, limit,'AzureDataExplorer.RunningSearchQuery')
 
 
 def running_search_query_cancel_command(client: DataExplorerClient, args: Dict[str, Any]) -> \
@@ -287,16 +287,17 @@ def running_search_query_cancel_command(client: DataExplorerClient, args: Dict[s
 
 
 def retrieve_command_results_of_list_commands(response: Dict[str, Any], base_header: str,
-                                              page: int, limit: int) -> CommandResults:
+                                              page: int, limit: int, outputs_prefix:str) -> CommandResults:
     """
-    Retrieves the command results of list commands. 
-    Args: 
+    Retrieves the command results of list commands.
+    Args:
         response (Dict[str,Any]): API response from Azure.
         base_header: (str) Header prefix in the readable output.
         page (int): Page number.
-        limit (int): Page size. 
+        limit (int): Page size.
+        outputs_prefix (str): Command context outputs prefix.
     Returns:
-        CommandResults: List Command results. 
+        CommandResults: List Command results.
     """
     response_kusto_dataset = KustoResponseDataSetV1(response)
     total_rows = response_kusto_dataset.primary_results[0].rows_count
@@ -312,7 +313,7 @@ def retrieve_command_results_of_list_commands(response: Dict[str, Any], base_hea
                                                'State'],
                                       headerTransform=pascalToSpace)
     command_results = CommandResults(
-        outputs_prefix='AzureDataExplorer.RunningSearchQuery',
+        outputs_prefix=outputs_prefix,
         outputs_key_field='ClientActivityId',
         outputs=outputs,
         raw_response=response,
@@ -394,16 +395,16 @@ def retrieve_common_request_body(database_name: str, query: str,
                                  properties: Dict[str, Any] = None) -> Dict[str, Any]:
     """
     Retrieve requests body.
-    for every request, the body contains the database name and the query to the execute. 
+    for every request, the body contains the database name and the query to the execute.
 
     Args:
-        database_name (str): The database name. 
-        query (str): The query to execute. 
+        database_name (str): The database name.
+        query (str): The query to execute.
         properties (Dict[str, Any], optional): Other user's properties to send in the request
                                                Defaults to None.
 
     Returns:
-        Dict[str, Any]: Body raw data for the request. 
+        Dict[str, Any]: Body raw data for the request.
     """
     data = {
         "db": database_name,
@@ -418,13 +419,13 @@ def retrieve_common_request_body(database_name: str, query: str,
 def calculate_total_request_timeout(server_timeout: int) -> int:
     """
     Calculates the total timeout duration of a request.
-    Takes into consideration the timeout duration on server side. 
+    Takes into consideration the timeout duration on server side.
 
     Args:
-        server_timeout (int): Quesry execution duration on server side. 
+        server_timeout (int): Quesry execution duration on server side.
 
     Returns:
-        int: Total timeout duration of a request. 
+        int: Total timeout duration of a request.
     """
     server_timeout_in_seconds = server_timeout * 60
     return server_timeout_in_seconds + REQUEST_BASE_TIMEOUT
@@ -432,11 +433,11 @@ def calculate_total_request_timeout(server_timeout: int) -> int:
 
 def validate_list_command_arguments(page: int, limit: int) -> None:
     """
-    Validation of page and limit arguments in list commands. 
+    Validation of page and limit arguments in list commands.
 
     Args:
         page (int): The page number.
-        limit (int): Limit on page size. 
+        limit (int): Limit on page size.
 
     Raises:
         ValueError: Error message.
@@ -556,7 +557,6 @@ def main() -> None:
             return_error("Search query execution took longer than the assigned timeout value and has been aborted.")
         else:
             return_error(error_text)
-
 
 from MicrosoftApiModule import *  # noqa: E402
 
