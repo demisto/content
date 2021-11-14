@@ -1372,6 +1372,7 @@ outputs:
   description: The type of the IP address.
   type: string
 - contextPath: VMRay.Sample.IOC.Mutex
+  description: ''
   type: unknown
 - contextPath: VMRay.Sample.IOC.Mutex.AnalysisID
   description: The IDs of other analyses that contain the given IP address.
