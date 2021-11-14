@@ -1,5 +1,8 @@
 from ExtractAttackPattern import is_valid_attack_pattern
+
+import CommonServerPython
 from CommonServerPython import *
+import ExtractAttackPattern as eap
 
 
 def test_extract_existing_mitre_ids(mocker):
@@ -12,15 +15,15 @@ def test_extract_existing_mitre_ids(mocker):
     - run the ExtractAttackPattern script
     Validate that name extracted successfully from the ID.
     """
-    mocker.patch.object(demisto, 'executeCommand', return_value=[{}, {}, {'Contents': [
+    mocker.patch.object(eap, 'get_mitre_results', return_value=[
         {'id': 'T1530', 'value': 'Data from Cloud Storage Object'},
         {'id': 'T1602', 'value': 'Data from Configuration Repository'}
-    ]}])
+    ])
 
     indicators = is_valid_attack_pattern(['T1530', 'T1602'])
     assert indicators == ['Data from Cloud Storage Object', 'Data from Configuration Repository']
 
-    mocker.patch.object(demisto, 'executeCommand', side_effect=ValueError(
+    mocker.patch.object(eap, 'get_mitre_results', side_effect=ValueError(
         'verify you have proper integration enabled to support it'))
     mocker.patch.object(demisto, 'info')
 
@@ -32,7 +35,7 @@ def test_extract_existing_mitre_ids(mocker):
 
 
 def test_extract_non_existing_mitre_ids(mocker):
-    mocker.patch.object(demisto, 'executeCommand', return_value=[])
+    mocker.patch.object(eap, 'get_mitre_results', return_value=[])
 
     indicators = is_valid_attack_pattern(['T1111', 'T2222'])
     assert indicators == []
@@ -48,8 +51,8 @@ def test_extract_existing_mitre_id(mocker):
     - run the ExtractAttackPattern script
     Validate that name extracted successfully from the ID.
     """
-    mocker.patch.object(demisto, 'executeCommand', return_value=[{}, {}, {'Contents':
-                        [{'id': 'T1530', 'value': 'Data from Cloud Storage Object'}]}])
+    mocker.patch.object(eap, 'get_mitre_results', return_value=[{
+        'id': 'T1530', 'value': 'Data from Cloud Storage Object'}])
 
     indicators = is_valid_attack_pattern(['T1530'])
     assert indicators == ['Data from Cloud Storage Object']
