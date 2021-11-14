@@ -1582,7 +1582,7 @@ def formatCell(data, json_transform, is_pretty=True):
     if isinstance(data, STRING_TYPES):
         return data
     elif isinstance(data, dict):
-        return '\n'.join([u'{}: {}'.format(k, flattenCell(v, is_pretty, json_transform)) for k, v in data.items()])
+        return '\n'.join([u'***{}***: {}'.format(k, flattenCell(v, is_pretty, json_transform)) for k, v in data.items()])
     else:
         return flattenCell(data, is_pretty)
 
@@ -1779,9 +1779,10 @@ def json_to_str(dct, keys):
     str_lst = ['\n']
     for key in keys:
         val = dct.get(key)
-        val = re.sub('[#\n]', "", val)
-        str_lst.append("{key}: {val}".format(key=key, val=val))
-    return ', '.join(str_lst)
+        val = re.sub('[#\n]', " ", val).strip()
+        str_lst.append("\t**{key}**: {val}".format(key=key, val=val))
+    return '\n'.join(str_lst)
+
 
 
 def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False, metadata=None, url_keys=None,
@@ -1814,7 +1815,9 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
        :type date_fields: ``list``
        :param date_fields: A list of date fields to format the value to human-readable output.
 
-        :param json_transform:
+        :type json_transform: ``dict``
+        :param json_transform: A dictionary which the key is the header key of the json to transform and the value
+                                is either a list of the inner_keys or a function to convert the inner json to str
 
 
        :return: A string representation of the markdown table

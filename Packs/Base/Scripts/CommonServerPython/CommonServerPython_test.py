@@ -5685,3 +5685,12 @@ def test_get_tenant_name(mocker, demistoUrls, expected_result):
 
     result = get_tenant_account_name()
     assert result == expected_result
+
+
+def test_tbm():
+    with open('test_data/content_data.json') as f:
+        content_data = json.load(f)
+    content_data = content_data.get('ContentData')
+    headers = argToList('name,author,categories,useCases,certification,contentItemTypes,currentVersion,lastInstallDate,premium,rating,updated,changelog')
+    md = tableToMarkdown("test", content_data, headers=headers, json_transform={'changelog': ['displayName', 'releaseNotes', 'released']})
+    print(md)

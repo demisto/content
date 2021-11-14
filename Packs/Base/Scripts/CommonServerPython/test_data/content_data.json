@@ -1,0 +1,661 @@
+{
+  "ContentData": [
+    {
+      "rating": 5,
+      "version": 8,
+      "certification": "certified",
+      "sortValues": null,
+      "integrations": [],
+      "general": [
+        "generalFieldCertified",
+        "generalFieldByCortexXSOAR",
+        "generalFieldFree",
+        "generalFieldSupportIncluded"
+      ],
+      "legacy": true,
+      "fromServerVersion": "6.0.0",
+      "ratingCount": 1,
+      "keywords": [],
+      "vcShouldKeepItemLegacyProdMachine": false,
+      "id": "AccessInvestigation",
+      "installMessage": "",
+      "previewOnly": false,
+      "lastInstallDate": "2021-10-07T11:47:30.791656056Z",
+      "useCases": [
+        "Access"
+      ],
+      "serverMinVersion": "6.0.0",
+      "propagationLabels": [
+        "all"
+      ],
+      "author": "Cortex XSOAR",
+      "commitMessage": "",
+      "packID": "AccessInvestigation",
+      "definitionId": "",
+      "currentVersion": "1.2.1",
+      "readme": "An unauthorised access to a cloud asset, a server or a physical endpoint can compromise an entire organization. \nAccess investigations require security teams to reconcile data from multiple sources, gather user and network data, and communicate with users and other relevant parties. Valuable time is lost shuttling between screens and executing repeatable tasks while an attack continues to manifest.\nThis Access Investigation content pack contains the \u2018Access Investigation - Generic\u2019 playbook, that automates response to an unauthorised access incident. The pack also contains the corresponding custom Access incident type to facilitate analyst investigation.\nThe Access playbook orchestrates across multiple products to extract and enrich IOCs, interact with the suspected user and calculate the incident\u2019s severity.\n\n\n##### What does this pack do?\nThe playbooks included in this pack help you save time and automate repetitive tasks associated with Malware incidents:\n- Create an Access incident within Cortex XSOAR associated with the unauthorized access.\n- Extract and enrich user information, and retrieve the user\u2019s manager details.\n- Extract and enrich IP information.\n- Interact with the user to gather more information regarding the suspected access.\n- Calculate the incident\u2019s severity based on the enriched information and information received from the user.\n- Assign the investigation to an analyst.\n\nAs part of this pack, you will also get out-of-the-box Access incident type, which is easily customizable to suit the needs of your organization.\n\n_For more information, visit our  [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/playbooks/access-investigation---generic)_\n\n![Access_Investigation_-_Generic](https://raw.githubusercontent.com/demisto/content/a5e419535b376b08764f65670c24ea364072e869/Packs/AccessInvestigation/doc_files/Access_Investigation_-_Generic_4_5.png)\n",
+      "eulaLink": "https://github.com/demisto/content/blob/master/LICENSE",
+      "price": 0,
+      "serverMaxVersion": "",
+      "itemVersion": "1.2.1",
+      "updated": "2020-11-09T18:42:24Z",
+      "premium": false,
+      "description": "This Content Pack automates response to unauthorised access incidents and contains customer access incident views and layouts to aid investigation.",
+      "tags": [],
+      "downloads": 0,
+      "updateAvailable": true,
+      "rawTags": null,
+      "vcShouldIgnore": false,
+      "beta": false,
+      "dependencies": {
+        "CommonScripts": {
+          "minVersion": "1.2.13",
+          "certification": "certified",
+          "mandatory": true,
+          "name": "Common Scripts",
+          "author": "Cortex XSOAR"
+        },
+        "CommonTypes": {
+          "minVersion": "1.6.0",
+          "certification": "certified",
+          "mandatory": true,
+          "name": "Common Types",
+          "author": "Cortex XSOAR"
+        },
+        "Base": {
+          "minVersion": "1.1.7",
+          "certification": "certified",
+          "mandatory": true,
+          "name": "Base",
+          "author": "Cortex XSOAR"
+        },
+        "Active_Directory_Query": {
+          "minVersion": "1.0.3",
+          "certification": "certified",
+          "mandatory": false,
+          "name": "Active Directory Query",
+          "author": "Cortex XSOAR"
+        },
+        "CommonPlaybooks": {
+          "minVersion": "1.7.0",
+          "certification": "certified",
+          "mandatory": true,
+          "name": "Common Playbooks",
+          "author": "Cortex XSOAR"
+        }
+      },
+      "supportDetails": {
+        "url": "https://www.paloaltonetworks.com/cortex",
+        "email": ""
+      },
+      "versionInfo": "74521",
+      "searchRank": 0,
+      "rawUseCases": null,
+      "categories": [
+        "Network Security"
+      ],
+      "name": "Access Investigation",
+      "authorImage": "content/packs/Base/Author_image.png",
+      "contentItemTypes": [
+        "incidenttype",
+        "playbook",
+        "layoutscontainer"
+      ],
+      "changelog": {
+        "1.2.2": {
+          "path": "",
+          "releaseNotes": "\n#### Layouts\n##### layout-edit-Access.json\nSet the default incident type for the layout.\n##### layout-details-Access.json\nSet the default incident type for the layout.\n",
+          "displayName": "1.2.2 - R264879",
+          "released": "2020-11-09T18:42:24Z"
+        },
+        "1.2.1": {
+          "path": "",
+          "releaseNotes": "\n",
+          "displayName": "1.2.1 - 74521",
+          "released": "2020-07-26T19:54:22Z"
+        }
+      },
+      "deprecated": false,
+      "created": "2020-05-25T10:39:08Z",
+      "modified": "2021-10-07T11:47:30.791750745Z",
+      "rawKeywords": null,
+      "shouldCommit": false,
+      "contentItems": {
+        "widget": null,
+        "incidentfield": null,
+        "genericobjecttype": null,
+        "list": null,
+        "integration": null,
+        "automation": null,
+        "reputation": null,
+        "dashboard": null,
+        "incidenttype": [
+          {
+            "name": "Access",
+            "days": 3,
+            "hours": 0,
+            "closureScript": "",
+            "playbook": "access_investigation_-_generic",
+            "weeks": 1
+          }
+        ],
+        "indicatorfield": null,
+        "report": null,
+        "classifier": null,
+        "layoutscontainer": [
+          {
+            "description": "",
+            "name": "Access Incident"
+          }
+        ],
+        "playbook": [
+          {
+            "description": "This playbook investigates an access incident by gathering user and IP information.\n\nThe playbook then interacts with the user that triggered the incident to confirm whether or not they initiated the access action.",
+            "name": "Access Investigation - Generic"
+          }
+        ]
+      },
+      "toServerVersion": "",
+      "support": "xsoar"
+    },
+    {
+      "rating": 4.3333335,
+      "version": 8,
+      "certification": "certified",
+      "sortValues": null,
+      "integrations": [
+        {
+          "imagePath": "content/packs/Active_Directory_Query/ActiveDirectoryQueryv2_image.png",
+          "name": "Active Directory Query v2"
+        }
+      ],
+      "general": [
+        "generalFieldCertified",
+        "generalFieldByCortexXSOAR",
+        "generalFieldFree",
+        "generalFieldSupportIncluded"
+      ],
+      "legacy": true,
+      "fromServerVersion": "5.0.0",
+      "ratingCount": 6,
+      "keywords": [
+        "Active Directory"
+      ],
+      "vcShouldKeepItemLegacyProdMachine": false,
+      "id": "Active_Directory_Query",
+      "installMessage": "",
+      "previewOnly": false,
+      "lastInstallDate": "2021-10-07T11:47:46.310013835Z",
+      "useCases": [],
+      "serverMinVersion": "5.0.0",
+      "propagationLabels": [
+        "all"
+      ],
+      "author": "Cortex XSOAR",
+      "commitMessage": "",
+      "packID": "Active_Directory_Query",
+      "definitionId": "",
+      "currentVersion": "1.3.5",
+      "readme": "Use the Active Directory Query content pack to access and manage Active Directory objects (users, contacts, and computers) and run AD queries.\r\n\r\n\r\n## What does this pack do?\r\n- Retrieve detailed information about user accounts in Active Directory. \r\n- Create, update, and delete users and contacts in Active Directory.\r\n- Add or remove users from groups in Active Directory.\r\n- Enable or disable a user account in Active Directory.\r\n- Based on an email address or a username of a user account in Active Directory, return the email address and/or username of the user's manager.\r\n- Investigate changes in Active Directory containers, ACLs, Schema, and objects.\r\n\r\n\r\nAs part of this pack, you will get an integration, a playbook to investigate changes in Active Directory, a playbook to access a user's manager's email address or username, 2 classifiers, and 4 scripts:\r\n- **ADGetUser**: Retrieves detailed information about a user account. \r\n- **IAMInitADUser**: Generates and sets an AD user account with a password, and enables the account. \r\n- **SendEmailToManager**: Sends an approval email to the manager of the employee with the given email allowing the manager to reply directly in the incident.\r\n- **UserEnrichAD**: Enriches a username with Active Directory data.\r\n\r\n## How does this pack work?\r\nCreate an instance of the **Active Directory Query v2** integration.\r\nThis integration can be used along with the Identity Lifecycle Management premium pack. For more information, see [Identity Lifecycle Management](https://xsoar.pan.dev/docs/reference/articles/identity-lifecycle-management) article.\r\n\r\nFor more information, see [Active Directory Query v2](https://xsoar.pan.dev/docs/reference/integrations/active-directory-query-v2)\r\n\r\n![Playbook Image](https://github.com/demisto/content/raw/master/docs/images/playbooks/Active_Directory_-_Get_User_Manager_Details.png)\r\n",
+      "eulaLink": "https://github.com/demisto/content/blob/master/LICENSE",
+      "price": 0,
+      "serverMaxVersion": "",
+      "itemVersion": "1.3.5",
+      "updated": "2021-09-26T21:16:52Z",
+      "premium": false,
+      "description": "Active Directory Query integration enables you to access and manage Active Directory objects (users, contacts, and computers).",
+      "tags": [],
+      "downloads": 9156,
+      "updateAvailable": true,
+      "rawTags": null,
+      "vcShouldIgnore": false,
+      "beta": false,
+      "dependencies": {
+        "MailSenderNew": {
+          "minVersion": "1.0.3",
+          "certification": "certified",
+          "mandatory": false,
+          "name": "Mail Sender (New)",
+          "author": "Cortex XSOAR"
+        },
+        "CrisisManagement": {
+          "minVersion": "1.2.2",
+          "certification": "certified",
+          "mandatory": false,
+          "name": "Crisis Management",
+          "author": "Cortex XSOAR"
+        },
+        "CommonScripts": {
+          "minVersion": "1.4.35",
+          "certification": "certified",
+          "mandatory": true,
+          "name": "Common Scripts",
+          "author": "Cortex XSOAR"
+        },
+        "CommonTypes": {
+          "minVersion": "3.1.16",
+          "certification": "certified",
+          "mandatory": true,
+          "name": "Common Types",
+          "author": "Cortex XSOAR"
+        },
+        "EWSMailSender": {
+          "minVersion": "1.1.2",
+          "certification": "certified",
+          "mandatory": false,
+          "name": "EWS Mail Sender",
+          "author": "Cortex XSOAR"
+        },
+        "Base": {
+          "minVersion": "1.13.31",
+          "certification": "certified",
+          "mandatory": true,
+          "name": "Base",
+          "author": "Cortex XSOAR"
+        },
+        "MicrosoftGraphMail": {
+          "minVersion": "1.0.24",
+          "certification": "certified",
+          "mandatory": false,
+          "name": "Microsoft Graph Mail",
+          "author": "Cortex XSOAR"
+        },
+        "GmailSingleUser": {
+          "minVersion": "1.1.3",
+          "certification": "certified",
+          "mandatory": false,
+          "name": "Gmail Single User (Beta)",
+          "author": "Cortex XSOAR"
+        },
+        "MicrosoftGraphListener": {
+          "minVersion": "1.0.19",
+          "certification": "certified",
+          "mandatory": false,
+          "name": "Microsoft Graph Mail Single User",
+          "author": "Cortex XSOAR"
+        },
+        "Gmail": {
+          "minVersion": "1.1.7",
+          "certification": "certified",
+          "mandatory": false,
+          "name": "Gmail",
+          "author": "Cortex XSOAR"
+        }
+      },
+      "supportDetails": {
+        "url": "https://www.paloaltonetworks.com/cortex",
+        "email": ""
+      },
+      "versionInfo": "7640590",
+      "searchRank": 10,
+      "rawUseCases": null,
+      "categories": [
+        "Data Enrichment & Threat Intelligence"
+      ],
+      "name": "Active Directory Query",
+      "authorImage": "content/packs/Base/Author_image.png",
+      "contentItemTypes": [
+        "integration",
+        "automation",
+        "playbook",
+        "classifier"
+      ],
+      "changelog": {
+        "1.0.4": {
+          "path": "",
+          "releaseNotes": "\n#### Integrations\n##### Active Directory Query v2\nFixed an issue where the ***ad-get-user*** command caused performance issues because the *limit* argument was not defined.\n",
+          "displayName": "1.0.4 - R124496",
+          "released": "2020-09-23T17:43:26Z"
+        },
+        "1.0.5": {
+          "path": "",
+          "releaseNotes": "\n#### Integrations\n##### Active Directory Query v2\n- Fixed several typos.\n- Updated the Docker image to: *demisto/ldap:1.0.0.11282*.\n",
+          "displayName": "1.0.5 - 132259",
+          "released": "2020-10-01T17:48:31Z"
+        },
+        "1.0.6": {
+          "path": "",
+          "releaseNotes": "\n#### Integrations\n##### Active Directory Query v2\n- Fixed an issue where the DN parameter within query in the ***search-computer*** command was incorrect.\n- Updated the Docker image to *demisto/ldap:1.0.0.12410*.\n",
+          "displayName": "1.0.6 - 151676",
+          "released": "2020-10-19T14:35:15Z"
+        },
+        "1.0.7": {
+          "path": "",
+          "releaseNotes": "\n#### Integrations\n##### Active Directory Query v2\nAdded the following CRUD commands, which support use cases for the IAM premium pack.\n  - ***create-user***\n  - ***get-user***\n  - ***update-user***\n  - ***enable-user***\n  - ***disable-user***\n\n#### Classifiers\n##### New: User Profile - Active Directory (Outgoing)\n- Maps a User Profile data to an Active Directory user data.\n\n\n##### New: User Profile - Active Directory (Incoming)\n- Maps an Active Directory user data to a User Profile data.\n\n#### Script\n##### New: IAMInitADUser\n- Generates password,\nSet an AD user account with this password.\nEnable the account.\nSend mail to the user with tha account information.\nThis script is running `send-mail` command, make sure there is a matching Integration configurated.\n\n##### New: Generate_AD_Password\n- This scripts generates a 12 letter password, that contains letters, numbers and symbols.\n",
+          "displayName": "1.0.7 - 166486",
+          "released": "2020-10-29T21:44:35Z"
+        },
+        "1.1.5": {
+          "path": "",
+          "releaseNotes": "\n#### Scripts\n##### IAMInitADUser\n- Fixed an issue where an email was sent even though the create user flow had failed.\n",
+          "displayName": "1.1.5 - 286068",
+          "released": "2021-02-21T22:45:43Z"
+        },
+        "1.1.4": {
+          "path": "",
+          "releaseNotes": "\n#### Integrations\n##### Active Directory Query v2\n- Maintenance enhancements.\n",
+          "displayName": "1.1.4 - R283644",
+          "released": "2021-02-17T22:43:40Z"
+        },
+        "1.1.7": {
+          "path": "",
+          "releaseNotes": "\n#### Playbooks\n##### New: Active Directory Investigation\n- Active Directory Investigation playbook provides tools and guidance to investigate changes and manipulation in Active Directory containers, ACLs, Schema, and objects.\nThis playbook uses a 3rd party tool provided by Microsoft to scan the Active Directory access list, trees, and objects.\nAdditional investigative information is provided for manual investigation. (Available from Cortex XSOAR 6.0.0).\n",
+          "displayName": "1.1.7 - 301652",
+          "released": "2021-03-11T22:54:48Z"
+        },
+        "1.0.3": {
+          "path": "",
+          "releaseNotes": "\n#### Integrations\n##### Active Directory Query v2\nAdded the *disable-nested-search* argument to the command ***ad-get-group-members***, which enables you to disable recursive retrieval of a user's group memberships.\n",
+          "displayName": "1.0.3 - 72965",
+          "released": "2020-07-23T17:53:09Z"
+        },
+        "1.1.9": {
+          "path": "",
+          "releaseNotes": "\n#### Integrations\n##### Active Directory Query v2\n- Internal code improvements.\n- Updated the Docker image to: *demisto/ldap:1.0.0.17947*.",
+          "displayName": "1.1.9 - 325844",
+          "released": "2021-04-11T22:55:39Z"
+        },
+        "1.1.8": {
+          "path": "",
+          "releaseNotes": "\n#### Scripts\n##### IAMInitADUser\n- Updated the automation to accommodate for the changes in the **Identity Lifecycle Management** user synchronization flow.\n- Updated the Docker image to: *demisto/python3:3.9.2.17957*.\n\n",
+          "displayName": "1.1.8 - 321670",
+          "released": "2021-04-06T22:54:15Z"
+        },
+        "1.3.4": {
+          "path": "",
+          "releaseNotes": "#### Integrations\n##### Active Directory Query v2\n- Fixed an issue in ***iam-update-user*** command where the command failed whenever the *allow-enable* argument was set to true.",
+          "displayName": "1.3.4 - 7561139",
+          "released": "2021-09-12T09:24:08Z"
+        },
+        "1.0.8": {
+          "path": "",
+          "releaseNotes": "#### Integrations\n##### Active Directory Query v2\n- Fixed an issue where setting the *attributes* argument to \"*\" did not work in the ***search-computer*** command.",
+          "displayName": "1.0.8 - R171637",
+          "released": "2020-11-03T12:36:51Z"
+        },
+        "1.1.3": {
+          "path": "",
+          "releaseNotes": "\n#### Integrations\n##### Active Directory Query v2\n- Added the import for *IAMApiModule* to support all IAM Classes.\n",
+          "displayName": "1.1.3 - 264879",
+          "released": "2021-01-27T23:02:16Z"
+        },
+        "1.1.2": {
+          "path": "",
+          "releaseNotes": "\n#### Classifiers\n##### User Profile - Active Directory (Incoming)\n- Removed non existing incident fields from classifier.\n##### User Profile - Active Directory (Outgoing)\n- Removed non existing incident fields from classifier.\n",
+          "displayName": "1.1.2 - R263971",
+          "released": "2021-01-27T10:37:37Z"
+        },
+        "1.3.5": {
+          "path": "",
+          "releaseNotes": "#### Scripts\n##### IAMInitADUser\n- Updated the Docker image to: *demisto/python3:3.9.7.24076*.",
+          "displayName": "1.3.5 - 7640590",
+          "released": "2021-09-16T21:16:01Z"
+        },
+        "1.1.6": {
+          "path": "",
+          "releaseNotes": "\n#### Integrations\n##### Active Directory Query v2\n- Fixed an issue where a duplicated field caused the ***iam-create-user*** command to fail.\n",
+          "displayName": "1.1.6 - 290393",
+          "released": "2021-02-25T20:32:40Z"
+        },
+        "1.1.1": {
+          "path": "",
+          "releaseNotes": "\n#### Integrations\n##### Active Directory Query v2\nMaintenance and stability enhancements.\n",
+          "displayName": "1.1.1 - R237835",
+          "released": "2020-12-30T11:39:36Z"
+        },
+        "1.3.3": {
+          "path": "",
+          "releaseNotes": "#### Integrations\n##### Active Directory Query v2\n- Fixed an issue where the ***get-mapping-fields*** command returned the *sAMAccountName* user attribute twice.\n\n#### Mappers\n##### User Profile - Active Directory (Outgoing)\n- Updated the mapping of the *sAMAccountName* Active Directory user attribute.",
+          "displayName": "1.3.3 - 7535528",
+          "released": "2021-09-10T09:23:51Z"
+        },
+        "1.3.2": {
+          "path": "",
+          "releaseNotes": "#### Integrations\n##### Active Directory Query v2\n- Fixed an issue in the ***iam-update-user*** command where username change was not detected correctly.\n- Fixed an issue in the ***get-mapping-fields*** command where the output did not contain custom user attributes.",
+          "displayName": "1.3.2 - 7440142",
+          "released": "2021-09-03T21:14:45Z"
+        },
+        "1.3.1": {
+          "path": "",
+          "releaseNotes": "#### Integrations\n##### Active Directory Query v2\n- Fixed an issue where group name included parentheses in the ***ad-add-to-group***, ***ad-remove-from-group***, ***iam-disable-user***, ***iam-update-user*** and ***iam-create-user*** commands commands.\n- Updated the Docker image to: *demisto/ldap:1.0.0.23980*.",
+          "displayName": "1.3.1 - 7371081",
+          "released": "2021-08-31T09:16:33Z"
+        },
+        "1.3.0": {
+          "path": "",
+          "releaseNotes": "#### Integrations\n##### Active Directory Query v2\n- Added support for TLS secure connections.\n- Added *group* to the *member-type* argument in the ***ad-get-group-members*** command.\n- Added the *sAMAccountName* argument to ***ad-get-group-members*** command.\n- Updated the Docker image to: *demisto/ldap:1.0.0.23433*.",
+          "displayName": "1.3.0 - 409279",
+          "released": "2021-08-09T12:51:04Z"
+        },
+        "1.2.2": {
+          "path": "",
+          "releaseNotes": "#### Integrations\n##### Active Directory Query v2\n- Added support for detection of identifier change.",
+          "displayName": "1.2.2 - 406668",
+          "released": "2021-08-05T00:15:45Z"
+        },
+        "1.3.6": {
+          "path": "",
+          "releaseNotes": "#### Scripts\n##### SendEmailToManager\n- Updated the Docker image to: *demisto/python:2.7.18.24066*.\n##### ADGetUser\n- Updated the Docker image to: *demisto/python:2.7.18.24066*.\n##### UserEnrichAD\n- Updated the Docker image to: *demisto/python:2.7.18.24066*.",
+          "displayName": "1.3.6 - 7789574",
+          "released": "2021-09-26T21:16:52Z"
+        },
+        "1.2.0": {
+          "path": "",
+          "releaseNotes": "\n#### Integrations\n##### Active Directory Query v2\n- Added the option to get user by the *sAMAccountName* in the ***ad-get-user*** command.\n- Added support for updating the *OU*, *Email*, *Manager* and *Manager Email* attributes in the ***iam-update-user*** command.\n- Added support for customizing fields mapping differently in the ***iam-create-user*** and the ***iam-update-user*** commands.\n\n#### Mappers\n##### User Profile - Active Directory (Outgoing)\n- Added the *Manager* field.\n- Updated the *CN* field mapping to be calculated by the *Given Name* and *Surname* fields.\n- Updated the mapper to use the **User Profile - Create** and **User Profile - Update** incident types.\n",
+          "displayName": "1.2.0 - 397182",
+          "released": "2021-07-13T14:58:36Z"
+        },
+        "1.2.1": {
+          "path": "",
+          "releaseNotes": "#### Scripts\n##### ADGetUser\n- Updated the Docker image to: *demisto/python:2.7.18.20958*.\n##### UserEnrichAD\n- Updated the Docker image to: *demisto/python:2.7.18.20958*.\n##### SendEmailToManager\n- Updated the Docker image to: *demisto/python:2.7.18.20958*.",
+          "displayName": "1.2.1 - 398245",
+          "released": "2021-07-15T11:43:00Z"
+        },
+        "1.1.0": {
+          "path": "",
+          "releaseNotes": "\n#### Integrations\n##### Active Directory Query v2\nUpdated the integration description.\n",
+          "displayName": "1.1.0 - R180529",
+          "released": "2020-11-09T18:42:11Z"
+        },
+        "1.1.11": {
+          "path": "",
+          "releaseNotes": "\n#### Integrations\n##### Active Directory Query v2\n- Fixed an issue where the ***ad-get-computer*** command outputted \"null\" values when no results are found.\n",
+          "displayName": "1.1.11 - R366242",
+          "released": "2021-05-25T22:49:06Z"
+        },
+        "1.1.10": {
+          "path": "",
+          "releaseNotes": "#### Integrations\n##### Active Directory Query v2\n- Improved error handling in the ***iam-get-user***, ***iam-create-user***, ***iam-update-user*** and ***iam-disable-user*** commands.\n- Updated the Docker image to: *demisto/ldap:1.0.0.19143*.\n\n\n#### Scripts\n##### IAMInitADUser\n- Improved error handling for commands called from this script.\n- Updated the docker image to *demisto/python3:3.9.4.18682*.\n",
+          "displayName": "1.1.10 - 345096",
+          "released": "2021-05-04T00:33:50Z"
+        },
+        "1.1.12": {
+          "path": "",
+          "releaseNotes": "\n#### Integrations\n##### Active Directory Query v2\n- Added support for parentheses when searching for a user using the ***ad-get-user*** command.\n- added sub-playbook, **active directory search user with parentheses test**. \n\n#### Scripts\n##### IAMInitADUser\n- Updated the docker image to *demisto/python3:3.9.5.20070*.\n",
+          "displayName": "1.1.12 - 369103",
+          "released": "2021-05-27T22:56:43Z"
+        }
+      },
+      "deprecated": false,
+      "created": "2020-07-23T17:53:09Z",
+      "modified": "2021-10-07T11:47:46.310116913Z",
+      "rawKeywords": null,
+      "shouldCommit": false,
+      "contentItems": {
+        "widget": null,
+        "incidentfield": null,
+        "genericobjecttype": null,
+        "list": null,
+        "integration": [
+          {
+            "category": "Data Enrichment & Threat Intelligence",
+            "commands": [
+              {
+                "description": "Expires the password of an Active Directory user.",
+                "name": "ad-expire-password"
+              },
+              {
+                "description": "Creates an Active Directory user. This command requires a secure connection (SSL,TLS).",
+                "name": "ad-create-user"
+              },
+              {
+                "description": "Runs Active Directory queries.",
+                "name": "ad-search"
+              },
+              {
+                "description": "Adds an Active Directory user or computer to a group.",
+                "name": "ad-add-to-group"
+              },
+              {
+                "description": "Removes an Active Directory user or computer from a group.",
+                "name": "ad-remove-from-group"
+              },
+              {
+                "description": "Updates attributes of an existing Active Directory user.",
+                "name": "ad-update-user"
+              },
+              {
+                "description": "Deletes an Active Directory user.",
+                "name": "ad-delete-user"
+              },
+              {
+                "description": "Creates an Active Directory contact.",
+                "name": "ad-create-contact"
+              },
+              {
+                "description": "Updates attributes of an existing Active Directory contact.",
+                "name": "ad-update-contact"
+              },
+              {
+                "description": "Disables an Active Directory user account.",
+                "name": "ad-disable-account"
+              },
+              {
+                "description": "Enables a previously disabled Active Directory account.",
+                "name": "ad-enable-account"
+              },
+              {
+                "description": "Unlocks a previously locked Active Directory user account.",
+                "name": "ad-unlock-account"
+              },
+              {
+                "description": "Sets a new password for an Active Directory user. This command requires a secure connection (SSL,TLS).",
+                "name": "ad-set-new-password"
+              },
+              {
+                "description": "Modifies the computer organizational unit within a domain.",
+                "name": "ad-modify-computer-ou"
+              },
+              {
+                "description": "Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.",
+                "name": "ad-get-user"
+              },
+              {
+                "description": "Retrieves detailed information about a computer account. The computer can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filters are provided, all computers are returned.",
+                "name": "ad-get-computer"
+              },
+              {
+                "description": "Retrieves the list of users or computers that are members of the specified group.",
+                "name": "ad-get-group-members"
+              },
+              {
+                "description": "Creates a new security or distribution Active Directory group.",
+                "name": "ad-create-group"
+              },
+              {
+                "description": "Deletes an existing Active Directory security or distribution group.",
+                "name": "ad-delete-group"
+              },
+              {
+                "description": "Creates an Active Directory user. This command requires a secure connection (SSL,TLS).",
+                "name": "iam-create-user"
+              },
+              {
+                "description": "Retrieves a single user resource.",
+                "name": "iam-get-user"
+              },
+              {
+                "description": "Updates an existing user with the data in the User Profile indicator that is passed in the user-profile argument.",
+                "name": "iam-update-user"
+              },
+              {
+                "description": "Disables a user.",
+                "name": "iam-disable-user"
+              },
+              {
+                "description": "Retrieves a User Profile schema which holds all of the user fields within the application. Used for outgoing-mapping through the Get Schema option.",
+                "name": "get-mapping-fields"
+              }
+            ],
+            "description": "Active Directory Query integration enables you to access and manage Active Directory objects (users, contacts, and computers).",
+            "name": "Active Directory Query v2"
+          }
+        ],
+        "automation": [
+          {
+            "tags": [
+              "enhancement",
+              "active directory",
+              "user"
+            ],
+            "description": "Enhancement automation for user type indicator, to enrich the user name from Active Directory data",
+            "name": "UserEnrichAD"
+          },
+          {
+            "tags": [
+              "IAM",
+              "active directory",
+              "Utility"
+            ],
+            "description": "Generates password,\nSet an AD user account with this password.\nEnable the account.\nSend mail to the user with tha account information.\nThis script is running `send-mail` command, make sure there is a matching Integration configurated.",
+            "name": "IAMInitADUser"
+          },
+          {
+            "tags": [
+              "active directory",
+              "enhancement",
+              "username"
+            ],
+            "description": "Use Active Directory to retrieve detailed information about a user account. The user can be specified by name, email or as an Active Directory Distinguished Name (DN).\nIf no filter is provided, the result will show all users.",
+            "name": "ADGetUser"
+          },
+          {
+            "tags": [
+              "communication"
+            ],
+            "description": "Send an approval email to the manager of the employee with the given email allowing the manager to reply directly into the incident",
+            "name": "SendEmailToManager"
+          }
+        ],
+        "reputation": null,
+        "dashboard": null,
+        "incidenttype": null,
+        "indicatorfield": null,
+        "report": null,
+        "classifier": [
+          {
+            "description": "",
+            "name": "User Profile - Active Directory (Outgoing)"
+          },
+          {
+            "description": "",
+            "name": "User Profile - Active Directory (Incoming)"
+          }
+        ],
+        "layoutscontainer": null,
+        "playbook": [
+          {
+            "description": "Active Directory Investigation playbook provides tools and guidance to investigate changes and manipulation in Active Directory containers, ACLs, Schema, and objects.\nThis playbook uses a 3rd party tool provided by Microsoft to scan the Active Directory access list, trees, and objects.\nAdditional investigative information is provided for manual investigation.",
+            "name": "Active Directory Investigation"
+          },
+          {
+            "description": "Takes an email address or a username of a user account in Active Directory, and returns the email address of the user's manager.",
+            "name": "Active Directory - Get User Manager Details"
+          }
+        ]
+      },
+      "toServerVersion": "",
+      "support": "xsoar"
+    }
+  ]
+}
