@@ -117,6 +117,9 @@ tasks:
       username:
         complex:
           root: inputs.username
+      search_name:
+        complex:
+          root: inputs.search_name
     separatecontext: false
     view: |-
       {
@@ -158,7 +161,7 @@ tasks:
     scriptarguments:
       Ids:
         complex:
-          root: Logrhythm.Search.Task
+          root: LogRhythm.Search
           accessor: TaskId
       Interval:
         simple: "1"
@@ -169,7 +172,7 @@ tasks:
       Timeout:
         simple: "60"
       dt:
-        simple: Logrhythm.Search.Results(val.TaskStatus == 'Searching').TaskID
+        simple: LogRhythm.Search(val.TaskStatus == 'Searching').TaskId
     separatecontext: true
     loop:
       iscommand: false
@@ -207,7 +210,7 @@ tasks:
     scriptarguments:
       task_id:
         complex:
-          root: Logrhythm.Search.Task
+          root: LogRhythm.Search
           accessor: TaskId
     separatecontext: false
     view: |-
@@ -242,6 +245,11 @@ inputs:
     simple: "7"
   required: true
   description: Number of days to search.
+  playbookInputQuery:
+- key: search_name
+  value: {}
+  required: false
+  description: Name of the search.
   playbookInputQuery:
 - key: source_type
   value: {}
@@ -316,61 +324,64 @@ inputs:
   description: Entity ID.
   playbookInputQuery:
 outputs:
-- contextPath: Logrhythm.Search.Results.TaskStatus
+- contextPath: LogRhythm.Search.TaskStatus
   description: Task Status.
   type: string
-- contextPath: Logrhythm.Search.Results.TaskID
-  description: Task ID.
+- contextPath: LogRhythm.Search.TaskId
+  description: Task Id.
   type: string
-- contextPath: Logrhythm.Search.Results.Items.originEntityId
+- contextPath: LogRhythm.Search.SearchName
+  description: The name of the search query in Cortex XSOAR.
+  type: string
+- contextPath: LogRhythm.Search.Results.originEntityId
   description: Entity ID.
   type: number
-- contextPath: Logrhythm.Search.Results.Items.impactedIp
+- contextPath: LogRhythm.Search.Results.impactedIp
   description: Impacted IP address.
   type: string
-- contextPath: Logrhythm.Search.Results.Items.classificationTypeName
+- contextPath: LogRhythm.Search.Results.classificationTypeName
   description: Classification name.
   type: string
-- contextPath: Logrhythm.Search.Results.Items.logSourceName
+- contextPath: LogRhythm.Search.Results.logSourceName
   description: Log source name.
   type: string
-- contextPath: Logrhythm.Search.Results.Items.entityName
+- contextPath: LogRhythm.Search.Results.entityName
   description: Entity name.
   type: string
-- contextPath: Logrhythm.Search.Results.Items.normalDate
+- contextPath: LogRhythm.Search.Results.normalDate
   description: Date.
   type: date
-- contextPath: Logrhythm.Search.Results.Items.vendorMessageId
+- contextPath: LogRhythm.Search.Results.vendorMessageId
   description: Vendor log message.
   type: string
-- contextPath: Logrhythm.Search.Results.Items.priority
+- contextPath: LogRhythm.Search.Results.priority
   description: Log priority.
   type: number
-- contextPath: Logrhythm.Search.Results.Items.sequenceNumber
+- contextPath: LogRhythm.Search.Results.sequenceNumber
   description: Sequence number.
   type: string
-- contextPath: Logrhythm.Search.Results.Items.originHostId
+- contextPath: LogRhythm.Search.Results.originHostId
   description: Origin host ID.
   type: number
-- contextPath: Logrhythm.Search.Results.Items.mpeRuleId
+- contextPath: LogRhythm.Search.Results.mpeRuleId
   description: LogRhythm rule ID.
   type: number
-- contextPath: Logrhythm.Search.Results.Items.originIp
+- contextPath: LogRhythm.Search.Results.originIp
   description: Origin IP address.
   type: string
-- contextPath: Logrhythm.Search.Results.Items.mpeRuleName
+- contextPath: LogRhythm.Search.Results.mpeRuleName
   description: LogRhythm rule name.
   type: string
-- contextPath: Logrhythm.Search.Results.Items.logSourceHostId
+- contextPath: LogRhythm.Search.Results.logSourceHostId
   description: Log source host ID.
   type: number
-- contextPath: Logrhythm.Search.Results.Items.originHost
+- contextPath: LogRhythm.Search.Results.originHost
   description: Origin host.
   type: string
-- contextPath: Logrhythm.Search.Results.Items.logDate
+- contextPath: LogRhythm.Search.Results.logDate
   description: Log date.
   type: date
-- contextPath: Logrhythm.Search.Results.Items.classificationName
+- contextPath: LogRhythm.Search.Results.classificationName
   description: Log classification name.
   type: string
 fromversion: 5.5.0

@@ -3141,7 +3141,7 @@ tasks:
       - - operator: startWith
           left:
             value:
-              simple: Logrhythm.Search.Results.TaskStatus
+              simple: LogRhythm.Search.TaskStatus
             iscontext: true
           right:
             value:
@@ -3149,12 +3149,12 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Logrhythm.Search.Results.TaskID
+              simple: LogRhythm.Search.TaskId
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: Logrhythm.Search.Results.Items
+              simple: LogRhythm.Search.Results
             iscontext: true
     view: |-
       {
