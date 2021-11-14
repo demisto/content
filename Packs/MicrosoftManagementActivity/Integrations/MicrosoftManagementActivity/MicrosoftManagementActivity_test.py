@@ -451,14 +451,15 @@ def http_return_data(method, url_suffix, full_url, headers, json_data):
     return json_data
 
 
-def create_client():
+def create_client(timeout: int = 15):
     from MicrosoftManagementActivity import Client
     base_url = 'https://manage.office.com/api/v1.0/'
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
 
     client = Client(base_url, verify=verify_certificate, proxy=proxy, self_deployed=True, auth_and_token_url="test",
-                    refresh_token="test", enc_key="test", auth_code="test", tenant_id="test", redirect_uri="")
+                    refresh_token="test", enc_key="test", auth_code="test", tenant_id="test", redirect_uri="",
+                    timeout=timeout)
 
     return client
 
@@ -576,7 +577,7 @@ def test_get_all_content_type_records(requests_mock):
 
     content_records = get_all_content_type_records(client, "audit.general", TIME_24_HOURS_AGO, TIME_ONE_MINUTE_AGO_STRING)
     content_record_ids = [record['Id'] for record in content_records]
-    assert set(content_record_ids) == set(["1234", "567", "89"])
+    assert set(content_record_ids) == {"1234", "567", "89"}
 
 
 def mock_get_access_token(requests_mock, access_token_resp):
@@ -653,10 +654,8 @@ def test_timeout(args_timeout, param_timeout, expected_timeout):
              Validate the Client and its MSClient get the expected value
     """
     from MicrosoftManagementActivity import calculate_timeout_value, Client
-    assert calculate_timeout_value(params={'timeout': param_timeout},
-                                   args={'timeout': args_timeout}) == expected_timeout
-    client = Client(base_url='', verify=False, proxy=False, self_deployed=False, refresh_token='',
-                    auth_and_token_url='', enc_key='', auth_code='', tenant_id='', redirect_uri='',
-                    timeout=expected_timeout)
+    timeout = calculate_timeout_value(params={'timeout': param_timeout}, args={'timeout': args_timeout})
+    assert timeout == expected_timeout
+    client = create_client(timeout=timeout)
     assert client.timeout == expected_timeout
     assert client.ms_client.timeout == expected_timeout
