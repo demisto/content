@@ -311,7 +311,7 @@ def get_edl_on_demand():
         edl = create_new_edl(request_args)
         with open(EDL_ON_DEMAND_CACHE_PATH, 'w') as file:
             file.write(edl)
-        set_integration_context(ctx)
+        set_to_integration_context_with_retries(ctx)
     else:
         with open(EDL_ON_DEMAND_CACHE_PATH, 'r') as file:
             edl = file.read()
@@ -494,7 +494,7 @@ def update_edl_command(args: Dict, params: Dict):
                                     add_comment_if_empty)
     ctx = request_args.to_context_json()
     ctx[EDL_ON_DEMAND_KEY] = True
-    set_integration_context(ctx)
+    set_to_integration_context_with_retries(ctx)
     hr = 'EDL will be updated the next time you access it'
     return hr, {}, {}
 
@@ -518,7 +518,7 @@ def initialize_edl_context(params: dict):
     EDL_ON_DEMAND_CACHE_PATH = demisto.uniqueFile()
     ctx = request_args.to_context_json()
     ctx[EDL_ON_DEMAND_KEY] = True
-    set_integration_context(ctx)
+    set_to_integration_context_with_retries(ctx)
 
 
 def main():

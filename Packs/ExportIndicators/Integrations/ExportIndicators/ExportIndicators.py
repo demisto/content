@@ -222,7 +222,7 @@ def refresh_outbound_context(request_args: RequestArguments, on_demand: bool = F
         out_dict[CTX_MIMETYPE_KEY] = MIMETYPE_TEXT
 
     if on_demand:
-        set_integration_context({
+        set_to_integration_context_with_retries({
             "last_output": out_dict,
             'last_run': date_to_timestamp(now),
             'last_limit': request_args.limit,
@@ -575,7 +575,7 @@ def get_ioc_values_str_from_context(request_args: RequestArguments, iocs=None) -
         returned_dict, _ = create_values_for_returned_dict(iocs, request_args=request_args)
         current_cache = get_integration_context()
         current_cache['last_output'] = returned_dict
-        set_integration_context(current_cache)
+        set_to_integration_context_with_retries(current_cache)
 
     else:
         returned_dict = get_integration_context().get('last_output', {})

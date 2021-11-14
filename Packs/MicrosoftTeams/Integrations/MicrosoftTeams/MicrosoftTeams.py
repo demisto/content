@@ -45,7 +45,7 @@ MESSAGE_TYPES: dict = {
 
 if '@' in BOT_ID:
     BOT_ID, tenant_id, service_url = BOT_ID.split('@')
-    set_integration_context({'tenant_id': tenant_id, 'service_url': service_url})
+    set_to_integration_context_with_retries({'tenant_id': tenant_id, 'service_url': service_url})
 
 ''' HELPER FUNCTIONS '''
 
@@ -426,7 +426,7 @@ def get_bot_access_token() -> str:
             expires_in -= time_buffer
         integration_context['bot_access_token'] = access_token
         integration_context['bot_valid_until'] = time_now + expires_in
-        set_integration_context(integration_context)
+        set_to_integration_context_with_retries(integration_context)
         return access_token
     except ValueError:
         raise ValueError('Failed to get bot access token')
@@ -476,7 +476,7 @@ def get_graph_access_token() -> str:
             expires_in -= time_buffer
         integration_context['graph_access_token'] = access_token
         integration_context['graph_valid_until'] = time_now + expires_in
-        set_integration_context(integration_context)
+        set_to_integration_context_with_retries(integration_context)
         return access_token
     except ValueError:
         raise ValueError('Failed to get Graph access token')
@@ -689,7 +689,7 @@ def validate_auth_header(headers: dict) -> bool:
         return False
 
     integration_context['open_id_metadata'] = json.dumps(open_id_metadata)
-    set_integration_context(integration_context)
+    set_to_integration_context_with_retries(integration_context)
     return True
 
 
@@ -1066,7 +1066,7 @@ def close_channel():
         if not channel_id:
             raise ValueError('Could not find Microsoft Teams channel to close.')
         integration_context['teams'] = json.dumps(teams)
-        set_integration_context(integration_context)
+        set_to_integration_context_with_retries(integration_context)
     else:
         team_name: str = demisto.args().get('team') or demisto.params().get('team')
         team_aad_id = get_team_aad_id(team_name)
@@ -1312,7 +1312,7 @@ def mirror_investigation():
         demisto.results(f'Investigation mirrored successfully in channel {channel_name}.')
     team['mirrored_channels'] = mirrored_channels
     integration_context['teams'] = json.dumps(teams)
-    set_integration_context(integration_context)
+    set_to_integration_context_with_retries(integration_context)
 
 
 def channel_mirror_loop():
@@ -1345,7 +1345,7 @@ def channel_mirror_loop():
                             demisto.info(f'Could not mirror {investigation_id}')
                         team['mirrored_channels'] = mirrored_channels
                         integration_context['teams'] = json.dumps(teams)
-                        set_integration_context(integration_context)
+                        set_to_integration_context_with_retries(integration_context)
                         found_channel_to_mirror = True
                         break
                 if found_channel_to_mirror:
@@ -1418,7 +1418,7 @@ def member_added_handler(integration_context: dict, request_body: dict, channel_
             'team_members': team_members
         })
     integration_context['teams'] = json.dumps(teams)
-    set_integration_context(integration_context)
+    set_to_integration_context_with_retries(integration_context)
 
 
 def direct_message_handler(integration_context: dict, request_body: dict, conversation: dict, message: str):
@@ -1580,7 +1580,7 @@ def messages() -> Response:
         if service_url:
             service_url = service_url[:-1] if service_url.endswith('/') else service_url
             integration_context['service_url'] = service_url
-            set_integration_context(integration_context)
+            set_to_integration_context_with_retries(integration_context)
 
         channel_data: dict = request_body.get('channelData', {})
         event_type: str = channel_data.get('eventType', '')

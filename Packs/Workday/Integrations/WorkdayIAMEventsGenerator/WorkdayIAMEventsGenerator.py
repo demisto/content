@@ -519,7 +519,7 @@ def get_full_reports():
 
 
 def get_full_report():
-    set_integration_context(FIRST_RUN_REPORT)
+    set_to_integration_context_with_retries(FIRST_RUN_REPORT)
     integration_context = get_integration_context()
     return integration_context['Report_Entry'][0]
 
@@ -572,7 +572,7 @@ def generate_new_hire_reports():
     new_report['Preferred_Name_-_Last_Name'] = last_name
     new_report['Emp_ID'] = get_employee_id()
     integration_context['Report_Entry'].append(new_report)
-    set_integration_context(integration_context)
+    set_to_integration_context_with_retries(integration_context)
 
     return_results('Successfully generated the new hire event.')
 
@@ -598,7 +598,7 @@ def generate_terminate_report():
     user_report['Employment_Status'] = 'Terminated'
     user_report['Last_Day_of_Work'] = demisto.args().get('last_day_of_work', str(current_date))
     user_report['Termination_Date'] = demisto.args().get('termination_date', str(current_date))
-    set_integration_context(integration_context)
+    set_to_integration_context_with_retries(integration_context)
     return_results('Successfully generated the Terminate user event.')
 
 
@@ -624,7 +624,7 @@ def generate_update_report():
         user_report['Street_Address'] = street_address
     if last_day_of_work:
         user_report['Last_Day_of_Work'] = last_day_of_work
-    set_integration_context(integration_context)
+    set_to_integration_context_with_retries(integration_context)
     return_results('Successfully generated the Update user event.')
 
 
