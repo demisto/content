@@ -400,3 +400,78 @@ def test_perform_long_running_loop(mocker, test_data, test_name):
         assert not demisto.createIncidents.called
         assert not get_integration_context()
     Syslogv2.LOG_FORMAT, Syslogv2.MESSAGE_REGEX, Syslogv2.INCIDENT_TYPE = tmp_format, tmp_reg, temp_incident
+
+
+@pytest.mark.parametrize('log_format, message_regex, incident_type, certificate, private_key',
+                         [('RFC3164', None, None, None, None),
+                          ('RFC3164', 'a', None, None, None),
+                          ('RFC3164', None, 'Syslog Alert', None, None),
+                          ('RFC3164', 'reg', 'Syslog Alert', None, None),
+                          ('RFC5424', None, None, None, None),
+                          ('RFC5424', 'a', None, None, None),
+                          ('RFC5424', None, 'Syslog Alert', None, None),
+                          ('RFC5424', 'reg', 'Syslog Alert', None, None),
+                          ('RFC3164', None, None, 'a', 'b'),
+                          ('RFC3164', 'reg', None, 'a', 'b'),
+                          ('RFC3164', None, 'Syslog Alert', 'a', 'b'),
+                          ('RFC3164', 'reg', 'Syslog alert', 'a', 'b'),
+                          ('RFC5424', None, None, 'a', 'b'),
+                          ('RFC5424', 'reg', None, 'a', 'b'),
+                          ('RFC5424', None, 'Syslog Alert', 'a', 'b'),
+                          ('RFC5424', 'reg', 'Syslog alert', 'a', 'b')
+                          ])
+def test_prepare_globals_and_create_server(log_format, message_regex, incident_type, certificate, private_key):
+    """
+    Given:
+    - log_format: The log format.
+    - message_regex: The message regex to match.
+    - incident_type: Incident type.
+    - certificate: Certificate.
+    - private_key: Private key
+    When:
+    - Preparing global variables and creating the StreamServer.
+
+    Then:
+    - Ensure globals are set as expected and server is returned with expected attributes.
+    """
+    from Syslogv2 import prepare_globals_and_create_server, StreamServer
+    import Syslogv2
+    server: StreamServer = prepare_globals_and_create_server(33333, log_format, message_regex, incident_type,
+                                                             certificate, private_key)
+    assert Syslogv2.LOG_FORMAT == log_format
+    assert Syslogv2.MESSAGE_REGEX == message_regex
+    assert Syslogv2.INCIDENT_TYPE == incident_type
+    if certificate and private_key:
+        assert 'keyfile' in server.ssl_args and 'certfile' in server.ssl_args
+    else:
+        assert not server.ssl_args
+    assert server.address[1] == 33333
+
+
+@pytest.mark.parametrize('params, expected_err_message',
+                         [({'log_format': 'RFC3164'},
+                           "Invalid listen port - int() argument must be a string, a bytes-like object or a number, not 'NoneType'"),
+                          ({'log_format': 'RFC5424'},
+                           "Invalid listen port - int() argument must be a string, a bytes-like object or a number, not 'NoneType'"),
+                          ({'log_format': 'RFC3164', 'longRunningPort': 'a'},
+                           "Invalid listen port - invalid literal for int() with base 10: 'a'"),
+                          ({'log_format': 'RFC5424', 'longRunningPort': -2},
+                           'Given port: -2 is not valid and must be between 0-65535')
+                          ])
+def test_invalid_params(params, expected_err_message, mocker):
+    """
+    Given:
+    - Invalid params for log_format and/or port
+
+    When:
+    - Calling main() function.
+
+    Then:
+    - Ensure expected error message is returned.
+    """
+    from Syslogv2 import main
+    import re
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'command', return_value='long-running-execution')
+    with pytest.raises(DemistoException, match=re.escape(expected_err_message)):
+        main()

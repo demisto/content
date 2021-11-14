@@ -16,7 +16,7 @@ BUF_SIZE = 1024
 LOG_FORMAT: str = ''
 MESSAGE_REGEX: Optional[str] = None
 INCIDENT_TYPE: Optional[str] = None
-
+MAX_PORT: int = 65535
 
 @dataclass
 class SyslogMessageExtract:
@@ -218,6 +218,49 @@ def perform_long_running_execution(sock: Any, _: tuple) -> None:
     file_obj.close()
 
 
+def prepare_globals_and_create_server(port: int, log_format: str, message_regex: Optional[str],
+                                      incident_type: Optional[str], certificate: Optional[str],
+                                      private_key: Optional[str]) -> StreamServer:
+    """
+    Prepares global environments of LOG_FORMAT, MESSAGE_REGEX, INCIDENT_TYPE and creates the server to listen
+    to Syslog messages.
+    Args:
+        port (int): Port
+        log_format (str): Log format of messages to be received from Syslog, either RFC-3164 or RFC-5424.
+        message_regex (Optional[str]): Regex. Will create incident only if Syslog message matches this regex.
+        incident_type (Optional[str]): Incident type.
+        certificate (Optional[str]): Certificate. For SSL connection.
+        private_key (Optional[str]): Private key. For SSL connection.
+
+    Returns:
+        (StreamServer): Server to listen to Syslog messages.
+    """
+    global LOG_FORMAT, MESSAGE_REGEX, INCIDENT_TYPE
+    LOG_FORMAT = log_format
+    MESSAGE_REGEX = message_regex
+    INCIDENT_TYPE = incident_type
+    if certificate and private_key:
+        certificate_file = NamedTemporaryFile(delete=False)
+        certificate_path = certificate_file.name
+        certificate_file.write(bytes(certificate, 'utf-8'))
+        certificate_file.close()
+        cert_file = certificate_path
+
+        private_key_file = NamedTemporaryFile(delete=False)
+        private_key_path = private_key_file.name
+        private_key_file.write(bytes(private_key, 'utf-8'))
+        private_key_file.close()
+        keyfile = private_key_path
+
+        server = StreamServer(('0.0.0.0', port), perform_long_running_execution, keyfile=keyfile,
+                              certfile=cert_file)
+        demisto.debug('Starting HTTPS Server')
+    else:
+        server = StreamServer(('0.0.0.0', port), perform_long_running_execution)
+        demisto.debug('Starting HTTP Server')
+    return server
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -234,41 +277,22 @@ def main() -> None:
         raise DemistoException(f'Given format: {log_format} is not in the expected format.\n'
                                f'Please choose one of the following formats: {FORMAT_TO_PARSER_FUNCTION.keys()}')
 
+    try:
+        port = int(params.get('longRunningPort'))
+    except (ValueError, TypeError) as e:
+        raise DemistoException(f'Invalid listen port - {e}') from e
+    if port < 0 or MAX_PORT < port:
+        raise DemistoException(f'Given port: {port} is not valid and must be between 0-{MAX_PORT}')
+
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
-        try:
-            port = int(params.get('longRunningPort'))
-        except ValueError as e:
-            raise ValueError(f'Invalid listen port - {e}')
         if command == 'test-module':
             return_results(test_module())
         elif command == 'fetch-incidents':
             fetch_samples()
         elif command == 'long-running-execution':
-            global LOG_FORMAT, MESSAGE_REGEX, INCIDENT_TYPE
-            LOG_FORMAT = log_format
-            MESSAGE_REGEX = message_regex
-            INCIDENT_TYPE = incident_type
-            # Create socket and bind to address
-            if certificate and private_key:
-                certificate_file = NamedTemporaryFile(delete=False)
-                certificate_path = certificate_file.name
-                certificate_file.write(bytes(certificate, 'utf-8'))
-                certificate_file.close()
-                cert_file = certificate_path
-
-                private_key_file = NamedTemporaryFile(delete=False)
-                private_key_path = private_key_file.name
-                private_key_file.write(bytes(private_key, 'utf-8'))
-                private_key_file.close()
-                keyfile = private_key_path
-
-                server = StreamServer(('0.0.0.0', port), perform_long_running_execution, keyfile=keyfile,
-                                      certfile=cert_file)
-                demisto.debug('Starting HTTPS Server')
-            else:
-                server = StreamServer(('0.0.0.0', port), perform_long_running_execution)
-                demisto.debug('Starting HTTP Server')
+            server: StreamServer = prepare_globals_and_create_server(port, log_format, message_regex, incident_type,
+                                                                     certificate, private_key)
             server.serve_forever()
         else:
             raise NotImplementedError(f'''Command '{command}' is not implemented.''')
