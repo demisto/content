@@ -121,7 +121,7 @@ script:
     description: Reset the integration context to fetch the first run reports.
     execution: false
     name: initialize-context
-  dockerimage: demisto/teams:1.0.0.14902
+  dockerimage: demisto/teams:1.0.0.23674
   feed: false
   isfetch: false
   longRunning: true
