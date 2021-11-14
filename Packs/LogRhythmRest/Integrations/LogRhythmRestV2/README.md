@@ -41,6 +41,7 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
     | Case tags filter | False |
     | Case status filter | False |
     | Case priority filter | False |
+    | Fetch case evidences | False |
     | Use system proxy settings | False |
     | Trust any certificate (not secure) | False |
 
