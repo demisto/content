@@ -1,9 +1,9 @@
-The Microsoft Management Activity API integration enables you to subscribe or unsubscribe to different audits, receive their content and fetch new content as incidents. Through the integration you can subscribe to new content types or stop your subscription, list the available content of each content type, and most importantly - fetch new content records from content types of your choice as Cortex XSOAR incidents.
+The Microsoft Management Activity API integration enables you to subscribe or unsubscribe to different audits, receive their content, and fetch new content as incidents. Through the integration you can subscribe to new content types or stop your subscription, list the available content of each content type, and most importantly, fetch new content records from content types of your choice as Cortex XSOAR incidents.
 
 This integration was integrated and tested with version 1.0 of Microsoft Management Activity API (O365 Azure Events)
 
 ## Grant Cortex XSOAR Authorization in Microsoft Management Activity API
-To allow us to access Microsoft Management Activity API you will be required to give us authorization to access it.
+To allow Cortex XSOAR access to the Microsoft Management Activity API you will be required to give authorization to access it.
 
 1. To grant authorization, click [HERE](https://oproxy.demisto.ninja/ms-management-api).
 2. After you click the link, click the **Start Authorization Process** button.
@@ -33,7 +33,7 @@ Moreover, enter your client secret as the “Key” parameter and your client ID
 | enc_key | Key \(received from the authorization step \- see Detailed Instructions \(?\) section\) | False |
 | refresh_token | Token \(received from the authorization step \- see Detailed Instructions \(?\) section\) | False |
 | self_deployed | Use a self\-deployed Azure application | False |
-| auth_code | The authentication code you got for the service. For instructions on how to receive it, see the detailed description \(&\#x27;?&\#x27;\) section. | False |
+| auth_code | The authentication code you got for the service. For instructions on how to receive it, see Detailed Instructions \(?\) section. | False |
 | timeout | The default timeout (in seconds) for API calls. Can be overridden by providing value to the corresponding argument when calling supported commands. Default is 15 seconds. | True |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
@@ -51,7 +51,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### ms-management-activity-start-subscription
 ***
-Starts a subscription to a given content type
+Starts a subscription to a given content type.
 
 
 ##### Base Command
@@ -88,7 +88,7 @@ Successfully started subscription to content type: Audit.Exchange
 
 ### ms-management-activity-stop-subscription
 ***
-Stops a subscription to a given content type
+Stops a subscription to a given content type.
 
 
 ##### Base Command
