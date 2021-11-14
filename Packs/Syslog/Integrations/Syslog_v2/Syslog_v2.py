@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 from typing import Callable
-
 import syslogmp
+from gevent.server import StreamServer
 from syslog_rfc5424_parser import SyslogMessage, ParseError
-
+from tempfile import NamedTemporaryFile
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
@@ -13,20 +13,24 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 ''' CONSTANTS '''
 MAX_SAMPLES = 10
 BUF_SIZE = 1024
+LOG_FORMAT: str = ''
+MESSAGE_REGEX: Optional[str] = None
+INCIDENT_TYPE: Optional[str] = None
 
 
 @dataclass
 class SyslogMessageExtract:
-    app_name: Optional[str]  # su
-    facility: str  # SyslogFacility.auth
-    host_name: Optional[str]  # client_machine
-    msg: str  # su root failed for joe on /dev/pts/2
-    msg_id: Optional[str]  # None
-    process_id: Optional[str]  # None
-    sd: dict  # sd
-    severity: str  # err
-    timestamp: str  # date
-    version: Optional[int]  # 1
+    app_name: Optional[str]
+    facility: str
+    host_name: Optional[str]
+    msg: str
+    msg_id: Optional[str]
+    process_id: Optional[str]
+    sd: dict
+    severity: str
+    timestamp: str
+    version: Optional[int]
+    occurred: Optional[str]
 
 
 def parse_rfc_3164_format(log_message: bytes) -> SyslogMessageExtract:
@@ -52,7 +56,9 @@ def parse_rfc_3164_format(log_message: bytes) -> SyslogMessageExtract:
         sd={},
         severity=syslog_message.severity.name,
         timestamp=syslog_message.timestamp.isoformat(),
-        version=None
+        version=None,
+        # Because RF-3164 doesn't return localized date, can't determine the localized time it occurred.
+        occurred=None
     )
 
 
@@ -79,7 +85,8 @@ def parse_rfc_5424_format(log_message: bytes) -> SyslogMessageExtract:
         sd=syslog_message.sd,
         severity=syslog_message.severity.name,
         timestamp=syslog_message.timestamp,
-        version=syslog_message.version
+        version=syslog_message.version,
+        occurred=syslog_message.timestamp
     )
 
 
@@ -142,7 +149,7 @@ def create_incident_from_syslog_message(extracted_message: SyslogMessageExtract,
     return {
         'name': f'Syslog from [{extracted_message.host_name}][{extracted_message.timestamp}]',
         'rawJSON': json.dumps(vars(extracted_message)),
-        'occurred': extracted_message.timestamp,
+        'occurred': extracted_message.occurred,
         'type': incident_type
     }
 
@@ -185,70 +192,49 @@ def log_message_passes_filter(log_message: SyslogMessageExtract, message_regex: 
     return True if regexp.search(log_message.msg) else False
 
 
-def perform_long_running_loop(s: socket.socket, log_format: str, message_regex: Optional[str],
-                              incident_type: Optional[str]) -> None:
+def perform_long_running_loop(socket_data):
     """
     Performs one loop of a long running execution.
-    - Waits for data from socket
+    - Gets data from socket.
     - Parses the Syslog message data.
     - If the Syslog message data passes filter, creates a new incident.
     - Saves the incident in integration context for samples.
     Args:
-        s (socket.socket): Socket to retrieve Syslog messages from.
-        log_format (str): The Syslog format the messages will be sent with. one of the dictionary keys of the
-                          constant `FORMAT_TO_PARSER_FUNCTION` variable.
-        message_regex (Optional[str]): Message regex to match if exists.
-        incident_type (Optional[str]): Incident type.
+        socket_data (): TODO
 
     Returns:
         (None): Creates incident in Cortex XSOAR platform.
     """
-    data, address = s.recvfrom(BUF_SIZE)
-    extracted_message: SyslogMessageExtract = FORMAT_TO_PARSER_FUNCTION[log_format](data)
-    if log_message_passes_filter(extracted_message, message_regex):
-        incident: dict = create_incident_from_syslog_message(extracted_message, incident_type)
+    extracted_message: SyslogMessageExtract = FORMAT_TO_PARSER_FUNCTION[LOG_FORMAT](socket_data)
+    if log_message_passes_filter(extracted_message, MESSAGE_REGEX):
+        incident: dict = create_incident_from_syslog_message(extracted_message, INCIDENT_TYPE)
+        demisto.error(f'incident = {incident}')
         update_integration_context_samples(incident)
         demisto.createIncidents([incident])
 
 
-def perform_long_running_execution(host_address: str, port: int, log_format: str, protocol: str,
-                                   message_regex: Optional[str], incident_type: Optional[str]):
+def perform_long_running_execution(sock: socket, _) -> None:
     """
-    The long running execution loop. Binds a socket, and performs a while True loop and logs any error that happens.
+    The long running execution loop. Gets input, and performs a while True loop and logs any error that happens.
+    Stops when there is no more data to read.
     Args:
-        host_address (str): The host address to connect to.
-        port (int): Port.
-        log_format (str): The Syslog format the messages will be sent with. one of the dictionary keys of the
-                          constant `FORMAT_TO_PARSER_FUNCTION` variable.
-        protocol (str): TODO
-        message_regex (Optional[str]): Message regex. If given, will only create incidents of Syslog messages whom
-                                       matches this filter.
-        incident_type (Optional[str]): Incident type.
+        sock: Socket.
+        _: Address. Not used inside loop so marked as underscore.
 
     Returns:
-
+        (None): Reads data, calls perform_long_running_loop that creates incidents from inputted data.
     """
-    # Create socket and bind to address
-    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
-        try:
-            s.bind((host_address, port))
-        except OSError as e:
-            if "Can't assign requested address" in str(e):
-                raise DemistoException('The given IP address could not be accessed\n.Please make sure the IP address '
-                                       'is valid and can be accessed.')
-            elif 'nodename nor servname provided, or not known' in str(e):
-                raise DemistoException('Could not find the host address. Please verify host address is correct.')
-            elif 'Permission denied' in str(e):
-                raise DemistoException(
-                    'Permission was denied. Make sure you have permissions to access to the given port.')
-            else:
-                raise e
-        while True:
-            try:
-                perform_long_running_loop(s, log_format, message_regex, incident_type)
-            except Exception as e:
-                demisto.error(f'Error occurred during long running loop: {e}')
-                demisto.error(traceback.format_exc())
+    demisto.error('Starting long running execution')
+    file_obj = sock.makefile(mode='rb')
+    while True:
+        demisto.error('Waiting for line')
+        line = file_obj.readline()
+        demisto.error(f'line read: {line}')
+        if not line:
+            demisto.info('Disconnect')
+            break
+        perform_long_running_loop(line)
+    file_obj.close()
 
 
 ''' MAIN FUNCTION '''
@@ -257,17 +243,10 @@ def perform_long_running_execution(host_address: str, port: int, log_format: str
 def main() -> None:
     params = demisto.params()
     command = demisto.command()
-    # params = {
-    #     'host_address': '127.0.0.1',
-    #     'longRunningPort': 32376,
-    #     'log_format': RFC3164
-    # }
-    # command = 'long-running-execution'
-
-    host_address: str = params.get('host_address', '')
-    protocol: str = params.get('protocol', '')
     message_regex: Optional[str] = params.get('message_regex')
     incident_type: Optional[str] = params.get('incident_type')
+    certificate: Optional[str] = params.get('certificate', {}).get('password')
+    private_key: Optional[str] = params.get('private_key', {}).get('password')
 
     log_format: str = params.get('log_format', '')
     if log_format not in FORMAT_TO_PARSER_FUNCTION:
@@ -281,11 +260,35 @@ def main() -> None:
         except ValueError as e:
             raise ValueError(f'Invalid listen port - {e}')
         if command == 'test-module':
-            return_results(test_module(host_address, port))
+            return_results(test_module('0.0.0.0', port))
         elif command == 'fetch-incidents':
             fetch_samples()
         elif command == 'long-running-execution':
-            perform_long_running_execution(host_address, port, log_format, protocol, message_regex, incident_type)
+            global LOG_FORMAT, MESSAGE_REGEX, INCIDENT_TYPE
+            LOG_FORMAT = log_format
+            MESSAGE_REGEX = message_regex
+            INCIDENT_TYPE = incident_type
+            # Create socket and bind to address
+            if certificate and private_key:
+                certificate_file = NamedTemporaryFile(delete=False)
+                certificate_path = certificate_file.name
+                certificate_file.write(bytes(certificate, 'utf-8'))
+                certificate_file.close()
+                cert_file = certificate_path
+
+                private_key_file = NamedTemporaryFile(delete=False)
+                private_key_path = private_key_file.name
+                private_key_file.write(bytes(private_key, 'utf-8'))
+                private_key_file.close()
+                keyfile = private_key_path
+
+                server = StreamServer(('0.0.0.0', port), perform_long_running_execution, keyfile=keyfile,
+                                      certfile=cert_file)
+                demisto.debug('Starting HTTPS Server')
+            else:
+                server = StreamServer(('0.0.0.0', port), perform_long_running_execution)
+                demisto.debug('Starting HTTP Server')
+            server.serve_forever()
         else:
             raise NotImplementedError(f'''Command '{command}' is not implemented.''')
 
@@ -298,10 +301,4 @@ def main() -> None:
 ''' ENTRY POINT '''
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
-    # z = b'<116>Nov  9 17:07:20 M-C02DKB3QMD6M softwareupdated[288]: Removing client SUUpdateServiceClient pid=90550, uid=375597002, installAuth=NO rights=(), transactions=0 (/System/Library/PreferencePanes/SoftwareUpdate.prefPane/Contents/XPCServices/com.apple.preferences.softwareupdate.remoteservice.xpc/Contents/MacOS/com.apple.preferences.softwareupdate.remoteservice)\n'
-    # z = """<165>1 2003-10-11T22:14:15.003Z mymachine.example.com evntslog - ID47 [exampleSDID@32473 iut="3" eventSource="Application" eventID="1011"] BOMAn application event log entry"""
-    # x = SyslogMessage.parse(z)
-    # z = 2
-    # x = syslogmp.parse(z)
-    # zzz = 32
     main()

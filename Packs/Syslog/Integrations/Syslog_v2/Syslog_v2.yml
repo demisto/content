@@ -3,23 +3,18 @@ commonfields:
   id: Syslog v2
   version: -1
 configuration:
-- defaultvalue: https://example.com/
-  display: Host Address Of The Listening Machine
-  name: host_address
-  required: true
-  type: 0
-  additionalinfo: The hostname or IP address of the listening machine.
-- display: Protocol
-  hidden: false
-  defaultvalue: UDP
-  name: protocol
-  options:
-  - TCP
-  - UDP
-  - Unix
-  required: true
-  type: 15
-  additionalinfo: The protocol the data will be transferred with.
+- displaypassword: Certificate (Required for HTTPS)
+  name: certificate
+  additionalinfo: Required for HTTPS, if not using server rerouting
+  type: 9
+  required: false
+  hiddenusername: true
+- displaypassword: Private Key (Required for HTTPS)
+  name: private_key
+  additionalinfo: Required for HTTPS, if not using server rerouting
+  type: 9
+  required: false
+  hiddenusername: true
 - display: Incoming Log Format
   defaultvalue: Auto
   hidden: false
@@ -47,7 +42,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: devdemisto/syslog:1.0.0.24351
+  dockerimage: devdemisto/syslog:1.0.0.24366
   feed: false
   longRunning: true
   longRunningPort: true
