@@ -1,9 +1,11 @@
 from dataclasses import dataclass
+from tempfile import NamedTemporaryFile
 from typing import Callable
+
 import syslogmp
 from gevent.server import StreamServer
 from syslog_rfc5424_parser import SyslogMessage, ParseError
-from tempfile import NamedTemporaryFile
+
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
@@ -17,6 +19,7 @@ LOG_FORMAT: str = ''
 MESSAGE_REGEX: Optional[str] = None
 INCIDENT_TYPE: Optional[str] = None
 MAX_PORT: int = 65535
+
 
 @dataclass
 class SyslogMessageExtract:

@@ -1,11 +1,13 @@
-import json
 import io
+import json
+
 import pytest
 from Syslogv2 import parse_rfc_3164_format, parse_rfc_5424_format, fetch_samples, \
     create_incident_from_syslog_message, Callable, SyslogMessageExtract, Optional, update_integration_context_samples, \
     log_message_passes_filter, perform_long_running_loop
-from CommonServerPython import DemistoException, set_integration_context, get_integration_context
+
 import demistomock as demisto
+from CommonServerPython import DemistoException, set_integration_context, get_integration_context
 
 
 def util_load_json(path):
@@ -450,9 +452,11 @@ def test_prepare_globals_and_create_server(log_format, message_regex, incident_t
 
 @pytest.mark.parametrize('params, expected_err_message',
                          [({'log_format': 'RFC3164'},
-                           "Invalid listen port - int() argument must be a string, a bytes-like object or a number, not 'NoneType'"),
+                           "Invalid listen port - int() argument must be a string, a bytes-like object or"
+                           " a number, not 'NoneType'"),
                           ({'log_format': 'RFC5424'},
-                           "Invalid listen port - int() argument must be a string, a bytes-like object or a number, not 'NoneType'"),
+                           "Invalid listen port - int() argument must be a string, a bytes-like object or"
+                           " a number, not 'NoneType'"),
                           ({'log_format': 'RFC3164', 'longRunningPort': 'a'},
                            "Invalid listen port - invalid literal for int() with base 10: 'a'"),
                           ({'log_format': 'RFC5424', 'longRunningPort': -2},
