@@ -119,7 +119,6 @@ def update_playbook(source_path, destination_path):
     # Configure safe dumper (multiline for strings)
     yaml.SafeDumper.org_represent_str = yaml.SafeDumper.represent_str  # type: ignore[attr-defined]
 
-
     def repr_str(dumper, data):
         if '\n' in data:
             return dumper.represent_scalar(u'tag:yaml.org,2002:str', data, style='|')

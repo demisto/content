@@ -2493,7 +2493,6 @@ class Pack(object):
             # In the future this might be needed to re-thought.
             return '\n'.join(bc_version_to_text.values())  # type: ignore[arg-type]
 
-
     def _handle_many_bc_versions_some_with_text(self, release_notes_dir: str, text_of_bc_versions: List[str],
                                                 bc_versions_without_text: List[str], ) -> str:
         """
