@@ -270,9 +270,14 @@ def create_incident_labels(parsed_msg, headers):
 def mail_to_incident(msg):
     parsed_msg, headers = get_email_context(msg)
 
+    file_data = ''
     file_names = []
     for attachment in parsed_msg.get('Attachments', []):
-        file_data = base64.urlsafe_b64decode(attachment['Data'].encode('ascii'))
+        try:
+            file_data = base64.urlsafe_b64decode(attachment['Data'].encode('ascii'))
+        except TypeError as e:
+            if str(e) == 'Incorrect padding':
+                file_data = attachment['Data'].encode('ascii')
 
         # save the attachment
         file_result = fileResult(attachment['Name'], file_data)

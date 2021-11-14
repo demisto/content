@@ -2141,6 +2141,7 @@ def list_items_remove_command(client: Client, args: Dict[str, Any]) -> CommandRe
 
 def execute_search_query_command(client: Client, args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
     number_of_days = args.get('number_of_days')
+    search_name = args.get('search_name')
     source_type = args.get('source_type')
     host_name = args.get('host_name')
     username = args.get('username')
@@ -2161,10 +2162,12 @@ def execute_search_query_command(client: Client, args: Dict[str, Any]) -> Comman
                                                    query_timeout, entity_id)
     task_id = response.get('TaskId')
     ec = {'TaskId': task_id, 'StatusMessage': response.get('StatusMessage')}
+    if search_name:
+        ec['SearchName'] = search_name
 
     command_results = CommandResults(
         readable_output=f'New search query created, Task ID={task_id}',
-        outputs_prefix='LogRhythm.Search.Task',
+        outputs_prefix='LogRhythm.Search',
         outputs_key_field='TaskId',
         outputs=ec,
         raw_response=response,
@@ -2186,12 +2189,12 @@ def get_query_result_command(client: Client, args: Dict[str, Any]) -> CommandRes
     else:
         hr = f'Task status: {status}'
 
-    ec = [{'TaskID': task_id, 'TaskStatus': status, 'Items': items}]
+    ec = [{'TaskId': task_id, 'TaskStatus': status, 'Results': items}]
 
     command_results = CommandResults(
         readable_output=hr,
-        outputs_prefix='LogRhythm.Search.Results',
-        outputs_key_field='TaskID',
+        outputs_prefix='LogRhythm.Search',
+        outputs_key_field='TaskId',
         outputs=ec,
         raw_response=response,
     )
