@@ -1151,7 +1151,7 @@ class Client(BaseClient):
 
         return response
 
-    def case_evidence_list_request(self, case_id, evidence_number, evidence_type, status):
+    def case_evidence_list_request(self, case_id, evidence_number=None, evidence_type=None, status=None):
         params = assign_params(type=evidence_type, status=status)
 
         evidences = self._http_request('GET', f'lr-case-api/cases/{case_id}/evidence', params=params)
@@ -2319,9 +2319,9 @@ def test_module(client: Client, is_fetch: bool, fetch_type: str, cases_max_fetch
 def fetch_incidents_command(client: Client, fetch_type: str, cases_max_fetch: int, alarms_max_fetch: int,
                             fetch_time: str, alarm_status_filter: str = '', alarm_rule_name_filter: str = '',
                             case_tags_filter: str = '', case_status_filter: str = '',
-                            case_priority_filter: str = ''):  # pragma: no cover
+                            case_priority_filter: str = '', fetch_case_evidences=False):  # pragma: no cover
     if fetch_type == 'Both':
-        case_incidents = fetch_cases(client, cases_max_fetch, fetch_time,
+        case_incidents = fetch_cases(client, cases_max_fetch, fetch_time, fetch_case_evidences,
                                      case_tags_filter, case_status_filter, case_priority_filter)
         alarm_incidents = fetch_alarms(client, alarms_max_fetch, fetch_time,
                                        alarm_status_filter, alarm_rule_name_filter)
@@ -2329,7 +2329,7 @@ def fetch_incidents_command(client: Client, fetch_type: str, cases_max_fetch: in
     elif fetch_type == 'Alarms':
         return fetch_alarms(client, alarms_max_fetch, fetch_time, alarm_status_filter, alarm_rule_name_filter)
     elif fetch_type == 'Cases':
-        return fetch_cases(client, cases_max_fetch, fetch_time,
+        return fetch_cases(client, cases_max_fetch, fetch_time, fetch_case_evidences,
                            case_tags_filter, case_status_filter, case_priority_filter)
 
 
@@ -2371,7 +2371,7 @@ def fetch_alarms(client: Client, limit: int, fetch_time: str, alarm_status_filte
     return alarm_incidents
 
 
-def fetch_cases(client: Client, limit: int, fetch_time: str,
+def fetch_cases(client: Client, limit: int, fetch_time: str, fetch_case_evidences: bool,
                 case_tags_filter: str, case_status_filter: str, case_priority_filter: str):  # pragma: no cover
     case_incidents = []
     last_run = demisto.getLastRun()
@@ -2398,10 +2398,24 @@ def fetch_cases(client: Client, limit: int, fetch_time: str,
     cases = client.cases_list_request(**cases_list_args)
 
     for case in cases:
+        file_names = []
         case['incidentType'] = 'Case'
+
+        if fetch_case_evidences:
+            case_id = case.get('id')
+            evidences = client.case_evidence_list_request(case_id)
+            case['CaseEvidence'] = evidences
+            for evidence in evidences:
+                if evidence.get('type') == 'file':
+                    file_result = client.case_file_evidence_download_request(case_id, evidence.get('number'))
+                    file_names.append({
+                        'path': file_result.get('FileID'),
+                        'name': file_result.get('File')})
+
         incident = {
             'name': f'Case #{case.get("number")} {case.get("name")}',
             'occurred': case.get('dateCreated'),
+            'attachment': file_names,
             'rawJSON': json.dumps(case)
         }
         case_incidents.append(incident)
@@ -2428,6 +2442,7 @@ def main() -> None:  # pragma: no cover
     case_priority_filter = params.get('case_priority_filter', '')
     case_status_filter = params.get('case_status_filter', '')
     case_tags_filter = params.get('case_tags_filter', '')
+    fetch_case_evidences = params.get('fetch_case_evidences', False)
 
     api_key = params.get('credentials', {}).get('password')
     headers = {'Authorization': f'Bearer {api_key}'}
@@ -2485,7 +2500,8 @@ def main() -> None:  # pragma: no cover
                                                       alarm_rule_name_filter=alarm_rule_name_filter,
                                                       case_tags_filter=case_tags_filter,
                                                       case_status_filter=case_status_filter,
-                                                      case_priority_filter=case_priority_filter))
+                                                      case_priority_filter=case_priority_filter,
+                                                      fetch_case_evidences=fetch_case_evidences))
         elif command in commands:
             return_results(commands[command](client, args))
         else:

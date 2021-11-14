@@ -98,6 +98,10 @@ configuration:
   - '3'
   - '4'
   - '5'
+- display: Fetch case evidences
+  name: fetch_case_evidences
+  required: false
+  type: 8
 - name: proxy
   display: Use system proxy settings
   defaultvalue: ''
