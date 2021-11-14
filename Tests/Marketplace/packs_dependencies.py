@@ -199,7 +199,7 @@ def main():
     packs dependencies. The logic of pack dependency is identical to sdk find-dependencies command.
 
     """
-    install_logging('Calculate_Packs_Dependencies.log', include_process_name=True)
+    install_logging('Calculate_Packs_Dependencies.log', include_process_name=True, logger=logging)
     option = option_handler()
     output_path = option.output_path
     id_set_path = option.id_set_path
