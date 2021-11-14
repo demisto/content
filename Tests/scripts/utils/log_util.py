@@ -76,7 +76,7 @@ def install_logging(log_file_name: str, include_process_name=False, logger=loggi
         logger: the logger to be configured, default are the `logging` module
     """
     if not hasattr(logger, 'success'):
-        _add_logging_level('SUCCESS', 25, logger)
+        _add_logging_level('SUCCESS', 25, logger=logger)
     logging_format = LOGGING_FORMAT
     if include_process_name:
         logging_format = '[%(asctime)s] - [%(processName)s] - [%(threadName)s] - [%(levelname)s] - %(message)s'
