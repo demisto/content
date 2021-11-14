@@ -1,6 +1,5 @@
 from ExtractAttackPattern import is_valid_attack_pattern
 
-import CommonServerPython
 from CommonServerPython import *
 import ExtractAttackPattern as eap
 
