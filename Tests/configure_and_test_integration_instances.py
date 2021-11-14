@@ -796,7 +796,6 @@ def report_tests_status(preupdate_fails, postupdate_fails, preupdate_success, po
             performed.
         build: Build object
 
-
     Returns:
         (bool): False if there were integration instances that succeeded prior to the content update and then
             failed after content was updated, otherwise True.
