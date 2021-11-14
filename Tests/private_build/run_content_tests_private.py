@@ -362,7 +362,7 @@ def manage_tests(tests_settings: SettingsTester):
             execute_testing(tests_settings, ami_instance_ip, all_tests, tests_data_keeper)
             sleep(8)
 
-    print_test_summary(tests_data_keeper, tests_settings.isAMI)
+    print_test_summary(tests_data_keeper, tests_settings.isAMI, logging_module=logging)
     create_result_files(tests_data_keeper)
 
     if tests_data_keeper.failed_playbooks:
