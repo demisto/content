@@ -632,7 +632,7 @@ def set_requests_mock(client, requests_mock, access_token_resp=GET_ACCESS_TOKEN_
     mock_get_blob_data(requests_mock)
 
 
-@pytest.mark.parametrize('args_timeout,param_timeout,expected_value', (
+@pytest.mark.parametrize('args_timeout,param_timeout,expected_timeout', (
         (0, 0, 15),
         (None, None, 15),
         (1, None, 1),
@@ -641,7 +641,7 @@ def set_requests_mock(client, requests_mock, access_token_resp=GET_ACCESS_TOKEN_
         (0, 2, 2),
         (3, 0, 3),
         (3, 4, 3)))
-def test_timeout(mocker, args_timeout, param_timeout, expected_value):
+def test_timeout(args_timeout, param_timeout, expected_timeout):
     """
     Given
             args and params, both of which may contain `timeout`
@@ -650,6 +650,13 @@ def test_timeout(mocker, args_timeout, param_timeout, expected_value):
     Then
             validate the output of get_timeout matches the logic, based on availability:
              use arg, then param, then default.
+             Validate the Client and its MSClient get the expected value
     """
-    from MicrosoftManagementActivity import calculate_timeout_value
-    assert calculate_timeout_value(params={'timeout': param_timeout}, args={'timeout': args_timeout}) == expected_value
+    from MicrosoftManagementActivity import calculate_timeout_value, Client
+    assert calculate_timeout_value(params={'timeout': param_timeout},
+                                   args={'timeout': args_timeout}) == expected_timeout
+    client = Client(base_url='', verify=False, proxy=False, self_deployed=False, refresh_token='',
+                    auth_and_token_url='', enc_key='', auth_code='', tenant_id='', redirect_uri='',
+                    timeout=expected_timeout)
+    assert client.timeout == expected_timeout
+    assert client.ms_client.timeout == expected_timeout

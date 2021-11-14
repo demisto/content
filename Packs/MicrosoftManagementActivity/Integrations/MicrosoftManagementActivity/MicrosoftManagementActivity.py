@@ -1,9 +1,5 @@
-import json
-from typing import List, Set
-
 import demistomock as demisto  # noqa: F401
 import jwt
-import requests
 from CommonServerPython import *  # noqa: F401
 
 # Disable insecure warnings
@@ -13,7 +9,7 @@ requests.packages.urllib3.disable_warnings()
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'
 APP_NAME = 'ms-management-api'
 PUBLISHER_IDENTIFIER = 'ebac1a16-81bf-449b-8d43-5732c3c1d999'  # This isn't a secret and is public knowledge.
-TIMEOUT = 15  # may be changed on main(), according to timeout parameter/argument.
+TIMEOUT_DEFAULT = 15
 
 CONTENT_TYPE_TO_TYPE_ID_MAPPING = {
     'ExchangeAdmin': 1,
@@ -71,8 +67,8 @@ class Client(BaseClient):
     """
 
     def __init__(self, base_url: str, verify: bool,
-                 proxy: bool, self_deployed, refresh_token, auth_and_token_url,
-                 enc_key, auth_code, tenant_id, redirect_uri):
+                 proxy: bool, self_deployed, refresh_token: str, auth_and_token_url: str,
+                 enc_key: str, auth_code: str, tenant_id: str, redirect_uri: str, timeout: int):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.tenant_id = tenant_id
         self.suffix_template = '{}/activity/feed/subscriptions/{}'
@@ -81,6 +77,7 @@ class Client(BaseClient):
         self.refresh_token = refresh_token
         self.auth_and_token_url = auth_and_token_url
         self.enc_key = enc_key
+        self.timeout = timeout
         self.ms_client = MicrosoftClient(self_deployed=self.self_deployed,
                                          tenant_id=self.tenant_id,
                                          auth_id=self.auth_and_token_url,
@@ -92,11 +89,29 @@ class Client(BaseClient):
                                          proxy=proxy,
                                          refresh_token=self.refresh_token,
                                          ok_codes=(200, 201, 202, 204),
+                                         timeout=self.timeout,
                                          scope='',
                                          auth_code=auth_code,
                                          resource='https://manage.office.com',
                                          token_retrieval_url='https://login.windows.net/common/oauth2/token',
                                          redirect_uri=redirect_uri)
+
+    def _http_request(self, method, url_suffix='', full_url=None, headers=None, auth=None, json_data=None,
+                      params=None, data=None, files=None, timeout=TIMEOUT_DEFAULT, resp_type='json', ok_codes=None,
+                      return_empty_response=False, retries=0, status_list_to_retry=None,
+                      backoff_factor=5, raise_on_redirect=False, raise_on_status=False,
+                      error_handler=None, empty_valid_codes=None, **kwargs):
+        """
+        Calls the built in http_request, only changing timeout.
+        """
+        return super()._http_request(method=method, url_suffix=url_suffix, full_url=full_url,
+                                     headers=headers, auth=auth, json_data=json_data,
+                                     return_empty_response=return_empty_response, retries=retries,
+                                     status_list_to_retry=status_list_to_retry,
+                                     backoff_factor=backoff_factor, raise_on_redirect=raise_on_redirect,
+                                     raise_on_status=raise_on_status, error_handler=error_handler,
+                                     empty_valid_codes=empty_valid_codes,
+                                     timeout=self.timeout, **kwargs)
 
     def get_access_token_data(self):
         access_token_jwt = self.ms_client.get_access_token()
@@ -106,12 +121,11 @@ class Client(BaseClient):
     def get_authentication_string(self):
         return f'Bearer {self.access_token}'
 
-    def get_blob_data_request(self, blob_url, timeout=TIMEOUT):
-        '''
+    def get_blob_data_request(self, blob_url):
+        """
         Args:
             blob_url: The URL for the blob.
-            timeout: Timeout for http request.
-        '''
+        """
         auth_string = self.get_authentication_string()
         headers = {
             'Content-Type': 'application/json',
@@ -126,17 +140,15 @@ class Client(BaseClient):
             full_url=blob_url,
             headers=headers,
             params=params,
-            timeout=timeout,
         )
         return response
 
-    def list_content_request(self, content_type, start_time, end_time, timeout=TIMEOUT):
+    def list_content_request(self, content_type, start_time, end_time):
         """
         Args:
             content_type: the content type
             start_time: start time to fetch content
             end_time: end time to fetch content
-            timeout: Timeout for http request.
         """
         auth_string = self.get_authentication_string()
         headers = {
@@ -156,7 +168,6 @@ class Client(BaseClient):
             url_suffix=self.suffix_template.format(self.tenant_id, 'content'),
             headers=headers,
             params=params,
-            timeout=timeout,
         )
         return response
 
@@ -314,13 +325,13 @@ def get_content_records_context(content_records):
     return content_records_context
 
 
-def get_all_content_type_records(client, content_type, start_time, end_time, timeout=TIMEOUT):
-    content_blobs = client.list_content_request(content_type, start_time, end_time, timeout)
+def get_all_content_type_records(client, content_type, start_time, end_time):
+    content_blobs = client.list_content_request(content_type, start_time, end_time)
     # The list_content request returns a list of content records, each containing a url that holds the actual data
     content_uris = [content_blob.get('contentUri') for content_blob in content_blobs]
     content_records: List = []
     for uri in content_uris:
-        content_records_in_uri = client.get_blob_data_request(uri, timeout)
+        content_records_in_uri = client.get_blob_data_request(uri)
         content_records.extend(content_records_in_uri)
     return content_records
 
@@ -397,7 +408,7 @@ def list_content_command(client, args):
     start_time = args.get('start_time')
     end_time = args.get('end_time')
 
-    content_records = get_all_content_type_records(client, content_type, start_time, end_time, TIMEOUT)
+    content_records = get_all_content_type_records(client, content_type, start_time, end_time)
     filtered_content_records = filter_records(content_records, args)
     content_records_context = get_content_records_context(filtered_content_records)
     human_readable = create_events_human_readable(content_records_context, content_type)
@@ -508,7 +519,7 @@ def calculate_timeout_value(params: dict, args: dict) -> int:
         return arg_timeout
     elif param_timeout := int(params.get('timeout') or 0):
         return param_timeout
-    return TIMEOUT  # for unit tests
+    return TIMEOUT_DEFAULT  # for unit tests
 
 
 def main():
@@ -521,8 +532,6 @@ def main():
     proxy = demisto.params().get('proxy', False)
     args = demisto.args()
     params = demisto.params()
-
-    TIMEOUT = calculate_timeout_value(params, args)
 
     LOG(f'Command being called is {demisto.command()}')
     try:
@@ -547,6 +556,7 @@ def main():
             self_deployed=self_deployed,
             refresh_token=refresh_token,
             auth_and_token_url=auth_id,
+            timeout=calculate_timeout_value(params=params, args=args),
             enc_key=enc_key,
             auth_code=params.get('auth_code', ''),
             redirect_uri=redirect_uri
