@@ -105,7 +105,7 @@ def test_list_search_running_queries_command(requests_mock):
     requests_mock.post("https://login.microsoftonline.com/organizations/oauth2/v2.0/token", json={})
     result = running_search_queries_list_command(mock_client(), {
         "database_name": "Samples",
-        "page": 0,
+        "page": 1,
         "limit": 1
     })
     outputs = result.outputs
