@@ -223,7 +223,7 @@ def search_queries_list_command(client: DataExplorerClient, args: Dict[str, Any]
         database_name, client_activity_id)
 
     return retrieve_command_results_of_list_commands(response, 'List of Completed Search Queries',
-                                                     page, limit,'AzureDataExplorer.SearchQuery')
+                                                     page, limit, 'AzureDataExplorer.SearchQuery')
 
 
 def running_search_queries_list_command(client: DataExplorerClient, args: Dict[str, Any]) -> CommandResults:
@@ -246,7 +246,7 @@ def running_search_queries_list_command(client: DataExplorerClient, args: Dict[s
         database_name, client_activity_id)
 
     return retrieve_command_results_of_list_commands(response, 'List of Currently running Search Queries',
-                                                     page, limit,'AzureDataExplorer.RunningSearchQuery')
+                                                     page, limit, 'AzureDataExplorer.RunningSearchQuery')
 
 
 def running_search_query_cancel_command(client: DataExplorerClient, args: Dict[str, Any]) -> \
@@ -287,7 +287,7 @@ def running_search_query_cancel_command(client: DataExplorerClient, args: Dict[s
 
 
 def retrieve_command_results_of_list_commands(response: Dict[str, Any], base_header: str,
-                                              page: int, limit: int, outputs_prefix:str) -> CommandResults:
+                                              page: int, limit: int, outputs_prefix: str) -> CommandResults:
     """
     Retrieves the command results of list commands.
     Args:
@@ -557,6 +557,7 @@ def main() -> None:
             return_error("Search query execution took longer than the assigned timeout value and has been aborted.")
         else:
             return_error(error_text)
+
 
 from MicrosoftApiModule import *  # noqa: E402
 
