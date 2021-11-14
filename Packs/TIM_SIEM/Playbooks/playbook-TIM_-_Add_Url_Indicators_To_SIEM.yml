@@ -192,8 +192,6 @@ tasks:
     separatecontext: false
     conditions:
     - label: "yes"
-    conditions:
-    - label: "yes"
       condition:
       - - operator: isExists
           left:
