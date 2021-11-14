@@ -2,7 +2,7 @@
 Create an image or PDF file from a URL or HTML body.
 
 **Security Note:**
-* If you are using the integration to rasterize un-trusted urls or html content, such as those obtained via external emails we recommend following the instructions at the [Docker Network Hardening](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/docker/docker-hardening-guide/docker-network-hardening.html) under section Block Internal Network Access
+If you are using the integration to rasterize un-trusted URLs or HTML content, such as those obtained via external emails, we recommend following the instructions at the [Docker Network Hardening](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/docker/docker-hardening-guide/docker-network-hardening.html) under the Block Internal Network Access section.
 
 
 **Configuration Notes:**
