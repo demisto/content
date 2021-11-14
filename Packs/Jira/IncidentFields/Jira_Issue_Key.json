@@ -1,10 +1,10 @@
 {
-    "id": "incident_jiraduedate",
+    "id": "incident_jiraissuekey",
     "version": -1,
-    "name": "Jira Due Date",
+    "modified": "2021-10-21T08:34:28.348247718Z",
+    "name": "Jira Issue Key",
     "ownerOnly": false,
-    "description": "The due date for the issue (in the format 2018-03-11)",
-    "cliName": "jiraduedate",
+    "cliName": "jiraissuekey",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
@@ -31,6 +31,5 @@
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "isExtractingSpecificIndicatorTypes": false,
-    "fromVersion": "6.0.0"
+    "fromVersion": "5.5.0"
 }
