@@ -14,6 +14,7 @@ import socket
 import sys
 import time
 import traceback
+import urllib
 from random import randint
 import xml.etree.cElementTree as ET
 from collections import OrderedDict
@@ -1413,6 +1414,11 @@ class IntegrationLogger(object):
                 if js.endswith('"'):
                     js = js[:-1]
                 to_add.append(js)
+                if IS_PY3:
+                    to_add.append(urllib.parse.quote_plus(a))  # type: ignore[attr-defined]
+                else:
+                    to_add.append(urllib.quote_plus(a))
+
         self.replace_strs.extend(to_add)
 
     def set_buffering(self, state):
@@ -8192,6 +8198,7 @@ def get_tenant_account_name():
         account_name = "acc_{}".format(tenant_name) if tenant_name != "" else ""
 
     return account_name
+
 
 def indicators_value_to_clickable(indicators):
     """
