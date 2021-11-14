@@ -525,9 +525,7 @@ def set_integration_params(build,
             logging.info(f"Integration params are {integration}")
             if len(instance_names) > 1:
                 for instance_name in instance_names:
-                    if integration['instance_name'] == instance_name:
-                        logging.info(f"Found {instance_name} in the integration dict object.")
-                    else:
+                    if integration['instance_name'] is not instance_name:
                         integration_copy = json.loads(json.dumps(integration))
                         for item in integration_params:
                             logging.info(f"Instance names in conf are: {instance_names}")
