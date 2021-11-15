@@ -28,3 +28,5 @@ runas: DBotRole
 dockerimage: demisto/office-utils:2.0.0.23094
 runonce: false
 fromversion: 5.0.0
+tests:
+- Extract Indicators From File - Generic v2 - Test
