@@ -1952,7 +1952,15 @@ inputs:
 - key: EmailBrand
   value: {}
   required: false
-  description: ""
+  description: |-
+    When this value supplied, only the relevant playbook will run.
+    Possible values:
+    - Gmail
+    - EWS v2
+    - MicrosoftGraphMail
+    - EmailSecurityGateway
+
+    If none of the above values is supplied, all of the playbooks will run.
   playbookInputQuery:
 outputs:
 - contextPath: Email.HTML
