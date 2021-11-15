@@ -1,0 +1,113 @@
+id: ExtractAttackPattern-Test
+version: -1
+name: ExtractAttackPattern-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b74f3c8a-1740-4444-8079-1150af5539e4
+    type: start
+    task:
+      id: b74f3c8a-1740-4444-8079-1150af5539e4
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 29fe68f0-5a16-4811-867f-3a4d8188c464
+    type: title
+    task:
+      id: 29fe68f0-5a16-4811-867f-3a4d8188c464
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 9254115c-1ae7-449c-883b-92bda6245a95
+    type: regular
+    task:
+      id: 9254115c-1ae7-449c-883b-92bda6245a95
+      version: -1
+      name: ExtractAttackPattern
+      description: Extract Attack Pattern Threat Intel Object. After auto extract
+        extracts the Attack Pattern IDs, this script is executed and extracts the
+        value (name) of the Attack Pattern.
+      scriptName: ExtractAttackPattern
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      input:
+        simple: T1134, T1134.001
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 385,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.5.0
+description: Extract Attack Pattern Threat Intel Object - Test
