@@ -64,7 +64,7 @@
                     "complex": null,
                     "simple": "associatedCases"
                 },
-                "Endpoint": {
+                "LogRhythm Entity": {
                     "complex": null,
                     "simple": "entityName"
                 },
