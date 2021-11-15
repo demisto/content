@@ -304,4 +304,4 @@ outputs:
   type: string
 tests:
 - Get Original Email - EWS v2 - test
-fromversion: 6.1.0
+fromversion: 6.0.0
