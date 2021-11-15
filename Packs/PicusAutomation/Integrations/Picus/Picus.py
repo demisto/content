@@ -97,7 +97,7 @@ def getVectorList():
     table_name = "Picus Vector List"
     table_headers = ['name','description','trusted','untrusted','is_disabled','type']
     md_table = tableToMarkdown(table_name,picus_vectors,headers=table_headers,removeNull=True)
-    results = CommandResults(readable_output=md_table)
+    results = CommandResults(readable_output=md_table,outputs=picus_vectors,outputs_prefix="Picus.vectorlist")
 
     return results
 
@@ -111,7 +111,7 @@ def getPeerList():
     table_name = "Picus Peer List"
     table_headers = ['name','registered_ip','type','is_alive']
     md_table = tableToMarkdown(table_name,picus_peers,headers=table_headers,removeNull=True)
-    results = CommandResults(readable_output=md_table)
+    results = CommandResults(readable_output=md_table,outputs=picus_peers,outputs_prefix="Picus.peerlist")
 
     return results
 
@@ -456,7 +456,7 @@ def triggerUpdate():
     table_name = "Picus Trigger Update"
     table_headers = ['data','success']
     md_table = tableToMarkdown(table_name,picus_update_results,headers=table_headers,removeNull=True)
-    results = CommandResults(readable_output=md_table)
+    results = CommandResults(readable_output=md_table,outputs=picus_update_results,outputs_prefix="Picus.triggerupdate")
 
     return results
 
