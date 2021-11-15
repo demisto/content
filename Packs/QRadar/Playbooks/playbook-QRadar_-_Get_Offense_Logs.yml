@@ -822,7 +822,7 @@ inputs:
   value:
     simple: "50"
   required: false
-  description: 'Maximum number of log entires to query from QRadar (default: 50)'
+  description: 'Maximum number of log entires to query from QRadar'
   playbookInputQuery:
 - key: ID
   value:
