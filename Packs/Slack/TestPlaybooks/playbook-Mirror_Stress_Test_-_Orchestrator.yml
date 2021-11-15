@@ -295,7 +295,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 1
+    quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "8":
@@ -337,7 +337,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 1
+    quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "9":
@@ -379,7 +379,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 1
+    quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "10":
