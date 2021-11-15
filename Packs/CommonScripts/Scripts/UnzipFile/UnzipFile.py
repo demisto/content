@@ -138,7 +138,7 @@ def extract_using_unrar(file_path, dir_path, password=None):
     return stdout
 
 
-def extract_using_tarfile(file_path: str, dir_path: str, file_name: str):
+def extract_using_tarfile(file_path: str, dir_path: str, file_name: str) -> str:
     if '.tar.gz' in file_name:
         cmd = 'tar -xzvf {} -C {}'.format(file_path, dir_path)
     elif file_name.endswith('.tar'):
@@ -146,7 +146,8 @@ def extract_using_tarfile(file_path: str, dir_path: str, file_name: str):
     process = Popen(shlex.split(cmd), stdout=PIPE, stderr=PIPE)
     stdout, stderr = process.communicate()
     stdout = str(stdout)
-
+    if stderr:
+        return_error(str(stderr))
     if "Errors" in stdout:
         return_error(f"Couldn't extract the file {file_name}.")
     return stdout
