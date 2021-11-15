@@ -495,7 +495,6 @@ def set_integration_params(build,
             if len(integration_params) != 1:
                 found_matching_instance = False
                 for item in integration_params:
-                    logging.info(f"Instance names in conf are: {instance_names}")
                     if item.get('instance_name', 'Not Found') in instance_names:
                         matched_integration_params = item
                         found_matching_instance = True
@@ -522,19 +521,16 @@ def set_integration_params(build,
                 integration['params'].update({'proxy': False})
                 logging.info(
                     f'Configuring integration "{integration["name"]}" with proxy=False')
-            logging.info(f"Integration params are {integration}")
             if len(instance_names) > 1:
                 for instance_name in instance_names:
                     if integration['instance_name'] is not instance_name:
                         integration_copy = json.loads(json.dumps(integration))
                         for item in integration_params:
-                            logging.info(f"Instance names in conf are: {instance_names}")
                             if item.get('instance_name', 'Not Found') == instance_name:
                                 integration_copy['params'] = item.get('params', {})
                         integration_copy['instance_name'] = instance_name
                         added_integration_configurations.append(integration_copy)
 
-    logging.info(f"Added integration configurations are: {added_integration_configurations}")
     integrations.extend(added_integration_configurations)
 
     return True
