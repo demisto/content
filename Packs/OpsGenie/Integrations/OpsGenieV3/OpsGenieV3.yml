@@ -1,0 +1,1614 @@
+category: Case Management
+commonfields:
+  id: OpsGenieV3
+  version: -1
+configuration:
+- defaultvalue: https://api.opsgenie.com
+  display: Server URL (e.g. https://example.net)
+  name: url
+  required: true
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- additionalinfo: Must be created from the Teams API Integration section.
+  display: API Token
+  hidden: false
+  name: token
+  required: false
+  type: 4
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: 3 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
+  required: false
+  type: 0
+- defaultvalue: '20'
+  name: max_fetch
+  required: false
+  type: 0
+- additionalinfo: Fetch only events with selected event types
+  defaultvalue: All
+  display: Event types
+  name: event_types
+  options:
+  - All
+  - Alerts
+  - Incidents
+  required: true
+  isArray: true
+  type: 16
+- display: Status
+  name: status
+  required: false
+  options:
+  - Open
+  - Closed
+  type: 15
+- display: Priority
+  name: priority
+  required: false
+  options:
+  - All
+  - P1
+  - P2
+  - P3
+  - P4
+  - P5
+  type: 15
+- display: Tags
+  name: tags
+  required: false
+  type: 0
+- display: Query
+  name: query
+  required: false
+  type: 0
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+description: Integration with Atlassian OpsGenie
+display: OpsGenie v3
+name: OpsGenieV3
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+      defaultValue: '5'
+    - default: false
+      defaultValue: '30'
+      description: The number of results to return.
+      isArray: false
+      name: max_results
+      required: false
+      secret: false
+    - default: false
+      description: Alert message.
+      isArray: false
+      name: message
+      required: true
+      secret: false
+    - default: false
+      description: Client-defined identifier of the alert
+      isArray: false
+      name: alias
+      required: false
+      secret: false
+    - default: false
+      description: Description field of the alert that is generally used to provide
+        a detailed information about the alert.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: Teams/users that the alert is routed to via notifications. List
+        of:responser_type, value_type, value.
+      isArray: true
+      name: responders
+      required: false
+      secret: false
+    - default: false
+      description: Comma separated list of tags to add.
+      isArray: true
+      name: tags
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Incident Priority. Defaulted to P3 if not provided
+      isArray: true
+      name: priority
+      predefined:
+      - P1
+      - P2
+      - P3
+      - P4
+      - P5
+      required: false
+      secret: false
+      defaultValue: P3
+    - default: false
+      description: Display name of the request source. Defaulted to IP of the request
+        sender.
+      isArray: false
+      name: source
+      required: false
+      secret: false
+    - default: false
+      description: Additional alert note to add.
+      isArray: false
+      name: note
+      required: false
+      secret: false
+    description: Create an Alert in opsgenie
+    deprecated: false
+    name: opsgenie-create-alert
+    polling: true
+    outputs:
+    - contextPath: OpsGenie.Alert.action
+      description: Action of this Request
+      type: String
+    - contextPath: OpsGenie.Alert.alertId
+      description: Id of created Alert
+      type: String
+    - contextPath: OpsGenie.Alert.alias
+      description: Alais of created Alert
+      type: String
+    - contextPath: OpsGenie.Alert.integrationId
+      description: Integration of created Alert
+      type: String
+    - contextPath: OpsGenie.Alert.isSuccess
+      description: If the request was successful
+      type: Boolean
+    - contextPath: OpsGenie.Alert.processedAt
+      description: When the request was processed
+      type: Date
+    - contextPath: OpsGenie.Alert.requestId
+      description: The ID of the request
+      type: String
+    - contextPath: OpsGenie.Alert.status
+      description: The human readable result of the request
+      type: String
+    - contextPath: OpsGenie.Alert.success
+      description: Bool, whether the request was a success
+      type: Boolean
+
+  - arguments:
+    - default: false
+      description: The ID of the alert from opsgenie
+      isArray: false
+      name: alert-id
+      required: false
+      secret: false
+    - default: false
+      description: OpsGenie field to sort by
+      isArray: false
+      name: sort
+      required: false
+      secret: false
+    - default: false
+      description: Maximum results to return
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+      defaultValue: '20'
+    - default: false
+      description: Start index of the result set (to apply pagination). Minimum value
+        (and also default value) is 0.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+      defaultValue: '0'
+    - auto: PREDEFINED
+      default: false
+      description: The ID of the alert from opsgenie
+      isArray: false
+      name: status
+      required: false
+      secret: false
+      predefined:
+      - Open
+      - Closed
+    - auto: PREDEFINED
+      default: false
+      description: Incident Priority. Defaulted to P3 if not provided
+      isArray: true
+      name: priority
+      predefined:
+      - P1
+      - P2
+      - P3
+      - P4
+      - P5
+      required: false
+      secret: false
+      defaultValue: P3
+    - default: false
+      description: Comma separated list of tags to add.
+      isArray: true
+      name: tags
+      required: false
+      secret: false
+    - default: false
+      description: URL Encoded query params
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    deprecated: false
+    description: List the current alerts from OpsGenie.
+    execution: false
+    name: opsgenie-get-alerts
+    polling: true
+    outputs:
+    - contextPath: OpsGenie.Alert.acknowledged
+      description: State of Acknoweledgement
+      type: Boolean
+    - contextPath: OpsGenie.Alert.alias
+      description: Alert Alias
+      type: String
+    - contextPath: OpsGenie.Alert.count
+      description: Count of Alert occurences
+      type: Number
+    - contextPath: OpsGenie.Alert.createdAt
+      description: Time alert created
+      type: Date
+    - contextPath: OpsGenie.Alert.id
+      description: ID of alert
+      type: String
+    - contextPath: OpsGenie.Alert.integration.id
+      description: ID of integration
+      type: String
+    - contextPath: OpsGenie.Alert.integration.name
+      description: Integration name
+      type: String
+    - contextPath: OpsGenie.Alert.integration.type
+      description: Type of integration
+      type: String
+    - contextPath: OpsGenie.Alert.isSeen
+      description: Whether alert has been seen
+      type: Boolean
+    - contextPath: OpsGenie.Alert.lastOccurredAt
+      description: Time alert last occured
+      type: Date
+    - contextPath: OpsGenie.Alert.message
+      description: Alert Message
+      type: String
+    - contextPath: OpsGenie.Alert.owner
+      description: Owner of Alert
+      type: String
+    - contextPath: OpsGenie.Alert.ownerTeamId
+      description: Team ID of Owner
+      type: String
+    - contextPath: OpsGenie.Alert.priority
+      description: Alert Priority
+      type: String
+    - contextPath: OpsGenie.Alert.responders.id
+      description: ID of responders
+      type: String
+    - contextPath: OpsGenie.Alert.responders.type
+      description: Type of Responders
+      type: String
+    - contextPath: OpsGenie.Alert.seen
+      description: Seen status of alert
+      type: Boolean
+    - contextPath: OpsGenie.Alert.snoozed
+      description: Whether alert has been snoozed
+      type: Boolean
+    - contextPath: OpsGenie.Alert.source
+      description: Source of Alert
+      type: String
+    - contextPath: OpsGenie.Alert.status
+      description: Status of Alert
+      type: String
+    - contextPath: OpsGenie.Alert.teams.id
+      description: Id of teams associated with Alert
+      type: String
+    - contextPath: OpsGenie.Alert.tinyId
+      description: Shorter ID for alert
+      type: String
+    - contextPath: OpsGenie.Alert.updatedAt
+      description: Last Updated time for Alert
+      type: Date
+    - contextPath: OpsGenie.Alert.report.ackTime
+      description: Acknoweledgement Time of Alert
+      type: Number
+    - contextPath: OpsGenie.Alert.report.acknowledgedBy
+      description: User that Acknolwedged the alert
+      type: String
+    - contextPath: OpsGenie.Alert.report.closeTime
+      description: Time Alarm closed
+      type: Number
+    - contextPath: OpsGenie.Alert.report.closedBy
+      description: Who Closed the alarm
+      type: String
+  - arguments:
+    - default: false
+      description: The ID of the alert from opsgenie
+      isArray: false
+      name: alert-id
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete an Alert from OpsGenie
+    execution: false
+    name: opsgenie-delete-alert
+    polling: true
+    outputs:
+    - contextPath: OpsGenie.DeletedAlert.action
+      description: Action of this Request
+      type: String
+    - contextPath: OpsGenie.DeletedAlert.alertId
+      description: Id of deleted Alert
+      type: String
+    - contextPath: OpsGenie.DeletedAlert.alias
+      description: Alais of deleted Alert
+      type: String
+    - contextPath: OpsGenie.DeletedAlert.integrationId
+      description: Integration of deleted Alert
+      type: String
+    - contextPath: OpsGenie.DeletedAlert.isSuccess
+      description: If the request was successful
+      type: Boolean
+    - contextPath: OpsGenie.DeletedAlert.processedAt
+      description: When the request was processed
+      type: Date
+    - contextPath: OpsGenie.DeletedAlert.requestId
+      description: The ID of the request
+      type: String
+    - contextPath: OpsGenie.DeletedAlert.status
+      description: The human readable result of the request
+      type: String
+    - contextPath: OpsGenie.DeletedAlert.success
+      description: Bool, whether the request was a success
+      type: Boolean
+  - arguments:
+    - default: false
+      description: The ID of the alert from opsgenie
+      isArray: false
+      name: alert-id
+      required: true
+      secret: false
+    - default: false
+      description: Additional alert note to add
+      isArray: false
+      name: note
+      required: false
+      secret: false
+    deprecated: false
+    description: Acknowledge an alert in OpsGenie
+    execution: false
+    name: opsgenie-ack-alert
+    polling: true
+    outputs:
+    - contextPath: OpsGenie.AckedAlert.action
+      description: Action of this Request
+      type: String
+    - contextPath: OpsGenie.AckedAlert.alertId
+      description: Id of acked Alert
+      type: String
+    - contextPath: OpsGenie.AckedAlert.alias
+      description: Alais of acked Alert
+      type: String
+    - contextPath: OpsGenie.AckedAlert.integrationId
+      description: Integration of acked Alert
+      type: String
+    - contextPath: OpsGenie.AckedAlert.isSuccess
+      description: If the request was successful
+      type: Boolean
+    - contextPath: OpsGenie.AckedAlert.processedAt
+      description: When the request was processed
+      type: Date
+    - contextPath: OpsGenie.AckedAlert.requestId
+      description: The ID of the request
+      type: String
+    - contextPath: OpsGenie.AckedAlert.status
+      description: The human readable result of the request
+      type: String
+    - contextPath: OpsGenie.AckedAlert.success
+      description: Bool, whether the request was a success
+      type: Boolean
+
+  - arguments:
+    - default: false
+      description: The ID of the alert from opsgenie
+      isArray: false
+      name: alert-id
+      required: true
+      secret: false
+    - default: false
+      description: Additional alert note to add
+      isArray: false
+      name: note
+      required: false
+      secret: false
+    deprecated: false
+    description: Close an alert in OpsGenie
+    execution: false
+    name: opsgenie-close-alert
+    polling: true
+    outputs:
+    - contextPath: OpsGenie.ClosedAlert.action
+      description: Action of this Request
+      type: String
+    - contextPath: OpsGenie.ClosedAlert.alertId
+      description: Id of closed Alert
+      type: String
+    - contextPath: OpsGenie.ClosedAlert.alias
+      description: Alais of closed Alert
+      type: String
+    - contextPath: OpsGenie.ClosedAlert.integrationId
+      description: Integration of acked Alert
+      type: String
+    - contextPath: OpsGenie.ClosedAlert.isSuccess
+      description: If the request was successful
+      type: Boolean
+    - contextPath: OpsGenie.ClosedAlert.processedAt
+      description: When the request was processed
+      type: Date
+    - contextPath: OpsGenie.ClosedAlert.requestId
+      description: The ID of the request
+      type: String
+    - contextPath: OpsGenie.ClosedAlert.status
+      description: The human readable result of the request
+      type: String
+    - contextPath: OpsGenie.ClosedAlert.success
+      description: Bool, whether the request was a success
+      type: Boolean
+
+  - arguments:
+    - default: false
+      description: Id of opsgenie alert
+      isArray: false
+      name: alert-id
+      required: true
+      secret: false
+    - default: false
+      description: Id of User that the alert will be assigned to. Not required if
+        owner_username is present.
+      isArray: false
+      name: owner_id
+      required: false
+      secret: false
+    - default: false
+      description: Display name of the request owner. Not required if owner_id is
+        present.
+      isArray: false
+      name: owner_username
+      required: false
+      secret: false
+    - default: false
+      description: Additional alert note to add
+      isArray: false
+      name: note
+      required: false
+      secret: false
+    deprecated: false
+    description: Assign an OpsGenie Alert
+    execution: false
+    name: opsgenie-assign-alert
+    polling: true
+    outputs:
+    - contextPath: OpsGenie.AssignAlert.action
+      description: Action of this Request
+      type: String
+    - contextPath: OpsGenie.AssignAlert.alertId
+      description: ID of assigned Alert
+      type: String
+    - contextPath: OpsGenie.AssignAlert.alias
+      description: Alais of assigned Alert
+      type: String
+    - contextPath: OpsGenie.AssignAlert.integrationId
+      description: Integration of assigned Alert
+      type: String
+    - contextPath: OpsGenie.AssignAlert.isSuccess
+      description: If the request was successful
+      type: Boolean
+    - contextPath: OpsGenie.AssignAlert.processedAt
+      description: When the request was processed
+      type: Date
+    - contextPath: OpsGenie.AssignAlert.requestId
+      description: The ID of the request
+      type: String
+    - contextPath: OpsGenie.AssignAlert.status
+      description: The human readable result of the request
+      type: String
+    - contextPath: OpsGenie.AssignAlert.success
+      description: Bool, whether the request was a success
+      type: Boolean
+
+  - arguments:
+    - default: false
+      description: Id of opsgenie alert
+      isArray: false
+      name: alert-id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Type of the identifier
+      isArray: false
+      name: identifierType
+      required: false
+      secret: false
+      predefined:
+      - id
+      - tiny
+      - alias
+    - default: false
+      description: Team or user that the alert will be routed to. List of triples
+        (responser_type, value_type, value)
+      isArray: true
+      name: responders
+      required: true
+      secret: false
+    - default: false
+      description: Additional alert note to add
+      isArray: false
+      name: note
+      required: false
+      secret: false
+    deprecated: false
+    description: Add responder to an OpsGenie Alert
+    execution: false
+    name: opsgenie-add-responder-alert
+    polling: true
+    outputs:
+    - contextPath: OpsGenie.AddResponderAlert.action
+      description: Action of this Request
+      type: String
+    - contextPath: OpsGenie.AddResponderAlert.alertId
+      description: ID of created Alert
+      type: String
+    - contextPath: OpsGenie.AddResponderAlert.alias
+      description: Alais of created Alert
+      type: String
+    - contextPath: OpsGenie.AddResponderAlert.integrationId
+      description: Integration of created Alert
+      type: String
+    - contextPath: OpsGenie.AddResponderAlert.isSuccess
+      description: If the request was successful
+      type: Boolean
+    - contextPath: OpsGenie.AddResponderAlert.processedAt
+      description: When the request was processed
+      type: Date
+    - contextPath: OpsGenie.AddResponderAlert.requestId
+      description: The ID of the request
+      type: String
+    - contextPath: OpsGenie.AddResponderAlert.status
+      description: The human readable result of the request
+      type: String
+    - contextPath: OpsGenie.AddResponderAlert.success
+      description: Bool, whether the request was a success
+      type: Boolean
+
+  - arguments:
+    - default: false
+      description: Id of escalation
+      isArray: false
+      name: escalation_id
+      required: false
+      secret: false
+    - default: false
+      description: Name of escalation
+      isArray: false
+      name: escalation_name
+      required: false
+      secret: false
+    description: Get escalations from OpsGenie
+    name: opsgenie-get-escalations
+    outputs:
+    - contextPath: OpsGenie.Escalation.action
+      description: Action of this Request
+      type: String
+    - contextPath: OpsGenie.Escalation.Id
+      description: ID of Escalation
+      type: String
+    - contextPath: OpsGenie.Escalation.name
+      description: Name of Escalation
+      type: String
+    - contextPath: OpsGenie.Escalation.description
+      description: Description of Escalation
+      type: String
+    - contextPath: OpsGenie.Escalation.ownerTeam
+      description: OwnerTeam of Escalation
+      type: String
+    - contextPath: OpsGenie.Escalation.rules
+      description: Rules of Escalation
+      type: String
+    - contextPath: OpsGenie.Escalation.integrationId
+      description: Integration of escalated Alert
+      type: String
+    - contextPath: OpsGenie.Escalation.isSuccess
+      description: If the request was successful
+      type: Boolean
+    - contextPath: OpsGenie.Escalation.processedAt
+      description: When the request was processed
+      type: Date
+    - contextPath: OpsGenie.Escalation.requestId
+      description: The ID of the request
+      type: String
+    - contextPath: OpsGenie.Escalation.status
+      description: The human readable result of the request
+      type: String
+    - contextPath: OpsGenie.Escalation.success
+      description: Bool, whether the request was a success
+      type: Boolean
+
+  - arguments:
+    - default: false
+      description: Id of opsgenie alert
+      isArray: false
+      name: alert-id
+      required: true
+      secret: false
+    - default: false
+      description: Escalation that the alert will be escalated. Either id or name
+        of the escalation should be provided.
+      isArray: false
+      name: escalation_name
+      required: false
+      secret: false
+    - default: false
+      description: Escalation that the alert will be escalated. Either id or name
+        of the escalation should be provided.
+      isArray: false
+      name: escalation_id
+      required: false
+      secret: false
+    - default: false
+      description: Additional alert note to add
+      isArray: false
+      name: note
+      required: false
+      secret: false
+    deprecated: false
+    description: Escalate an OpsGenie Alert
+    execution: false
+    name: opsgenie-escalate-alert
+    polling: true
+    outputs:
+    - contextPath: OpsGenie.EscalateAlert.action
+      description: Action of this Request
+      type: String
+    - contextPath: OpsGenie.EscalateAlert.id
+      description: ID of escalation
+      type: String
+    - contextPath: OpsGenie.EscalateAlert.name
+      description: Name of Escalation
+      type: String
+    - contextPath: OpsGenie.EscalateAlert.description
+      description: Description of Escalation
+      type: String
+    - contextPath: OpsGenie.EscalateAlert.integrationId
+      description: Integration of escalated Alert
+      type: String
+    - contextPath: OpsGenie.EscalateAlert.isSuccess
+      description: If the request was successful
+      type: Boolean
+    - contextPath: OpsGenie.EscalateAlert.processedAt
+      description: When the request was processed
+      type: Date
+    - contextPath: OpsGenie.EscalateAlert.requestId
+      description: The ID of the request
+      type: String
+    - contextPath: OpsGenie.EscalateAlert.status
+      description: The human readable result of the request
+      type: String
+    - contextPath: OpsGenie.EscalateAlert.success
+      description: Bool, whether the request was a success
+      type: Boolean
+
+  - arguments:
+    - default: false
+      description: Id of opsgenie alert
+      isArray: false
+      name: alert-id
+      required: true
+      secret: false
+    - default: false
+      description: Comma separated list of tags to add into alert.
+      isArray: true
+      name: tags
+      required: true
+      secret: false
+    - default: false
+      description: Additional alert note to add
+      isArray: false
+      name: note
+      required: false
+      secret: false
+    deprecated: false
+    description: Add tag into OpsGenie Alert
+    execution: false
+    name: opsgenie-add-alert-tag
+    polling: true
+    outputs:
+    - contextPath: OpsGenie.AddTagAlert.action
+      description: Action of this Request
+      type: String
+    - contextPath: OpsGenie.AddTagAlert.alertId
+      description: ID of added Alert
+      type: String
+    - contextPath: OpsGenie.AddTagAlert.alias
+      description: Alais of added Alert
+      type: String
+    - contextPath: OpsGenie.AddTagAlert.integrationId
+      description: Integration of added Alert
+      type: String
+    - contextPath: OpsGenie.AddTagAlert.isSuccess
+      description: If the request was successful
+      type: Boolean
+    - contextPath: OpsGenie.AddTagAlert.processedAt
+      description: When the request was processed
+      type: Date
+    - contextPath: OpsGenie.AddTagAlert.requestId
+      description: The ID of the request
+      type: String
+    - contextPath: OpsGenie.AddTagAlert.status
+      description: The human readable result of the request
+      type: String
+    - contextPath: OpsGenie.AddTagAlert.success
+      description: Bool, whether the request was a success
+      type: Boolean
+
+  - arguments:
+    - default: false
+      description: Id of opsgenie alert
+      isArray: false
+      name: alert-id
+      required: true
+      secret: false
+    - default: false
+      description: Comma separated list of tags to remove from alert.
+      isArray: true
+      name: tags
+      required: true
+      secret: false
+    - default: false
+      description: Additional alert note to add
+      isArray: false
+      name: note
+      required: false
+      secret: false
+    deprecated: false
+    description: Remove tag from OpsGenie Alert
+    execution: false
+    name: opsgenie-remove-alert-tag
+    polling: true
+    outputs:
+    - contextPath: OpsGenie.RemoveTagAlert.action
+      description: Action of this Request
+      type: String
+    - contextPath: OpsGenie.RemoveTagAlert.alertId
+      description: ID of removed tag Alert
+      type: String
+    - contextPath: OpsGenie.RemoveTagAlert.alias
+      description: Alais of removed tag Alert
+      type: String
+    - contextPath: OpsGenie.RemoveTagAlert.integrationId
+      description: Integration of removed tag Alert
+      type: String
+    - contextPath: OpsGenie.RemoveTagAlert.isSuccess
+      description: If the request was successful
+      type: Boolean
+    - contextPath: OpsGenie.RemoveTagAlert.processedAt
+      description: When the request was processed
+      type: Date
+    - contextPath: OpsGenie.RemoveTagAlert.requestId
+      description: The ID of the request
+      type: String
+    - contextPath: OpsGenie.RemoveTagAlert.status
+      description: The human readable result of the request
+      type: String
+    - contextPath: OpsGenie.RemoveTagAlert.success
+      description: Bool, whether the request was a success
+      type: Boolean
+
+  - arguments:
+    - default: false
+      description: Id of opsgenie alert
+      isArray: false
+      name: alert-id
+      required: true
+      secret: false
+    - default: false
+      description: Identifier of the attachment
+      isArray: false
+      name: attachment_id
+      required: false
+      secret: false
+    description: Get allert attachments
+    name: opsgenie-get-alert-attachments
+    outputs:
+    - contextPath: OpsGenie.Alert.Attachment.action
+      description: Action of this Request
+      type: String
+    - contextPath: OpsGenie.Alert.Attachment.alertId
+      description: ID of Alert
+      type: String
+    - contextPath: OpsGenie.Alert.Attachment.alias
+      description: Alais of Alert
+      type: String
+    - contextPath: OpsGenie.Alert.Attachment.integrationId
+      description: Integration of Alert
+      type: String
+    - contextPath: OpsGenie.Alert.Attachment.isSuccess
+      description: If the request was successful
+      type: Boolean
+    - contextPath: OpsGenie.Alert.Attachment.processedAt
+      description: When the request was processed
+      type: Date
+    - contextPath: OpsGenie.Alert.Attachment.requestId
+      description: The ID of the request
+      type: String
+    - contextPath: OpsGenie.Alert.Attachment.status
+      description: The human readable result of the request
+      type: String
+    - contextPath: OpsGenie.Alert.Attachment.success
+      description: Bool, whether the request was a success
+      type: Boolean
+
+  - arguments:
+    - default: false
+      description: Id of schedule
+      isArray: false
+      name: schedule_id
+      required: false
+      secret: false
+    - default: false
+      description: Name of schedule
+      isArray: false
+      name: schedule_name
+      required: false
+      secret: false
+    description: Get dchedules from OpsGenie
+    name: opsgenie-get-schedules
+    outputs:
+    - contextPath: OpsGenie.Schedule.description
+      description: Schedule description
+      type: String
+    - contextPath: OpsGenie.Schedule.enabled
+      description: If schedule enabled
+      type: Boolean
+    - contextPath: OpsGenie.Schedule.id
+      description: Id of schedule
+      type: String
+    - contextPath: OpsGenie.Schedule.name
+      description: Name of schedule
+      type: String
+    - contextPath: OpsGenie.Schedule.ownerTeam.id
+      description: Id of schedule owner
+      type: String
+    - contextPath: OpsGenie.Schedule.ownerTeam.name
+      description: Name of schedule owner
+      type: String
+    - contextPath: OpsGenie.Schedule.timezone
+      description: Schedule timezone
+      type: String
+
+  - arguments:
+    - default: false
+      description: Id of schedule
+      isArray: false
+      name: schedule_id
+      required: false
+      secret: false
+    - default: false
+      description: Name of schedule
+      isArray: false
+      name: schedule_name
+      required: false
+      secret: false
+    - default: false
+      description: Alias of the schedule override
+      isArray: false
+      name: override_alias
+      required: false
+      secret: false
+    description: Get schedule overrides
+    name: opsgenie-get-schedule-overrides
+    outputs:
+    - contextPath: OpsGenie.Schedule.Override.action
+      description: Action of this Request
+      type: String
+    - contextPath: OpsGenie.Schedule.Override.alertId
+      description: ID of Schedule
+      type: String
+    - contextPath: OpsGenie.Schedule.Override.alias
+      description: Alais of Schedule
+      type: String
+    - contextPath: OpsGenie.Schedule.Override.integrationId
+      description: Integration of Alert
+      type: String
+    - contextPath: OpsGenie.Schedule.Override.isSuccess
+      description: If the request was successful
+      type: Boolean
+    - contextPath: OpsGenie.Schedule.Override.processedAt
+      description: When the request was processed
+      type: Date
+    - contextPath: OpsGenie.Schedule.Override.requestId
+      description: The ID of the request
+      type: String
+    - contextPath: OpsGenie.Schedule.Override.status
+      description: The human readable result of the request
+      type: String
+    - contextPath: OpsGenie.Schedule.Override.success
+      description: Bool, whether the request was a success
+      type: Boolean
+
+  - arguments:
+    - default: false
+      description: Schedule id from which to return on-call users
+      isArray: false
+      name: schedule_id
+      required: false
+      secret: false
+    - default: false
+      description: Schedule name from which to return on-call users
+      isArray: false
+      name: schedule_name
+      required: false
+      secret: false
+    - default: false
+      description: Starting date of the timeline that will be provided in format as
+        (yyyy-MM-dd'T'HH:mm:ssZ)
+      isArray: false
+      name: starting_date
+      required: false
+      secret: false
+    deprecated: false
+    description: Get the on-call users for the provided schedule
+    execution: false
+    name: opsgenie-get-on-call
+    outputs:
+    - contextPath: OpsGenie.Schedule.OnCall._parent.enabled
+      description: If this OnCall is Enabled
+      type: Boolean
+    - contextPath: OpsGenie.Schedule.OnCall._parent.id
+      description: ID Of parent schedule
+      type: String
+    - contextPath: OpsGenie.Schedule.OnCall._parent.name
+      description: Name of parent Schedule
+      type: String
+    - contextPath: OpsGenie.Schedule.OnCall.onCallParticipants.id
+      description: ID Of oncall participant
+      type: String
+    - contextPath: OpsGenie.Schedule.OnCall.onCallParticipants.name
+      description: Name of oncall participant
+      type: String
+    - contextPath: OpsGenie.Schedule.OnCall.onCallParticipants.type
+      description: Type of OnCall participant
+      type: String
+  - arguments:
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+      defaultValue: '5'
+    - default: false
+      description: Incident message.
+      isArray: false
+      name: message
+      required: true
+      secret: false
+    - default: false
+      description: Description field of the incident that is generally used to provide
+        a detailed information about it.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: Teams/users that the incident is routed to via notifications. List
+        of responser_type,value_type,value.
+      isArray: true
+      name: responders
+      required: true
+      secret: false
+    - default: false
+      description: Comma separated list of tags to add.
+      isArray: true
+      name: tags
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Incident Priority. Defaulted to P3 if not provided
+      isArray: true
+      name: priority
+      predefined:
+      - P1
+      - P2
+      - P3
+      - P4
+      - P5
+      required: false
+      secret: false
+      defaultValue: P3
+    description: Create an Incident in opsgenie
+    deprecated: false
+    name: opsgenie-create-incident
+    polling: true
+    outputs:
+    - contextPath: OpsGenie.Incident.action
+      description: Action of this Request
+      type: String
+    - contextPath: OpsGenie.Incident.Id
+      description: Id of created Alert
+      type: String
+    - contextPath: OpsGenie.Incident.alias
+      description: Alais of created Alert
+      type: String
+    - contextPath: OpsGenie.Incident.integrationId
+      description: Integration of created Alert
+      type: String
+    - contextPath: OpsGenie.Incident.isSuccess
+      description: If the request was successful
+      type: Boolean
+    - contextPath: OpsGenie.Incident.processedAt
+      description: When the request was processed
+      type: Date
+    - contextPath: OpsGenie.Incident.requestId
+      description: The ID of the request
+      type: String
+    - contextPath: OpsGenie.Incident.status
+      description: The human readable result of the request
+      type: String
+    - contextPath: OpsGenie.Incident.success
+      description: Bool, whether the request was a success
+      type: Boolean
+  - arguments:
+    - default: false
+      description: The ID of the incident from opsgenie
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+      defaultValue: '5'
+    deprecated: false
+    description: Delete an incident from OpsGenie
+    execution: false
+    name: opsgenie-delete-incident
+    polling: true
+    outputs:
+    - contextPath: OpsGenie.DeletedIncident.action
+      description: Action of this Request
+      type: String
+    - contextPath: OpsGenie.DeletedIncident.alertId
+      description: Id of deleted incident
+      type: String
+    - contextPath: OpsGenie.DeletedIncident.alias
+      description: Alais of deleted incident
+      type: String
+    - contextPath: OpsGenie.DeletedIncident.integrationId
+      description: Integration of deleted incident
+      type: String
+    - contextPath: OpsGenie.DeletedIncident.isSuccess
+      description: If the request was successful
+      type: Boolean
+    - contextPath: OpsGenie.DeletedIncident.processedAt
+      description: When the request was processed
+      type: Date
+    - contextPath: OpsGenie.DeletedIncident.requestId
+      description: The ID of the request
+      type: String
+    - contextPath: OpsGenie.DeletedIncident.status
+      description: The human readable result of the request
+      type: String
+    - contextPath: OpsGenie.DeletedIncident.success
+      description: Bool, whether the request was a success
+      type: Boolean
+
+  - arguments:
+    - name: request_id
+      required: true
+    - name: request_type_suffix
+      required: true
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+      defaultValue: '5'
+    deprecated: false
+    execution: false
+    hidden: true
+    name: opsgenie-get-polling-result
+    polling: true
+    outputs: []
+  - arguments:
+    - default: false
+      description: The ID of the incident from opsgenie
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
+      description: Maximum results to return
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+      defaultValue: '20'
+    - default: false
+      description: Start index of the result set (to apply pagination). Minimum value
+        (and also default value) is 0.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+      defaultValue: '0'
+    - auto: PREDEFINED
+      default: false
+      description: The ID of the alert from opsgenie
+      isArray: false
+      name: status
+      required: false
+      secret: false
+      predefined:
+      - Open
+      - Closed
+    - auto: PREDEFINED
+      default: false
+      description: Incident Priority. Defaulted to P3 if not provided
+      isArray: true
+      name: priority
+      predefined:
+      - P1
+      - P2
+      - P3
+      - P4
+      - P5
+      required: false
+      secret: false
+      defaultValue: P3
+    - default: false
+      description: Comma separated list of tags to add.
+      isArray: true
+      name: tags
+      required: false
+      secret: false
+    - default: false
+      description: URL Encoded query params
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    deprecated: false
+    description: List the current incidents from OpsGenie.
+    execution: false
+    name: opsgenie-get-incidents
+    polling: true
+    outputs:
+    - contextPath: OpsGenie.Incident.acknowledged
+      description: State of Acknoweledgement
+      type: Boolean
+    - contextPath: OpsGenie.Incident.alias
+      description: Alert Alias
+      type: String
+    - contextPath: OpsGenie.Incident.count
+      description: Count of Alert occurences
+      type: Number
+    - contextPath: OpsGenie.Incident.createdAt
+      description: Time alert created
+      type: Date
+    - contextPath: OpsGenie.Incident.id
+      description: ID of alert
+      type: String
+    - contextPath: OpsGenie.Incident.integration.id
+      description: ID of integration
+      type: String
+    - contextPath: OpsGenie.Incident.integration.name
+      description: Integration name
+      type: String
+    - contextPath: OpsGenie.Incident.integration.type
+      description: Type of integration
+      type: String
+    - contextPath: OpsGenie.Incident.isSeen
+      description: Whether alert has been seen
+      type: Boolean
+    - contextPath: OpsGenie.Incident.lastOccurredAt
+      description: Time alert last occured
+      type: Date
+    - contextPath: OpsGenie.Incident.message
+      description: Alert Message
+      type: String
+    - contextPath: OpsGenie.Incident.owner
+      description: Owner of Alert
+      type: String
+    - contextPath: OpsGenie.Incident.ownerTeamId
+      description: Team ID of Owner
+      type: String
+    - contextPath: OpsGenie.Incident.priority
+      description: Alert Priority
+      type: String
+    - contextPath: OpsGenie.Incident.responders.id
+      description: ID of responders
+      type: String
+    - contextPath: OpsGenie.Incident.responders.type
+      description: Type of Responders
+      type: String
+    - contextPath: OpsGenie.Incident.seen
+      description: Seen status of alert
+      type: Boolean
+    - contextPath: OpsGenie.Incident.snoozed
+      description: Whether alert has been snoozed
+      type: Boolean
+    - contextPath: OpsGenie.Incident.source
+      description: Source of Alert
+      type: String
+    - contextPath: OpsGenie.Incident.status
+      description: Status of Alert
+      type: String
+    - contextPath: OpsGenie.Incident.teams.id
+      description: Id of teams associated with Alert
+      type: String
+    - contextPath: OpsGenie.Incident.tinyId
+      description: Shorter ID for alert
+      type: String
+    - contextPath: OpsGenie.Incident.updatedAt
+      description: Last Updated time for Alert
+      type: Date
+    - contextPath: OpsGenie.Incident.report.ackTime
+      description: Acknoweledgement Time of Alert
+      type: Number
+    - contextPath: OpsGenie.Incident.report.acknowledgedBy
+      description: User that Acknolwedged the alert
+      type: String
+    - contextPath: OpsGenie.Incident.report.closeTime
+      description: Time Alarm closed
+      type: Number
+    - contextPath: OpsGenie.Incident.report.closedBy
+      description: Who Closed the alarm
+      type: String
+
+  - arguments:
+    - default: false
+      description: The ID of the incident from opsgenie
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+      defaultValue: '5'
+    - default: false
+      description: Additional incident note to add.
+      isArray: false
+      name: note
+      required: false
+      secret: false
+    deprecated: false
+    description: Close an incident from OpsGenie
+    execution: false
+    name: opsgenie-close-incident
+    polling: true
+    outputs:
+    - contextPath: OpsGenie.ClosedIncident.action
+      description: Action of this Request
+      type: String
+    - contextPath: OpsGenie.ClosedIncident.alertId
+      description: Id of closed incident
+      type: String
+    - contextPath: OpsGenie.ClosedIncident.alias
+      description: Alais of closed incident
+      type: String
+    - contextPath: OpsGenie.ClosedIncident.integrationId
+      description: Integration of closed incident
+      type: String
+    - contextPath: OpsGenie.ClosedIncident.isSuccess
+      description: If the request was successful
+      type: Boolean
+    - contextPath: OpsGenie.ClosedIncident.processedAt
+      description: When the request was processed
+      type: Date
+    - contextPath: OpsGenie.ClosedIncident.requestId
+      description: The ID of the request
+      type: String
+    - contextPath: OpsGenie.ClosedIncident.status
+      description: The human readable result of the request
+      type: String
+    - contextPath: OpsGenie.ClosedIncident.success
+      description: Bool, whether the request was a success
+      type: Boolean
+
+  - arguments:
+    - default: false
+      description: The ID of the incident from opsgenie
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+      defaultValue: '5'
+    - default: false
+      description: Additional incident note to add.
+      isArray: false
+      name: note
+      required: false
+      secret: false
+    deprecated: false
+    description: Resolve an incident from OpsGenie
+    execution: false
+    name: opsgenie-resolve-incident
+    polling: true
+    outputs:
+    - contextPath: OpsGenie.ResolvedIncident.action
+      description: Action of this Request
+      type: String
+    - contextPath: OpsGenie.ResolvedIncident.alertId
+      description: Id of closed incident
+      type: String
+    - contextPath: OpsGenie.ResolvedIncident.alias
+      description: Alais of closed incident
+      type: String
+    - contextPath: OpsGenie.ResolvedIncident.integrationId
+      description: Integration of closed incident
+      type: String
+    - contextPath: OpsGenie.ResolvedIncident.isSuccess
+      description: If the request was successful
+      type: Boolean
+    - contextPath: OpsGenie.ResolvedIncident.processedAt
+      description: When the request was processed
+      type: Date
+    - contextPath: OpsGenie.ResolvedIncident.requestId
+      description: The ID of the request
+      type: String
+    - contextPath: OpsGenie.ResolvedIncident.status
+      description: The human readable result of the request
+      type: String
+    - contextPath: OpsGenie.ResolvedIncident.success
+      description: Bool, whether the request was a success
+      type: Boolean
+
+  - arguments:
+    - default: false
+      description: The ID of the incident from opsgenie
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+      defaultValue: '5'
+    - default: false
+      description: Team or user that the incident will be routed to. List of triples
+        (responser_type, value_type, value)
+      isArray: true
+      name: responders
+      required: true
+      secret: false
+    - default: false
+      description: Additional alert note to add
+      isArray: false
+      name: note
+      required: false
+      secret: false
+    deprecated: false
+    description: Add responder to an OpsGenie Incident
+    execution: false
+    name: opsgenie-add-responder-incident
+    polling: true
+    outputs:
+    - contextPath: OpsGenie.AddResponderIncident.action
+      description: Action of this Request
+      type: String
+    - contextPath: OpsGenie.AddResponderIncident.alertId
+      description: ID of created Incident
+      type: String
+    - contextPath: OpsGenie.AddResponderIncident.alias
+      description: Alais of created Incident
+      type: String
+    - contextPath: OpsGenie.AddResponderIncident.integrationId
+      description: Integration of created Incident
+      type: String
+    - contextPath: OpsGenie.AddResponderIncident.isSuccess
+      description: If the request was successful
+      type: Boolean
+    - contextPath: OpsGenie.AddResponderIncident.processedAt
+      description: When the request was processed
+      type: Date
+    - contextPath: OpsGenie.AddResponderIncident.requestId
+      description: The ID of the request
+      type: String
+    - contextPath: OpsGenie.AddResponderIncident.status
+      description: The human readable result of the request
+      type: String
+    - contextPath: OpsGenie.AddResponderIncident.success
+      description: Bool, whether the request was a success
+      type: Boolean
+
+  - arguments:
+    - default: false
+      description: The ID of the incident from opsgenie
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+      defaultValue: '5'
+    - default: false
+      description: Comma separated list of tags to add into incident.
+      isArray: true
+      name: tags
+      required: true
+      secret: false
+    - default: false
+      description: Additional incident note to add
+      isArray: false
+      name: note
+      required: false
+      secret: false
+    deprecated: false
+    description: Add tag into OpsGenie Incident
+    execution: false
+    name: opsgenie-add-tag-incident
+    polling: true
+    outputs:
+    - contextPath: OpsGenie.AddTagIncident.action
+      description: Action of this Request
+      type: String
+    - contextPath: OpsGenie.AddTagIncident.alertId
+      description: ID of added Incident
+      type: String
+    - contextPath: OpsGenie.AddTagIncident.alias
+      description: Alais of added Incident
+      type: String
+    - contextPath: OpsGenie.AddTagIncident.integrationId
+      description: Integration of added Incident
+      type: String
+    - contextPath: OpsGenie.AddTagIncident.isSuccess
+      description: If the request was successful
+      type: Boolean
+    - contextPath: OpsGenie.AddTagIncident.processedAt
+      description: When the request was processed
+      type: Date
+    - contextPath: OpsGenie.AddTagIncident.requestId
+      description: The ID of the request
+      type: String
+    - contextPath: OpsGenie.AddTagIncident.status
+      description: The human readable result of the request
+      type: String
+    - contextPath: OpsGenie.AddTagIncident.success
+      description: Bool, whether the request was a success
+      type: Boolean
+
+  - arguments:
+    - default: false
+      description: The ID of the incident from opsgenie
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+      defaultValue: '5'
+    - default: false
+      description: Comma separated list of tags to add into incident.
+      isArray: true
+      name: tags
+      required: true
+      secret: false
+    - default: false
+      description: Additional incident note to add
+      isArray: false
+      name: note
+      required: false
+      secret: false
+    deprecated: false
+    description: Remove tag from OpsGenie Alert
+    execution: false
+    name: opsgenie-remove-tag-incident
+    polling: true
+    outputs:
+    - contextPath: OpsGenie.RemoveTagIncident.action
+      description: Action of this Request
+      type: String
+    - contextPath: OpsGenie.RemoveTagIncident.alertId
+      description: ID of removed tag Incident
+      type: String
+    - contextPath: OpsGenie.RemoveTagIncident.alias
+      description: Alais of removed tag Incident
+      type: String
+    - contextPath: OpsGenie.RemoveTagIncident.integrationId
+      description: Integration of removed tag Incident
+      type: String
+    - contextPath: OpsGenie.RemoveTagIncident.isSuccess
+      description: If the request was successful
+      type: Boolean
+    - contextPath: OpsGenie.RemoveTagIncident.processedAt
+      description: When the request was processed
+      type: Date
+    - contextPath: OpsGenie.RemoveTagIncident.requestId
+      description: The ID of the request
+      type: String
+    - contextPath: OpsGenie.RemoveTagIncident.status
+      description: The human readable result of the request
+      type: String
+    - contextPath: OpsGenie.RemoveTagIncident.success
+      description: Bool, whether the request was a success
+      type: Boolean
+
+  - arguments:
+    - default: false
+      description: The ID of the team from opsgenie
+      isArray: false
+      name: team_id
+      required: false
+      secret: false
+    description: Get teams
+    name: opsgenie-get-teams
+    outputs:
+    - contextPath: OpsGenie.Team.description
+      description: Team description
+      type: String
+    - contextPath: OpsGenie.Team.id
+      description: Team id
+      type: String
+    - contextPath: OpsGenie.Team.links.api
+      description: Team api links
+      type: String
+    - contextPath: OpsGenie.Team.links.web
+      description: Team web links
+      type: String
+    - contextPath: OpsGenie.Team.name
+      description: Team name
+      type: String
+  dockerimage: demisto/python3:3.9.7.24076
+  isfetch: true
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+fromversion: '6.2'
+tests:
+- No tests (auto formatted)
