@@ -386,7 +386,7 @@ def get_and_validate_positive_int_argument(args: Dict, argument_name: str, lower
     argument_value = arg_to_number(args.get(argument_name), arg_name=argument_name)
     if argument_value is None:
         return None
-    if not lower_bound < argument_value < upper_bound:  # type:ignore
+    if not lower_bound <= argument_value <= upper_bound:  # type:ignore
         raise ValueError(
             MESSAGES["INVALID_POSITIVE_INT"].format(argument_value, argument_name, lower_bound, upper_bound))
     return argument_value
