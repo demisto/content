@@ -27,6 +27,9 @@ class KafkaCommunicator:
     """Client class to interact with Kafka."""
     conf_producer = None
     conf_consumer = None
+    CA_PATH = 'ca.cert'
+    CLIENT_CERT_PATH = 'client.cert'
+    CLIENT_KEY_PATH = 'client_key.key'
 
     def __init__(self, brokers: str, offset: str = 'earliest', group_id: str = 'xsoar_group',
                  message_max_bytes: int = None, enable_auto_commit: bool = False, ca_cert=None,
@@ -41,34 +44,32 @@ class KafkaCommunicator:
         self.conf_consumer = {'bootstrap.servers': brokers,
                               'session.timeout.ms': 5000,
                               'auto.offset.reset': offset,
-                              'group.id': group_id,  # TODO: Need to sort this
+                              'group.id': group_id,
                               'enable.auto.commit': enable_auto_commit}
 
         if message_max_bytes:
             self.conf_consumer.update({'message.max.bytes': int(message_max_bytes)})
 
         if ca_cert:
-            ca_path = 'ca.cert'  # type: ignore
-            with open(ca_path, 'w') as file:
+            with open(self.CA_PATH, 'w') as file:
                 file.write(ca_cert)
-                ca_path = os.path.abspath(ca_path)
+                ca_path = os.path.abspath(self.CA_PATH)
             self.conf_producer.update({'ssl.ca.location': ca_path})
             self.conf_consumer.update({'ssl.ca.location': ca_path})
         if client_cert:
-            client_path = 'client.cert'
-            with open(client_path, 'w') as file:
+            with open(self.CLIENT_CERT_PATH, 'w') as file:
                 file.write(client_cert)
-                client_path = os.path.abspath(client_path)
+                client_path = os.path.abspath(self.CLIENT_CERT_PATH)
             self.conf_producer.update({'ssl.certificate.location': client_path,
                                        'security.protocol': 'ssl'})
             self.conf_consumer.update({'ssl.certificate.location': client_path,
                                        'security.protocol': 'ssl'})
         if client_cert_key:
-            client_key_path = 'client_key.key'
-            with open(client_key_path, 'w') as file:
+            with open(self.CLIENT_KEY_PATH, 'w') as file:
                 file.write(client_cert_key)
-                self.conf_producer.update({'ssl.key.location': client_key_path})
-                self.conf_consumer.update({'ssl.key.location': client_key_path})
+                client_key_path = os.path.abspath(self.CLIENT_KEY_PATH)
+            self.conf_producer.update({'ssl.key.location': client_key_path})
+            self.conf_consumer.update({'ssl.key.location': client_key_path})
         if ssl_password:
             self.conf_producer.update({'ssl.key.password': ssl_password})
             self.conf_consumer.update({'ssl.key.password': ssl_password})

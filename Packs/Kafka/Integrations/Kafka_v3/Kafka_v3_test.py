@@ -7,6 +7,7 @@ from confluent_kafka import KafkaError, TopicPartition, TIMESTAMP_NOT_AVAILABLE,
 
 import pytest
 import Kafka_v3
+import os
 
 KAFKA = KafkaCommunicator(brokers=['some_broker_ip'])
 
@@ -521,3 +522,43 @@ def test_fetch_incidents_no_partitions(mocker, demisto_params, last_run, cluster
     close_mock.assert_called_once()
     incidents_mock.assert_called_once_with([])
     set_last_run_mock.assert_called_once_with(last_run)
+
+
+def test_ssl_configuration():
+    kafka = KafkaCommunicator(brokers='brokers',
+                              ca_cert='ca_cert',
+                              client_cert='client_cert',
+                              client_cert_key='client_cert_key',
+                              ssl_password='ssl_password',
+                              offset='offset')
+    expected_consumer_conf = {
+        'auto.offset.reset': 'earliest',
+        'bootstrap.servers': 'brokers',
+        'enable.auto.commit': False,
+        'group.id': 'xsoar_group',
+        'security.protocol': 'ssl',
+        'session.timeout.ms': 5000,
+        'ssl.ca.location': os.path.abspath(kafka.CA_PATH),
+        'ssl.certificate.location': os.path.abspath(kafka.CLIENT_CERT_PATH),
+        'ssl.key.location': os.path.abspath(kafka.CLIENT_KEY_PATH),
+        'ssl.key.password': 'ssl_password'
+    }
+    expected_producer_conf = {
+        'bootstrap.servers': 'brokers',
+        'security.protocol': 'ssl',
+        'ssl.ca.location': os.path.abspath(kafka.CA_PATH),
+        'ssl.certificate.location': os.path.abspath(kafka.CLIENT_CERT_PATH),
+        'ssl.key.location': os.path.abspath(kafka.CLIENT_KEY_PATH),
+        'ssl.key.password': 'ssl_password'
+    }
+    assert kafka.conf_consumer == expected_consumer_conf
+    assert kafka.conf_producer == expected_producer_conf
+    with open(kafka.CA_PATH, 'r') as f:
+        assert f.read() == 'ca_cert'
+    with open(kafka.CLIENT_CERT_PATH, 'r') as f:
+        assert f.read() == 'client_cert'
+    with open(kafka.CLIENT_KEY_PATH, 'r') as f:
+        assert f.read() == 'client_cert_key'
+    os.remove(kafka.CA_PATH)
+    os.remove(kafka.CLIENT_CERT_PATH)
+    os.remove(kafka.CLIENT_KEY_PATH)
