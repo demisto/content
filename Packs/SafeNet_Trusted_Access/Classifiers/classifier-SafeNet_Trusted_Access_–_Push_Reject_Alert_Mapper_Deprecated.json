@@ -1,9 +1,9 @@
 {
-    "description": "Maps incoming SafeNet Trusted Access account lockout alert fields.",
+    "description": "Maps incoming SafeNet Trusted Access alert fields.",
     "feed": false,
-    "id": "SafeNet Trusted Access – Account Lockout Alert Mapper",
+    "id": "SafeNet Trusted Access – Push Reject Alert Mapper",
     "mapping": {
-        "SafeNet Trusted Access Account Lockout Alert": {
+        "SafeNet Trusted Access Push Reject Alert": {
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "SafeNet Trusted Access - Instance Name": {
@@ -44,7 +44,7 @@
                                         "isContext": false,
                                         "value": {
                                             "complex": null,
-                                            "simple": "Username:"
+                                            "simple": "user account"
                                         }
                                     }
                                 },
@@ -56,7 +56,7 @@
                                         "isContext": false,
                                         "value": {
                                             "complex": null,
-                                            "simple": "Account:"
+                                            "simple": "in organization"
                                         }
                                     }
                                 },
@@ -82,7 +82,7 @@
                                         "isContext": false,
                                         "value": {
                                             "complex": null,
-                                            "simple": "Account:"
+                                            "simple": "Organization name:"
                                         }
                                     }
                                 },
@@ -94,7 +94,7 @@
                                         "isContext": false,
                                         "value": {
                                             "complex": null,
-                                            "simple": "Instance name"
+                                            "simple": "Resource name"
                                         }
                                     }
                                 },
@@ -109,10 +109,6 @@
                     "simple": ""
                 }
             }
-        },
-        "SafeNet Trusted Access Alert": {
-            "dontMapEventToLabels": false,
-            "internalMapping": {}
         },
         "dbot_classification_incident_type_all": {
             "dontMapEventToLabels": false,
@@ -184,7 +180,7 @@
             }
         }
     },
-    "name": "SafeNet Trusted Access – Account Lockout Alert Mapper",
+    "name": "SafeNet Trusted Access – Push Reject Alert Mapper",
     "type": "mapping-incoming",
     "version": -1,
     "fromVersion": "6.0.0"
