@@ -116,7 +116,7 @@ script:
     - contextPath: wsa.response
       description: whether the result indicates if request is success or failure
     description: Deleting an Access Policy
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   runonce: false
   subtype: python3
 fromversion: 6.0.0
