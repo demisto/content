@@ -9,3 +9,6 @@ Then, follow the steps below:
 4. Copy your API key and enter it inside the API key field.
 
 **Note** For more details about API call limits and plans please visit: https://maltiverse.com/plans
+
+---
+[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/maltiverse)
