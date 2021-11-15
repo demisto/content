@@ -4627,7 +4627,7 @@
             "fromversion": "6.0.0"
         },
         {
-            "integrations": "Azure Data Explorer",
+            "integrations": "AzureDataExplorer",
             "playbookID": "playbook-AzureDataExplorer-Test",
             "fromversion": "6.0.0"
         },
