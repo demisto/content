@@ -2,7 +2,7 @@ commonfields:
   id: JsonToNestedTable
   version: -1
 fromversion: 5.5.0
-name: JsonToTable
+name: JsonToNestedTable
 script: ''
 type: python
 tags:
@@ -20,6 +20,8 @@ args:
   description: The markdown title.
 - name: headers
   description: A comma-separated list of table header values. Default will include all available table headers.
+- name: json_trasnfrom_properties
+  description: A json to transform the value to strings
 scripttarget: 0
 subtype: python3
 runonce: false
