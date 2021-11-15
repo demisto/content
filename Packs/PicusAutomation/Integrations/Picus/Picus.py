@@ -84,17 +84,14 @@ def getVectorList():
     page = arg_to_number(demisto.args().get('page'))
     size = arg_to_number(demisto.args().get('size'))
     picus_post_data = {"add_user_details":add_user_details,"size":size,"page":page}
-    post_data_copy = {**picus_post_data}
-    for key,value in post_data_copy.items():
-        if value==None:
-            del picus_post_data[key]
+    picus_post_data = assign_params(**picus_post_data)
 
     picus_endpoint_response = requests.post(picus_req_url,headers=picus_headers,data=json.dumps(picus_post_data),verify=verify_certificate)
     picus_vectors = json.loads(picus_endpoint_response.text)["data"]["vectors"]
 
     table_name = "Picus Vector List"
     table_headers = ['name','description','trusted','untrusted','is_disabled','type']
-    md_table = tableToMarkdown(table_name,picus_vectors,headers=table_headers,removeNull=True)
+    md_table = tableToMarkdown(table_name,picus_vectors,headers=table_headers,removeNull=True,headerTransform=string_to_table_header)
     results = CommandResults(readable_output=md_table,outputs=picus_vectors,outputs_prefix="Picus.vectorlist")
 
     return results
@@ -108,7 +105,7 @@ def getPeerList():
 
     table_name = "Picus Peer List"
     table_headers = ['name','registered_ip','type','is_alive']
-    md_table = tableToMarkdown(table_name,picus_peers,headers=table_headers,removeNull=True)
+    md_table = tableToMarkdown(table_name,picus_peers,headers=table_headers,removeNull=True,headerTransform=string_to_table_header)
     results = CommandResults(readable_output=md_table,outputs=picus_peers,outputs_prefix="Picus.peerlist")
 
     return results
@@ -196,7 +193,7 @@ def getAttackResults():
 
     table_name = attack_result + " Attack List"
     table_headers = ['begin_time','end_time','string','threat_id','threat_name']
-    md_table = tableToMarkdown(table_name,picus_attack_results,headers=table_headers,removeNull=True)
+    md_table = tableToMarkdown(table_name,picus_attack_results,headers=table_headers,removeNull=True,headerTransform=string_to_table_header)
     results = CommandResults(readable_output=md_table,outputs_prefix="Picus.attackresults",outputs=threat_ids)
 
     return results
@@ -244,7 +241,7 @@ def runAttacks():
     picus_attack_results = picus_attack_results["results"]
     table_name = "Picus Attack Results"
     table_headers = ['threat_id','result']
-    md_table = tableToMarkdown(table_name, picus_attack_results, headers=table_headers, removeNull=True)
+    md_table = tableToMarkdown(table_name, picus_attack_results, headers=table_headers, removeNull=True,headerTransform=string_to_table_header)
     results = CommandResults(readable_output=md_table,outputs_prefix="Picus.runattacks",outputs=picus_attack_raw_results)
 
     return results
@@ -297,7 +294,7 @@ def getThreatResults():
 
     table_name = "Picus Threat Results"
     table_headers = ['threat_id','result','l1_category','last_time','status']
-    md_table = tableToMarkdown(table_name, picus_threat_results, headers=table_headers, removeNull=True)
+    md_table = tableToMarkdown(table_name, picus_threat_results, headers=table_headers, removeNull=True,headerTransform=string_to_table_header)
     results = CommandResults(readable_output=md_table,outputs_prefix="Picus.threatresults",outputs=picus_threat_raw_results)
 
     return results
@@ -345,7 +342,7 @@ def getMitigationList():
     picus_mitigation_results = picus_mitigation_results["results"]
     table_name = "Picus Mitigation List"
     table_headers = ['threat_id','signature_id','signature_name','vendor']
-    md_table = tableToMarkdown(table_name, picus_mitigation_results, headers=table_headers, removeNull=True)
+    md_table = tableToMarkdown(table_name, picus_mitigation_results, headers=table_headers, removeNull=True,headerTransform=string_to_table_header)
     results = CommandResults(readable_output=md_table,outputs_prefix="Picus.mitigationresults",outputs=picus_mitigation_results)
 
     return results
@@ -407,7 +404,7 @@ def getVectorCompare():
     all_vector_results = all_vector_results["results"]
     table_name = "Picus Vector Compare Result"
     table_headers = ['status','threat_id','name']
-    md_table = tableToMarkdown(table_name, all_vector_results, headers=table_headers, removeNull=True)
+    md_table = tableToMarkdown(table_name, all_vector_results, headers=table_headers, removeNull=True,headerTransform=string_to_table_header)
     results = CommandResults(readable_output=md_table,outputs=all_vector_results,outputs_prefix="Picus.vectorresults")
 
     return results
@@ -439,7 +436,7 @@ def getPicusVersion():
 
     table_name = "Picus Version"
     table_headers = ['version','update_time','last_update_date']
-    md_table = tableToMarkdown(table_name,picus_version_info,headers=table_headers,removeNull=True)
+    md_table = tableToMarkdown(table_name,picus_version_info,headers=table_headers,removeNull=True,headerTransform=string_to_table_header)
     results = CommandResults(readable_output=md_table,outputs=picus_version_info,outputs_prefix="Picus.versioninfo")
 
     return results
@@ -453,7 +450,7 @@ def triggerUpdate():
 
     table_name = "Picus Trigger Update"
     table_headers = ['data','success']
-    md_table = tableToMarkdown(table_name,picus_update_results,headers=table_headers,removeNull=True)
+    md_table = tableToMarkdown(table_name,picus_update_results,headers=table_headers,removeNull=True,headerTransform=string_to_table_header)
     results = CommandResults(readable_output=md_table,outputs=picus_update_results,outputs_prefix="Picus.triggerupdate")
 
     return results
