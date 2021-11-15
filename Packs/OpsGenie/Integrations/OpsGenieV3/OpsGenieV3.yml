@@ -44,7 +44,6 @@ configuration:
   - Alerts
   - Incidents
   required: true
-  isArray: true
   type: 16
 - display: Status
   name: status
@@ -1127,8 +1126,10 @@ script:
 
   - arguments:
     - name: request_id
+      description: Id of request
       required: true
     - name: request_type_suffix
+      description: request_type_suffix
       required: true
     - default: false
       description: Interval in seconds between each poll.
@@ -1141,6 +1142,7 @@ script:
     execution: false
     hidden: true
     name: opsgenie-get-polling-result
+    description: Inside command for polling
     polling: true
     outputs: []
   - arguments:

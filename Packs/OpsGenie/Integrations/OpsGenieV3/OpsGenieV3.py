@@ -448,7 +448,14 @@ def create_alert(client: Client, args: Dict[str, Any]) -> CommandResults:
 def get_alerts(client: Client, args: Dict[str, Any]) -> CommandResults:
     alert_id = args.get("alert-id", None)
     result = client.get_alert(alert_id) if alert_id else list_alerts(client, args)
-    return result
+    if isinstance(result, CommandResults):
+        return result
+    return CommandResults(
+        outputs_prefix="OpsGenie.Alert",
+        outputs=result.get("data"),
+        readable_output=tableToMarkdown("OpsGenie Alert", result.get("data")),
+        raw_response=result
+    )
 
 
 def list_alerts(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -671,7 +678,14 @@ def delete_incident(client: Client, args: Dict[str, Any]) -> CommandResults:
 def get_incidents(client: Client, args: Dict[str, Any]) -> CommandResults:
     incident_id = args.get("incident_id", None)
     result = client.get_incident(args) if incident_id else list_incidents(client, args)
-    return result
+    if isinstance(result, CommandResults):
+        return result
+    return CommandResults(
+        outputs_prefix="OpsGenie.Incident",
+        outputs=result.get("data"),
+        readable_output=tableToMarkdown("OpsGenie Alert", result.get("data")),
+        raw_response=result
+    )
 
 
 def list_incidents(client: Client, args: Dict[str, Any]) -> CommandResults:
