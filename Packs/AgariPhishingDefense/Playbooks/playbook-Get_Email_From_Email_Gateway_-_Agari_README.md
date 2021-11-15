@@ -39,4 +39,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![Get Email From Email Gateway - Agari](Insert the link to your image here)
+![Get Email From Email Gateway - Agari](https://raw.githubusercontent.com/demisto/content/5153dd815b5288877b560e3fdcc3d9ab28cda57e/Packs/AgariPhishingDefense/doc_files/Get_Email_From_Email_Gateway_-_Agari.png)

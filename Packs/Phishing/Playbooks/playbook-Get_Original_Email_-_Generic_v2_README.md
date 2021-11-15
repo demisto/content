@@ -66,4 +66,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![Get Original Email - Generic v2](Insert the link to your image here)
+![Get Original Email - Generic v2](https://raw.githubusercontent.com/demisto/content/5153dd815b5288877b560e3fdcc3d9ab28cda57e/Packs/Phishing/doc_files/Get_Original_Email_-_Generic_v2.png)

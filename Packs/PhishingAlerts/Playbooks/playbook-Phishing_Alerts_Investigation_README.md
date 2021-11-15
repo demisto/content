@@ -57,4 +57,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Phishing Alerts Investigation](Insert the link to your image here)
+![Phishing Alerts Investigation](https://raw.githubusercontent.com/demisto/content/5153dd815b5288877b560e3fdcc3d9ab28cda57e/Packs/PhishingAlerts/doc_files/Phishing_Alerts_Investigation.png)

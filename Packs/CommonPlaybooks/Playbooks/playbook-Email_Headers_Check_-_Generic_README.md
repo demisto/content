@@ -35,4 +35,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![Email Headers Check - Generic](Insert the link to your image here)
+![Email Headers Check - Generic](https://raw.githubusercontent.com/demisto/content/5153dd815b5288877b560e3fdcc3d9ab28cda57e/Packs/CommonPlaybooks/doc_files/Email_Headers_Check_-_Generic.png)

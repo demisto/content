@@ -47,4 +47,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Get Email From Email Gateway - Mimecast](Insert the link to your image here)
+![Get Email From Email Gateway - Mimecast](https://raw.githubusercontent.com/demisto/content/5153dd815b5288877b560e3fdcc3d9ab28cda57e/Packs/Mimecast/doc_files/Get_Email_From_Email_Gateway_-_Mimecast.png)
