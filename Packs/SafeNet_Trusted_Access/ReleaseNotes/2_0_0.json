@@ -1,1 +1,1 @@
-{"breakingChanges": true, "breakingChangesNotes": "Updated input parameters for SafeNet Trusted Access - Add to Unusual Activity Group playbook."}
+{"breakingChanges": true, "breakingChangesNotes": "Updated name of incident type and playbook input parameters. Deprecated old classifiers and mapper and created new."}
