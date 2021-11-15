@@ -2156,6 +2156,8 @@ def execute_search_query_command(client: Client, args: Dict[str, Any]) -> Comman
     max_message = args.get('max_message')
     query_timeout = args.get('query_timeout')
     entity_id = args.get('entity_id')
+    page_size = args.get('page_size', 50)
+    interval_in_secs = int(args.get('interval_in_seconds', 10))
 
     response = client.execute_search_query_request(number_of_days, source_type, host_name, username, subject, sender,
                                                    recipient, hash_, url, process_name, object_, ipaddress, max_message,
@@ -2165,13 +2167,40 @@ def execute_search_query_command(client: Client, args: Dict[str, Any]) -> Comman
     if search_name:
         ec['SearchName'] = search_name
 
+    if not is_demisto_version_ge('6.2.0'):  # only 6.2.0 version and above support polling command.
+        return CommandResults(
+            readable_output=f'New search query created, Task ID={task_id}',
+            outputs_prefix='LogRhythm.Search',
+            outputs_key_field='TaskId',
+            outputs=ec,
+            raw_response=response,
+        )
+
+    get_results_args = {'task_id': task_id, 'page_size': page_size}
+    query_results = client.get_query_result_request(task_id, page_size)
+    items = query_results.get('Items', [])
+    status = query_results.get('TaskStatus')
+
+    if items:
+        hr = tableToMarkdown(f'Search results for task {task_id}', items, headerTransform=pascalToSpace)
+    else:
+        hr = f'Task status: {status}'
+
+    ec = [{'TaskId': task_id, 'TaskStatus': status, 'Results': items}]
+
     command_results = CommandResults(
-        readable_output=f'New search query created, Task ID={task_id}',
+        readable_output=hr,
         outputs_prefix='LogRhythm.Search',
         outputs_key_field='TaskId',
         outputs=ec,
-        raw_response=response,
+        raw_response=query_results,
     )
+
+    if status == 'Searching':
+        scheduled_command = ScheduledCommand(command='lr-get-query-result', next_run_in_seconds=interval_in_secs,
+                                             args=get_results_args, timeout_in_seconds=600)
+        command_results.scheduled_command = scheduled_command
+        return command_results
 
     return command_results
 

@@ -2661,6 +2661,7 @@ script:
       contextPath: LogRhythm.ListItemsRemove.listItemsCount
       description: 'The list items count.'
   - name: lr-execute-search-query
+    polling: true
     description: 'Execute a search query on the LogRhythm log database.'
     arguments:
     - name: number_of_days
@@ -3687,6 +3688,16 @@ script:
       description: 'Entity ID.'
       required: false
       isArray: false
+    - default: false
+      description: 'Interval in seconds between each poll.'
+      isArray: false
+      name: interval_in_seconds
+      required: false
+    - name: page_size
+      description: 'Page size.'
+      required: false
+      isArray: false
+      defaultValue: "50"
     outputs:
     - type: String
       contextPath: LogRhythm.Search.TaskId
@@ -3697,6 +3708,63 @@ script:
     - type: String
       contextPath: LogRhythm.Search.SearchName
       description: 'The name of the search query in Cortex XSOAR.'
+    - contextPath: LogRhythm.Search.TaskStatus
+      description: 'Task status.'
+      type: String
+    - contextPath: LogRhythm.Search.TaskId
+      description: 'Task ID.'
+      type: String
+    - contextPath: LogRhythm.Search.Results.originEntityId
+      description: 'Entity ID.'
+      type: Number
+    - contextPath: LogRhythm.Search.Results.impactedIp
+      description: 'Impacted IP address.'
+      type: String
+    - contextPath: LogRhythm.Search.Results.classificationTypeName
+      description: 'Classification name.'
+      type: String
+    - contextPath: LogRhythm.Search.Results.logSourceName
+      description: 'Log source name.'
+      type: String
+    - contextPath: LogRhythm.Search.Results.entityName
+      description: 'Entity name.'
+      type: String
+    - contextPath: LogRhythm.Search.Results.normalDate
+      description: 'Date.'
+      type: Date
+    - contextPath: LogRhythm.Search.Results.vendorMessageId
+      description: 'Vendor log message.'
+      type: String
+    - contextPath: LogRhythm.Search.Results.priority
+      description: 'Log priority.'
+      type: Number
+    - contextPath: LogRhythm.Search.Results.sequenceNumber
+      description: 'Sequence number.'
+      type: String
+    - contextPath: LogRhythm.Search.Results.originHostId
+      description: 'Origin host ID.'
+      type: Number
+    - contextPath: LogRhythm.Search.Results.mpeRuleId
+      description: 'Logrhythm rule ID.'
+      type: Number
+    - contextPath: LogRhythm.Search.Results.originIp
+      description: 'Origin IP address.'
+      type: String
+    - contextPath: LogRhythm.Search.Results.mpeRuleName
+      description: 'Logrhythm rule name.'
+      type: String
+    - contextPath: LogRhythm.Search.Results.logSourceHostId
+      description: 'Log source host ID.'
+      type: Number
+    - contextPath: LogRhythm.Search.Results.originHost
+      description: 'Origin host.'
+      type: String
+    - contextPath: LogRhythm.Search.Results.logDate
+      description: 'Log date.'
+      type: Date
+    - contextPath: LogRhythm.Search.Results.classificationName
+      description: 'Log classification name.'
+      type: String
   - name: lr-get-query-result
     description: 'Get the search query result for the specified task ID. The task ID can be retrieved from the lr-execute-search-query command.'
     arguments:

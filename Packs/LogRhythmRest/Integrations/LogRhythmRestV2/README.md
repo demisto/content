@@ -5313,6 +5313,8 @@ Execute a search query on the LogRhythm log database.
 | max_message | Maximum number of log messages to query. Default is 100. | Optional | 
 | query_timeout | The query timeout in seconds. Default is 60. | Optional | 
 | entity_id | Entity ID. | Optional | 
+| interval_in_seconds | Interval in seconds between each poll. | Optional | 
+| page_size | Page size. | Optional | 
 
 
 #### Context Output
@@ -5322,6 +5324,25 @@ Execute a search query on the LogRhythm log database.
 | LogRhythm.Search.TaskId | String | The task ID returned from the database for the current search. This is actually the search GUID. | 
 | LogRhythm.Search.StatusMessage | String | The task status returned from the database for the current search. | 
 | LogRhythm.Search.SearchName | String | The name of the search query in Cortex XSOAR. | 
+| LogRhythm.Search.Results.TaskStatus | String | Task status. | 
+| LogRhythm.Search.Results.TaskID | String | Task ID. | 
+| LogRhythm.Search.Results.originEntityId | Number | Entity ID. | 
+| LogRhythm.Search.Results.impactedIp | String | Impacted IP address. | 
+| LogRhythm.Search.Results.classificationTypeName | String | Classification name. | 
+| LogRhythm.Search.Results.logSourceName | String | Log source name. | 
+| LogRhythm.Search.Results.entityName | String | Entity name. | 
+| LogRhythm.Search.Results.normalDate | Date | Date. | 
+| LogRhythm.Search.Results.vendorMessageId | String | Vendor log message. | 
+| LogRhythm.Search.Results.priority | Number | Log priority. | 
+| LogRhythm.Search.Results.sequenceNumber | String | Sequence number. | 
+| LogRhythm.Search.Results.originHostId | Number | Origin host ID. | 
+| LogRhythm.Search.Results.mpeRuleId | Number | Logrhythm rule ID. | 
+| LogRhythm.Search.Results.originIp | String | Origin IP address. | 
+| LogRhythm.Search.Results.mpeRuleName | String | Logrhythm rule name. | 
+| LogRhythm.Search.Results.logSourceHostId | Number | Log source host ID. | 
+| LogRhythm.Search.Results.originHost | String | Origin host. | 
+| LogRhythm.Search.Results.logDate | Date | Log date. | 
+| LogRhythm.Search.Results.classificationName | String | Log classification name. | 
 
 
 #### Command Example
