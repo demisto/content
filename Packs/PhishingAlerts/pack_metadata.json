@@ -13,8 +13,7 @@
         "Scam",
         "Spam",
         "Email"],
-    "useCases": [
-        "PhishingAlerts"
-    ],
+    "itemPrefix": ["Email"],
+    "useCases": [],
     "keywords": []
 }
