@@ -129,7 +129,7 @@ class KafkaCommunicator:
 
     def consume(self, topic: str, partition: int = -1, offset: str = '0') -> Message:
         kafka_consumer = KConsumer(self.conf_consumer)
-        kafka_consumer.assign(self.get_topic_partitions(topic, partition, offset))
+        kafka_consumer.assign(self.get_topic_partitions(topic, partition, offset, True))
         polled_msg = kafka_consumer.poll(1.0)
         demisto.debug(f"polled {polled_msg}")
         kafka_consumer.close()
@@ -150,7 +150,7 @@ class KafkaCommunicator:
             return number_offset
 
     def get_topic_partitions(self, topic: str, partition: Union[int, list],
-                             offset: Union[str, int]) -> list:
+                             offset: Union[str, int], consumer: bool = False) -> list:
         topic_partitions = []
         if partition != -1 and type(partition) is not list:
             offset = self.get_offset_for_partition(topic, int(partition), offset)  # type: ignore
@@ -166,7 +166,7 @@ class KafkaCommunicator:
                         raise e
 
         else:
-            topics = self.get_topics()
+            topics = self.get_topics(consumer=consumer)
             topic_metadata = topics[topic]
             for metadata_partition in topic_metadata.partitions.values():
                 try:
@@ -399,6 +399,7 @@ def fetch_incidents(kafka, demisto_params: dict) -> None:
     message_max_bytes = int(handle_empty(demisto_params.get("max_bytes_per_message", 1048576), 1048576))
     max_messages = int(handle_empty(demisto_params.get('max_fetch', 50), 50))
     last_fetched_offsets = demisto.getLastRun().get('last_fetched_offsets', {})
+    last_topic = demisto.getLastRun().get('last_topic', '')
     demisto.debug(f"Starting fetch incidents with last_fetched_offsets: {last_fetched_offsets}")
     incidents = []
 
@@ -407,6 +408,10 @@ def fetch_incidents(kafka, demisto_params: dict) -> None:
     kafka_consumer = KConsumer(kafka.conf_consumer)
     check_params(kafka, topic, partitions, offset, True)
 
+    if topic != last_topic:
+        last_fetched_offsets = {}
+
+    topic_partitions = []
     for partition in partitions:
         specific_offset = handle_empty(last_fetched_offsets.get(partition), offset)
         demisto.debug(f'Getting last offset for partition {partition}, specific offset is {specific_offset}\n')
@@ -415,20 +420,21 @@ def fetch_incidents(kafka, demisto_params: dict) -> None:
             earliest_offset, latest_offset = kafka.get_partition_offsets(topic=topic, partition=int(partition))
             if specific_offset >= latest_offset:
                 continue
-        topic_partitions = kafka.get_topic_partitions(topic=topic, partition=int(partition),
-                                                      offset=specific_offset)
-        demisto.debug(f"The topic partitions assigned to the consumer are: {topic_partitions}")
+        topic_partitions += kafka.get_topic_partitions(topic=topic, partition=int(partition),
+                                                       offset=specific_offset)
+    demisto.debug(f"The topic partitions assigned to the consumer are: {topic_partitions}")
+    if topic_partitions:
         kafka_consumer.assign(topic_partitions)
 
     for message_num in range(max_messages):
         polled_msg = kafka_consumer.poll(1.0)
         if polled_msg:
             incidents.append(create_incident(message=polled_msg, topic=topic))
-            last_fetched_offsets[polled_msg.partition()] = polled_msg.offset()
+            last_fetched_offsets[f'{polled_msg.partition()}'] = polled_msg.offset()
 
     kafka_consumer.close()
 
-    last_run = {'last_fetched_offsets': last_fetched_offsets}
+    last_run = {'last_fetched_offsets': last_fetched_offsets, 'last_topic': topic}
     demisto.debug(f"Fetching finished, setting last run to {last_run}")
     demisto.setLastRun(last_run)
 
