@@ -96,22 +96,25 @@ class Client(BaseClient):
                                          token_retrieval_url='https://login.windows.net/common/oauth2/token',
                                          redirect_uri=redirect_uri)
 
-    def _http_request(self, method, url_suffix='', full_url=None, headers=None, auth=None, json_data=None,
-                      params=None, data=None, files=None, timeout=TIMEOUT_DEFAULT, resp_type='json', ok_codes=None,
-                      return_empty_response=False, retries=0, status_list_to_retry=None,
-                      backoff_factor=5, raise_on_redirect=False, raise_on_status=False,
-                      error_handler=None, empty_valid_codes=None, **kwargs):
+    def http_request(self, method, url_suffix='', full_url=None, headers=None, auth=None, json_data=None,
+                     params=None, data=None, files=None, timeout=None, resp_type='json', ok_codes=None,
+                     return_empty_response=False, retries=0, status_list_to_retry=None,
+                     backoff_factor=5, raise_on_redirect=False, raise_on_status=False,
+                     error_handler=None, empty_valid_codes=None, **kwargs):
         """
-        Calls the built in http_request, only changing timeout.
+        Calls the built in http_request, replacing a None timeout with self.timeout
         """
-        return super()._http_request(method=method, url_suffix=url_suffix, full_url=full_url,
-                                     headers=headers, auth=auth, json_data=json_data,
-                                     return_empty_response=return_empty_response, retries=retries,
-                                     status_list_to_retry=status_list_to_retry,
-                                     backoff_factor=backoff_factor, raise_on_redirect=raise_on_redirect,
-                                     raise_on_status=raise_on_status, error_handler=error_handler,
-                                     empty_valid_codes=empty_valid_codes,
-                                     timeout=self.timeout, **kwargs)
+        if timeout is None:
+            timeout = self.timeout
+        return self._http_request(method=method, url_suffix=url_suffix, full_url=full_url,
+                                  params=params, data=data, files=files, resp_type=resp_type, ok_codes=ok_codes,
+                                  headers=headers, auth=auth, json_data=json_data,
+                                  return_empty_response=return_empty_response, retries=retries,
+                                  status_list_to_retry=status_list_to_retry,
+                                  backoff_factor=backoff_factor, raise_on_redirect=raise_on_redirect,
+                                  raise_on_status=raise_on_status, error_handler=error_handler,
+                                  empty_valid_codes=empty_valid_codes,
+                                  timeout=timeout, **kwargs)
 
     def get_access_token_data(self):
         access_token_jwt = self.ms_client.get_access_token()
@@ -134,7 +137,7 @@ class Client(BaseClient):
         params = {
             'PublisherIdentifier': PUBLISHER_IDENTIFIER
         }
-        response = self._http_request(
+        response = self.http_request(
             method='GET',
             url_suffix='',
             full_url=blob_url,
@@ -163,7 +166,7 @@ class Client(BaseClient):
             params['startTime'] = start_time
             params['endTime'] = end_time
 
-        response = self._http_request(
+        response = self.http_request(
             method='GET',
             url_suffix=self.suffix_template.format(self.tenant_id, 'content'),
             headers=headers,
@@ -179,7 +182,7 @@ class Client(BaseClient):
         params = {
             'PublisherIdentifier': PUBLISHER_IDENTIFIER
         }
-        response = self._http_request(
+        response = self.http_request(
             method='GET',
             url_suffix=self.suffix_template.format(self.tenant_id, 'list'),
             headers=headers,
@@ -197,7 +200,7 @@ class Client(BaseClient):
             'PublisherIdentifier': PUBLISHER_IDENTIFIER,
             'contentType': content_type
         }
-        return self._http_request(
+        return self.http_request(
             method='POST',
             url_suffix=self.suffix_template.format(self.tenant_id, start_or_stop_suffix),
             headers=headers,
