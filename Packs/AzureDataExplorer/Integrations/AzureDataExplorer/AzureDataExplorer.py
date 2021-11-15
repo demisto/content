@@ -158,7 +158,16 @@ class DataExplorerClient:
             cancel_running_query += f" with ( reason = '{reason}' )"
         return self.management_query_request(database_name, cancel_running_query)
 
-    def management_query_request(self, database_name: str, mgmt_query: str):
+    def management_query_request(self, database_name: str, mgmt_query: str) -> Dict[str, Any]:
+        """
+            API call method for management query endpoint.
+            Each requests that uses management query endpoint uses this method.
+           Args:
+               database_name (str): The name of the database to see the completed queries on.
+               mgmt_query (str):  Client specified identity of the request.
+           Returns:
+               Dict[str, Any]: API response from Azure.
+           """
         data = retrieve_common_request_body(database_name, mgmt_query)
         response = self.http_request("POST", url_suffix="/v1/rest/mgmt", data=data)
         return response
@@ -394,8 +403,7 @@ def format_header_for_list_commands(base_header: str, rows_count: int, total_pag
 def retrieve_common_request_body(database_name: str, query: str,
                                  properties: Dict[str, Any] = None) -> Dict[str, Any]:
     """
-    Retrieve requests body.
-    for every request, the body contains the database name and the query to the execute.
+    Retrieve requests body. For every request, the body contains the database name and the query to the execute.
 
     Args:
         database_name (str): The database name.

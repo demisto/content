@@ -6,6 +6,9 @@ APPLICATION_ID = "xxx-xxx-xxx"
 QUERY_URL_SUFFIX = "/v1/rest/query"
 MANAGEMENT_URL_SUFFIX = "/v1/rest/mgmt"
 CLIENT_ACTIVITY_PREFIX = "XSOAR-DataExplorerIntegation"
+CLIENT_ACTIVITY_ID = "XSOAR-DataExplorer1;xxxx-xxxxx-xxxxx-xxxx"
+DATABASE_NAME = "Samples"
+QUERY = "test_query"
 
 
 def load_mock_response(file_name: str) -> str:
@@ -45,7 +48,7 @@ def test_execute_search_query_command(requests_mock):
     requests_mock.post("https://login.microsoftonline.com/organizations/oauth2/v2.0/token", json={})
     requests_mock.post(url, json=mock_response)
     result = search_query_execute_command(mock_client(), {
-        "database_name": "Samples",
+        "database_name": DATABASE_NAME,
         "query": "StormEvents | take 3"
     })
     outputs = result.outputs
@@ -76,7 +79,7 @@ def test_list_search_queries_command(requests_mock):
     requests_mock.post(url, json=mock_response)
     requests_mock.post("https://login.microsoftonline.com/organizations/oauth2/v2.0/token", json={})
     result = search_queries_list_command(mock_client(), {
-        "database_name": "Samples"
+        "database_name": DATABASE_NAME
     })
     outputs = result.outputs
     assert len(outputs) == 2
@@ -104,7 +107,7 @@ def test_list_search_running_queries_command(requests_mock):
     requests_mock.post(url, json=mock_response)
     requests_mock.post("https://login.microsoftonline.com/organizations/oauth2/v2.0/token", json={})
     result = running_search_queries_list_command(mock_client(), {
-        "database_name": "Samples",
+        "database_name": DATABASE_NAME,
         "page": 1,
         "limit": 1
     })
@@ -127,20 +130,45 @@ def test_cancel_running_search_query_command(requests_mock):
      - Ensure number of items is correct.
      - Ensure outputs prefix is correct.
     """
-    from AzureDataExplorer import running_search_queries_list_command
+    from AzureDataExplorer import running_search_query_cancel_command
     mock_response = json.loads(load_mock_response('cancel_query.json'))
     url = f'{CLUSTER_URL}{MANAGEMENT_URL_SUFFIX}'
     requests_mock.post(url, json=mock_response)
     requests_mock.post("https://login.microsoftonline.com/organizations/oauth2/v2.0/token", json={})
 
-    result = running_search_queries_list_command(mock_client(), {
-        "database_name": "Samples"
+    cancel_query_result = running_search_query_cancel_command(mock_client(), {
+        "database_name": DATABASE_NAME,
+        "client_activity_id": CLIENT_ACTIVITY_ID
     })
-    outputs = result.outputs
+    cancel_query_with_reason_result = running_search_query_cancel_command(mock_client(), {
+        "database_name": DATABASE_NAME,
+        "client_activity_id": CLIENT_ACTIVITY_ID,
+        "reason": "test-reason"
+    })
+    outputs = cancel_query_result.outputs
+    outputs_with_reason = cancel_query_with_reason_result.outputs
     assert len(outputs) == 1
     assert outputs[0]['RunningQueryCanceled'] is False
     assert outputs[0]['ReasonPhrase'] == "Query cancelled by the user's request"
-    assert result.outputs_prefix == 'AzureDataExplorer.RunningSearchQuery'
+    assert cancel_query_result.outputs_prefix == 'AzureDataExplorer.CanceledSearchQuery'
+    assert outputs_with_reason[0]['ReasonPhrase'] == "Query cancelled by the user's request"
+
+
+def test_retrieve_common_request_body():
+    """
+       Scenario: Retrieve the body argument for requests call.
+       Given:
+        - Database name provided.
+        - A response returned from the API.
+       When:
+        - Before every request method in AzureDataExplorer client.
+       Then:
+        - Ensure that the retrieved body is as expected.
+       """
+    from AzureDataExplorer import retrieve_common_request_body
+    body = retrieve_common_request_body(DATABASE_NAME, QUERY)
+    assert body['db'] == DATABASE_NAME
+    assert body['csl'] == QUERY
 
 
 def test_convert_kusto_response_to_dict():
