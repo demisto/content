@@ -1,0 +1,17 @@
+## Configuration without SSL
+
+1. Make sure your kafka configuration supports no client authentication: 
+   * ```ssl.client.auth``` does not equal ```required```
+   * Make sure you have the broker port ```<port>``` which supports non-ssl connection
+2. Add ```<broker_address>:<port>``` to the brokers list
+3. Make sure the ```Use TLS for connection``` flag is unchecked
+
+## Configuration with SSL
+
+1. Make sure you have the broker port ```<port>``` which supports ssl connection
+2. Add ```<broker_address>:<port>``` to the brokers list
+3. Check the ```Use TLS for connection``` flag
+4. Provide the CA root certificate in the ```CA certificate of Kafka server (.cer)``` section
+5. Provide the client certificate in the ```Client certificate (.cer)``` section
+6. Provide the client certificate key in the ```Client certificate key (.key)``` section
+7. if your client certificate is password protected, please provide the password in the ```Client certificate key password (if required)``` section
