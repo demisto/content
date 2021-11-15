@@ -1,6 +1,8 @@
-id: 'Threat Hunting - Generic'
+id: Threat Hunting - Generic
 version: -1
-name: 'Threat Hunting - Generic'
+contentitemexportablefields:
+  contentitemfields: {}
+name: Threat Hunting - Generic
 description: "This playbook enables threat hunting for IOCs in your enterprise.\n\
   This playbook currently supports the following integrations:\n- Splunk\n- Qradar\n\
   - Pan-os\n- Cortex data lake \n- Autofocus"
@@ -35,16 +37,18 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 61b3c940-dcec-4fa5-8a82-4f8f0a698dc4
+    taskid: faee0e93-b767-4148-8d8f-b1762d1e1039
     type: playbook
     task:
-      id: 61b3c940-dcec-4fa5-8a82-4f8f0a698dc4
+      id: faee0e93-b767-4148-8d8f-b1762d1e1039
       version: -1
       name: Splunk Indicator Hunting
       description: This playbook queries Splunk for indicators such as file hashes,
-        IP addresses, domains, or urls. It outputs detected users, IP addresses, and
+        IP addresses, domains, or urls. It outputs detected users, ip addresses, and
         hostnames related to the indicators.
       playbookName: Splunk Indicator Hunting
       type: playbook
@@ -54,10 +58,8 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      HostFieldsToReturn: {}
       IPAddress:
         simple: ${inputs.IPAddress}
-      IPFieldsToReturn: {}
       IndexName:
         simple: '*'
       InternalDomainName:
@@ -74,19 +76,16 @@ tasks:
         simple: ${inputs.SHA256}
       SelectFields:
         simple: source,timestamp
-      SplunkIPField: {}
-      SplunkMD5Field: {}
-      SplunkSHA1Field: {}
-      SplunkSHA256Field: {}
-      SplunkURLDomainField: {}
       URLDomain:
         simple: ${inputs.URLDomain}
-      UserFieldsToReturn: {}
       earliest_time:
-        simple: -1d
+        complex:
+          root: inputs.SplunkEarliestTime
       event_limit:
         simple: "100"
-      latest_time: {}
+      latest_time:
+        complex:
+          root: inputs.SplunkLatestTime
     separatecontext: true
     loop:
       iscommand: false
@@ -105,6 +104,8 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
     taskid: 41273c47-6b21-49dd-869a-35e115202d0a
@@ -163,6 +164,8 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
     taskid: 68569c89-2090-4873-8dbc-aede46966200
@@ -188,15 +191,17 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 0f539d62-b4ac-4331-8039-d1914369d927
+    taskid: 6f545ba4-aeb9-4c82-87d0-4e3a1f0b5826
     type: playbook
     task:
-      id: 0f539d62-b4ac-4331-8039-d1914369d927
+      id: 6f545ba4-aeb9-4c82-87d0-4e3a1f0b5826
       version: -1
       name: QRadar Indicator Hunting V2
-      description: 'The playbook queries QRadar SIEM for indicators such as file hashes,
+      description: 'The Playbook queries QRadar SIEM for indicators such as file hashes,
         IP addresses, domains, or urls. '
       playbookName: QRadar Indicator Hunting V2
       type: playbook
@@ -218,16 +223,13 @@ tasks:
         simple: ${inputs.MD5}
       QradarIPfield:
         simple: sourceip,destinationip
-      QradarMD5Field: {}
-      QradarSHA1Field: {}
-      QradarSHA256Field: {}
-      QradarURLDomainField: {}
       SHA1:
         simple: ${inputs.SHA1}
       SHA256:
         simple: ${inputs.SHA256}
       TimeFrame:
-        simple: LAST 7 DAYS
+        complex:
+          root: inputs.InternalHostRegex
       URLDomain:
         simple: ${inputs.URLDomain}
     separatecontext: true
@@ -248,6 +250,9 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
@@ -319,6 +324,24 @@ inputs:
     naming convention. For example, the host testpc1 will have the following regex
     \w{6}\d{1}
   playbookInputQuery:
+- key: QRadarTimeFrame
+  value:
+    simple: LAST 7 DAYS
+  required: false
+  description: The time frame to search in QRadar.
+  playbookInputQuery:
+- key: SplunkEarliestTime
+  value:
+    simple: -7d@d
+  required: false
+  description: The earliest time to search in Splunk.
+  playbookInputQuery:
+- key: SplunkLatestTime
+  value:
+    simple: now
+  required: false
+  description: The latest time to search in Splunk.
+  playbookInputQuery:
 outputs:
 - contextPath: Splunk.DetectedUsers
   description: Users detected based on the username field in your search.
@@ -368,5 +391,5 @@ outputs:
     that the data accuracy depends on how the asset mapping is configured in QRadar.
   type: string
 tests:
-- no tests
+- No tests (auto formatted)
 fromversion: 5.5.0
