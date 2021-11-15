@@ -43,11 +43,11 @@ This playbook does not use any integrations.
 | SearchAndDeleteIntegration | Determines which product and playbook will be used to search and delete the phishing email from users' inboxes.<br/>Set this to "O365" to use the O365 - Security And Compliance - Search And Delete playbook.<br/>Set this to "EWS" to use the Search And Delete Emails - EWS playbook. | EWS | Optional |
 | O365DeleteType | The method by which to delete emails using the O365 - Security And Compliance - Search And Delete playbook. Could be "Soft" \(recoverable\), or "Hard" \(unrecoverable\). Leave empty to decide manually for each email incident.<br/>This is only applicable if the SearchAndDeleteIntegration input is set to O365. | Soft | Optional |
 | O365DeleteTarget | The exchange location. Determines from where to search and delete emails searched using O365 playbooks. Use the value "All" to search all mailboxes, use "SingleMailbox" to search and delete the email only from the recipient's inbox, or specify "Manual" to decide manually for every incident. Note - searching all mailboxes may take a significant amount of time. This input is only applicable if the SearchAndDeleteIntegration input is set to O365. | SingleMailbox | Optional |
-| SOCEmailAddress | The SOC email address to set in case the playbook handles phishing alert. | demistoadmin@demisto.int | Optional |
+| SOCEmailAddress | The SOC email address to set in case the playbook handles phishing alert. |  | Optional |
 | closeIfBlocked | Whether to close the investigation in cases where the email has already been blocked. | False | Optional |
 | escalationRole | The role to assign the incident to if the incident severity is critical |  | Optional |
 | blockedAlertActionValue | List of optional values the email security device returns for blocked\\denied\\etc. emails. | block, deny, denied, delete | Optional |
-| SensitiveMailboxesList | The name of a list that contains the organization's sensitive users. | lists.sensitiveMailboxesList | Optional |
+| SensitiveMailboxesList | The name of a list that contains the organization's sensitive users. |  | Optional |
 | SearchThisWeek | Whether to search for similar emails in a week's time range or all time. | true | Optional |
 | CheckMicrosoftHeaders | Check Microsoft's headers for BCL/PCL/SCL scores and set the "Severity" and "Email Classification" accordingly. | True | Optional |
 
