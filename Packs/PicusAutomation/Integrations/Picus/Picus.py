@@ -81,10 +81,8 @@ def getVectorList():
     picus_req_url, picus_headers = generateEndpointURL(getAccessToken(),picus_endpoint)
     add_user_details = demisto.args().get('add_user_details')
     add_user_details = bool(add_user_details) if add_user_details is not None else add_user_details
-    page = demisto.args().get('page')
-    page = int(page) if page is not None else page
-    size = demisto.args().get('size')
-    size = int(size) if size is not None else size
+    page = arg_to_number(demisto.args().get('page'))
+    size = arg_to_number(demisto.args().get('size'))
     picus_post_data = {"add_user_details":add_user_details,"size":size,"page":page}
     post_data_copy = {**picus_post_data}
     for key,value in post_data_copy.items():
