@@ -16,10 +16,12 @@ SUPPORTED_GENERAL_OFFSETS = ['smallest', 'earliest', 'beginning', 'largest', 'la
 
 
 class KConsumer(Consumer):
+    """Empty inheritance class for C-typed class in order to make mocking work."""
     pass
 
 
 class KProducer(Producer):
+    """Empty inheritance class for C-typed class in order to make mocking work."""
     pass
 
 
@@ -34,6 +36,7 @@ class KafkaCommunicator:
     def __init__(self, brokers: str, offset: str = 'earliest', group_id: str = 'xsoar_group',
                  message_max_bytes: int = None, enable_auto_commit: bool = False, ca_cert=None,
                  client_cert=None, client_cert_key=None, ssl_password=None):
+        """Set configuration dicts for consumer and producer."""
         self.conf_producer = {'bootstrap.servers': brokers}
 
         if offset not in SUPPORTED_GENERAL_OFFSETS:
