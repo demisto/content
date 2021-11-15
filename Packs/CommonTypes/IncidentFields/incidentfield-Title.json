@@ -25,7 +25,8 @@
   "User Profile",
   "IAM - Sync User",
   "IAM - Rehire User",
-  "Mandiant Automated Defense Incident"
+  "Mandiant Automated Defense Incident",
+  "OpsGenie Incident"
  ],
  "associatedToAll": false,
  "unmapped": false,
