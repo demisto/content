@@ -137,7 +137,7 @@
 </tr>
 <tr>
 <td style="width: 165px;">useragent</td>
-<td style="width: 446px;">User Agent header used to perform scan</td>
+<td style="width: 446px;">User Agent used to perform scans</td>
 <td style="width: 97px;">Optional</td>
 </tr>
 </tbody>
