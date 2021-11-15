@@ -473,5 +473,5 @@ view: |-
     }
   }
 tests:
-- No tests (auto formatted)
+- Process Email - Generic - Test - Incident Starter
 fromversion: 6.0.0
