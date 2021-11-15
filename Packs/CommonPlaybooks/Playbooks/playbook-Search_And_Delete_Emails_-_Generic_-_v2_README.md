@@ -4,8 +4,8 @@ This playbook searches and delete emails with similar attributes of a malicious 
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Search And Delete Emails - EWS
 * O365 - Security And Compliance - Search And Delete
+* Search And Delete Emails - EWS
 
 ### Integrations
 This playbook does not use any integrations.
@@ -39,4 +39,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Search_And_Delete_Emails_Generic](../doc_files/Search_And_Delete_Emails_-_Generic_v2.png)
+![Search And Delete Emails - Generic v2](https://raw.githubusercontent.com/demisto/content/a1fd8bd8eaab1058a3b0a6a849552bc62621984e/Packs/CommonPlaybooks/doc_files/Search_And_Delete_Emails_-_Generic_-_v2.png)

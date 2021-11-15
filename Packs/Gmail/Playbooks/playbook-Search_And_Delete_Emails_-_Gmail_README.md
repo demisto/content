@@ -1,4 +1,4 @@
-This playbook searches Gmail to identify and delete emails with similar attributes of a malicious email. Please note that in order to perform these actions, splecial permissiosn are required.
+This playbook searches Gmail to identify and delete emails with similar attributes to the malicious email.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -13,8 +13,8 @@ This playbook does not use any sub-playbooks.
 * GetTime
 
 ### Commands
-* gmail-delete-mail
 * gmail-search-all-mailboxes
+* gmail-delete-mail
 
 ## Playbook Inputs
 ---
@@ -34,4 +34,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Search And Delete Emails - Gmail](../doc_files/Search_And_Delete_Emails_-_Gmail.png)
+![Search And Delete Emails - Gmail](https://raw.githubusercontent.com/demisto/content/5153dd815b5288877b560e3fdcc3d9ab28cda57e/Packs/Gmail/doc_files/Search_And_Delete_Emails_-_Gmail.png)
