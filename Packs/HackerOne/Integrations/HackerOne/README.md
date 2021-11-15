@@ -52,8 +52,8 @@ Retrieves all the reports based on program handle and provided arguments.
 | --- | --- | --- |
 | program_handle | The program handle to fetch the reports based on the specified handle. Users can get the list of the program_handle by executing the "hackerone-program-list" command.<br/><br/>Note: Supports comma separated values. | Required | 
 | sort_by | Sort the reports based on the attributes provided.<br/><br/>Possible values: swag_awarded_at, bounty_awarded_at, last_reporter_activity_at, first_program_activity_at, last_program_activity_at, triaged_at, created_at, closed_at, last_public_activity_at, last_activity_at, disclosed_at.<br/><br/>Note: The default sort order for an attribute is descending. Prefix the attributes with a hyphen to sort in ascending order. Supports comma separated values.<br/><br/>Example: -last_reporter_activity_at, created_at. | Optional | 
-| page_size | The number of reports to retrieve per page. <br/><br/>Note: Possible values are between 1 and 100. Default is 50. | Optional | 
-| page_number | Page number to retrieve the reports from the specified page. | Optional | 
+| page_size | The number of reports to retrieve per page. Default value is 50. <br/><br/>Note: Possible values are between 1 and 100. | Optional | 
+| page_number | Page number to retrieve the reports from the specified page. Default value is 1. | Optional | 
 | advanced_filter | By providing advanced filters, users can get specific reports according to their requirements. Supports JSON format.<br/><br/>Note: This will take higher precedence over "program_handle", "filter_by_keyword", "state" and "severity".<br/><br/>Format accepted: {"filter[attribute1][]": "value1, value2", "filter[attribute2]" : "value3"}<br/><br/>For example: {"filter[closed_at__gt]":"2020-10-26T10:48:16.834Z","filter[state][]":"new, triaged"}. | Optional | 
 | filter_by_keyword | The keyword filter to retrieve the reports by title and keywords. | Optional | 
 | state | The state filter to retrieve the reports by current report state.<br/><br/>Possible values: new, pending-program-review, triaged, needs-more-info, resolved, not-applicable, informative, duplicate, spam, retesting.<br/><br/>Note: Supports comma separated values. | Optional | 
@@ -423,8 +423,8 @@ Retrieves information about the programs in which the user is a member.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page_size | The number of programs to retrieve per page.<br/><br/>Note: Possible values are between 1 and 100. Default is 50. | Optional | 
-| page_number | Page number to retrieve the programs from the specified page. | Optional |
+| page_size | The number of programs to retrieve per page. Default value is 50.<br/><br/>Note: Possible values are between 1 and 100. | Optional | 
+| page_number | Page number to retrieve the programs from the specified page. Default value is 1. | Optional |
 | limit | Number of programs to retrieve. | Optional |
 
 
