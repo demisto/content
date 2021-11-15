@@ -8,11 +8,11 @@ from CommonServerPython import DemistoException
 from test_data import input_data
 from unittest import mock
 
-BASE_URL = 'https://mocked_url'
+BASE_URL = 'https://mocked_url/v1/'
 
 URL_SUFFIX = {
-    "REPORTS": "/v1/reports",
-    "PROGRAMS": "/v1/me/programs"
+    "REPORTS": "reports",
+    "PROGRAMS": "me/programs"
 }
 
 
@@ -24,7 +24,7 @@ def util_load_json(path):
 @pytest.fixture()
 def client():
     from HackerOne import Client
-    return Client("https://mocked_url", False, False, auth=("user", "user123"), max_fetch=1,
+    return Client("https://mocked_url/v1", False, False, auth=("user", "user123"), max_fetch=1,
                   first_fetch="2020-09-07T04:59:51Z",
                   program_handle=["checker_program_h1b"], severity="", state="", filters="")
 
@@ -412,9 +412,10 @@ def test_fetch_incident_when_report_ids_should_be_replaced(client, requests_mock
     assert fetched_incidents == (next_run, incidents)
 
 
-@pytest.mark.parametrize("max_fetch, first_fetch, program_handle, severity, state, filters, expected_params",
+@pytest.mark.parametrize("max_fetch, first_fetch, program_handle, severity, state, filters, page, expected_params",
                          input_data.valid_params_for_fetch_incidents)
 def test_fetch_incident_when_valid_params_are_provided(max_fetch, first_fetch, program_handle, severity, state, filters,
+                                                       page,
                                                        expected_params):
     """
     test case scenario when valid parameters are provided for fetching the incidents.
@@ -428,7 +429,7 @@ def test_fetch_incident_when_valid_params_are_provided(max_fetch, first_fetch, p
     from HackerOne import prepare_fetch_incidents_parameters
 
     assert prepare_fetch_incidents_parameters(max_fetch, first_fetch, program_handle, severity, state,
-                                              filters) == expected_params
+                                              filters, page) == expected_params
 
 
 @pytest.mark.parametrize("max_fetch, program_handle,filters, expected_error_msg",

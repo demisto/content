@@ -12,10 +12,10 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 URL_SUFFIX = {
-    "REPORTS": "/v1/reports",
-    "PROGRAMS": "/v1/me/programs"
+    "REPORTS": "reports",
+    "PROGRAMS": "me/programs"
 }
-
+API_VERSION = 'v1'
 BASE_URL = 'https://api.hackerone.com'
 DEFAULT_MAX_FETCH = "15"
 DEFAULT_FIRST_FETCH = "3 days"
@@ -225,15 +225,15 @@ def validate_fetch_incidents_parameters(max_fetch: Optional[int], program_handle
             raise ValueError(MESSAGES["FILTER"])
 
 
-def prepare_fetch_incidents_parameters(max_fetch, first_fetch, program_handle, severity, state, filters) -> \
+def prepare_fetch_incidents_parameters(max_fetch, time_to_fetch, program_handle, severity, state, filters, page) -> \
         Dict[str, Any]:
     """
     Prepare fetch incidents params
     :type max_fetch: ``int``
     :param max_fetch: Maximum number of incidents per fetch provided by user.
 
-    :type first_fetch: ``str``
-    :param first_fetch: Date or relative timestamp to start fetching incidents from.
+    :type time_to_fetch: ``str``
+    :param time_to_fetch: Date or relative timestamp to start fetching incidents from.
 
     :type program_handle: ``List``
     :param program_handle: The program handle provided by the user.
@@ -247,14 +247,18 @@ def prepare_fetch_incidents_parameters(max_fetch, first_fetch, program_handle, s
     :type filters: ``str``
     :param filters: The advanced_filter argument provided by the user.
 
+    :type page: ``str``
+    :param page: Page number to retrieve next records.
+
     """
 
-    fetch_params: Dict[str, Any] = {"page[size]": max_fetch, "sort": "reports.created_at"}
+    fetch_params: Dict[str, Any] = {"page[size]": max_fetch, "sort": "reports.created_at",
+                                    "page[number]": page}
 
     fetch_params.update(
         prepare_filter_by_arguments(program_handle, severity, state, filters))
 
-    fetch_params["filter[created_at__gt]"] = arg_to_datetime(first_fetch).isoformat()[:-6]  # type:ignore
+    fetch_params["filter[created_at__gt]"] = arg_to_datetime(time_to_fetch).isoformat()[:-6]  # type:ignore
 
     return assign_params(**fetch_params)
 
@@ -293,7 +297,7 @@ def prepare_report_list_args(args: Dict[str, Any]) -> Dict[str, Any]:
 
     sort_by = argToList(args.get("sort_by", ""))
     if sort_by:
-        params["sort"] = ["-reports." + sort_value[1:] if sort_value.startswith("-") else "reports." + sort_value
+        params["sort"] = ["reports." + sort_value[1:] if sort_value.startswith("-") else "-reports." + sort_value
                           for sort_value in sort_by]
 
     program_handle = argToList(args.get("program_handle", ""))
@@ -382,7 +386,7 @@ def get_and_validate_positive_int_argument(args: Dict, argument_name: str, lower
     argument_value = arg_to_number(args.get(argument_name), arg_name=argument_name)
     if argument_value is None:
         return None
-    if argument_value < lower_bound or argument_value > upper_bound:  # type:ignore
+    if not lower_bound < argument_value < upper_bound:  # type:ignore
         raise ValueError(
             MESSAGES["INVALID_POSITIVE_INT"].format(argument_value, argument_name, lower_bound, upper_bound))
     return argument_value
@@ -461,12 +465,10 @@ def fetch_incidents(client: Client, last_run: dict, ) -> Tuple[dict, list]:
     :return: tuple of dictionary of next run and list of fetched incidents
     """
     validate_fetch_incidents_parameters(client.max_fetch, client.program_handle, client.filters)
-    fetch_params = prepare_fetch_incidents_parameters(client.max_fetch, client.first_fetch, client.program_handle,
-                                                      client.severity, client.state, client.filters)
-    first_fetch = fetch_params["filter[created_at__gt]"]
-
-    fetch_params["page[number]"] = last_run.get("next_page", 1)
-    fetch_params["filter[created_at__gt]"] = last_run.get("next_created_at", first_fetch)  # type: ignore
+    time_to_fetch = last_run.get("next_created_at", client.first_fetch)
+    page_to_fetch = last_run.get("next_page", 1)
+    fetch_params = prepare_fetch_incidents_parameters(client.max_fetch, time_to_fetch, client.program_handle,
+                                                      client.severity, client.state, client.filters, page_to_fetch)
 
     response = client.report_list(params=fetch_params)
 
@@ -475,36 +477,31 @@ def fetch_incidents(client: Client, last_run: dict, ) -> Tuple[dict, list]:
     if not results:
         return next_run, []
 
-    created_at_last_report = results[-1].get("attributes", {}).get("created_at")
-
-    if created_at_last_report == fetch_params["filter[created_at__gt]"]:
-        next_run = {
-            "next_page": fetch_params["page[number]"] + 1,
-            "next_created_at": fetch_params["filter[created_at__gt]"]
-        }
-    else:
-        next_run = {
-            "next_page": 1,
-            "next_created_at": created_at_last_report
-        }
-
-    report_ids = last_run.get("report_ids", [])
+    previous_report_ids = last_run.get("report_ids", [])
     new_report_ids = []
     incidents = []
     for result in results:
-        if result.get("id") in report_ids:
-            continue
-        new_report_ids.append(result.get("id"))
-        incidents.append({
-            'name': result.get('attributes', {}).get('title', ''),
-            'occurred': result.get('attributes', {}).get('created_at'),
-            'rawJSON': json.dumps(result)
-        })
+        if result.get("id") not in previous_report_ids:
+            new_report_ids.append(result.get("id"))
+            incidents.append({
+                'name': result.get('attributes', {}).get('title', ''),
+                'occurred': result.get('attributes', {}).get('created_at'),
+                'rawJSON': json.dumps(result)
+            })
 
-    if created_at_last_report == fetch_params["filter[created_at__gt]"]:
-        next_run["report_ids"] = report_ids + new_report_ids
-    else:
-        next_run["report_ids"] = new_report_ids
+    next_page = 1
+    next_report_ids = new_report_ids
+    created_at_last_report = results[-1].get("attributes", {}).get("created_at")
+
+    if created_at_last_report == time_to_fetch:
+        next_report_ids = previous_report_ids + new_report_ids
+        next_page = page_to_fetch + 1
+
+    next_run = {
+        "next_page": next_page,
+        "next_created_at": created_at_last_report,
+        "report_ids": next_report_ids
+    }
 
     return next_run, incidents
 
@@ -623,7 +620,7 @@ def main():
     params = demisto.params()
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    url = params.get('url', BASE_URL)
+    url = urljoin(params.get('url', BASE_URL), API_VERSION)
     credentials = params.get("username", {})
     username = credentials.get('identifier').strip()
     password = credentials.get('password')
